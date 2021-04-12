@@ -1,68 +1,136 @@
 <ar>
-6.1:
-تتوفر آخر التحديثات لتطبيق WooCommerce لنظام تشغيل Android هنا. عند تحرير أحد المنتجات، سيتم حفظ جميع التغييرات الآن تلقائيًا، سيؤدي النقر على "تحديث" إلى إرسال التغييرات إلى خادمك. أصلحنا كذلك أخطاء كانت تؤثر في عرض إعدادات المنتج، وتعديل لغة أسعار المنتج، والتنبيهات المنبثقة بشأن طلبات الدعم.
+6.3:
+يوفِّر تطبيق WooCommerce المتوافق مع نظام تشغيل Android 6.3 تحديثين مهمين للمستخدمين:
+
+- يمكنك الآن تضمين عبارة "قابل للتنزيل" في تفاصيل نوع المنتج إن أمكن.
+- أصلحنا خطأ بحيث تظهر حالة طلب العميل بشكل صحيح الآن في تفاصيل الطلب.
+
 </ar>
 <de-DE>
-6.1:
-Die neuesten Updates für die WooCommerce Android-App sind da. Wenn du ein Produkt bearbeitest, werden nun alle Änderungen automatisch lokal gespeichert – und wenn du auf „Aktualisieren“ klickst, werden die Änderungen an deinen Server gesendet. Darüber hinaus haben wir Fehler rund um Anzeige und Produkteinstellungen, die Bearbeitung der Sprache der Produktpreise und Push-Benachrichtigungen zu Supportanfragen behoben.
+6.3:
+WooCommerce Android 6.3 hält zwei wichtige Updates bereit:
+
+- Falls zutreffend kannst du jetzt in den Produktdetails „Zum Herunterladen“ angeben.
+- Wir haben einen Fehler behoben, sodass der Status einzelner Bestellungen jetzt korrekt unter den Bestelldetails angezeigt wird.
+
 </de-DE>
 <es-ES>
-6.1:
-Ya están aquí las últimas novedades de la aplicación de WooCommerce para Android. Ahora, cuando edites un producto, los cambios se guardarán localmente de manera automática. Al hacer clic en "Actualizar", los cambios se enviarán al servidor. Hemos corregido errores que afectaban a cómo se mostraban los ajustes de los productos, la edición del idioma en los precios del producto y las notificaciones push sobre solicitudes de soporte.
+6.3:
+WooCommerce para Android 6.3 ofrece a los usuarios dos mejoras importantes:
+
+- Cuando proceda, ya puedes incluir "descargable" en los detalles del tipo de producto.
+- Hemos solucionado un error para que el estado de los pedidos personalizados aparezca correctamente en los detalles del pedido.
+
 </es-ES>
 <fr-FR>
-6.1 :
-Les dernières mises à jour de l’application WooCommerce pour Android sont disponibles. Lorsque vous modifiez un produit, toutes les modifications sont désormais enregistrées localement. Appuyez sur « Mettre à jour » pour envoyer les modifications à votre serveur. Nous avons également corrigé des bugs au niveau de l’affichage des paramètres des produits, de la modification de la langue pour le prix des produits et des notifications push relatives aux demandes d’assistance.
+6.3 :
+WooCommerce Android 6.3 propose aux utilisateurs deux mises à jour importantes :
+
+- Le cas échéant, vous pouvez désormais inclure « téléchargeable » dans les détails de type d’un produit.
+- Nous avons résolu un bug afin que l’état d’une commande personnalisée s’affiche désormais correctement dans les détails de la commande.
+
 </fr-FR>
 <iw-IL>
-6.1:
-העדכונים האחרונים לאפליקציה של WooCommerce ב-Android כבר כאן. כאשר עורכים מוצר, כל השינויים נשמרים כעת במכשיר המקומי באופן אוטומטי – לאחר הלחיצה על 'עדכון', העדכונים יעברו לשרת. בנוסף, תיקנו באגים שהשפיעו על התצוגה בהגדרות המוצר, העריכה של השפות במחירי המוצרים והודעות הדחיפה לגבי בקשות לתמיכה.
+6.3:
+גרסת 6.3 של WooCommerce ל-Android כוללת שני עדכונים חשובים למשתמשים:
+
+- אם רלוונטי, אפשר להוסיף אפשרות 'להורדה' בפרטי הסוג של המוצר.
+- תיקנו באג כדי לוודא שסטטוס ההזמנה המותאם מופיע כעת בצורה תקינה בפרטי ההזמנה.
+
 </iw-IL>
 <id>
-6.1:
-Pembaruan terbaru untuk aplikasi Android WooCommerce sudah tersedia. Jika Anda menyunting produk, semua perubahan kini akan secara otomatis disimpan secara lokal—dengan mengeklik “Perbarui”, perubahan akan dikirimkan ke server Anda. Kami juga telah memperbaiki bug yang memengaruhi tampilan pengaturan produk, penyuntingan bahasa pada harga produk, dan pemberitahuan push mengenai permintaan dukungan.
+6.3:
+WooCommerce Android 6.3 memberikan dua pembaruan penting untuk pengguna:
+
+- Jika dibutuhkan, sekarang Anda dapat menyertakan “bahan unduhan” pada detail tipe produk.
+- Kami telah memperbaiki bug sehingga status pesanan khusus ditampilkan dengan benar pada detail pesanan.
+
 </id>
 <it-IT>
-6.1:
-Ecco gli ultimi aggiornamenti all'app per Android di WooCommerce. Quando viene modificato un prodotto, tutte le modifiche verranno automaticamente salvate in locale. Facendo clic su "Aggiorna" le modifiche verranno inviate al server. Abbiamo inoltre corretto bug che interessavano la visualizzazione delle impostazioni del prodotto, la modifica della lingua del prezzo del prodotto e le notifiche push relative alle richieste del supporto.
+6.3:
+WooCommerce per Android 6.3 offre agli utenti due importanti aggiornamenti:
+
+- Se applicabile, puoi ora includere "scaricabile" nei dettagli del tipo di prodotto.
+- Abbiamo risolto un bug in modo che lo stato di un ordine personalizzato ora venga visualizzato correttamente nei dettagli dell'ordine.
+
 </it-IT>
 <ja-JP>
-6.1:
-WooCommerce Android アプリの最新の更新プログラムはこちらです。商品の編集時にすべての変更が自動的にローカルで保存されるようになりました。「更新」をクリックすると変更がサーバーに送信されます。商品設定の表示、商品価格の言語の編集、サポートリクエストのプッシュ通知に影響するバグも修正しました。
+6.3:
+WooCommerce Android 6.3に2つの重要なアップデートがあります : 
+
+- 該当する場合は、商品のタイプの詳細に「ダウンロード可能」を含めることが可能になりました。
+- カスタム注文のステータスが注文の詳細に正確に表示されるようバグを修正しました。
+
 </ja-JP>
 <ko-KR>
-6.1:
-최근에 WooCommerce Android 앱을 업데이트했습니다. 제품을 편집할 때 이제는 모든 변경사항이 로컬로 자동으로 저장됩니다. "업데이트"를 클릭하면 변경사항이 서버로 전송됩니다. 제품 설정의 표시, 제품 가격 언어의 편집 및 지원 요청에 대한 푸시 알림에 영향을 주는 버그도 수정했습니다.
+6.3:
+WooCommerce Android 6.3에서 다음 두 가지 중요한 업데이트를 사용자에게 제공합니다.
+
+- 업데이트를 적용하면 상품 유형 상세 정보에 "다운로드 가능"이라는 표시를 포함할 수 있습니다.
+- 이제 주문 상세 정보에 사용자 정의 주문의 상태가 올바르게 표시되도록 버그를 수정했습니다.
+
 </ko-KR>
 <nl-NL>
-6.1:
-Hier zijn de meest recente updates voor de WooCommerce-app voor Android. Tijdens het bewerken van een product zullen alle wijzigingen lokaal worden opgeslagen. Door op 'bijwerken’ te klikken, worden de wijzigingen naar je server verzonden. Ook hebben we bugs verholpen die invloed hadden op de weergave van productinstellingen, op het bewerken van de taal van productprijzen en op pushmeldingen over ondersteuningsverzoeken.
+6.3:
+WooCommerce Android 6.3 bevat twee belangrijke updates:
+
+- Indien van toepassing, kan je nu 'downloadbaar’ toevoegen aan de informatie van het producttype.
+- We hebben een bug verholpen zodat de status van een aangepaste bestelling nu correct wordt weergegeven in de bestellingsgegevens.
+
 </nl-NL>
 <pt-BR>
-6.1:
-Veja as atualizações mais recentes no aplicativo Android do WooCommerce. Quando você editar um produto, todas as alterações serão salvas automaticamente. Ao clicar em "Atualizar", elas serão enviadas para seu servidor. Também corrigimos bugs que afetam a exibição das configurações do produto, a edição do idioma dos preços dos produtos e as notificações push sobre pedidos de suporte.
+6.3:
+O WooCommerce para Android 6.3 conta com duas atualizações importantes:
+
+- Se aplicável, agora é possível incluir "pode ser baixado" nos detalhes de tipo de um produto.
+- Corrigimos um bug e agora o status de pedidos personalizados é exibido corretamente nos detalhes do pedido.
+
 </pt-BR>
 <ru-RU>
-6.1:
-А вот и последнее обновление приложения WooCommerce для Android. Теперь при редактировании товара все изменения автоматически сохраняются на локальном устройстве и отправляются на сервер при нажатии кнопки "Обновить". Мы также исправили ошибки, влияющие на отображение параметров товаров, редактирование языка обозначения цены на товар и всплывающие уведомления об обращениях в службу поддержки.
+6.3:
+Доступно два важных обновления WooCommerce 6.3 для Android:
+
+— Теперь в сведениях о типе можно указать, что товар является загружаемым (если применимо).
+— Исправлена ошибка, благодаря чему статус заказа клиента отображается корректно в сведениях о заказе.
+
 </ru-RU>
 <sv-SE>
-6.1:
-De senaste uppdateringarna av Android-appen WooCommerce är här. När du redigerar en produkt sparas alla ändringar automatiskt lokalt. Genom att klicka på "Uppdatera" skickas ändringarna till din server. Vi korrigerade också fel som påverkar visning av produktinställningar, redigering av språk för produktpriser och push-meddelanden om supportförfrågningar.
+6.3:
+Med WooCommerce Android 6.3 får användare två viktiga uppdateringar:
+
+– Vid behov kan du nu inkludera "nedladdningsbar" i typinformationen för en produkt.
+– Vi åtgärdade en bugg så att en status för en anpassad order nu visas korrekt i orderinformationen.
+
 </sv-SE>
 <tr-TR>
-6.1:
-WooCommerce Android uygulamasıyla ilgili en son güncellemeler burada. Bir ürünü düzenlerken, tüm değişiklikler artık otomatik şekilde yerel olarak kaydedilecek. "Güncelle"ye tıkladığınızda değişiklikler sunucunuza gönderilir. Ayrıca ürün ayarlarının görüntülenmesini, ürün fiyatlarının dilinin düzenlenmesini ve destek talepleriyle ilgili anlık bildirimleri etkileyen hatalar da düzeltildi.
+6.3:
+WooCommerce Android 6.3 kullanıcılara iki önemli güncelleme sunuyor:
+
+- Mümkünse, artık bir ürünün tür ayrıntılarına "indirilebilir" ifadesini ekleyebilirsiniz.
+- Özel bir siparişin durumunun sipariş ayrıntılarında doğru şekilde görüntülenmesini önleyen bir hatayı düzelttik.
+
 </tr-TR>
 <zh-CN>
-6.1：
-这是 WooCommerce Android 应用程序的最新更新。 现在，编辑产品后，系统会将所有更改自动保存在本地 - 点击“更新”会将更改发送到您的服务器。 我们还修复了影响产品设置显示、产品价格语言编辑和支持请求推送通知的错误。
+6.3：
+WooCommerce Android 6.3 为用户提供了两个重要更新：
+
+- 如果适用，您现在可以在产品的类型详情中包括“可下载”。
+- 我们修复了一个错误，以便现在可以在订单详情中正确显示自定义订单的状态。
+
 </zh-CN>
 <zh-TW>
-6.1：
-以下是 WooCommerce Android 應用程式的最新更新。 編輯產品時，所有變更現在會自動儲存在本機；按一下「更新」會將變更傳送到你的伺服器。 我們也修正了幾個影響到產品設定顯示、產品價格語言編輯，以及支援要求相關推送通知的錯誤。
+6.3：
+WooCommerce Android 6.3 版為使用者提供兩項重要更新：
+
+- 在適用情況下，你現在可以在產品類型詳細資料中提供「可下載」內容。
+- 修正錯誤，現在自訂訂單詳細資料中會正確顯示訂單狀態。
+
 </zh-TW>
 <en-US>
-6.1:
-The latest updates to the WooCommerce Android app are here. When editing a product, all changes will now automatically save locally—clicking “Update” will send the changes to your server. We also fixed bugs affecting the display of product settings, the editing of the language of product prices, and push notifications about support requests. 
+6.3:
+WooCommerce Android 6.3 offers users two important updates: 
+
+ - If applicable, you can now include “downloadable” in the type details of a product.
+ - We fixed a bug so that a custom order’s status now displays correctly in order details.
+ 
 </en-US>

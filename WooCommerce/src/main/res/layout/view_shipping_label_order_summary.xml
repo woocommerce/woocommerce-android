@@ -129,11 +129,13 @@
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/mark_order_complete_checkbox"
+        style="@style/Woo.CheckBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_100"
         android:layout_marginTop="@dimen/major_100"
         android:paddingStart="@dimen/major_75"
+        android:gravity="top"
         android:text="@string/shipping_label_create_mark_order_complete"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
         app:layout_constraintStart_toStartOf="parent"

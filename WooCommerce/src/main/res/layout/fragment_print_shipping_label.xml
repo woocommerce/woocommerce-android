@@ -6,11 +6,18 @@
     android:background="?attr/colorSurface"
     android:padding="@dimen/major_75">
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/reprint_group"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="shippingLabelPrint_errorMessage, shippingLabelPrint_disclaimerIcon, shippingLabelPrint_disclaimer" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/shippingLabelPrint_errorMessage"
         style="@style/Woo.Card.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="2dp"
+        android:layout_height="5dp"
         android:paddingBottom="@dimen/major_100"
         android:text="@string/shipping_label_print_error_message"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,6 +47,43 @@
         app:layout_constraintStart_toEndOf="@+id/shippingLabelPrint_disclaimerIcon"
         app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_errorMessage" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/purchase_group"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="label_purchased, label_purchased_img,save_for_later_button" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/label_purchased"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/shipping_label_print_purchase_success"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:textColor="@color/color_on_surface_high"
+        android:layout_marginTop="@dimen/major_100"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/label_purchased_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/label_purchased"
+        app:srcCompat="@drawable/img_label_purchased" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/top_part_barrier"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="label_purchased_img,shippingLabelPrint_disclaimer" />
+
     <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
         android:id="@+id/shippingLabelPrint_paperSize"
         android:layout_width="match_parent"
@@ -48,7 +92,7 @@
         android:hint="@string/shipping_label_paper_size"
         android:text="@string/shipping_label_paper_size_legal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_disclaimer" />
+        app:layout_constraintTop_toBottomOf="@+id/top_part_barrier" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/shippingLabelPrint_btn"
@@ -61,14 +105,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_paperSize" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/save_for_later_button"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:text="@string/shipping_label_print_save_for_later"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shippingLabelPrint_btn" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/shippingLabelPrint_pageOptionsView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_btn"
-        android:background="?attr/selectableItemBackground">
+        app:layout_constraintTop_toBottomOf="@+id/save_for_later_button">
 
         <ImageView
             android:id="@+id/shippingLabelPrint_pagesIcon"
@@ -97,10 +153,10 @@
         android:id="@+id/shippingLabelPrint_infoView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_pageOptionsView"
-        android:background="?attr/selectableItemBackground">
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_pageOptionsView">
 
         <ImageView
             android:id="@+id/shippingLabelPrint_infoIcon"
@@ -120,8 +176,8 @@
             android:layout_height="wrap_content"
             android:text="@string/shipping_label_print_info"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/shippingLabelPrint_infoIcon"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/shippingLabelPrint_infoIcon"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

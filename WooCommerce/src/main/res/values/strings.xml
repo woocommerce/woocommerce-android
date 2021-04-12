@@ -65,12 +65,18 @@
     <string name="product_variation_attributes">Attributes</string>
     <string name="product_add_attribute">Add attribute</string>
     <string name="product_new_attribute_name">New attribute name</string>
+    <string name="product_rename_attribute">Rename attribute</string>
+    <string name="product_rename_attribute_helper">Type of variation, eg. size or color</string>
     <string name="product_select_attribute">Or tap to select an existing attribute</string>
     <string name="product_new_attribute_term_name">Option name</string>
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
     <string name="product_enter_attribute_term">Add each option name and press enter</string>
     <string name="product_attribute_name_already_exists">An attribute with this name already exists</string>
+    <string name="product_any_attribute_hint">Any</string>
     <string name="product_term_name_already_exists">An option with this name already exists</string>
+    <string name="product_attribute_error_renaming">Error while renaming your attribute</string>
+    <string name="product_attributes_error_saving">Error while saving your attributes</string>
+    <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -91,6 +97,8 @@
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
     <string name="remove">Remove</string>
+    <string name="rename">Rename</string>
+    <string name="type">Type</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>
@@ -101,6 +109,8 @@
     <string name="please_wait">Please wait…</string>
     <string name="other">Other</string>
     <string name="free">free</string>
+    <string name="and">and</string>
+    <string name="generic_string" translatable="false">%s</string>
     <!--
         Date/Time Labels
     -->
@@ -288,6 +298,7 @@
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
+    <string name="orderdetail_collect_payment_button">Collect Payment</string>
     <string name="orderdetail_shipping_label_item_header">Package %d</string>
     <string name="orderdetail_shipping_label_item_menu">Refund shipping label</string>
     <string name="orderdetail_shipping_label_item_shipfrom">Ship from</string>
@@ -349,6 +360,9 @@
     <string name="shipping_label_print_button">Print shipping label</string>
     <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
     <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
+    <string name="shipping_label_print_purchase_success">Shipping label purchased!</string>
+    <string name="shipping_label_print_save_for_later">Save for later</string>
+    <string name="shipping_label_print_screen_title">Print shipping label</string>
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
@@ -387,6 +401,10 @@
     <string name="shipping_label_create_price_total">Order total</string>
     <string name="shipping_label_create_mark_order_complete">Mark this order as complete and notify the customer</string>
     <string name="shipping_label_create_purchase">Purchase shipping label</string>
+    <string name="shipping_label_create_purchase_progress_title">Purchasing label</string>
+    <string name="shipping_label_create_purchase_progress_message">Please wait…</string>
+    <string name="shipping_label_create_purchase_error">Error purchasing the labels</string>
+    <string name="shipping_label_create_purchase_fulfill_error">Couldn\'t mark the order as complete</string>
     <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
     <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
     <string name="shipping_label_loading_data_progress_message">Please wait…</string>
@@ -456,7 +474,7 @@
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message">"When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates. "</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates.</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid %1$s (%2$s) for shipping</string>
     <string name="shipping_label_shipping_method_flat_rate">Flat rate</string>
     <string name="shipping_label_shipping_method_local_pickup">Local pickup</string>
@@ -511,8 +529,7 @@
         <item quantity="other">%d items</item>
     </plurals>
     <string name="order_refunds_refund_info_title">Refunded products</string>
-    <string name="order_refunds_shipping_refund_notice">You can refund shipping and tax amounts %s</string>
-    <string name="order_refunds_shipping_refund_notice_fees">You can refund fees, shipping and tax amounts %s</string>
+    <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
     <!--
         Add Order Note
@@ -621,6 +638,7 @@
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_price_empty">Add price</string>
+    <string name="product_attributes">Attributes</string>
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
@@ -645,7 +663,6 @@
     <string name="product_stock_status">Stock status</string>
     <string name="product_type">Product type</string>
     <string name="product_type_description">%s product</string>
-    <string name="product_type_downloadable">downloadable</string>
     <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
     <string name="product_sold_individually">Limit one per order</string>
@@ -913,6 +930,9 @@
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
+    <string name="settings_store">Store settings</string>
+    <string name="settings_card_reader">Manage card reader</string>
+    <string name="settings_card_reader_connect">Connect card reader</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
@@ -1149,6 +1169,7 @@
     <string name="product_type_variable">Variable</string>
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
+    <string name="product_type_downloadable">Downloadable</string>
 
     <!-- Product Add more details Bottom sheet -->
     <string name="product_type_list_header">Select a product type</string>
@@ -1162,22 +1183,22 @@
     <string name="product_type_confirm_button">Yes, change</string>
 
     <!-- New Product bottom sheet -->
-    <string name="product_add_type_list_header">@string/product_type_list_header</string>
+    <string name="product_add_type_list_header" translatable="false">@string/product_type_list_header</string>
     <string name="product_add_type_simple">Simple product</string>
     <string name="product_add_type_variable">Variable product</string>
     <string name="product_add_type_grouped">Grouped product</string>
     <string name="product_add_type_external">External product</string>
     <string name="product_add_type_simple_desc">A unique item to sell</string>
     <string name="product_add_type_variable_desc">A product with variations like color or size</string>
-    <string name="product_add_type_grouped_desc">@string/product_type_grouped_desc</string>
-    <string name="product_add_type_external_desc">@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc" translatable="false">@string/product_type_grouped_desc</string>
+    <string name="product_add_type_external_desc" translatable="false">@string/product_type_external_desc</string>
 
     <!-- New Product screen -->
     <string name="product_add_tool_bar_title">New Product</string>
     <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
     <string name="product_publish_dialog_title">Publishing product</string>
     <string name="product_publish_draft_dialog_title">Saving draft</string>
-    <string name="product_publish_dialog_message">@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_message" translatable="false">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
     <string name="product_detail_publish_product_success">Product published</string>
     <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
@@ -1580,4 +1601,5 @@
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
+    <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
 </resources>

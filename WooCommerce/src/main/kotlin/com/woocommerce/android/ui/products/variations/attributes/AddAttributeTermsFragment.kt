@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -14,22 +18,28 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
-import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermClickListener
+import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
+import com.woocommerce.android.widgets.SkeletonView
 
 /**
  * This fragment contains two lists of product attribute terms. Thee\ first is a list of terms from
  * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
  */
-class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms), OnTermClickListener {
+class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
         private const val LIST_STATE_KEY_GLOBAL = "list_state_global"
+        private const val KEY_RENAMED_ATTRIBUTE_NAME = "renamed_attribute_name"
+        private const val KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING = "is_remove_dialog_showing"
     }
 
     private var layoutManagerAssigned: LinearLayoutManager? = null
@@ -39,15 +49,69 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val binding get() = _binding!!
 
     private val navArgs: AddAttributeTermsFragmentArgs by navArgs()
+    private val skeletonView = SkeletonView()
+
+    private var isConfirmRemoveDialogShowing = false
+    private var renamedAttributeName: String? = null
 
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
             dragDirs = ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             onMove = { from, to ->
-                getAssignedTermsAdapter().swapItems(from, to)
+                assignedTermsAdapter.swapItems(from, to)
             }
         )
     }
+
+    private lateinit var assignedTermsAdapter: AttributeTermsListAdapter
+    private lateinit var globalTermsAdapter: AttributeTermsListAdapter
+
+    /**
+     * This is the listener attached to the list of assigned terms
+     */
+    private val assignedTermListener by lazy {
+        object : OnTermListener {
+            override fun onTermClick(termName: String) {}
+
+            /**
+             * If the user removed a global term from the assigned term list, we need to return it to the
+             * global term list
+             */
+            override fun onTermDelete(termName: String) {
+                viewModel.getProductDraftAttributes().find {
+                    it.isGlobalAttribute && it.id == navArgs.attributeId
+                }?.let { attribute ->
+                    attribute.terms.find {
+                        it == termName
+                    }
+                }?.let { term ->
+                    globalTermsAdapter.addTerm(termName)
+                }
+
+                viewModel.removeAttributeTermFromDraft(navArgs.attributeId, attributeName, termName)
+                checkViews()
+            }
+        }
+    }
+
+    /**
+     * This is the listener attached to the list of global terms
+     */
+    private val globalTermListener by lazy {
+        object : OnTermListener {
+            override fun onTermClick(termName: String) {
+                addTerm(termName)
+            }
+
+            override fun onTermDelete(termName: String) {}
+        }
+    }
+
+    private val isGlobalAttribute
+        get() = navArgs.attributeId != 0L
+
+    private val attributeName
+        get() = renamedAttributeName ?: navArgs.attributeName
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,17 +120,29 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         initializeViews(savedInstanceState)
         setupObservers()
+        setupResultHandlers()
         getAttributeTerms()
+
+        setHasOptionsMenu(true)
+
+        savedInstanceState?.let { bundle ->
+            if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
+                confirmRemoveAttribute()
+            }
+            if (bundle.containsKey(KEY_RENAMED_ATTRIBUTE_NAME)) {
+                renamedAttributeName = bundle.getString(KEY_RENAMED_ATTRIBUTE_NAME)
+            }
+        }
     }
 
     private fun getAttributeTerms() {
-        // if this is a global attribute, fetch the attribute's terms and exclude ones that are already assigned
-        if (navArgs.attributeId != 0L) {
-            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId, excludeAssignedTerms = true)
+        // if this is a global attribute, fetch the attribute's terms
+        if (isGlobalAttribute) {
+            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId)
         }
 
         // get the attribute terms for attributes already assigned to this product
-        showAssignedTerms(viewModel.getProductDraftAttributeTerms(navArgs.attributeId, navArgs.attributeName))
+        showAssignedTerms(viewModel.getProductDraftAttributeTerms(navArgs.attributeId, attributeName))
     }
 
     override fun onDestroyView() {
@@ -75,15 +151,44 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         _binding = null
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_attribute_terms, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        // we don't want to show the Remove menu item if this is new attribute
+        menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute
+
+        // we don't want to show the Rename menu item if this is new attribute or a global attribute
+        menu.findItem(R.id.menu_rename)?.isVisible = !navArgs.isNewAttribute && !isGlobalAttribute
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_remove -> {
+                confirmRemoveAttribute()
+                true
+            }
+            R.id.menu_rename -> {
+                viewModel.onRenameAttributeButtonClick(attributeName)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onRequestAllowBackPress(): Boolean {
-        val terms = getAssignedTermsAdapter().termNames
-        viewModel.setProductDraftAttributeTerms(
-            navArgs.attributeId,
-            navArgs.attributeName,
-            terms
-        )
-        viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
+        saveChangesAndReturn()
         return false
+    }
+
+    private fun saveChangesAndReturn() {
+        // TODO We probably want to push changes in the main attribute list screen rather than here
+        viewModel.saveAttributeChanges()
+        viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
     }
 
     override fun onResume() {
@@ -92,6 +197,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        if (isConfirmRemoveDialogShowing) {
+            outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
+        }
+        renamedAttributeName?.let {
+            outState.putString(KEY_RENAMED_ATTRIBUTE_NAME, it)
+        }
         layoutManagerAssigned?.let {
             outState.putParcelable(LIST_STATE_KEY_ASSIGNED, it.onSaveInstanceState())
         }
@@ -102,19 +213,23 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun initializeViews(savedInstanceState: Bundle?) {
         layoutManagerAssigned = initializeRecycler(binding.assignedTermList, showIcons = true)
+        assignedTermsAdapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
+        assignedTermsAdapter.setOnTermListener(assignedTermListener)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
             layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
         layoutManagerGlobal = initializeRecycler(binding.globalTermList, showIcons = false)
+        globalTermsAdapter = binding.globalTermList.adapter as AttributeTermsListAdapter
+        globalTermsAdapter.setOnTermListener(globalTermListener)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
         binding.termEditText.setOnEditorActionListener { _, actionId, event ->
             val termName = binding.termEditText.text?.toString() ?: ""
-            if (termName.isNotBlank()) {
-                addLocalTerm(termName)
+            if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
+                addTerm(termName)
                 binding.termEditText.text?.clear()
             }
             true
@@ -126,10 +241,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         recycler.layoutManager = layoutManager
 
         if (showIcons) {
-            recycler.adapter = AttributeTermsListAdapter(showIcons, itemTouchHelper)
+            recycler.adapter = AttributeTermsListAdapter(showIcons)
             itemTouchHelper.attachToRecyclerView(recycler)
         } else {
-            recycler.adapter = AttributeTermsListAdapter(showIcons, onTermClick = this)
+            recycler.adapter = AttributeTermsListAdapter(showIcons)
         }
 
         recycler.addItemDecoration(
@@ -149,6 +264,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             showGlobalAttributeTerms(it)
         })
 
+        viewModel.globalAttributeTermsViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
+                showSkeleton(it)
+            }
+        }
+
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ExitProductAddAttributeTerms -> findNavController().navigateUp()
@@ -157,11 +278,16 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         })
     }
 
-    override fun getFragmentTitle() = navArgs.attributeName
+    private fun setupResultHandlers() {
+        handleResult<String>(RenameAttributeFragment.KEY_RENAME_ATTRIBUTE_RESULT) {
+            // note we always pass 0L as the attributeId since renaming is only supported for local attributes
+            if (viewModel.renameAttributeInDraft(0L, oldAttributeName = attributeName, newAttributeName = it)) {
+                renamedAttributeName = it
+            }
+        }
+    }
 
-    private fun getAssignedTermsAdapter() = binding.assignedTermList.adapter as AttributeTermsListAdapter
-
-    private fun getGlobalTermsAdapter() = binding.globalTermList.adapter as AttributeTermsListAdapter
+    override fun getFragmentTitle() = attributeName
 
     /**
      * Show the list of terms already assigned to the product attribute
@@ -171,7 +297,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             binding.assignedTermList.isVisible = false
         } else {
             binding.assignedTermList.isVisible = true
-            getAssignedTermsAdapter().termNames = ArrayList<String>().also { it.addAll(termNames) }
+            assignedTermsAdapter.termNames = ArrayList<String>().also { it.addAll(termNames) }
         }
     }
 
@@ -180,33 +306,75 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
      */
     private fun showGlobalAttributeTerms(terms: List<ProductAttributeTerm>) {
         if (terms.isEmpty()) {
-            binding.globalTermContainer.isVisible = false
-            getGlobalTermsAdapter().clear()
+            globalTermsAdapter.clear()
         } else {
-            binding.globalTermContainer.isVisible = true
-
-            // build a list of term names
+            // build a list of term names, excluding ones that are already assigned
+            val assignedTermNames = assignedTermsAdapter.termNames
             val termNames = ArrayList<String>()
             terms.forEach { term ->
-                termNames.add(term.name)
+                if (!assignedTermNames.contains(term.name)) {
+                    termNames.add(term.name)
+                }
             }
 
-            getGlobalTermsAdapter().termNames = termNames
+            globalTermsAdapter.termNames = termNames
         }
+
+        checkViews()
+    }
+
+    private fun checkViews() {
+        binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
+        binding.textExistingOption.isVisible = !globalTermsAdapter.isEmpty()
     }
 
     /**
-     * User entered a new term
+     * User entered a new term or tapped a global term
      */
-    private fun addLocalTerm(termName: String) {
-        getAssignedTermsAdapter().addTerm(termName)
-        binding.assignedTermList.isVisible = !getAssignedTermsAdapter().isEmpty()
+    private fun addTerm(termName: String) {
+        // add the term to the list of assigned terms
+        assignedTermsAdapter.addTerm(termName)
+
+        // remove it from the list of global terms
+        if (isGlobalAttribute) {
+            globalTermsAdapter.removeTerm(termName)
+        }
+
+        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName)
+        checkViews()
+    }
+
+    private fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(binding.globalTermContainer, R.layout.skeleton_simple_list, true)
+        } else {
+            skeletonView.hide()
+        }
+        checkViews()
+    }
+
+    private fun confirmRemoveAttribute() {
+        isConfirmRemoveDialogShowing = true
+        WooDialog.showDialog(
+            requireActivity(),
+            messageId = R.string.product_attribute_remove,
+            positiveButtonId = R.string.remove,
+            posBtnAction = DialogInterface.OnClickListener { _, _ ->
+                isConfirmRemoveDialogShowing = false
+                removeAttribute()
+            },
+            negativeButtonId = R.string.cancel,
+            negBtnAction = DialogInterface.OnClickListener { _, _ ->
+                isConfirmRemoveDialogShowing = false
+            }
+        )
     }
 
     /**
-     * Called by the gobal adapter when a term is clicked
+     * Removes this attribute from the product draft and returns to the attributes screen
      */
-    override fun onTermClick(termName: String) {
-        // TODO
+    private fun removeAttribute() {
+        viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
+        saveChangesAndReturn()
     }
 }

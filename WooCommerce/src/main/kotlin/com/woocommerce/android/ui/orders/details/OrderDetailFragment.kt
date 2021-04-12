@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
@@ -45,6 +46,7 @@ import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
+import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
@@ -174,7 +176,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowSnackbar -> {
+                    if (event.args.isNotEmpty()) {
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
+                    } else {
+                        uiMessageResolver.showSnack(event.message)
+                    }
+                }
                 is ShowUndoSnackbar -> {
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
@@ -200,6 +208,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
         }
+        handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
+            viewModel.onShippingLabelsPurchased()
+        }
     }
 
     private fun showOrderDetail(order: Order) {
@@ -212,7 +223,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
-            onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() }
+            onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
+            onCollectCardPresentPaymentClickListener = {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
+                    val manager = (requireActivity().application as? WooCommerce)?.cardReaderManager
+                    viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager = manager)
+                }
+            }
         )
     }
 

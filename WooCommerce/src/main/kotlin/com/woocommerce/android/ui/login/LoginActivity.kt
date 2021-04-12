@@ -541,10 +541,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     // Signup
 
-    override fun doStartSignup() {
-        // TODO: Signup
-    }
-
     override fun helpSignupEmailScreen(email: String?) {
         viewHelpAndSupport(Origin.SIGNUP_EMAIL)
     }
@@ -558,6 +554,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun showSignupToLoginMessage() {
+        // TODO: Signup
+    }
+
+    override fun onTermsOfServiceClicked() {
         // TODO: Signup
     }
 
@@ -614,7 +614,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_SITE_CREDS_LAYOUT)
         } else {
             val loginEmailFragment = getLoginEmailFragment(
-                siteCredsLayout = false) ?: LoginEmailFragment.newInstance(false, false, true, true)
+                siteCredsLayout = false) ?: LoginEmailFragment.newInstance(siteAddress, false)
             slideInFragment(
                 loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }

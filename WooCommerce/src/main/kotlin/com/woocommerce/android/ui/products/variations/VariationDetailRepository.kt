@@ -43,6 +43,7 @@ class VariationDetailRepository @Inject constructor(
     private var remoteVariationId: Long = 0L
 
     var lastUpdateVariationErrorType: ProductErrorType? = null
+    var lastFetchVariationErrorType: ProductErrorType? = null
 
     init {
         dispatcher.register(this)
@@ -53,6 +54,7 @@ class VariationDetailRepository @Inject constructor(
     }
 
     suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
+        lastFetchVariationErrorType = null
         try {
             this.remoteProductId = remoteProductId
             this.remoteVariationId = remoteVariationId
@@ -114,6 +116,7 @@ class VariationDetailRepository @Inject constructor(
             event.remoteVariationId == remoteVariationId) {
             if (continuationFetchVariation?.isActive == true) {
                 if (event.isError) {
+                    lastFetchVariationErrorType = event.error?.type
                     continuationFetchVariation?.resume(false)
                 } else {
                     AnalyticsTracker.track(PRODUCT_VARIATION_LOADED)

@@ -7,6 +7,7 @@ import java.math.BigDecimal
 @Parcelize
 data class ShippingRate(
     val packageId: String,
+    val shipmentId: String,
     val rateId: String,
     val serviceId: String,
     val carrierId: String,

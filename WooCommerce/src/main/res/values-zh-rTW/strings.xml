@@ -1,17 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 17:54:04+0000
+Translation-Revision-Date: 2021-04-01 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_attributes_error_saving">儲存屬性時發生錯誤</string>
+    <string name="shipping_label_payments_cant_edit_warning">僅限網站擁有者管理運送標籤付款方式。 請聯絡商店擁有者 %1$s (%2$s) 管理付款方式。</string>
+    <string name="product_detail_add_variations">新增款式</string>
+    <string name="product_variant_list_empty_action">新增款式</string>
+    <string name="product_variant_list_add_first_variation">新增第一個款式</string>
+    <string name="shipping_label_selected_rates_total_description">總計 %s</string>
+    <string name="shipping_label_selected_rates_description">已選取 %s 個費率</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">符合免費要求簽名資格</string>
+    <string name="shipping_label_rate_included_options_free_pickup">符合免費取貨資格</string>
+    <string name="shipping_label_rate_included_options_insurance">保險 (最高 %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">%s 追蹤中</string>
+    <string name="shipping_label_rate_included_options">包含 %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">需成人簽名 (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">需簽名 (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">免費運送</string>
+    <string name="shipping_label_shipping_method_local_pickup">自行取貨</string>
+    <string name="shipping_label_shipping_method_flat_rate">單一費率</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">客戶支付 %1$s (%2$s) 運費</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">向 WooCommerce 購買運送標籤，費率會比郵局低 5% 至 40%。</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">什麼是 WooCommerce Services 折扣？</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">載入運送選項時發生錯誤</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">沒有適合所選地址和包裹的運送選項</string>
+    <string name="shipping_label_shipping_carriers_title">貨運業者和費率</string>
+    <string name="shipping_label_create_purchase">購買運送標籤</string>
+    <string name="shipping_label_create_mark_order_complete">將此訂單標示為完成並通知客戶</string>
+    <string name="shipping_label_create_price_total">訂單總額</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">深入瞭解 WooCommerce Services 折扣</string>
+    <string name="shipping_label_create_price_woo_discount">WooCommerce Services 折扣</string>
+    <string name="shipping_label_create_price_subtotal">小計</string>
+    <string name="shipping_label_create_order_summary">運送標籤訂單摘要</string>
+    <string name="free">免費</string>
+    <string name="other">其他</string>
+    <string name="product_term_name_already_exists">已存在使用此名稱的選項</string>
+    <string name="product_attribute_name_already_exists">已存在使用此名稱的屬性</string>
+    <string name="product_enter_attribute_term">在新增每個選項名稱後按下 Enter 鍵</string>
+    <string name="product_select_attribute_term">或點選以選取現有選項</string>
+    <string name="product_new_attribute_term_name">選項名稱</string>
     <string name="shipping_label_payments_saving_error">儲存設定時發生錯誤</string>
     <string name="shipping_label_payments_saving_dialog_message">請稍候…</string>
     <string name="shipping_label_payments_saving_dialog_title">正在儲存設定</string>
     <string name="shipping_label_payments_expiration_date">有效期限 %1$s</string>
     <string name="shipping_label_payments_email_receipts_checkbox">透過電子郵件傳送標籤購買收據給 %1$s (%2$s)，電子郵件地址是 %3$s</string>
-    <string name="shipping_label_payments_account_info">從以下 WordPress.com 帳號擷取信用卡：%1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_account_info">從以下 WordPress.com 帳號擷取信用卡：%1$s &lt;%2$s&gt;</string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">新增其他信用卡</string>
     <string name="shipping_label_payments_selected_payment_method">已選取付款方式</string>
@@ -39,7 +76,6 @@ Language: zh_TW
     <string name="shipping_label_packages_loading_message">請稍候…</string>
     <string name="shipping_label_packages_loading_title">正在載入包裹！</string>
     <string name="shipping_label_package_details_title_template">包裹 %1$d</string>
-    <string name="shipping_label_package_details_items_count">「%1$d 項商品」</string>
     <string name="shipping_label_packages_loading_error">無法載入包裹定義</string>
     <string name="shipping_label_package_details_weight_info">包括包裹重量</string>
     <string name="shipping_label_package_details_weight_hint">包裹總重 (%1$s)</string>
@@ -141,9 +177,10 @@ Language: zh_TW
     <string name="product_downloadable_files_value_single">1 個檔案</string>
     <string name="product_downloadable_files_value_multiple">%1$d 個檔案</string>
     <string name="product_wip_message_m4">你現在可以透過 Woo 應用程式隨時隨地新增簡單、連結和組合產品。尚未建立完成嗎？ 將它們儲存為草稿！</string>
-    <string name="print_shipping_label_info_step_4">你可能必須&lt;b>在印表機上直接設定 WiFi 列印。&lt;/b>請確認已更新印表機韌體，並參閱印表機文件以取得指示。</string>
-    <string name="print_shipping_label_info_step_3">你可以選擇裝置的&lt;b>預設列印服務&lt;/b>或安裝&lt;b>印表機的品牌應用程式&lt;/b> (應顯示為建議選項)</string>
-    <string name="print_shipping_label_info_step_1">請確認你的印表機和裝置已連接到&lt;b>同樣的 WiFi 網路&lt;/b></string>
+    <string name="print_shipping_label_info_step_4">你可能必須&lt;b&gt;在印表機上直接設定 WiFi 列印。&lt;/b&gt;請確認已更新印表機韌體，並參閱印表機文件以取得指示。</string>
+    <string name="print_shipping_label_info_step_3">你可以選擇裝置的&lt;b&gt;預設列印服務&lt;/b&gt;或安裝&lt;b&gt;印表機的品牌應用程式&lt;/b&gt; (應顯示為建議選項)</string>
+    <string name="print_shipping_label_info_step_1">請確認你的印表機和裝置已連接到&lt;b&gt;同樣的 WiFi 網路&lt;/b&gt;</string>
+    <string name="settings_enable_product_adding_teaser_message">在推出前搶先測試全新的簡單、連結和組合商品建立功能。</string>
     <string name="bottom_sheet_linked_products_desc">透過追加銷售和交叉銷售提高銷售額</string>
     <string name="edit_products_button">編輯商品</string>
     <string name="add_products_button">新增商品</string>
@@ -172,8 +209,8 @@ Language: zh_TW
     <string name="product_ratings_count_one">\u2022 評分過一次</string>
     <string name="product_ratings_count">\u2022 評分過 %d 次</string>
     <string name="product_detail_fetch_product_invalid_id_error">找不到商品</string>
-    <string name="print_shipping_label_info_step_5">如果仍無法從裝置列印，可以&lt;b>將標籤另存為 PDF 檔&lt;/b>，並透過電子郵件傳送檔案到其他裝置上列印。</string>
-    <string name="print_shipping_label_info_step_2">如果你從未使用此裝置列印，選取&lt;b>「列印郵寄標籤」&lt;/b>之後，可能必須先選取並新增印表機。</string>
+    <string name="print_shipping_label_info_step_5">如果仍無法從裝置列印，可以&lt;b&gt;將標籤另存為 PDF 檔&lt;/b&gt;，並透過電子郵件傳送檔案到其他裝置上列印。</string>
+    <string name="print_shipping_label_info_step_2">如果你從未使用此裝置列印，選取&lt;b&gt;「列印郵寄標籤」&lt;/b&gt;之後，可能必須先選取並新增印表機。</string>
     <string name="print_shipping_label_format_options_title">標籤格式選項</string>
     <string name="print_shipping_label_info_title">使用你的裝置列印</string>
     <string name="shipping_label_paper_size_label">標籤 (4 x 6 吋)</string>
@@ -226,19 +263,15 @@ Language: zh_TW
     <string name="feedback_product_give_feedback_button_text">提供意見回饋</string>
     <string name="product_detail_publish_product_success">已上架商品</string>
     <string name="product_detail_publish_product_error">上架商品時發生錯誤</string>
-    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
     <string name="product_publish_dialog_title">正在上架商品</string>
     <string name="product_add_tool_bar_menu_button_done">上架</string>
     <string name="product_add_tool_bar_title">新商品</string>
-    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
-    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
     <string name="product_add_type_variable_desc">具有多種版本 (顏色或尺寸) 的商品</string>
     <string name="product_add_type_simple_desc">獨特的銷售商品</string>
     <string name="product_add_type_external">外部商品</string>
     <string name="product_add_type_grouped">組合商品</string>
     <string name="product_add_type_variable">變化商品</string>
     <string name="product_add_type_simple">簡單商品</string>
-    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
     <string name="product_images_image_limit_warning">每個商品子項只能顯示一張相片</string>
     <string name="product_replace_photo">替換相片</string>
     <string name="product_add_photo">新增相片</string>
@@ -518,10 +551,10 @@ Language: zh_TW
     <string name="date_timeframe_future">即將到來</string>
     <string name="remove">移除</string>
     <string name="login_discovery_error_generic">無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
-    <string name="login_discovery_error_ssl">由於 &lt;b>SSL 憑證&lt;/b>發生問題，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
-    <string name="login_discovery_error_http_auth">由於你的網站須進行 &lt;b>HTTP 驗證&lt;/b>，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
-    <string name="login_discovery_error_xmlrpc">無法存取你網站上的 &lt;b>XMLRPC 檔案&lt;/b>。你必須聯絡主機商以解決此問題。</string>
-    <string name="login_site_credentials_magic_link_label">快完成了！我們只需要驗證你與 Jetpack 綁定的電子郵件地址&lt;b>%1$s&lt;/b></string>
+    <string name="login_discovery_error_ssl">由於 &lt;b&gt;SSL 憑證&lt;/b&gt;發生問題，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
+    <string name="login_discovery_error_http_auth">由於你的網站須進行 &lt;b&gt;HTTP 驗證&lt;/b&gt;，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
+    <string name="login_discovery_error_xmlrpc">無法存取你網站上的 &lt;b&gt;XMLRPC 檔案&lt;/b&gt;。你必須聯絡主機商以解決此問題。</string>
+    <string name="login_site_credentials_magic_link_label">快完成了！我們只需要驗證你與 Jetpack 綁定的電子郵件地址&lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_site_credentials_instead">請使用網站憑證登入。</string>
     <string name="enter_credentials_for_site">請使用 %1$s 網站憑證登入</string>
     <string name="send_verification_email">傳送驗證電子郵件</string>
@@ -549,7 +582,7 @@ Language: zh_TW
     <string name="orderdetail_shipping_method">運送方式</string>
     <string name="button_edit_permissions">編輯權限</string>
     <string name="permission_camera">相機</string>
-    <string name="permissions_denied_message">你似乎已關閉此功能所需的權限。&lt;br/>&lt;br/>若要變更此設定，請編輯權限並確認已啟用 &lt;strong>%s&lt;/strong>。</string>
+    <string name="permissions_denied_message">你似乎已關閉此功能所需的權限。&lt;br/&gt;&lt;br/&gt;若要變更此設定，請編輯權限並確認已啟用 &lt;strong&gt;%s&lt;/strong&gt;。</string>
     <string name="permissions_denied_title">權限</string>
     <string name="orders_processed_empty_message">所有訂單均已處理</string>
     <string name="orders_empty_message_with_processing">尚無訂單需要處理</string>
@@ -622,7 +655,7 @@ Language: zh_TW
     <string name="orderdetail_empty_shipping_address">指定任何地址</string>
     <string name="login_need_help_finding_connected_email">需要協助找出你連結的電子郵件嗎？</string>
     <string name="enter_wordpress_site">此地址的網站不是 WordPress 網站。若需要我們連結網站，網站必須安裝 WordPress。</string>
-    <string name="enter_email_for_site">透過 WordPress.com 登入以連結至 &lt;b>%1$s&lt;/b></string>
+    <string name="enter_email_for_site">透過 WordPress.com 登入以連結至 &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">辛巴威</string>
     <string name="country_mapping_ZM">尚比亞</string>
     <string name="country_mapping_YE">葉門</string>
@@ -893,7 +926,7 @@ Language: zh_TW
     <string name="order_detail_shipment_tracking_button_contentdesc">追蹤或刪除貨件追蹤</string>
     <string name="orderdetail_delete_tracking">刪除追蹤</string>
     <string name="orderdetail_track_shipment">追蹤貨件</string>
-    <string name="login_email_help_desc">你可以在網站管理中透過%3$s連結 > 帳號連結%4$s下方的 %1$sJetpack 儀表板%2$s找到用來連結至 WordPress.com 的電子郵件</string>
+    <string name="login_email_help_desc">你可以在網站管理中透過%3$s連結 &gt; 帳號連結%4$s下方的 %1$sJetpack 儀表板%2$s找到用來連結至 WordPress.com 的電子郵件</string>
     <string name="login_email_help_title">我該使用什麼電子郵件登入？</string>
     <string name="login_need_help_finding_email">需要協助找出連結的電子郵件嗎？</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>

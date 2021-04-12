@@ -118,14 +118,15 @@ class ShippingLabelsStateMachineTest {
     fun `test show packages step`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val packagesList = listOf(
             ShippingLabelPackage(
+                packageId = "package1",
                 selectedPackage = ShippingPackage(
                     "id",
                     "title",
                     false,
                     "provider",
-                    PackageDimensions(10.0, 10.0, 10.0)
+                    PackageDimensions(10.0f, 10.0f, 10.0f)
                 ),
-                weight = 10.0,
+                weight = 10.0f,
                 items = listOf(Item(10L, "item", "attributes", "10kgs"))
             )
         )

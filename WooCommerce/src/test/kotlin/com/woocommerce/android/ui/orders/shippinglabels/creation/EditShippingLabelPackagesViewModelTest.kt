@@ -7,11 +7,8 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingLabelPackage.Item
-import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -21,6 +18,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -41,12 +39,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     private val availablePackages = listOf(
-        ShippingPackage(
-            "id1", "title1", false, "provider1", PackageDimensions(1.0, 1.0, 1.0)
-        ),
-        ShippingPackage(
-            "id2", "title2", false, "provider2", PackageDimensions(1.0, 1.0, 1.0)
-        )
+        CreateShippingLabelTestUtils.generatePackage("id1", "provider1"),
+        CreateShippingLabelTestUtils.generatePackage("id2", "provider2")
     )
 
     private val shippingAccountSettings = ShippingAccountSettings(
@@ -66,6 +60,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val variationDetailRepository: VariationDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val parameterRepository: ParameterRepository = mock()
 
@@ -93,6 +88,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             productDetailRepository = productDetailRepository,
             orderDetailRepository = orderDetailRepository,
+            variationDetailRepository = variationDetailRepository,
             shippingLabelRepository = shippingLabelRepository,
             parameterRepository = parameterRepository
         )
@@ -115,10 +111,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     @Test
     fun `test edit flow`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val currentShippingPackages = arrayOf(
-            ShippingLabelPackage(
-                availablePackages.first(),
-                10.0,
-                listOf(Item(0L, "product", "", "10 kg"))
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                selectedPackage = availablePackages[0]
             )
         )
         setup(currentShippingPackages)
@@ -162,8 +156,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        viewModel.onWeightEdited(0, 10.0)
-        assertThat(viewState!!.shippingLabelPackages.first().weight).isEqualTo(10.0)
+        viewModel.onWeightEdited(0, 10.0f)
+        assertThat(viewState!!.shippingLabelPackages.first().weight).isEqualTo(10.0f)
         assertThat(viewState!!.isDataValid).isTrue()
     }
 
@@ -201,12 +195,12 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         var event: MultiLiveEvent.Event? = null
         viewModel.event.observeForever { event = it }
 
-        viewModel.onWeightEdited(0, 10.0)
+        viewModel.onWeightEdited(0, 10.0f)
         viewModel.onDoneButtonClicked()
 
         assertThat(event).isInstanceOf(ExitWithResult::class.java)
         val createdShippingPackages = (event as ExitWithResult<List<ShippingLabelPackage>>).data
         assertThat(createdShippingPackages.size).isEqualTo(1)
-        assertThat(createdShippingPackages.first().weight).isEqualTo(10.0)
+        assertThat(createdShippingPackages.first().weight).isEqualTo(10.0f)
     }
 }

@@ -77,7 +77,7 @@
         app:layout_constraintTop_toBottomOf="@+id/deliveryTime"
         tools:text="Includes tracking and insurance (up to $100)" />
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/signatureOption"
         style="@style/Woo.CheckBox"
         android:layout_width="wrap_content"
@@ -90,7 +90,7 @@
         tools:text="Signature required (+2.60)"
         android:visibility="gone" />
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/adultSignatureOption"
         style="@style/Woo.CheckBox"
         android:layout_width="wrap_content"

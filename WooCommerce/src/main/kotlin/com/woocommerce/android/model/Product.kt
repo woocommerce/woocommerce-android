@@ -21,7 +21,6 @@ import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.attribute.WCProductAttributeModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -53,7 +52,7 @@ data class Product(
     val regularPrice: BigDecimal?,
     val taxClass: String,
     val isStockManaged: Boolean,
-    val stockQuantity: Int,
+    val stockQuantity: Double,
     val sku: String,
     val shippingClass: String,
     val shippingClassId: Long,
@@ -367,10 +366,12 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
     fun attributesToJson(): String {
         val jsonArray = JsonArray()
         attributes.map {
-            WCProductAttributeModel(
-                globalAttributeId = it.id.toInt(),
+            WCProductModel.ProductAttribute(
+                id = it.id,
                 name = it.name,
-                options = it.terms.toMutableList()
+                visible = it.isVisible,
+                options = it.terms.toMutableList(),
+                variation = it.isVariation
             )
         }.forEach {
             if (it.options.isNotEmpty()) {
@@ -504,12 +505,7 @@ fun WCProductModel.toAppModel(): Product {
             )
         },
         attributes = this.getAttributeList().map {
-            ProductAttribute(
-                it.id,
-                it.name,
-                it.options,
-                it.visible
-            )
+            it.toAppModel()
         },
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
@@ -555,13 +551,11 @@ fun WCProductModel.toProductReviewProductModel() =
 /**
  * TODO: move to FluxC model
  */
-fun WCProductAttributeModel.toJson(): JsonObject {
+fun WCProductModel.ProductAttribute.toJson(): JsonObject {
     return JsonObject().also { json ->
-        json.addProperty("id", globalAttributeId)
+        json.addProperty("id", id)
         json.addProperty("name", name)
-        json.addProperty("position", position)
         json.addProperty("visible", visible)
-        json.addProperty("variation", variation)
         json.addProperty("options", options.joinToString())
     }
 }

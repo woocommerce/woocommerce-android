@@ -1,17 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 11:54:05+0000
+Translation-Revision-Date: 2021-03-31 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_attributes_error_saving">Errore durante il salvataggio degli attributi</string>
+    <string name="shipping_label_payments_cant_edit_warning">Solo il proprietario del sito può gestire i metodi di pagamento dell\'etichetta di spedizione. Contatta il proprietario del negozio %1$s (%2$s) per gestire i metodi di pagamento.</string>
+    <string name="product_detail_add_variations">Aggiungi varianti</string>
+    <string name="product_variant_list_empty_action">Aggiungi variante</string>
+    <string name="product_variant_list_add_first_variation">Aggiungi prima variante</string>
+    <string name="shipping_label_selected_rates_total_description">%s totali</string>
+    <string name="shipping_label_selected_rates_description">%s tariffe selezionate</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Idoneo per il requisito della firma gratuita</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Idoneo per il ritiro gratuito</string>
+    <string name="shipping_label_rate_included_options_insurance">Assicurazione (fino a %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">Tracciabilità %s</string>
+    <string name="shipping_label_rate_included_options">Includi %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Firma di un adulto richiesta (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">Firma richiesta (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">Spedizione gratuita</string>
+    <string name="shipping_label_shipping_method_local_pickup">Ritiro in sede</string>
+    <string name="shipping_label_shipping_method_flat_rate">Tariffa unica</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Il cliente ha pagato %1$s (%2$s) per la spedizione</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Quando acquisti le etichette di spedizione tramite WooCommerce, ottieni dal 5% al 40% di sconto rispetto alle tariffe degli uffici postali.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">Cos\'è lo sconto di WooCommerce  Services?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">Si è verificato un errore durante il caricamento delle opzioni di spedizione</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">Non sono presenti opzioni di spedizione per l\'indirizzo e i pacchetti selezionati</string>
+    <string name="shipping_label_shipping_carriers_title">Corrieri e tariffe</string>
+    <string name="shipping_label_create_purchase">Acquista l\'etichetta di spedizione</string>
+    <string name="shipping_label_create_mark_order_complete">Contrassegna questo ordine come completato e invia una notifica al cliente</string>
+    <string name="shipping_label_create_price_total">Totale ordine</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">Scopri di più sullo sconto di WooCommerce Services</string>
+    <string name="shipping_label_create_price_woo_discount">Sconto di WooCommerce Services</string>
+    <string name="shipping_label_create_price_subtotal">Subtotale</string>
+    <string name="shipping_label_create_order_summary">Riepilogo ordine etichetta di spedizione</string>
+    <string name="free">gratis</string>
+    <string name="other">Altro</string>
+    <string name="product_term_name_already_exists">Esiste già un\'opzione con questo nome</string>
+    <string name="product_attribute_name_already_exists">Esiste già un attributo con questo nome</string>
+    <string name="product_enter_attribute_term">Aggiungi ogni nome dell\'opzione e premi Invio</string>
+    <string name="product_select_attribute_term">In alternativa, tocca per selezionare un\'opzione esistente</string>
+    <string name="product_new_attribute_term_name">Nome opzione</string>
     <string name="shipping_label_payments_saving_error">Errore durante il salvataggio delle impostazioni</string>
     <string name="shipping_label_payments_saving_dialog_message">Attendi…</string>
     <string name="shipping_label_payments_saving_dialog_title">Salvataggio delle impostazioni</string>
     <string name="shipping_label_payments_expiration_date">Scade il giorno %1$s</string>
     <string name="shipping_label_payments_email_receipts_checkbox">Invia tramite e-mail le ricevute di pagamento delle etichette a %1$s (%2$s) presso %3$s</string>
-    <string name="shipping_label_payments_account_info">Le carte di credito vengono recuperate dal seguente account WordPress.com: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_account_info">Le carte di credito vengono recuperate dal seguente account WordPress.com: %1$s &lt;%2$s&gt;</string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">Aggiungi un\'altra carta di credito</string>
     <string name="shipping_label_payments_selected_payment_method">Metodo di pagamento selezionato</string>
@@ -39,7 +76,6 @@ Language: it
     <string name="shipping_label_packages_loading_message">Attendi…</string>
     <string name="shipping_label_packages_loading_title">Caricamento dei pacchetti.</string>
     <string name="shipping_label_package_details_title_template">Pacchetto %1$d</string>
-    <string name="shipping_label_package_details_items_count">\"%1$d articoli\"</string>
     <string name="shipping_label_packages_loading_error">Impossibile caricare le definizioni dei pacchetti</string>
     <string name="shipping_label_package_details_weight_info">Include il peso del pacchetto</string>
     <string name="shipping_label_package_details_weight_hint">Peso del pacchetto totale: %1$s</string>
@@ -141,9 +177,10 @@ Language: it
     <string name="product_downloadable_files_value_single">1 file</string>
     <string name="product_downloadable_files_value_multiple">%1$d file</string>
     <string name="product_wip_message_m4">Dall\'app Woo ora puoi creare nuovi prodotti semplici, collegati e raggruppati anche mentre viaggi. Non sei ancora pronto? Salva come bozza.</string>
-    <string name="print_shipping_label_info_step_4">Potrebbe essere necessario &lt;b>configurare la stampa Wi-Fi direttamente sulla stampante stessa&lt;/b>. Assicurati che il firmware della stampante sia aggiornato e consulta la documentazione della stampante per le istruzioni.</string>
-    <string name="print_shipping_label_info_step_3">Puoi selezionare il &lt;b> servizio di stampa predefinito&lt;/b> del dispositivo oppure installare l\'&lt;b>app della stampante &lt;/b> (dovrebbe apparire come opzione consigliata)</string>
-    <string name="print_shipping_label_info_step_1">Assicurati che stampante e dispositivo siano collegati alla &lt;b>stessa rete Wi-Fi&lt;/b></string>
+    <string name="print_shipping_label_info_step_4">Potrebbe essere necessario &lt;b&gt;configurare la stampa Wi-Fi direttamente sulla stampante stessa&lt;/b&gt;. Assicurati che il firmware della stampante sia aggiornato e consulta la documentazione della stampante per le istruzioni.</string>
+    <string name="print_shipping_label_info_step_3">Puoi selezionare il &lt;b&gt; servizio di stampa predefinito&lt;/b&gt; del dispositivo oppure installare l\'&lt;b&gt;app della stampante &lt;/b&gt; (dovrebbe apparire come opzione consigliata)</string>
+    <string name="print_shipping_label_info_step_1">Assicurati che stampante e dispositivo siano collegati alla &lt;b&gt;stessa rete Wi-Fi&lt;/b&gt;</string>
+    <string name="settings_enable_product_adding_teaser_message">Prova la nuova funzionalità di creazione di prodotti semplici, collegati e raggruppati mentre ci prepariamo al lancio</string>
     <string name="bottom_sheet_linked_products_desc">Incrementa le vendite con upsell e cross-sell</string>
     <string name="edit_products_button">Modifica prodotti</string>
     <string name="add_products_button">Aggiungi prodotti</string>
@@ -172,8 +209,8 @@ Language: it
     <string name="product_ratings_count_one">\u2022 valutato una volta</string>
     <string name="product_ratings_count">\u2022 valutato %d volte</string>
     <string name="product_detail_fetch_product_invalid_id_error">Prodotto non trovato</string>
-    <string name="print_shipping_label_info_step_5">Se stai ancora riscontrando problemi di stampa dal tuo dispositivo, puoi &lt;b>salvare la tua etichetta come PDF&lt;/b> e inviarla via e-mail per stamparla da un altro dispositivo.</string>
-    <string name="print_shipping_label_info_step_2">Dopo aver selezionato &lt;b>\"Stampa le etichette di spedizione\"&lt;/b>, potrebbe essere necessario selezionare e aggiungere una stampante se non hai stampato da questo dispositivo prima.</string>
+    <string name="print_shipping_label_info_step_5">Se stai ancora riscontrando problemi di stampa dal tuo dispositivo, puoi &lt;b&gt;salvare la tua etichetta come PDF&lt;/b&gt; e inviarla via e-mail per stamparla da un altro dispositivo.</string>
+    <string name="print_shipping_label_info_step_2">Dopo aver selezionato &lt;b&gt;\"Stampa le etichette di spedizione\"&lt;/b&gt;, potrebbe essere necessario selezionare e aggiungere una stampante se non hai stampato da questo dispositivo prima.</string>
     <string name="print_shipping_label_format_options_title">Opzioni formato etichetta</string>
     <string name="print_shipping_label_info_title">Stampa dal dispositivo</string>
     <string name="shipping_label_paper_size_label">Etichetta (4 x 6 pollici)</string>
@@ -226,19 +263,15 @@ Language: it
     <string name="feedback_product_give_feedback_button_text">Lascia il feedback</string>
     <string name="product_detail_publish_product_success">Prodotto pubblicato</string>
     <string name="product_detail_publish_product_error">Errore durante la pubblicazione del prodotto</string>
-    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
     <string name="product_publish_dialog_title">Pubblicazione del prodotto…</string>
     <string name="product_add_tool_bar_menu_button_done">PUBBLICAZIONE</string>
     <string name="product_add_tool_bar_title">Nuovo prodotto</string>
-    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
-    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
     <string name="product_add_type_variable_desc">Un prodotto con varianti come colore o misura</string>
     <string name="product_add_type_simple_desc">Un articolo unico da vendere</string>
     <string name="product_add_type_external">Prodotto esterno</string>
     <string name="product_add_type_grouped">Prodotto raggruppato</string>
     <string name="product_add_type_variable">Prodotto variabile</string>
     <string name="product_add_type_simple">Prodotto semplice</string>
-    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
     <string name="product_images_image_limit_warning">Può essere visualizzata solo una foto per variante di prodotto</string>
     <string name="product_replace_photo">Sostituisci foto</string>
     <string name="product_add_photo">Aggiungi foto</string>
@@ -518,10 +551,10 @@ Language: it
     <string name="date_timeframe_future">In arrivo</string>
     <string name="remove">Rimuovi</string>
     <string name="login_discovery_error_generic">Non siamo stati in grado di accedere al tuo sito. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
-    <string name="login_discovery_error_ssl">Non siamo stati in grado di accedere al tuo sito perché abbiamo riscontrato un problema con il &lt;b>certificato SSL&lt;/b>. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
-    <string name="login_discovery_error_http_auth">Non siamo stati in grado di accedere al tuo sito perché viene richiesta l\'&lt;b>autenticazione HTTP&lt;/b>. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
-    <string name="login_discovery_error_xmlrpc">Non siamo stati in grado di accedere al &lt;b>file XMLRPC&lt;/b> sul tuo sito. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
-    <string name="login_site_credentials_magic_link_label">Ci sei quasi! Dobbiamo solamente verificare il tuo indirizzo e-mail connesso a Jetpack &lt;b>%1$s&lt;/b></string>
+    <string name="login_discovery_error_ssl">Non siamo stati in grado di accedere al tuo sito perché abbiamo riscontrato un problema con il &lt;b&gt;certificato SSL&lt;/b&gt;. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
+    <string name="login_discovery_error_http_auth">Non siamo stati in grado di accedere al tuo sito perché viene richiesta l\'&lt;b&gt;autenticazione HTTP&lt;/b&gt;. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
+    <string name="login_discovery_error_xmlrpc">Non siamo stati in grado di accedere al &lt;b&gt;file XMLRPC&lt;/b&gt; sul tuo sito. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
+    <string name="login_site_credentials_magic_link_label">Ci sei quasi! Dobbiamo solamente verificare il tuo indirizzo e-mail connesso a Jetpack &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_site_credentials_instead">Accedi con le credenziali del sito.</string>
     <string name="enter_credentials_for_site">Accedi con le credenziali del sito %1$s</string>
     <string name="send_verification_email">Invia e-mail di verifica</string>
@@ -549,7 +582,7 @@ Language: it
     <string name="orderdetail_shipping_method">Metodo di spedizione</string>
     <string name="button_edit_permissions">Modifica autorizzazioni</string>
     <string name="permission_camera">Fotocamera</string>
-    <string name="permissions_denied_message">Sembra che tu abbia disattivato le autorizzazioni necessarie per questa funzionalità.&lt;br/>&lt;br/>Per cambiare, modifica le tue autorizzazioni e assicurati che sia attivo &lt;strong>%s&lt;/strong>.</string>
+    <string name="permissions_denied_message">Sembra che tu abbia disattivato le autorizzazioni necessarie per questa funzionalità.&lt;br/&gt;&lt;br/&gt;Per cambiare, modifica le tue autorizzazioni e assicurati che sia attivo &lt;strong&gt;%s&lt;/strong&gt;.</string>
     <string name="permissions_denied_title">Autorizzazioni</string>
     <string name="orders_processed_empty_message">Tutti gli ordini sono stati elaborati</string>
     <string name="orders_empty_message_with_processing">Nessun ordine ancora da elaborare</string>
@@ -622,7 +655,7 @@ Language: it
     <string name="orderdetail_empty_shipping_address">Nessun indirizzo specificato</string>
     <string name="login_need_help_finding_connected_email">Ti serve aiuto per trovare l\'e-mail con cui ti sei collegato?</string>
     <string name="enter_wordpress_site">Il sito web su questo indirizzo non è un sito WordPress. Per poterci collegare a esso, il sito deve avere WordPress installato.</string>
-    <string name="enter_email_for_site">Accedi con WordPress.com per collegarti a &lt;b>%1$s&lt;/b></string>
+    <string name="enter_email_for_site">Accedi con WordPress.com per collegarti a &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -893,7 +926,7 @@ Language: it
     <string name="order_detail_shipment_tracking_button_contentdesc">Traccia o elimina tracciabilità della spedizione</string>
     <string name="orderdetail_delete_tracking">Elimina tracciabilità</string>
     <string name="orderdetail_track_shipment">Traccia spedizione</string>
-    <string name="login_email_help_desc">Nell\'amministrazione del sito puoi trovare l\'e-mail che hai usato per collegarti a WordPress.com dalla %1$sBacheca di Jetpack%2$s sotto %3$sConnessioni > Connessione dell\'account%4$s</string>
+    <string name="login_email_help_desc">Nell\'amministrazione del sito puoi trovare l\'e-mail che hai usato per collegarti a WordPress.com dalla %1$sBacheca di Jetpack%2$s sotto %3$sConnessioni &gt; Connessione dell\'account%4$s</string>
     <string name="login_email_help_title">Quale e-mail uso per accedere?</string>
     <string name="login_need_help_finding_email">Ti serve aiuto per trovare l\'e-mail collegata?</string>
     <string name="login_jetpack_what_is_description">Jetpack è un plugin WordPress gratuito che collega il tuo negozio con gli strumenti necessari per assicurarti la migliore esperienza mobile, incluse le notifiche push e le statistiche</string>

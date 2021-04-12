@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
@@ -13,6 +11,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -21,6 +20,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.toIdSet
@@ -32,6 +34,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     parameterRepository: ParameterRepository,
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
+    private val variationDetailRepository: VariationDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
@@ -86,29 +89,47 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(showSkeletonView = false)
         return listOf(
             ShippingLabelPackage(
+                packageId = "package1",
                 selectedPackage = lastUsedPackage,
-                weight = Double.NaN,
+                weight = Float.NaN,
                 items = order.getShippableItems().map { it.toShippingItem() }
             )
         )
     }
 
     private suspend fun loadProductsWeightsIfNeeded(order: Order) {
-        if (order.items.any { productDetailRepository.getProduct(it.productId) == null }) {
-            order.items.forEach {
-                if (productDetailRepository.getProduct(it.productId) == null) {
-                    if (productDetailRepository.fetchProduct(it.productId) == null &&
-                        productDetailRepository.lastFetchProductErrorType != ProductErrorType.INVALID_PRODUCT_ID) {
-                        // If we fail to fetch a non deleted product, display an error
-                        triggerEvent(ShowSnackbar(R.string.shipping_label_package_details_fetch_products_error))
-                        triggerEvent(Exit)
-                    }
-                }
+        suspend fun fetchProductIfNeeded(productId: Long): Boolean {
+            if (productDetailRepository.getProduct(productId) == null) {
+                return productDetailRepository.fetchProduct(productId) != null ||
+                    productDetailRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID
+            }
+            return true
+        }
+        suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
+            if (!fetchProductIfNeeded(productId)) return false
+            if (variationDetailRepository.getVariation(productId, variationId) == null) {
+                return variationDetailRepository.fetchVariation(productId, variationId) != null ||
+                    variationDetailRepository.lastFetchVariationErrorType == ProductErrorType.INVALID_PRODUCT_ID
+            }
+            return true
+        }
+
+        order.items.forEach {
+            val result = if (it.isVariation) {
+                fetchVariationIfNeeded(it.productId, it.variationId)
+            } else {
+                fetchProductIfNeeded(it.productId)
+            }
+            if (!result) {
+                // If we fail to fetch a non deleted product, display an error
+                triggerEvent(ShowSnackbar(R.string.shipping_label_package_details_fetch_products_error))
+                triggerEvent(Exit)
+                return
             }
         }
     }
 
-    fun onWeightEdited(position: Int, weight: Double) {
+    fun onWeightEdited(position: Int, weight: Float) {
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = packages[position].copy(weight = weight)
         viewState = viewState.copy(shippingLabelPackages = packages)
@@ -143,9 +164,14 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     }
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
-        val weight = productDetailRepository.getProduct(productId)!!.weight.let {
+        val weight = if (isVariation) {
+            variationDetailRepository.getVariation(productId, variationId)!!.weight
+        } else {
+            productDetailRepository.getProduct(productId)!!.weight
+        }.let {
             "$it $weightUnit"
         }
+
         return ShippingLabelPackage.Item(
             productId = productId,
             name = name,
@@ -168,6 +194,6 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<EditShippingLabelPackagesViewModel>
 }

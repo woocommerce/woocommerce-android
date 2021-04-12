@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@android:color/black"
     tools:context=".ui.products.ProductImageViewerFragment">
 
     <com.woocommerce.android.widgets.WCViewPager
@@ -28,7 +28,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            app:srcCompat="@drawable/ic_arrow_left_white_24dp" />
+            app:srcCompat="@drawable/ic_back_24dp" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/iconTrash"

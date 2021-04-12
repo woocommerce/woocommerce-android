@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -46,6 +47,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVi
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -229,7 +231,11 @@ class ProductNavigator @Inject constructor() {
 
             is ViewGroupedProducts -> {
                 val action = ProductDetailFragmentDirections
-                    .actionGlobalGroupedProductListFragment(target.remoteId, target.groupedProductIds, GROUPED)
+                    .actionGlobalGroupedProductListFragment(
+                        remoteProductId = target.remoteId,
+                        productIds = target.groupedProductIds.toLongArray(),
+                        groupedProductListType = GROUPED
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -242,9 +248,10 @@ class ProductNavigator @Inject constructor() {
             is ViewProductSelectionList -> {
                 val action = ProductDetailFragmentDirections
                     .actionGlobalProductSelectionListFragment(
-                        target.remoteId,
-                        target.groupedProductType,
-                        target.excludedProductIds.joinToString(","))
+                        remoteProductId = target.remoteId,
+                        groupedProductListType = target.groupedProductType,
+                        excludedProductIds = target.excludedProductIds.toLongArray()
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -282,10 +289,17 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigate(action)
             }
 
+            is RenameProductAttribute -> {
+                val action = AddAttributeTermsFragmentDirections
+                    .actionAttributeTermsFragmentToRenameAttributeFragment(target.attributeName)
+                fragment.findNavController().navigate(action)
+            }
+
             is AddProductAttributeTerms -> {
                 val action = NavGraphProductsDirections.actionGlobalAddVariationAttributeTermsFragment(
                     target.attributeId,
-                    target.attributeName
+                    target.attributeName,
+                    target.isNewAttribute
                 )
                 fragment.findNavController().navigate(action)
             }
