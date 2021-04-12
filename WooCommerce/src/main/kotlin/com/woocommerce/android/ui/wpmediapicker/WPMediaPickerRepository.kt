@@ -77,7 +77,7 @@ class WPMediaPickerRepository @Inject constructor(
     fun onMediaListFetched(event: OnMediaListFetched) {
         if (event.isError) {
             loadContinuation.continueWith(false)
-        } else {
+        } else if (loadContinuation.isWaiting) {
             canLoadMoreMedia = event.canLoadMore
             loadContinuation.continueWith(true)
         }
