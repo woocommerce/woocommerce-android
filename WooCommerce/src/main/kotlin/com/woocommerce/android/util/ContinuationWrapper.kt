@@ -6,6 +6,8 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Succe
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.resume
 
@@ -22,6 +24,7 @@ import kotlin.coroutines.resume
  */
 class ContinuationWrapper<T>(private val tag: WooLog.T) {
     private var continuation: CancellableContinuation<T>? = null
+    private val mutex = Mutex()
 
     val isWaiting: Boolean
         get() = continuation?.isActive ?: false
@@ -43,21 +46,23 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
             asyncRequest()
         }
 
-        return try {
-            continuation?.cancel()
-            val continuationResult = if (timeout > 0) {
-                withTimeout(timeout) {
+        mutex.withLock {
+            return try {
+                continuation?.cancel()
+                val continuationResult = if (timeout > 0) {
+                    withTimeout(timeout) {
+                        suspendCoroutine(asyncAction)
+                    }
+                } else {
                     suspendCoroutine(asyncAction)
                 }
-            } else {
-                suspendCoroutine(asyncAction)
+                Success(continuationResult)
+            } catch (e: CancellationException) {
+                WooLog.e(tag, e)
+                Cancellation<T>(e)
+            } finally {
+                continuation = null
             }
-            Success(continuationResult)
-        } catch (e: CancellationException) {
-            WooLog.e(tag, e)
-            Cancellation<T>(e)
-        } finally {
-            continuation = null
         }
     }
 
