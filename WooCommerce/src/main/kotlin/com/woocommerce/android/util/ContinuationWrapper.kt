@@ -25,12 +25,17 @@ import kotlin.coroutines.resume
 class ContinuationWrapper<T>(private val tag: WooLog.T) {
     private var continuation: CancellableContinuation<T>? = null
 
+    val isWaiting: Boolean
+        @Synchronized
+        get() = continuation?.isActive ?: false
+
     suspend fun callAndWaitUntilTimeout(
         timeout: Long = AppConstants.REQUEST_TIMEOUT,
         asyncAction: () -> Unit
     ): ContinuationResult<T> {
         return callAndWait(asyncAction, timeout)
     }
+
     suspend fun callAndWait(asyncAction: () -> Unit): ContinuationResult<T> {
        return callAndWait(asyncAction, 0)
     }
