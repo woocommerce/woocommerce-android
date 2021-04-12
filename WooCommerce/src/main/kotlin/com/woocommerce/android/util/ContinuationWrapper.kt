@@ -23,45 +23,42 @@ import kotlin.coroutines.resume
  *
  */
 class ContinuationWrapper<T>(private val tag: WooLog.T) {
-    private var timeout: Long = 0
     private var continuation: CancellableContinuation<T>? = null
-    private val mutex = Mutex()
 
     suspend fun callAndWaitUntilTimeout(
         timeout: Long = AppConstants.REQUEST_TIMEOUT,
         asyncAction: () -> Unit
     ): ContinuationResult<T> {
-        mutex.withLock {
-            this.timeout = timeout
-        }
-        return callAndWait(asyncAction)
+        return callAndWait(asyncAction, timeout)
+    }
+    suspend fun callAndWait(asyncAction: () -> Unit): ContinuationResult<T> {
+       return callAndWait(asyncAction, 0)
     }
 
-    suspend fun callAndWait(asyncAction: () -> Unit): ContinuationResult<T> {
+    @Synchronized
+    private suspend fun callAndWait(asyncAction: () -> Unit, timeout: Long): ContinuationResult<T> {
         suspend fun suspendCoroutine(asyncRequest: () -> Unit) = suspendCancellableCoroutine<T> {
             continuation = it
             asyncRequest()
         }
 
-        mutex.withLock {
-            val result = try {
-                continuation?.cancel()
-                val continuationResult = if (timeout > 0) {
-                    withTimeout(timeout) {
-                        suspendCoroutine(asyncAction)
-                    }
-                } else {
+        val result = try {
+            continuation?.cancel()
+            val continuationResult = if (timeout > 0) {
+                withTimeout(timeout) {
                     suspendCoroutine(asyncAction)
                 }
-                Success(continuationResult)
-            } catch (e: CancellationException) {
-                WooLog.e(tag, e)
-                Cancellation<T>(e)
+            } else {
+                suspendCoroutine(asyncAction)
             }
-
-            continuation = null
-            return result
+            Success(continuationResult)
+        } catch (e: CancellationException) {
+            WooLog.e(tag, e)
+            Cancellation<T>(e)
         }
+
+        continuation = null
+        return result
     }
 
     @Synchronized
@@ -71,6 +68,7 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
         }
     }
 
+    @Synchronized
     fun cancel() {
         continuation?.cancel()
     }
