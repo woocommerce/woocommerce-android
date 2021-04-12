@@ -61,12 +61,14 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
         }
     }
 
+    @Synchronized
     fun continueWith(value: T) {
         if (continuation?.isActive == true) {
             continuation?.resume(value)
         }
     }
 
+    @Synchronized
     fun cancel() {
         continuation?.cancel()
     }
