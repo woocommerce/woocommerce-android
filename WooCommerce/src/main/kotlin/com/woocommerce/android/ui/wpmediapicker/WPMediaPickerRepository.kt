@@ -1,13 +1,10 @@
 package com.woocommerce.android.ui.wpmediapicker
 
-import com.woocommerce.android.AppConstants
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -16,7 +13,6 @@ import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaListFetched
 import org.wordpress.android.fluxc.utils.MimeType
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
 class WPMediaPickerRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -25,12 +21,9 @@ class WPMediaPickerRepository @Inject constructor(
 ) {
     companion object {
         private const val MEDIA_PAGE_SIZE = WPMediaGalleryView.NUM_COLUMNS * 10
-
-        // according to the docs, use this to return only images (passing "image/*" doesn't work)
-        private const val MEDIA_MIME_TYPE = "image"
     }
 
-    private var loadContinuation: CancellableContinuation<Boolean>? = null
+    private val loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
 
     var canLoadMoreMedia = true
         private set
@@ -46,33 +39,26 @@ class WPMediaPickerRepository @Inject constructor(
     /**
      * Submits a fetch request to get a list of media for the current site
      */
-    suspend fun fetchSiteMediaList(loadMore: Boolean = false): List<Product.Image> {
-        try {
-            loadContinuation?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                loadContinuation = it
-                val payload = MediaStore.FetchMediaListPayload(
-                        selectedSite.get(),
-                        MEDIA_PAGE_SIZE,
-                        loadMore,
-                        MimeType.Type.IMAGE
-                )
-                dispatcher.dispatch(MediaActionBuilder.newFetchMediaListAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching site media", e)
+    suspend fun fetchSiteMediaList(loadMore: Boolean = false): List<Image> {
+        loadContinuation.callAndWaitUntilTimeout {
+            val payload = MediaStore.FetchMediaListPayload(
+                selectedSite.get(),
+                MEDIA_PAGE_SIZE,
+                loadMore,
+                MimeType.Type.IMAGE
+            )
+            dispatcher.dispatch(MediaActionBuilder.newFetchMediaListAction(payload))
         }
 
-        loadContinuation = null
         return getSiteMediaList()
     }
 
     /**
      * Returns all media for the current site that are in the database
      */
-    fun getSiteMediaList(): List<Product.Image> {
+    fun getSiteMediaList(): List<Image> {
         val mediaList = mediaStore.getSiteImages(selectedSite.get())
-        val imageList = ArrayList<Product.Image>()
+        val imageList = ArrayList<Image>()
 
         for (media in mediaList) {
             // skip media with empty URLs - these are media that are still being uploaded
@@ -89,15 +75,11 @@ class WPMediaPickerRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMediaListFetched(event: OnMediaListFetched) {
-        loadContinuation?.let {
-            if (it.isActive) {
-                if (event.isError) {
-                    it.resume(false)
-                } else {
-                    canLoadMoreMedia = event.canLoadMore
-                    it.resume(true)
-                }
-            }
+        if (event.isError) {
+            loadContinuation.continueWith(false)
+        } else if (loadContinuation.isWaiting) {
+            canLoadMoreMedia = event.canLoadMore
+            loadContinuation.continueWith(true)
         }
     }
 }
