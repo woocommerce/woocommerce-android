@@ -7,11 +7,8 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingLabelPackage.Item
-import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -42,12 +39,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     private val availablePackages = listOf(
-        ShippingPackage(
-            "id1", "title1", false, "provider1", PackageDimensions(1.0f, 1.0f, 1.0f)
-        ),
-        ShippingPackage(
-            "id2", "title2", false, "provider2", PackageDimensions(1.0f, 1.0f, 1.0f)
-        )
+        CreateShippingLabelTestUtils.generatePackage("id1", "provider1"),
+        CreateShippingLabelTestUtils.generatePackage("id2", "provider2")
     )
 
     private val shippingAccountSettings = ShippingAccountSettings(
@@ -118,11 +111,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     @Test
     fun `test edit flow`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val currentShippingPackages = arrayOf(
-            ShippingLabelPackage(
-                "package1",
-                availablePackages.first(),
-                10.0f,
-                listOf(Item(0L, "product", "", "10 kg"))
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                selectedPackage = availablePackages[0]
             )
         )
         setup(currentShippingPackages)
