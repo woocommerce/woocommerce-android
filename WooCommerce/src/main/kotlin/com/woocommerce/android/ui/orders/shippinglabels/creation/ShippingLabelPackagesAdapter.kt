@@ -57,7 +57,7 @@ class ShippingLabelPackagesAdapter(
             with(binding.itemsList) {
                 layoutManager =
                     LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
-                adapter = PackageProductsAdapter()
+                adapter = PackageProductsAdapter(weightUnit)
             }
             binding.weightEditText.hint = binding.root.context.getString(
                 R.string.shipping_label_package_details_weight_hint,
@@ -136,7 +136,7 @@ class ShippingLabelPackagesAdapter(
     }
 }
 
-class PackageProductsAdapter() : RecyclerView.Adapter<PackageProductViewHolder>() {
+class PackageProductsAdapter(private val weightUnit: String) : RecyclerView.Adapter<PackageProductViewHolder>() {
     var items: List<ShippingLabelPackage.Item> = emptyList()
         set(value) {
             field = value
@@ -160,7 +160,7 @@ class PackageProductsAdapter() : RecyclerView.Adapter<PackageProductViewHolder>(
         fun bind(item: ShippingLabelPackage.Item) {
             binding.productName.text = item.name
             val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
-            val details = "$attributes${item.weight}"
+            val details = "$attributes${item.weight} $weightUnit"
             if (details.isEmpty()) {
                 binding.productDetails.isVisible = false
             } else {

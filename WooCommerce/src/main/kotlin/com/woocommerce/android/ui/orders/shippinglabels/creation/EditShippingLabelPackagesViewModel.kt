@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingPackage
@@ -87,12 +88,14 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         loadProductsWeightsIfNeeded(order)
 
         viewState = viewState.copy(showSkeletonView = false)
+        val items = order.getShippableItems().map { it.toShippingItem() }
+        val totalWeight = items.sumByFloat { it.weight } + (lastUsedPackage?.boxWeight ?: 0f)
         return listOf(
             ShippingLabelPackage(
                 packageId = "package1",
                 selectedPackage = lastUsedPackage,
-                weight = Float.NaN,
-                items = order.getShippableItems().map { it.toShippingItem() }
+                weight = if (totalWeight != 0f) totalWeight else Float.NaN,
+                items = items
             )
         )
     }
@@ -168,8 +171,6 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
             variationDetailRepository.getVariation(productId, variationId)!!.weight
         } else {
             productDetailRepository.getProduct(productId)!!.weight
-        }.let {
-            "$it $weightUnit"
         }
 
         return ShippingLabelPackage.Item(
