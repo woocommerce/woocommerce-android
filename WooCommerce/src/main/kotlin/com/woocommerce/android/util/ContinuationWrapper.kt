@@ -6,8 +6,6 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Succe
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.resume
 
@@ -37,7 +35,7 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
     }
 
     suspend fun callAndWait(asyncAction: () -> Unit): ContinuationResult<T> {
-       return callAndWait(asyncAction, 0)
+        return callAndWait(asyncAction, 0)
     }
 
     @Synchronized
