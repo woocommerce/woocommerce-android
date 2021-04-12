@@ -46,9 +46,9 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
             asyncRequest()
         }
 
+        continuation?.cancel()
         mutex.withLock {
             return try {
-                continuation?.cancel()
                 val continuationResult = if (timeout > 0) {
                     withTimeout(timeout) {
                         suspendCoroutine(asyncAction)
