@@ -18,6 +18,7 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFeatures
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
@@ -301,6 +302,37 @@ class OrderDetailRepository @Inject constructor(
 
     fun getStoreCountryCode(): String? {
         return wooCommerceStore.getStoreCountryCode(selectedSite.get())
+    }
+
+    suspend fun fetchSLCreationEligibility(orderId: Long) {
+        val result = shippingLabelStore.fetchShippingLabelCreationEligibility(
+            site = selectedSite.get(),
+            orderId = orderId,
+            canCreatePackage = ShippingLabelCreationFeatures.CAN_CREATE_PACKAGE,
+            canCreatePaymentMethod = ShippingLabelCreationFeatures.CAN_CREATE_PAYMENT_METHOD,
+            canCreateCustomsForm = ShippingLabelCreationFeatures.CAN_CREATE_CUSTOMS_FORM
+        )
+        if (result.isError) {
+            WooLog.e(
+                tag = ORDERS,
+                message = "Fetching shipping labels creation eligibility failed for $orderId, " +
+                    "error: ${result.error.type} ${result.error.message}")
+        } else if (!result.model!!.isEligible) {
+            WooLog.d(
+                tag = ORDERS,
+                message = "Order $orderId is not eligible for shipping labels creation, " +
+                    "reason: ${result.model!!.reason}")
+        }
+    }
+
+    fun isOrderEligibleForSLCreation(orderId: Long): Boolean {
+        return shippingLabelStore.isOrderEligibleForShippingLabelCreation(
+            site = selectedSite.get(),
+            orderId = orderId,
+            canCreatePackage = ShippingLabelCreationFeatures.CAN_CREATE_PACKAGE,
+            canCreatePaymentMethod = ShippingLabelCreationFeatures.CAN_CREATE_PAYMENT_METHOD,
+            canCreateCustomsForm = ShippingLabelCreationFeatures.CAN_CREATE_CUSTOMS_FORM
+        )?.isEligible ?: false
     }
 
     @Suppress("unused")

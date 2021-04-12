@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -28,16 +27,15 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import java.util.Date
 
 @ExperimentalCoroutinesApi
 class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     private val shippingLabelRepository: ShippingLabelRepository = mock()
 
     @Suppress("DEPRECATION")
-    private val paymentMethods = listOf<PaymentMethod>(
-        PaymentMethod(1, "Jhon Doe", "visa", "1234", Date(2030, 11, 31)),
-        PaymentMethod(2, "Jhon Doe", "mastercard", "1234", Date(2030, 11, 31))
+    private val paymentMethods = listOf(
+        CreateShippingLabelTestUtils.generatePaymentMethod(id = 1, cardType = "visa"),
+        CreateShippingLabelTestUtils.generatePaymentMethod(id = 2, cardType = "mastercard")
     )
 
     private val shippingAccountSettings = ShippingAccountSettings(
