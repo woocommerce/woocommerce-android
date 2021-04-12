@@ -82,6 +82,17 @@ class VariationListRepository @Inject constructor(
      */
     fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
+
+    /**
+     * Fires the request to create a empty variation to a given product
+     */
+    suspend fun createEmptyVariation(productID: Long): ProductVariation? =
+        productStore
+            .generateEmptyVariation(selectedSite.get(), productID)
+            .takeIf { it.isError.not() }
+            ?.model
+            ?.toAppModel()
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: OnProductChanged) {
