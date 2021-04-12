@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import com.tinder.StateMachine
-import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
