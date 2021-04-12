@@ -82,7 +82,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         return when (item.itemId) {
             ID_ATTRIBUTE_LIST -> {
                 AttributeListFragmentDirections
-                    .actionAttributeListFragmentToVariationListFragment()
+                    .actionAttributeListFragmentToVariationListFragment(isVariationCreation = true)
                     .run { findNavController().navigateSafely(this) }
                 true
             }
