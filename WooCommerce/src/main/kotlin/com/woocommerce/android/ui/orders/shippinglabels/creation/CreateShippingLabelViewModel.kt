@@ -427,7 +427,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     remoteOrderId = orderIdSet.remoteOrderId,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 )
-                if (!fulfillResult) {
+                if (fulfillResult) {
+                    AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
+                } else {
+                    AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
                     triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
                 }
             }
