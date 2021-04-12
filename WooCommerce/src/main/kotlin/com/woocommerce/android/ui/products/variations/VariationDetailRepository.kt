@@ -38,7 +38,6 @@ class VariationDetailRepository @Inject constructor(
 ) {
     private var continuationUpdateVariation: Continuation<Boolean>? = null
     private var continuationFetchVariation: CancellableContinuation<Boolean>? = null
-    private var continuationCreateVariation: CancellableContinuation<Boolean>? = null
 
     private var remoteProductId: Long = 0L
     private var remoteVariationId: Long = 0L
@@ -97,22 +96,6 @@ class VariationDetailRepository @Inject constructor(
             } ?: false // request timed out
         } catch (e: CancellationException) {
             WooLog.e(PRODUCTS, "Exception encountered while updating variation", e)
-            false
-        }
-    }
-
-    /**
-     * Fires the request to create a empty variation to a given product
-     *
-     * @return the result of the action as a [Boolean]
-     */
-    suspend fun createEmptyVariation(productID: Long): Boolean {
-        return try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                true
-            } ?: false
-        } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "", e)
             false
         }
     }
