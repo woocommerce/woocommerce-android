@@ -630,6 +630,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_NOTE_ID = "note_id"
         const val KEY_IMAGE_SOURCE = "source"
         const val KEY_FILTERS = "filters"
+        const val KEY_FULFILL_ORDER = "fulfill_order"
+        const val KEY_STEP = "step"
+
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -644,6 +647,17 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"
+        const val VALUE_STARTED = "started"
+        const val VALUE_PURCHASE_INITIATED = "purchase_initiated"
+        const val VALUE_ORIGIN_ADDRESS_COMPLETE = "origin_address_complete"
+        const val VALUE_DESTINATION_ADDRESS_COMPLETE = "destination_address_complete"
+        const val VALUE_PACKAGES_SELECTED = "packages_selected"
+        const val VALUE_CARRIER_RATES_SELECTED = "carrier_rates_selected"
+        const val VALUE_CUSTOMS_COMPLETE = "customs_complete"
+        const val VALUE_PAYMENT_METHOD_SELECTED = "payment_method_selected"
+        const val VALUE_PURCHASE_FAILED = "purchase_failed"
+        const val VALUE_PURCHASE_SUCCEEDED = "purchase_succeeded"
+        const val VALUE_PURCHASE_READY = "purchase_ready"
 
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
@@ -705,7 +719,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_REFUND_IS_FULL = "is_full"
         const val KEY_REFUND_TYPE = "method"
         const val KEY_REFUND_METHOD = "gateway"
-        const val KEY_REFUND_AMOUNT = "amount"
+        const val KEY_AMOUNT = "amount"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 

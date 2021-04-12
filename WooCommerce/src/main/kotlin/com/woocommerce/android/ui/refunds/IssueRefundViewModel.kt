@@ -345,7 +345,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                                         (commonState.refundTotal isEqualTo maxRefund).toString(),
                                 AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
                                 AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
-                                AnalyticsTracker.KEY_REFUND_AMOUNT to commonState.refundTotal.toString()
+                                AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
                     )
 
