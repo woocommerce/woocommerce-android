@@ -51,9 +51,12 @@ class VariationListViewModel @AssistedInject constructor(
 
     private var loadingJob: Job? = null
 
-    fun start(remoteProductId: Long) {
+    fun start(remoteProductId: Long, createNewVariation: Boolean = false) {
         viewState = viewState.copy(parentProduct = productRepository.getProduct(remoteProductId))
-        loadVariations(remoteProductId)
+        when (createNewVariation) {
+            true -> createEmptyVariation(remoteProductId)
+            else -> loadVariations(remoteProductId)
+        }
     }
 
     fun refreshVariations(remoteProductId: Long) {
@@ -83,6 +86,11 @@ class VariationListViewModel @AssistedInject constructor(
     fun onCreateVariationRequested() {
         // TODO: tracks event
         triggerEvent(ShowAddAttributeView)
+    }
+
+    private fun createEmptyVariation(remoteProductId: Long) = launch {
+        variationListRepository.createEmptyVariation(remoteProductId)
+        fetchVariations(remoteProductId)
     }
 
     private fun loadVariations(remoteProductId: Long, loadMore: Boolean = false) {
