@@ -208,7 +208,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.PurchaseStarted> {
                 transitionTo(
                     State.PurchaseLabels(data, it.fulfillOrder),
-                    SideEffect.TrackPurchaseInitiated(data.stepsState.carrierStep.data)
+                    SideEffect.TrackPurchaseInitiated(data.stepsState.carrierStep.data, it.fulfillOrder)
                 )
             }
         }
@@ -728,7 +728,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object TrackFlowStart : SideEffect()
         data class TrackCompletedStep(val step: Step<*>) : SideEffect()
-        data class TrackPurchaseInitiated(private val data: List<ShippingRate>) : SideEffect() {
+        data class TrackPurchaseInitiated(
+            private val data: List<ShippingRate>,
+            val fulfillOrder: Boolean
+        ) : SideEffect() {
             val amount = data.sumByBigDecimal { it.price }
         }
     }

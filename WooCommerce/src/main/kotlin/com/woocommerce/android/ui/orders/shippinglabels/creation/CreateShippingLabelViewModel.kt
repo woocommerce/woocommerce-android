@@ -201,7 +201,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                         is SideEffect.ShowLabelsPrint -> openPrintLabelsScreen(sideEffect.orderId, sideEffect.labels)
                         is SideEffect.TrackFlowStart -> trackFlowStart()
-                        is SideEffect.TrackPurchaseInitiated -> trackPurchaseInitiated(sideEffect.amount)
+                        is SideEffect.TrackPurchaseInitiated -> {
+                            trackPurchaseInitiated(sideEffect.amount, sideEffect.fulfillOrder)
+                        }
                         is SideEffect.TrackCompletedStep -> trackCompletedStep(sideEffect.step)
                     }
                 }
@@ -214,12 +216,13 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         mapOf("state" to "started")
     )
 
-    private fun trackPurchaseInitiated(amount: BigDecimal) {
+    private fun trackPurchaseInitiated(amount: BigDecimal, fulfillOrder: Boolean) {
         AnalyticsTracker.track(
             Stat.SHIPPING_LABEL_PURCHASE_FLOW,
             mapOf(
                 "state" to "purchase_initiated",
-                "amount" to amount.toPlainString()
+                "amount" to amount.toPlainString(),
+                "fulfill_order" to fulfillOrder
             )
         )
     }
