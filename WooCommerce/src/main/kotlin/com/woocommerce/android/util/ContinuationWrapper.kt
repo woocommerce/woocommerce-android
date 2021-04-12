@@ -42,7 +42,7 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
             asyncRequest()
         }
 
-        val result = try {
+        return try {
             continuation?.cancel()
             val continuationResult = if (timeout > 0) {
                 withTimeout(timeout) {
@@ -55,10 +55,9 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
         } catch (e: CancellationException) {
             WooLog.e(tag, e)
             Cancellation<T>(e)
+        } finally {
+            continuation = null
         }
-
-        continuation = null
-        return result
     }
 
     @Synchronized
