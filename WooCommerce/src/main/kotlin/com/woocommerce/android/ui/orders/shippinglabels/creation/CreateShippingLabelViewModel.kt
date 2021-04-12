@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_AMOUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FULFILL_ORDER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STEP
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARRIER_RATES_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOMS_COMPLETE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DESTINATION_ADDRESS_COMPLETE
@@ -100,11 +101,13 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import kotlin.system.measureTimeMillis
 
 class CreateShippingLabelViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -409,15 +412,25 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     private suspend fun purchaseLabels(data: StateMachineData, fulfillOrder: Boolean): Event {
-        val result = shippingLabelRepository.purchaseLabels(
-            orderId = data.order.remoteId,
-            origin = data.stepsState.originAddressStep.data,
-            destination = data.stepsState.shippingAddressStep.data,
-            packages = data.stepsState.packagingStep.data,
-            rates = data.stepsState.carrierStep.data
-        )
+        var result: WooResult<List<ShippingLabel>>
+        val duration = measureTimeMillis {
+            result = shippingLabelRepository.purchaseLabels(
+                orderId = data.order.remoteId,
+                origin = data.stepsState.originAddressStep.data,
+                destination = data.stepsState.shippingAddressStep.data,
+                packages = data.stepsState.packagingStep.data,
+                rates = data.stepsState.carrierStep.data
+            )
+        } / 1000.0
+
         return if (result.isError) {
-            AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to VALUE_PURCHASE_FAILED))
+            AnalyticsTracker.track(
+                Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+                mapOf(
+                    KEY_STATE to VALUE_PURCHASE_FAILED,
+                    KEY_TOTAL_DURATION to duration
+                )
+            )
             PurchaseFailed
         } else {
             if (fulfillOrder) {
@@ -434,7 +447,13 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
                 }
             }
-            AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to VALUE_PURCHASE_SUCCEEDED))
+            AnalyticsTracker.track(
+                Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+                mapOf(
+                    KEY_STATE to VALUE_PURCHASE_SUCCEEDED,
+                    KEY_TOTAL_DURATION to duration
+                )
+            )
             PurchaseSuccess(result.model!!)
         }
     }
