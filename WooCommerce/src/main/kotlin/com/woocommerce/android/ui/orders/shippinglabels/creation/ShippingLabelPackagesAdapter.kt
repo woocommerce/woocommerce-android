@@ -65,6 +65,9 @@ class ShippingLabelPackagesAdapter(
             )
             binding.weightEditText.setOnTextChangedListener {
                 val weight = it?.toString()?.trim('.')?.ifEmpty { null }?.toFloat() ?: Float.NaN
+                // Return early if the weight wasn't changed
+                if (weight == shippingLabelPackages[adapterPosition].weight) return@setOnTextChangedListener
+
                 onWeightEdited(adapterPosition, weight)
 
                 if (weight <= 0.0) {

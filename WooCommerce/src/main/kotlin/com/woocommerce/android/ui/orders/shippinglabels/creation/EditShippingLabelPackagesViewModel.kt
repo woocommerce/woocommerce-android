@@ -52,6 +52,11 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         parameters.weightUnit ?: ""
     }
 
+    /**
+     * Track the packages where the user manually edited the weight, to avoid changing it if the box is changed
+     */
+    private val packagesWithEditedWeight = mutableSetOf<String>()
+
     init {
         initState()
     }
@@ -136,6 +141,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = packages[position].copy(weight = weight)
         viewState = viewState.copy(shippingLabelPackages = packages)
+        packagesWithEditedWeight.add(packages[position].packageId)
     }
 
     fun onPackageSpinnerClicked(position: Int) {
@@ -144,7 +150,14 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
         val packages = viewState.shippingLabelPackages.toMutableList()
-        packages[position] = packages[position].copy(selectedPackage = selectedPackage)
+        packages[position] = with(packages[position]) {
+            val weight = if (!packagesWithEditedWeight.contains(packageId)) {
+                items.sumByFloat { it.weight } + selectedPackage.boxWeight
+            } else {
+                weight
+            }
+            copy(selectedPackage = selectedPackage, weight = weight)
+        }
         viewState = viewState.copy(shippingLabelPackages = packages)
     }
 
