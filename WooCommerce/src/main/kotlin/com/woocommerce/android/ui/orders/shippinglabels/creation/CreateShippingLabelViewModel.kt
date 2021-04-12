@@ -219,9 +219,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                         is SideEffect.ShowLabelsPrint -> openPrintLabelsScreen(sideEffect.orderId, sideEffect.labels)
                         is SideEffect.TrackFlowStart -> trackFlowStart()
-                        is SideEffect.TrackPurchaseInitiated -> {
-                            trackPurchaseInitiated(sideEffect.amount, sideEffect.fulfillOrder)
-                        }
                         is SideEffect.TrackCompletedStep -> trackCompletedStep(sideEffect.step)
                     }
                 }
@@ -234,7 +231,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         mapOf(KEY_STATE to VALUE_STARTED)
     )
 
-    private fun trackPurchaseInitiated(amount: BigDecimal, fulfillOrder: Boolean) {
+    private fun trackPurchaseInitiated(data: List<ShippingRate>, fulfillOrder: Boolean) {
+        val amount = data.sumByBigDecimal { it.price }
         AnalyticsTracker.track(
             Stat.SHIPPING_LABEL_PURCHASE_FLOW,
             mapOf(
@@ -412,6 +410,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     private suspend fun purchaseLabels(data: StateMachineData, fulfillOrder: Boolean): Event {
+        trackPurchaseInitiated(data.stepsState.carrierStep.data, fulfillOrder)
+
         var result: WooResult<List<ShippingLabel>>
         val duration = measureTimeMillis {
             result = shippingLabelRepository.purchaseLabels(
