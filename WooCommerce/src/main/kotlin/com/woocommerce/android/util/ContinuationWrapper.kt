@@ -24,7 +24,6 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
     private var continuation: CancellableContinuation<T>? = null
 
     val isWaiting: Boolean
-        @Synchronized
         get() = continuation?.isActive ?: false
 
     suspend fun callAndWaitUntilTimeout(
@@ -38,7 +37,6 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
         return callAndWait(asyncAction, 0)
     }
 
-    @Synchronized
     private suspend fun callAndWait(asyncAction: () -> Unit, timeout: Long): ContinuationResult<T> {
         suspend fun suspendCoroutine(asyncRequest: () -> Unit) = suspendCancellableCoroutine<T> {
             continuation = it
@@ -63,14 +61,12 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
         }
     }
 
-    @Synchronized
     fun continueWith(value: T) {
         if (continuation?.isActive == true) {
             continuation?.resume(value)
         }
     }
 
-    @Synchronized
     fun cancel() {
         continuation?.cancel()
     }
