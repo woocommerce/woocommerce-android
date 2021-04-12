@@ -2,14 +2,17 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.sumByBigDecimal
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.tools.SelectedSite
@@ -18,6 +21,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowWooDiscountBottomSheet
@@ -32,6 +36,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PackagesLoadingError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PurchaseError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressChangeSuggested
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressEditCanceled
@@ -43,6 +48,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PaymentSelected
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseFailed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseStarted
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseSuccess
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.ShippingCarrierSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.ShippingCarrierSelectionCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
@@ -74,6 +82,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -153,6 +163,14 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             validateAddress(transition.state.data.stepsState.shippingAddressStep.data, DESTINATION)
                         }
                     }
+                    is State.PurchaseLabels -> {
+                        handleResult(
+                            progressDialogTitle = string.shipping_label_create_purchase_progress_title,
+                            progressDialogMessage = string.shipping_label_create_purchase_progress_message
+                        ) {
+                            purchaseLabels(transition.state.data, transition.state.fulfillOrder)
+                        }
+                    }
                     else -> {
                     }
                 }
@@ -179,6 +197,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
+                        is SideEffect.ShowLabelsPrint -> openPrintLabelsScreen(sideEffect.orderId, sideEffect.labels)
                     }
                 }
             }
@@ -227,6 +246,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private fun openPaymentDetails() {
         triggerEvent(ShowPaymentDetails)
+    }
+
+    private fun openPrintLabelsScreen(orderId: Long, labels: List<ShippingLabel>) {
+        triggerEvent(ShowPrintShippingLabels(orderId, labels))
     }
 
     private fun updateViewState(stateMachineData: StateMachineData) {
@@ -287,6 +310,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             DataLoadingError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
             AddressValidationError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
             PackagesLoadingError -> triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
+            PurchaseError -> triggerEvent(ShowSnackbar(string.shipping_label_create_purchase_error))
         }
     }
 
@@ -332,6 +356,32 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
+    private suspend fun purchaseLabels(data: StateMachineData, fulfillOrder: Boolean): Event {
+        val result = shippingLabelRepository.purchaseLabels(
+            orderId = data.order.remoteId,
+            origin = data.stepsState.originAddressStep.data,
+            destination = data.stepsState.shippingAddressStep.data,
+            packages = data.stepsState.packagingStep.data,
+            rates = data.stepsState.carrierStep.data
+        )
+        return if (result.isError) {
+            PurchaseFailed
+        } else {
+            if (fulfillOrder) {
+                val orderIdSet = data.order.identifier.toIdSet()
+                val fulfillResult = orderDetailRepository.updateOrderStatus(
+                    localOrderId = orderIdSet.id,
+                    remoteOrderId = orderIdSet.remoteOrderId,
+                    newStatus = CoreOrderStatus.COMPLETED.value
+                )
+                if (!fulfillResult) {
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+                }
+            }
+            PurchaseSuccess(result.model!!)
+        }
+    }
+
     private val PackagingStep.stepDescription: String
         get() {
             return if (status == DONE && data.isNotEmpty()) {
@@ -355,7 +405,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 val weightFormatted = with(DecimalFormat()) {
                     maximumFractionDigits = 4
                     minimumFractionDigits = 0
-                    format(data.sumByDouble { it.weight })
+                    format(data.sumByFloat { it.weight })
                 }
 
                 val secondLine = resourceProvider.getString(
@@ -455,6 +505,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onWooDiscountInfoClicked() {
         triggerEvent(ShowWooDiscountBottomSheet)
+    }
+
+    fun onPurchaseButtonClicked(fulfillOrder: Boolean) {
+        stateMachine.handleEvent(PurchaseStarted(fulfillOrder))
     }
 
     fun onEditButtonTapped(step: FlowStep) {
@@ -570,6 +624,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         ORIGIN_ADDRESS, SHIPPING_ADDRESS, PACKAGING, CUSTOMS, CARRIER, PAYMENT
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<CreateShippingLabelViewModel>
 }

@@ -1,5 +1,3 @@
-WooCommerce Android 6.3 offers users two important updates: 
-
- - If applicable, you can now include “downloadable” in the type details of a product.
- - We fixed a bug so that a custom order’s status now displays correctly in order details.
- 
+We made a few improvements in this release.
+We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
+We also fixed a layout issue that occurred on the shipping label formats option screen.
