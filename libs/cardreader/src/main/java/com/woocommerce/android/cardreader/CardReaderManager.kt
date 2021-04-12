@@ -9,11 +9,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 interface CardReaderManager {
     val isInitialized: Boolean
-    val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents>
     val readerStatus: MutableStateFlow<CardReaderStatus>
     fun initialize(app: Application)
-    fun startDiscovery(isSimulated: Boolean)
-    fun connectToReader(readerId: String)
+    fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
+    fun connectToReader(cardReader: CardReader)
 
     // TODO cardreader Stripe accepts only Int, is that ok?
     suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus>
