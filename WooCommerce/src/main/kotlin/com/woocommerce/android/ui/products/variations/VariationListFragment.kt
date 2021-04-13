@@ -64,12 +64,19 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private var _warningBinding: ProductPropertyWarningLayoutBinding? = null
     private val warningBinding get() = _warningBinding!!
 
+    /**
+     * this property will be true only for the first call,
+     * making sure the variation creation flow is only on Fragment initial setup
+     */
+    private var isVariationCreationFlow = true
+        get() = (navArgs.isVariationCreation && field == true)
+            .also { if(it) field = false }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentVariationListBinding.bind(view)
         _warningBinding = binding.variationVisibilityWarning
-
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
         initializeViewModel()
@@ -146,7 +153,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId, navArgs.isVariationCreation)
+        viewModel.start(navArgs.remoteProductId, isVariationCreationFlow)
         binding.firstVariationView.setOnClickListener {
             viewModel.onCreateVariationRequested()
         }
