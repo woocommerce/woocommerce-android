@@ -70,7 +70,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
      */
     private var isVariationCreationFlow = true
         get() = (navArgs.isVariationCreation && field == true)
-            .also { if(it) field = false }
+            .also { if (it) field = false }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
