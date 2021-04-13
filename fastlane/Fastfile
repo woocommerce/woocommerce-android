@@ -14,6 +14,7 @@ ENV["PROJECT_NAME"]="WooCommerce"
 ENV["PROJECT_ROOT_FOLDER"]="./"
 ENV["validate_translations"]="lintVanillaRelease"
 REPOSITORY_NAME="woocommerce-android"
+GH_ORG_NAME="woocommerce"
 
 SUPPORTED_LOCALES = [
   { glotpress: "ar", google_play: "ar",  promo_config: {}},
@@ -304,7 +305,7 @@ platform :android do
     circleci_trigger_job(
       circle_ci_token: ENV["CIRCLE_CI_AUTH_TOKEN"],
       repository: REPOSITORY_NAME,
-      organization: "woocommerce",
+      organization: GH_ORG_NAME,
       branch: options[:branch_to_build],
       job_params: {"release_build" => true}
     )
