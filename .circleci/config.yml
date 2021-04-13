@@ -2,6 +2,10 @@ copy_gradle_properties: &copy_gradle_properties
   run:
     name: Setup gradle.properties
     command: cp gradle.properties-example gradle.properties
+update-gradle-memory:
+  run:
+    name: Update memory setting
+    command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx1536m/" gradle.properties
 
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
@@ -92,6 +96,7 @@ jobs:
       - run:
           name: Copy Secrets
           command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
+      - update-gradle-memory
       - android/restore-gradle-cache
       - run:
           name: Build APK
@@ -125,6 +130,7 @@ jobs:
       - run:
           name: Copy Secrets
           command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
+      - update-gradle-memory
       - run:
           name: Install other tools
           command: |
