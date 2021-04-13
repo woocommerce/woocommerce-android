@@ -114,6 +114,10 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 viewModel.onUpdateButtonClicked()
                 true
             }
+            R.id.menu_delete -> {
+                viewModel.onDeleteVariationClicked()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
