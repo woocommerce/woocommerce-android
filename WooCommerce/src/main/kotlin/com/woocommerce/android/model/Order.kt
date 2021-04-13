@@ -97,6 +97,8 @@ data class Order(
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
+        @IgnoredOnParcel
+        val isVariation: Boolean = variationId != 0L
     }
 
     fun getBillingName(defaultValue: String): String {

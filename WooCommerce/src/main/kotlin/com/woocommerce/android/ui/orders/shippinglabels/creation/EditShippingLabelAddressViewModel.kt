@@ -6,6 +6,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
@@ -82,6 +84,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked(address: Address) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED)
         if (areRequiredFieldsValid(address)) {
             launch {
                 viewState = viewState.copy(address = address, isValidationProgressDialogVisible = true)
@@ -175,6 +178,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onUseAddressAsIsButtonClicked() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
+
         viewState.address?.let { address ->
             if (areRequiredFieldsValid(address)) {
                 triggerEvent(ExitWithResult(address))
@@ -185,20 +190,28 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onCountrySpinnerTapped() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_COUNTRY_SPINNER_TAPPED)
+
         triggerEvent(ShowCountrySelector(countries, viewState.address?.country))
     }
 
     fun onStateSpinnerTapped() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_STATE_SPINNER_TAPPED)
+
         triggerEvent(ShowStateSelector(states, viewState.address?.state))
     }
 
     fun onOpenMapTapped() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED)
+
         viewState.address?.let { address ->
             triggerEvent(OpenMapWithAddress(address))
         }
     }
 
     fun onContactCustomerTapped() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED)
+
         viewState.address?.phone?.let {
             triggerEvent(DialPhoneNumber(it))
         }

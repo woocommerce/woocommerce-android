@@ -7,6 +7,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
@@ -265,6 +267,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SHIPPING_CARRIER_DONE_BUTTON_TAPPED)
+
         val selectedRates = shippingRates.value?.let { rates ->
             rates.map { it.selectedRate }
         }

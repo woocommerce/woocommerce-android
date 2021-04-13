@@ -35,7 +35,6 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.getNonRefundedShippingLabelProducts
 import com.woocommerce.android.model.loadProducts
@@ -82,10 +81,6 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
-    companion object {
-        private const val US_COUNTRY_CODE = "US"
-    }
-
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     private val orderIdSet: OrderIdSet
@@ -120,8 +115,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
-    private val wooShippingPluginInfo: WooPlugin by lazy {
-        orderDetailRepository.getWooServicesPluginInfo()
+    private val isShippingPluginReady: Boolean by lazy {
+        val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()
+        pluginInfo.isInstalled && pluginInfo.isActive
     }
 
     override fun onCleared() {
@@ -448,15 +444,6 @@ class OrderDetailViewModel @AssistedInject constructor(
         )
     }
 
-    private fun areShippingLabelRequirementsMet(): Boolean {
-        val storeIsInUs = orderDetailRepository.getStoreCountryCode()?.startsWith(US_COUNTRY_CODE) ?: false
-        val isShippingPluginReady = wooShippingPluginInfo.isInstalled && wooShippingPluginInfo.isActive
-        val orderHasPhysicalProducts = !hasVirtualProductsOnly()
-        val shippingAddressIsInUs = order.shippingAddress.country == US_COUNTRY_CODE
-
-        return isShippingPluginReady && storeIsInUs && shippingAddressIsInUs && orderHasPhysicalProducts
-    }
-
     private fun loadOrderNotes() {
         _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
     }
@@ -499,6 +486,12 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    private fun fetchSLCreationEligibilityAsync() = async {
+        if (isShippingPluginReady) {
+            orderDetailRepository.fetchSLCreationEligibility(order.remoteId)
+        }
+    }
+
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
@@ -535,7 +528,8 @@ class OrderDetailViewModel @AssistedInject constructor(
             fetchOrderShippingLabelsAsync(),
             fetchShipmentTrackingAsync(),
             fetchOrderRefundsAsync(),
-            fetchOrderProductsAsync()
+            fetchOrderProductsAsync(),
+            fetchSLCreationEligibilityAsync()
         )
     }
 
@@ -562,7 +556,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
 
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = areShippingLabelRequirementsMet(),
+            isCreateShippingLabelButtonVisible = isShippingPluginReady &&
+                orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId),
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible
