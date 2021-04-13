@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.products.variations
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -85,12 +87,10 @@ class VariationListRepository @Inject constructor(
     /**
      * Fires the request to create a empty variation to a given product
      */
-    suspend fun createEmptyVariation(productID: Long): ProductVariation? =
+    suspend fun createEmptyVariation(product: Product): ProductVariation? =
         productStore
-            .generateEmptyVariation(selectedSite.get(), productID)
-            .takeIf { it.isError.not() }
-            ?.model
-            ?.toAppModel()
+            .generateEmptyVariation(selectedSite.get(), product.toDataModel())
+            .model?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
