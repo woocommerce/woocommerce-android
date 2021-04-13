@@ -319,7 +319,7 @@ data class Product(
     }
 }
 
-fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
+fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductModel {
     fun imagesToJson(): String {
         val jsonArray = JsonArray()
         for (image in images) {
@@ -556,6 +556,6 @@ fun WCProductModel.ProductAttribute.toJson(): JsonObject {
         json.addProperty("id", id)
         json.addProperty("name", name)
         json.addProperty("visible", visible)
-        json.addProperty("options", options.joinToString())
+        json.add("options", JsonArray().apply { options.forEach { add(it) } })
     }
 }
