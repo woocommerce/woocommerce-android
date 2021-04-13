@@ -149,6 +149,11 @@ class VariationDetailViewModel @AssistedInject constructor(
         triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, images, showChooser = true))
     }
 
+    fun onDeleteVariationClicked() {
+        //TODO: trigger track
+        deleteVariation()
+    }
+
     fun isUploadingImages(remoteId: Long) = ProductImagesService.isUploadingForProduct(remoteId)
 
     fun onVariationVisibilitySwitchChanged(isVisible: Boolean) {
@@ -243,6 +248,15 @@ class VariationDetailViewModel @AssistedInject constructor(
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
+    }
+
+    private fun deleteVariation() = launch {
+        viewState.parentProduct?.remoteId?.let { productID ->
+            variationRepository.deleteVariation(
+                productID,
+                viewState.variation.remoteVariationId
+            )
+        }
     }
 
     private fun loadVariation(remoteProductId: Long, remoteVariationId: Long) {
