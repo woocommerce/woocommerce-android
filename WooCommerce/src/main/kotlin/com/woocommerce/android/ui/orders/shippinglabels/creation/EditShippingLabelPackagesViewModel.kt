@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -136,6 +138,8 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     }
 
     fun onPackageSpinnerClicked(position: Int) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_PACKAGE_SPINNER_TAPPED)
+
         triggerEvent(OpenPackageSelectorEvent(position))
     }
 
@@ -146,6 +150,8 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_DONE_BUTTON_TAPPED)
+
         triggerEvent(ExitWithResult(viewState.shippingLabelPackages))
     }
 

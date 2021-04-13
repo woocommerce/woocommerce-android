@@ -71,7 +71,7 @@ class EditShippingLabelPaymentFragment
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                viewModel.saveSettings()
+                viewModel.onDoneButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)

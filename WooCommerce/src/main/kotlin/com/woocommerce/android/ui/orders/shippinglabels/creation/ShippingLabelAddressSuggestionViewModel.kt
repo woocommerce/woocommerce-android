@@ -6,6 +6,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SHIPPING_LABEL_ADDRESS_SUGGESTIONS_EDIT_SELECTED_ADDRESS_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SHIPPING_LABEL_ADDRESS_SUGGESTIONS_USE_SELECTED_ADDRESS_BUTTON_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
@@ -38,15 +41,35 @@ class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
     }
 
     fun onUseSelectedAddressTapped() {
+        trackUseAddressEvent()
+
         viewState.selectedAddress?.let {
             triggerEvent(UseSelectedAddress(it))
         }
     }
 
+    private fun trackUseAddressEvent() {
+        val addressType = if (viewState.selectedAddress == viewState.suggestedAddress) "suggested" else "original"
+        AnalyticsTracker.track(
+            SHIPPING_LABEL_ADDRESS_SUGGESTIONS_USE_SELECTED_ADDRESS_BUTTON_TAPPED,
+            mapOf("type" to addressType)
+        )
+    }
+
     fun onEditSelectedAddressTapped() {
+        trackEditAddressEvent()
+
         viewState.selectedAddress?.let {
             triggerEvent(EditSelectedAddress(it))
         }
+    }
+
+    private fun trackEditAddressEvent() {
+        val addressType = if (viewState.selectedAddress == viewState.suggestedAddress) "suggested" else "original"
+        AnalyticsTracker.track(
+            SHIPPING_LABEL_ADDRESS_SUGGESTIONS_EDIT_SELECTED_ADDRESS_BUTTON_TAPPED,
+            mapOf("type" to addressType)
+        )
     }
 
     fun onSelectedAddressChanged(isSuggestedAddress: Boolean) {
