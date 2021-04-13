@@ -150,7 +150,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     fun onDeleteVariationClicked() {
-        //TODO: trigger track
+        // TODO: trigger track
         deleteVariation()
     }
 
