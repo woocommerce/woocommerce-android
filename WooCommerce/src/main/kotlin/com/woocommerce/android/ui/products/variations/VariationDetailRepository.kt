@@ -100,6 +100,17 @@ class VariationDetailRepository @Inject constructor(
         }
     }
 
+    /**
+     * Fires the request to delete a variation
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun deleteVariation(productID: Long, variationID: Long) =
+        productStore
+            .deleteVariation(selectedSite.get(), productID, variationID)
+            .model?.let { true }
+            ?: false
+
     private fun getCachedVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
         productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
