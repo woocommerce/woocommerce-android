@@ -82,8 +82,10 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         return when (item.itemId) {
             ID_ATTRIBUTE_LIST -> {
                 AttributeListFragmentDirections
-                    .actionAttributeListFragmentToVariationListFragment(isVariationCreation = true)
-                    .run { findNavController().navigateSafely(this) }
+                    .actionAttributeListFragmentToVariationListFragment(
+                        remoteProductId = viewModel.getRemoteProductId(),
+                        isVariationCreation = true
+                    ).run { findNavController().navigateSafely(this) }
                 true
             }
             else -> super.onOptionsItemSelected(item)
