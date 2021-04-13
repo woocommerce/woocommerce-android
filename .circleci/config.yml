@@ -1,11 +1,18 @@
-copy_gradle_properties: &copy_gradle_properties
-  run:
-    name: Setup gradle.properties
-    command: cp gradle.properties-example gradle.properties
-update-gradle-memory:
-  run:
-    name: Update memory setting
-    command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx1536m/" gradle.properties
+commands:
+  copy-gradle-properties:
+    steps:
+      - run:
+          name: Setup gradle.properties
+          command: cp gradle.properties-example gradle.properties
+  update-gradle-memory:
+      parameters:
+        jvmargs:
+          type: string
+          default: "Xmx1536m"
+      steps:
+        - run:
+            name: Update memory setting
+            command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-<< parameters.jvmargs >>/" gradle.properties
 
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
@@ -24,7 +31,7 @@ jobs:
       - checkout
       - android/restore-gradle-cache:
           cache-prefix: lint-cache-v1
-      - <<: *copy_gradle_properties
+      - copy-gradle-properties
       - run:
           name: Checkstyle & klint
           command: ./gradlew --stacktrace checkstyle ciktlint
@@ -53,7 +60,7 @@ jobs:
       - checkout
       - android/restore-gradle-cache:
           cache-prefix: tests-cache-v1
-      - <<: *copy_gradle_properties
+      - copy-gradle-properties
       - run:
           name: Unit tests WooCommerce
           command: ./gradlew --stacktrace testVanillaRelease
@@ -71,7 +78,7 @@ jobs:
       - checkout
       - android/restore-gradle-cache:
           cache-prefix: tests-cache-v1
-      - <<: *copy_gradle_properties
+      - copy-gradle-properties
       - run:
           # The instrumentation tests are not currently used and do tend to get
           # out of date when the UI changes, failing to build.
