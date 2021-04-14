@@ -218,7 +218,7 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 doneOrUpdateMenuItem?.isEnabled = it
             }
             new.variationDeleted?.takeIfNotEqualTo(old?.variationDeleted) {
-                if(it == true) viewModel.onExit()
+                if (it == true) viewModel.onExit()
             }
             new.isDeleteDialogShown?.takeIfNotEqualTo(old?.isDeleteDialogShown) {
                 showProgressDialog(it, R.string.product_delete_dialog_title)
