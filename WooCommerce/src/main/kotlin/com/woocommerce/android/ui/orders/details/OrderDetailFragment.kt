@@ -356,7 +356,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner)
                 R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
             else
-                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m2_wip_message
+                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m3_wip_message
 
             binding.orderDetailShippingLabelsWipCard.initView(
                 getString(wipCardTitleId),
