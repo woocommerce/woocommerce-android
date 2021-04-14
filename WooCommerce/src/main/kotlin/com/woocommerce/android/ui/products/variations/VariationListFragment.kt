@@ -21,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentVariationListBinding
 import com.woocommerce.android.databinding.ProductPropertyWarningLayoutBinding
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -28,6 +29,8 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Companion.KEY_VARIATION_DETAILS_RESULT
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
@@ -149,14 +152,16 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
                 viewModel.refreshVariations(navArgs.remoteProductId)
             }
         }
+
+        binding.firstVariationView.setOnClickListener {
+            viewModel.onCreateVariationRequested()
+        }
     }
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
         viewModel.start(navArgs.remoteProductId, isVariationCreationFlow)
-        binding.firstVariationView.setOnClickListener {
-            viewModel.onCreateVariationRequested()
-        }
     }
 
     private fun setupObservers(viewModel: VariationListViewModel) {
@@ -199,6 +204,12 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
                 is Exit -> activity?.onBackPressed()
             }
         })
+    }
+
+    private fun setupResultHandlers(viewModel: VariationListViewModel) {
+        handleResult<DeletedVariationData>(KEY_VARIATION_DETAILS_RESULT) {
+            viewModel.refreshVariations(it.productID)
+        }
     }
 
     private fun showWarning(isVisible: Boolean) {
