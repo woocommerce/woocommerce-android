@@ -114,6 +114,9 @@ android {
         disable 'InvalidPackage'
         // see https://github.com/woocommerce/woocommerce-android/pull/3699
         disable "NullSafeMutableLiveData"
+        // TODO remove this after we update AGP, it's a bug that has been fixed in 4.1.1 and later
+        // see: https://issuetracker.google.com/issues/168794947
+        disable "ParcelCreator"
     }
 
     testOptions {
