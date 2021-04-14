@@ -740,6 +740,7 @@
     <string name="product_short_description">Short description</string>
     <string name="product_short_description_empty">Brief summary about the product</string>
     <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_delete_dialog_title">Deleting product</string>
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
