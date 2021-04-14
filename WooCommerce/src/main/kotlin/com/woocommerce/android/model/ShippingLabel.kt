@@ -2,8 +2,8 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.ui.orders.shippinglabels.ShipmentTrackingUrls
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import java.math.BigDecimal
 import java.util.Date

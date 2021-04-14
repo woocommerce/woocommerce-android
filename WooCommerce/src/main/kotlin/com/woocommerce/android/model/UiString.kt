@@ -2,7 +2,7 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * [UiString] is a utility sealed class that represents a string to be used in the UI. It allows a string to be
