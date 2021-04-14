@@ -136,10 +136,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 showMarkOrderCompleteButton(it)
             }
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
-                showShippingLabelButton(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()))
+                showShippingLabelButton(it)
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()), false)
+                displayShippingLabelsWIPCard(it, false)
             }
             new.isReprintShippingLabelBannerVisible.takeIfNotEqualTo(old?.isReprintShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it, true)
