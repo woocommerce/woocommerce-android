@@ -68,9 +68,9 @@ internal class CardReaderManagerImpl(
         return connectionManager.discoverReaders(isSimulated)
     }
 
-    override fun connectToReader(cardReader: CardReader) {
+    override suspend fun connectToReader(cardReader: CardReader): Boolean {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        connectionManager.connectToReader(cardReader)
+        return connectionManager.connectToReader(cardReader)
     }
 
     override suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus> =

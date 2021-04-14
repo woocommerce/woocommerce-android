@@ -20,6 +20,8 @@ import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal class ConnectionManager(
     private val terminal: TerminalWrapper,
@@ -46,18 +48,18 @@ internal class ConnectionManager(
             }
         }
 
-    fun connectToReader(cardReader: CardReader) {
-        (cardReader as? CardReaderImpl)?.let {
+    suspend fun connectToReader(cardReader: CardReader) = suspendCoroutine<Boolean> { continuation ->
+        (cardReader as CardReaderImpl).let {
             terminal.connectToReader(it.cardReader, object : ReaderCallback {
                 override fun onFailure(e: TerminalException) {
-                    logWrapper.d("CardReader", "connecting to reader failed: ${e.errorMessage}")
+                    continuation.resume(false)
                 }
 
                 override fun onSuccess(reader: Reader) {
-                    logWrapper.d("CardReader", "connecting to reader succeeded")
+                    continuation.resume(true)
                 }
             })
-        } ?: logWrapper.e("CardReader", "Expected CardReaderImpl but ${cardReader.javaClass} found.")
+        }
     }
 
     override fun onUnexpectedReaderDisconnect(reader: Reader) {
