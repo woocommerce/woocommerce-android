@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardPaymentStatus
+import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
@@ -32,8 +33,6 @@ internal class CardReaderManagerImpl(
 
     override val isInitialized: Boolean
         get() { return terminal.isInitialized() }
-
-    override val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents> = connectionManager.discoveryEvents
 
     override val readerStatus: MutableStateFlow<CardReaderStatus> = connectionManager.readerStatus
 
@@ -64,14 +63,14 @@ internal class CardReaderManagerImpl(
         }
     }
 
-    override fun startDiscovery(isSimulated: Boolean) {
+    override fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        connectionManager.startDiscovery(isSimulated)
+        return connectionManager.discoverReaders(isSimulated)
     }
 
-    override fun connectToReader(readerId: String) {
+    override suspend fun connectToReader(cardReader: CardReader): Boolean {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        connectionManager.connectToReader(readerId)
+        return connectionManager.connectToReader(cardReader)
     }
 
     override suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus> =

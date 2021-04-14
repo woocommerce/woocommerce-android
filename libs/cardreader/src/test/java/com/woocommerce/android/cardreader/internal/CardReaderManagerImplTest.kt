@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -85,13 +86,14 @@ class CardReaderManagerImplTest {
     fun `given terminal not initialized, when reader discovery started, then exception is thrown`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.startDiscovery(true)
+        cardReaderManager.discoverReaders(true)
     }
 
     @Test(expected = IllegalStateException::class)
-    fun `given terminal not initialized, when connecting to reader started, then exception is thrown`() {
-        whenever(terminalWrapper.isInitialized()).thenReturn(false)
+    fun `given terminal not initialized, when connecting to reader started, then exception is thrown`() =
+        runBlockingTest {
+            whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.connectToReader("")
-    }
+            cardReaderManager.connectToReader(mock())
+        }
 }

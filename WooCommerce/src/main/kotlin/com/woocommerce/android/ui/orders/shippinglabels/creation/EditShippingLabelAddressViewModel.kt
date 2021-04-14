@@ -2,10 +2,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
@@ -25,9 +24,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-
-import kotlinx.android.parcel.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
 
@@ -82,6 +83,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked(address: Address) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED)
         if (areRequiredFieldsValid(address)) {
             launch {
                 viewState = viewState.copy(address = address, isValidationProgressDialogVisible = true)
@@ -175,6 +177,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onUseAddressAsIsButtonClicked() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
+
         viewState.address?.let { address ->
             if (areRequiredFieldsValid(address)) {
                 triggerEvent(ExitWithResult(address))
@@ -185,20 +189,28 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onCountrySpinnerTapped() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_COUNTRY_SPINNER_TAPPED)
+
         triggerEvent(ShowCountrySelector(countries, viewState.address?.country))
     }
 
     fun onStateSpinnerTapped() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_STATE_SPINNER_TAPPED)
+
         triggerEvent(ShowStateSelector(states, viewState.address?.state))
     }
 
     fun onOpenMapTapped() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED)
+
         viewState.address?.let { address ->
             triggerEvent(OpenMapWithAddress(address))
         }
     }
 
     fun onContactCustomerTapped() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED)
+
         viewState.address?.phone?.let {
             triggerEvent(DialPhoneNumber(it))
         }

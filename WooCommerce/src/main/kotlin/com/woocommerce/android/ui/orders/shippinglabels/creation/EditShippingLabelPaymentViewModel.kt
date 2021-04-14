@@ -1,10 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
@@ -17,8 +16,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 
 class EditShippingLabelPaymentViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -70,7 +72,9 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
         viewState = viewState.copy(paymentMethods = paymentMethodsModels)
     }
 
-    fun saveSettings() {
+    fun onDoneButtonClicked() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_METHOD_DONE_BUTTON_TAPPED)
+
         launch {
             viewState = viewState.copy(showSavingProgressDialog = true)
             val selectedPaymentMethod = viewState.paymentMethods.find { it.isSelected }!!.paymentMethod

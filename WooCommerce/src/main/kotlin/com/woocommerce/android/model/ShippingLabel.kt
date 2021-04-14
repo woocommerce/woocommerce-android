@@ -2,8 +2,8 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.ui.orders.shippinglabels.ShipmentTrackingUrls
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import java.math.BigDecimal
 import java.util.Date
@@ -20,7 +20,6 @@ data class ShippingLabel(
     val rate: BigDecimal = BigDecimal.ZERO,
     val refundableAmount: BigDecimal = BigDecimal.ZERO,
     val currency: String = "",
-    val paperSize: String = "",
     val productNames: List<String> = emptyList(),
     val productIds: List<Long> = emptyList(),
     val originAddress: Address? = null,
@@ -52,7 +51,6 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
         rate.toBigDecimal(),
         refundableAmount.toBigDecimal(),
         currency,
-        paperSize,
         getProductNameList().map { it.trim() },
         getProductIdsList(),
         getOriginAddress()?.toAppModel(),

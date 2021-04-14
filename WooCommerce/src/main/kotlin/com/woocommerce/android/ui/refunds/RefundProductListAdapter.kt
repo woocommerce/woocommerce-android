@@ -18,7 +18,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundViewHolder
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal

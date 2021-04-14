@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -557,5 +557,6 @@ fun WCProductModel.ProductAttribute.toJson(): JsonObject {
         json.addProperty("name", name)
         json.addProperty("visible", visible)
         json.addProperty("options", options.joinToString())
+        json.addProperty("variation", variation)
     }
 }
