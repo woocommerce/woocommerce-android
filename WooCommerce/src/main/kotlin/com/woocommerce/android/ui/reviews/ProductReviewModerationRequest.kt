@@ -5,7 +5,7 @@ import com.woocommerce.android.model.ActionRequest
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ActionStatus.PENDING
 import com.woocommerce.android.model.ProductReview
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class ProductReviewModerationRequest(

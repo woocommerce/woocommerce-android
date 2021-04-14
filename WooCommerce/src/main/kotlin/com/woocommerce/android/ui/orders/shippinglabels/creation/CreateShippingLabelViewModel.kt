@@ -97,9 +97,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
