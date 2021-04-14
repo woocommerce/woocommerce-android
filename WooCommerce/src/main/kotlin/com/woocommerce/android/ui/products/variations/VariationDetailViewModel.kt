@@ -125,7 +125,7 @@ class VariationDetailViewModel @AssistedInject constructor(
                     }
                 ))
             }
-            viewState.variation != originalVariation -> {
+            viewState.variation != originalVariation && viewState.variationDeleted == false -> {
                 triggerEvent(ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         triggerEvent(Exit)
@@ -251,11 +251,13 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     private fun deleteVariation() = launch {
+        viewState = viewState.copy(isDeleteDialogShown = true)
         viewState.parentProduct?.remoteId?.let { productID ->
-            variationRepository.deleteVariation(
-                productID,
-                viewState.variation.remoteVariationId
-            )
+            variationRepository.deleteVariation(productID, viewState.variation.remoteVariationId)
+                .takeIf { it == true }
+                ?.let { viewState = viewState.copy(variationDeleted = true, isDeleteDialogShown = false) }
+                ?: viewState.copy(variationDeleted = false, isDeleteDialogShown = false)
+                    .let { viewState = it }
         }
     }
 
@@ -387,6 +389,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         val isDoneButtonEnabled: Boolean? = null,
         val isSkeletonShown: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
+        val isDeleteDialogShown: Boolean? = null,
         val weightWithUnits: String? = null,
         val sizeWithUnits: String? = null,
         val priceWithCurrency: String? = null,
@@ -395,7 +398,8 @@ class VariationDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val shippingClass: String? = null,
         val parentProduct: Product? = null,
-        val uploadingImageUri: Uri? = null
+        val uploadingImageUri: Uri? = null,
+        val variationDeleted: Boolean? = null
     ) : Parcelable
 
     @AssistedFactory
