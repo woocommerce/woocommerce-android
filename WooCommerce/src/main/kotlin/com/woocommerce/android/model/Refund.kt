@@ -7,6 +7,7 @@ import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundShippingLine
 import java.math.RoundingMode.HALF_UP
 import java.math.BigDecimal
 import java.util.Date
@@ -18,7 +19,8 @@ data class Refund(
     val amount: BigDecimal,
     val reason: String?,
     val automaticGatewayRefund: Boolean,
-    val items: List<Item>
+    val items: List<Item>,
+    val shippingLines: List<ShippingLine>
 ) : Parcelable {
     @Parcelize
     data class Item(
@@ -36,6 +38,14 @@ data class Refund(
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
     }
+    @Parcelize
+    data class ShippingLine(
+        val itemId: Long,
+        val methodId: String,
+        val methodTitle: String,
+        val totalTax: BigDecimal,
+        val total: BigDecimal
+    ) : Parcelable
 
     fun getRefundMethod(
         paymentMethodTitle: String,
@@ -57,7 +67,8 @@ fun WCRefundModel.toAppModel(): Refund {
             amount.roundError(),
             reason,
             automaticGatewayRefund,
-            items.map { it.toAppModel() }
+            items.map { it.toAppModel() },
+            shippingLineItems.map { it.toAppModel() }
     )
 }
 
@@ -75,6 +86,46 @@ fun WCRefundItem.toAppModel(): Refund.Item {
             price?.roundError() ?: BigDecimal.ZERO
     )
 }
+
+fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
+    return Refund.ShippingLine(
+        itemId = getRefundedShippingLineId(),
+        methodId = methodId ?: "",
+        methodTitle = methodTitle ?: "",
+        totalTax = -totalTax.roundError(),      // WCRefundShippineLine.totalTax is NEGATIVE
+        total = (total).roundError()            // WCREfundShippingLine.total is NEGATIVE
+    )
+}
+
+/**
+ * In a "WCRefundShippingLine" object, the id of the refunded shipping line is buried in "metaData" property like so:
+ *
+ * -------------------------------------------
+ *
+ * meta_data: [
+ *     0: {
+ *         display_key: "_refunded_item_id"
+ *         display_value: "72"
+ *         id: 591                         <-- Not what we want. This is the metadata id.
+ *         key: "_refunded_item_id"
+ *         value: "72"                     <-- This is the specific shipping line id that we want.
+ *         }
+ *    ]
+ *
+ * -------------------------------------------
+ *
+ * This method extracts that `value` property and returns it, or returns -1 if it can't find it.
+ */
+fun WCRefundShippingLine.getRefundedShippingLineId(): Long {
+    if (this.metaData != null) {
+        val resultJson = this.metaData!!.get(0).asJsonObject
+        if(resultJson.has("value") && resultJson.get("value").isJsonPrimitive ) {
+            return resultJson.get("value").asLong
+        }
+    }
+    return -1
+}
+
 
 fun List<Refund>.hasNonRefundedProducts(products: List<Order.Item>) =
     getMaxRefundQuantities(products).values.any { it > 0 }
