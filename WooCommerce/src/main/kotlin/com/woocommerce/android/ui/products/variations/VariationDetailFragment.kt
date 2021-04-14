@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -207,12 +208,20 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 }
             }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                showProgressDialog(it, R.string.product_update_dialog_title)
+            }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) {
                 doneOrUpdateMenuItem?.isVisible = it
             }
             new.isDoneButtonEnabled?.takeIfNotEqualTo(old?.isDoneButtonEnabled) {
                 doneOrUpdateMenuItem?.isEnabled = it
+            }
+            new.variationDeleted?.takeIfNotEqualTo(old?.variationDeleted) {
+                if(it == true) viewModel.onExit()
+            }
+            new.isDeleteDialogShown?.takeIfNotEqualTo(old?.isDeleteDialogShown) {
+                showProgressDialog(it, R.string.product_delete_dialog_title)
             }
         }
 
@@ -262,11 +271,11 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
         }
     }
 
-    private fun showProgressDialog(show: Boolean) {
+    private fun showProgressDialog(show: Boolean, @StringRes title: Int) {
         if (show) {
             hideProgressDialog()
             progressDialog = CustomProgressDialog.show(
-                getString(R.string.product_update_dialog_title),
+                getString(title),
                 getString(R.string.product_update_dialog_message)
             ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
             progressDialog?.isCancelable = false
