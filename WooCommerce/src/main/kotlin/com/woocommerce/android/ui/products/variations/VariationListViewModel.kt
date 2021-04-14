@@ -91,8 +91,10 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     private fun createEmptyVariation(product: Product?) = launch {
+        viewState.copy(isSkeletonShown = true).let { viewState = it }
         product?.apply { variationListRepository.createEmptyVariation(this) }
             ?.also { fetchVariations(it.remoteId) }
+            ?: viewState.copy(isSkeletonShown = false).let { viewState = it }
     }
 
     private fun loadVariations(remoteProductId: Long, loadMore: Boolean = false) {
