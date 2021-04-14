@@ -132,6 +132,7 @@ class VariationListViewModel @AssistedInject constructor(
             val fetchedVariations = variationListRepository.fetchProductVariations(remoteProductId, loadMore)
             if (fetchedVariations.isNullOrEmpty()) {
                 if (!loadMore) {
+                    _variationList.value = emptyList()
                     viewState = viewState.copy(isEmptyViewVisible = true)
                 }
             } else {
