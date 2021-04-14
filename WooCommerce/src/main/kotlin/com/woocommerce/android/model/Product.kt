@@ -547,4 +547,3 @@ fun MediaModel.toAppModel(): Product.Image {
  */
 fun WCProductModel.toProductReviewProductModel() =
     ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
-}
