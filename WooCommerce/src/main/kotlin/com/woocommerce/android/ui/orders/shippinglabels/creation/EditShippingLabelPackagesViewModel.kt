@@ -52,11 +52,6 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         parameters.weightUnit ?: ""
     }
 
-    /**
-     * Track the packages where the user manually edited the weight, to avoid changing it if the box is changed
-     */
-    private val packagesWithEditedWeight = mutableSetOf<String>()
-
     init {
         initState()
     }
@@ -140,8 +135,10 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     fun onWeightEdited(position: Int, weight: Float) {
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = packages[position].copy(weight = weight)
-        viewState = viewState.copy(shippingLabelPackages = packages)
-        packagesWithEditedWeight.add(packages[position].packageId)
+        viewState = viewState.copy(
+            shippingLabelPackages = packages,
+            packagesWithEditedWeight = viewState.packagesWithEditedWeight + packages[position].packageId
+        )
     }
 
     fun onPackageSpinnerClicked(position: Int) {
@@ -151,7 +148,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = with(packages[position]) {
-            val weight = if (!packagesWithEditedWeight.contains(packageId)) {
+            val weight = if (!viewState.packagesWithEditedWeight.contains(packageId)) {
                 items.sumByFloat { it.weight } + selectedPackage.boxWeight
             } else {
                 weight
@@ -197,7 +194,8 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val shippingLabelPackages: List<ShippingLabelPackage> = emptyList(),
-        val showSkeletonView: Boolean = false
+        val showSkeletonView: Boolean = false,
+        val packagesWithEditedWeight: Set<String> = setOf()
     ) : Parcelable {
         val isDataValid: Boolean
             get() = shippingLabelPackages.isNotEmpty() &&
