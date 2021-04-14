@@ -36,6 +36,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -125,7 +126,7 @@ class VariationDetailViewModel @AssistedInject constructor(
                     }
                 ))
             }
-            viewState.variation != originalVariation && viewState.variationDeleted == false -> {
+            viewState.variation != originalVariation -> {
                 triggerEvent(ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         triggerEvent(Exit)
@@ -254,10 +255,17 @@ class VariationDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(isDeleteDialogShown = true)
         viewState.parentProduct?.remoteId?.let { productID ->
             variationRepository.deleteVariation(productID, viewState.variation.remoteVariationId)
-                .takeIf { it == true }
-                ?.let { viewState = viewState.copy(variationDeleted = true, isDeleteDialogShown = false) }
-                ?: viewState.copy(variationDeleted = false, isDeleteDialogShown = false)
-                    .let { viewState = it }
+                .also {
+                    if (it) triggerEvent(
+                        ExitWithResult(
+                            DeletedVariationData(
+                                productID,
+                                viewState.variation.remoteVariationId
+                            )
+                        )
+                    )
+                    viewState = viewState.copy(isDeleteDialogShown = false)
+                }
         }
     }
 
@@ -398,8 +406,13 @@ class VariationDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val shippingClass: String? = null,
         val parentProduct: Product? = null,
-        val uploadingImageUri: Uri? = null,
-        val variationDeleted: Boolean? = null
+        val uploadingImageUri: Uri? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class DeletedVariationData(
+        val productID: Long,
+        val variationID: Long
     ) : Parcelable
 
     @AssistedFactory
