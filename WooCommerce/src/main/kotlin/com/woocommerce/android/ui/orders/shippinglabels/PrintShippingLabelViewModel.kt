@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import java.io.File
+import java.util.Date
 import java.util.Locale
 
 class PrintShippingLabelViewModel @AssistedInject constructor(
@@ -33,8 +35,16 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
     private val arguments: PrintShippingLabelFragmentArgs by savedState.navArgs()
+    private val label
+        get() = repository.getShippingLabelByOrderIdAndLabelId(
+            orderId = arguments.orderId,
+            shippingLabelId = arguments.shippingLabelId
+        )
 
-    val viewStateData = LiveDataDelegate(savedState, PrintShippingLabelViewState())
+    val viewStateData = LiveDataDelegate(savedState, PrintShippingLabelViewState(
+        isLabelExpired = label?.isAnonymized == true ||
+            label?.expiryDate?.let { Date().after(it) } ?: false
+    ))
     private var viewState by viewStateData
 
     fun onPrintShippingLabelInfoSelected() {
@@ -109,6 +119,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         val paperSize: ShippingLabelPaperSize = ShippingLabelPaperSize.LABEL,
         val isProgressDialogShown: Boolean? = null,
         val previewShippingLabel: String? = null,
+        val isLabelExpired: Boolean? = null,
         val tempFile: File? = null
     ) : Parcelable
 
