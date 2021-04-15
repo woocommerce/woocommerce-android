@@ -22,12 +22,14 @@ import com.woocommerce.android.databinding.FragmentVariationListBinding
 import com.woocommerce.android.databinding.ProductPropertyWarningLayoutBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Companion.KEY_VARIATION_DETAILS_RESULT
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
@@ -36,6 +38,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -43,9 +46,11 @@ import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
+    BackPressListener,
     OnLoadMoreListener {
     companion object {
         const val TAG: String = "VariationListFragment"
+        const val KEY_VARIATION_LIST_RESULT = "key_variation_list_result"
         private const val LIST_STATE_KEY = "list_state"
         private const val ID_EDIT_ATTRIBUTES = 1
     }
@@ -201,6 +206,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
                 is ShowAttributeList -> openAttributeList()
                 is ShowAddAttributeView -> openAddAttributeView()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressed()
             }
         })
@@ -264,5 +270,10 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         }
 
         adapter.setVariationList(variations)
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onExit()
+        return false
     }
 }
