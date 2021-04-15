@@ -22,6 +22,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -90,6 +91,10 @@ class VariationListViewModel @AssistedInject constructor(
         triggerEvent(ShowAddAttributeView)
     }
 
+    fun onExit() {
+        triggerEvent(ExitWithResult(VariationListData(viewState.parentProduct?.numVariations)))
+    }
+
     private fun createEmptyVariation(product: Product?) = launch {
         viewState.copy(isSkeletonShown = true).let { viewState = it }
         product?.apply { variationListRepository.createEmptyVariation(this) }
@@ -144,9 +149,9 @@ class VariationListViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.offline_error))
         }
         viewState = viewState.copy(
-                isSkeletonShown = false,
-                isRefreshing = false,
-                isLoadingMore = false
+            isSkeletonShown = false,
+            isRefreshing = false,
+            isLoadingMore = false
         )
     }
 
@@ -175,6 +180,11 @@ class VariationListViewModel @AssistedInject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val isWarningVisible: Boolean? = null,
         val parentProduct: Product? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class VariationListData(
+        val currentVariationAmount: Int? = null
     ) : Parcelable
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
