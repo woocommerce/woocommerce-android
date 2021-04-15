@@ -399,6 +399,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(AddProductDownloadableFile)
     }
 
+    fun onVariationAmountReceived(variationAmount: Int) {
+        viewState.storedProduct
+            ?.takeIf { it.numVariations != variationAmount }
+            ?.let { updateProductDraft(numVariation = variationAmount) }
+    }
+
     fun uploadDownloadableFile(uri: Uri) {
         launch {
             viewState = viewState.copy(isUploadingDownloadableFile = true)
@@ -709,7 +715,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         downloadLimit: Long? = null,
         downloadExpiry: Int? = null,
         isDownloadable: Boolean? = null,
-        attributes: List<ProductAttribute>? = null
+        attributes: List<ProductAttribute>? = null,
+        numVariation: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val updatedProduct = product.copy(
@@ -762,7 +769,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     downloadLimit = downloadLimit ?: product.downloadLimit,
                     downloadExpiry = downloadExpiry ?: product.downloadExpiry,
                     isDownloadable = isDownloadable ?: product.isDownloadable,
-                    attributes = attributes ?: product.attributes
+                    attributes = attributes ?: product.attributes,
+                    numVariations = numVariation ?: product.numVariations
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -1865,7 +1873,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val draftPassword: String? = null,
         val showBottomSheetButton: Boolean? = null,
         val isConfirmingTrash: Boolean = false,
-        val isUploadingDownloadableFile: Boolean? = null
+        val isUploadingDownloadableFile: Boolean? = null,
+        val isVariationListEmpty: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
