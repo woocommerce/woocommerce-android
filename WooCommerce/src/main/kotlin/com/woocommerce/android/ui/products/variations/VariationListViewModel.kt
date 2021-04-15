@@ -62,6 +62,15 @@ class VariationListViewModel @AssistedInject constructor(
         }
     }
 
+    fun refreshParentProduct(productID: Long) = launch {
+        viewState.copy(isSkeletonShown = true).let { viewState = it }
+        productRepository.fetchProduct(productID)
+            ?.let { viewState.copy(parentProduct = it) }
+            ?.let { viewState = it }
+            ?.also { refreshVariations(productID) }
+            ?: viewState.copy(isSkeletonShown = false).let { viewState = it }
+    }
+
     fun refreshVariations(remoteProductId: Long) {
         viewState = viewState.copy(isRefreshing = true)
         loadVariations(remoteProductId)
@@ -98,7 +107,7 @@ class VariationListViewModel @AssistedInject constructor(
     private fun createEmptyVariation(product: Product?) = launch {
         viewState.copy(isSkeletonShown = true).let { viewState = it }
         product?.apply { variationListRepository.createEmptyVariation(this) }
-            ?.also { fetchVariations(it.remoteId) }
+            ?.also { refreshParentProduct(product.remoteId) }
             ?: viewState.copy(isSkeletonShown = false).let { viewState = it }
     }
 
