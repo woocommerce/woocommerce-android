@@ -1,11 +1,16 @@
 package com.woocommerce.android.ui.products.viewholders
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
 open class ProductPropertyViewHolder(
-    parent: ViewGroup,
-    @LayoutRes layout: Int
-) : ViewHolder(LayoutInflater.from(parent.context).inflate(layout, parent, false))
+    view: View
+) : ViewHolder(view) {
+    constructor(
+        parent: ViewGroup,
+        @LayoutRes layout: Int
+    ) : this(LayoutInflater.from(parent.context).inflate(layout, parent, false))
+}

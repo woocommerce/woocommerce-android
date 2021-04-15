@@ -26,7 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_200"
         android:layout_marginTop="@dimen/major_100"
-        android:text="@string/variation_detail_price_warning_title"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/warning_message"
         app:layout_constraintEnd_toEndOf="parent"

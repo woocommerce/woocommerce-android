@@ -30,6 +30,12 @@ class WCWarningBanner @JvmOverloads constructor(
             binding.warningMessage.isVisible = !value.isNullOrEmpty()
         }
 
+    var isDividerVisible: Boolean
+        get() = binding.warningDivider.isVisible
+        set(value) {
+            binding.warningDivider.isVisible = value
+        }
+
     init {
         setBackgroundResource(R.color.warning_banner_background_color)
         if (attrs != null) {
@@ -37,6 +43,9 @@ class WCWarningBanner @JvmOverloads constructor(
                 title = it.getString(R.styleable.WCWarningBanner_title)
                 message = it.getString(R.styleable.WCWarningBanner_message)
             }
+        } else {
+            title = null
+            message = null
         }
     }
 }
