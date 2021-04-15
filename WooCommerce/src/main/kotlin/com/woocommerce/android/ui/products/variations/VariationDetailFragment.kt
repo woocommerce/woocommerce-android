@@ -53,7 +53,7 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
     OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
-        const val KEY_VARIATION_DETAILS_RESULT = "key_variation_deleted_result"
+        const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
