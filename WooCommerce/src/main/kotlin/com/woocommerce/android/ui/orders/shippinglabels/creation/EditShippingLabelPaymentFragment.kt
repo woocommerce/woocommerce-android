@@ -104,7 +104,7 @@ class EditShippingLabelPaymentFragment
                 binding.emailReceiptsCheckbox.isChecked = it
             }
             new.storeOwnerDetails?.takeIfNotEqualTo(old?.storeOwnerDetails) { details ->
-                binding.editWarningBanner.text = getString(
+                binding.editWarningBanner.message = getString(
                     R.string.shipping_label_payments_cant_edit_warning,
                     details.name,
                     details.wpcomUserName
