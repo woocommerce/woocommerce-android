@@ -75,7 +75,7 @@ class ShippingLabelRefundViewModel @AssistedInject constructor(
         @IgnoredOnParcel
         val isRefundExpired: Boolean
             get() = shippingLabel?.isAnonymized == true ||
-                shippingLabel?.refundExpiryDate?.let { Date().before(it) } ?: false
+                shippingLabel?.refundExpiryDate?.let { Date().after(it) } ?: false
     }
 
     @AssistedFactory
