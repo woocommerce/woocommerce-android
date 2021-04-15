@@ -88,7 +88,7 @@ class VariationDetailRepository @Inject constructor(
                 continuationUpdateVariation = it
 
                 val variation = updatedVariation.toDataModel(
-                    getCachedVariation(
+                    getCachedWCVariation(
                         updatedVariation.remoteProductId,
                         updatedVariation.remoteVariationId
                     )
@@ -102,11 +102,18 @@ class VariationDetailRepository @Inject constructor(
         }
     }
 
-    private fun getCachedVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
+    private fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
         productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
     fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
-        getCachedVariation(remoteProductId, remoteVariationId)?.toAppModel()
+        getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
+
+    /**
+     * Returns the cached variation if it exists, otherwise fetches it from the backend
+     */
+    suspend fun getOrFetchVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
+        getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
+            ?: fetchVariation(remoteProductId, remoteVariationId)
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
