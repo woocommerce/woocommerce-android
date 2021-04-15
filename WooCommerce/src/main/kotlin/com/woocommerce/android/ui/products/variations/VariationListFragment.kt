@@ -58,7 +58,6 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar

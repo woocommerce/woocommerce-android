@@ -2,10 +2,8 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo

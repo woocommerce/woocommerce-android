@@ -135,7 +135,6 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
         doReturn(shippingLabel.copy(status = "ANONYMIZED"))
             .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
 
-
         var viewState: ShippingLabelRefundViewState? = null
         viewModel.shippingLabelRefundViewStateData.observeForever { _, new -> viewState = new }
 
@@ -149,7 +148,6 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
         doReturn(shippingLabel.copy(createdDate = Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(31))))
             .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
 
-
         var viewState: ShippingLabelRefundViewState? = null
         viewModel.shippingLabelRefundViewStateData.observeForever { _, new -> viewState = new }
 
@@ -162,7 +160,6 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     fun `enable refund if label is recent than 30 days`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(shippingLabel.copy(createdDate = Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(29))))
             .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
-
 
         var viewState: ShippingLabelRefundViewState? = null
         viewModel.shippingLabelRefundViewStateData.observeForever { _, new -> viewState = new }
