@@ -65,10 +65,16 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     private val navArgs: VariationDetailFragmentArgs by savedState.navArgs()
-    private var originalVariation: ProductVariation = variationRepository.getVariation(
-        navArgs.remoteProductId,
-        navArgs.remoteVariationId
-    )!!
+
+    private var originalVariation: ProductVariation? = null
+        get() {
+            if (field == null) {
+                launch {
+                    field = variationRepository.getOrFetchVariation(navArgs.remoteProductId, navArgs.remoteVariationId)
+                }
+            }
+            return field
+        }
         set(value) {
             // Update the cards (and the original SKU, so that that the "SKU error taken" is not shown unnecessarily
             if (field != value) {
