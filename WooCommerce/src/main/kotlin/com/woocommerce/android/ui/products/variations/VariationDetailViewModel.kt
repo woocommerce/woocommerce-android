@@ -5,9 +5,6 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -41,8 +38,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.parcelize.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -69,9 +69,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     private var originalVariation: ProductVariation? = null
         get() {
             if (field == null) {
-                launch {
-                    field = variationRepository.getOrFetchVariation(navArgs.remoteProductId, navArgs.remoteVariationId)
-                }
+                loadVariation(navArgs.remoteProductId, navArgs.remoteVariationId)
             }
             return field
         }
@@ -79,7 +77,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             // Update the cards (and the original SKU, so that that the "SKU error taken" is not shown unnecessarily
             if (field != value) {
                 field = value
-                updateCards(viewState.variation)
+                updateCards(viewState.variation!!)
             }
         }
 
@@ -88,9 +86,11 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the variation detail screen
-    val variationViewStateData = LiveDataDelegate(savedState, VariationViewState(originalVariation)) { old, new ->
+    val variationViewStateData = LiveDataDelegate(savedState, VariationViewState()) { old, new ->
         if (old?.variation != new.variation) {
-            updateCards(new.variation)
+            new.variation?.let {
+                updateCards(it)
+            }
         }
     }
     private var viewState by variationViewStateData
@@ -110,8 +110,10 @@ class VariationDetailViewModel @AssistedInject constructor(
     init {
         EventBus.getDefault().register(this)
 
-        viewState = viewState.copy(parentProduct = productRepository.getProduct(viewState.variation.remoteProductId))
-        showVariation(originalVariation.copy())
+        viewState = viewState.copy(parentProduct = productRepository.getProduct(navArgs.remoteProductId))
+        originalVariation?.let {
+            showVariation(it.copy())
+        }
     }
 
     /**
@@ -125,7 +127,7 @@ class VariationDetailViewModel @AssistedInject constructor(
 
     fun onExit() {
         when {
-            ProductImagesService.isUploadingForProduct(viewState.variation.remoteVariationId) -> {
+            isUploadingImages(navArgs.remoteVariationId) -> {
                 // images can't be assigned to the product until they finish uploading so ask whether to discard images.
                 triggerEvent(ShowDialog.buildDiscardDialogEvent(
                     messageId = string.discard_images_message,
@@ -149,13 +151,13 @@ class VariationDetailViewModel @AssistedInject constructor(
 
     fun onImageClicked(image: Image) {
         AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-        triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, listOf(image)))
+        triggerEvent(ViewImageGallery(navArgs.remoteVariationId, listOf(image)))
     }
 
     fun onAddImageButtonClicked() {
         AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-        val images = viewState.variation.image?.let { listOf(it) } ?: emptyList()
-        triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, images, showChooser = true))
+        val images = viewState.variation?.image?.let { listOf(it) } ?: emptyList()
+        triggerEvent(ViewImageGallery(navArgs.remoteVariationId, images, showChooser = true))
     }
 
     fun isUploadingImages(remoteId: Long) = ProductImagesService.isUploadingForProduct(remoteId)
@@ -172,8 +174,8 @@ class VariationDetailViewModel @AssistedInject constructor(
         image: Image? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
-        saleEndDate: Date? = viewState.variation.saleEndDateGmt,
-        saleStartDate: Date? = viewState.variation.saleStartDateGmt,
+        saleEndDate: Date? = viewState.variation?.saleEndDateGmt,
+        saleStartDate: Date? = viewState.variation?.saleStartDateGmt,
         isSaleScheduled: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         backorderStatus: ProductBackorderStatus? = null,
@@ -193,40 +195,46 @@ class VariationDetailViewModel @AssistedInject constructor(
         height: Float? = null,
         weight: Float? = null
     ) {
-        showVariation(viewState.variation.copy(
-            remoteProductId = remoteProductId ?: viewState.variation.remoteProductId,
-            remoteVariationId = remoteVariationId ?: viewState.variation.remoteVariationId,
-            sku = sku ?: viewState.variation.sku,
-            image = image ?: viewState.variation.image,
-            regularPrice = regularPrice ?: viewState.variation.regularPrice,
-            salePrice = salePrice ?: viewState.variation.salePrice,
-            saleEndDateGmt = saleEndDate,
-            saleStartDateGmt = saleStartDate,
-            isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
-            stockStatus = stockStatus ?: viewState.variation.stockStatus,
-            backorderStatus = backorderStatus ?: viewState.variation.backorderStatus,
-            stockQuantity = stockQuantity ?: viewState.variation.stockQuantity,
-            options = options ?: viewState.variation.options,
-            isPurchasable = isPurchasable ?: viewState.variation.isPurchasable,
-            isVirtual = isVirtual ?: viewState.variation.isVirtual,
-            isDownloadable = isDownloadable ?: viewState.variation.isDownloadable,
-            description = description ?: viewState.variation.description,
-            isVisible = isVisible ?: viewState.variation.isVisible,
-            isStockManaged = isStockManaged ?: viewState.variation.isStockManaged,
-            shippingClass = shippingClass ?: viewState.variation.shippingClass,
-            shippingClassId = shippingClassId ?: viewState.variation.shippingClassId,
-            attributes = attributes ?: viewState.variation.attributes,
-            length = length ?: viewState.variation.length,
-            width = width ?: viewState.variation.width,
-            height = height ?: viewState.variation.height,
-            weight = weight ?: viewState.variation.weight
-        ))
+        viewState.variation?.let { variation ->
+            showVariation(
+                variation.copy(
+                    remoteProductId = remoteProductId ?: variation.remoteProductId,
+                    remoteVariationId = remoteVariationId ?: variation.remoteVariationId,
+                    sku = sku ?: variation.sku,
+                    image = image ?: variation.image,
+                    regularPrice = regularPrice ?: variation.regularPrice,
+                    salePrice = salePrice ?: variation.salePrice,
+                    saleEndDateGmt = saleEndDate,
+                    saleStartDateGmt = saleStartDate,
+                    isSaleScheduled = isSaleScheduled ?: variation.isSaleScheduled,
+                    stockStatus = stockStatus ?: variation.stockStatus,
+                    backorderStatus = backorderStatus ?: variation.backorderStatus,
+                    stockQuantity = stockQuantity ?: variation.stockQuantity,
+                    options = options ?: variation.options,
+                    isPurchasable = isPurchasable ?: variation.isPurchasable,
+                    isVirtual = isVirtual ?: variation.isVirtual,
+                    isDownloadable = isDownloadable ?: variation.isDownloadable,
+                    description = description ?: variation.description,
+                    isVisible = isVisible ?: variation.isVisible,
+                    isStockManaged = isStockManaged ?: variation.isStockManaged,
+                    shippingClass = shippingClass ?: variation.shippingClass,
+                    shippingClassId = shippingClassId ?: variation.shippingClassId,
+                    attributes = attributes ?: variation.attributes,
+                    length = length ?: variation.length,
+                    width = width ?: variation.width,
+                    height = height ?: variation.height,
+                    weight = weight ?: variation.weight
+                )
+            )
+        }
     }
 
     fun onUpdateButtonClicked() {
-        viewState = viewState.copy(isProgressDialogShown = true)
-        launch {
-            updateVariation(viewState.variation)
+        viewState.variation?.let {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            launch {
+                updateVariation(it)
+            }
         }
     }
 
@@ -265,7 +273,9 @@ class VariationDetailViewModel @AssistedInject constructor(
                 fetchVariation(remoteProductId, remoteVariationId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
-            showVariation(originalVariation)
+            originalVariation?.let {
+                showVariation(it)
+            }
         }
     }
 
@@ -297,7 +307,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             }
             _variationDetailCards.value = cardBuilder.buildPropertyCards(
                 variation,
-                originalVariation.sku,
+                variation.sku,
                 viewState.parentProduct
             )
             viewState = viewState.copy(isSkeletonShown = false)
@@ -313,7 +323,7 @@ class VariationDetailViewModel @AssistedInject constructor(
 
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-            ?: viewState.variation.shippingClass ?: ""
+            ?: viewState.variation?.shippingClass ?: ""
 
     /**
      * Checks whether product images are uploading and ensures the view state reflects any currently
@@ -368,16 +378,18 @@ class VariationDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
             event.media?.let { media ->
-                val variation = viewState.variation.copy(image = media.toAppModel())
-                showVariation(variation)
+                viewState.variation?.let {
+                    val variation = it.copy(image = media.toAppModel())
+                    showVariation(variation)
+                }
             }
         }
-        checkImageUploads(viewState.variation.remoteVariationId)
+        checkImageUploads(navArgs.remoteVariationId)
     }
 
     @Parcelize
     data class VariationViewState(
-        val variation: ProductVariation,
+        val variation: ProductVariation? = null,
         val isDoneButtonVisible: Boolean? = null,
         val isDoneButtonEnabled: Boolean? = null,
         val isSkeletonShown: Boolean? = null,

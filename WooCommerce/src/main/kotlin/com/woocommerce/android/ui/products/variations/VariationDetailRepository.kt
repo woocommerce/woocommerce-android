@@ -108,13 +108,6 @@ class VariationDetailRepository @Inject constructor(
     fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
         getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
 
-    /**
-     * Returns the cached variation if it exists, otherwise fetches it from the backend
-     */
-    suspend fun getOrFetchVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
-        getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
-            ?: fetchVariation(remoteProductId, remoteVariationId)
-
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onVariationChanged(event: OnVariationChanged) {

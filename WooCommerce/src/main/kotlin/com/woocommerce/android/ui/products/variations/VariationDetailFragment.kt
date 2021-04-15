@@ -187,12 +187,16 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.variation.takeIfNotEqualTo(old?.variation) {
-                variationName = new.variation.getName(new.parentProduct)
-                showVariationDetails(it)
+            new.variation.takeIfNotEqualTo(old?.variation) { newVariation ->
+                newVariation?.let {
+                    variationName = it.getName(new.parentProduct)
+                    showVariationDetails(it)
+                }
             }
             new.parentProduct.takeIfNotEqualTo(old?.parentProduct) { product ->
-                variationName = new.variation.getName(product)
+                new.variation?.let {
+                    variationName = it.getName(product)
+                }
             }
             new.uploadingImageUri.takeIfNotEqualTo(old?.uploadingImageUri) {
                 if (it != null) {
