@@ -75,9 +75,9 @@ class VariationDetailViewModel @AssistedInject constructor(
         }
         set(value) {
             // Update the cards (and the original SKU, so that that the "SKU error taken" is not shown unnecessarily
-            if (field != value) {
+            if (field != value && value != null) {
                 field = value
-                updateCards(viewState.variation!!)
+                updateCards(value)
             }
         }
 
@@ -273,8 +273,13 @@ class VariationDetailViewModel @AssistedInject constructor(
                 fetchVariation(remoteProductId, remoteVariationId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
-            originalVariation?.let {
-                showVariation(it)
+
+            // show the variation if we were able to get it, otherwise exit
+            if (originalVariation != null) {
+                showVariation(originalVariation!!)
+            } else {
+                triggerEvent(ShowSnackbar(string.variation_detail_fetch_variation_error))
+                triggerEvent(Exit)
             }
         }
     }
@@ -282,14 +287,9 @@ class VariationDetailViewModel @AssistedInject constructor(
     private suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long) {
         if (networkStatus.isConnected()) {
             val fetchedVariation = variationRepository.fetchVariation(remoteProductId, remoteVariationId)
-            if (fetchedVariation == null) {
-                triggerEvent(ShowSnackbar(string.variation_detail_fetch_variation_error))
-            } else {
-                originalVariation = fetchedVariation
-            }
+            originalVariation = fetchedVariation
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
-            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 
