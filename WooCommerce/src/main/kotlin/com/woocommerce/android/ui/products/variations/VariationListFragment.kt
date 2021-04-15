@@ -214,7 +214,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
 
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
         handleResult<DeletedVariationData>(KEY_VARIATION_DETAILS_RESULT) {
-            viewModel.refreshVariations(it.productID)
+            viewModel.refreshParentProduct(it.productID)
         }
     }
 
