@@ -17,7 +17,7 @@ object PhoneUtils {
                 @Suppress("DEPRECATION")
                 PhoneNumberUtils.formatNumber(number)
             }
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             WooLog.d(T.UTILS, "Unable to format phone number: $number")
             number
         }
