@@ -119,13 +119,12 @@ fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
 fun WCRefundShippingLine.getRefundedShippingLineId(): Long {
     if (this.metaData != null) {
         val resultJson = this.metaData!!.get(0).asJsonObject
-        if(resultJson.has("value") && resultJson.get("value").isJsonPrimitive ) {
+        if (resultJson.has("value") && resultJson.get("value").isJsonPrimitive) {
             return resultJson.get("value").asLong
         }
     }
     return -1
 }
-
 
 fun List<Refund>.hasNonRefundedProducts(products: List<Order.Item>) =
     getMaxRefundQuantities(products).values.any { it > 0 }
