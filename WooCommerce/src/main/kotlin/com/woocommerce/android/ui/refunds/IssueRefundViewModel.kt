@@ -121,7 +121,6 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     private val order: Order
     private val refunds: List<Refund>
-    private val selectedShippingLineIds: List<Long>
 
     private val maxRefund: BigDecimal
     private val maxQuantities: Map<Long, Int>
@@ -142,8 +141,6 @@ class IssueRefundViewModel @AssistedInject constructor(
     init {
         order = loadOrder(arguments.orderId)
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
-        selectedShippingLineIds = order.shippingLines.map { it.itemId }
-
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
         maxQuantities = refunds.getMaxRefundQuantities(order.items)
@@ -220,7 +217,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                     isShippingRefundAvailable = order.shippingTotal > BigDecimal.ZERO,
                     isFeesVisible = order.feesTotal > BigDecimal.ZERO,
                     isNextButtonEnabled = false,
-                    selectedShippingLines = selectedShippingLineIds,
                     formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
                     refundNotice = getRefundNotice()
             )
@@ -364,9 +360,11 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 if (! refundItems.value.isNullOrEmpty()) {
                                     refundItems.value!!.forEach { allItems.add(it.toDataModel()) }
                                 }
-                                if (! refundShippingLines.value.isNullOrEmpty()) {
-                                    refundShippingLines.value!!.forEach { allItems.add(it.toDataModel()) }
+
+                                val selectedShipping = refundShippingLines.value?.filter {
+                                    refundByItemsState.selectedShippingLines!!.contains(it.shippingLine.itemId)
                                 }
+                                selectedShipping?.forEach { allItems.add(it.toDataModel()) }
 
                                 refundStore.createItemsRefund(
                                         selectedSite.get(),
@@ -606,20 +604,23 @@ class IssueRefundViewModel @AssistedInject constructor(
         val productsRefund = refundByItemsState.productsRefund
 
         if (isChecked) {
-            val shippingRefund = calculatePartialShippingTotal(refundByItemsState.selectedShippingLines!!)
+            val allShippingLineIds = order.shippingLines.map { it.itemId }
+            val shippingRefund = calculatePartialShippingTotal(allShippingLineIds)
 
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = shippingRefund,
                 formattedShippingRefundTotal = formatCurrency(shippingRefund),
                 isShippingMainSwitchChecked = true,
-                isNextButtonEnabled = productsRefund.add(shippingRefund) > BigDecimal.ZERO
+                isNextButtonEnabled = productsRefund.add(shippingRefund) > BigDecimal.ZERO,
+                selectedShippingLines = allShippingLineIds
             )
         } else {
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = 0.toBigDecimal(),
                 formattedShippingRefundTotal = formatCurrency(0.toBigDecimal()),
                 isShippingMainSwitchChecked = false,
-                isNextButtonEnabled = productsRefund > BigDecimal.ZERO
+                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
+                selectedShippingLines = emptyList()
             )
         }
     }
