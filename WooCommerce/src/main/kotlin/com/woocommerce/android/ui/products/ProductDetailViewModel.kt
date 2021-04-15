@@ -400,7 +400,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onVariationAmountReceived(variationAmount: Int) {
-        viewState.storedProduct
+        viewState.productDraft
             ?.takeIf { it.numVariations != variationAmount }
             ?.let { updateProductDraft(numVariation = variationAmount) }
     }
