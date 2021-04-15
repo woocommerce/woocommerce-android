@@ -171,6 +171,7 @@
     </declare-styleable>
 
     <declare-styleable name="WCWarningBanner">
-        <attr name="text" format="string" />
+        <attr name="title" format="string" />
+        <attr name="message" format="string" />
     </declare-styleable>
 </resources>
