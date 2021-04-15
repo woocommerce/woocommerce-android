@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingPackage
@@ -89,12 +90,14 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         loadProductsWeightsIfNeeded(order)
 
         viewState = viewState.copy(showSkeletonView = false)
+        val items = order.getShippableItems().map { it.toShippingItem() }
+        val totalWeight = items.sumByFloat { it.weight } + (lastUsedPackage?.boxWeight ?: 0f)
         return listOf(
             ShippingLabelPackage(
                 packageId = "package1",
                 selectedPackage = lastUsedPackage,
-                weight = Float.NaN,
-                items = order.getShippableItems().map { it.toShippingItem() }
+                weight = if (totalWeight != 0f) totalWeight else Float.NaN,
+                items = items
             )
         )
     }
@@ -134,7 +137,10 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     fun onWeightEdited(position: Int, weight: Float) {
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = packages[position].copy(weight = weight)
-        viewState = viewState.copy(shippingLabelPackages = packages)
+        viewState = viewState.copy(
+            shippingLabelPackages = packages,
+            packagesWithEditedWeight = viewState.packagesWithEditedWeight + packages[position].packageId
+        )
     }
 
     fun onPackageSpinnerClicked(position: Int) {
@@ -145,7 +151,14 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
         val packages = viewState.shippingLabelPackages.toMutableList()
-        packages[position] = packages[position].copy(selectedPackage = selectedPackage)
+        packages[position] = with(packages[position]) {
+            val weight = if (!viewState.packagesWithEditedWeight.contains(packageId)) {
+                items.sumByFloat { it.weight } + selectedPackage.boxWeight
+            } else {
+                weight
+            }
+            copy(selectedPackage = selectedPackage, weight = weight)
+        }
         viewState = viewState.copy(shippingLabelPackages = packages)
     }
 
@@ -174,8 +187,6 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
             variationDetailRepository.getVariation(productId, variationId)!!.weight
         } else {
             productDetailRepository.getProduct(productId)!!.weight
-        }.let {
-            "$it $weightUnit"
         }
 
         return ShippingLabelPackage.Item(
@@ -189,7 +200,8 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val shippingLabelPackages: List<ShippingLabelPackage> = emptyList(),
-        val showSkeletonView: Boolean = false
+        val showSkeletonView: Boolean = false,
+        val packagesWithEditedWeight: Set<String> = setOf()
     ) : Parcelable {
         val isDataValid: Boolean
             get() = shippingLabelPackages.isNotEmpty() &&

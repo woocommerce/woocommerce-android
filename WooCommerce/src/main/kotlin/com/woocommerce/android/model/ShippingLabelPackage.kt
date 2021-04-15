@@ -15,6 +15,6 @@ data class ShippingLabelPackage(
         val productId: Long,
         val name: String,
         val attributesList: String,
-        val weight: String
+        val weight: Float
     ) : Parcelable
 }

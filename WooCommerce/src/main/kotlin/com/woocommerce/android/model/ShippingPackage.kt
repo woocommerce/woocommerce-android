@@ -11,7 +11,8 @@ data class ShippingPackage(
     val title: String,
     val isLetter: Boolean,
     val category: String,
-    val dimensions: PackageDimensions
+    val dimensions: PackageDimensions,
+    val boxWeight: Float
 ) : Parcelable {
     companion object {
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
@@ -36,6 +37,7 @@ fun CustomPackage.toAppModel(): ShippingPackage {
             width = dimensionsParts[1].trim().toFloat(),
             height = dimensionsParts[2].trim().toFloat()
         ),
+        boxWeight = boxWeight,
         category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY
     )
 }
@@ -52,6 +54,7 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
                 width = dimensionsParts[1].trim().toFloat(),
                 height = dimensionsParts[2].trim().toFloat()
             ),
+            boxWeight = it.boxWeight,
             category = this.title
         )
     }
