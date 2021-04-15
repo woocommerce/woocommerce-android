@@ -39,6 +39,8 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.variations.VariationListFragment
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CrashUtils
@@ -192,6 +194,10 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
                 }
             }
             changesMade()
+        }
+
+        handleResult<VariationListData>(VariationListFragment.KEY_VARIATION_LIST_RESULT) { data ->
+            data.currentVariationAmount?.let { viewModel.onVariationAmountReceived(it) }
         }
     }
 
