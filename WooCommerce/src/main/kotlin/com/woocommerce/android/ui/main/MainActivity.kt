@@ -761,20 +761,20 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    override fun showProductDetail(remoteProductId: Long, remoteVariationId: Long, enableTrash: Boolean) {
-        if (remoteVariationId == 0L) {
-            val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-                remoteProductId,
-                isTrashEnabled = enableTrash
-            )
-            navController.navigateSafely(action)
-        } else {
-            // variation detail is part of the products navigation graph, and product detail is the starting destination
-            // for that graph, so we have to use a deep link to navigate to variation detail
-            val query = "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
-            val deeplink = "wcandroid://variationDetail$query"
-            navController.navigate(Uri.parse(deeplink))
-        }
+    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            remoteProductId,
+            isTrashEnabled = enableTrash
+        )
+        navController.navigateSafely(action)
+    }
+
+    override fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
+        // variation detail is part of the products navigation graph, and product detail is the starting destination
+        // for that graph, so we have to use a deep link to navigate to variation detail
+        val query = "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
+        val deeplink = "wcandroid://variationDetail$query"
+        navController.navigate(Uri.parse(deeplink))
     }
 
     override fun showAddProduct() {

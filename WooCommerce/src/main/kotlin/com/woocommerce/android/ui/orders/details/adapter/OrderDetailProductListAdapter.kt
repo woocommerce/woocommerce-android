@@ -32,7 +32,11 @@ class OrderDetailProductListAdapter(
         val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.productId), imageSize, imageSize)
         holder.view.initView(orderItems[position], productImage, formatCurrencyForDisplay)
         holder.view.setOnClickListener {
-            productItemListener.openOrderProductDetail(item.productId, item.variationId)
+            if (item.variationId == 0L) {
+                productItemListener.openOrderProductDetail(item.productId)
+            } else {
+                productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)
+            }
         }
     }
 
