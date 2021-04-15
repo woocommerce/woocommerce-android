@@ -13,6 +13,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewModel.PrintShippingLabelViewState
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize.LABEL
@@ -24,13 +25,13 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import java.util.Date
 import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi
@@ -44,38 +45,27 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
+    private val savedState: SavedStateWithArgs = SavedStateWithArgs(
             SavedStateHandle(),
             null,
             PrintShippingLabelFragmentArgs(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
         )
-    )
 
     private val printShippingLabelViewState = PrintShippingLabelViewState()
     private lateinit var viewModel: PrintShippingLabelViewModel
 
-    @Before
-    fun setup() {
-        viewModel = spy(
-            PrintShippingLabelViewModel(
+    private fun initViewModel() {
+        viewModel = PrintShippingLabelViewModel(
                 savedState,
                 repository,
                 networkStatus,
                 coroutinesTestRule.testDispatchers
             )
-        )
-
-        clearInvocations(
-            viewModel,
-            savedState,
-            repository,
-            networkStatus
-        )
     }
 
     @Test
     fun `Displays print shipping label view correctly`() {
+        initViewModel()
         var shippingLabelData: PrintShippingLabelViewState? = null
         viewModel.viewStateData.observeForever { _, new -> shippingLabelData = new }
 
@@ -84,6 +74,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays label format options correctly`() {
+        initViewModel()
         var viewLabelFormatOptions: ViewShippingLabelFormatOptions? = null
         viewModel.event.observeForever {
             if (it is ViewShippingLabelFormatOptions) viewLabelFormatOptions = it
@@ -95,6 +86,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays label info view correctly`() {
+        initViewModel()
         var viewPrintShippingLabelInfo: ViewPrintShippingLabelInfo? = null
         viewModel.event.observeForever {
             if (it is ViewPrintShippingLabelInfo) viewPrintShippingLabelInfo = it
@@ -106,6 +98,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays paper size options view correctly`() {
+        initViewModel()
         var viewShippingLabelPaperSizes: ViewShippingLabelPaperSizes? = null
         viewModel.event.observeForever {
             if (it is ViewShippingLabelPaperSizes) viewShippingLabelPaperSizes = it
@@ -129,6 +122,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not print shipping label when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        initViewModel()
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: ShowSnackbar? = null
@@ -145,6 +139,8 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         val testString = "testString"
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(WooResult(testString)).whenever(repository).printShippingLabel(any(), any())
+
+        initViewModel()
 
         val isProgressDialogShown = ArrayList<Boolean>()
         val previewShippingLabelStringList = ArrayList<String>()
@@ -169,6 +165,8 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
             WooResult<Boolean>(WooError(API_ERROR, NETWORK_ERROR, ""))
         ).whenever(repository).printShippingLabel(any(), any())
 
+        initViewModel()
+
         val isProgressDialogShown = ArrayList<Boolean>()
         val previewShippingLabelStringList = ArrayList<String>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -189,5 +187,56 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         assertThat(isProgressDialogShown).containsExactly(true, false)
         assertThat(previewShippingLabelStringList).isEmpty()
         assertThat(snackBar).isEqualTo(ShowSnackbar(string.shipping_label_preview_error))
+    }
+
+    @Test
+    fun `consider an anonymized label as expired`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        val label = OrderTestUtils.generateShippingLabel(remoteOrderId = 1L, shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
+            .copy(status = "ANONYMIZED")
+        doReturn(label)
+            .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
+
+        initViewModel()
+
+        var isLabelExpired: Boolean? = null
+        viewModel.viewStateData.observeForever { old, new ->
+            isLabelExpired = new.isLabelExpired
+        }
+
+        assertThat(isLabelExpired).isTrue()
+    }
+
+    @Test
+    fun `disable printing if label expiry date passed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        val label = OrderTestUtils.generateShippingLabel(remoteOrderId = 1L, shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
+            .copy(expiryDate = Date(System.currentTimeMillis() - 60_000))
+        doReturn(label)
+            .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
+
+        initViewModel()
+
+        var isLabelExpired: Boolean? = null
+        viewModel.viewStateData.observeForever { old, new ->
+            isLabelExpired = new.isLabelExpired
+        }
+
+        assertThat(isLabelExpired).isTrue()
+    }
+
+    @Test
+    fun `enable printing if label hasn't expired yet`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        val label = OrderTestUtils.generateShippingLabel(remoteOrderId = 1L, shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
+            .copy(expiryDate = Date(System.currentTimeMillis() + 60_000))
+        doReturn(label)
+            .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
+
+        initViewModel()
+
+        var isLabelExpired: Boolean? = null
+        viewModel.viewStateData.observeForever { old, new ->
+            isLabelExpired = new.isLabelExpired
+        }
+
+        assertThat(isLabelExpired).isFalse()
     }
 }

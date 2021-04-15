@@ -119,7 +119,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         val paperSize: ShippingLabelPaperSize = ShippingLabelPaperSize.LABEL,
         val isProgressDialogShown: Boolean? = null,
         val previewShippingLabel: String? = null,
-        val isLabelExpired: Boolean? = null,
+        val isLabelExpired: Boolean = false,
         val tempFile: File? = null
     ) : Parcelable
 
