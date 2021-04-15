@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Parcelable
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -16,9 +13,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.parcelize.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
+import java.util.Date
 
 class ShippingLabelRefundViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -69,7 +71,12 @@ class ShippingLabelRefundViewModel @AssistedInject constructor(
     @Parcelize
     data class ShippingLabelRefundViewState(
         val shippingLabel: ShippingLabel? = null
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isRefundExpired: Boolean
+            get() = shippingLabel?.isAnonymized == true ||
+                shippingLabel?.refundExpiryDate?.let { Date().before(it) } ?: false
+    }
 
     @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ShippingLabelRefundViewModel>

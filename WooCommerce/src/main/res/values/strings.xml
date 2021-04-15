@@ -349,6 +349,7 @@
     <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
     <string name="shipping_label_refund_success">Refund request was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
+    <string name="shipping_label_refund_expired">Labels older than 30 days cannot be refunded</string>
 
     <!--
         Print shipping labels

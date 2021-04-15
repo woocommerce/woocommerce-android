@@ -7,6 +7,9 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import java.math.BigDecimal
 import java.util.Date
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 @Parcelize
 data class ShippingLabel(
@@ -37,6 +40,10 @@ data class ShippingLabel(
     @IgnoredOnParcel
     val isAnonymized: Boolean
         get() = status == "ANONYMIZED"
+
+    @IgnoredOnParcel
+    val refundExpiryDate: Date?
+        get() = createdDate?.let { Date(it.time + TimeUnit.DAYS.toMillis(30)) }
 
     @Parcelize
     data class Refund(
