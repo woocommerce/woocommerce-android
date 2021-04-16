@@ -242,7 +242,8 @@
     <fragment
         android:id="@+id/createShippingLabelFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelFragment"
-        android:label="CreateShippingLabelFragment">
+        android:label="CreateShippingLabelFragment"
+        tools:layout="@layout/fragment_create_shipping_label">
         <argument
             android:name="orderIdentifier"
             app:argType="string" />
@@ -355,7 +356,8 @@
     <fragment
         android:id="@+id/shippingCarrierRatesFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment"
-        android:label="ShippingCarrierRatesFragment">
+        android:label="ShippingCarrierRatesFragment"
+        tools:layout="@layout/fragment_shipping_carrier_rates">
         <argument
             android:name="originAddress"
             app:argType="com.woocommerce.android.model.Address" />

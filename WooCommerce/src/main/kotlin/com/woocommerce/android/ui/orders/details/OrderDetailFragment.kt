@@ -382,8 +382,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             FEATURE_FEEDBACK_BANNER, mapOf(
             AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-        )
-        )
+        ))
         registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.SHIPPING_LABELS)
@@ -400,8 +399,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             FEATURE_FEEDBACK_BANNER, mapOf(
             AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-        )
-        )
+        ))
         registerFeedbackSetting(DISMISSED)
         displayShippingLabelsWIPCard(false, isM1)
     }
