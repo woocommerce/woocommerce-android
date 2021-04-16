@@ -35,6 +35,10 @@ data class ShippingLabel(
             carrierId, trackingNumber
         ) ?: ""
 
+    /**
+     * Checks if a label has been anonymized.
+     * An label gets anonymized when the store owner request its data to be removed from the server, for privacy reasons
+     */
     @IgnoredOnParcel
     val isAnonymized: Boolean
         get() = status == "ANONYMIZED"
