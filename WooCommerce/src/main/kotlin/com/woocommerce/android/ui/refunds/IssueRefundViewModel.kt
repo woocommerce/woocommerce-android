@@ -122,6 +122,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val order: Order
     private val refunds: List<Refund>
     private val allShippingLineIds: List<Long>
+    private val refundableShippingLineIds: List<Long> /* Shipping lines that haven't been refunded */
 
     private val maxRefund: BigDecimal
     private val maxQuantities: Map<Long, Int>
@@ -147,6 +148,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         maxRefund = order.total - order.refundTotal
         maxQuantities = refunds.getMaxRefundQuantities(order.items)
         gateway = loadPaymentGateway()
+        refundableShippingLineIds = getRefundableShippingLineIds()
 
         initRefundByAmountState()
         initRefundByItemsState()
@@ -216,7 +218,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                     shippingTaxes = formatCurrency(order.shippingLines.sumByBigDecimal { it.totalTax }),
                     feesTotal = formatCurrency(order.feesTotal),
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                    isShippingRefundAvailable = order.shippingTotal > BigDecimal.ZERO,
+                    isShippingRefundAvailable = refundableShippingLineIds.isNotEmpty(),
                     isFeesVisible = order.feesTotal > BigDecimal.ZERO,
                     isNextButtonEnabled = false,
                     formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
@@ -231,9 +233,10 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
         updateRefundItems(items)
 
-        val shippingLines = order.shippingLines.map {
-            ShippingRefundListItem(it)
-        }
+        /* Grab all shipping lines listed in the Order, but remove those that are already refunded previously) */
+        val shippingLines = order.shippingLines
+            .map { ShippingRefundListItem(it) }
+            .filter { refundableShippingLineIds.contains(it.shippingLine.itemId) }
         _refundShippingLines.value = shippingLines
 
         if (productsRefundLiveData.hasInitialValue) {
@@ -632,8 +635,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         if (list != null) {
             if (isChecked && !list.contains(itemId)) {
                 list += itemId
-            }
-            else {
+            } else {
                 list -= itemId
             }
 
@@ -650,6 +652,18 @@ class IssueRefundViewModel @AssistedInject constructor(
                 isNextButtonEnabled = productsRefund.add(newShippingRefundTotal) > BigDecimal.ZERO
             )
         }
+    }
+
+    private fun getRefundableShippingLineIds(): List<Long> {
+        val availableShippingLines = allShippingLineIds.toMutableList()
+        refunds.forEach {
+            it.shippingLines.forEach { shippingLine ->
+                if (availableShippingLines.contains(shippingLine.itemId)) {
+                    availableShippingLines -= shippingLine.itemId
+                }
+            }
+        }
+        return availableShippingLines
     }
 
     private fun calculatePartialShippingSubtotal(selectedShippingLinesId: List<Long>): BigDecimal {
