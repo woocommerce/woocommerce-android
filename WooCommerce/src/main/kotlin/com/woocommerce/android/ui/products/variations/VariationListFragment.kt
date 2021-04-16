@@ -19,7 +19,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentVariationListBinding
-import com.woocommerce.android.databinding.ProductPropertyWarningLayoutBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -59,15 +58,10 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
 
-    // this is an included layout
-    private var _warningBinding: ProductPropertyWarningLayoutBinding? = null
-    private val warningBinding get() = _warningBinding!!
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentVariationListBinding.bind(view)
-        _warningBinding = binding.variationVisibilityWarning
 
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
@@ -78,7 +72,6 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         skeletonView.hide()
         super.onDestroyView()
         _binding = null
-        _warningBinding = null
     }
 
     override fun onResume() {
@@ -193,7 +186,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     }
 
     private fun showWarning(isVisible: Boolean) {
-        warningBinding.root.isVisible = isVisible
+        binding.variationVisibilityWarning.isVisible = isVisible
     }
 
     private fun openVariationDetail(variation: ProductVariation) {

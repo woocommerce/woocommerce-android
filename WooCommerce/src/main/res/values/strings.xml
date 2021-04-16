@@ -349,6 +349,7 @@
     <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
     <string name="shipping_label_refund_success">Refund request was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
+    <string name="shipping_label_refund_expired">Labels older than 30 days cannot be refunded</string>
 
     <!--
         Print shipping labels
@@ -379,6 +380,7 @@
     <string name="print_shipping_label_info_step_3">You can select your device\'s &lt;b&gt;default print service&lt;/b&gt; or install your &lt;b&gt;printer\'s brand app&lt;/b&gt; (this should appear as a recommended option)</string>
     <string name="print_shipping_label_info_step_4">You might have to &lt;b&gt;configure WiFi printing directly on the printer itself.&lt;/b&gt; Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
     <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can &lt;b&gt;save your label as PDF&lt;/b&gt; and send it by email to print it from another device.</string>
+    <string name="shipping_label_reprint_expired_message">Label images older than 180 days are deleted by our technology partners for general security and data privacy concerns.</string>
 
     <!--
         Create shipping labels

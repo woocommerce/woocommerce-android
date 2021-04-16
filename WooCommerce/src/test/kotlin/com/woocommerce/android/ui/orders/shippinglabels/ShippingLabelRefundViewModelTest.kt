@@ -28,6 +28,8 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import java.util.Date
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -126,5 +128,44 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
         verify(repository, times(1)).getShippingLabelByOrderIdAndLabelId(any(), any())
         assertThat(snackBar).isEqualTo(ShowSnackbar(string.order_refunds_amount_refund_error))
         assertNull(exitEvent)
+    }
+
+    @Test
+    fun `disable refund if label is anonymized`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        doReturn(shippingLabel.copy(status = "ANONYMIZED"))
+            .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
+
+        var viewState: ShippingLabelRefundViewState? = null
+        viewModel.shippingLabelRefundViewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.start()
+
+        assertThat(viewState?.isRefundExpired).isTrue()
+    }
+
+    @Test
+    fun `disable refund if label is older than 30 days`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        doReturn(shippingLabel.copy(createdDate = Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(31))))
+            .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
+
+        var viewState: ShippingLabelRefundViewState? = null
+        viewModel.shippingLabelRefundViewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.start()
+
+        assertThat(viewState?.isRefundExpired).isTrue()
+    }
+
+    @Test
+    fun `enable refund if label is recent than 30 days`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        doReturn(shippingLabel.copy(createdDate = Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(29))))
+            .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
+
+        var viewState: ShippingLabelRefundViewState? = null
+        viewModel.shippingLabelRefundViewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.start()
+
+        assertThat(viewState?.isRefundExpired).isFalse()
     }
 }
