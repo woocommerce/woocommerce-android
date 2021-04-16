@@ -34,7 +34,8 @@ import kotlinx.android.parcel.Parcelize
 import java.util.Date
 
 class ShippingCarrierRatesAdapter(
-    private val onRateSelected: (ShippingRate) -> Unit
+    private val onRateSelected: (ShippingRate) -> Unit,
+    private val dateUtils: DateUtils
 ) : RecyclerView.Adapter<RateListViewHolder>() {
     var items: List<PackageRateListItem> = emptyList()
         set(value) {
@@ -119,7 +120,6 @@ class ShippingCarrierRatesAdapter(
                     binding.carrierServiceName.text = rateItem.title
 
                     if (rateItem.deliveryDate != null) {
-                        val dateUtils = DateUtils()
                         binding.deliveryTime.text = dateUtils.getShortMonthDayString(
                             dateUtils.getYearMonthDayStringFromDate(rateItem.deliveryDate)
                         )

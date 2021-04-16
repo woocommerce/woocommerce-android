@@ -13,7 +13,8 @@ import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShipmentTrac
 import com.woocommerce.android.util.DateUtils
 
 class OrderDetailShipmentTrackingListAdapter(
-    private val onDeleteShipmentTrackingClicked: (trackingNumber: String) -> Unit
+    private val onDeleteShipmentTrackingClicked: (trackingNumber: String) -> Unit,
+    private val dateUtils: DateUtils
 ) : RecyclerView.Adapter<OrderDetailShipmentTrackingViewHolder>() {
     var shipmentTrackingList: List<OrderShipmentTracking> = ArrayList()
         set(value) {
@@ -33,7 +34,7 @@ class OrderDetailShipmentTrackingListAdapter(
             parent,
             false
         )
-        return OrderDetailShipmentTrackingViewHolder(viewBinding, onDeleteShipmentTrackingClicked)
+        return OrderDetailShipmentTrackingViewHolder(viewBinding, onDeleteShipmentTrackingClicked, dateUtils)
     }
 
     override fun onBindViewHolder(holder: OrderDetailShipmentTrackingViewHolder, position: Int) {
@@ -44,7 +45,8 @@ class OrderDetailShipmentTrackingListAdapter(
 
     class OrderDetailShipmentTrackingViewHolder(
         private val viewBinding: OrderDetailShipmentTrackingListItemBinding,
-        private val onDeleteShipmentTrackingClicked: (trackingNumber: String) -> Unit
+        private val onDeleteShipmentTrackingClicked: (trackingNumber: String) -> Unit,
+        private val dateUtils: DateUtils
     ) : RecyclerView.ViewHolder(
         viewBinding.root
     ) {
@@ -52,7 +54,7 @@ class OrderDetailShipmentTrackingListAdapter(
             with(viewBinding.trackingType) { text = shipmentTracking.trackingProvider }
             with(viewBinding.trackingNumber) { text = shipmentTracking.trackingNumber }
             with(viewBinding.trackingDateShipped) {
-                text = DateUtils().getLocalizedLongDateString(context, shipmentTracking.dateShipped).orEmpty()
+                text = dateUtils.getLocalizedLongDateString(context, shipmentTracking.dateShipped).orEmpty()
             }
             with(viewBinding.trackingBtnTrack) {
                 isVisible = true

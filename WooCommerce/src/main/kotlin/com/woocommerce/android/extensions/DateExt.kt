@@ -74,7 +74,7 @@ fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(cont
 
 fun Date.getMediumDate(context: Context): String = DateFormat.getMediumDateFormat(context).format(this)
 
-fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils().offsetGmtDate(it, gmtOffset) }
+fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils.offsetGmtDate(it, gmtOffset) }
 
 fun Date.formatToYYYYmmDDhhmmss(): String =
     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(this)

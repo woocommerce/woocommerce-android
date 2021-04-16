@@ -10,6 +10,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.OrderDetailShipmentTrackingListBinding
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShipmentTrackingListAdapter
+import com.woocommerce.android.util.DateUtils
 
 class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
     ctx: Context,
@@ -20,11 +21,12 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
 
     fun updateShipmentTrackingList(
         shipmentTrackings: List<OrderShipmentTracking>,
-        onDeleteShipmentTrackingClicked: (trackingNumber: String) -> Unit
+        onDeleteShipmentTrackingClicked: (trackingNumber: String) -> Unit,
+        dateUtils: DateUtils
     ) {
         val shipmentTrackingAdapter =
             binding.shipmentTrackItems.adapter as? OrderDetailShipmentTrackingListAdapter
-                ?: OrderDetailShipmentTrackingListAdapter(onDeleteShipmentTrackingClicked)
+                ?: OrderDetailShipmentTrackingListAdapter(onDeleteShipmentTrackingClicked, dateUtils)
 
         binding.shipmentTrackItems.apply {
             setHasFixedSize(true)
