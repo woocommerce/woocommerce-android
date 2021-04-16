@@ -15,6 +15,7 @@
         <com.woocommerce.android.widgets.WCWarningBanner
             android:id="@+id/variationVisibilityWarning"
             android:layout_height="wrap_content"
+            android:layout_width="match_parent"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/variationInfoContainer"
             app:layout_constraintEnd_toEndOf="parent"
