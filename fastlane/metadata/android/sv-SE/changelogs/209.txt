@@ -1,0 +1,4 @@
+6,4:
+Vi har gjort ett antal förbättringar i den här versionen.
+Vi har korrigerat ett fel som hindrade appen från att läsa in produkter när det fanns ett decimalvärde i lagerkvantiteten.
+Vi har också korrigerat ett layoutproblem som inträffade på alternativskärmen för fraktetikettformat.
