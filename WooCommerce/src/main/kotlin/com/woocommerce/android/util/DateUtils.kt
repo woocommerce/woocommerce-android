@@ -37,25 +37,6 @@ class DateUtils @Inject constructor(
     private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     /**
-     * Returns a string in the format of {date} at {time}.
-     */
-    fun getFriendlyShortDateAtTimeString(context: Context, date: Date): String {
-        val dateLabel = when (TimeGroup.getTimeGroupForDate(date)) {
-            TimeGroup.GROUP_TODAY -> {
-                context.getString(R.string.date_timeframe_today).toLowerCase(locale)
-            }
-            TimeGroup.GROUP_YESTERDAY -> {
-                context.getString(R.string.date_timeframe_yesterday).toLowerCase(locale)
-            }
-            else -> {
-                DateFormat.getDateFormat(context).format(date)
-            }
-        }
-        val timeString = DateFormat.getTimeFormat(context).format(date.time)
-        return context.getString(R.string.date_at_time, dateLabel, timeString)
-    }
-
-    /**
      * Given an ISO8601 date of format YYYY-MM-DD, returns the number of days in the given month.
      *
      * return null if the argument is not a valid iso8601 date string.
