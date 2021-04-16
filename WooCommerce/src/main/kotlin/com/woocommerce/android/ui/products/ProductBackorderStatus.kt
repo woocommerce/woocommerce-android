@@ -7,7 +7,7 @@ import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductBackOrders
 
 sealed class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {

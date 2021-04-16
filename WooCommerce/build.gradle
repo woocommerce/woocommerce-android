@@ -13,7 +13,7 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-allopen'
 apply plugin: 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
 apply plugin: 'io.sentry.android.gradle'
@@ -34,10 +34,6 @@ repositories {
     maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
 }
 
-androidExtensions {
-    experimental = true
-}
-
 android {
     compileSdkVersion 30
     buildToolsVersion '30.0.0'
@@ -48,9 +44,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "6.4-rc-1"
+            versionName "6.4-rc-2"
         }
-        versionCode 207
+        versionCode 208
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -118,6 +114,9 @@ android {
         disable 'InvalidPackage'
         // see https://github.com/woocommerce/woocommerce-android/pull/3699
         disable "NullSafeMutableLiveData"
+        // TODO remove this after we update AGP, it's a bug that has been fixed in 4.1.1 and later
+        // see: https://issuetracker.google.com/issues/168794947
+        disable "ParcelCreator"
     }
 
     testOptions {

@@ -92,16 +92,24 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                 cardReaderManager.discoverReaders(isSimulated = simulated).collect { event ->
                     AppLog.d(AppLog.T.MAIN, event.toString())
                     when (event) {
-                        Started, Succeeded, is Failed -> {
+                        Started -> {
                             Snackbar.make(
                                 requireView(),
                                 event.javaClass.simpleName,
                                 BaseTransientBottomBar.LENGTH_SHORT
                             ).show()
                         }
+                        Succeeded, is Failed -> {
+                            // no-op
+                        }
                         is ReadersFound -> {
                             if (event.list.isNotEmpty()) {
-                                getCardReaderManager()?.connectToReader(event.list[0])
+                                val success = getCardReaderManager()?.connectToReader(event.list[0]) ?: false
+                                Snackbar.make(
+                                    requireView(),
+                                    "Connecting to reader ${if (success) "succeeded" else "failed"}",
+                                    BaseTransientBottomBar.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }

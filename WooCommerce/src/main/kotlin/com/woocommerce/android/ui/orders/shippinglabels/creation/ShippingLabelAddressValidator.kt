@@ -6,7 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult

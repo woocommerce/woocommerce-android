@@ -19,7 +19,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore

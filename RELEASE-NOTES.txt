@@ -3,6 +3,7 @@
 6.5
 -----
 - [*] Fixed bug that would cause the on-screen keyboard to disappear when searching the order list. [https://github.com/woocommerce/woocommerce-android/pull/3828]
+- [**] Beta feature: merchants from US can create shipping labels for physical orders from the app, the feature supports for now only orders where the shipping address is in the US. [https://github.com/woocommerce/woocommerce-android/pull/3844]
 
 6.4
 -----

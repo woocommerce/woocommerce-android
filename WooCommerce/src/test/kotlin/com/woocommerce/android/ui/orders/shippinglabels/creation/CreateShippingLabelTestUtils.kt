@@ -29,7 +29,7 @@ object CreateShippingLabelTestUtils {
 
     fun generatePackage(id: String = "id", provider: String = "provider"): ShippingPackage {
         return ShippingPackage(
-            id, "title1", false, provider, PackageDimensions(1.0f, 1.0f, 1.0f)
+            id, "title1", false, provider, PackageDimensions(1.0f, 1.0f, 1.0f), 1f
         )
     }
 
@@ -42,7 +42,7 @@ object CreateShippingLabelTestUtils {
             id,
             selectedPackage ?: generatePackage(),
             weight,
-            listOf(Item(0L, "product", "", "10 kg"))
+            listOf(Item(0L, "product", "", 10f))
         )
     }
 

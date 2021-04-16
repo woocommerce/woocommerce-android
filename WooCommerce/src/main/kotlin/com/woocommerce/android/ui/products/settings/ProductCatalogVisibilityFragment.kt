@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.CAT
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.HIDDEN
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.SEARCH
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Settings screen which enables choosing a product's catalog visibility

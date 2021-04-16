@@ -28,7 +28,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
