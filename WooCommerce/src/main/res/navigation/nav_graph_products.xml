@@ -568,7 +568,11 @@
             app:destination="@id/productPricingFragment" />
         <action
             android:id="@+id/action_variationDetailFragment_to_editVariationAttributesFragment"
-            app:destination="@id/editVariationAttributesFragment" />
+            app:destination="@id/editVariationAttributesFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
         <action
             android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment" />
