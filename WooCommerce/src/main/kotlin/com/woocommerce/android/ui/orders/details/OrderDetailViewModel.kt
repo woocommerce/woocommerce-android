@@ -83,7 +83,8 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
-        private const val SUPPORTED_WCS_VERSION = "1.25.11"
+        // The required version to support shipping label creation
+        const val SUPPORTED_WCS_VERSION = "1.25.11"
     }
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
