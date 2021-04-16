@@ -192,8 +192,10 @@ class IssueRefundViewModel @AssistedInject constructor(
                     .toLowerCase(Locale.getDefault())
                 refundOptions.add(fees)
             }
-            if (order.shippingTotal > BigDecimal.ZERO) {
-                val shipping = resourceProvider.getString(R.string.shipping).toLowerCase(Locale.getDefault())
+
+            // Inform user that multiple shipping lines can only be refunded in wp-admin.
+            if (refundableShippingLineIds.size > 1) {
+                val shipping = resourceProvider.getString(R.string.multiple_shipping).toLowerCase(Locale.getDefault())
                 refundOptions.add(shipping)
             }
             if (order.totalTax > BigDecimal.ZERO) {
