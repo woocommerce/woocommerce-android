@@ -16,24 +16,44 @@
             android:id="@+id/variationVisibilityWarning"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/variationList"
+            app:layout_constraintBottom_toTopOf="@id/variationInfoContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/variationList"
+        <LinearLayout
+            android:id="@+id/variationInfoContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:orientation="vertical"
+            android:background="@android:color/white"
             app:layout_constraintTop_toBottomOf="@id/variationVisibilityWarning"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="?attr/colorSurface"
-            tools:itemCount="3"
-            tools:listitem="@layout/variation_list_item"/>
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addVariationButton"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_extra_large"
+                android:layout_marginTop="@dimen/margin_extra_large"
+                android:layout_marginEnd="@dimen/margin_extra_large"
+                android:text="@string/product_detail_add_variations"
+                android:textAllCaps="true" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/variationList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorSurface"
+                tools:itemCount="3"
+                tools:listitem="@layout/variation_list_item"/>
+
+        </LinearLayout>
 
         <com.woocommerce.android.widgets.ActionableEmptyView
             android:id="@+id/empty_view"
