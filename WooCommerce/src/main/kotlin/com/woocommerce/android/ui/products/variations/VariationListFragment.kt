@@ -6,6 +6,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -37,11 +40,13 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlag.ADD_EDIT_VARIATIONS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
@@ -61,6 +66,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private val viewModel: VariationListViewModel by viewModels { viewModelFactory }
 
     private val skeletonView = SkeletonView()
+    private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
 
     private val navArgs: VariationListFragmentArgs by navArgs()
@@ -159,7 +165,11 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         }
 
         binding.firstVariationView.setOnClickListener {
-            viewModel.onCreateVariationRequested()
+            viewModel.onCreateFirstVariationRequested()
+        }
+
+        binding.addVariationButton.setOnClickListener {
+            viewModel.onCreateEmptyVariationRequested()
         }
     }
 
@@ -179,19 +189,9 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
                 binding.loadMoreProgress.isVisible = it
             }
             new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { showWarning(it) }
-            new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
-                if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
-                    binding.firstVariationView.updateVisibility(
-                        shouldBeVisible = isEmptyViewVisible,
-                        showButton = true
-                    )
-                } else {
-                    binding.emptyView.updateVisibility(
-                        shouldBeVisible = isEmptyViewVisible,
-                        showButton = false
-                    )
-                }
-                requireActivity().invalidateOptionsMenu()
+            new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible, ::handleEmptyViewChanges)
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                showProgressDialog(it, R.string.variation_create_dialog_title)
             }
         }
 
@@ -214,7 +214,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
 
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
         handleResult<DeletedVariationData>(KEY_VARIATION_DETAILS_RESULT) {
-            viewModel.refreshParentProduct(it.productID)
+            viewModel.onVariationDeleted(it.productID)
         }
     }
 
@@ -270,6 +270,41 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         }
 
         adapter.setVariationList(variations)
+    }
+
+
+    private fun handleEmptyViewChanges(isEmptyViewVisible: Boolean) {
+        binding.variationInfoContainer.visibility = if(isEmptyViewVisible) GONE else VISIBLE
+        if (ADD_EDIT_VARIATIONS.isEnabled()) {
+            binding.firstVariationView.updateVisibility(
+                shouldBeVisible = isEmptyViewVisible,
+                showButton = true
+            )
+        } else {
+            binding.emptyView.updateVisibility(
+                shouldBeVisible = isEmptyViewVisible,
+                showButton = false
+            )
+        }
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    private fun showProgressDialog(show: Boolean, @StringRes title: Int) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = CustomProgressDialog.show(
+                getString(title),
+                getString(R.string.product_update_dialog_message)
+            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+            progressDialog?.isCancelable = false
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     override fun onRequestAllowBackPress(): Boolean {
