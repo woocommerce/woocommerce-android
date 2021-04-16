@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Translation-Revision-Date: 2021-04-01 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
@@ -24,7 +24,7 @@ Language: nl
     <string name="shipping_label_shipping_method_local_pickup">Lokaal afhalen</string>
     <string name="shipping_label_shipping_method_flat_rate">Vast tarief</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Klant heeft %1$s (%2$s) betaald aan verzendkosten</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Wanneer je verzendlabels koopt met WooCommerce, krijg je 5 tot 40% korting ten opzichte van de tarieven van postkantoren.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">Wanneer je verzendlabels koopt met WooCommerce, krijg je 5 tot 40% korting ten opzichte van de tarieven van postkantoren.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Wat houdt korting op WooCommerce  Services in?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Er is een fout opgetreden bij het laden van de verzendopties</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Er zijn geen verzendopties voor het geselecteerde adres en pakketjes</string>
@@ -48,7 +48,7 @@ Language: nl
     <string name="shipping_label_payments_saving_dialog_title">Instellingen worden opgeslagen</string>
     <string name="shipping_label_payments_expiration_date">Verloopt %1$s</string>
     <string name="shipping_label_payments_email_receipts_checkbox">E-mail de labelaanschafkwitanties naar %1$s (%2$s) via %3$s</string>
-    <string name="shipping_label_payments_account_info">Creditcards worden opgehaald uit het volgende WordPress.com-account: %1$s &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_account_info">Creditcards worden opgehaald uit het volgende WordPress.com-account: %1$s &lt;%2$s></string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">Een andere creditcard toevoegen</string>
     <string name="shipping_label_payments_selected_payment_method">Betaalmethode geselecteerd</string>
@@ -91,7 +91,6 @@ Language: nl
     <string name="shipping_label_edit_address_loading_progress_title">Adresgegevens worden geladen</string>
     <string name="product_wip_title_m5">Nieuwe functies beschikbaar!</string>
     <string name="product_wip_message_m5">Je kan nu downloadbare bestanden aan een product toevoegen en upsell- en cross-sell-producten koppelen. Wil je een product niet meer? Verplaats het naar de prullenbak!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Je kan tarieven, verzend- en belastingkosten restitueren %s</string>
     <string name="shipping_label_validation_view_map">Kaart openen</string>
     <string name="shipping_label_validation_contact_customer">Contact opnemen met klant</string>
     <string name="shipping_label_validation_error_template">Validatie mislukt: %s</string>
@@ -177,9 +176,9 @@ Language: nl
     <string name="product_downloadable_files_value_single">1 bestand</string>
     <string name="product_downloadable_files_value_multiple">%1$d bestanden</string>
     <string name="product_wip_message_m4">Je kan nu nieuwe eenvoudige, gekoppelde en gegroepeerde producten aanmaken terwijl je onderweg bent met de Woo-app. Was je nog niet klaar? Sla ze op als een concept!</string>
-    <string name="print_shipping_label_info_step_4">Het is mogelijk dat &lt;b&gt;je afdrukken via wifi op de printer zelf moet instellen.&lt;/b&gt; Controleer of de firmware van de printer bijgewerkt is. Zie de documenten van je printer voor instructies.</string>
-    <string name="print_shipping_label_info_step_3">Je kan de &lt;b&gt;standaard afdrukservice&lt;/b&gt; van je apparaat selecteren, of de &lt;b&gt;bijbehorende app van je printer&lt;/b&gt; installeren (dit zou de aanbevolen optie moeten zijn)</string>
-    <string name="print_shipping_label_info_step_1">Zorg dat je printer en je apparaat verbonden zijn met &lt;b&gt;dezelfde wifi-netwerken&lt;/b&gt;</string>
+    <string name="print_shipping_label_info_step_4">Het is mogelijk dat &lt;b>je afdrukken via wifi op de printer zelf moet instellen.&lt;/b> Controleer of de firmware van de printer bijgewerkt is. Zie de documenten van je printer voor instructies.</string>
+    <string name="print_shipping_label_info_step_3">Je kan de &lt;b>standaard afdrukservice&lt;/b> van je apparaat selecteren, of de &lt;b>bijbehorende app van je printer&lt;/b> installeren (dit zou de aanbevolen optie moeten zijn)</string>
+    <string name="print_shipping_label_info_step_1">Zorg dat je printer en je apparaat verbonden zijn met &lt;b>dezelfde wifi-netwerken&lt;/b></string>
     <string name="settings_enable_product_adding_teaser_message">Probeer de nieuwe functies uit voor het aanmaken van een eenvoudig, gekoppeld of gegroepeerd product. De functies zijn bijna klaar voor lancering</string>
     <string name="bottom_sheet_linked_products_desc">Meer verkopen met upselling en cross-selling</string>
     <string name="edit_products_button">Producten bewerken</string>
@@ -209,8 +208,8 @@ Language: nl
     <string name="product_ratings_count_one">\u2022 1 keer beoordeeld</string>
     <string name="product_ratings_count">\u2022 %d keer beoordeeld</string>
     <string name="product_detail_fetch_product_invalid_id_error">Product niet gevonden</string>
-    <string name="print_shipping_label_info_step_5">Als je nog steeds problemen ondervindt bij het afdrukken vanaf je apparaat, kan je &lt;b&gt;het label opslaan als pdf&lt;/b&gt; en het per e-mail verzenden om het vanaf een ander apparaat af te drukken.</string>
-    <string name="print_shipping_label_info_step_2">Nadat je &lt;b&gt;\'Verzendlabel afdrukken\'&lt;/b&gt; hebt geselecteerd, moet je wellicht een printer selecteren en toevoegen als je nog niet eerder iets vanaf dit apparaat hebt afgedrukt.</string>
+    <string name="print_shipping_label_info_step_5">Als je nog steeds problemen ondervindt bij het afdrukken vanaf je apparaat, kan je &lt;b>het label opslaan als pdf&lt;/b> en het per e-mail verzenden om het vanaf een ander apparaat af te drukken.</string>
+    <string name="print_shipping_label_info_step_2">Nadat je &lt;b>\'Verzendlabel afdrukken\'&lt;/b> hebt geselecteerd, moet je wellicht een printer selecteren en toevoegen als je nog niet eerder iets vanaf dit apparaat hebt afgedrukt.</string>
     <string name="print_shipping_label_format_options_title">Opties labelformaat</string>
     <string name="print_shipping_label_info_title">Afdrukken met je apparaat</string>
     <string name="shipping_label_paper_size_label">Etiket (4 x 6 inch)</string>
@@ -471,7 +470,6 @@ Language: nl
     <string name="product_schedule_sale_sublabel">Uitverkoop automatisch beginnen en beëindigen</string>
     <string name="product_schedule_sale_label">Uitverkoop inplannen</string>
     <string name="order_refunds_store_admin_link_text">in je winkelbeheer</string>
-    <string name="order_refunds_shipping_refund_notice">Je kunt verzend- en belastingkosten restitueren %s</string>
     <string name="orders_empty_message_with_order_status_filter">Helaas kunnen we geen bestellingen voor \'%s\' vinden</string>
     <string name="product_inventory_update_sku_error">SKU wordt al door een ander product gebruikt</string>
     <string name="product_shipping_settings">Verzendinstellingen</string>
@@ -551,10 +549,10 @@ Language: nl
     <string name="date_timeframe_future">Komende</string>
     <string name="remove">Verwijderen</string>
     <string name="login_discovery_error_generic">We konden geen toegang krijgen tot je site. Neem contact op met je host om dit probleem te verhelpen.</string>
-    <string name="login_discovery_error_ssl">We konden geen toegang krijgen tot je site vanwege een probleem met het &lt;b&gt;SSL-certificaat&lt;/b&gt;. Neem contact op met je host om dit probleem te verhelpen.</string>
-    <string name="login_discovery_error_http_auth">We konden geen toegang krijgen tot je site omdat hiervoor &lt;b&gt;HTTP-authenticatie is vereist&lt;/b&gt;. Neem contact op met je host om dit probleem te verhelpen.</string>
-    <string name="login_discovery_error_xmlrpc">We konden geen toegang krijgen tot het &lt;b&gt;XMLRPC-bestand&lt;/b&gt; op je site. Neem contact op met je host om dit probleem te verhelpen.</string>
-    <string name="login_site_credentials_magic_link_label">Bijna klaar! We hoeven nu alleen nog het e-mailadres (&lt;b&gt;%1$s&lt;/b&gt;) te verifiëren dat aan je Jetpack-account is gekoppeld</string>
+    <string name="login_discovery_error_ssl">We konden geen toegang krijgen tot je site vanwege een probleem met het &lt;b>SSL-certificaat&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
+    <string name="login_discovery_error_http_auth">We konden geen toegang krijgen tot je site omdat hiervoor &lt;b>HTTP-authenticatie is vereist&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
+    <string name="login_discovery_error_xmlrpc">We konden geen toegang krijgen tot het &lt;b>XMLRPC-bestand&lt;/b> op je site. Neem contact op met je host om dit probleem te verhelpen.</string>
+    <string name="login_site_credentials_magic_link_label">Bijna klaar! We hoeven nu alleen nog het e-mailadres (&lt;b>%1$s&lt;/b>) te verifiëren dat aan je Jetpack-account is gekoppeld</string>
     <string name="enter_site_credentials_instead">Inloggen met site-inloggegevens.</string>
     <string name="enter_credentials_for_site">Inloggen met je site-inloggegevens voor %1$s.</string>
     <string name="send_verification_email">Verificatiemail verzenden</string>
@@ -582,7 +580,7 @@ Language: nl
     <string name="orderdetail_shipping_method">Verzendmethode</string>
     <string name="button_edit_permissions">Machtigingen bewerken</string>
     <string name="permission_camera">Camera</string>
-    <string name="permissions_denied_message">Het lijkt erop dat je de vereiste machtigingen voor deze functie hebt uitgeschakeld.&lt;br/&gt;&lt;br/&gt;Om dit te wijzigen, moet je je machtigingen bewerken en zorgen dat &lt;strong&gt;%s&lt;/strong&gt; is ingeschakeld.</string>
+    <string name="permissions_denied_message">Het lijkt erop dat je de vereiste machtigingen voor deze functie hebt uitgeschakeld.&lt;br/>&lt;br/>Om dit te wijzigen, moet je je machtigingen bewerken en zorgen dat &lt;strong>%s&lt;/strong> is ingeschakeld.</string>
     <string name="permissions_denied_title">Machtigingen</string>
     <string name="orders_processed_empty_message">Alle bestellingen zijn verwerkt</string>
     <string name="orders_empty_message_with_processing">Nog geen te verwerken bestellingen</string>
@@ -655,7 +653,7 @@ Language: nl
     <string name="orderdetail_empty_shipping_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
-    <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -926,7 +924,7 @@ Language: nl
     <string name="order_detail_shipment_tracking_button_contentdesc">Verzending tracken of tracking van verzending verwijderen</string>
     <string name="orderdetail_delete_tracking">Tracking verwijderen</string>
     <string name="orderdetail_track_shipment">Verzending tracken</string>
-    <string name="login_email_help_desc">In je sitebeheer kun je de e-mail vinden die je gebruikt hebt om verbinding te maken met WordPress.com via het %1$sJetpack-dashboard%2$s onder %3$sVerbindingen &gt; Accountverbinding%4$s</string>
+    <string name="login_email_help_desc">In je sitebeheer kun je de e-mail vinden die je gebruikt hebt om verbinding te maken met WordPress.com via het %1$sJetpack-dashboard%2$s onder %3$sVerbindingen > Accountverbinding%4$s</string>
     <string name="login_email_help_title">Welke e-mail moet ik gebruiken om me aan te melden?</string>
     <string name="login_need_help_finding_email">Heb je hulp nodig bij het vinden van de gekoppelde e-mail?</string>
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
