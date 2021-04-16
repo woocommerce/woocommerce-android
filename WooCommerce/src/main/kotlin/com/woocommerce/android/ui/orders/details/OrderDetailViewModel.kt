@@ -26,6 +26,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -81,6 +82,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
+    companion object {
+        private const val SUPPORTED_WCS_VERSION = "1.25.11"
+    }
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     private val orderIdSet: OrderIdSet
@@ -117,7 +121,8 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private val isShippingPluginReady: Boolean by lazy {
         val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()
-        pluginInfo.isInstalled && pluginInfo.isActive
+        pluginInfo.isInstalled && pluginInfo.isActive &&
+            (pluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
     }
 
     override fun onCleared() {
