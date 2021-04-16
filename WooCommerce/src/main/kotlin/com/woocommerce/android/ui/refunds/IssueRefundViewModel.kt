@@ -211,18 +211,22 @@ class IssueRefundViewModel @AssistedInject constructor(
 
         if (refundByItemsStateLiveData.hasInitialValue) {
             refundByItemsState = refundByItemsState.copy(
-                    currency = order.currency,
-                    subtotal = formatCurrency(BigDecimal.ZERO),
-                    taxes = formatCurrency(BigDecimal.ZERO),
-                    shippingSubtotal = formatCurrency(order.shippingTotal),
-                    shippingTaxes = formatCurrency(order.shippingLines.sumByBigDecimal { it.totalTax }),
-                    feesTotal = formatCurrency(order.feesTotal),
-                    formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                    isShippingRefundAvailable = refundableShippingLineIds.isNotEmpty(),
-                    isFeesVisible = order.feesTotal > BigDecimal.ZERO,
-                    isNextButtonEnabled = false,
-                    formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
-                    refundNotice = getRefundNotice()
+                currency = order.currency,
+                subtotal = formatCurrency(BigDecimal.ZERO),
+                taxes = formatCurrency(BigDecimal.ZERO),
+                shippingSubtotal = formatCurrency(order.shippingTotal),
+                shippingTaxes = formatCurrency(order.shippingLines.sumByBigDecimal { it.totalTax }),
+                feesTotal = formatCurrency(order.feesTotal),
+                formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
+                isFeesVisible = order.feesTotal > BigDecimal.ZERO,
+                isNextButtonEnabled = false,
+                formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
+                refundNotice = getRefundNotice(),
+
+                // We only support refunding an Order with one shipping refund for now.
+                // In the future, to support multiple shipping refund, we can replace this
+                // with refundableShippingLineIds.isNotEmpty()
+                isShippingRefundAvailable = refundableShippingLineIds.size == 1
             )
         }
 
