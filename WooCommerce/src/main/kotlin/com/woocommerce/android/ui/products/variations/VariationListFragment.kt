@@ -272,9 +272,8 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         adapter.setVariationList(variations)
     }
 
-
     private fun handleEmptyViewChanges(isEmptyViewVisible: Boolean) {
-        binding.variationInfoContainer.visibility = if(isEmptyViewVisible) GONE else VISIBLE
+        binding.variationInfoContainer.visibility = if (isEmptyViewVisible) GONE else VISIBLE
         if (ADD_EDIT_VARIATIONS.isEnabled()) {
             binding.firstVariationView.updateVisibility(
                 shouldBeVisible = isEmptyViewVisible,

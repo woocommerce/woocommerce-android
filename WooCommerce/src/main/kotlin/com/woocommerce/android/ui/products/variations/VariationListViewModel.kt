@@ -121,7 +121,6 @@ class VariationListViewModel @AssistedInject constructor(
             ?.also { refreshParentProduct(product.remoteId) }
     }
 
-
     private fun refreshParentProduct(productID: Long) = launch {
         productRepository.fetchProduct(productID)
             ?.let { viewState.copy(parentProduct = it) }
