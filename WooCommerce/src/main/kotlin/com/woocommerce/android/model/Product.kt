@@ -556,6 +556,7 @@ fun WCProductModel.ProductAttribute.toJson(): JsonObject {
         json.addProperty("id", id)
         json.addProperty("name", name)
         json.addProperty("visible", visible)
+        json.addProperty("variation", variation)
         json.add("options", JsonArray().apply { options.forEach { add(it) } })
     }
 }
