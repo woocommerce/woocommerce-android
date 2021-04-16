@@ -26,7 +26,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Product Regular Price -->
-            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                 android:id="@+id/product_regular_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,12 +34,13 @@
                 android:layout_marginTop="@dimen/major_75"
                 android:layout_marginEnd="@dimen/major_100"
                 android:hint="@string/product_regular_price"
+                android:inputType="numberDecimal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/product_price_heading" />
 
             <!-- Product Sale Price -->
-            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                 android:id="@+id/product_sale_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,6 +49,7 @@
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/minor_100"
                 android:hint="@string/product_sale_price"
+                android:inputType="numberDecimal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/product_regular_price" />
