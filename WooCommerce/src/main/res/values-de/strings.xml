@@ -91,7 +91,6 @@ Language: de
     <string name="shipping_label_edit_address_loading_progress_title">Adressdaten werden geladen</string>
     <string name="product_wip_title_m5">Neue Funktionen verfügbar!</string>
     <string name="product_wip_message_m5">Du kannst jetzt herunterladbare Dateien zu einem Produkt hinzufügen und Upsell- und Cross-Sell-Produkte verlinken. Du willst ein Produkt nicht mehr? Lege es in den Papierkorb.</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Du kannst Gebühren, Versand- und Steuerbeträge %s rückerstatten</string>
     <string name="shipping_label_validation_view_map">Karte öffnen</string>
     <string name="shipping_label_validation_contact_customer">Kunden kontaktieren</string>
     <string name="shipping_label_validation_error_template">Validierung fehlgeschlagen: %s</string>
@@ -471,7 +470,6 @@ Language: de
     <string name="product_schedule_sale_sublabel">Verkauf automatisch beginnen und beenden</string>
     <string name="product_schedule_sale_label">Verkauf planen</string>
     <string name="order_refunds_store_admin_link_text">in deiner Shop-Administration</string>
-    <string name="order_refunds_shipping_refund_notice">Du kannst Versand- und Steuerbeträge %s rückerstatten</string>
     <string name="orders_empty_message_with_order_status_filter">Leider wurden für „%s“ keine Bestellungen gefunden</string>
     <string name="product_inventory_update_sku_error">Diese SKU wird bereits für ein anderes Produkt verwendet</string>
     <string name="product_shipping_settings">Einstellungen für den Versand</string>

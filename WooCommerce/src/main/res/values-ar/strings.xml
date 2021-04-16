@@ -91,7 +91,6 @@ Language: ar
     <string name="shipping_label_edit_address_loading_progress_title">تحميل بيانات العنوان</string>
     <string name="product_wip_title_m5">تتوافر ميزات جديدة!</string>
     <string name="product_wip_message_m5">يمكنك الآن إضافة ملفات قابلة للتنزيل إلى المنتج والربط بين المنتجات الموصى بها والمنتجات التسويقية. ألم تعد تريد منتجًا ما؟ انقله إلى سلة المهملات!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">يمكنك استرداد المبالغ المدفوعة في الرسوم ومبالغ الشحن والضرائب %s</string>
     <string name="shipping_label_validation_view_map">فتح الخريطة</string>
     <string name="shipping_label_validation_contact_customer">الاتصال بالعميل</string>
     <string name="shipping_label_validation_error_template">فشل التحقُّق: %s</string>
@@ -471,7 +470,6 @@ Language: ar
     <string name="product_schedule_sale_sublabel">بدء التخفيض وانتهاؤه تلقائيًا</string>
     <string name="product_schedule_sale_label">جدولة التخفيض</string>
     <string name="order_refunds_store_admin_link_text">في مسؤول المتجر الخاص بك</string>
-    <string name="order_refunds_shipping_refund_notice">يمكنك استرداد %s من مبالغ الشحن والضرائب</string>
     <string name="orders_empty_message_with_order_status_filter">نأسف لذلك، لم نتمكن من العثور على أي \"%s\" من الطلبات</string>
     <string name="product_inventory_update_sku_error">وحدة SKU قيد الاستخدام بالفعل بواسطة منتج آخر</string>
     <string name="product_shipping_settings">إعدادات الشحن</string>

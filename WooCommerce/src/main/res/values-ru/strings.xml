@@ -91,7 +91,6 @@ Language: ru
     <string name="shipping_label_edit_address_loading_progress_title">Загрузка адреса</string>
     <string name="product_wip_title_m5">Доступны новые функции!</string>
     <string name="product_wip_message_m5">Теперь вы можете добавлять к товару скачиваемые файлы и давать ссылки на сопутствующие и более дорогие товары. Товар больше не нужен? Отправьте его в корзину!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Можно получить возврат оплаты товара, доставки и суммы налогов (%s)</string>
     <string name="shipping_label_validation_view_map">Открыть карту</string>
     <string name="shipping_label_validation_contact_customer">Связаться с клиентом</string>
     <string name="shipping_label_validation_error_template">Сбой проверки: %s</string>
@@ -471,7 +470,6 @@ Language: ru
     <string name="product_schedule_sale_sublabel">Автоматически начинать и завершать распродажу</string>
     <string name="product_schedule_sale_label">Запланировать распродажу</string>
     <string name="order_refunds_store_admin_link_text">в учетной записи администратора магазина</string>
-    <string name="order_refunds_shipping_refund_notice">Можно получить возврат оплаты доставки и суммы налогов (%s)</string>
     <string name="orders_empty_message_with_order_status_filter">К сожалению, мы не смогли найти заказы \"%s\"</string>
     <string name="product_inventory_update_sku_error">Артикул уже используется для другого продукта</string>
     <string name="product_shipping_settings">Настройки доставки</string>

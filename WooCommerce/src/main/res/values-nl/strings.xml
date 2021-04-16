@@ -91,7 +91,6 @@ Language: nl
     <string name="shipping_label_edit_address_loading_progress_title">Adresgegevens worden geladen</string>
     <string name="product_wip_title_m5">Nieuwe functies beschikbaar!</string>
     <string name="product_wip_message_m5">Je kan nu downloadbare bestanden aan een product toevoegen en upsell- en cross-sell-producten koppelen. Wil je een product niet meer? Verplaats het naar de prullenbak!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Je kan tarieven, verzend- en belastingkosten restitueren %s</string>
     <string name="shipping_label_validation_view_map">Kaart openen</string>
     <string name="shipping_label_validation_contact_customer">Contact opnemen met klant</string>
     <string name="shipping_label_validation_error_template">Validatie mislukt: %s</string>
@@ -471,7 +470,6 @@ Language: nl
     <string name="product_schedule_sale_sublabel">Uitverkoop automatisch beginnen en beëindigen</string>
     <string name="product_schedule_sale_label">Uitverkoop inplannen</string>
     <string name="order_refunds_store_admin_link_text">in je winkelbeheer</string>
-    <string name="order_refunds_shipping_refund_notice">Je kunt verzend- en belastingkosten restitueren %s</string>
     <string name="orders_empty_message_with_order_status_filter">Helaas kunnen we geen bestellingen voor \'%s\' vinden</string>
     <string name="product_inventory_update_sku_error">SKU wordt al door een ander product gebruikt</string>
     <string name="product_shipping_settings">Verzendinstellingen</string>

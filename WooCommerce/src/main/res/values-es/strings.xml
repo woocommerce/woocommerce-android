@@ -91,7 +91,6 @@ Language: es
     <string name="shipping_label_edit_address_loading_progress_title">cargando los datos de la dirección</string>
     <string name="product_wip_title_m5">¡Hay nuevas funciones disponibles!</string>
     <string name="product_wip_message_m5">Ahora puedes añadir archivos descargables a un producto y enlazar productos de ventas dirigidas y cruzadas ¿Ya no quieres un producto? ¡Envíalo a la papelera!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Puedes reembolsar los importes de cuotas, envíos e impuestos %s</string>
     <string name="shipping_label_validation_view_map">Abrir mapa</string>
     <string name="shipping_label_validation_contact_customer">Contactar con el cliente</string>
     <string name="shipping_label_validation_error_template">Error de validación: %s</string>
@@ -471,7 +470,6 @@ Language: es
     <string name="product_schedule_sale_sublabel">Iniciar y finalizar una oferta automáticamente</string>
     <string name="product_schedule_sale_label">Programar oferta</string>
     <string name="order_refunds_store_admin_link_text">en la administración de tu tienda</string>
-    <string name="order_refunds_shipping_refund_notice">Puedes reembolsar los importes de los envíos y los impuestos %s</string>
     <string name="orders_empty_message_with_order_status_filter">No hemos encontrado pedidos de \"%s\"</string>
     <string name="product_inventory_update_sku_error">Otro producto ya usa este SKU</string>
     <string name="product_shipping_settings">Configuración de envío</string>

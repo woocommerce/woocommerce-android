@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-30 11:54:04+0000
+Translation-Revision-Date: 2021-04-07 13:00:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">Var det inte meningen att skapa ett nytt konto? Gå tillbaka och skriv din e-postadress igen.</string>
+    <string name="settings_card_reader">Hantera kortläsare</string>
+    <string name="settings_store">Butiksinställningar</string>
+    <string name="product_attributes">Attribut</string>
+    <string name="and">och</string>
+    <string name="product_attribute_remove">Ta bort detta attribut?</string>
     <string name="product_attributes_error_saving">Fel när dina attribut sparades</string>
     <string name="shipping_label_payments_cant_edit_warning">Det är bara webbplatsens ägare som kan hantera betalningsmetoderna för fraktetiketter. Kontakta butiksägaren %1$s (%2$s) för att hantera betalningsmetoder.</string>
     <string name="product_detail_add_variations">Lägg till variationer</string>
@@ -91,7 +97,6 @@ Language: sv_SE
     <string name="shipping_label_edit_address_loading_progress_title">Laddar in adressdata</string>
     <string name="product_wip_title_m5">Nya funktioner tillgängliga!</string>
     <string name="product_wip_message_m5">Du kan nu lägga till nedladdningsbara filer till en produkt och länka produkter för merföräljning och korsförsäljning. Vill du inte ha en produkt längre? Släng den!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Du kan återbetala avgifter, frakt och momsbelopp %s</string>
     <string name="shipping_label_validation_view_map">Öppna karta</string>
     <string name="shipping_label_validation_contact_customer">Kontakta kunden</string>
     <string name="shipping_label_validation_error_template">Validering misslyckades: %s</string>
@@ -471,7 +476,6 @@ Language: sv_SE
     <string name="product_schedule_sale_sublabel">Starta och avsluta en rea automatiskt</string>
     <string name="product_schedule_sale_label">Schemalägg rea</string>
     <string name="order_refunds_store_admin_link_text">i ditt administratörsarkiv</string>
-    <string name="order_refunds_shipping_refund_notice">Du kan återbetala frakt- och momsbelopp %s</string>
     <string name="orders_empty_message_with_order_status_filter">Vi hittade inga %s-ordrar</string>
     <string name="product_inventory_update_sku_error">SKU används redan av en annan produkt</string>
     <string name="product_shipping_settings">Fraktinställningar</string>

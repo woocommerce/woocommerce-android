@@ -91,7 +91,6 @@ Language: tr
     <string name="shipping_label_edit_address_loading_progress_title">Adres verileri yükleniyor</string>
     <string name="product_wip_title_m5">Yeni özellikler mevcut.</string>
     <string name="product_wip_message_m5">Artık bir ürüne indirilebilir dosyalar ekleyebilir ve daha yüksek satış ve çapraz satış ürünleri arasında bağlantı oluşturabilirsiniz. Bir ürünü artık istemiyor musunuz? Çöpe atın.</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Ücretleri, gönderin ve vergi tutarlarını iade edebilirsiniz %s</string>
     <string name="shipping_label_validation_view_map">Haritayı Aç</string>
     <string name="shipping_label_validation_contact_customer">Müşteri İle İletişime Geç</string>
     <string name="shipping_label_validation_error_template">Doğrulama başarısız: %s</string>
@@ -470,7 +469,6 @@ Language: tr
     <string name="product_schedule_sale_sublabel">Bir satışı otomatik başlat ve durdur</string>
     <string name="product_schedule_sale_label">Programlı satış</string>
     <string name="order_refunds_store_admin_link_text">mağaza yöneticinizde</string>
-    <string name="order_refunds_shipping_refund_notice">%s tutarında gönderim ve vergiyi iade edebilirsiniz</string>
     <string name="orders_empty_message_with_order_status_filter">Maalesef \"%s\" siparişi bulamadık</string>
     <string name="product_inventory_update_sku_error">SKU başka bir ürün için kullanılıyor</string>
     <string name="product_shipping_settings">Kargo ayarları</string>

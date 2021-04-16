@@ -91,7 +91,6 @@ Language: id
     <string name="shipping_label_edit_address_loading_progress_title">Memuat data alamat</string>
     <string name="product_wip_title_m5">Tersedia fitur baru!</string>
     <string name="product_wip_message_m5">Sekarang Anda dapat menambahkan file yang dapat diunduh ke produk dan menautkan produk upsell &amp; cross-sell. Tidak lagi ingin menampilkan produk? Hapus!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Anda dapat mengembalikan dana, pengiriman, dan jumlah pajak %s</string>
     <string name="shipping_label_validation_view_map">Buka Peta</string>
     <string name="shipping_label_validation_contact_customer">Hubungi Pelanggan</string>
     <string name="shipping_label_validation_error_template">Validasi gagal: %s</string>
@@ -471,7 +470,6 @@ Language: id
     <string name="product_schedule_sale_sublabel">Otomatis mulai dan akhiri penjualan</string>
     <string name="product_schedule_sale_label">Jadwalkan obral</string>
     <string name="order_refunds_store_admin_link_text">di admin toko Anda</string>
-    <string name="order_refunds_shipping_refund_notice">Anda dapat mengembalikan dana pengiriman dan jumlah pajak %s</string>
     <string name="orders_empty_message_with_order_status_filter">Maaf, kami tidak dapat menemukan pesanan \"%s\"</string>
     <string name="product_inventory_update_sku_error">SKU telah digunakan oleh produk lain</string>
     <string name="product_shipping_settings">Pengaturan pengiriman</string>

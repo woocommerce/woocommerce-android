@@ -91,7 +91,6 @@ Language: ko_KR
     <string name="shipping_label_edit_address_loading_progress_title">주소 데이터 로드 중</string>
     <string name="product_wip_title_m5">새 기능을 사용할 수 있습니다!</string>
     <string name="product_wip_message_m5">이제 다운로드 가능한 파일을 제품에 추가하고 상향 판매 및 교차 판매 제품을 연결할 수 있습니다. 더는 제품을 원하지 않나요? 휴지통에 버리세요!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">수수료, 배송비 및 세금(%s)을 환불할 수 있음</string>
     <string name="shipping_label_validation_view_map">지도 열기</string>
     <string name="shipping_label_validation_contact_customer">고객에게 문의</string>
     <string name="shipping_label_validation_error_template">유효성 검사 실패: %s</string>
@@ -471,7 +470,6 @@ Language: ko_KR
     <string name="product_schedule_sale_sublabel">자동 판매 시작 및 종료</string>
     <string name="product_schedule_sale_label">판매 일정</string>
     <string name="order_refunds_store_admin_link_text">스토어 관리자에서</string>
-    <string name="order_refunds_shipping_refund_notice">배송비 및 세금(%s)을 환불할 수 있습니다.</string>
     <string name="orders_empty_message_with_order_status_filter">죄송합니다. \"%s\" 주문을 찾을 수 없습니다.</string>
     <string name="product_inventory_update_sku_error">SKU가 다른 제품에서 이미 사용 중</string>
     <string name="product_shipping_settings">배송 설정</string>

@@ -91,7 +91,6 @@ Language: ja_JP
     <string name="shipping_label_edit_address_loading_progress_title">住所データを読み込んでいます</string>
     <string name="product_wip_title_m5">新機能を利用できます。</string>
     <string name="product_wip_message_m5">商品にダウンロード可能なファイルを追加して、アップセルとクロスセルの商品をリンクできるようになりました。 商品が不要になりましたか ? ゴミ箱に移動しましょう。</string>
-    <string name="order_refunds_shipping_refund_notice_fees">料金、配送料、税額の払い戻しを受けられます%s</string>
     <string name="shipping_label_validation_view_map">マップを開く</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
     <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
@@ -471,7 +470,6 @@ Language: ja_JP
     <string name="product_schedule_sale_sublabel">セールを自動的に開始、終了する</string>
     <string name="product_schedule_sale_label">セールの予定を設定</string>
     <string name="order_refunds_store_admin_link_text">ストア管理へ</string>
-    <string name="order_refunds_shipping_refund_notice">配送料と税額%sの返金をリクエストできます。</string>
     <string name="orders_empty_message_with_order_status_filter">「%s」の注文が見つかりませんでした。</string>
     <string name="product_inventory_update_sku_error">すでに別の製品で使用されている SKU</string>
     <string name="product_shipping_settings">配送設定</string>

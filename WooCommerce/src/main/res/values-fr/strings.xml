@@ -91,7 +91,6 @@ Language: fr
     <string name="shipping_label_edit_address_loading_progress_title">Données d’adresse en cours de chargement</string>
     <string name="product_wip_title_m5">Nouvelles fonctionnalités disponibles !</string>
     <string name="product_wip_message_m5">Vous pouvez désormais ajouter des fichiers téléchargeables à un produit et associer des produits suggérés et des ventes croisées. Vous ne voulez plus d’un produit ? Déplacez-le vers la corbeille !</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Vous pouvez rembourser les frais, les frais d’expédition et les taxes %s</string>
     <string name="shipping_label_validation_view_map">Ouvrir une carte</string>
     <string name="shipping_label_validation_contact_customer">Contacter le client</string>
     <string name="shipping_label_validation_error_template">Échec de la validation : %s</string>
@@ -471,7 +470,6 @@ Language: fr
     <string name="product_schedule_sale_sublabel">Commencer et terminer automatiquement une vente</string>
     <string name="product_schedule_sale_label">Planifier une vente</string>
     <string name="order_refunds_store_admin_link_text">depuis la page administration de votre boutique</string>
-    <string name="order_refunds_shipping_refund_notice">Vous pouvez rembourser les frais d’expédition et de taxe %s</string>
     <string name="orders_empty_message_with_order_status_filter">Désolé, impossible de trouver les commandes « %s »</string>
     <string name="product_inventory_update_sku_error">Cette UGS est déjà utilisée par un autre produit</string>
     <string name="product_shipping_settings">Paramètres de livraison</string>

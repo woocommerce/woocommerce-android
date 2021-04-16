@@ -91,7 +91,6 @@ Language: he_IL
     <string name="shipping_label_edit_address_loading_progress_title">טוען את הנתונים של הכתובת</string>
     <string name="product_wip_title_m5">אפשרויות חדשות זמינות!</string>
     <string name="product_wip_message_m5">כעת אפשר להוסיף קבצים שניתנים להורדה למוצר ולקשר מוצרים של שדרוגי מכירות ושל מכירות משלימות. אין לך עוד צורך במוצר מסוים? אפשר להעביר אותו לפח!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">אפשר להנפיק החזר כספי עבור סכומים של עמלות, משלוח ומיסים %s</string>
     <string name="shipping_label_validation_view_map">לפתוח את המפה</string>
     <string name="shipping_label_validation_contact_customer">ליצור קשר עם הלקוח</string>
     <string name="shipping_label_validation_error_template">האימות נכשל: %s</string>
@@ -471,7 +470,6 @@ Language: he_IL
     <string name="product_schedule_sale_sublabel">להתחיל ולסיים מבצע באופן אוטומטי</string>
     <string name="product_schedule_sale_label">לקבוע תאריך למבצע</string>
     <string name="order_refunds_store_admin_link_text">במנהל המערכת של החנות שלך</string>
-    <string name="order_refunds_shipping_refund_notice">אפשר לבצע החזר כספי על הסכומים של המשלוח והמס %s</string>
     <string name="orders_empty_message_with_order_status_filter">מצטערים, לא הצלחנו למצוא הזמנות של \"%s\"</string>
     <string name="product_inventory_update_sku_error">הקוד של SKU כבר נמצא בשימוש של מוצר אחר</string>
     <string name="product_shipping_settings">הגדרות משלוח</string>

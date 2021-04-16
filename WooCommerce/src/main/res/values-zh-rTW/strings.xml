@@ -91,7 +91,6 @@ Language: zh_TW
     <string name="shipping_label_edit_address_loading_progress_title">正在載入地址資料</string>
     <string name="product_wip_title_m5">現已推出新功能！</string>
     <string name="product_wip_message_m5">你現在可將可下載檔案新增到產品，並連結追加銷售和交叉銷售產品。 不再需要某個產品了嗎？ 移至垃圾桶！</string>
-    <string name="order_refunds_shipping_refund_notice_fees">你可以退還運費和稅款 %s</string>
     <string name="shipping_label_validation_view_map">開啟地圖</string>
     <string name="shipping_label_validation_contact_customer">聯絡客戶</string>
     <string name="shipping_label_validation_error_template">驗證失敗：%s</string>
@@ -471,7 +470,6 @@ Language: zh_TW
     <string name="product_schedule_sale_sublabel">自動開始及結束折扣優惠</string>
     <string name="product_schedule_sale_label">在商店管理員中</string>
     <string name="order_refunds_store_admin_link_text">排程折扣優惠</string>
-    <string name="order_refunds_shipping_refund_notice">你可以退還運費和稅款 %s</string>
     <string name="orders_empty_message_with_order_status_filter">不好意思，我們找不到任何「%s」訂單</string>
     <string name="product_inventory_update_sku_error">其他商品已使用此貨號</string>
     <string name="product_shipping_settings">運送設定</string>
