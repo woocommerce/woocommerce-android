@@ -121,6 +121,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     private val order: Order
     private val refunds: List<Refund>
+    private val allShippingLineIds: List<Long>
 
     private val maxRefund: BigDecimal
     private val maxQuantities: Map<Long, Int>
@@ -140,6 +141,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     init {
         order = loadOrder(arguments.orderId)
+        allShippingLineIds = order.shippingLines.map { it.itemId }
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
@@ -604,7 +606,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         val productsRefund = refundByItemsState.productsRefund
 
         if (isChecked) {
-            val allShippingLineIds = order.shippingLines.map { it.itemId }
             val shippingRefund = calculatePartialShippingTotal(allShippingLineIds)
 
             refundByItemsState = refundByItemsState.copy(
@@ -629,7 +630,14 @@ class IssueRefundViewModel @AssistedInject constructor(
         val list = refundByItemsState.selectedShippingLines?.toMutableList()
         val productsRefund = refundByItemsState.productsRefund
         if (list != null) {
-            if (isChecked) list += itemId else list -= itemId
+            if (isChecked && !list.contains(itemId)) {
+                list += itemId
+            }
+            else {
+                list -= itemId
+            }
+
+            refundByItemsState.selectedShippingLines?.filter { it != itemId }
 
             val newShippingRefundTotal = calculatePartialShippingTotal(list)
 
