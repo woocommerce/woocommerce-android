@@ -109,7 +109,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             .whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
 
-        doReturn(WooPlugin(true, true)).whenever(repository).getWooServicesPluginInfo()
+        doReturn(WooPlugin(true, true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
+            .whenever(repository).getWooServicesPluginInfo()
 
         viewModel = spy(OrderDetailViewModel(
             savedState,
@@ -591,7 +592,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(repository).getOrder(any())
         doReturn(order).whenever(repository).fetchOrder(any())
 
-        doReturn(WooPlugin(isInstalled = true, isActive = true)).whenever(repository).getWooServicesPluginInfo()
+        doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
+            .whenever(repository).getWooServicesPluginInfo()
         doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
         doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
 
@@ -612,12 +614,40 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `hide shipping label creation if wcs is older than supported version`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+
+            doReturn(WooPlugin(isInstalled = true, isActive = true, version = "1.25.10")).whenever(repository)
+                .getWooServicesPluginInfo()
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
+            doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
+
+            var isCreateShippingLabelButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+            }
+
+            viewModel.start()
+
+            verify(repository, never()).fetchSLCreationEligibility(any())
+            verify(repository, never()).isOrderEligibleForSLCreation(any())
+            assertThat(isCreateShippingLabelButtonVisible).isFalse()
+        }
+
+    @Test
     fun `hide shipping label creation if the order is not eligible`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(order).whenever(repository).getOrder(any())
         doReturn(order).whenever(repository).fetchOrder(any())
 
-        doReturn(WooPlugin(isInstalled = true, isActive = true)).whenever(repository).getWooServicesPluginInfo()
+        doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
+            .whenever(repository).getWooServicesPluginInfo()
         doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
         doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
 
@@ -640,24 +670,30 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `hide shipping label creation if wcs plugin is not installed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
 
-        doReturn(WooPlugin(isInstalled = false, isActive = false)).whenever(repository).getWooServicesPluginInfo()
+            doReturn(
+                WooPlugin(
+                    isInstalled = false, isActive = false, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
+                )
+            ).whenever(repository).getWooServicesPluginInfo()
 
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
-        doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
-        doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
+            doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
 
-        var isCreateShippingLabelButtonVisible: Boolean? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+            var isCreateShippingLabelButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+            }
+
+            viewModel.start()
+
+            verify(repository, never()).fetchSLCreationEligibility(any())
+            verify(repository, never()).isOrderEligibleForSLCreation(any())
+            assertThat(isCreateShippingLabelButtonVisible).isFalse()
         }
-
-        viewModel.start()
-
-        assertThat(isCreateShippingLabelButtonVisible).isFalse()
-    }
 }

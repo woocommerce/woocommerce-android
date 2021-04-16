@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import java.math.BigDecimal
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 @Parcelize
 data class ShippingLabel(
@@ -16,6 +17,7 @@ data class ShippingLabel(
     val serviceName: String = "",
     val status: String = "",
     val createdDate: Date? = null,
+    val expiryDate: Date? = null,
     val packageName: String = "",
     val rate: BigDecimal = BigDecimal.ZERO,
     val refundableAmount: BigDecimal = BigDecimal.ZERO,
@@ -28,9 +30,22 @@ data class ShippingLabel(
     val products: List<Order.Item> = emptyList()
 ) : Parcelable {
     @IgnoredOnParcel
-    var trackingLink: String = ShipmentTrackingUrls.fromCarrier(
-        carrierId, trackingNumber
-    ) ?: ""
+    val trackingLink: String
+        get() = ShipmentTrackingUrls.fromCarrier(
+            carrierId, trackingNumber
+        ) ?: ""
+
+    /**
+     * Checks if a label has been anonymized.
+     * An label gets anonymized when the store owner request its data to be removed from the server, for privacy reasons
+     */
+    @IgnoredOnParcel
+    val isAnonymized: Boolean
+        get() = status == "ANONYMIZED"
+
+    @IgnoredOnParcel
+    val refundExpiryDate: Date?
+        get() = createdDate?.let { Date(it.time + TimeUnit.DAYS.toMillis(30)) }
 
     @Parcelize
     data class Refund(
@@ -41,21 +56,22 @@ data class ShippingLabel(
 
 fun WCShippingLabelModel.toAppModel(): ShippingLabel {
     return ShippingLabel(
-        remoteShippingLabelId,
-        trackingNumber,
-        carrierId,
-        serviceName,
-        status,
-        dateCreated.toLongOrNull()?.let { Date(it) },
-        packageName,
-        rate.toBigDecimal(),
-        refundableAmount.toBigDecimal(),
-        currency,
-        getProductNameList().map { it.trim() },
-        getProductIdsList(),
-        getOriginAddress()?.toAppModel(),
-        getDestinationAddress()?.toAppModel(),
-        getRefundModel()?.toAppModel()
+        id = remoteShippingLabelId,
+        trackingNumber = trackingNumber,
+        carrierId = carrierId,
+        serviceName = serviceName,
+        status = status,
+        createdDate = dateCreated?.let { Date(it) },
+        expiryDate = expiryDate?.let { Date(it) },
+        packageName = packageName,
+        rate = rate.toBigDecimal(),
+        refundableAmount = refundableAmount.toBigDecimal(),
+        currency = currency,
+        productNames = getProductNameList().map { it.trim() },
+        productIds = getProductIdsList(),
+        originAddress = getOriginAddress()?.toAppModel(),
+        destinationAddress = getDestinationAddress()?.toAppModel(),
+        refund = getRefundModel()?.toAppModel()
     )
 }
 

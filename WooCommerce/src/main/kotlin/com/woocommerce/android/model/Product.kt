@@ -547,16 +547,3 @@ fun MediaModel.toAppModel(): Product.Image {
  */
 fun WCProductModel.toProductReviewProductModel() =
     ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
-
-/**
- * TODO: move to FluxC model
- */
-fun WCProductModel.ProductAttribute.toJson(): JsonObject {
-    return JsonObject().also { json ->
-        json.addProperty("id", id)
-        json.addProperty("name", name)
-        json.addProperty("visible", visible)
-        json.addProperty("variation", variation)
-        json.add("options", JsonArray().apply { options.forEach { add(it) } })
-    }
-}
