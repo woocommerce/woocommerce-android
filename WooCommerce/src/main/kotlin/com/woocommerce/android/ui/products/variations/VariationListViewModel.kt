@@ -62,22 +62,6 @@ class VariationListViewModel @AssistedInject constructor(
         }
     }
 
-    fun refreshParentProduct(productID: Long, withLoadingDialog: Boolean = false) = launch {
-        viewState = viewState.copy(
-            isSkeletonShown = withLoadingDialog.not(),
-            isEmptyViewVisible = false
-        )
-
-        productRepository.fetchProduct(productID)
-            ?.let { viewState.copy(parentProduct = it) }
-            ?.let { viewState = it }
-            ?.also { refreshVariations(productID) }
-            ?: viewState.copy(
-                isSkeletonShown = false,
-                isProgressDialogShown = false
-            ).let { viewState = it }
-    }
-
     fun refreshVariations(remoteProductId: Long) {
         viewState = viewState.copy(isRefreshing = true)
         loadVariations(remoteProductId)
@@ -108,6 +92,7 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     fun onCreateEmptyVariationRequested() {
+        // TODO: tracks event
         viewState = viewState.copy(isProgressDialogShown = true)
         viewState.parentProduct?.let {
             createEmptyVariation(
@@ -117,13 +102,35 @@ class VariationListViewModel @AssistedInject constructor(
         }
     }
 
+    fun onVariationDeleted(productIdOfDeletedVariation: Long) {
+        viewState = viewState.copy(isSkeletonShown = true)
+        refreshParentProduct(productIdOfDeletedVariation)
+    }
+
     fun onExit() {
         triggerEvent(ExitWithResult(VariationListData(viewState.parentProduct?.numVariations)))
     }
 
     private fun createEmptyVariation(product: Product?, withLoadingDialog: Boolean = false) = launch {
+        viewState = viewState.copy(
+            isSkeletonShown = withLoadingDialog.not(),
+            isEmptyViewVisible = false
+        )
+
         product?.apply { variationListRepository.createEmptyVariation(this) }
-            ?.also { refreshParentProduct(product.remoteId, withLoadingDialog) }
+            ?.also { refreshParentProduct(product.remoteId) }
+    }
+
+
+    private fun refreshParentProduct(productID: Long) = launch {
+        productRepository.fetchProduct(productID)
+            ?.let { viewState.copy(parentProduct = it) }
+            ?.let { viewState = it }
+            ?.also { refreshVariations(productID) }
+            ?: viewState.copy(
+                isSkeletonShown = false,
+                isProgressDialogShown = false
+            ).let { viewState = it }
     }
 
     private fun loadVariations(remoteProductId: Long, loadMore: Boolean = false) {
