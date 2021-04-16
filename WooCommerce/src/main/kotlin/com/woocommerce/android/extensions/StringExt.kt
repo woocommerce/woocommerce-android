@@ -6,6 +6,7 @@ import android.text.method.LinkMovementMethod
 import android.widget.TextView
 import com.woocommerce.android.widgets.WooClickableSpan
 import org.apache.commons.text.StringEscapeUtils
+import java.lang.NumberFormatException
 
 /**
  * Checks if a given string is a number (supports positive or negative numbers)
@@ -93,4 +94,23 @@ private fun SpannableString.buildClickableUrlSpan(
         fullContent.length,
         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
     )
+}
+
+fun String.semverCompareTo(otherVersion: String): Int {
+    try {
+        val thisVersionTokens = substringBefore("-").split(".").map { Integer.parseInt(it) }
+        val otherVersionTokens = otherVersion.substringBefore("-").split(".").map { Integer.parseInt(it) }
+
+        thisVersionTokens.forEachIndexed { index, token ->
+            if (token > otherVersionTokens[index]) {
+                return 1
+            } else if (token < otherVersionTokens[index]) {
+                return -1
+            }
+        }
+        return 0
+    } catch (e: NumberFormatException) {
+        // if the parsing fails, consider this version lower than the other one
+        return -1
+    }
 }

@@ -179,7 +179,7 @@ object OrderTestUtils {
             remoteShippingLabelId = shippingLabelId
             packageName = "Package"
             serviceName = "Service"
-            dateCreated = Date().time.toString()
+            dateCreated = Date().time
         }.toAppModel()
     }
 
@@ -192,7 +192,7 @@ object OrderTestUtils {
                 remoteShippingLabelId = i.toLong()
                 packageName = "Package$i"
                 serviceName = "Service$i"
-                dateCreated = Date().time.toString()
+                dateCreated = Date().time
             }.toAppModel())
         }
         return result
