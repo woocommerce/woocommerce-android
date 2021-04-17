@@ -863,6 +863,7 @@
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
     <string name="variation_create_dialog_title">Creating variation</string>
+    <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
 
     <!--
         Product images

@@ -115,6 +115,24 @@ class VariationDetailViewModel @AssistedInject constructor(
         triggerEvent(target)
     }
 
+    fun onDeleteVariationClicked() {
+        triggerEvent(
+            ShowDialog(
+                positiveBtnAction = { _, _ ->
+                    // TODO: trigger track
+                    viewState = viewState.copy(isConfirmingDeletion = false)
+                    deleteVariation()
+                },
+                negativeBtnAction = { _, _ ->
+                    viewState = viewState.copy(isConfirmingDeletion = false)
+                },
+                messageId = string.variation_confirm_delete,
+                positiveButtonId = string.delete,
+                negativeButtonId = string.cancel
+            )
+        )
+    }
+
     fun onExit() {
         when {
             ProductImagesService.isUploadingForProduct(viewState.variation.remoteVariationId) -> {
@@ -148,11 +166,6 @@ class VariationDetailViewModel @AssistedInject constructor(
         AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
         val images = viewState.variation.image?.let { listOf(it) } ?: emptyList()
         triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, images, showChooser = true))
-    }
-
-    fun onDeleteVariationClicked() {
-        // TODO: trigger track
-        deleteVariation()
     }
 
     fun isUploadingImages(remoteId: Long) = ProductImagesService.isUploadingForProduct(remoteId)
@@ -255,18 +268,23 @@ class VariationDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(isDeleteDialogShown = true)
         viewState.parentProduct?.remoteId?.let { productID ->
             variationRepository.deleteVariation(productID, viewState.variation.remoteVariationId)
-                .also {
-                    if (it) triggerEvent(
-                        ExitWithResult(
-                            DeletedVariationData(
-                                productID,
-                                viewState.variation.remoteVariationId
-                            )
-                        )
-                    )
-                    viewState = viewState.copy(isDeleteDialogShown = false)
-                }
+                .also { handleVariationDeletion(it, productID) }
         }
+    }
+
+    private fun handleVariationDeletion(deleted: Boolean, productID: Long) {
+        if (deleted) triggerEvent(
+            ExitWithResult(
+                DeletedVariationData(
+                    productID,
+                    viewState.variation.remoteVariationId
+                )
+            )
+        ) else if (deleted.not() && networkStatus.isConnected().not()) {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+
+        viewState = viewState.copy(isDeleteDialogShown = false)
     }
 
     private fun loadVariation(remoteProductId: Long, remoteVariationId: Long) {
@@ -406,7 +424,8 @@ class VariationDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val shippingClass: String? = null,
         val parentProduct: Product? = null,
-        val uploadingImageUri: Uri? = null
+        val uploadingImageUri: Uri? = null,
+        val isConfirmingDeletion: Boolean? = null
     ) : Parcelable
 
     @Parcelize
