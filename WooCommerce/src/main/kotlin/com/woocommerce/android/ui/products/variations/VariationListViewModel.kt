@@ -56,7 +56,7 @@ class VariationListViewModel @AssistedInject constructor(
         productRepository.getProduct(remoteProductId).let {
             viewState = viewState.copy(parentProduct = it)
             when (createNewVariation) {
-                true -> createEmptyVariation(it)
+                true -> handleVariationCreation()
                 else -> loadVariations(remoteProductId)
             }
         }
@@ -91,15 +91,9 @@ class VariationListViewModel @AssistedInject constructor(
         triggerEvent(ShowAddAttributeView)
     }
 
-    fun onCreateEmptyVariationRequested() {
+    fun onCreateEmptyVariationClick() {
         // TODO: tracks event
-        viewState = viewState.copy(isProgressDialogShown = true)
-        viewState.parentProduct?.let {
-            createEmptyVariation(
-                product = it,
-                withLoadingDialog = true
-            )
-        }
+        handleVariationCreation()
     }
 
     fun onVariationDeleted(productIdOfDeletedVariation: Long) {
@@ -111,14 +105,30 @@ class VariationListViewModel @AssistedInject constructor(
         triggerEvent(ExitWithResult(VariationListData(viewState.parentProduct?.numVariations)))
     }
 
-    private fun createEmptyVariation(product: Product?, withLoadingDialog: Boolean = false) = launch {
+    private fun handleVariationCreation() = launch {
+        viewState = viewState.copy(isProgressDialogShown = true)
+        viewState.parentProduct?.let {
+            createEmptyVariation(
+                product = it,
+                withLoadingDialog = true
+            )
+        }?.let {
+            viewState = viewState.copy(isProgressDialogShown = false)
+            triggerEvent(ShowVariationDetail(it))
+        } ?: viewState.copy(isProgressDialogShown = false).let { viewState = it }
+    }
+
+    private suspend fun createEmptyVariation(
+        product: Product?,
+        withLoadingDialog: Boolean = false
+    ): ProductVariation? {
         viewState = viewState.copy(
             isSkeletonShown = withLoadingDialog.not(),
             isEmptyViewVisible = false
         )
 
-        product?.apply { variationListRepository.createEmptyVariation(this) }
-            ?.also { refreshParentProduct(product.remoteId) }
+        return product?.let { variationListRepository.createEmptyVariation(it) }
+            ?.apply { refreshParentProduct(product.remoteId) }
     }
 
     private fun refreshParentProduct(productID: Long) = launch {

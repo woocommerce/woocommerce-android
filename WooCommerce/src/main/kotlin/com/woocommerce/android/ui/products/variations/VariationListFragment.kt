@@ -163,7 +163,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         }
 
         binding.addVariationButton.setOnClickListener {
-            viewModel.onCreateEmptyVariationRequested()
+            viewModel.onCreateEmptyVariationClick()
         }
     }
 
