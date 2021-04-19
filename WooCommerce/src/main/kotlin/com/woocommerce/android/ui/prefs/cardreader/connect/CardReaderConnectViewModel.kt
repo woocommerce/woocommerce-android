@@ -1,7 +1,7 @@
-package com.woocommerce.android.ui.prefs.cardreader
+package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.ui.prefs.cardreader.CardReaderConnectViewModel.NavigationTarget.InitiateCardReaderScan
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget.InitiateCardReaderScan
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -9,8 +9,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog.T
 
 class CardReaderConnectViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,

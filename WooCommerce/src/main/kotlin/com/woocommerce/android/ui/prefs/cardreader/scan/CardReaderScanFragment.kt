@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.prefs.cardreader
+package com.woocommerce.android.ui.prefs.cardreader.scan
 
 import android.os.Bundle
 import android.view.View

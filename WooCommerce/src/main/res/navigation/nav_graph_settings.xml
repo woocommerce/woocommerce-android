@@ -54,11 +54,11 @@
     </fragment>
     <fragment
         android:id="@+id/cardReaderScanFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.CardReaderScanFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.scan.CardReaderScanFragment"
         android:label="CardReaderScanFragment" />
     <fragment
         android:id="@+id/cardReaderConnectFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.CardReaderConnectFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
         android:label="CardReaderConnectFragment" >
         <action
             android:id="@+id/action_cardReaderConnectFragment_to_cardReaderScanFragment"

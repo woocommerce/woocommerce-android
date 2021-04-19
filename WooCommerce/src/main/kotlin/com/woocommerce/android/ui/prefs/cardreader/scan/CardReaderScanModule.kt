@@ -1,9 +1,10 @@
-package com.woocommerce.android.ui.prefs.cardreader
+package com.woocommerce.android.ui.prefs.cardreader.scan
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.prefs.cardreader.scan.CardReaderScanViewModel.Factory
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
@@ -25,5 +26,5 @@ abstract class CardReaderScanModule {
     @Binds
     @IntoMap
     @ViewModelKey(CardReaderScanViewModel::class)
-    abstract fun bindFactory(factory: CardReaderScanViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    abstract fun bindFactory(factory: Factory): ViewModelAssistedFactory<out ViewModel>
 }

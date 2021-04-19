@@ -1,8 +1,7 @@
-package com.woocommerce.android.ui.prefs.cardreader
+package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.NonNull
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -10,7 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderConnectBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.prefs.cardreader.CardReaderConnectViewModel.NavigationTarget.InitiateCardReaderScan
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget.InitiateCardReaderScan
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
