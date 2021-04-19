@@ -12,16 +12,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/product_property_warning_layout"
+        <com.woocommerce.android.widgets.WCWarningBanner
             android:id="@+id/variationVisibilityWarning"
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/variationList"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent"
+            app:message="@string/variation_detail_price_warning"
+            app:title="@string/variation_detail_price_warning_title" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/variationList"

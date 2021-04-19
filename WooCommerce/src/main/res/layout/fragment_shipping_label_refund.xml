@@ -4,8 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    android:padding="@dimen/major_75">
+    android:background="?attr/colorSurface">
+
+    <com.woocommerce.android.widgets.WCWarningBanner
+        android:id="@+id/expiration_warning_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent"
+        app:message="@string/shipping_label_refund_expired" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/shippingLabelRefund_info"
@@ -14,7 +21,8 @@
         android:layout_height="wrap_content"
         android:text="@string/shipping_label_refund_message"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="@dimen/major_100"
+        app:layout_constraintTop_toBottomOf="@id/expiration_warning_banner" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/shippingLabelRefund_purchaseDate_title"

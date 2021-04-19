@@ -136,10 +136,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 showMarkOrderCompleteButton(it)
             }
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
-                showShippingLabelButton(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()))
+                showShippingLabelButton(it)
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()), false)
+                displayShippingLabelsWIPCard(it, false)
             }
             new.isReprintShippingLabelBannerVisible.takeIfNotEqualTo(old?.isReprintShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it, true)
@@ -356,7 +356,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner)
                 R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
             else
-                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m2_wip_message
+                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m3_wip_message
 
             binding.orderDetailShippingLabelsWipCard.initView(
                 getString(wipCardTitleId),

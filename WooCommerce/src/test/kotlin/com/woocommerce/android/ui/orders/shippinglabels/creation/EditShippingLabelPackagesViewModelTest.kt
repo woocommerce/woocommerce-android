@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -80,9 +79,6 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
-        whenever(parameterRepository.getParameters(any(), any())).thenReturn(
-            SiteParameters("", "kg", "", 0f)
-        )
         viewModel = EditShippingLabelPackagesViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,

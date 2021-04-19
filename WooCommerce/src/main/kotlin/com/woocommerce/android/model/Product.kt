@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -547,15 +547,3 @@ fun MediaModel.toAppModel(): Product.Image {
  */
 fun WCProductModel.toProductReviewProductModel() =
     ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
-
-/**
- * TODO: move to FluxC model
- */
-fun WCProductModel.ProductAttribute.toJson(): JsonObject {
-    return JsonObject().also { json ->
-        json.addProperty("id", id)
-        json.addProperty("name", name)
-        json.addProperty("visible", visible)
-        json.addProperty("options", options.joinToString())
-    }
-}

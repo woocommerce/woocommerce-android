@@ -140,7 +140,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
         viewModel.onPaymentMethodSelected(paymentMethods[1])
         viewModel.onEmailReceiptsCheckboxChanged(false)
-        viewModel.saveSettings()
+        viewModel.onDoneButtonClicked()
 
         verify(shippingLabelRepository).updatePaymentSettings(paymentMethods[1].id, false)
         assertThat(event).isEqualTo(ExitWithResult(paymentMethods[1]))
@@ -157,7 +157,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
         viewModel.onPaymentMethodSelected(paymentMethods[1])
         viewModel.onEmailReceiptsCheckboxChanged(false)
-        viewModel.saveSettings()
+        viewModel.onDoneButtonClicked()
 
         verify(shippingLabelRepository).updatePaymentSettings(paymentMethods[1].id, false)
         assertThat(event).isEqualTo(ShowSnackbar(R.string.shipping_label_payments_saving_error))

@@ -124,10 +124,11 @@ class ShippingLabelsStateMachineTest {
                     "title",
                     false,
                     "provider",
-                    PackageDimensions(10.0f, 10.0f, 10.0f)
+                    PackageDimensions(10.0f, 10.0f, 10.0f),
+                    1f
                 ),
                 weight = 10.0f,
-                items = listOf(Item(10L, "item", "attributes", "10kgs"))
+                items = listOf(Item(10L, "item", "attributes", 10f))
             )
         )
 

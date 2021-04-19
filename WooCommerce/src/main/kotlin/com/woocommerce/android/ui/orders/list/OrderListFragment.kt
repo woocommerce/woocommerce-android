@@ -379,10 +379,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
         binding.orderListView.submitPagedList(pagedListData)
-
-        if (pagedListData?.size != 0 && isSearching) {
-            WPActivityUtils.hideKeyboard(activity)
-        }
     }
 
     /**

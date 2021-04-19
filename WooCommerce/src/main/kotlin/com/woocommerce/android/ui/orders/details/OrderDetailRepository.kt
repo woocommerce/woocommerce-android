@@ -297,7 +297,7 @@ class OrderDetailRepository @Inject constructor(
 
     fun getWooServicesPluginInfo(): WooPlugin {
         val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
-        return WooPlugin(info != null, info?.active ?: false)
+        return WooPlugin(info != null, info?.active ?: false, info?.version)
     }
 
     fun getStoreCountryCode(): String? {
