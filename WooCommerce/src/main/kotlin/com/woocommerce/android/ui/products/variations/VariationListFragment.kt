@@ -122,7 +122,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         super.onPrepareOptionsMenu(menu)
 
         if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
-            menu.findItem(ID_EDIT_ATTRIBUTES)?.isVisible = !viewModel.isEmpty()
+            menu.findItem(ID_EDIT_ATTRIBUTES)?.isVisible = !viewModel.isEmpty
         }
     }
 
@@ -208,7 +208,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
 
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
         handleResult<DeletedVariationData>(KEY_VARIATION_DETAILS_RESULT) {
-            viewModel.onVariationDeleted(it.productID)
+            viewModel.onVariationDeleted()
         }
     }
 
