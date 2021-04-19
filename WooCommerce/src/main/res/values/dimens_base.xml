@@ -84,6 +84,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="skeleton_list_header_text_height_100">@dimen/major_100</dimen>
     <dimen name="skeleton_list_item_title_text_height_100">@dimen/major_110</dimen>
     <dimen name="skeleton_list_item_body_text_height_100">@dimen/major_100</dimen>
+    <dimen name="skeleton_list_spinner_text_field_height_100">@dimen/image_major_50</dimen>
     <dimen name="skeleton_bar_chart_bar_width_days">14dp</dimen>
     <dimen name="skeleton_bar_chart_bar_width_weeks">18dp</dimen>
     <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>

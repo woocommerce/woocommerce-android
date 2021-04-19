@@ -15,7 +15,7 @@
 
     <color name="color_surface_elevated_04">@color/woo_white</color>
 
-    <color name="color_on_surface">@color/black</color>
+    <color name="color_on_surface">@android:color/black</color>
     <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>

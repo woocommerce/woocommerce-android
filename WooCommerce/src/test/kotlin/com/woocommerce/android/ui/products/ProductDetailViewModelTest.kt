@@ -44,12 +44,17 @@ import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
         private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
+        private val SALE_END_DATE = Date.from(LocalDateTime.of(2020, 4, 1, 8, 0)
+            .toInstant(ZoneOffset.UTC))
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -496,4 +501,56 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
         assertThat(isTrashDialogShown).isFalse()
     }
+
+    @Test
+    fun `Should update view state with not null sale end date when sale is scheduled`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        viewModel.start()
+        viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = true)
+
+        assertThat(productsDraft?.saleEndDateGmt).isEqualTo(SALE_END_DATE)
+    }
+
+    @Test
+    fun `Should update with stored product sale end date when sale is not scheduled`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        viewModel.start()
+        viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = false)
+
+        assertThat(productsDraft?.saleEndDateGmt).isEqualTo(product.saleEndDateGmt)
+    }
+
+    @Test
+    fun `Should update sale end date when sale schedule is unknown but stored product sale is scheduled`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        val storedProduct = product.copy(isSaleScheduled = true)
+        doReturn(storedProduct).whenever(productRepository).getProduct(any())
+
+        viewModel.start()
+        viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = null)
+
+        assertThat(productsDraft?.saleEndDateGmt).isEqualTo(SALE_END_DATE)
+    }
+
+    @Test
+    fun `Should update with null sale end date and stored product has scheduled sale`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        val storedProduct = product.copy(
+            saleEndDateGmt = SALE_END_DATE,
+            isSaleScheduled = true
+        )
+        doReturn(storedProduct).whenever(productRepository).getProduct(any())
+
+        viewModel.start()
+        viewModel.updateProductDraft(saleEndDate = null)
+
+        assertThat(productsDraft?.saleEndDateGmt).isNull()
+    }
+
+    private val productsDraft
+        get() = viewModel.productDetailViewStateData.liveData.value?.productDraft
 }

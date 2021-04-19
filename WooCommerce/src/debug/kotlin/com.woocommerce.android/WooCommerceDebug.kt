@@ -8,14 +8,27 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
+import com.woocommerce.android.cardreader.CardReaderManagerFactory
+import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponentDebug
 
 class WooCommerceDebug : WooCommerce() {
+    override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
+        override suspend fun getConnectionToken(): String {
+            val result = payStore.fetchConnectionToken(selectedSite.get())
+            return result.model?.token.orEmpty()
+        }
+
+        override suspend fun capturePaymentIntent(id: String): Boolean {
+            return false
+        }
+    })
+
     override val component: AppComponent by lazy {
         DaggerAppComponentDebug.builder()
-                .application(this)
-                .build()
+            .application(this)
+            .build()
     }
 
     override fun onCreate() {

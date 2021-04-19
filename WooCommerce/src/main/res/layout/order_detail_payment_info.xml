@@ -357,6 +357,16 @@
                 android:layout_marginEnd="@dimen/minor_00"
                 android:text="@string/orderdetail_issue_refund_button"/>
 
+            <!-- Accept Card Present Payment button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/paymentInfo_collectCardPresentPaymentButton"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="@dimen/minor_00"
+                android:text="@string/orderdetail_collect_payment_button"/>
+
         </LinearLayout>
     </LinearLayout>
 </merge>

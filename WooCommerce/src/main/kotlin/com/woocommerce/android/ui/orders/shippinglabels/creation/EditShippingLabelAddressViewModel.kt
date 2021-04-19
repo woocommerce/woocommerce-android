@@ -2,8 +2,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
@@ -24,6 +25,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.data.WCLocationModel
@@ -256,6 +258,6 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         val isContactCustomerButtonVisible = !address?.phone.isNullOrBlank()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<EditShippingLabelAddressViewModel>
 }

@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.net.Uri
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
@@ -40,6 +41,6 @@ class AddProductDownloadViewModel @AssistedInject constructor(
     object PickFileFromDevice : Event()
     data class UploadFile(val uri: Uri) : Event()
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<AddProductDownloadViewModel>
 }

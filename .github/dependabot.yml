@@ -1,13 +1,12 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     directory: "/"
     schedule:
       interval: "daily"
     reviewers:
       - "woocommerce/android-developers"
-      - "woocommerce/platform-9"
     ignore:
       # The Android Gradle Plugin is a dependency we'd like to have in sync with other
       # in-house libraries due to compatibility with composite build.

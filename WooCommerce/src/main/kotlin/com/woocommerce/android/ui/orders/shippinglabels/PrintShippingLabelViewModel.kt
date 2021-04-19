@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Parcelable
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -106,6 +107,6 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         val tempFile: File? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<PrintShippingLabelViewModel>
 }

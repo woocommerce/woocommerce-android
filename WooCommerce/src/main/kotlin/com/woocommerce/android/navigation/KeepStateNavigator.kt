@@ -2,6 +2,7 @@ package com.woocommerce.android.navigation
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavDestination
@@ -41,6 +42,14 @@ class KeepStateNavigator(
         val cls = Class.forName(destination.className)
         if (!TopLevelFragment::class.java.isAssignableFrom(cls)) {
             return super.navigate(destination, args, navOptions, navigatorExtras)
+        }
+
+        if (manager.isStateSaved) {
+            Log.i(
+                KeepStateNavigator::class.simpleName, "Ignoring navigate() call: FragmentManager has already" +
+                " saved its state"
+            )
+            return null
         }
 
         val tag = destination.id.toString()

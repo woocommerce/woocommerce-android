@@ -2,8 +2,9 @@ package com.woocommerce.android.ui.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -34,6 +35,6 @@ class LoginNoJetpackViewModel @AssistedInject constructor(
         loginNoJetpackRepository.onCleanup()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<LoginNoJetpackViewModel>
 }

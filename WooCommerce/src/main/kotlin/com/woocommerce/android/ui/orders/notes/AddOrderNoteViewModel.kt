@@ -2,8 +2,9 @@ package com.woocommerce.android.ui.orders.notes
 
 import android.content.DialogInterface
 import android.os.Parcelable
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
@@ -133,6 +134,6 @@ class AddOrderNoteViewModel @AssistedInject constructor(
             get() = draftNote.note.isNotBlank()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<AddOrderNoteViewModel>
 }

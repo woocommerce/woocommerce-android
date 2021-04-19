@@ -5,8 +5,9 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -21,6 +22,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.ProductVariation.Option
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -32,8 +34,6 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.Optional
-import com.woocommerce.android.util.OptionalViewState
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -163,12 +163,12 @@ class VariationDetailViewModel @AssistedInject constructor(
         image: Image? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
-        saleEndDate: Optional<Date>? = null,
-        saleStartDate: Optional<Date>? = null,
+        saleEndDate: Date? = viewState.variation.saleEndDateGmt,
+        saleStartDate: Date? = viewState.variation.saleStartDateGmt,
         isSaleScheduled: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         backorderStatus: ProductBackorderStatus? = null,
-        stockQuantity: Int? = null,
+        stockQuantity: Double? = null,
         options: List<Option>? = null,
         isPurchasable: Boolean? = null,
         isVirtual: Boolean? = null,
@@ -178,6 +178,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         isStockManaged: Boolean? = null,
         shippingClass: String? = null,
         shippingClassId: Long? = null,
+        attributes: Array<VariantOption>? = null,
         length: Float? = null,
         width: Float? = null,
         height: Float? = null,
@@ -190,8 +191,8 @@ class VariationDetailViewModel @AssistedInject constructor(
             image = image ?: viewState.variation.image,
             regularPrice = regularPrice ?: viewState.variation.regularPrice,
             salePrice = salePrice ?: viewState.variation.salePrice,
-            saleEndDateGmt = if (saleEndDate != null) saleEndDate.value else viewState.variation.saleEndDateGmt,
-            saleStartDateGmt = if (saleStartDate != null) saleStartDate.value else viewState.variation.saleStartDateGmt,
+            saleEndDateGmt = saleEndDate,
+            saleStartDateGmt = saleStartDate,
             isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
             stockStatus = stockStatus ?: viewState.variation.stockStatus,
             backorderStatus = backorderStatus ?: viewState.variation.backorderStatus,
@@ -205,6 +206,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             isStockManaged = isStockManaged ?: viewState.variation.isStockManaged,
             shippingClass = shippingClass ?: viewState.variation.shippingClass,
             shippingClassId = shippingClassId ?: viewState.variation.shippingClassId,
+            attributes = attributes ?: viewState.variation.attributes,
             length = length ?: viewState.variation.length,
             width = width ?: viewState.variation.width,
             height = height ?: viewState.variation.height,
@@ -312,12 +314,12 @@ class VariationDetailViewModel @AssistedInject constructor(
         viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
             val uri = ProductImagesService.getUploadingImageUris(remoteProductId)?.firstOrNull()
             viewState.copy(
-                uploadingImageUri = OptionalViewState(uri),
+                uploadingImageUri = uri,
                 isDoneButtonEnabled = false
             )
         } else {
             viewState.copy(
-                uploadingImageUri = OptionalViewState(),
+                uploadingImageUri = null,
                 isDoneButtonEnabled = true
             )
         }
@@ -379,9 +381,9 @@ class VariationDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val shippingClass: String? = null,
         val parentProduct: Product? = null,
-        val uploadingImageUri: OptionalViewState<Uri>? = null
+        val uploadingImageUri: Uri? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<VariationDetailViewModel>
 }

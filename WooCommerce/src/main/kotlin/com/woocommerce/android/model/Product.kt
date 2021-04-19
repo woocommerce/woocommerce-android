@@ -52,7 +52,7 @@ data class Product(
     val regularPrice: BigDecimal?,
     val taxClass: String,
     val isStockManaged: Boolean,
-    val stockQuantity: Int,
+    val stockQuantity: Double,
     val sku: String,
     val shippingClass: String,
     val shippingClassId: Long,
@@ -557,5 +557,6 @@ fun WCProductModel.ProductAttribute.toJson(): JsonObject {
         json.addProperty("name", name)
         json.addProperty("visible", visible)
         json.addProperty("options", options.joinToString())
+        json.addProperty("variation", variation)
     }
 }

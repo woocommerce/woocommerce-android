@@ -2,8 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -65,6 +66,6 @@ class ProductSortingViewModel @AssistedInject constructor(
         val value: ProductSorting
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ProductSortingViewModel>
 }

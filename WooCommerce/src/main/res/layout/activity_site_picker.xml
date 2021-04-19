@@ -84,7 +84,9 @@
 
             <include
                 android:id="@+id/no_stores_view"
-                layout="@layout/view_login_no_stores" />
+                layout="@layout/view_login_no_stores"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

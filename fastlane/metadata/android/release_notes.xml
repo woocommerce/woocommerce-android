@@ -1,136 +1,102 @@
 <ar>
-6.3:
-يوفِّر تطبيق WooCommerce المتوافق مع نظام تشغيل Android 6.3 تحديثين مهمين للمستخدمين:
-
-- يمكنك الآن تضمين عبارة "قابل للتنزيل" في تفاصيل نوع المنتج إن أمكن.
-- أصلحنا خطأ بحيث تظهر حالة طلب العميل بشكل صحيح الآن في تفاصيل الطلب.
-
+6.4:
+قمنا بالقليل من التحسينات في هذا الإصدار.
+أصلحنا خطأ كان يمنع التطبيق من تحميل المنتجات عند وجود قيمة عشرية في كمية المخزون.
+أصلحنا كذلك مشكلة تخطيط كانت تحدث في شاشة خيار تنسيقات ملصق الشحن.
 </ar>
 <de-DE>
-6.3:
-WooCommerce Android 6.3 hält zwei wichtige Updates bereit:
-
-- Falls zutreffend kannst du jetzt in den Produktdetails „Zum Herunterladen“ angeben.
-- Wir haben einen Fehler behoben, sodass der Status einzelner Bestellungen jetzt korrekt unter den Bestelldetails angezeigt wird.
-
+6.4:
+Wir haben in dieser Release ein paar Verbesserungen vorgenommen.
+Wir haben einen Fehler behoben, der dazu führte, dass Produkte in der App nicht geladen wurde, wenn im Lagerbestand ein Dezimalwert angegeben war.
+Außerdem haben wir ein Problem am Layout behoben, das an den Optionen für Versandetikettenformate auftrat.
 </de-DE>
 <es-ES>
-6.3:
-WooCommerce para Android 6.3 ofrece a los usuarios dos mejoras importantes:
-
-- Cuando proceda, ya puedes incluir "descargable" en los detalles del tipo de producto.
-- Hemos solucionado un error para que el estado de los pedidos personalizados aparezca correctamente en los detalles del pedido.
-
+6,4:
+Hemos realizado algunas mejoras en esta versión.
+Hemos corregido un error que impedía que la aplicación cargara productos cuando había un valor decimal en la cantidad de existencias.
+También hemos solucionado un problema de diseño que se producía en la pantalla de opciones de formatos de etiquetas de envío.
 </es-ES>
 <fr-FR>
-6.3 :
-WooCommerce Android 6.3 propose aux utilisateurs deux mises à jour importantes :
-
-- Le cas échéant, vous pouvez désormais inclure « téléchargeable » dans les détails de type d’un produit.
-- Nous avons résolu un bug afin que l’état d’une commande personnalisée s’affiche désormais correctement dans les détails de la commande.
-
+6.4 :
+Nous avons apporté quelques améliorations à cette version.
+Nous avons résolu un bogue qui empêchait l’application de charger des produits lorsqu’il y avait une valeur décimale dans la quantité en stock.
+Nous avons également résolu un problème de mise en page qui se produisait sur l’écran d’option des formats des étiquettes d’expédition.
 </fr-FR>
 <iw-IL>
-6.3:
-גרסת 6.3 של WooCommerce ל-Android כוללת שני עדכונים חשובים למשתמשים:
-
-- אם רלוונטי, אפשר להוסיף אפשרות 'להורדה' בפרטי הסוג של המוצר.
-- תיקנו באג כדי לוודא שסטטוס ההזמנה המותאם מופיע כעת בצורה תקינה בפרטי ההזמנה.
-
+6.4:
+ביצענו כמה שיפורים בגרסה הזאת.
+תיקנו באג שמנע מהאפליקציה לטעון מוצרים כאשר הכמות במלאי הכילה ערך עשרוני.
+תיקנו גם בעיה בפריסה שהתרחשה במסך האפשרויות של הפורמטים לתוויות משלוח.
 </iw-IL>
 <id>
-6.3:
-WooCommerce Android 6.3 memberikan dua pembaruan penting untuk pengguna:
-
-- Jika dibutuhkan, sekarang Anda dapat menyertakan “bahan unduhan” pada detail tipe produk.
-- Kami telah memperbaiki bug sehingga status pesanan khusus ditampilkan dengan benar pada detail pesanan.
-
+6.4:
+Kami melakukan sejumlah peningkatan pada rilis ini.
+Kami memperbaiki bug yang membuat aplikasi tidak dapat memuat produk saat ada nilai desimal pada jumlah stok.
+Kami juga memperbaiki masalah tata letak yang muncul pada layar opsi format label pengiriman.
 </id>
 <it-IT>
-6.3:
-WooCommerce per Android 6.3 offre agli utenti due importanti aggiornamenti:
-
-- Se applicabile, puoi ora includere "scaricabile" nei dettagli del tipo di prodotto.
-- Abbiamo risolto un bug in modo che lo stato di un ordine personalizzato ora venga visualizzato correttamente nei dettagli dell'ordine.
-
+6.4:
+Abbiamo apportato alcuni miglioramenti in questo rilascio.
+Abbiamo corretto un bug che impediva all'applicazione di caricare i prodotti quando era presente un valore decimale nella quantità in magazzino.
+Abbiamo anche corretto un problema di layout che si presentava sulla schermata delle opzioni dei formati dell'etichetta di spedizione.
 </it-IT>
 <ja-JP>
-6.3:
-WooCommerce Android 6.3に2つの重要なアップデートがあります : 
-
-- 該当する場合は、商品のタイプの詳細に「ダウンロード可能」を含めることが可能になりました。
-- カスタム注文のステータスが注文の詳細に正確に表示されるようバグを修正しました。
-
+6.4:
+今回のリリースでは数か所改善しました。
+在庫数に小数値がある場合にアプリが商品を読み込めないバグを修正しました。
+配送ラベルの書式設定オプション画面で発生するレイアウトに関する問題も修正しました。
 </ja-JP>
 <ko-KR>
-6.3:
-WooCommerce Android 6.3에서 다음 두 가지 중요한 업데이트를 사용자에게 제공합니다.
-
-- 업데이트를 적용하면 상품 유형 상세 정보에 "다운로드 가능"이라는 표시를 포함할 수 있습니다.
-- 이제 주문 상세 정보에 사용자 정의 주문의 상태가 올바르게 표시되도록 버그를 수정했습니다.
-
+6.4:
+이 릴리스에서 몇 가지 개선 사항을 적용했습니다.
+재고 수량에 소수점 값이 있으면 앱에서 제품을 로드하지 못했던 버그를 수정했습니다.
+배송 레이블 형식 옵션 화면에서 발생하는 레이아웃 문제도 해결했습니다.
 </ko-KR>
 <nl-NL>
-6.3:
-WooCommerce Android 6.3 bevat twee belangrijke updates:
-
-- Indien van toepassing, kan je nu 'downloadbaar’ toevoegen aan de informatie van het producttype.
-- We hebben een bug verholpen zodat de status van een aangepaste bestelling nu correct wordt weergegeven in de bestellingsgegevens.
-
+6.4:
+We made a few improvements in this release.
+We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
+We also fixed a layout issue that occurred on the shipping label formats option screen.
 </nl-NL>
 <pt-BR>
-6.3:
-O WooCommerce para Android 6.3 conta com duas atualizações importantes:
-
-- Se aplicável, agora é possível incluir "pode ser baixado" nos detalhes de tipo de um produto.
-- Corrigimos um bug e agora o status de pedidos personalizados é exibido corretamente nos detalhes do pedido.
-
+6.4:
+Fizemos algumas melhorias nesta versão.
+Corrigimos um bug que impedia o aplicativo de carregar produtos quando havia um valor decimal na quantidade em estoque.
+Também corrigimos um erro no layout que ocorria na tela de opções de formatos de etiquetas de envio.
 </pt-BR>
 <ru-RU>
-6.3:
-Доступно два важных обновления WooCommerce 6.3 для Android:
-
-— Теперь в сведениях о типе можно указать, что товар является загружаемым (если применимо).
-— Исправлена ошибка, благодаря чему статус заказа клиента отображается корректно в сведениях о заказе.
-
+6,4:
+В этом выпуске добавлено несколько улучшений.
+Исправлена ошибка, из-за которой приложение не загружало товары, когда их количество в наличии было представлено в десятичном формате.
+Мы также исправили проблему разметки, которая возникала на экране выбора формата транспортной этикетки.
 </ru-RU>
 <sv-SE>
-6.3:
-Med WooCommerce Android 6.3 får användare två viktiga uppdateringar:
-
-– Vid behov kan du nu inkludera "nedladdningsbar" i typinformationen för en produkt.
-– Vi åtgärdade en bugg så att en status för en anpassad order nu visas korrekt i orderinformationen.
-
+6,4:
+Vi har gjort ett antal förbättringar i den här versionen.
+Vi har korrigerat ett fel som hindrade appen från att läsa in produkter när det fanns ett decimalvärde i lagerkvantiteten.
+Vi har också korrigerat ett layoutproblem som inträffade på alternativskärmen för fraktetikettformat.
 </sv-SE>
 <tr-TR>
-6.3:
-WooCommerce Android 6.3 kullanıcılara iki önemli güncelleme sunuyor:
-
-- Mümkünse, artık bir ürünün tür ayrıntılarına "indirilebilir" ifadesini ekleyebilirsiniz.
-- Özel bir siparişin durumunun sipariş ayrıntılarında doğru şekilde görüntülenmesini önleyen bir hatayı düzelttik.
-
+6,4:
+Bu sürümde birkaç iyileştirme yaptık.
+Stok miktarında ondalık bir değer olduğunda uygulamanın ürünleri yüklemesini engelleyen bir hatayı düzelttik.
+Gönderi etiketi biçim seçeneği ekranında oluşan düzenle ilgili bir sorunu da düzelttik.
 </tr-TR>
 <zh-CN>
-6.3：
-WooCommerce Android 6.3 为用户提供了两个重要更新：
-
-- 如果适用，您现在可以在产品的类型详情中包括“可下载”。
-- 我们修复了一个错误，以便现在可以在订单详情中正确显示自定义订单的状态。
-
+6.4：
+我们在此版本中进行了一些改进。
+我们修复了在库存数量显示为小数时，应用不会加载产品的错误。
+我们也修复“配送标签格式选项屏幕上出现的布局问题。
 </zh-CN>
 <zh-TW>
-6.3：
-WooCommerce Android 6.3 版為使用者提供兩項重要更新：
-
-- 在適用情況下，你現在可以在產品類型詳細資料中提供「可下載」內容。
-- 修正錯誤，現在自訂訂單詳細資料中會正確顯示訂單狀態。
-
+6.4：
+我們在此版本中進行了一些改善。
+我們修正了在「存貨數量」的值中有小數時，會防止應用程式載入產品的錯誤。
+我們也修正了在「運送標籤格式選項」畫面上發生的版面配置問題。
 </zh-TW>
 <en-US>
-6.3:
-WooCommerce Android 6.3 offers users two important updates: 
-
- - If applicable, you can now include “downloadable” in the type details of a product.
- - We fixed a bug so that a custom order’s status now displays correctly in order details.
- 
+6.4:
+We made a few improvements in this release.
+We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
+We also fixed a layout issue that occurred on the shipping label formats option screen.
 </en-US>

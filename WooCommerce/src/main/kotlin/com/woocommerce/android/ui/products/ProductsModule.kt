@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.products.ProductsModule.AddAttributeTermsFragm
 import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.AddProductDownloadFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.AttributeListFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.EditVariationAttributesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.GroupedProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.LinkedProductsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
@@ -79,6 +80,8 @@ import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTer
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsModule
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListModule
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module
@@ -92,6 +95,7 @@ import dagger.android.ContributesAndroidInjector
     ProductFilterOptionListFragmentModule::class,
     VariationListFragmentModule::class,
     AttributeListFragmentModule::class,
+    EditVariationAttributesFragmentModule::class,
     AddAttributeFragmentModule::class,
     AddAttributeTermsFragmentModule::class,
     ProductImagesFragmentModule::class,
@@ -390,5 +394,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [AddProductDownloadModule::class])
         abstract fun provideAddProductDownloadFragment(): AddProductDownloadBottomSheetFragment
+    }
+
+    @Module
+    internal abstract class EditVariationAttributesFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [EditVariationAttributesModule::class])
+        abstract fun editVariationAttributesFragment(): EditVariationAttributesFragment
     }
 }

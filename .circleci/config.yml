@@ -51,8 +51,11 @@ jobs:
           cache-prefix: tests-cache-v1
       - <<: *copy_gradle_properties
       - run:
-          name: Unit tests
+          name: Unit tests WooCommerce
           command: ./gradlew --stacktrace testVanillaRelease
+      - run:
+          name: Unit tests CardReaderModule
+          command: ./gradlew --stacktrace lib:cardreader:testDebug
       - android/save-gradle-cache:
           cache-prefix: tests-cache-v1
       - android/save-test-results
@@ -88,7 +91,7 @@ jobs:
           cache_key_prefix: installable-build-v2
       - run:
           name: Copy Secrets
-          command: bundle exec fastlane run configure_apply
+          command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
       - android/restore-gradle-cache
       - run:
           name: Build APK
@@ -121,7 +124,7 @@ jobs:
           cache_key_prefix: release-build-v2
       - run:
           name: Copy Secrets
-          command: bundle exec fastlane run configure_apply
+          command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
       - run:
           name: Install other tools
           command: |
@@ -138,6 +141,8 @@ jobs:
             APP_VERSION=$(./gradlew -q printVersionName | tail -1)
             echo "export SLACK_FAILURE_MESSAGE=':red_circle: Build for WooCommerce Android $APP_VERSION failed!'" >> $BASH_ENV
             echo "export SLACK_SUCCESS_MESSAGE=':tada: WooCommerce Android $APP_VERSION has been deployed!'" >> $BASH_ENV
+            # Prevent fastlane from checking for updates, also removing the verbose fastlane changelog at the end of each invocation.
+            echo "export FASTLANE_SKIP_UPDATE_CHECK=1" >> $BASH_ENV
             mv ~/.android/debug_a8c.keystore ~/.android/debug.keystore
             if [[ $APP_VERSION == *"-rc-"* ]]; then
               bundle exec fastlane build_and_upload_beta skip_confirm:true create_release:true

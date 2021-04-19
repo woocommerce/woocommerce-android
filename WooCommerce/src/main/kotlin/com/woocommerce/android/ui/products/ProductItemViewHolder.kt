@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import org.wordpress.android.util.FormatUtils
+import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 
@@ -128,7 +128,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
                     if (product.stockQuantity > 0) {
                         context.getString(
                             R.string.product_stock_count,
-                            FormatUtils.formatInt(product.stockQuantity)
+                            StringUtils.formatCountDecimal(product.stockQuantity)
                         )
                     } else {
                         context.getString(R.string.product_stock_status_instock)

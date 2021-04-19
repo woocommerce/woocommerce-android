@@ -192,6 +192,6 @@ be covered by a different license compatible with the GPLv2.
 
 <p align="center">
     <br/><br/>
-    Made with 💜 by <a href="https://automattic.com/">Automattic</a>.<br/>
-    <a href="https://automattic.com/work-with-us/">We're hiring</a>! Come work with us!
+    Made with 💜 by <a href="https://woocommerce.com/">WooCommerce</a>.<br/>
+    <a href="https://woocommerce.com/careers/">We're hiring</a>! Come work with us!
 </p>
