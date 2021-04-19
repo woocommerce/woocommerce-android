@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.variations.VariationListRepository
@@ -43,6 +44,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
+        whenever(productRepository.getProduct(productRemoteId)).thenReturn(mock())
     }
 
     private fun createViewModel() {
