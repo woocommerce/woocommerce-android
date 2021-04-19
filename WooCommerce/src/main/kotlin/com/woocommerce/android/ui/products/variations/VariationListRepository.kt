@@ -11,6 +11,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -88,9 +90,11 @@ class VariationListRepository @Inject constructor(
      * Fires the request to create a empty variation to a given product
      */
     suspend fun createEmptyVariation(product: Product): ProductVariation? =
-        productStore
-            .generateEmptyVariation(selectedSite.get(), product.toDataModel())
-            .model?.toAppModel()
+        withContext(Dispatchers.IO) {
+            productStore
+                .generateEmptyVariation(selectedSite.get(), product.toDataModel())
+                .model?.toAppModel()
+        }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
