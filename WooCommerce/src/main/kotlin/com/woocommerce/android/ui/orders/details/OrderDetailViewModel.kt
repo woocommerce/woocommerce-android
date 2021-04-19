@@ -6,17 +6,27 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.Callback
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
+import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -26,7 +36,6 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.getNonRefundedShippingLabelProducts
 import com.woocommerce.android.model.loadProducts
@@ -48,10 +57,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -70,9 +83,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
-        private const val US_COUNTRY_CODE = "US"
+        // The required version to support shipping label creation
+        const val SUPPORTED_WCS_VERSION = "1.25.11"
     }
-
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     private val orderIdSet: OrderIdSet
@@ -107,8 +120,10 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
-    private val wooShippingPluginInfo: WooPlugin by lazy {
-        orderDetailRepository.getWooServicesPluginInfo()
+    private val isShippingPluginReady: Boolean by lazy {
+        val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()
+        pluginInfo.isInstalled && pluginInfo.isActive &&
+            (pluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
     }
 
     override fun onCleared() {
@@ -210,6 +225,40 @@ class OrderDetailViewModel @AssistedInject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.remoteId))
     }
 
+    fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager?) {
+        launch {
+            // TODO cardreader use the correct currency or hide the button
+            cardReaderManager?.collectPayment(999, "usd")?.collect {
+                when (it) {
+                    CapturingPaymentFailed,
+                    CollectingPaymentFailed,
+                    InitializingPaymentFailed,
+                    ProcessingPaymentFailed -> triggerEvent(
+                        ShowSnackbar(string.generic_string, arrayOf("Payment failed :("))
+                    )
+                    PaymentCompleted -> triggerEvent(
+                        ShowSnackbar(string.generic_string, arrayOf("Payment completed successfully :))"))
+                    )
+                    CollectingPayment -> {
+                    }
+                    InitializingPayment -> triggerEvent(
+                        ShowSnackbar(string.generic_string, arrayOf("Payment flow started."))
+                    )
+                    CapturingPayment -> {
+                    }
+                    ProcessingPayment -> triggerEvent(
+                        ShowSnackbar(string.generic_string, arrayOf("Processing payment."))
+                    )
+                    ShowAdditionalInfo -> {
+                    }
+                    WaitingForInput -> triggerEvent(
+                        ShowSnackbar(string.generic_string, arrayOf("Tap your card"))
+                    )
+                }
+            }
+        }
+    }
+
     fun onViewRefundedProductsClicked() {
         triggerEvent(ViewRefundedProducts(remoteOrderId = order.remoteId))
     }
@@ -248,7 +297,17 @@ class OrderDetailViewModel @AssistedInject constructor(
     fun onShippingLabelRefunded() {
         launch {
             fetchOrderShippingLabelsAsync().await()
+            displayOrderDetails()
         }
+    }
+
+    fun onShippingLabelsPurchased() {
+        // Refresh UI from the database, as new labels are cached by FluxC after the purchase,
+        // if for any reason, the order wasn't found, refetch it
+        orderDetailRepository.getOrder(navArgs.orderId)?.let {
+            order = it
+            displayOrderDetails()
+        } ?: launch { fetchOrder(true) }
     }
 
     fun onOrderItemRefunded() {
@@ -391,15 +450,6 @@ class OrderDetailViewModel @AssistedInject constructor(
         )
     }
 
-    private fun areShippingLabelRequirementsMet(): Boolean {
-        val storeIsInUs = orderDetailRepository.getStoreCountryCode()?.startsWith(US_COUNTRY_CODE) ?: false
-        val isShippingPluginReady = wooShippingPluginInfo.isInstalled && wooShippingPluginInfo.isActive
-        val orderHasPhysicalProducts = !hasVirtualProductsOnly()
-        val shippingAddressIsInUs = order.shippingAddress.country == US_COUNTRY_CODE
-
-        return isShippingPluginReady && storeIsInUs && shippingAddressIsInUs && orderHasPhysicalProducts
-    }
-
     private fun loadOrderNotes() {
         _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
     }
@@ -442,6 +492,12 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    private fun fetchSLCreationEligibilityAsync() = async {
+        if (isShippingPluginReady) {
+            orderDetailRepository.fetchSLCreationEligibility(order.remoteId)
+        }
+    }
+
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
@@ -478,7 +534,8 @@ class OrderDetailViewModel @AssistedInject constructor(
             fetchOrderShippingLabelsAsync(),
             fetchShipmentTrackingAsync(),
             fetchOrderRefundsAsync(),
-            fetchOrderProductsAsync()
+            fetchOrderProductsAsync(),
+            fetchSLCreationEligibilityAsync()
         )
     }
 
@@ -505,7 +562,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
 
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = areShippingLabelRequirementsMet(),
+            isCreateShippingLabelButtonVisible = isShippingPluginReady &&
+                orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId),
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible

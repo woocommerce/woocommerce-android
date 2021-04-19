@@ -3,9 +3,6 @@ package com.woocommerce.android.ui.refunds
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
@@ -55,10 +52,13 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -345,7 +345,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                                         (commonState.refundTotal isEqualTo maxRefund).toString(),
                                 AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
                                 AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
-                                AnalyticsTracker.KEY_REFUND_AMOUNT to commonState.refundTotal.toString()
+                                AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
                     )
 

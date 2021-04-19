@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsAdapter
+import com.woocommerce.android.util.FeatureFlag
 import java.math.BigDecimal
 
 class OrderDetailPaymentInfoView @JvmOverloads constructor(
@@ -28,7 +29,8 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     fun updatePaymentInfo(
         order: Order,
         formatCurrencyForDisplay: (BigDecimal) -> String,
-        onIssueRefundClickListener: ((view: View) -> Unit)
+        onIssueRefundClickListener: (view: View) -> Unit,
+        onCollectCardPresentPaymentClickListener: (view: View) -> Unit
     ) {
         binding.paymentInfoProductsTotal.text = formatCurrencyForDisplay(order.productsTotal)
         binding.paymentInfoShippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
@@ -99,6 +101,13 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         }
 
         binding.paymentInfoIssueRefundButton.setOnClickListener(onIssueRefundClickListener)
+        if (FeatureFlag.CARD_READER.isEnabled()) {
+            binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
+                onCollectCardPresentPaymentClickListener
+            )
+        } else {
+            binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.GONE
+        }
     }
 
     fun showRefunds(

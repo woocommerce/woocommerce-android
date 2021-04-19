@@ -46,6 +46,7 @@ object ProductTestUtils {
             ratingCount = 4
             shortDescription = "short desc"
             virtual = isVirtual
+            stockQuantity = 4.2
         }.toAppModel()
     }
 

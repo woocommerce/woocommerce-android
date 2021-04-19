@@ -41,7 +41,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -168,7 +168,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         isSaleScheduled: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         backorderStatus: ProductBackorderStatus? = null,
-        stockQuantity: Int? = null,
+        stockQuantity: Double? = null,
         options: List<Option>? = null,
         isPurchasable: Boolean? = null,
         isVirtual: Boolean? = null,

@@ -13,7 +13,7 @@ import com.woocommerce.android.databinding.FragmentProductVisibilityBinding
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PASSWORD_PROTECTED
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PRIVATE
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.ActivityUtils
 
 /**

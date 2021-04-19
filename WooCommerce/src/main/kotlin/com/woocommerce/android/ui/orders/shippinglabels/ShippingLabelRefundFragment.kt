@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -33,9 +34,6 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    private var _binding: FragmentShippingLabelRefundBinding? = null
-    private val binding get() = _binding!!
-
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -43,18 +41,17 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentShippingLabelRefundBinding.bind(view)
-        setupObservers(viewModel)
+        val binding = FragmentShippingLabelRefundBinding.bind(view)
+        setupObservers(binding)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setupObservers(viewModel: ShippingLabelRefundViewModel) {
+    private fun setupObservers(binding: FragmentShippingLabelRefundBinding) {
         viewModel.shippingLabelRefundViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.shippingLabel?.takeIfNotEqualTo(old?.shippingLabel) { showShippingLabelDetails(it) }
+            new.shippingLabel?.takeIfNotEqualTo(old?.shippingLabel) { binding.showShippingLabelDetails(it) }
+            new.isRefundExpired.takeIfNotEqualTo(old?.isRefundExpired) { isExpired ->
+                binding.expirationWarningBanner.isVisible = isExpired
+                binding.shippingLabelRefundBtnRefund.isEnabled = !isExpired
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -66,16 +63,16 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
         })
     }
 
-    private fun showShippingLabelDetails(shippingLabel: ShippingLabel) {
+    private fun FragmentShippingLabelRefundBinding.showShippingLabelDetails(shippingLabel: ShippingLabel) {
         val formattedAmount = currencyFormatter.buildBigDecimalFormatter(shippingLabel.currency)(shippingLabel.rate)
-        binding.shippingLabelRefundAmount.text = formattedAmount
+        shippingLabelRefundAmount.text = formattedAmount
 
-        with(binding.shippingLabelRefundBtnRefund) {
+        with(shippingLabelRefundBtnRefund) {
             text = getString(R.string.shipping_label_refund_button, formattedAmount)
             setOnClickListener { viewModel.onRefundShippingLabelButtonClicked() }
         }
 
-        binding.shippingLabelRefundPurchaseDate.text = shippingLabel.createdDate?.formatToMMMddYYYYhhmm()
+        shippingLabelRefundPurchaseDate.text = shippingLabel.createdDate?.formatToMMMddYYYYhhmm()
     }
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_request_refund)

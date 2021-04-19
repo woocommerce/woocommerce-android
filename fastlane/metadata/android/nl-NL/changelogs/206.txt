@@ -1,0 +1,6 @@
+6.3:
+WooCommerce Android 6.3 bevat twee belangrijke updates:
+
+- Indien van toepassing, kan je nu 'downloadbaar’ toevoegen aan de informatie van het producttype.
+- We hebben een bug verholpen zodat de status van een aangepaste bestelling nu correct wordt weergegeven in de bestellingsgegevens.
+

@@ -50,7 +50,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
-import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -68,7 +67,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -113,7 +111,6 @@ class MainActivity : AppUpgradeActivity(),
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
@@ -224,12 +221,6 @@ class MainActivity : AppUpgradeActivity(),
         if (!selectedSite.exists()) {
             showSitePickerScreen()
             return
-        }
-
-        // we only have to check the new revenue stats availability
-        // if the activity is starting for the first time
-        if (savedInstanceState == null) {
-            fetchRevenueStatsAvailability(selectedSite.get())
         }
 
         initFragment(savedInstanceState)
@@ -627,10 +618,6 @@ class MainActivity : AppUpgradeActivity(),
     override fun hideOrderBadge() {
         unfilledOrderCount = 0
         binding.bottomNav.setOrderBadgeCount(0)
-    }
-
-    override fun fetchRevenueStatsAvailability(site: SiteModel) {
-        revenueStatsAvailabilityFetcher.fetchRevenueStatsAvailability(site)
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {

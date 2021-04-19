@@ -5,7 +5,7 @@ import androidx.annotation.DimenRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import java.util.Locale
 import java.util.Stack

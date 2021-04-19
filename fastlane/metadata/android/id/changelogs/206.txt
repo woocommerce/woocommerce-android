@@ -1,0 +1,6 @@
+6.3:
+WooCommerce Android 6.3 memberikan dua pembaruan penting untuk pengguna:
+
+- Jika dibutuhkan, sekarang Anda dapat menyertakan “bahan unduhan” pada detail tipe produk.
+- Kami telah memperbaiki bug sehingga status pesanan khusus ditampilkan dengan benar pada detail pesanan.
+

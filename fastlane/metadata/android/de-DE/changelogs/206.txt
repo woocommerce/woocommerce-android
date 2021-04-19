@@ -1,0 +1,6 @@
+6.3:
+WooCommerce Android 6.3 hält zwei wichtige Updates bereit:
+
+- Falls zutreffend kannst du jetzt in den Produktdetails „Zum Herunterladen“ angeben.
+- Wir haben einen Fehler behoben, sodass der Status einzelner Bestellungen jetzt korrekt unter den Bestelldetails angezeigt wird.
+

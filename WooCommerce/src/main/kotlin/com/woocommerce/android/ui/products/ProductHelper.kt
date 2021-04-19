@@ -59,7 +59,7 @@ object ProductHelper {
             regularPrice = BigDecimal.ZERO,
             taxClass = Product.TAX_CLASS_DEFAULT,
             isStockManaged = false,
-            stockQuantity = 0,
+            stockQuantity = 0.0,
             sku = "",
             slug = "",
             length = 0f,
