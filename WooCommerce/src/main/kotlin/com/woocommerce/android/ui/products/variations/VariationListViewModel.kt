@@ -156,8 +156,6 @@ class VariationListViewModel @AssistedInject constructor(
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
-
-
     private fun loadVariations(
         remoteProductId: Long,
         loadMore: Boolean = false,
