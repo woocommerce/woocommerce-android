@@ -29,7 +29,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when initiate scan button clicked, then the apps navigates to scan screen`() {
+    fun `when initiate scan button clicked, then the app navigates to scan screen`() {
         viewModel.onInitiateScanBtnClicked()
 
         assertThat(viewModel.event.value)
