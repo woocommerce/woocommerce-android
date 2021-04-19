@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
 import com.woocommerce.android.ui.prefs.PrivacySettingsModule
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderModule
 import com.woocommerce.android.ui.products.ProductsModule
 import com.woocommerce.android.ui.refunds.RefundsModule
 import com.woocommerce.android.ui.reviews.ReviewsModule
@@ -55,7 +56,8 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = [
         AppSettingsModule::class,
         MainSettingsModule::class,
-        PrivacySettingsModule::class
+        PrivacySettingsModule::class,
+        CardReaderModule::class
     ])
     abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
 
