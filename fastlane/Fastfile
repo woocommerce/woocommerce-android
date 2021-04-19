@@ -401,7 +401,7 @@ platform :android do
   ########################################################################
   desc "Get a list of pull request from `start_tag` to the current state"
   lane :get_pullrequests_list do | options |
-    get_prs_list(repository:GHHELPER_REPO, milestone:"#{options[:mileston]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
+    get_prs_list(repository:GHHELPER_REPO, milestone:"#{options[:milestone]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
   end
 
   #####################################################################################
