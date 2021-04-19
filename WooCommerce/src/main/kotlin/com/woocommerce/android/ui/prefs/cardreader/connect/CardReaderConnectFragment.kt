@@ -9,7 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderConnectBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget.InitiateCardReaderScan
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget.CardReaderScanScreen
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
@@ -38,7 +38,7 @@ class CardReaderConnectFragment : BaseFragment(R.layout.fragment_settings_card_r
     private fun initObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer {
             when (it) {
-                is InitiateCardReaderScan ->
+                is CardReaderScanScreen ->
                     findNavController().navigateSafely(R.id.action_cardReaderConnectFragment_to_cardReaderScanFragment)
                 else ->
                     it.isHandled = false

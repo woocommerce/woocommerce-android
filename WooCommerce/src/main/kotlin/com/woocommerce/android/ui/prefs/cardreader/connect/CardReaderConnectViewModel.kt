@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget.InitiateCardReaderScan
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget.CardReaderScanScreen
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -16,11 +16,11 @@ class CardReaderConnectViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
 
     fun onInitiateScanBtnClicked() {
-        triggerEvent(InitiateCardReaderScan)
+        triggerEvent(CardReaderScanScreen)
     }
 
     sealed class NavigationTarget : Event() {
-        object InitiateCardReaderScan : NavigationTarget()
+        object CardReaderScanScreen : NavigationTarget()
     }
 
     @AssistedFactory
