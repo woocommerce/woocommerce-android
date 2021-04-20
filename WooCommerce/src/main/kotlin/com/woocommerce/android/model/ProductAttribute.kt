@@ -17,7 +17,7 @@ data class ProductAttribute(
 ) : Parcelable {
     companion object {
         val DEFAULT_VISIBLE = true
-        val DEFAULT_IS_VARIATION = false
+        val DEFAULT_IS_VARIATION = true
     }
 
     /**
@@ -33,8 +33,8 @@ data class ProductAttribute(
         WCProductModel.ProductAttribute(
             id = id,
             name = name,
-            visible = isVisible,
             options = terms.toMutableList(),
+            visible = isVisible,
             variation = isVariation
         )
 }
