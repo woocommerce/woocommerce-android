@@ -6,9 +6,11 @@ import com.woocommerce.android.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -24,6 +26,7 @@ class AppConfigModule {
     fun provideUserAgent(appContext: Context) = UserAgent(appContext, USER_AGENT_APPNAME)
 
     @Provides
+    @Singleton
     fun providesAppPrefs(appContext: Context): AppPrefs {
         AppPrefs.init(appContext)
         return AppPrefs

@@ -55,14 +55,6 @@ abstract class ActivityBindingModule {
     abstract fun provideMagicLinkInterceptActivityInjector(): MagicLinkInterceptActivity
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = [
-        AppSettingsModule::class,
-        MainSettingsModule::class,
-        PrivacySettingsModule::class
-    ])
-    abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
-
-    @ActivityScope
     @ContributesAndroidInjector(modules = [HelpModule::class])
     abstract fun provideHelpActivity(): HelpActivity
 
