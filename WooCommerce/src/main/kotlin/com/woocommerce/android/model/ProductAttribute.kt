@@ -12,11 +12,11 @@ data class ProductAttribute(
     val id: Long,
     val name: String,
     val terms: List<String>,
-    val isVisible: Boolean = DEFAULT_VISIBLE,
+    val isVisible: Boolean = DEFAULT_IS_VISIBLE,
     val isVariation: Boolean = DEFAULT_IS_VARIATION
 ) : Parcelable {
     companion object {
-        val DEFAULT_VISIBLE = true
+        val DEFAULT_IS_VISIBLE = true
         val DEFAULT_IS_VARIATION = true
     }
 

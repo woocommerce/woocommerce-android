@@ -43,7 +43,6 @@ import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
@@ -1067,7 +1066,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun addAttributeTermToDraft(attributeId: Long, attributeName: String, termName: String) {
         val updatedTerms = ArrayList<String>()
-        var isVisible = ProductAttribute.DEFAULT_VISIBLE
+        var isVisible = ProductAttribute.DEFAULT_IS_VISIBLE
         var isVariation = ProductAttribute.DEFAULT_IS_VARIATION
 
         // find this attribute in the draft attributes
@@ -1254,7 +1253,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 id = 0L,
                 name = attributeName,
                 terms = emptyList(),
-                isVisible = ProductAttribute.DEFAULT_VISIBLE,
+                isVisible = ProductAttribute.DEFAULT_IS_VISIBLE,
                 isVariation = ProductAttribute.DEFAULT_IS_VARIATION
             )
         )

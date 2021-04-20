@@ -42,7 +42,7 @@ data class ProductGlobalAttribute(
             id = this.remoteId,
             name = this.name,
             terms = terms,
-            isVisible = ProductAttribute.DEFAULT_VISIBLE,
+            isVisible = ProductAttribute.DEFAULT_IS_VISIBLE,
             isVariation = ProductAttribute.DEFAULT_IS_VARIATION
         )
     }
