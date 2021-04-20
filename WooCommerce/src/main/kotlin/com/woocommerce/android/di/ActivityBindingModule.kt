@@ -38,7 +38,8 @@ abstract class ActivityBindingModule {
             ReviewsModule::class,
             SitePickerModule::class,
             AztecModule::class,
-            ShippingLabelsModule::class
+            ShippingLabelsModule::class,
+            CardReaderModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 
