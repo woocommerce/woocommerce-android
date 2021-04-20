@@ -56,6 +56,7 @@ import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import javax.inject.Inject
 
 open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationLifecycleListener {
+    @Inject lateinit var wellSqlInitializer: WellSqlInitializer
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var membersInjector: MembersInjector<WooCommerceGlideModule>
 
@@ -101,9 +102,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
     override fun onCreate() {
         super.onCreate()
-
-        val wellSqlConfig = WooWellSqlConfig(applicationContext)
-        WellSql.init(wellSqlConfig)
 
         CrashUtils.initCrashLogging(this)
 
