@@ -30,6 +30,22 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+/**
+ * [Product] and [ProductVariation] are two models fetched in separate endpoints,
+ * but to allow us to create and delete variations correctly, consistency between
+ * site and app data around both models is necessary to handle the correct flow
+ * to the user.
+ *
+ * This happens because when any change happens at the variation list
+ * from a product, the [Product.numVariations] is also updated by the site,
+ * causing the need to fetch the product data after that, allowing
+ * us to be able to tell at any Product view if we shall make available
+ * the first variation creation flow or just allow the user the access the variation
+ * list view directly without affecting the ability of the Fragment to manage drafts.
+ *
+ * With that said, when we update the Variation list, we should also update the
+ * [ViewState.parentProduct] so the correct information is returned [onExit]
+ */
 class VariationListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
@@ -94,10 +110,14 @@ class VariationListViewModel @AssistedInject constructor(
         triggerEvent(ShowAddAttributeView)
     }
 
-    fun onVariationDeleted() = launch {
-        viewState = viewState.copy(isSkeletonShown = true)
-        viewState.parentProduct
-            ?.let { syncProductToVariations(it.remoteId) }
+    fun onVariationDeleted(productID: Long, variationID: Long) = launch {
+        variationList.value?.toMutableList()?.apply {
+            find { it.remoteVariationId == variationID }
+                ?.let { remove(it) }
+        }?.toList().let { _variationList.value = it }
+
+        productRepository.fetchProduct(productID)
+            ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
     fun onExit() {
@@ -134,22 +154,6 @@ class VariationListViewModel @AssistedInject constructor(
                 ?.copy(remoteProductId = remoteId)
                 ?.apply { syncProductToVariations(remoteId) }
 
-    /**
-     * [Product] and [ProductVariation] are two models fetched in separate endpoints,
-     * but to allow us to create and delete variations correctly, consistency between
-     * site and app data around both models is necessary to handle the correct flow
-     * to the user.
-     *
-     * This happens because when any change happens at the variation list
-     * from a product, the [Product.numVariations] is also updated by the site,
-     * causing the need to fetch the product data after that, allowing
-     * us to be able to tell at any Product view if we shall make available
-     * the first variation creation flow or just allow the user the access the variation
-     * list view directly without affecting the ability of the Fragment to manage drafts.
-     *
-     * With that said, when we update the Variation list, we should also update the
-     * [ViewState.parentProduct] so the correct information is returned [onExit]
-     */
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)
         productRepository.fetchProduct(productID)
