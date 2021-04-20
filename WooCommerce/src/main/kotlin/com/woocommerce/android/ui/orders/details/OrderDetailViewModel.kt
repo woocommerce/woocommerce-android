@@ -214,7 +214,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.remoteId))
     }
 
-    fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager?) {
+    fun onAcceptCardPresentPaymentClicked() {
         triggerEvent(StartCardReaderPaymentFlow(order.identifier))
     }
 
