@@ -17,7 +17,7 @@ data class ProductAttribute(
 ) : Parcelable {
     companion object {
         val DEFAULT_VISIBLE = true
-        val DEFAULT_IS_VARIATION = false
+        val DEFAULT_IS_VARIATION = true
     }
 
     /**
