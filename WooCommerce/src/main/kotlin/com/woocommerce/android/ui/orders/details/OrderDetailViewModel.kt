@@ -40,11 +40,13 @@ import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.getNonRefundedShippingLabelProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -226,37 +228,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager?) {
-        launch {
-            // TODO cardreader use the correct currency or hide the button
-            cardReaderManager?.collectPayment(999, "usd")?.collect {
-                when (it) {
-                    CapturingPaymentFailed,
-                    CollectingPaymentFailed,
-                    InitializingPaymentFailed,
-                    ProcessingPaymentFailed -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Payment failed :("))
-                    )
-                    PaymentCompleted -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Payment completed successfully :))"))
-                    )
-                    CollectingPayment -> {
-                    }
-                    InitializingPayment -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Payment flow started."))
-                    )
-                    CapturingPayment -> {
-                    }
-                    ProcessingPayment -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Processing payment."))
-                    )
-                    ShowAdditionalInfo -> {
-                    }
-                    WaitingForInput -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Tap your card"))
-                    )
-                }
-            }
-        }
+        triggerEvent(StartCardReaderPaymentFlow(order.identifier))
     }
 
     fun onViewRefundedProductsClicked() {
