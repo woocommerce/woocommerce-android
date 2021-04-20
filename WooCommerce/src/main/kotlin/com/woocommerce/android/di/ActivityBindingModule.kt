@@ -22,8 +22,11 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.login.di.LoginFragmentModule
 
+@InstallIn(SingletonComponent::class)
 @Module
 abstract class ActivityBindingModule {
     @ActivityScope

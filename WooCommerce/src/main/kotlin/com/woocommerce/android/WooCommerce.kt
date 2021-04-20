@@ -13,8 +13,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.di.AppComponent
-import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.FCMRegistrationIntentService
@@ -39,6 +37,7 @@ import dagger.MembersInjector
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import dagger.hilt.android.HiltAndroidApp
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -82,12 +81,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
     private var connectionReceiverRegistered = false
 
-    open val component: AppComponent by lazy {
-        DaggerAppComponent.builder()
-                .application(this)
-                .build()
-    }
-
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
     }
@@ -109,23 +102,10 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     override fun onCreate() {
         super.onCreate()
 
-        // enable strict mode in debug builds
-        if (BuildConfig.DEBUG) {
-            enableStrictMode()
-        }
-
-        // Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
-        // https://github.com/woocommerce/woocommerce-android/issues/817
-        if (!BuildConfig.DEBUG) {
-            VolleyLog.DEBUG = false
-        }
-
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
 
         CrashUtils.initCrashLogging(this)
-
-        component.inject(this)
 
         FeedbackPrefs.init(this)
 

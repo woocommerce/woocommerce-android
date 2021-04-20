@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import com.android.volley.VolleyLog
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.android.utils.FlipperUtils
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin
@@ -10,9 +11,9 @@ import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPl
 import com.facebook.soloader.SoLoader
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
-import com.woocommerce.android.di.AppComponent
-import com.woocommerce.android.di.DaggerAppComponentDebug
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
     override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
         override suspend fun getConnectionToken(): String {
@@ -25,12 +26,6 @@ class WooCommerceDebug : WooCommerce() {
         }
     })
 
-    override val component: AppComponent by lazy {
-        DaggerAppComponentDebug.builder()
-            .application(this)
-            .build()
-    }
-
     override fun onCreate() {
         if (FlipperUtils.shouldEnableFlipper(this)) {
             SoLoader.init(this, false)
@@ -42,5 +37,11 @@ class WooCommerceDebug : WooCommerce() {
             }.start()
         }
         super.onCreate()
+
+        // Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
+        // https://github.com/woocommerce/woocommerce-android/issues/817
+        if (!BuildConfig.DEBUG) {
+            VolleyLog.DEBUG = false
+        }
     }
 }

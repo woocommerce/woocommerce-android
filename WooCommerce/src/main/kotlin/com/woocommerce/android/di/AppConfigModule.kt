@@ -5,9 +5,12 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 
+@InstallIn(SingletonComponent::class)
 @Module
 class AppConfigModule {
     companion object {
