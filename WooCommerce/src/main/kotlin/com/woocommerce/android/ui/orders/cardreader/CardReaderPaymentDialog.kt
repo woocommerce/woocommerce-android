@@ -7,14 +7,8 @@ import android.view.View
 import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
-import com.woocommerce.android.databinding.FragmentSettingsCardReaderConnectBinding
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget.CardReaderScanScreen
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
