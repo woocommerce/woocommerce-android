@@ -42,8 +42,8 @@ data class ProductGlobalAttribute(
             id = this.remoteId,
             name = this.name,
             terms = terms,
-            isVisible = DEFAULT_VISIBLE,
-            isVariation = DEFAULT_IS_VARIATION
+            isVisible = ProductAttribute.DEFAULT_VISIBLE,
+            isVariation = ProductAttribute.DEFAULT_IS_VARIATION
         )
     }
 }
