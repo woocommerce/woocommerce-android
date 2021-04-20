@@ -10,8 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
 @ExperimentalCoroutinesApi
 class CardReaderConnectViewModelTest : BaseUnitTest() {
@@ -35,5 +33,4 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value)
             .isInstanceOf(NavigationTarget.CardReaderScanScreen::class.java)
     }
-
 }
