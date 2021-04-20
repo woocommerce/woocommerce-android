@@ -23,6 +23,7 @@
 
 6.2
 -----
+* Updated empty state illustrations. [https://github.com/woocommerce/woocommerce-android/pull/3678]
 - [*] Fixed a possible crash during the login
 
 

@@ -39,6 +39,7 @@
     <color name="woo_white_alpha_060">#99FFFFFF</color>
     <color name="woo_white_alpha_087">#DEFFFFFF</color>
 
+    <color name="woo_gray_0">#F6F7F7</color>
     <color name="woo_gray_5">#DCDCDE</color>
     <color name="woo_gray_40">#787C82</color>
     <color name="woo_gray_80">#2C3338</color>
