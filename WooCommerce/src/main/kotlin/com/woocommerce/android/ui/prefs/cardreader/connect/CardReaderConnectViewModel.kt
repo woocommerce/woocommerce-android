@@ -14,7 +14,6 @@ class CardReaderConnectViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
-
     fun onInitiateScanBtnClicked() {
         triggerEvent(CardReaderScanScreen)
     }

@@ -15,7 +15,6 @@ class CardReaderScanViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val appLogWrapper: AppLogWrapper
 ) : ScopedViewModel(savedState, dispatchers) {
-
     fun foo() {
         appLogWrapper.d(T.MAIN, "Scan foo() invoked")
     }

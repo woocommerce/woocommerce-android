@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
 class CardReaderConnectFragment : BaseFragment(R.layout.fragment_settings_card_reader_connect) {
-
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     val viewModel: CardReaderConnectViewModel by viewModels { viewModelFactory }

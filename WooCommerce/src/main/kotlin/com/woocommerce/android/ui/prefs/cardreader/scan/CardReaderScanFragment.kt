@@ -7,7 +7,6 @@ import com.woocommerce.android.databinding.FragmentSettingsCardReaderScanBinding
 import com.woocommerce.android.ui.base.BaseFragment
 
 class CardReaderScanFragment : BaseFragment(R.layout.fragment_settings_card_reader_scan) {
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
