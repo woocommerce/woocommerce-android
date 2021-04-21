@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
@@ -623,7 +624,10 @@ class ProductDetailCardBuilder(
                 icon = drawable.ic_gridicons_types,
                 showTitle = false,
                 onClick = {
-                    // TODO call variation creation view sequence
+                    viewModel.onEditProductCardClicked(
+                        AddProductAttribute(isVariationCreation = true),
+                        PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                    )
                 }
             )
         } else {

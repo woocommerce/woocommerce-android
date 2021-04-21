@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragm
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -71,6 +72,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var dateUtils: DateUtils
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -325,9 +327,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private fun showShipmentTrackings(
         shipmentTrackings: List<OrderShipmentTracking>
     ) {
-        binding.orderDetailShipmentList.updateShipmentTrackingList(shipmentTrackings) {
-            viewModel.onDeleteShipmentTrackingClicked(it)
-        }
+        binding.orderDetailShipmentList.updateShipmentTrackingList(
+            shipmentTrackings = shipmentTrackings,
+            dateUtils = dateUtils,
+            onDeleteShipmentTrackingClicked = {
+                viewModel.onDeleteShipmentTrackingClicked(it)
+            })
     }
 
     private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {

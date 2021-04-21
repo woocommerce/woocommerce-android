@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -145,13 +146,17 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
             context, "${context.packageName}.provider", file
         )
 
-        val sendIntent = Intent(Intent.ACTION_VIEW)
-        sendIntent.setDataAndType(pdfUri, "application/pdf")
-        sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(sendIntent)
+        try {
+            val sendIntent = Intent(Intent.ACTION_VIEW)
+            sendIntent.setDataAndType(pdfUri, "application/pdf")
+            sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            startActivity(sendIntent)
 
-        viewModel.onPreviewLabelCompleted()
+            viewModel.onPreviewLabelCompleted()
+        } catch (exception: ActivityNotFoundException) {
+            displayError(R.string.shipping_label_preview_pdf_app_missing)
+        }
     }
 
     override fun onRequestAllowBackPress(): Boolean {

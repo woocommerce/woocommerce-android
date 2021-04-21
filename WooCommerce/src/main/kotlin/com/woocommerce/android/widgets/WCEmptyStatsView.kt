@@ -31,7 +31,7 @@ class WCEmptyStatsView @JvmOverloads constructor(
 
     fun updateVisitorCount(visits: Int) {
         visitorValue.text = visits.toString()
-        emptyStatsViewDateTitle.text = DateUtils().getDayOfWeekWithMonthAndDayFromDate(Date())
+        emptyStatsViewDateTitle.text = DateUtils.getDayOfWeekWithMonthAndDayFromDate(Date())
 
         // The empty view is only shown when there are no orders, which means the revenue is also 0
         ordersValue.text = "0"

@@ -18,8 +18,11 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
     : LinearLayout(ctx, attrs) {
     private val binding = MyStoreDateBarBinding.inflate(LayoutInflater.from(ctx), this)
 
-    fun initView() {
+    private lateinit var dateUtils: DateUtils
+
+    fun initView(dateUtils: DateUtils) {
         clearDateRangeValues()
+        this.dateUtils = dateUtils
     }
 
     /**
@@ -89,10 +92,10 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
         activeGranularity: StatsGranularity
     ): String {
         return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils().getDayMonthDateString(dateString).orEmpty()
+            StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
             StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
-            StatsGranularity.MONTHS -> DateUtils().getMonthString(dateString).orEmpty()
-            StatsGranularity.YEARS -> DateUtils().getYearString(dateString).orEmpty()
+            StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateUtils.getYearString(dateString).orEmpty()
         }
     }
 }
