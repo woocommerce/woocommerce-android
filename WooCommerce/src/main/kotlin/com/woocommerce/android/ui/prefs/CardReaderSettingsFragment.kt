@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -20,9 +21,16 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
+import com.woocommerce.android.extensions.navigateSafely
 import kotlinx.coroutines.flow.collect
 import org.wordpress.android.util.AppLog
 
+// TODO cardreader update this comment
+/**
+ * This fragment currently contains a UI for testing purposes. However, this will change and its only job will be to
+ * determine if there is a connected card reader and redirect the user either to CardReaderConnectFragment
+ * or CardReaderDetailFragment.
+ */
 class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_reader) {
     companion object {
         const val TAG = "card-reader-settings"
@@ -61,6 +69,9 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                 requestPermissionLauncher.launch(permissionType)
             }
             startObserving(binding)
+        }
+        binding.redirectToConnectFragment.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_cardReaderSettingsFragment_to_cardReaderConnectFragment)
         }
     }
 
