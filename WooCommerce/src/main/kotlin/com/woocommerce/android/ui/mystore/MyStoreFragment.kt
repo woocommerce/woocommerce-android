@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -59,6 +60,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var dateUtils: DateUtils
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -149,13 +151,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             }
         }
 
-        myStoreDateBar.initView()
+        myStoreDateBar.initView(dateUtils)
 
         binding.myStoreStats.initView(
             activeGranularity,
             listener = this,
             selectedSite = selectedSite,
-            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
+            dateUtils = dateUtils
         )
 
         binding.myStoreTopPerformers.initView(
