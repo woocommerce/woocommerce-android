@@ -253,7 +253,12 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                             )
                         }
                         new.filterCount?.compareTo(0) == 1 -> binding.emptyView.show(EmptyViewType.FILTER_RESULTS)
-                        else -> binding.emptyView.show(EmptyViewType.PRODUCT_LIST)
+                        else -> {
+                            viewModel.hideAddProductButton() /* Hide FAB and use empty state view's button */
+                            binding.emptyView.show(EmptyViewType.PRODUCT_LIST) {
+                                showAddProductBottomSheet()
+                            }
+                        }
                     }
                 } else {
                     binding.emptyView.hide()

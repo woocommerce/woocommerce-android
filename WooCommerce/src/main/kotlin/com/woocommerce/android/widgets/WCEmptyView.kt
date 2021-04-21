@@ -119,19 +119,18 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 isTitleBold = false
                 val fmtArgs = "<strong>$searchQueryOrFilter</strong>"
                 title = String.format(
-                        context.getString(R.string.orders_empty_message_with_order_status_filter),
-                        fmtArgs
+                    context.getString(R.string.orders_empty_message_with_order_status_filter),
+                    fmtArgs
                 )
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_search
             }
             PRODUCT_LIST -> {
-                // TODO: once adding products is supported, this needs to be updated to match designs
                 isTitleBold = true
                 title = context.getString(R.string.product_list_empty)
-                message = null
-                buttonText = null
+                message = context.getString(R.string.empty_product_message)
+                buttonText = context.getString(R.string.empty_product_add_product_button)
                 drawableId = R.drawable.img_empty_products
             }
             FILTER_RESULTS -> {

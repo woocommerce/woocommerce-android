@@ -276,6 +276,12 @@ class ProductListViewModel @AssistedInject constructor(
         )
     }
 
+    fun hideAddProductButton() {
+        viewState = viewState.copy(
+            isAddProductButtonVisible = false
+        )
+    }
+
     /**
      * If products are already being fetched, wait for the existing job to finish
      */
