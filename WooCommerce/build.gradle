@@ -46,7 +46,7 @@ android {
         } else {
             versionName "6.5-rc-2"
         }
-        versionCode 211
+        versionCode 212
 
         minSdkVersion 21
         targetSdkVersion 30
