@@ -3,10 +3,26 @@ package com.woocommerce.android.ui.orders.cardreader
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
+import com.woocommerce.android.cardreader.CardPaymentStatus.UnexpectedError
+import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -44,7 +60,8 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
             try {
                 loadOrderFromDB()?.let { order ->
                     order.total.toBigDecimalOrNull()?.let { amount ->
-                        collectPaymentFlow(cardReaderManager, amount, order.currency)
+                        // TODO cardreader don't hardcode currency symbol ($)
+                        collectPaymentFlow(cardReaderManager, amount, order.currency, "$${amount}")
                     } ?: IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
@@ -57,9 +74,32 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
     private suspend fun collectPaymentFlow(
         cardReaderManager: CardReaderManager,
         amount: BigDecimal,
-        currency: String
+        currency: String,
+        amountLabel: String
     ) {
         cardReaderManager.collectPayment(amount, currency).collect { paymentStatus ->
+            when (paymentStatus) {
+                InitializingPayment -> viewState.postValue(LoadingDataState)
+                CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
+                CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
+                ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
+                PaymentCompleted -> viewState.postValue(PaymentSuccessfulState(amountLabel))
+                ShowAdditionalInfo -> {
+                    // TODO cardreader prompt the user to take certain action eg. Remove card
+                }
+                WaitingForInput -> {
+                    // TODO cardreader prompt the user to tap/insert a card
+                }
+                CapturingPaymentFailed,
+                CollectingPaymentFailed,
+                InitializingPaymentFailed,
+                ProcessingPaymentFailed -> viewState.postValue(FailedPaymentState)
+                is UnexpectedError -> {
+                    logger.e(T.MAIN, paymentStatus.errorCause)
+                    viewState.postValue(FailedPaymentState)
+                }
+            }
+            // TODO cardreader remove this line which is used only for debug purposes
             triggerEvent(ShowSnackbar(R.string.generic_string, arrayOf(paymentStatus.javaClass.simpleName)))
         }
     }
