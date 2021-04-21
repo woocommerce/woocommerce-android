@@ -67,22 +67,18 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
     private fun loadOrderFromDB() = orderStore.getOrderByIdentifier(arguments.orderIdentifier)
 
     sealed class ViewState(
-        val hintLabel: Int?,
-        val headerLabel: Int?,
-        val paymentStateLabel: Int?,
-        val illustration: Int?
+        val hintLabel: Int? = null,
+        val headerLabel: Int? = null,
+        val paymentStateLabel: Int? = null,
+        val illustration: Int? = null
     ) {
-        abstract val amountWithCurrencyLabel: String?
+        open val amountWithCurrencyLabel: String? = ""
 
         // TODO cardreader Update LoadingDataState
-        object LoadingDataState: ViewState(
-            hintLabel = null,
-            headerLabel = null,
-            paymentStateLabel = null,
-            illustration = null
-        ) {
-            override val amountWithCurrencyLabel = null
-        }
+        object LoadingDataState : ViewState()
+
+        // TODO cardreader Update FailedPaymentState
+        object FailedPaymentState : ViewState()
 
         data class CollectPaymentState(override val amountWithCurrencyLabel: String) : ViewState(
             hintLabel = R.string.card_reader_payment_collect_payment_hint,
@@ -109,9 +105,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
 
         data class PaymentSuccessfulState(override val amountWithCurrencyLabel: String) :
             ViewState(
-                hintLabel = null,
                 headerLabel = R.string.card_reader_payment_completed_payment_header,
-                paymentStateLabel = null,
                 illustration = R.drawable.common_full_open_on_phone
             )
     }
