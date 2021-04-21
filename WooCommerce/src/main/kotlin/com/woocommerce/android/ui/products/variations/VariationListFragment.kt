@@ -24,7 +24,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
@@ -37,7 +37,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
-class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
+class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_list),
     OnLoadMoreListener {
     companion object {
         const val TAG: String = "VariationListFragment"

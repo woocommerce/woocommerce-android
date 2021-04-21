@@ -23,7 +23,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
@@ -32,7 +32,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.Lazy
 import javax.inject.Inject
 
-class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_viewer),
+class ProductImageViewerFragment : BaseDaggerFragment(R.layout.fragment_product_image_viewer),
     ImageViewerListener,
     BackPressListener {
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>

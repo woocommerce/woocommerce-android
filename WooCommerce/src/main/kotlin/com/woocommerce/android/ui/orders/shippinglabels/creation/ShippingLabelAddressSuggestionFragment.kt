@@ -14,7 +14,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
@@ -26,7 +26,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
 class ShippingLabelAddressSuggestionFragment
-    : BaseFragment(R.layout.fragment_shipping_label_address_suggestion), BackPressListener {
+    : BaseDaggerFragment(R.layout.fragment_shipping_label_address_suggestion), BackPressListener {
     companion object {
         const val SUGGESTED_ADDRESS_DISCARDED = "key_suggested_address_dialog_closed"
         const val SELECTED_ADDRESS_ACCEPTED = "key_selected_address_accepted"

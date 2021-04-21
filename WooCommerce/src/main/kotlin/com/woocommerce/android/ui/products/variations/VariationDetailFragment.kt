@@ -24,7 +24,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
@@ -45,7 +45,7 @@ import org.wordpress.android.util.ActivityUtils
 import java.util.Date
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail),
+class VariationDetailFragment : BaseDaggerFragment(R.layout.fragment_variation_detail),
     BackPressListener,
     OnGalleryImageInteractionListener {
     companion object {

@@ -14,7 +14,7 @@ import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -23,7 +23,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
-class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_label_refund), BackPressListener {
+class ShippingLabelRefundFragment : BaseDaggerFragment(R.layout.fragment_shipping_label_refund), BackPressListener {
     companion object {
         const val KEY_REFUND_SHIPPING_LABEL_RESULT = "key_refund_shipping_label_result"
     }

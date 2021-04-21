@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -40,7 +40,7 @@ import java.util.Calendar
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
-class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_shipment_tracking), BackPressListener {
+class AddOrderShipmentTrackingFragment : BaseDaggerFragment(R.layout.fragment_add_shipment_tracking), BackPressListener {
     companion object {
         const val KEY_ADD_SHIPMENT_TRACKING_RESULT = "key_add_shipment_tracking_result"
     }
