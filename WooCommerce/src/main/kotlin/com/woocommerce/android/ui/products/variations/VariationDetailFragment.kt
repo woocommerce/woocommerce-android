@@ -98,6 +98,11 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_variation_detail_fragment, menu)
         doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)

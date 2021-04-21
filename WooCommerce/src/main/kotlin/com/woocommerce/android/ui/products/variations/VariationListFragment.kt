@@ -102,6 +102,11 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
