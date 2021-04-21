@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
+import com.woocommerce.android.cardreader.CardPaymentStatus.UnexpectedError
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import java.lang.ArithmeticException
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 
@@ -42,9 +44,15 @@ internal class PaymentManager(
 ) {
     suspend fun acceptPayment(amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
         if (!isSupportedCurrency(currency)) {
-            throw IllegalStateException("Unsupported currency")
+            emit(UnexpectedError("Unsupported currency: $currency"))
+            return@flow
         }
-        val amountInSmallestCurrencyUnit = convertBigDecimalInDollarsToIntegerInCents(amount)
+        val amountInSmallestCurrencyUnit = try {
+            convertBigDecimalInDollarsToIntegerInCents(amount)
+        } catch (e: ArithmeticException) {
+            emit(UnexpectedError("BigDecimal amount doesn't fit into an Integer: $amount"))
+            return@flow
+        }
         var paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
@@ -123,16 +131,12 @@ internal class PaymentManager(
 
     // TODO cardreader Add support for other currencies
     private fun convertBigDecimalInDollarsToIntegerInCents(amount: BigDecimal): Int {
-        return try {
-            amount
-                // round to USD_TO_CENTS_DECIMAL_PLACES decimal places
-                .setScale(USD_TO_CENTS_DECIMAL_PLACES, HALF_UP)
-                // move decimal point USD_TO_CENTS_DECIMAL_PLACES to the right = aka convert dollars to cents
-                .movePointRight(USD_TO_CENTS_DECIMAL_PLACES)
-                .intValueExact()
-        } catch (e: ArithmeticException) {
-            throw IllegalStateException("BigDecimal amount doesn't fit into an Integer")
-        }
+        return amount
+            // round to USD_TO_CENTS_DECIMAL_PLACES decimal places
+            .setScale(USD_TO_CENTS_DECIMAL_PLACES, HALF_UP)
+            // convert dollars to cents
+            .movePointRight(USD_TO_CENTS_DECIMAL_PLACES)
+            .intValueExact()
     }
 
     // TODO Add Support for other currencies
