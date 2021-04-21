@@ -28,6 +28,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import java.math.BigDecimal
+import java.math.RoundingMode.HALF_UP
+
+private const val USD_TO_CENTS_DECIMAL_PLACES = 2
+private const val USD_CURRENCY = "usd"
 
 internal class PaymentManager(
     private val cardReaderStore: CardReaderStore,
@@ -35,8 +40,12 @@ internal class PaymentManager(
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction
 ) {
-    suspend fun acceptPayment(amount: Int, currency: String): Flow<CardPaymentStatus> = flow {
-        var paymentIntent = createPaymentIntent(amount, currency)
+    suspend fun acceptPayment(amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
+        if (!isSupportedCurrency(currency)) {
+            throw IllegalStateException("Unsupported currency")
+        }
+        val amountInSmallestCurrencyUnit = convertBigDecimalInDollarsToIntegerInCents(amount)
+        var paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
@@ -111,4 +120,21 @@ internal class PaymentManager(
             emit(CapturingPaymentFailed)
         }
     }
+
+    // TODO cardreader Add support for other currencies
+    private fun convertBigDecimalInDollarsToIntegerInCents(amount: BigDecimal): Int {
+        return try {
+            amount
+                // round to USD_TO_CENTS_DECIMAL_PLACES decimal places
+                .setScale(USD_TO_CENTS_DECIMAL_PLACES, HALF_UP)
+                // move decimal point USD_TO_CENTS_DECIMAL_PLACES to the right = aka convert dollars to cents
+                .movePointRight(USD_TO_CENTS_DECIMAL_PLACES)
+                .intValueExact()
+        } catch (e: ArithmeticException) {
+            throw IllegalStateException("BigDecimal amount doesn't fit into an Integer")
+        }
+    }
+
+    // TODO Add Support for other currencies
+    private fun isSupportedCurrency(currency: String): Boolean = currency.toLowerCase() == USD_CURRENCY
 }
