@@ -284,18 +284,22 @@ class VariationDetailViewModel @AssistedInject constructor(
     private fun deleteVariation() = launch {
         viewState = viewState.copy(isDeleteDialogShown = true)
         viewState.parentProduct?.remoteId?.let { productID ->
-            variationRepository.deleteVariation(productID, viewState.variation.remoteVariationId)
-                .also { handleVariationDeletion(it, productID) }
+            viewState.variation?.let { variation ->
+                variationRepository.deleteVariation(productID, variation.remoteVariationId)
+                    .also { handleVariationDeletion(it, productID) }
+            }
         }
     }
 
     private fun handleVariationDeletion(deleted: Boolean, productID: Long) {
         if (deleted) triggerEvent(
             ExitWithResult(
-                DeletedVariationData(
-                    productID,
-                    viewState.variation.remoteVariationId
-                )
+                viewState.variation?.let { variation ->
+                    DeletedVariationData(
+                        productID,
+                        variation.remoteVariationId
+                    )
+                }
             )
         ) else if (deleted.not() && networkStatus.isConnected().not()) {
             triggerEvent(ShowSnackbar(string.offline_error))
