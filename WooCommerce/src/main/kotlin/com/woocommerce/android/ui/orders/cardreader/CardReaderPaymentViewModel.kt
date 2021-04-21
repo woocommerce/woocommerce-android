@@ -61,7 +61,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                 loadOrderFromDB()?.let { order ->
                     order.total.toBigDecimalOrNull()?.let { amount ->
                         // TODO cardreader don't hardcode currency symbol ($)
-                        collectPaymentFlow(cardReaderManager, amount, order.currency, "$${amount}")
+                        collectPaymentFlow(cardReaderManager, amount, order.currency, "$$amount")
                     } ?: IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
