@@ -34,13 +34,13 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -59,7 +59,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val parameterRepository: ParameterRepository,
     private val resources: ResourceProvider
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
     }
@@ -79,7 +79,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the variation detail screen
-    val variationViewStateData = LiveDataDelegate(savedState, VariationViewState(originalVariation)) { old, new ->
+    val variationViewStateData = LiveDataDelegateWithArgs(savedState, VariationViewState(originalVariation)) { old, new ->
         if (old?.variation != new.variation) {
             updateCards(new.variation)
         }

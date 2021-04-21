@@ -12,10 +12,10 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.launch
 
@@ -24,13 +24,13 @@ class WPMediaPickerViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val mediaPickerRepository: WPMediaPickerRepository,
     private val networkStatus: NetworkStatus
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private val navArgs: WPMediaPickerFragmentArgs by savedState.navArgs()
 
     private val _mediaList = MutableLiveData<List<Product.Image>>()
     val mediaList: LiveData<List<Product.Image>> = _mediaList
 
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState(isMultiSelectionAllowed = navArgs.allowMultiple))
+    val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState(isMultiSelectionAllowed = navArgs.allowMultiple))
     private var viewState by viewStateLiveData
 
     fun start() {

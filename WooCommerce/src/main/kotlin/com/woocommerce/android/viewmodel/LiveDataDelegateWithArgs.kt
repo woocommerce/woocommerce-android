@@ -5,7 +5,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateHandle
 import java.lang.IllegalStateException
 import kotlin.reflect.KProperty
 
@@ -20,8 +19,8 @@ import kotlin.reflect.KProperty
  *  being updated. If there is more than one, an [IllegalStateException] is thrown.
  *
  */
-class LiveDataDelegate<T : Parcelable>(
-    savedState: SavedStateHandle,
+class LiveDataDelegateWithArgs<T : Parcelable>(
+    savedState: SavedStateWithArgs,
     private val initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
     private val onChange: (T?, T) -> Unit = { _, _ -> }

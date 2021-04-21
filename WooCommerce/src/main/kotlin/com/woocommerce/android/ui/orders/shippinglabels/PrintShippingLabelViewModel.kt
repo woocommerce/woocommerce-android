@@ -12,11 +12,11 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -32,7 +32,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
     private val repository: ShippingLabelRepository,
     private val networkStatus: NetworkStatus,
     dispatchers: CoroutineDispatchers
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private val arguments: PrintShippingLabelFragmentArgs by savedState.navArgs()
     private val label
         get() = repository.getShippingLabelByOrderIdAndLabelId(
@@ -40,7 +40,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
             shippingLabelId = arguments.shippingLabelId
         )
 
-    val viewStateData = LiveDataDelegate(savedState, PrintShippingLabelViewState(
+    val viewStateData = LiveDataDelegateWithArgs(savedState, PrintShippingLabelViewState(
         isLabelExpired = label?.isAnonymized == true ||
             label?.expiryDate?.let { Date().after(it) } ?: false
     ))

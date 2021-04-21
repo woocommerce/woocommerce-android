@@ -80,7 +80,7 @@ import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -89,7 +89,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -118,7 +118,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productTagsRepository: ProductTagsRepository,
     private val mediaFilesRepository: MediaFilesRepository,
     private val prefs: AppPrefs
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
@@ -135,7 +135,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the product detail screen
-    val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
+    val productDetailViewStateData = LiveDataDelegateWithArgs(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
             new.productDraft?.let {
                 updateCards(it)
@@ -145,15 +145,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var viewState by productDetailViewStateData
 
     // view state for the product categories screen
-    val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
+    val productCategoriesViewStateData = LiveDataDelegateWithArgs(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
 
     // view state for the product tags screen
-    final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
+    final val productTagsViewStateData = LiveDataDelegateWithArgs(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
 
     // view state for the product downloads screen
-    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
+    final val productDownloadsViewStateData = LiveDataDelegateWithArgs(savedState, ProductDownloadsViewState())
     private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
@@ -168,13 +168,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
-    final val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
+    final val globalAttributeTermsViewStateData = LiveDataDelegateWithArgs(savedState, GlobalAttributesTermsViewState())
     private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
 
     private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
     val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
 
-    final val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
+    final val globalAttributeViewStateData = LiveDataDelegateWithArgs(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
