@@ -47,8 +47,11 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.junit.MockitoJUnitRunner
+import java.math.BigDecimal
 
 private const val TIMEOUT = 1000L
+private val DUMMY_AMOUNT = BigDecimal(0)
+private val USD_CURRENCY = "USD"
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -87,7 +90,7 @@ class PaymentManagerTest {
     // BEGIN - Creating Payment intent
     @Test
     fun `when creating payment intent starts, then InitializingPayment is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(0, "")
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY)
             .takeUntil(InitializingPayment).toList()
 
         assertThat(result.last()).isInstanceOf(InitializingPayment::class.java)
@@ -98,7 +101,7 @@ class PaymentManagerTest {
         whenever(createPaymentAction.createPaymentIntent(anyInt(), anyString()))
             .thenReturn(flow { emit(CreatePaymentStatus.Failure(mock())) })
 
-        val result = manager.acceptPayment(0, "").toList()
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
 
         assertThat(result.last()).isInstanceOf(InitializingPaymentFailed::class.java)
     }
@@ -110,7 +113,7 @@ class PaymentManagerTest {
                 .thenReturn(flow { emit(CreatePaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
             val result = withTimeoutOrNull(TIMEOUT) {
-                manager.acceptPayment(0, "").toList()
+                manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
             }
 
             assertThat(result).isNotNull // verify the flow did not timeout
@@ -121,7 +124,7 @@ class PaymentManagerTest {
     // BEGIN - Collecting Payment
     @Test
     fun `when collecting payment starts, then CollectingPayment is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(0, "")
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY)
             .takeUntil(CollectingPayment).toList()
 
         assertThat(result.last()).isInstanceOf(CollectingPayment::class.java)
@@ -132,7 +135,7 @@ class PaymentManagerTest {
         whenever(collectPaymentAction.collectPayment(anyOrNull()))
             .thenReturn(flow { emit(CollectPaymentStatus.ReaderInputRequested(mock())) })
 
-        val result = manager.acceptPayment(0, "").toList()
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
 
         assertThat(result.last()).isInstanceOf(WaitingForInput::class.java)
     }
@@ -142,7 +145,7 @@ class PaymentManagerTest {
         whenever(collectPaymentAction.collectPayment(anyOrNull()))
             .thenReturn(flow { emit(CollectPaymentStatus.DisplayMessageRequested(mock())) })
 
-        val result = manager.acceptPayment(0, "").toList()
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
 
         assertThat(result.last()).isInstanceOf(ShowAdditionalInfo::class.java)
     }
@@ -152,7 +155,7 @@ class PaymentManagerTest {
         whenever(collectPaymentAction.collectPayment(anyOrNull()))
             .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
 
-        val result = manager.acceptPayment(0, "").toList()
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
 
         assertThat(result.last()).isInstanceOf(CollectingPaymentFailed::class.java)
     }
@@ -164,7 +167,7 @@ class PaymentManagerTest {
                 .thenReturn(flow { emit(CollectPaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
             val result = withTimeoutOrNull(TIMEOUT) {
-                manager.acceptPayment(0, "").toList()
+                manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
             }
 
             assertThat(result).isNotNull // verify the flow did not timeout
@@ -175,7 +178,7 @@ class PaymentManagerTest {
     // BEGIN - Processing Payment
     @Test
     fun `when processing payment starts, then ProcessingPayment is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(0, "")
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY)
             .takeUntil(ProcessingPayment).toList()
 
         assertThat(result.last()).isInstanceOf(ProcessingPayment::class.java)
@@ -186,7 +189,7 @@ class PaymentManagerTest {
         whenever(processPaymentAction.processPayment(anyOrNull()))
             .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
 
-        val result = manager.acceptPayment(0, "").toList()
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
 
         assertThat(result.last()).isInstanceOf(ProcessingPaymentFailed::class.java)
     }
@@ -198,7 +201,7 @@ class PaymentManagerTest {
                 .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
             val result = withTimeoutOrNull(TIMEOUT) {
-                manager.acceptPayment(0, "").toList()
+                manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
             }
 
             assertThat(result).isNotNull // verify the flow did not timeout
@@ -209,7 +212,7 @@ class PaymentManagerTest {
     // BEGIN - Capturing Payment
     @Test
     fun `when capturing payment starts, then CapturingPayment is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(0, "")
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY)
             .takeUntil(CapturingPayment).toList()
 
         assertThat(result.last()).isInstanceOf(CapturingPayment::class.java)
@@ -217,7 +220,7 @@ class PaymentManagerTest {
 
     @Test
     fun `when capturing payment succeeds, then PaymentCompleted is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(0, "")
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY)
             .takeUntil(PaymentCompleted).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentCompleted::class.java)
@@ -227,7 +230,7 @@ class PaymentManagerTest {
     fun `when capturing payment fails, then CapturingPaymentFailed is emitted`() = runBlockingTest {
         whenever(cardReaderStore.capturePaymentIntent(anyString())).thenReturn(false)
 
-        val result = manager.acceptPayment(0, "").toList()
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
 
         assertThat(result.last()).isInstanceOf(CapturingPaymentFailed::class.java)
     }
