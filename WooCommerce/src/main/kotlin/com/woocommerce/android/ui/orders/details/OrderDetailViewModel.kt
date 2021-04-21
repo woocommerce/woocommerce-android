@@ -12,17 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
-import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotEqualTo
@@ -45,6 +34,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -62,7 +52,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -226,37 +215,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager?) {
-        launch {
-            // TODO cardreader use the correct currency or hide the button
-            cardReaderManager?.collectPayment(999, "usd")?.collect {
-                when (it) {
-                    CapturingPaymentFailed,
-                    CollectingPaymentFailed,
-                    InitializingPaymentFailed,
-                    ProcessingPaymentFailed -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Payment failed :("))
-                    )
-                    PaymentCompleted -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Payment completed successfully :))"))
-                    )
-                    CollectingPayment -> {
-                    }
-                    InitializingPayment -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Payment flow started."))
-                    )
-                    CapturingPayment -> {
-                    }
-                    ProcessingPayment -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Processing payment."))
-                    )
-                    ShowAdditionalInfo -> {
-                    }
-                    WaitingForInput -> triggerEvent(
-                        ShowSnackbar(string.generic_string, arrayOf("Tap your card"))
-                    )
-                }
-            }
-        }
+        triggerEvent(StartCardReaderPaymentFlow(order.identifier))
     }
 
     fun onViewRefundedProductsClicked() {

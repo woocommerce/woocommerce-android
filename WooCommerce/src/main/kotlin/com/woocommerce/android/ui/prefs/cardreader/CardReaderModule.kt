@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.prefs.cardreader
 
 import com.woocommerce.android.di.FragmentScope
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog
+import com.woocommerce.android.ui.orders.cardreader.di.CardReaderPaymentModule
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderModule.CardReaderConnectFragmentModule
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderModule.CardReaderPaymentFragmentModule
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderModule.CardReaderScanFragmentModule
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectModule
@@ -13,7 +16,8 @@ import dagger.android.ContributesAndroidInjector
 @Module(
     includes = [
         CardReaderConnectFragmentModule::class,
-        CardReaderScanFragmentModule::class
+        CardReaderScanFragmentModule::class,
+        CardReaderPaymentFragmentModule::class
     ]
 )
 object CardReaderModule {
@@ -29,5 +33,12 @@ object CardReaderModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [CardReaderScanModule::class])
         abstract fun cardReaderScanFragment(): CardReaderScanFragment
+    }
+
+    @Module
+    abstract class CardReaderPaymentFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [CardReaderPaymentModule::class])
+        abstract fun cardReaderPaymentFragment(): CardReaderPaymentDialog
     }
 }
