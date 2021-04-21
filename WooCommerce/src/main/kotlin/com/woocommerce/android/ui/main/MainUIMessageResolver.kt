@@ -1,13 +1,20 @@
 package com.woocommerce.android.ui.main
 
+import android.app.Activity
+import android.content.Context
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.ui.base.UIMessageResolver
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
-@ActivityScope
-class MainUIMessageResolver @Inject constructor(val activity: MainActivity) : UIMessageResolver {
+@ActivityScoped
+class MainUIMessageResolver @Inject constructor(activity: Activity) : UIMessageResolver {
+    init {
+        if (activity !is MainActivity) throw IllegalStateException("MainUIMessageResolver should be provided only in MainModule")
+    }
     override val snackbarRoot: ViewGroup by lazy {
         activity.findViewById(R.id.snack_root) as ViewGroup
     }
