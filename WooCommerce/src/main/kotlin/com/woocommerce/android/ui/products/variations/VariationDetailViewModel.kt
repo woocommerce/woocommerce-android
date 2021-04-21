@@ -36,6 +36,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -112,6 +113,24 @@ class VariationDetailViewModel @AssistedInject constructor(
     fun onEditVariationCardClicked(target: VariationNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
+    }
+
+    fun onDeleteVariationClicked() {
+        triggerEvent(
+            ShowDialog(
+                positiveBtnAction = { _, _ ->
+                    // TODO: trigger track
+                    viewState = viewState.copy(isConfirmingDeletion = false)
+                    deleteVariation()
+                },
+                negativeBtnAction = { _, _ ->
+                    viewState = viewState.copy(isConfirmingDeletion = false)
+                },
+                messageId = string.variation_confirm_delete,
+                positiveButtonId = string.delete,
+                negativeButtonId = string.cancel
+            )
+        )
     }
 
     fun onExit() {
@@ -245,6 +264,29 @@ class VariationDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(isProgressDialogShown = false)
     }
 
+    private fun deleteVariation() = launch {
+        viewState = viewState.copy(isDeleteDialogShown = true)
+        viewState.parentProduct?.remoteId?.let { productID ->
+            variationRepository.deleteVariation(productID, viewState.variation.remoteVariationId)
+                .also { handleVariationDeletion(it, productID) }
+        }
+    }
+
+    private fun handleVariationDeletion(deleted: Boolean, productID: Long) {
+        if (deleted) triggerEvent(
+            ExitWithResult(
+                DeletedVariationData(
+                    productID,
+                    viewState.variation.remoteVariationId
+                )
+            )
+        ) else if (deleted.not() && networkStatus.isConnected().not()) {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+
+        viewState = viewState.copy(isDeleteDialogShown = false)
+    }
+
     private fun loadVariation(remoteProductId: Long, remoteVariationId: Long) {
         launch {
             val variationInDb = variationRepository.getVariation(remoteProductId, remoteVariationId)
@@ -373,6 +415,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         val isDoneButtonEnabled: Boolean? = null,
         val isSkeletonShown: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
+        val isDeleteDialogShown: Boolean? = null,
         val weightWithUnits: String? = null,
         val sizeWithUnits: String? = null,
         val priceWithCurrency: String? = null,
@@ -381,7 +424,14 @@ class VariationDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val shippingClass: String? = null,
         val parentProduct: Product? = null,
-        val uploadingImageUri: Uri? = null
+        val uploadingImageUri: Uri? = null,
+        val isConfirmingDeletion: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class DeletedVariationData(
+        val productID: Long,
+        val variationID: Long
     ) : Parcelable
 
     @AssistedFactory
