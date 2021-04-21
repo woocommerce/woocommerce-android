@@ -115,4 +115,5 @@ so that's the baseline as defined in `major_100`.
     <dimen name="top_performer_min_height">224dp</dimen>
     <dimen name="expanded_toolbar_height">108dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="empty_states_button_width">240dp</dimen>
 </resources>
