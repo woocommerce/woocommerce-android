@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -13,7 +10,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import kotlinx.parcelize.Parcelize
 
 class ProductShippingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,

@@ -1,7 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.CustomPackage
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.PredefinedOption
 
@@ -11,7 +11,8 @@ data class ShippingPackage(
     val title: String,
     val isLetter: Boolean,
     val category: String,
-    val dimensions: PackageDimensions
+    val dimensions: PackageDimensions,
+    val boxWeight: Float
 ) : Parcelable {
     companion object {
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
@@ -20,9 +21,9 @@ data class ShippingPackage(
 
 @Parcelize
 data class PackageDimensions(
-    val length: Double,
-    val width: Double,
-    val height: Double
+    val length: Float,
+    val width: Float,
+    val height: Float
 ) : Parcelable
 
 fun CustomPackage.toAppModel(): ShippingPackage {
@@ -32,10 +33,11 @@ fun CustomPackage.toAppModel(): ShippingPackage {
         title = title,
         isLetter = isLetter,
         dimensions = PackageDimensions(
-            length = dimensionsParts[0].trim().toDouble(),
-            width = dimensionsParts[1].trim().toDouble(),
-            height = dimensionsParts[2].trim().toDouble()
+            length = dimensionsParts[0].trim().toFloat(),
+            width = dimensionsParts[1].trim().toFloat(),
+            height = dimensionsParts[2].trim().toFloat()
         ),
+        boxWeight = boxWeight,
         category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY
     )
 }
@@ -48,10 +50,11 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
             title = it.title,
             isLetter = it.isLetter,
             dimensions = PackageDimensions(
-                length = dimensionsParts[0].trim().toDouble(),
-                width = dimensionsParts[1].trim().toDouble(),
-                height = dimensionsParts[2].trim().toDouble()
+                length = dimensionsParts[0].trim().toFloat(),
+                width = dimensionsParts[1].trim().toFloat(),
+                height = dimensionsParts[2].trim().toFloat()
             ),
+            boxWeight = it.boxWeight,
             category = this.title
         )
     }

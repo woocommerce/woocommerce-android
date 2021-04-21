@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
+import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
@@ -181,7 +182,7 @@ class MagicLinkInterceptRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchSites = it
 
-                dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+                dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
             } ?: false // request timed out
         } catch (e: CancellationException) {
             WooLog.e(LOGIN, "Exception encountered while fetching sites", e)

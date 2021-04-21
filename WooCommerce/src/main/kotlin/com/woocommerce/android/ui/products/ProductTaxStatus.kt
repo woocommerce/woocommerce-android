@@ -6,7 +6,7 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductTaxStatus
 
 sealed class ProductTaxStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {

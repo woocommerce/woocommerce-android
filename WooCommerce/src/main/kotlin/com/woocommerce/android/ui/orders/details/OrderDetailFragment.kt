@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
+import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
@@ -135,10 +136,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 showMarkOrderCompleteButton(it)
             }
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
-                showShippingLabelButton(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()))
+                showShippingLabelButton(it)
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()), false)
+                displayShippingLabelsWIPCard(it, false)
             }
             new.isReprintShippingLabelBannerVisible.takeIfNotEqualTo(old?.isReprintShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it, true)
@@ -206,6 +207,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
+        }
+        handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
+            viewModel.onShippingLabelsPurchased()
         }
     }
 
@@ -352,7 +356,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner)
                 R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
             else
-                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m2_wip_message
+                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m3_wip_message
 
             binding.orderDetailShippingLabelsWipCard.initView(
                 getString(wipCardTitleId),

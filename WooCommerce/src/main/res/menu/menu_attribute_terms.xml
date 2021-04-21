@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_rename"
+        android:title="@string/rename"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_remove"
         android:title="@string/remove"
         app:showAsAction="never" />

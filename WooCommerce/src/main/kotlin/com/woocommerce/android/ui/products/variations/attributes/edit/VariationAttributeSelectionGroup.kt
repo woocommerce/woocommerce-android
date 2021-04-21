@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.products.variations.attributes.edit
 import android.os.Parcelable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.VariantOption
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 typealias StringResourceCreator = (Int) -> String
 

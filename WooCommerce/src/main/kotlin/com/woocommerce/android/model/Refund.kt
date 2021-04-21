@@ -3,12 +3,12 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductHelper
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
-import java.math.RoundingMode.HALF_UP
 import java.math.BigDecimal
+import java.math.RoundingMode.HALF_UP
 import java.util.Date
 
 @Parcelize

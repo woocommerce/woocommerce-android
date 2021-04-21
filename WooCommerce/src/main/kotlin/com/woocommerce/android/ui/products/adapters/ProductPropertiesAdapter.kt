@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.products.viewholders.RatingBarViewHolder
 import com.woocommerce.android.ui.products.viewholders.ReadMoreViewHolder
 import com.woocommerce.android.ui.products.viewholders.SwitchViewHolder
 import com.woocommerce.android.ui.products.viewholders.WarningViewHolder
+import com.woocommerce.android.widgets.WCWarningBanner
 
 class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
     private var items = listOf<ProductProperty>()
@@ -60,7 +61,7 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
             LINK -> LinkViewHolder(parent)
             READ_MORE -> ReadMoreViewHolder(parent)
             SWITCH -> SwitchViewHolder(parent)
-            WARNING -> WarningViewHolder(parent)
+            WARNING -> WarningViewHolder(WCWarningBanner(parent.context))
         }
     }
 
