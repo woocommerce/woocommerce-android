@@ -1,6 +1,8 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
@@ -22,6 +24,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
+import com.woocommerce.android.cardreader.CardPaymentStatus.UnexpectedError
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
@@ -35,6 +38,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.withIndex
@@ -52,6 +56,7 @@ import java.math.BigDecimal
 private const val TIMEOUT = 1000L
 private val DUMMY_AMOUNT = BigDecimal(0)
 private val USD_CURRENCY = "USD"
+private val NONE_USD_CURRENCY = "CZK"
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -87,6 +92,62 @@ class PaymentManagerTest {
         whenever(cardReaderStore.capturePaymentIntent(anyString())).thenReturn(true)
     }
 
+    // BEGIN - Arguments validation and conversion
+    @Test
+    fun `when currency not USD, then UnexpectedError emitted`() = runBlockingTest {
+        val result = manager.acceptPayment(DUMMY_AMOUNT, NONE_USD_CURRENCY).single()
+
+        assertThat(result).isInstanceOf(UnexpectedError::class.java)
+    }
+
+    @Test
+    fun `when currency is USD, then flow initiated`() = runBlockingTest {
+        val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY)
+            .takeUntil(InitializingPayment).toList()
+
+        assertThat(result.last()).isInstanceOf(InitializingPayment::class.java)
+    }
+
+    @Test
+    fun `when payment flow started, then dollar amount converted to cents`() = runBlockingTest {
+        val captor = argumentCaptor<Int>()
+
+        manager.acceptPayment(BigDecimal(1), USD_CURRENCY).toList()
+
+        verify(createPaymentAction).createPaymentIntent(captor.capture(), anyString())
+        assertThat(captor.firstValue).isEqualTo(100)
+    }
+
+    @Test
+    fun `when amount $1 ¢005, then it gets rounded down to ¢100`() = runBlockingTest {
+        val captor = argumentCaptor<Int>()
+
+        manager.acceptPayment(BigDecimal(1.005), USD_CURRENCY).toList()
+
+        verify(createPaymentAction).createPaymentIntent(captor.capture(), anyString())
+        assertThat(captor.firstValue).isEqualTo(100)
+    }
+
+    @Test
+    fun `when amount $1 ¢006, then it gets rounded up to ¢101`() = runBlockingTest {
+        val captor = argumentCaptor<Int>()
+
+        manager.acceptPayment(BigDecimal(1.006), USD_CURRENCY).toList()
+
+        verify(createPaymentAction).createPaymentIntent(captor.capture(), anyString())
+        assertThat(captor.firstValue).isEqualTo(101)
+    }
+
+    @Test
+    fun `when amount $1 ¢99, then it gets converted to ¢199`() = runBlockingTest {
+        val captor = argumentCaptor<Int>()
+
+        manager.acceptPayment(BigDecimal(1.99), USD_CURRENCY).toList()
+
+        verify(createPaymentAction).createPaymentIntent(captor.capture(), anyString())
+        assertThat(captor.firstValue).isEqualTo(199)
+    }
+    // END - Arguments validation and conversion
     // BEGIN - Creating Payment intent
     @Test
     fun `when creating payment intent starts, then InitializingPayment is emitted`() = runBlockingTest {
