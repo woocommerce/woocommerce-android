@@ -321,9 +321,9 @@ class VariationDetailViewModel @AssistedInject constructor(
             viewState = viewState.copy(isSkeletonShown = false)
 
             // show the variation if we were able to get it, otherwise exit
-            if (originalVariation != null) {
-                showVariation(originalVariation!!)
-            } else {
+            originalVariation?.let {
+                showVariation(it)
+            } ?: run {
                 triggerEvent(ShowSnackbar(string.variation_detail_fetch_variation_error))
                 triggerEvent(Exit)
             }
