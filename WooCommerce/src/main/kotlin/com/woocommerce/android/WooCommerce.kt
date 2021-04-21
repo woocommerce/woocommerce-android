@@ -8,6 +8,7 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import androidx.multidex.MultiDexApplication
 import com.android.volley.VolleyLog
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -26,7 +27,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
-import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.PackageUtils.PACKAGE_VERSION_CODE_DEFAULT
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
@@ -77,6 +77,8 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
     @Inject lateinit var payStore: WCPayStore
 
+    @Inject lateinit var crashLogging: CrashLogging
+
     // TODO cardreader init this field
     open val cardReaderManager: CardReaderManager? = null
 
@@ -122,8 +124,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
-
-        CrashUtils.initCrashLogging(this)
 
         component.inject(this)
 
@@ -294,7 +294,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             // Reset analytics
             AnalyticsTracker.flush()
             AnalyticsTracker.clearAllData()
-            CrashUtils.resetAccountAndSite()
             zendeskHelper.reset()
 
             // Wipe user-specific preferences
@@ -305,7 +304,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
             }
-            CrashUtils.setCurrentAccount(accountStore.account)
         }
     }
 
@@ -313,7 +311,7 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUnexpectedError(event: OnUnexpectedError) {
         with(event) {
-            CrashUtils.logException(exception, message = "FluxC: ${exception.message}: $description")
+            crashLogging.sendReport(exception =  exception, message =  "FluxC: ${exception.message}: $description")
         }
     }
 

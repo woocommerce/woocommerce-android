@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -39,6 +40,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
+import java.lang.NullPointerException
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -61,6 +63,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
+    @Inject lateinit var crashLogging: CrashLogging
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -185,6 +188,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
+
+        crashLogging.sendReport(NullPointerException(), mapOf("test" to "tag"), "my custom message")
     }
 
     override fun onStop() {

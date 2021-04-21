@@ -2,7 +2,8 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import android.text.format.DateFormat
-import com.automattic.android.tracks.CrashLogging.CrashLoggingDataProvider
+import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.util.WooLog.T.UTILS
 import org.apache.commons.lang3.time.DateUtils
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 class DateUtils @Inject constructor(
     private val locale: Locale,
-    private val crashLogger: CrashLoggingDataProvider
+    private val crashLogger: CrashLogging
 ) {
     private val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
 
@@ -307,9 +308,9 @@ class DateUtils @Inject constructor(
         }
     }
 
-    private fun String.reportAsError(e: Exception) {
+    private fun String.reportAsError(exception: Exception) {
         WooLog.e(UTILS, this)
-        (crashLogger as? CrashUtils)?.logException(e)
+        crashLogger.sendReport(exception = exception)
     }
 
     companion object {
