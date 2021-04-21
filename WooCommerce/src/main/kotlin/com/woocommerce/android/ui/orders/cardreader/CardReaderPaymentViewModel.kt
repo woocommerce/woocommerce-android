@@ -62,7 +62,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                     order.total.toBigDecimalOrNull()?.let { amount ->
                         // TODO cardreader don't hardcode currency symbol ($)
                         collectPaymentFlow(cardReaderManager, amount, order.currency, "$${amount}")
-                    } ?: IllegalStateException("Converting order.total to BigDecimal failed")
+                    } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
                 logger.e(T.MAIN, e.stackTraceToString())
@@ -81,8 +81,8 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
             when (paymentStatus) {
                 InitializingPayment -> viewState.postValue(LoadingDataState)
                 CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
-                CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
                 ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
+                CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
                 PaymentCompleted -> viewState.postValue(PaymentSuccessfulState(amountLabel))
                 ShowAdditionalInfo -> {
                     // TODO cardreader prompt the user to take certain action eg. Remove card
