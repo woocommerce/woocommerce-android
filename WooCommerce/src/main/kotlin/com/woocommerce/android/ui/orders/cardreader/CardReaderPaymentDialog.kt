@@ -52,8 +52,16 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     }
 
     private fun initObservers() {
-        // TODO cardreader remove this
-        viewModel.foo()
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            // TODO cardreader Replace debug Snackbar with proper UI updates
+            when (event) {
+                is ShowSnackbar -> Snackbar.make(
+                    requireView(),
+                    String.format(getString(event.message), *event.args),
+                    LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
