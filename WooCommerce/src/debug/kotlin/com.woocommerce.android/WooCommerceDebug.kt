@@ -21,7 +21,8 @@ class WooCommerceDebug : WooCommerce() {
         }
 
         override suspend fun capturePaymentIntent(id: String): Boolean {
-            return false
+            // TODO cardreader Invoke capturePayment on WCPayStore
+            return true
         }
     })
 
