@@ -187,7 +187,7 @@ platform :android do
     hotfix = android_current_branch_is_hotfix
     android_download_translations(
       res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
-      glotpress_url: 'https://translate.wordpress.org/projects/apps/android/dev/', 
+      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/', 
       locales: SUPPORTED_LOCALES,
       lint_task: 'lintVanillaRelease'
     ) unless hotfix
