@@ -98,7 +98,7 @@ ext {
     lifecycleVersion = '2.3.1'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.81.0'
+    flipperVersion = '0.85.0'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.2.0'
     appCompatVersion = '1.2.0'
