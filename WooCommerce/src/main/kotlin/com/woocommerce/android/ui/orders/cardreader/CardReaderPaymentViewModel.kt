@@ -1,30 +1,25 @@
 package com.woocommerce.android.ui.orders.cardreader
 
-import android.os.Parcelable
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
-import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentArgs
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.IgnoredOnParcel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T
+import java.math.BigDecimal
 
 class CardReaderPaymentViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -38,20 +33,38 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
 
-    init {
-        start()
+    final fun start(cardReaderManager: CardReaderManager) {
+        // TODO cardreader Check if the payment was already processed and cancel this flow
+        // TODO cardreader Make sure a reader is connected
+        initPaymentFlow(cardReaderManager)
     }
 
-    final fun start() {
+    private fun initPaymentFlow(cardReaderManager: CardReaderManager) {
         launch {
-            val order = orderStore.getOrderByIdentifier(arguments.orderIdentifier)
-            logger.d(T.MAIN, "CardReader: Order: $order")
+            try {
+                loadOrderFromDB()?.let { order ->
+                    order.total.toBigDecimalOrNull()?.let { amount ->
+                        collectPaymentFlow(cardReaderManager, amount, order.currency)
+                    } ?: IllegalStateException("Converting order.total to BigDecimal failed")
+                } ?: throw IllegalStateException("Null order is not expected at this point")
+            } catch (e: IllegalStateException) {
+                logger.e(T.MAIN, e.stackTraceToString())
+                viewState.postValue(FailedPaymentState)
+            }
         }
     }
 
-    fun foo() {
-        logger.d(T.MAIN, "Testing foo()")
+    private suspend fun collectPaymentFlow(
+        cardReaderManager: CardReaderManager,
+        amount: BigDecimal,
+        currency: String
+    ) {
+        cardReaderManager.collectPayment(amount, currency).collect { paymentStatus ->
+            triggerEvent(ShowSnackbar(R.string.generic_string, arrayOf(paymentStatus.javaClass.simpleName)))
+        }
     }
+
+    private fun loadOrderFromDB() = orderStore.getOrderByIdentifier(arguments.orderIdentifier)
 
     sealed class ViewState(
         val hintLabel: Int?,
