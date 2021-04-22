@@ -28,6 +28,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 
@@ -121,19 +122,19 @@ class ProductPricingFragment
         if (!isAdded) return
 
         with(binding.productRegularPrice) {
-            initView(currency, decimals, currencyFormatter)
-            pricingData.regularPrice?.let { setValue(it) }
-            getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.onRegularPriceEntered(it)
-            })
+            pricingData.regularPrice?.let { setText(it.toString()) }
+            setOnTextChangedListener {
+                val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                viewModel.onRegularPriceEntered(price)
+            }
         }
 
         with(binding.productSalePrice) {
-            initView(currency, decimals, currencyFormatter)
-            pricingData.salePrice?.let { setValue(it) }
-            getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.onSalePriceEntered(it)
-            })
+            pricingData.salePrice?.let { setText(it.toString()) }
+            setOnTextChangedListener {
+                val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                viewModel.onSalePriceEntered(price)
+            }
         }
 
         val scheduleSale = pricingData.isSaleScheduled == true
