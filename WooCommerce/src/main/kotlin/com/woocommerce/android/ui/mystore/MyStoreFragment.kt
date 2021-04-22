@@ -40,7 +40,6 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.lang.NullPointerException
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -188,8 +187,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
-
-        crashLogging.sendReport(NullPointerException(), mapOf("test" to "tag"), "my custom message")
     }
 
     override fun onStop() {
