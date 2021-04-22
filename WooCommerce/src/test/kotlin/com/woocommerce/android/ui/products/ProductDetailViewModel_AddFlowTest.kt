@@ -12,10 +12,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.toMap
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
@@ -37,17 +38,19 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -69,17 +72,15 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true)
+    private val savedState = spy(
+        SavedStateHandle(
+            ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).toMap()
         )
     )
 
     private val siteParams = SiteParameters("$", "kg", "cm", 0f)
     private val parameterRepository: ParameterRepository = mock {
-        on(it.getParameters(any(), any())).thenReturn(siteParams)
+        on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
 
     private val prefs: AppPrefs = mock {

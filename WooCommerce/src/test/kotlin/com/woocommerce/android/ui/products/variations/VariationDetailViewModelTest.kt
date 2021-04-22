@@ -43,7 +43,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
 
     private val siteParams = SiteParameters("$", "kg", "cm", 0f)
     private val parameterRepository: ParameterRepository = mock {
-        on { getParameters(any(), any()) } doReturn (siteParams)
+        on { getParameters(any(), any<SavedStateWithArgs>()) } doReturn (siteParams)
     }
 
     private val resourceProvider: ResourceProvider = mock {
