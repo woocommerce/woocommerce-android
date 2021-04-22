@@ -45,13 +45,13 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -95,9 +95,11 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     final val commonStateLiveData = LiveDataDelegateWithArgs(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegateWithArgs(savedState, RefundSummaryViewState())
-    final val refundByItemsStateLiveData = LiveDataDelegateWithArgs(savedState, RefundByItemsViewState(), onChange = { _, new ->
+    final val refundByItemsStateLiveData = LiveDataDelegateWithArgs(
+        savedState, RefundByItemsViewState()
+    ) { _, new ->
         updateRefundTotal(new.productsRefund)
-    })
+    }
     final val refundByAmountStateLiveData = LiveDataDelegateWithArgs(
         savedState,
         RefundByAmountViewState(),

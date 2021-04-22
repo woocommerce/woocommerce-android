@@ -1,12 +1,7 @@
 package com.woocommerce.android.ui.base
 
 import android.content.Context
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.LayoutRes
-import androidx.fragment.app.Fragment
-import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector

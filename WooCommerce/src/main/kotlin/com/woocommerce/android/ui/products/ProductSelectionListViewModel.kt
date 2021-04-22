@@ -10,11 +10,11 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -41,7 +41,9 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
 
-    final val productSelectionListViewStateLiveData = LiveDataDelegateWithArgs(savedState, ProductSelectionListViewState())
+    final val productSelectionListViewStateLiveData = LiveDataDelegateWithArgs(
+        savedState, ProductSelectionListViewState()
+    )
     private var productSelectionListViewState by productSelectionListViewStateLiveData
 
     private val isRefreshing

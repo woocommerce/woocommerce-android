@@ -15,7 +15,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_
 import com.woocommerce.android.databinding.FragmentSettingsPrivacyBinding
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import dagger.android.support.AndroidSupportInjection
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

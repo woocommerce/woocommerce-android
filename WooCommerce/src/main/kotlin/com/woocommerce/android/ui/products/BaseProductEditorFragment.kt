@@ -17,7 +17,8 @@ import dagger.Lazy
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-abstract class BaseProductEditorFragment(@LayoutRes private val layoutRes: Int) : BaseDaggerFragment(), BackPressListener {
+abstract class BaseProductEditorFragment(@LayoutRes private val layoutRes: Int) :
+    BaseDaggerFragment(), BackPressListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var uiMessageResolver: UIMessageResolver

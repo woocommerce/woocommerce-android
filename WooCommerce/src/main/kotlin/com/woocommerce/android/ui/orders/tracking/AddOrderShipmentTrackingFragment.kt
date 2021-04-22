@@ -40,7 +40,8 @@ import java.util.Calendar
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
-class AddOrderShipmentTrackingFragment : BaseDaggerFragment(R.layout.fragment_add_shipment_tracking), BackPressListener {
+class AddOrderShipmentTrackingFragment :
+    BaseDaggerFragment(R.layout.fragment_add_shipment_tracking), BackPressListener {
     companion object {
         const val KEY_ADD_SHIPMENT_TRACKING_RESULT = "key_add_shipment_tracking_result"
     }

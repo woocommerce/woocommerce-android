@@ -6,7 +6,6 @@ import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.module.DebugOkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseBaseModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
-import org.wordpress.android.fluxc.module.ReleaseOkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseWCNetworkModule
 
 @InstallIn(SingletonComponent::class)

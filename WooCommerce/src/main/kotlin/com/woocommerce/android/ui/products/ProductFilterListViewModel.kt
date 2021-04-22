@@ -9,13 +9,13 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -46,7 +46,9 @@ class ProductFilterListViewModel @AssistedInject constructor(
     final val productFilterListViewStateData = LiveDataDelegateWithArgs(savedState, ProductFilterListViewState())
     private var productFilterListViewState by productFilterListViewStateData
 
-    final val productFilterOptionListViewStateData = LiveDataDelegateWithArgs(savedState, ProductFilterOptionListViewState())
+    final val productFilterOptionListViewStateData = LiveDataDelegateWithArgs(
+        savedState, ProductFilterOptionListViewState()
+    )
     private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
     /**
