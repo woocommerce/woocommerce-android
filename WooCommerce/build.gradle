@@ -151,7 +151,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
-    implementation('org.wordpress:utils:1.26') {
+    implementation('org.wordpress:utils:60-99fffd49c54d95ae062846e05f56df6e00697202') {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
