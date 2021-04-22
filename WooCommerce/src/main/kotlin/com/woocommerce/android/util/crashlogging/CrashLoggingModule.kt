@@ -12,7 +12,6 @@ import dagger.Provides
 
 @Module
 abstract class CrashLoggingModule {
-
     companion object {
         @Provides
         fun provideCrashLogging(context: Context, crashLoggingDataProvider: CrashLoggingDataProvider): CrashLogging {

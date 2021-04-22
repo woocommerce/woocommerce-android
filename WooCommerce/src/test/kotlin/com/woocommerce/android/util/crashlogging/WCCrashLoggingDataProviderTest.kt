@@ -18,7 +18,6 @@ import java.util.Locale
 
 @RunWith(MockitoJUnitRunner::class)
 class WCCrashLoggingDataProviderTest {
-
     lateinit var sut: WCCrashLoggingDataProvider
 
     private val localeProvider: LocaleProvider = mock()

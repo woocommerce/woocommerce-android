@@ -18,7 +18,6 @@ class WCCrashLoggingDataProvider @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs
 ) : CrashLoggingDataProvider {
-
     override val buildType: String = BuildConfig.BUILD_TYPE
 
     override val enableCrashLoggingLogs: Boolean = BuildConfig.DEBUG
