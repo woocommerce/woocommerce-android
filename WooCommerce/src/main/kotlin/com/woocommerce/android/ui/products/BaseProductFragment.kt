@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.products
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -22,17 +24,14 @@ import javax.inject.Inject
  * All product related fragments should extend this class to provide a consistent method
  * of displaying snackbars and handling navigation
  */
-abstract class BaseProductFragment : BaseDaggerFragment, BackPressListener {
+abstract class BaseProductFragment : BaseFragment, BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
-    protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) {
-        viewModelFactory.get()
-    }
+    protected val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

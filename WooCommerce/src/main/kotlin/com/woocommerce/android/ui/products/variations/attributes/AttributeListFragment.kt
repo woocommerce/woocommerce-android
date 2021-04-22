@@ -16,7 +16,9 @@ import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
     companion object {
         const val TAG: String = "AttributeListFragment"

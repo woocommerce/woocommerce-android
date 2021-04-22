@@ -23,7 +23,9 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_categories_list),
     OnLoadMoreListener, OnProductCategoryClickListener {
     private lateinit var productCategoriesAdapter: ProductCategoriesAdapter

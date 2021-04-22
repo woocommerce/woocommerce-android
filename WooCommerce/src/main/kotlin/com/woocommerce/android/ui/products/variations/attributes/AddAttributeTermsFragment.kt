@@ -28,11 +28,13 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * This fragment contains two lists of product attribute terms. Thee\ first is a list of terms from
  * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
  */
+@AndroidEntryPoint
 class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
