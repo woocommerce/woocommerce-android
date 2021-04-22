@@ -39,14 +39,10 @@ import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsModul
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.reviews.ProductReviewsModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
-import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityModule
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment
-import com.woocommerce.android.ui.products.settings.ProductSlugModule
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment
-import com.woocommerce.android.ui.products.settings.ProductStatusModule
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
-import com.woocommerce.android.ui.products.settings.ProductVisibilityModule
 import com.woocommerce.android.ui.products.variations.VariationDetailFragment
 import com.woocommerce.android.ui.products.variations.VariationDetailModule
 import com.woocommerce.android.ui.products.variations.VariationListFragment
@@ -169,28 +165,28 @@ object ProductsModule {
     @Module
     internal abstract class ProductStatusFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductStatusModule::class])
+        @ContributesAndroidInjector()
         abstract fun productStatusFragment(): ProductStatusFragment
     }
 
     @Module
     internal abstract class ProductCatalogVisibilityFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductCatalogVisibilityModule::class])
+        @ContributesAndroidInjector()
         abstract fun productCatalogVisibilityFragment(): ProductCatalogVisibilityFragment
     }
 
     @Module
     internal abstract class ProductVisibilityFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductVisibilityModule::class])
+        @ContributesAndroidInjector()
         abstract fun productVisibilityFragment(): ProductVisibilityFragment
     }
 
     @Module
     internal abstract class ProductSlugFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductSlugModule::class])
+        @ContributesAndroidInjector()
         abstract fun productSlugFragment(): ProductSlugFragment
     }
 
