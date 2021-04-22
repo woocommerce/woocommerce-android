@@ -130,6 +130,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
+    override fun openOrderProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
+        AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
+        (activity as? MainNavigationRouter)?.showProductVariationDetail(remoteProductId, remoteVariationId)
+    }
+
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) { showOrderDetail(it) }
