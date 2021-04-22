@@ -88,8 +88,9 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
             }
         }
 
-        binding.addProductTagView.setOnEditorActionListener {
-            viewModel.onProductTagAdded(it)
+        binding.addProductTagView.setOnEditorActionListener {tag ->
+            viewModel.onProductTagAdded(tag)
+            binding.addProductTagView.clearEnteredTag()
             updateSelectedTags()
             true
         }
