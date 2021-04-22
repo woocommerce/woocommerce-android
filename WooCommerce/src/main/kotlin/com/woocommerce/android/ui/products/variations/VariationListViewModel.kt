@@ -9,6 +9,7 @@ import dagger.assisted.AssistedInject
 import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotSet
@@ -96,17 +97,17 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     fun onAddEditAttributesClick() {
-        // TODO: tracks event
+        AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED)
         triggerEvent(ShowAttributeList)
     }
 
     fun onCreateEmptyVariationClick() {
-        // TODO: tracks event
+        AnalyticsTracker.track(Stat.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation(openVariationDetails = true)
     }
 
     fun onCreateFirstVariationRequested() {
-        // TODO: tracks event
+        AnalyticsTracker.track(Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
         triggerEvent(ShowAddAttributeView)
     }
 
@@ -153,6 +154,10 @@ class VariationListViewModel @AssistedInject constructor(
             variationListRepository.createEmptyVariation(this)
                 ?.copy(remoteProductId = remoteId)
                 ?.apply { syncProductToVariations(remoteId) }
+                .also {
+                    it?.let { AnalyticsTracker.track(Stat.PRODUCT_VARIATION_CREATION_SUCCESS) }
+                        ?: AnalyticsTracker.track(Stat.PRODUCT_VARIATION_CREATION_FAILED)
+                }
 
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)

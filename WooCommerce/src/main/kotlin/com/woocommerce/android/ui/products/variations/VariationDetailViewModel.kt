@@ -130,7 +130,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         triggerEvent(
             ShowDialog(
                 positiveBtnAction = { _, _ ->
-                    // TODO: trigger track
+                    AnalyticsTracker.track(Stat.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED)
                     viewState = viewState.copy(isConfirmingDeletion = false)
                     deleteVariation()
                 },
