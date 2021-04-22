@@ -15,6 +15,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.math.BigDecimal
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -73,7 +74,7 @@ internal class CardReaderManagerImpl(
         return connectionManager.connectToReader(cardReader)
     }
 
-    override suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus> =
+    override suspend fun collectPayment(amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
         paymentManager.acceptPayment(amount, currency)
 
     private fun initStripeTerminal(logLevel: LogLevel) {

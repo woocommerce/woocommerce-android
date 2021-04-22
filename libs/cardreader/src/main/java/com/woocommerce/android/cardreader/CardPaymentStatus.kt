@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader
 
 sealed class CardPaymentStatus {
+    data class UnexpectedError(val errorCause: String) : CardPaymentStatus()
     object InitializingPayment : CardPaymentStatus()
     object InitializingPaymentFailed : CardPaymentStatus()
     object CollectingPayment : CardPaymentStatus()
