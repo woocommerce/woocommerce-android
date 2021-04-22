@@ -49,14 +49,13 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippin
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
-import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
-import com.woocommerce.android.viewmodel.NavArgsProvider
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -75,7 +74,6 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    navArgsProvider: NavArgsProvider,
     dispatchers: CoroutineDispatchers,
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
@@ -86,7 +84,7 @@ class OrderDetailViewModel @Inject constructor(
         // The required version to support shipping label creation
         const val SUPPORTED_WCS_VERSION = "1.25.11"
     }
-    private val navArgs: OrderDetailFragmentArgs by navArgsProvider.navArgs(savedState, OrderDetailFragmentArgs::class)
+    private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     private val orderIdSet: OrderIdSet
         get() = navArgs.orderId.toIdSet()
