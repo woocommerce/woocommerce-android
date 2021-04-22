@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -461,10 +462,10 @@ class ProductDetailCardBuilder(
             SIMPLE -> {
                 when {
                     this.isDownloadable -> resources.getString(R.string.product_type_downloadable)
-                    this.isVirtual -> resources.getString(R.string.product_type_virtual)
                     else -> resources.getString(R.string.product_type_physical)
                 }
             }
+            VIRTUAL -> resources.getString(R.string.product_type_virtual)
             VARIABLE -> resources.getString(R.string.product_type_variable)
             GROUPED -> resources.getString(R.string.product_type_grouped)
             EXTERNAL -> resources.getString(R.string.product_type_external)
