@@ -41,7 +41,14 @@ class VariationDetailViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: VariationDetailViewModel
 
-    private val siteParams = SiteParameters("$", "kg", "cm", 0f)
+    private val siteParams = SiteParameters(
+        currencyCode = "USD",
+        currencySymbol = "$",
+        currencyPosition = null,
+        weightUnit = "kg",
+        dimensionUnit = "cm",
+        gmtOffset = 0f
+    )
     private val parameterRepository: ParameterRepository = mock {
         on { getParameters(any(), any()) } doReturn (siteParams)
     }
