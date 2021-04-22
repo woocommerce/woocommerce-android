@@ -3,6 +3,7 @@ package com.woocommerce.android.di
 import android.app.Application
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
+import com.woocommerce.android.util.crashlogging.CrashLoggingModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -32,7 +33,8 @@ import javax.inject.Singleton
         NetworkStatusModule::class,
         CurrencyModule::class,
         SupportModule::class,
-        OrderFetcherModule::class
+        OrderFetcherModule::class,
+        CrashLoggingModule::class
 ])
 interface AppComponentTest : AppComponent {
     @Component.Builder
