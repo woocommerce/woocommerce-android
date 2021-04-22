@@ -21,7 +21,7 @@ abstract class CrashLoggingModule {
     }
 
     @Binds
-    abstract fun bindCrashLoggingDataProvider(wcCrashLoggingDataProvider: WCCrashLoggingDataProvider): CrashLoggingDataProvider
+    abstract fun bindCrashLoggingDataProvider(dataProvider: WCCrashLoggingDataProvider): CrashLoggingDataProvider
 
     @Binds
     abstract fun bindLocaleProvider(contextBasedLocaleProvider: ContextBasedLocaleProvider): LocaleProvider

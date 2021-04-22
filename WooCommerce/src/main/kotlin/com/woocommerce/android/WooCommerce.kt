@@ -311,7 +311,7 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUnexpectedError(event: OnUnexpectedError) {
         with(event) {
-            crashLogging.sendReport(exception =  exception, message =  "FluxC: ${exception.message}: $description")
+            crashLogging.sendReport(exception = exception, message = "FluxC: ${exception.message}: $description")
         }
     }
 

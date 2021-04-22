@@ -38,7 +38,7 @@ import javax.inject.Singleton
         ThreadModule::class,
         SupportModule::class,
         OrderFetcherModule::class,
-        CrashLoggingModule::class,
+        CrashLoggingModule::class
     ]
 )
 interface AppComponentDebug : AppComponent {

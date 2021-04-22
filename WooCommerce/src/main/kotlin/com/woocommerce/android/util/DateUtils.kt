@@ -3,7 +3,6 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.util.WooLog.T.UTILS
 import org.apache.commons.lang3.time.DateUtils

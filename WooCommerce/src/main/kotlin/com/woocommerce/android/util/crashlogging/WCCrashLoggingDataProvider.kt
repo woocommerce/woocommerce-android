@@ -13,9 +13,9 @@ import java.util.Locale
 import javax.inject.Inject
 
 class WCCrashLoggingDataProvider @Inject constructor(
-    localeProvider: LocaleProvider,
+    private val localeProvider: LocaleProvider,
     private val accountStore: AccountStore,
-    private val siteStore: SelectedSite,
+    private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs
 ) : CrashLoggingDataProvider {
 
@@ -23,18 +23,23 @@ class WCCrashLoggingDataProvider @Inject constructor(
 
     override val enableCrashLoggingLogs: Boolean = BuildConfig.DEBUG
 
-    override val locale: Locale? = localeProvider.provideLocale()
+    override val locale: Locale?
+        get() = localeProvider.provideLocale()
 
     override val releaseName: String = BuildConfig.VERSION_NAME
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
     override fun applicationContextProvider(): Map<String, String> {
-        with(siteStore.get()){
-            return mapOf(
-                SITE_ID_KEY to siteId.toString(),
-                SITE_URL_KEY to url
-            )
+        with(selectedSite.getIfExists()) {
+            return if (this == null) {
+                emptyMap()
+            } else {
+                mapOf(
+                    SITE_ID_KEY to siteId.toString(),
+                    SITE_URL_KEY to url
+                )
+            }
         }
     }
 
@@ -62,7 +67,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
             CrashLoggingUser(
                 userID = accountModel.userId.toString(),
                 email = accountModel.email,
-                username = accountModel.userName,
+                username = accountModel.userName
             )
         }
     }

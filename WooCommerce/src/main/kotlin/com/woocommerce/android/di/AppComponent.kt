@@ -38,7 +38,7 @@ import javax.inject.Singleton
         ProductImagesServiceModule::class,
         SupportModule::class,
         OrderFetcherModule::class,
-        CrashLoggingModule::class,
+        CrashLoggingModule::class
     ]
 )
 interface AppComponent : AndroidInjector<WooCommerce> {
