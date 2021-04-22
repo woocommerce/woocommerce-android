@@ -81,7 +81,7 @@ class ProductPricingFragment
     private fun setupObservers(viewModel: ProductPricingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
-                setupViews(new.currency, new.decimals, viewModel.pricingData)
+                setupViews(new.currency, new.isCurrencyPrefix, viewModel.pricingData)
             }
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
                 updateProductTaxClassList(it, viewModel.pricingData)
@@ -118,10 +118,14 @@ class ProductPricingFragment
         })
     }
 
-    private fun setupViews(currency: String, decimals: Int, pricingData: PricingData) {
+    private fun setupViews(currency: String, isCurrencyPrefix: Boolean, pricingData: PricingData) {
         if (!isAdded) return
 
         with(binding.productRegularPrice) {
+            if (isCurrencyPrefix) {
+                prefixText = currency
+            } else suffixText = currency
+
             pricingData.regularPrice?.let { setText(it.toString()) }
             setOnTextChangedListener {
                 val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
@@ -130,6 +134,10 @@ class ProductPricingFragment
         }
 
         with(binding.productSalePrice) {
+            if (isCurrencyPrefix) {
+                prefixText = currency
+            } else suffixText = currency
+
             pricingData.salePrice?.let { setText(it.toString()) }
             setOnTextChangedListener {
                 val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
