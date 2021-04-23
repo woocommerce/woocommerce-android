@@ -33,9 +33,9 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute), Ba
             binding.attributeName.setText(navArgs.attributeName)
         }
 
-        binding.attributeName.setOnEditorActionListener { termName: String ->
-            if (termName.isNotBlank()) {
-                navigateBack()
+        binding.attributeName.setOnEditorActionListener { attributeName: String ->
+            if (attributeName.isNotBlank()) {
+                navigateBack(attributeName)
             }
             true
         }
@@ -49,6 +49,7 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute), Ba
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        binding.attributeName.showKeyboard(selectAll = true)
     }
 
     override fun onStop() {
@@ -57,12 +58,12 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute), Ba
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        navigateBack()
+        val attributeName = binding.attributeName.getText()
+        navigateBack(attributeName)
         return false
     }
 
-    private fun navigateBack() {
-        val attributeName = binding.attributeName.getText()
+    private fun navigateBack(attributeName: String) {
         if (attributeName.isNotEmpty() && !attributeName.equals(navArgs.attributeName)) {
             navigateBackWithResult(KEY_RENAME_ATTRIBUTE_RESULT, attributeName)
         } else {

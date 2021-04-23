@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryDa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.VariationListFragment
@@ -129,8 +130,8 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
     }
 
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
-        handleResult<ProductType>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
-            viewModel.updateProductDraft(type = it.value)
+        handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
+            viewModel.updateProductDraft(type = it.type.value, isVirtual = it.isVirtual)
             changesMade()
         }
         handleResult<List<Long>>(GroupedProductListType.GROUPED.resultKey) {
@@ -337,7 +338,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
             if (this == null) return@with
             val title = SpannableString(this.title)
             title.setSpan(ForegroundColorSpan(Color.RED), 0, title.length, 0)
-            this.setTitle(title)
+            this.title = title
             this.isVisible = viewModel.isTrashEnabled
         }
 
