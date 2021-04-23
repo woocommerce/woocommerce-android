@@ -115,7 +115,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
         val printReceiptLabel: Int? = null,
         val sendReceiptLabel: Int? = null
     ) {
-        @StringRes open val amountWithCurrencyLabel: String? = ""
+       open val amountWithCurrencyLabel: String? = ""
 
         object LoadingDataState : ViewState(isProgressVisible = true)
 
