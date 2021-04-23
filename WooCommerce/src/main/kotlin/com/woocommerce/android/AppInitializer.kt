@@ -51,7 +51,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
     }
 
-    @Inject lateinit var wellSqlInitializer: WellSqlInitializer
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher

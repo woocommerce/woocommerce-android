@@ -9,6 +9,7 @@ import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.yarolegovich.wellsql.WellSql
 import dagger.android.AndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.EntryPoints
@@ -30,6 +31,9 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector {
 
     override fun onCreate() {
         super.onCreate()
+        val wellSqlConfig = WooWellSqlConfig(this)
+        WellSql.init(wellSqlConfig)
+
         appInitializer = EntryPoints.get(
             applicationContext,
             WooCommerceInitializerEntryPoint::class.java
