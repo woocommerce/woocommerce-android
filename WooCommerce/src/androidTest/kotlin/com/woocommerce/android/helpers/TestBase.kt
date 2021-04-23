@@ -8,11 +8,10 @@ import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemp
 import com.github.tomakehurst.wiremock.extension.responsetemplating.helpers.DateOffset
 import com.github.tomakehurst.wiremock.extension.responsetemplating.helpers.HandlebarsHelper
 import com.github.tomakehurst.wiremock.junit.WireMockRule
+import com.woocommerce.android.BaseWooCommerce
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.di.AndroidNotifier
-import com.woocommerce.android.di.AppComponentTest
 import com.woocommerce.android.di.AssetFileSource
-import com.woocommerce.android.di.DaggerAppComponentTest
 import org.apache.commons.lang3.LocaleUtils
 import org.junit.Before
 import org.junit.Rule
@@ -23,8 +22,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 open class TestBase {
-    protected lateinit var appContext: WooCommerce
-    protected lateinit var mockedAppComponent: AppComponentTest
+    protected lateinit var appContext: BaseWooCommerce
 
     companion object {
         val wireMockPort = 8080
@@ -32,11 +30,7 @@ open class TestBase {
 
     @Before
     open fun setup() {
-        appContext = getInstrumentation().targetContext.applicationContext as WooCommerce
-
-        mockedAppComponent = DaggerAppComponentTest.builder()
-                .application(appContext)
-                .build()
+        appContext = getInstrumentation().targetContext.applicationContext as BaseWooCommerce
     }
 
     @Rule @JvmField

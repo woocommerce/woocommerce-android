@@ -94,6 +94,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         AppRatingDialog.init(application)
 
+        CrashUtils.initCrashLogging(application)
+
+        FeedbackPrefs.init(application)
+
         initAnalytics()
 
         val site = if (selectedSite.exists()) {
