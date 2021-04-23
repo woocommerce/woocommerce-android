@@ -1208,11 +1208,13 @@
 
     <!-- New Product bottom sheet -->
     <string name="product_add_type_list_header" translatable="false">@string/product_type_list_header</string>
-    <string name="product_add_type_simple">Simple product</string>
+    <string name="product_add_type_simple">Simple physical product</string>
+    <string name="product_add_type_virtual">Simple virtual product</string>
     <string name="product_add_type_variable">Variable product</string>
     <string name="product_add_type_grouped">Grouped product</string>
     <string name="product_add_type_external">External product</string>
     <string name="product_add_type_simple_desc">A unique item to sell</string>
+    <string name="product_add_type_virtual_desc">A unique digital product</string>
     <string name="product_add_type_variable_desc">A product with variations like color or size</string>
     <string name="product_add_type_grouped_desc" translatable="false">@string/product_type_grouped_desc</string>
     <string name="product_add_type_external_desc" translatable="false">@string/product_type_external_desc</string>
