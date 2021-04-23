@@ -11,10 +11,16 @@ import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPl
 import com.facebook.soloader.SoLoader
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.HiltAndroidApp
+import org.wordpress.android.fluxc.store.WCPayStore
+import javax.inject.Inject
 
 @HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
+    @Inject lateinit var payStore: WCPayStore
+    @Inject lateinit var selectedSite: SelectedSite
+
     override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
         override suspend fun getConnectionToken(): String {
             val result = payStore.fetchConnectionToken(selectedSite.get())
