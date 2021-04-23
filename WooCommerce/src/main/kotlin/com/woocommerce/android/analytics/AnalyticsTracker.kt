@@ -379,7 +379,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED,
         PRODUCT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED,
 
-
         // -- Product variation
         PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED,
         PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED,
@@ -397,7 +396,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_VARIATION_CREATION_SUCCESS,
         PRODUCT_VARIATION_CREATION_FAILED,
         PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
-
 
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
