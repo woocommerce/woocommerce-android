@@ -44,7 +44,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             val properties = mapOf("product_type" to productTypeUiItem.type.value.toLowerCase(ROOT))
             AnalyticsTracker.track(Stat.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
-            saveUserSelection(productTypeUiItem.type)
+            saveUserSelection(productTypeUiItem)
             triggerEvent(ViewProductAdd)
             triggerEvent(ExitWithResult(productTypeUiItem))
         } else {
@@ -60,7 +60,10 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         }
     }
 
-    private fun saveUserSelection(type: ProductType) = prefs.setSelectedProductType(type)
+    private fun saveUserSelection(productTypeUiItem: ProductTypesBottomSheetUiItem) {
+        prefs.setSelectedProductType(productTypeUiItem.type)
+        prefs.setSelectedProductIsVirtual(productTypeUiItem.isVirtual)
+    }
 
     @Parcelize
     data class ProductTypesBottomSheetUiItem(
