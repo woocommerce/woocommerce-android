@@ -12,7 +12,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.di.WooCommerceGlideModule
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.push.NotificationHandler
@@ -31,7 +30,6 @@ import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.AppRatingDialog
-import dagger.MembersInjector
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -55,7 +53,6 @@ import javax.inject.Inject
 open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationLifecycleListener {
     @Inject lateinit var wellSqlInitializer: WellSqlInitializer
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
-    @Inject lateinit var membersInjector: MembersInjector<WooCommerceGlideModule>
 
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
