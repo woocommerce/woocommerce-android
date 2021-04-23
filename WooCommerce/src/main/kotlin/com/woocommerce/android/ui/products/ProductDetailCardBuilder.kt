@@ -362,13 +362,14 @@ class ProductDetailCardBuilder(
 
     private fun Product.productTypeDisplayName(): String {
         return when (productType) {
-            VIRTUAL -> resources.getString(string.product_type_virtual)
             SIMPLE -> {
                 when {
+                    this.isVirtual -> resources.getString(string.product_type_virtual)
                     this.isDownloadable -> resources.getString(string.product_type_downloadable)
                     else -> resources.getString(string.product_type_physical)
                 }
             }
+            VIRTUAL -> resources.getString(string.product_type_virtual)
             VARIABLE -> resources.getString(string.product_type_variable)
             GROUPED -> resources.getString(string.product_type_grouped)
             EXTERNAL -> resources.getString(string.product_type_external)
