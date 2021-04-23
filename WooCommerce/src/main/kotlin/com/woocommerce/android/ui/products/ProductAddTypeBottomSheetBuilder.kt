@@ -23,7 +23,8 @@ class ProductAddTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
                 titleResource = string.product_add_type_virtual,
                 descResource = string.product_add_type_virtual_desc,
                 iconResource = drawable.ic_gridicons_cloud_outline,
-                isEnabled = true
+                isEnabled = true,
+                isVirtual = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = VARIABLE,
