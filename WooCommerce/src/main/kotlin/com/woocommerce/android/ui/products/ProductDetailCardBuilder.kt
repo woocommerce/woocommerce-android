@@ -72,6 +72,7 @@ class ProductDetailCardBuilder(
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
+            VIRTUAL -> cards.addIfNotEmpty(getOtherProductCard(product))
             OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
@@ -459,13 +460,13 @@ class ProductDetailCardBuilder(
 
     private fun Product.productTypeDisplayName(): String {
         return when (productType) {
+            VIRTUAL -> resources.getString(R.string.product_type_virtual)
             SIMPLE -> {
                 when {
                     this.isDownloadable -> resources.getString(R.string.product_type_downloadable)
                     else -> resources.getString(R.string.product_type_physical)
                 }
             }
-            VIRTUAL -> resources.getString(R.string.product_type_virtual)
             VARIABLE -> resources.getString(R.string.product_type_variable)
             GROUPED -> resources.getString(R.string.product_type_grouped)
             EXTERNAL -> resources.getString(R.string.product_type_external)
