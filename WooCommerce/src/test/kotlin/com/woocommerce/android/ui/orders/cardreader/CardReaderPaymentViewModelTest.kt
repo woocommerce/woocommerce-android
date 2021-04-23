@@ -218,7 +218,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
     }
 
-    // TODO cardreader add tests for ViewState fields when they are final
     @Test
     fun `when loading data, then only progress is visible`() = runBlockingTest {
         viewModel.start(cardReaderManager)
