@@ -197,7 +197,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun saveChangesAndReturn() {
         // TODO We probably want to push changes in the main attribute list screen rather than here
-        // viewModel.saveAttributeChanges()
+        viewModel.saveAttributeChanges()
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
     }
 
