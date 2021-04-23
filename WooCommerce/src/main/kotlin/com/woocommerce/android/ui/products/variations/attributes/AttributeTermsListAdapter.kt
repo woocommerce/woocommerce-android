@@ -21,6 +21,7 @@ class AttributeTermsListAdapter(
     interface OnTermListener {
         fun onTermClick(termName: String)
         fun onTermDelete(termName: String)
+        fun onTermMoved(fromTermName: String, toTermName: String)
     }
 
     private lateinit var onTermListener: OnTermListener
@@ -84,10 +85,13 @@ class AttributeTermsListAdapter(
 
     fun swapItems(from: Int, to: Int) {
         val fromValue = termNames[from]
-        termNames[from] = termNames[to]
+        val toValue = termNames[to]
+
+        termNames[from] = toValue
         termNames[to] = fromValue
-        notifyItemChanged(from)
-        notifyItemChanged(to)
+        notifyItemMoved(from, to)
+
+        onTermListener.onTermMoved(fromValue, toValue)
     }
 
     fun removeTerm(term: String) {

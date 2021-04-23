@@ -990,13 +990,22 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Returns the list of term names for a specific attribute assigned to the product
      */
     fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
-        val attributes = getProductDraftAttributes()
-        attributes.forEach { attribute ->
-            if (attribute.name == attributeName) {
-                return attribute.terms
+        return getDraftAttribute(attributeId, attributeName)?.terms ?: emptyList()
+    }
+
+    /**
+     * Swaps two terms for a draft attribute
+     */
+    fun swapProductDraftAttributeTerms(attributeId: Long, attributeName: String, fromTerm: String, toTerm: String) {
+        getDraftAttribute(attributeId, attributeName)?.let { attribute ->
+            val terms = attribute.terms
+            val fromIndex = terms.indexOf(fromTerm)
+            val toIndex = terms.indexOf(toTerm)
+            if (fromIndex >= 0 && toIndex >= 0) {
+                Collections.swap(attribute.terms, fromIndex, toIndex)
+                updateAttributeInDraft(attribute)
             }
         }
-        return emptyList()
     }
 
     /**
@@ -1029,6 +1038,21 @@ class ProductDetailViewModel @AssistedInject constructor(
             })
 
             updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
+    fun updateAttributeInDraft(attribute: ProductAttribute) {
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            // create a list of draft attributes without the old one
+            updatedAttributes.addAll(getProductDraftAttributes().filterNot {
+                attribute.id == it.id && attribute.name == it.name
+            })
+
+            if (updatedAttributes.size < getProductDraftAttributes().size) {
+                // add the renamed attribute to the list and update the draft attributes
+                updatedAttributes.add(attribute)
+                updateProductDraft(attributes = updatedAttributes)
+            }
         }
     }
 
@@ -1233,7 +1257,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productRepository.getGlobalAttributes()
 
     /**
-     * Returns true if an attribute with this name is assigned to the product draft
+     * Returns true if an attribute with this id & name is assigned to the product draft
      */
     private fun containsAttributeName(attributeName: String): Boolean {
         viewState.productDraft?.attributes?.forEach {
