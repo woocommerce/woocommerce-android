@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
@@ -38,6 +39,8 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 
+private const val DUMMY_TOTAL = "10.12"
+
 @ExperimentalCoroutinesApi
 class CardReaderPaymentViewModelTest : BaseUnitTest() {
     companion object {
@@ -70,7 +73,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         )
 
         val mockedOrder = mock<WCOrderModel>()
-        whenever(mockedOrder.total).thenReturn("10.12")
+        whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
         whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
         whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
@@ -216,4 +219,126 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     // TODO cardreader add tests for ViewState fields when they are final
+    @Test
+    fun `when loading data, then only progress is visible`() = runBlockingTest {
+        viewModel.start(cardReaderManager)
+        val viewState = viewModel.viewStateData.value!!
+
+        assertThat(viewState.isProgressVisible).isTrue()
+        assertThat(viewState.headerLabel).isNull()
+        assertThat(viewState.amountWithCurrencyLabel).isNull()
+        assertThat(viewState.illustration).isNull()
+        assertThat(viewState.paymentStateLabel).isNull()
+        assertThat(viewState.hintLabel).isNull()
+        assertThat(viewState.printReceiptLabel).isNull()
+        assertThat(viewState.sendReceiptLabel).isNull()
+    }
+
+    @Test
+    fun `when collecting payment, then progress and buttons are hidden`() = runBlockingTest {
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            flow { emit(CollectingPayment) }
+        }
+
+        viewModel.start(cardReaderManager)
+        val viewState = viewModel.viewStateData.value!!
+
+        assertThat(viewState.isProgressVisible).isFalse()
+        assertThat(viewState.printReceiptLabel).isNull()
+        assertThat(viewState.sendReceiptLabel).isNull()
+    }
+
+    @Test
+    fun `when collecting payment, then correct labels and illustration is shown`() = runBlockingTest {
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            flow { emit(CollectingPayment) }
+        }
+
+        viewModel.start(cardReaderManager)
+        val viewState = viewModel.viewStateData.value!!
+
+        assertThat(viewState.headerLabel).isEqualTo(R.string.card_reader_payment_collect_payment_header)
+        assertThat(viewState.amountWithCurrencyLabel).isEqualTo("$$DUMMY_TOTAL")
+        assertThat(viewState.illustration).isEqualTo(R.drawable.ic_card_reader)
+        assertThat(viewState.paymentStateLabel).isEqualTo(R.string.card_reader_payment_collect_payment_state)
+        assertThat(viewState.hintLabel).isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+    }
+
+    @Test
+    fun `when processing payment, then progress and buttons are hidden`() = runBlockingTest {
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            flow { emit(ProcessingPayment) }
+        }
+
+        viewModel.start(cardReaderManager)
+        val viewState = viewModel.viewStateData.value!!
+
+        assertThat(viewState.isProgressVisible).isFalse()
+        assertThat(viewState.printReceiptLabel).isNull()
+        assertThat(viewState.sendReceiptLabel).isNull()
+    }
+
+    @Test
+    fun `when processing payment, then correct labels and illustration is shown`() = runBlockingTest {
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            flow { emit(ProcessingPayment) }
+        }
+
+        viewModel.start(cardReaderManager)
+        val viewState = viewModel.viewStateData.value!!
+
+        assertThat(viewState.headerLabel).isEqualTo(R.string.card_reader_payment_processing_payment_header)
+        assertThat(viewState.amountWithCurrencyLabel).isEqualTo("$$DUMMY_TOTAL")
+        assertThat(viewState.illustration).isEqualTo(R.drawable.ic_card_reader)
+        assertThat(viewState.paymentStateLabel).isEqualTo(R.string.card_reader_payment_processing_payment_state)
+        assertThat(viewState.hintLabel).isEqualTo(R.string.card_reader_payment_processing_payment_hint)
+    }
+
+    @Test
+    fun `when capturing payment, then progress and buttons are hidden`() = runBlockingTest {
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            flow { emit(CapturingPayment) }
+        }
+
+        viewModel.start(cardReaderManager)
+        val viewState = viewModel.viewStateData.value!!
+
+        assertThat(viewState.isProgressVisible).isFalse()
+        assertThat(viewState.printReceiptLabel).isNull()
+        assertThat(viewState.sendReceiptLabel).isNull()
+    }
+
+    @Test
+    fun `when capturing payment, then correct labels and illustration is shown`() = runBlockingTest {
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            flow { emit(CapturingPayment) }
+        }
+
+        viewModel.start(cardReaderManager)
+        val viewState = viewModel.viewStateData.value!!
+
+        assertThat(viewState.headerLabel).isEqualTo(R.string.card_reader_payment_capturing_payment_header)
+        assertThat(viewState.amountWithCurrencyLabel).isEqualTo("$$DUMMY_TOTAL")
+        assertThat(viewState.illustration).isEqualTo(R.drawable.ic_card_reader)
+        assertThat(viewState.paymentStateLabel).isEqualTo(R.string.card_reader_payment_capturing_payment_state)
+        assertThat(viewState.hintLabel).isEqualTo(R.string.card_reader_payment_capturing_payment_hint)
+    }
+
+    @Test
+    fun `when payment succeeds, then correct labels, illustration and buttons are shown`() = runBlockingTest {
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            flow { emit(PaymentCompleted) }
+        }
+
+        viewModel.start(cardReaderManager)
+        val viewState = viewModel.viewStateData.value!!
+
+        assertThat(viewState.headerLabel).isEqualTo(R.string.card_reader_payment_completed_payment_header)
+        assertThat(viewState.amountWithCurrencyLabel).isEqualTo("$$DUMMY_TOTAL")
+        assertThat(viewState.illustration).isEqualTo(R.drawable.ic_celebration)
+        assertThat(viewState.paymentStateLabel).isNull()
+        assertThat(viewState.hintLabel).isNull()
+        assertThat(viewState.printReceiptLabel).isEqualTo(R.string.card_reader_payment_print_receipt)
+        assertThat(viewState.sendReceiptLabel).isEqualTo(R.string.card_reader_payment_send_receipt)
+    }
 }
