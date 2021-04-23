@@ -1026,6 +1026,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             })
 
             updateProductDraft(attributes = updatedAttributes)
+            AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_UPDATED)
         }
     }
 
@@ -1065,6 +1066,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             // add the renamed attribute to the list and update the draft attributes
             updatedAttributes.add(newAttribute)
             updateProductDraft(attributes = updatedAttributes)
+            AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_UPDATED)
         }
 
         return true
@@ -1117,6 +1119,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             )
 
             updateProductDraft(attributes = updatedAttributes)
+            AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_UPDATED)
         }
     }
 
@@ -1160,6 +1163,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         updateProductDraft(attributes = updatedAttributes)
+        AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_UPDATED)
     }
 
     /**
@@ -1196,6 +1200,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User tapped "Add attribute" on the attribute list fragment
      */
     fun onAddAttributeButtonClick() {
+        AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
         triggerEvent(AddProductAttribute())
     }
 
@@ -1203,6 +1208,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User tapped "Rename" on the attribute terms fragment
      */
     fun onRenameAttributeButtonClick(attributeName: String) {
+        AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED)
         triggerEvent(RenameProductAttribute(attributeName))
     }
 
