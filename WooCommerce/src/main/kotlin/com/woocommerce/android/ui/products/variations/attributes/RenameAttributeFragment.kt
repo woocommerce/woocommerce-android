@@ -49,6 +49,15 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute), Ba
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
+        binding.attributeName.editText?.let { editText ->
+            if (editText.requestFocus()) {
+                editText.selectAll()
+                editText.postDelayed({
+                    ActivityUtils.showKeyboard(editText)
+                }, 100)
+            }
+        }
     }
 
     override fun onStop() {
