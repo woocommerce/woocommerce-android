@@ -151,6 +151,8 @@ data class Product(
                 shippingClass.isNotEmpty()
         }
     val productType get() = ProductType.fromString(type)
+    val variationEnabledAttributes
+        get() = attributes.filter { it.isVariation }
 
     /**
      * Verifies if there are any changes made to the external link settings
