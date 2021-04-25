@@ -626,6 +626,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
         const val KEY_ORDER_ID = "order_id"
+        const val KEY_PRODUCT_ID = "product_id"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"

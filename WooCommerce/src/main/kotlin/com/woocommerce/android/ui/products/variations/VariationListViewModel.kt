@@ -9,7 +9,11 @@ import dagger.assisted.AssistedInject
 import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotSet
@@ -92,22 +96,22 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     fun onItemClick(variation: ProductVariation) {
-        AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
+        track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
         triggerEvent(ShowVariationDetail(variation))
     }
 
     fun onAddEditAttributesClick() {
-        AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED)
+        track(PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED)
         triggerEvent(ShowAttributeList)
     }
 
     fun onCreateEmptyVariationClick() {
-        AnalyticsTracker.track(Stat.PRODUCT_VARIATION_ADD_MORE_TAPPED)
+        trackWithProductId(Stat.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation(openVariationDetails = true)
     }
 
     fun onCreateFirstVariationRequested() {
-        AnalyticsTracker.track(Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
+        trackWithProductId(Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
         triggerEvent(ShowAddAttributeView)
     }
 
@@ -155,8 +159,8 @@ class VariationListViewModel @AssistedInject constructor(
                 ?.copy(remoteProductId = remoteId)
                 ?.apply { syncProductToVariations(remoteId) }
                 .also {
-                    it?.let { AnalyticsTracker.track(Stat.PRODUCT_VARIATION_CREATION_SUCCESS) }
-                        ?: AnalyticsTracker.track(Stat.PRODUCT_VARIATION_CREATION_FAILED)
+                    it?.let { trackWithProductId(Stat.PRODUCT_VARIATION_CREATION_SUCCESS) }
+                        ?: trackWithProductId(Stat.PRODUCT_VARIATION_CREATION_FAILED)
                 }
 
     private suspend fun syncProductToVariations(productID: Long) {
@@ -234,6 +238,10 @@ class VariationListViewModel @AssistedInject constructor(
             }
         }
         return variations
+    }
+
+    private fun trackWithProductId(event: Stat) {
+        track(event, mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId))
     }
 
     @Parcelize
