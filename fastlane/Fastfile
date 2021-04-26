@@ -28,7 +28,7 @@ SUPPORTED_LOCALES = [
   { glotpress: "ko", android: "ko", google_play: "ko-KR",  promo_config: {} },
   { glotpress: "nl", android: "nl", google_play: "nl-NL",  promo_config: {} },
   { glotpress: "pt-br", android: "pt-rBR", google_play: "pt-BR",  promo_config: {} },
-  { glotpress: "ru", android: "ru", google_play: "ru-RU",  promo_config: {} },   
+  { glotpress: "ru", android: "ru", google_play: "ru-RU",  promo_config: {} },
   { glotpress: "sv", android: "sv", google_play: "sv-SE",  promo_config: {} },
   { glotpress: "tr", android: "tr", google_play: "tr-TR",  promo_config: {} },
   { glotpress: "zh-cn", android: "zh-rCN", google_play: "zh-CN",  promo_config: {} },
@@ -69,7 +69,6 @@ platform :android do
       release_notes_file_path:"#{ENV["PROJECT_ROOT_FOLDER"]}RELEASE-NOTES.txt",
       extracted_notes_file_path:release_notes_path)
     android_update_release_notes(new_version: new_version)
-    get_prs_list(repository: GHHELPER_REPO, tag:"#{new_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{new_version}.txt")
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
 
@@ -196,7 +195,7 @@ platform :android do
     hotfix = android_current_branch_is_hotfix
     android_download_translations(
       res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
-      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/', 
+      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
       locales: SUPPORTED_LOCALES,
       lint_task: 'lintVanillaRelease'
     ) unless hotfix
