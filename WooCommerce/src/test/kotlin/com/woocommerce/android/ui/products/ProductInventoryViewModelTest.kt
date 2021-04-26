@@ -37,7 +37,16 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         isStockManaged = false,
         isSoldIndividually = false,
         stockStatus = InStock,
-        stockQuantity = 10,
+        stockQuantity = 10.0,
+        backorderStatus = No
+    )
+
+    private val initialDataWithNonWholeDecimalQuantity = InventoryData(
+        "SKU123",
+        isStockManaged = true,
+        isSoldIndividually = false,
+        stockStatus = InStock,
+        stockQuantity = 10.42,
         backorderStatus = No
     )
 
@@ -46,7 +55,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         isStockManaged = true,
         isSoldIndividually = true,
         stockStatus = OutOfStock,
-        stockQuantity = 0,
+        stockQuantity = 0.0,
         backorderStatus = Yes
     )
 
@@ -63,11 +72,11 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         viewModel = createViewModel(RequestCodes.PRODUCT_DETAIL_INVENTORY)
     }
 
-    private fun createViewModel(requestCode: Int): ProductInventoryViewModel {
+    private fun createViewModel(requestCode: Int, initData: InventoryData = initialData): ProductInventoryViewModel {
         val savedState = SavedStateWithArgs(
             SavedStateHandle(),
             null,
-            ProductInventoryFragmentArgs(requestCode, initialData, initialData.sku!!)
+            ProductInventoryFragmentArgs(requestCode, initData, initData.sku!!)
         )
         return spy(
             ProductInventoryViewModel(
@@ -192,5 +201,16 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewState?.isIndividualSaleSwitchVisible).isFalse()
+    }
+
+    @Test
+    fun `Test that stock quantity field is not editable if stock quantity is non-whole decimal`() = test {
+        viewModel = createViewModel(RequestCodes.PRODUCT_DETAIL_INVENTORY, initialDataWithNonWholeDecimalQuantity)
+
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            viewState = new
+        }
+        assertThat(viewState?.isStockQuantityEditable).isFalse()
     }
 }

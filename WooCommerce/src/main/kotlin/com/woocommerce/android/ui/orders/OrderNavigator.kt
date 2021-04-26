@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -75,7 +76,7 @@ class OrderNavigator @Inject constructor() {
             is PrintShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintShippingLabelFragment(
-                        target.remoteOrderId, target.shippingLabelId
+                        target.remoteOrderId, target.shippingLabelId, isReprint = true
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -110,6 +111,11 @@ class OrderNavigator @Inject constructor() {
             is StartShippingLabelCreationFlow -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderIdentifier)
+                fragment.findNavController().navigateSafely(action)
+            }
+            is StartCardReaderPaymentFlow -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToCardReaderPaymentDialog(target.orderIdentifier)
                 fragment.findNavController().navigateSafely(action)
             }
         }

@@ -45,10 +45,12 @@ import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
+import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -69,6 +71,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var dateUtils: DateUtils
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -126,6 +129,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
+    override fun openOrderProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
+        AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
+        (activity as? MainNavigationRouter)?.showProductVariationDetail(remoteProductId, remoteVariationId)
+    }
+
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) { showOrderDetail(it) }
@@ -134,10 +142,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 showMarkOrderCompleteButton(it)
             }
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
-                showShippingLabelButton(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()))
+                showShippingLabelButton(it)
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()), false)
+                displayShippingLabelsWIPCard(it, false)
             }
             new.isReprintShippingLabelBannerVisible.takeIfNotEqualTo(old?.isReprintShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it, true)
@@ -174,7 +182,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowSnackbar -> {
+                    if (event.args.isNotEmpty()) {
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
+                    } else {
+                        uiMessageResolver.showSnack(event.message)
+                    }
+                }
                 is ShowUndoSnackbar -> {
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
@@ -200,6 +214,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
         }
+        handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
+            viewModel.onShippingLabelsPurchased()
+        }
     }
 
     private fun showOrderDetail(order: Order) {
@@ -212,7 +229,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
-            onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() }
+            onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
+            onCollectCardPresentPaymentClickListener = {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
+                    viewModel.onAcceptCardPresentPaymentClicked()
+                }
+            }
         )
     }
 
@@ -303,9 +325,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private fun showShipmentTrackings(
         shipmentTrackings: List<OrderShipmentTracking>
     ) {
-        binding.orderDetailShipmentList.updateShipmentTrackingList(shipmentTrackings) {
-            viewModel.onDeleteShipmentTrackingClicked(it)
-        }
+        binding.orderDetailShipmentList.updateShipmentTrackingList(
+            shipmentTrackings = shipmentTrackings,
+            dateUtils = dateUtils,
+            onDeleteShipmentTrackingClicked = {
+                viewModel.onDeleteShipmentTrackingClicked(it)
+            })
     }
 
     private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {
@@ -339,7 +364,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner)
                 R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
             else
-                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m2_wip_message
+                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m3_wip_message
 
             binding.orderDetailShippingLabelsWipCard.initView(
                 getString(wipCardTitleId),

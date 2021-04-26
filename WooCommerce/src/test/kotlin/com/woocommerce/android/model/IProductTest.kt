@@ -7,7 +7,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class IProductTest {
-    private val product = ProductHelper.getDefaultNewProduct(ProductType.SIMPLE)
+    private val product = ProductHelper.getDefaultNewProduct(ProductType.SIMPLE, false)
 
     /* WEIGHT */
 

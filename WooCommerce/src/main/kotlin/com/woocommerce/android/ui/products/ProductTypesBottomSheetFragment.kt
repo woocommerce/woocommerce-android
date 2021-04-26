@@ -103,8 +103,8 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 )
 
                 is ExitWithResult<*> -> {
-                    (event.data as? ProductType)?.let {
-                        navigateWithSelectedResult(type = it)
+                    (event.data as? ProductTypesBottomSheetUiItem)?.let {
+                        navigateWithSelectedResult(productTypesBottomSheetUiItem = it)
                     }
                 }
 
@@ -127,10 +127,10 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         }
     }
 
-    private fun navigateWithSelectedResult(type: ProductType) {
+    private fun navigateWithSelectedResult(productTypesBottomSheetUiItem: ProductTypesBottomSheetUiItem) {
         when (navArgs.isAddProduct) {
             true -> dismiss()
-            else -> navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, type)
+            else -> navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, productTypesBottomSheetUiItem)
         }
     }
 }

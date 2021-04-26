@@ -65,6 +65,8 @@
     <string name="product_variation_attributes">Attributes</string>
     <string name="product_add_attribute">Add attribute</string>
     <string name="product_new_attribute_name">New attribute name</string>
+    <string name="product_rename_attribute">Rename attribute</string>
+    <string name="product_rename_attribute_helper">Type of variation, eg. size or color</string>
     <string name="product_select_attribute">Or tap to select an existing attribute</string>
     <string name="product_new_attribute_term_name">Option name</string>
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
@@ -72,6 +74,7 @@
     <string name="product_attribute_name_already_exists">An attribute with this name already exists</string>
     <string name="product_any_attribute_hint">Any</string>
     <string name="product_term_name_already_exists">An option with this name already exists</string>
+    <string name="product_attribute_error_renaming">Error while renaming your attribute</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="review_notifications">Reviews</string>
@@ -94,6 +97,8 @@
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
     <string name="remove">Remove</string>
+    <string name="rename">Rename</string>
+    <string name="type">Type</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>
@@ -105,6 +110,7 @@
     <string name="other">Other</string>
     <string name="free">free</string>
     <string name="and">and</string>
+    <string name="generic_string" translatable="false">%s</string>
     <!--
         Date/Time Labels
     -->
@@ -292,6 +298,7 @@
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
+    <string name="orderdetail_collect_payment_button">Collect Payment</string>
     <string name="orderdetail_shipping_label_item_header">Package %d</string>
     <string name="orderdetail_shipping_label_item_menu">Refund shipping label</string>
     <string name="orderdetail_shipping_label_item_shipfrom">Ship from</string>
@@ -312,7 +319,7 @@
     <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Create shipping labels from your device!!</string>
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on “Create shipping label” to try it!</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on "Create shipping label" to try our beta feature!</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your phone</string>
     <string name="order_mark_complete">Mark order complete</string>
@@ -342,6 +349,7 @@
     <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
     <string name="shipping_label_refund_success">Refund request was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
+    <string name="shipping_label_refund_expired">Labels older than 30 days cannot be refunded</string>
 
     <!--
         Print shipping labels
@@ -353,7 +361,11 @@
     <string name="shipping_label_print_button">Print shipping label</string>
     <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
     <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
+    <string name="shipping_label_print_purchase_success">Shipping label purchased!</string>
+    <string name="shipping_label_print_save_for_later">Save for later</string>
+    <string name="shipping_label_print_screen_title">Print shipping label</string>
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
+    <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
@@ -369,6 +381,7 @@
     <string name="print_shipping_label_info_step_3">You can select your device\'s &lt;b&gt;default print service&lt;/b&gt; or install your &lt;b&gt;printer\'s brand app&lt;/b&gt; (this should appear as a recommended option)</string>
     <string name="print_shipping_label_info_step_4">You might have to &lt;b&gt;configure WiFi printing directly on the printer itself.&lt;/b&gt; Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
     <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can &lt;b&gt;save your label as PDF&lt;/b&gt; and send it by email to print it from another device.</string>
+    <string name="shipping_label_reprint_expired_message">Label images older than 180 days are deleted by our technology partners for general security and data privacy concerns.</string>
 
     <!--
         Create shipping labels
@@ -391,6 +404,10 @@
     <string name="shipping_label_create_price_total">Order total</string>
     <string name="shipping_label_create_mark_order_complete">Mark this order as complete and notify the customer</string>
     <string name="shipping_label_create_purchase">Purchase shipping label</string>
+    <string name="shipping_label_create_purchase_progress_title">Purchasing label</string>
+    <string name="shipping_label_create_purchase_progress_message">Please wait…</string>
+    <string name="shipping_label_create_purchase_error">Error purchasing the labels</string>
+    <string name="shipping_label_create_purchase_fulfill_error">Couldn\'t mark the order as complete</string>
     <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
     <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
     <string name="shipping_label_loading_data_progress_message">Please wait…</string>
@@ -578,6 +595,24 @@
     <string name="order_shipment_tracking_progress_message">Please wait</string>
 
     <!--
+        Card Reader Payments
+    -->
+    <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
+    <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
+    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
+    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
+
+    <string name="card_reader_collect_payment">Collect payment</string>
+    <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_completed_payment_header">Payment successful</string>
+
+    <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
+    <string name="card_reader_payment_processing_payment_state">Processing payment</string>
+    <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
@@ -726,6 +761,7 @@
     <string name="product_short_description">Short description</string>
     <string name="product_short_description_empty">Brief summary about the product</string>
     <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_delete_dialog_title">Deleting product</string>
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
@@ -845,6 +881,8 @@
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
+    <string name="variation_create_dialog_title">Creating variation</string>
+    <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
 
     <!--
         Product images
@@ -1170,11 +1208,13 @@
 
     <!-- New Product bottom sheet -->
     <string name="product_add_type_list_header" translatable="false">@string/product_type_list_header</string>
-    <string name="product_add_type_simple">Simple product</string>
+    <string name="product_add_type_simple">Simple physical product</string>
+    <string name="product_add_type_virtual">Simple virtual product</string>
     <string name="product_add_type_variable">Variable product</string>
     <string name="product_add_type_grouped">Grouped product</string>
     <string name="product_add_type_external">External product</string>
     <string name="product_add_type_simple_desc">A unique item to sell</string>
+    <string name="product_add_type_virtual_desc">A unique digital product</string>
     <string name="product_add_type_variable_desc">A product with variations like color or size</string>
     <string name="product_add_type_grouped_desc" translatable="false">@string/product_type_grouped_desc</string>
     <string name="product_add_type_external_desc" translatable="false">@string/product_type_external_desc</string>
@@ -1587,4 +1627,5 @@
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
+    <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
 </resources>

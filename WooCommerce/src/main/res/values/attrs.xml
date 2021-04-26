@@ -169,4 +169,9 @@
         <attr name="highlighted" format="boolean"/>
         <attr name="android:enabled"/>
     </declare-styleable>
+
+    <declare-styleable name="WCWarningBanner">
+        <attr name="title" format="string" />
+        <attr name="message" format="string" />
+    </declare-styleable>
 </resources>

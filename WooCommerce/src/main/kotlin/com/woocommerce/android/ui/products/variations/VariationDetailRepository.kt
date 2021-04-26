@@ -43,6 +43,7 @@ class VariationDetailRepository @Inject constructor(
     private var remoteVariationId: Long = 0L
 
     var lastUpdateVariationErrorType: ProductErrorType? = null
+    var lastFetchVariationErrorType: ProductErrorType? = null
 
     init {
         dispatcher.register(this)
@@ -53,6 +54,7 @@ class VariationDetailRepository @Inject constructor(
     }
 
     suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
+        lastFetchVariationErrorType = null
         try {
             this.remoteProductId = remoteProductId
             this.remoteVariationId = remoteVariationId
@@ -86,7 +88,7 @@ class VariationDetailRepository @Inject constructor(
                 continuationUpdateVariation = it
 
                 val variation = updatedVariation.toDataModel(
-                    getCachedVariation(
+                    getCachedWCVariation(
                         updatedVariation.remoteProductId,
                         updatedVariation.remoteVariationId
                     )
@@ -100,11 +102,22 @@ class VariationDetailRepository @Inject constructor(
         }
     }
 
-    private fun getCachedVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
+    /**
+     * Fires the request to delete a variation
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun deleteVariation(productID: Long, variationID: Long) =
+        productStore
+            .deleteVariation(selectedSite.get(), productID, variationID)
+            .model?.let { true }
+            ?: false
+
+    private fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
         productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
     fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
-        getCachedVariation(remoteProductId, remoteVariationId)?.toAppModel()
+        getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
@@ -114,6 +127,7 @@ class VariationDetailRepository @Inject constructor(
             event.remoteVariationId == remoteVariationId) {
             if (continuationFetchVariation?.isActive == true) {
                 if (event.isError) {
+                    lastFetchVariationErrorType = event.error?.type
                     continuationFetchVariation?.resume(false)
                 } else {
                     AnalyticsTracker.track(PRODUCT_VARIATION_LOADED)

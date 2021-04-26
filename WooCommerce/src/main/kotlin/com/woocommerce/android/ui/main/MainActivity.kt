@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -50,7 +51,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
-import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -68,7 +68,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -113,7 +112,6 @@ class MainActivity : AppUpgradeActivity(),
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
@@ -224,12 +222,6 @@ class MainActivity : AppUpgradeActivity(),
         if (!selectedSite.exists()) {
             showSitePickerScreen()
             return
-        }
-
-        // we only have to check the new revenue stats availability
-        // if the activity is starting for the first time
-        if (savedInstanceState == null) {
-            fetchRevenueStatsAvailability(selectedSite.get())
         }
 
         initFragment(savedInstanceState)
@@ -629,10 +621,6 @@ class MainActivity : AppUpgradeActivity(),
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    override fun fetchRevenueStatsAvailability(site: SiteModel) {
-        revenueStatsAvailabilityFetcher.fetchRevenueStatsAvailability(site)
-    }
-
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> Stat.MAIN_TAB_DASHBOARD_SELECTED
@@ -774,12 +762,19 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
-        showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
             remoteProductId,
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
+    }
+
+    override fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
+        // variation detail is part of the products navigation graph, and product detail is the starting destination
+        // for that graph, so we have to use a deep link to navigate to variation detail
+        val query = "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
+        val deeplink = "wcandroid://variationDetail$query"
+        navController.navigate(Uri.parse(deeplink))
     }
 
     override fun showAddProduct() {

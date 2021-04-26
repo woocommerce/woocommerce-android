@@ -1,0 +1,4 @@
+6.4:
+Kami melakukan sejumlah peningkatan pada rilis ini.
+Kami memperbaiki bug yang membuat aplikasi tidak dapat memuat produk saat ada nilai desimal pada jumlah stok.
+Kami juga memperbaiki masalah tata letak yang muncul pada layar opsi format label pengiriman.

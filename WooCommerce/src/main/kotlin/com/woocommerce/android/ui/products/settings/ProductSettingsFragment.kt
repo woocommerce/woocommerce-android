@@ -52,18 +52,6 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             viewModel.onSettingsMenuOrderButtonClicked()
         }
 
-        val isSimple = viewModel.getProduct().productDraft?.productType == SIMPLE
-        if (isSimple) {
-            binding.productIsVirtual.visibility = View.VISIBLE
-            binding.productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
-                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)
-                viewModel.updateProductDraft(isVirtual = isChecked)
-                activity?.invalidateOptionsMenu()
-            }
-        } else {
-            binding.productIsVirtual.visibility = View.GONE
-        }
-
         binding.productReviewsAllowed.visibility = View.VISIBLE
         binding.productReviewsAllowedDivider.visibility = View.VISIBLE
         binding.productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
@@ -170,7 +158,6 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         binding.productCatalogVisibility.optionValue = product.catalogVisibility?.toLocalizedString(requireActivity())
         binding.productSlug.optionValue = valueOrNotSet(product.slug)
         binding.productReviewsAllowed.isChecked = product.reviewsAllowed
-        binding.productIsVirtual.isChecked = product.isVirtual
         binding.productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
         binding.productVisibility.optionValue = viewModel.getProductVisibility().toLocalizedString(requireActivity())
         binding.productMenuOrder.optionValue = valueOrNotSet(product.menuOrder)

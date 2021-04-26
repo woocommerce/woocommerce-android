@@ -53,9 +53,37 @@
             app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
+        android:id="@+id/cardReaderScanFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.scan.CardReaderScanFragment"
+        android:label="CardReaderScanFragment" />
+    <fragment
+        android:id="@+id/cardReaderConnectFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
+        android:label="CardReaderConnectFragment" >
+        <action
+            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderScanFragment"
+            app:destination="@id/cardReaderScanFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:popUpTo="@id/mainSettingsFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
         android:id="@+id/cardReaderSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.CardReaderSettingsFragment"
-        android:label="CardReaderSettingsFragment" />
+        android:label="CardReaderSettingsFragment" >
+        <action
+            android:id="@+id/action_cardReaderSettingsFragment_to_cardReaderConnectFragment"
+            app:destination="@id/cardReaderConnectFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:popUpTo="@id/mainSettingsFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.PrivacySettingsFragment"

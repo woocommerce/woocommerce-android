@@ -1,68 +1,102 @@
 <ar>
-6.2:
-بالنسبة إلى هذا الإصدار، ركزنا على إصلاحات الأخطاء وتحسينات الأداء.
+6.4:
+قمنا بالقليل من التحسينات في هذا الإصدار.
+أصلحنا خطأ كان يمنع التطبيق من تحميل المنتجات عند وجود قيمة عشرية في كمية المخزون.
+أصلحنا كذلك مشكلة تخطيط كانت تحدث في شاشة خيار تنسيقات ملصق الشحن.
 </ar>
 <de-DE>
-6.2:
-In dieser Release haben wir uns auf Fehlerbehebungen und die Verbesserung der Performance konzentriert.
+6.4:
+Wir haben in dieser Release ein paar Verbesserungen vorgenommen.
+Wir haben einen Fehler behoben, der dazu führte, dass Produkte in der App nicht geladen wurde, wenn im Lagerbestand ein Dezimalwert angegeben war.
+Außerdem haben wir ein Problem am Layout behoben, das an den Optionen für Versandetikettenformate auftrat.
 </de-DE>
 <es-ES>
-6.2:
-En esta versión, nos hemos centrado en corregir errores y hacer mejoras de rendimiento.
+6,4:
+Hemos realizado algunas mejoras en esta versión.
+Hemos corregido un error que impedía que la aplicación cargara productos cuando había un valor decimal en la cantidad de existencias.
+También hemos solucionado un problema de diseño que se producía en la pantalla de opciones de formatos de etiquetas de envío.
 </es-ES>
 <fr-FR>
-6.2 :
-Pour cette version, nous nous sommes concentrés sur les résolutions de bogues et l’amélioration des performances.
+6.4 :
+Nous avons apporté quelques améliorations à cette version.
+Nous avons résolu un bogue qui empêchait l’application de charger des produits lorsqu’il y avait une valeur décimale dans la quantité en stock.
+Nous avons également résolu un problème de mise en page qui se produisait sur l’écran d’option des formats des étiquettes d’expédition.
 </fr-FR>
 <iw-IL>
-6.2:
-בגרסה הזאת התמקדנו בתיקון באגים ובשיפורים בביצועים.
+6.4:
+ביצענו כמה שיפורים בגרסה הזאת.
+תיקנו באג שמנע מהאפליקציה לטעון מוצרים כאשר הכמות במלאי הכילה ערך עשרוני.
+תיקנו גם בעיה בפריסה שהתרחשה במסך האפשרויות של הפורמטים לתוויות משלוח.
 </iw-IL>
 <id>
-6.2:
-Untuk rilis ini, kami berfokus pada perbaikan bug dan peningkatan performa.
+6.4:
+Kami melakukan sejumlah peningkatan pada rilis ini.
+Kami memperbaiki bug yang membuat aplikasi tidak dapat memuat produk saat ada nilai desimal pada jumlah stok.
+Kami juga memperbaiki masalah tata letak yang muncul pada layar opsi format label pengiriman.
 </id>
 <it-IT>
-6.2:
-Per questo rilascio, ci siamo concentrati sulle correzioni dei bug e sui miglioramenti delle prestazioni.
+6.4:
+Abbiamo apportato alcuni miglioramenti in questo rilascio.
+Abbiamo corretto un bug che impediva all'applicazione di caricare i prodotti quando era presente un valore decimale nella quantità in magazzino.
+Abbiamo anche corretto un problema di layout che si presentava sulla schermata delle opzioni dei formati dell'etichetta di spedizione.
 </it-IT>
 <ja-JP>
-6.2:
-このリリースでは、バグ修正とパフォーマンス向上に注力しました。
+6.4:
+今回のリリースでは数か所改善しました。
+在庫数に小数値がある場合にアプリが商品を読み込めないバグを修正しました。
+配送ラベルの書式設定オプション画面で発生するレイアウトに関する問題も修正しました。
 </ja-JP>
 <ko-KR>
-6.2:
-이 릴리스의 경우 버그 수정 및 성능 향상에 집중했습니다.
+6.4:
+이 릴리스에서 몇 가지 개선 사항을 적용했습니다.
+재고 수량에 소수점 값이 있으면 앱에서 제품을 로드하지 못했던 버그를 수정했습니다.
+배송 레이블 형식 옵션 화면에서 발생하는 레이아웃 문제도 해결했습니다.
 </ko-KR>
 <nl-NL>
-6.2:
-Deze release is toegespitst op het verhelpen van bugs en prestatieverbeteringen.
+6.4:
+We made a few improvements in this release.
+We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
+We also fixed a layout issue that occurred on the shipping label formats option screen.
 </nl-NL>
 <pt-BR>
-6.2:
-Para esta versão, focamos em corrigir bugs e melhorar o desempenho.
+6.4:
+Fizemos algumas melhorias nesta versão.
+Corrigimos um bug que impedia o aplicativo de carregar produtos quando havia um valor decimal na quantidade em estoque.
+Também corrigimos um erro no layout que ocorria na tela de opções de formatos de etiquetas de envio.
 </pt-BR>
 <ru-RU>
-6.2:
-В этом выпуске мы сосредоточились на исправлении ошибок и повышении производительности.
+6,4:
+В этом выпуске добавлено несколько улучшений.
+Исправлена ошибка, из-за которой приложение не загружало товары, когда их количество в наличии было представлено в десятичном формате.
+Мы также исправили проблему разметки, которая возникала на экране выбора формата транспортной этикетки.
 </ru-RU>
 <sv-SE>
-6.2:
-I den här versionen har vi fokuserat på buggkorrigeringar och prestandaförbättringar.
+6,4:
+Vi har gjort ett antal förbättringar i den här versionen.
+Vi har korrigerat ett fel som hindrade appen från att läsa in produkter när det fanns ett decimalvärde i lagerkvantiteten.
+Vi har också korrigerat ett layoutproblem som inträffade på alternativskärmen för fraktetikettformat.
 </sv-SE>
 <tr-TR>
-6.2:
-Bu sürümde, hata düzeltmeye ve performans iyileştirmelerine odaklandık.
+6,4:
+Bu sürümde birkaç iyileştirme yaptık.
+Stok miktarında ondalık bir değer olduğunda uygulamanın ürünleri yüklemesini engelleyen bir hatayı düzelttik.
+Gönderi etiketi biçim seçeneği ekranında oluşan düzenle ilgili bir sorunu da düzelttik.
 </tr-TR>
 <zh-CN>
-6.2：
-在此版本中，我们重点关注错误修复和性能提升。
+6.4：
+我们在此版本中进行了一些改进。
+我们修复了在库存数量显示为小数时，应用不会加载产品的错误。
+我们也修复“配送标签格式选项屏幕上出现的布局问题。
 </zh-CN>
 <zh-TW>
-6.2：
-此版本著重於修正錯誤和提升效能。
+6.4：
+我們在此版本中進行了一些改善。
+我們修正了在「存貨數量」的值中有小數時，會防止應用程式載入產品的錯誤。
+我們也修正了在「運送標籤格式選項」畫面上發生的版面配置問題。
 </zh-TW>
 <en-US>
-6.2:
-For this release, we focused on bug fixes and performance improvements.
+6.4:
+We made a few improvements in this release.
+We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
+We also fixed a layout issue that occurred on the shipping label formats option screen.
 </en-US>

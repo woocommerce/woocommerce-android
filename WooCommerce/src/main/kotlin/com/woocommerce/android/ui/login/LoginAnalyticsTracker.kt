@@ -296,10 +296,6 @@ class LoginAnalyticsTracker(
         unifiedLoginTracker.setStep(Step.ENTER_EMAIL_ADDRESS)
     }
 
-    override fun trackEmailSignupConfirmationViewed() {
-        TODO("Not yet implemented")
-    }
-
     override fun trackSocialSignupConfirmationViewed() {
         TODO("Not yet implemented")
     }

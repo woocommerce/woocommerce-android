@@ -11,6 +11,12 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_065"
+msgid ""
+"6.5:\n"
+"We have a shiny new feature available for beta testing! US-based merchants can create shipping labels for physical orders right from the app (for US destinations only). We've also fixed some bugs: expired shipping labels now display more accurate information, and the on-screen keyboard won't disappear when searching your order list.\n"
+msgstr ""
+
 msgctxt "release_note_063"
 msgid ""
 "6.3:\n"
@@ -19,12 +25,6 @@ msgid ""
 "- If applicable, you can now include “downloadable” in the type details of a product.\n"
 "- We fixed a bug so that a custom order’s status now displays correctly in order details.\n"
 "\n"
-msgstr ""
-
-msgctxt "release_note_062"
-msgid ""
-"6.2:\n"
-"For this release, we focused on bug fixes and performance improvements.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

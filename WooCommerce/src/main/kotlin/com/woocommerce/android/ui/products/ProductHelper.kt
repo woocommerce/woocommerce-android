@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.products.ProductBackorderStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductTaxStatus.None
-import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
 import java.math.BigDecimal
 import java.util.Date
@@ -33,7 +32,7 @@ object ProductHelper {
      * Default Product for initial state of Product Add flow
      * */
 
-    fun getDefaultNewProduct(productType: ProductType): Product {
+    fun getDefaultNewProduct(productType: ProductType, isVirtual: Boolean): Product {
         return Product(
             remoteId = 0L,
             name = "",
@@ -49,7 +48,7 @@ object ProductHelper {
             firstImageUrl = null,
             totalSales = 0,
             reviewsAllowed = true,
-            isVirtual = productType == VARIABLE,
+            isVirtual = isVirtual,
             ratingCount = 0,
             averageRating = 0f,
             permalink = "",
@@ -59,7 +58,7 @@ object ProductHelper {
             regularPrice = BigDecimal.ZERO,
             taxClass = Product.TAX_CLASS_DEFAULT,
             isStockManaged = false,
-            stockQuantity = 0,
+            stockQuantity = 0.0,
             sku = "",
             slug = "",
             length = 0f,

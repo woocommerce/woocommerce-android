@@ -10,9 +10,11 @@ import android.text.Spanned
 import android.util.Patterns
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.util.FormatUtils
 import java.io.IOException
 import java.util.Locale
 import kotlin.math.abs
@@ -125,6 +127,33 @@ object StringUtils {
             absNumber >= ONE_MILLION -> (number / ONE_MILLION).toString() + "m"
             absNumber >= ONE_THOUSAND -> (number / ONE_THOUSAND).toString() + "k"
             else -> number.toString()
+        }
+    }
+
+    /**
+     * If a number's fractional part is zero, remove it and return as string. Otherwise return as string while
+     * including the fractional part.
+     * If the number is to be displayed as regular text, `formatInt` is used to display commas/dot for thousands
+     * separator (depending on locale).
+     * If the number is to be displayed in an editable text input, number.toInt() is used so that the input behavior
+     * does not show the thousands separator.
+     *
+     *  @param [number] The number to be formatted
+     *  @param [forInput] Whether the formatting is used in a text input or not.
+     *
+     *  For eg: for a number = 234560 and forInput = false, returns 234560
+     * for a number = 234560 forInput = true, returns 2,34,560
+     * for a number = 2.3456 return 2.3456
+     *
+     */
+    fun formatCountDecimal(number: Double, forInput: Boolean = false): String {
+        return if (number.isInteger()) {
+            if (forInput)
+                number.toInt().toString()
+            else
+                FormatUtils.formatInt(number.toInt())
+        } else {
+            number.toString()
         }
     }
 

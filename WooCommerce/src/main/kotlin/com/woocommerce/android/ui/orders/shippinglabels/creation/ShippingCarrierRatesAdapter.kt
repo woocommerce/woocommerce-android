@@ -29,12 +29,13 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
 import com.woocommerce.android.util.DateUtils
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import java.util.Date
 
 class ShippingCarrierRatesAdapter(
-    private val onRateSelected: (ShippingRate) -> Unit
+    private val onRateSelected: (ShippingRate) -> Unit,
+    private val dateUtils: DateUtils
 ) : RecyclerView.Adapter<RateListViewHolder>() {
     var items: List<PackageRateListItem> = emptyList()
         set(value) {
@@ -119,7 +120,6 @@ class ShippingCarrierRatesAdapter(
                     binding.carrierServiceName.text = rateItem.title
 
                     if (rateItem.deliveryDate != null) {
-                        val dateUtils = DateUtils()
                         binding.deliveryTime.text = dateUtils.getShortMonthDayString(
                             dateUtils.getYearMonthDayStringFromDate(rateItem.deliveryDate)
                         )

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -37,6 +38,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
         private const val LIST_STATE_KEY_GLOBAL = "list_state_global"
+        private const val KEY_RENAMED_ATTRIBUTE_NAME = "renamed_attribute_name"
         private const val KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING = "is_remove_dialog_showing"
     }
 
@@ -50,6 +52,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val skeletonView = SkeletonView()
 
     private var isConfirmRemoveDialogShowing = false
+    private var renamedAttributeName: String? = null
 
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
@@ -85,7 +88,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                     globalTermsAdapter.addTerm(termName)
                 }
 
-                viewModel.removeAttributeTermFromDraft(navArgs.attributeId, navArgs.attributeName, termName)
+                viewModel.removeAttributeTermFromDraft(navArgs.attributeId, attributeName, termName)
                 checkViews()
             }
         }
@@ -107,6 +110,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val isGlobalAttribute
         get() = navArgs.attributeId != 0L
 
+    private val attributeName
+        get() = renamedAttributeName ?: navArgs.attributeName
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -114,6 +120,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         initializeViews(savedInstanceState)
         setupObservers()
+        setupResultHandlers()
         getAttributeTerms()
 
         setHasOptionsMenu(true)
@@ -121,6 +128,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
                 confirmRemoveAttribute()
+            }
+            if (bundle.containsKey(KEY_RENAMED_ATTRIBUTE_NAME)) {
+                renamedAttributeName = bundle.getString(KEY_RENAMED_ATTRIBUTE_NAME)
             }
         }
     }
@@ -132,7 +142,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         }
 
         // get the attribute terms for attributes already assigned to this product
-        showAssignedTerms(viewModel.getProductDraftAttributeTerms(navArgs.attributeId, navArgs.attributeName))
+        showAssignedTerms(viewModel.getProductDraftAttributeTerms(navArgs.attributeId, attributeName))
     }
 
     override fun onDestroyView() {
@@ -148,14 +158,22 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
+
         // we don't want to show the Remove menu item if this is new attribute
         menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute
+
+        // we don't want to show the Rename menu item if this is new attribute or a global attribute
+        menu.findItem(R.id.menu_rename)?.isVisible = !navArgs.isNewAttribute && !isGlobalAttribute
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_remove -> {
                 confirmRemoveAttribute()
+                true
+            }
+            R.id.menu_rename -> {
+                viewModel.onRenameAttributeButtonClick(attributeName)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -181,6 +199,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     override fun onSaveInstanceState(outState: Bundle) {
         if (isConfirmRemoveDialogShowing) {
             outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
+        }
+        renamedAttributeName?.let {
+            outState.putString(KEY_RENAMED_ATTRIBUTE_NAME, it)
         }
         layoutManagerAssigned?.let {
             outState.putParcelable(LIST_STATE_KEY_ASSIGNED, it.onSaveInstanceState())
@@ -257,7 +278,16 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         })
     }
 
-    override fun getFragmentTitle() = navArgs.attributeName
+    private fun setupResultHandlers() {
+        handleResult<String>(RenameAttributeFragment.KEY_RENAME_ATTRIBUTE_RESULT) {
+            // note we always pass 0L as the attributeId since renaming is only supported for local attributes
+            if (viewModel.renameAttributeInDraft(0L, oldAttributeName = attributeName, newAttributeName = it)) {
+                renamedAttributeName = it
+            }
+        }
+    }
+
+    override fun getFragmentTitle() = attributeName
 
     /**
      * Show the list of terms already assigned to the product attribute
@@ -310,7 +340,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             globalTermsAdapter.removeTerm(termName)
         }
 
-        viewModel.addAttributeTermToDraft(navArgs.attributeId, navArgs.attributeName, termName)
+        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName)
         checkViews()
     }
 
@@ -344,7 +374,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
      * Removes this attribute from the product draft and returns to the attributes screen
      */
     private fun removeAttribute() {
-        viewModel.removeAttributeFromDraft(navArgs.attributeId, navArgs.attributeName)
+        viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
         saveChangesAndReturn()
     }
 }
