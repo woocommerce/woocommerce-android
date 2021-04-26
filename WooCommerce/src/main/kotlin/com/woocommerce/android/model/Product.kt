@@ -261,6 +261,12 @@ data class Product(
         return true
     }
 
+    infix fun containsValidAttributesFor(variation: ProductVariation) =
+        variationEnabledAttributes
+            .takeIf { it.isNotEmpty() }
+            ?.let { variation.containsValidAttributesFrom(this) ?: true
+            } ?: false
+
     /**
      * Method merges the updated product fields edited by the user with the locally cached
      * [Product] model and returns the updated [Product] model.
