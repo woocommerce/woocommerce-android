@@ -78,7 +78,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
              * global term list
              */
             override fun onTermDelete(termName: String) {
-                viewModel.getProductDraftAttributes().find {
+                viewModel.productDraftAttributes.find {
                     it.isGlobalAttribute && it.id == navArgs.attributeId
                 }?.let { attribute ->
                     attribute.terms.find {
