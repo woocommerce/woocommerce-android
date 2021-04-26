@@ -995,7 +995,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Returns the list of term names for a specific attribute assigned to the product
      */
     fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
-        val attributes = productDraftVariationAttributes
+        val attributes = productDraftAttributes
         attributes.forEach { attribute ->
             if (attribute.name == attributeName) {
                 return attribute.terms
@@ -1019,13 +1019,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Returns the draft attribute matching the passed id and name
      */
     private fun getDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? {
-        return productDraftVariationAttributes.firstOrNull {
+        return productDraftAttributes.firstOrNull {
             it.id == attributeId && it.name == attributeName
         }
     }
 
     fun removeAttributeFromDraft(attributeId: Long, attributeName: String) {
-        val draftAttributes = productDraftVariationAttributes
+        val draftAttributes = productDraftAttributes
 
         // create an updated list without this attribute and save it to the draft
         ArrayList<ProductAttribute>().also { updatedAttributes ->
@@ -1042,7 +1042,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean {
         // first make sure an attribute with the new name doesn't already exist in the draft
-        productDraftVariationAttributes.forEach {
+        productDraftAttributes.forEach {
             if (it.name.equals(newAttributeName, ignoreCase = true)) {
                 triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
                 return false
@@ -1066,7 +1066,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         ArrayList<ProductAttribute>().also { updatedAttributes ->
             // create a list of draft attributes without the old one
-            updatedAttributes.addAll(productDraftVariationAttributes.filterNot { attribute ->
+            updatedAttributes.addAll(productDraftAttributes.filterNot { attribute ->
                 attribute.id == attributeId && attribute.name == oldAttributeName
             })
 
@@ -1106,7 +1106,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updatedTerms.add(termName)
 
         // get the current draft attributes
-        val draftAttributes = productDraftVariationAttributes
+        val draftAttributes = productDraftAttributes
 
         // create an updated list without this attribute, then add a new one with the updated terms
         ArrayList<ProductAttribute>().also { updatedAttributes ->
@@ -1145,7 +1145,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         // get the current draft attributes
-        val draftAttributes = productDraftVariationAttributes
+        val draftAttributes = productDraftAttributes
 
         // create an updated list without this attribute...
         val updatedAttributes = ArrayList<ProductAttribute>().also {
