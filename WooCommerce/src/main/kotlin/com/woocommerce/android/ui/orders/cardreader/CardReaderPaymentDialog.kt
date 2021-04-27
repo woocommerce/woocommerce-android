@@ -6,12 +6,10 @@ import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -35,8 +33,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
 
         val binding = FragmentCardReaderPaymentBinding.bind(view)
 
-        initViews(binding)
-        initObservers()
+        initObservers(binding)
         initViewModel()
     }
 
@@ -46,21 +43,16 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
         viewModel.start(manager!!)
     }
 
-    private fun initViews(binding: FragmentCardReaderPaymentBinding) {
-        // TODO cardreader remove this
-        binding.testingText.setText("Hardcoded: Card Reader Payment Fragment")
-    }
-
-    private fun initObservers() {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            // TODO cardreader Replace debug Snackbar with proper UI updates
-            when (event) {
-                is ShowSnackbar -> Snackbar.make(
-                    requireView(),
-                    String.format(getString(event.message), *event.args),
-                    LENGTH_SHORT
-                ).show()
-            }
+    private fun initObservers(binding: FragmentCardReaderPaymentBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner, Observer { viewState ->
+            UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
+            UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
+            UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
+            UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
+            UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
+            UiHelpers.setTextOrHide(binding.printReceiptBtn, viewState.printReceiptLabel)
+            UiHelpers.setTextOrHide(binding.sendReceiptBtn, viewState.sendReceiptLabel)
+            UiHelpers.updateVisibility(binding.progressBar, viewState.isProgressVisible)
         })
     }
 

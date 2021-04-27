@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -44,13 +45,13 @@ import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import org.wordpress.android.util.ActivityUtils
+import javax.inject.Inject
 
 class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_detail),
     OnGalleryImageInteractionListener {
@@ -81,6 +82,8 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
+
+    @Inject lateinit var crashLogging: CrashLogging
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -325,7 +328,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
                 |menu elements:
                 |${menu.printItems()}
             """.trimMargin()
-            CrashUtils.logException(NullPointerException(message))
+            crashLogging.sendReport(exception = NullPointerException(message))
         }
 
         // visibility of these menu items depends on whether we're in the add product flow
