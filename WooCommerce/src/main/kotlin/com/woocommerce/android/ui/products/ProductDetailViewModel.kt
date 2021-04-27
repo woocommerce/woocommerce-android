@@ -195,13 +195,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Returns the list of attributes assigned to the product who are enabled for Variations
+     * Returns the filtered list of attributes assigned to the product who are enabled for Variations
      */
     val productDraftVariationAttributes
         get() = viewState.productDraft?.variationEnabledAttributes ?: emptyList()
 
     /**
-     * Returns the list of attributes assigned to the product who are disabled for Variations
+     * Returns the complete list of attributes assigned to the product, enabled for variations or not
      */
     val productDraftAttributes
         get() = viewState.productDraft?.attributes ?: emptyList()
