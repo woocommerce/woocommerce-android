@@ -346,7 +346,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given payment flow already started, when start() is invoked, then flow is not restarted`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer { flow<CardPaymentStatus>{} }
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer { flow<CardPaymentStatus> {} }
 
         viewModel.start(cardReaderManager)
         viewModel.start(cardReaderManager)
