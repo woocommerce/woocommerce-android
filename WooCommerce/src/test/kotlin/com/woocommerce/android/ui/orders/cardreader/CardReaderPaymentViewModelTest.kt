@@ -2,8 +2,11 @@ package com.woocommerce.android.ui.orders.cardreader
 
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardPaymentStatus
@@ -339,5 +342,17 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewState.hintLabel).isNull()
         assertThat(viewState.printReceiptLabel).isEqualTo(R.string.card_reader_payment_print_receipt)
         assertThat(viewState.sendReceiptLabel).isEqualTo(R.string.card_reader_payment_send_receipt)
+    }
+
+    @Test
+    fun `given payment flow already started, when start() is invoked, then flow is not restarted`() = runBlockingTest {
+        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer { flow<CardPaymentStatus>{} }
+
+        viewModel.start(cardReaderManager)
+        viewModel.start(cardReaderManager)
+        viewModel.start(cardReaderManager)
+        viewModel.start(cardReaderManager)
+
+        verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyString())
     }
 }

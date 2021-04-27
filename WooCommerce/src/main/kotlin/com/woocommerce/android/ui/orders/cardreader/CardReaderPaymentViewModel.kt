@@ -31,6 +31,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -50,14 +51,18 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
 
+    private var paymentFlowJob: Job? = null
+
     final fun start(cardReaderManager: CardReaderManager) {
         // TODO cardreader Check if the payment was already processed and cancel this flow
         // TODO cardreader Make sure a reader is connected
-        initPaymentFlow(cardReaderManager)
+        if (paymentFlowJob == null) {
+            initPaymentFlow(cardReaderManager)
+        }
     }
 
     private fun initPaymentFlow(cardReaderManager: CardReaderManager) {
-        launch {
+        paymentFlowJob = launch {
             try {
                 loadOrderFromDB()?.let { order ->
                     order.total.toBigDecimalOrNull()?.let { amount ->
