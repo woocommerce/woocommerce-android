@@ -26,7 +26,7 @@ SUPPORTED_LOCALES = [
   { glotpress: "ko", android: "ko", google_play: "ko-KR",  promo_config: {} },
   { glotpress: "nl", android: "nl", google_play: "nl-NL",  promo_config: {} },
   { glotpress: "pt-br", android: "pt-rBR", google_play: "pt-BR",  promo_config: {} },
-  { glotpress: "ru", android: "ru", google_play: "ru-RU",  promo_config: {} },   
+  { glotpress: "ru", android: "ru", google_play: "ru-RU",  promo_config: {} },
   { glotpress: "sv", android: "sv", google_play: "sv-SE",  promo_config: {} },
   { glotpress: "tr", android: "tr", google_play: "tr-TR",  promo_config: {} },
   { glotpress: "zh-cn", android: "zh-rCN", google_play: "zh-CN",  promo_config: {} },
@@ -169,6 +169,24 @@ platform :android do
   end
 
   #####################################################################################
+      # download_translations
+      # -----------------------------------------------------------------------------------
+      # This lane download the string translations from GlotPress
+      # -----------------------------------------------------------------------------------
+      # Usage:
+      # bundle exec fastlane download_translations
+      #####################################################################################
+    lane :download_translations do |options|
+      # Adapt the GP project URL and lint_task as needed if testing a project other than WordPress
+      android_download_translations(
+        res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
+        glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
+        locales: SUPPORTED_LOCALES,
+        lint_task: 'lintVanillaRelease'
+      )
+    end
+
+  #####################################################################################
   # finalize_release
   # -----------------------------------------------------------------------------------
   # This lane finalize a release: updates store metadata and runs the release checks
@@ -187,7 +205,7 @@ platform :android do
     hotfix = android_current_branch_is_hotfix
     android_download_translations(
       res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
-      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/', 
+      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
       locales: SUPPORTED_LOCALES,
       lint_task: 'lintVanillaRelease'
     ) unless hotfix
@@ -212,9 +230,9 @@ platform :android do
   # bundle exec fastlane build_and_upload_release [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
-  # bundle exec fastlane build_and_upload_release 
-  # bundle exec fastlane build_and_upload_release skip_confirm:true 
-  # bundle exec fastlane build_and_upload_release create_release:true 
+  # bundle exec fastlane build_and_upload_release
+  # bundle exec fastlane build_and_upload_release skip_confirm:true
+  # bundle exec fastlane build_and_upload_release create_release:true
   #####################################################################################
   desc "Builds and uploads release for distribution"
   lane :build_and_upload_release do | options |
@@ -258,9 +276,9 @@ platform :android do
   # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
-  # bundle exec fastlane build_and_upload_beta 
-  # bundle exec fastlane build_and_upload_beta skip_confirm:true 
-  # bundle exec fastlane build_and_upload_beta create_release:true 
+  # bundle exec fastlane build_and_upload_beta
+  # bundle exec fastlane build_and_upload_beta skip_confirm:true
+  # bundle exec fastlane build_and_upload_beta create_release:true
   #####################################################################################
   desc "Builds and uploads a new beta build to Google Play (without releasing it)"
   lane :build_and_upload_beta do | options |
@@ -451,7 +469,7 @@ platform :android do
     prerelease = options[:prerelease] || false
 
     project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
-    
+
     # APKs built on CI are not signed with master key, which means Google Sign-In won't work with those.
     # So don't attach them to the release, as this ends up being confusing for beta-testers.
     apk_file_path = File.join(project_root, 'artifacts', universal_apk_name(version)) unless is_ci
