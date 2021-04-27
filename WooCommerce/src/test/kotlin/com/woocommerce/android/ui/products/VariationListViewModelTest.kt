@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.variations.VariationListRepository
@@ -62,6 +63,10 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays the product variation list view correctly`() {
         doReturn(variations).whenever(variationListRepository).getProductVariationList(productRemoteId)
+        mock<Product>().apply {
+            whenever(containsValidAttributesFor(any())).thenReturn(true)
+            whenever(productRepository.getProduct(productRemoteId)).thenReturn(this)
+        }
 
         createViewModel()
 
