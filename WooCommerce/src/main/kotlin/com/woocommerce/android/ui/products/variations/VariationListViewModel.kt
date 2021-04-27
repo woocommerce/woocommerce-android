@@ -62,7 +62,9 @@ class VariationListViewModel @AssistedInject constructor(
             viewState = if (this.isEmpty()) {
                 viewState.copy(isEmptyViewVisible = true)
             } else {
-                val anyWithoutPrice = variations.any { it.isVisible && it.regularPrice.isNotSet() && it.salePrice.isNotSet() }
+                val anyWithoutPrice = variations.any {
+                    it.isVisible && it.regularPrice.isNotSet() && it.salePrice.isNotSet()
+                }
                 viewState.copy(isWarningVisible = anyWithoutPrice)
             }
         }
