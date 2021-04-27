@@ -561,9 +561,9 @@ fun WCProductModel.toProductReviewProductModel() =
  */
 fun List<ProductAttribute>.containsAttribute(attribute: ProductAttribute): Boolean {
     this.forEach {
-        if (attribute.id == it.id
-            && attribute.name == it.name
-            && attribute.terms == it.terms) {
+        if (attribute.id == it.id &&
+            attribute.name == it.name &&
+            attribute.terms == it.terms) {
             return true
         }
     }
