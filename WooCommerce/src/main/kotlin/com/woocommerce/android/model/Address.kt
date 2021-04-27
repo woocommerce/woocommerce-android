@@ -83,6 +83,9 @@ data class Address(
 
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
+            company = company,
+            name = "$firstName $lastName",
+            phone = phone,
             address = address1,
             address2 = address2,
             city = city,
