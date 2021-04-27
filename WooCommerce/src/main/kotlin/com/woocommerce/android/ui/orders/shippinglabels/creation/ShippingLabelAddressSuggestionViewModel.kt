@@ -2,9 +2,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SHIPPING_LABEL_ADDRESS_SUGGESTIONS_EDIT_SELECTED_ADDRESS_BUTTON_TAPPED
@@ -19,6 +16,9 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.parcelize.Parcelize
 
 class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
@@ -27,7 +27,14 @@ class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val arguments: ShippingLabelAddressSuggestionFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.enteredAddress, arguments.suggestedAddress))
+    val viewStateData = LiveDataDelegate(
+        savedState,
+        ViewState(
+            enteredAddress = arguments.enteredAddress,
+            suggestedAddress = arguments.suggestedAddress,
+            selectedAddress = arguments.suggestedAddress
+        )
+    )
     private var viewState by viewStateData
 
     init {
