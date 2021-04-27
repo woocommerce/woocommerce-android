@@ -612,6 +612,9 @@
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
 
+    <string name="card_reader_payment_print_receipt">Print receipt</string>
+    <string name="card_reader_payment_send_receipt">Send receipt</string>
+
     <!--
         Notifications
     -->

@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders.cardreader
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
@@ -24,12 +26,12 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -49,14 +51,18 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
 
+    private var paymentFlowJob: Job? = null
+
     final fun start(cardReaderManager: CardReaderManager) {
         // TODO cardreader Check if the payment was already processed and cancel this flow
         // TODO cardreader Make sure a reader is connected
-        initPaymentFlow(cardReaderManager)
+        if (paymentFlowJob == null) {
+            initPaymentFlow(cardReaderManager)
+        }
     }
 
     private fun initPaymentFlow(cardReaderManager: CardReaderManager) {
-        launch {
+        paymentFlowJob = launch {
             try {
                 loadOrderFromDB()?.let { order ->
                     order.total.toBigDecimalOrNull()?.let { amount ->
@@ -99,23 +105,24 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                     viewState.postValue(FailedPaymentState)
                 }
             }
-            // TODO cardreader remove this line which is used only for debug purposes
-            triggerEvent(ShowSnackbar(R.string.generic_string, arrayOf(paymentStatus.javaClass.simpleName)))
         }
     }
 
     private fun loadOrderFromDB() = orderStore.getOrderByIdentifier(arguments.orderIdentifier)
 
     sealed class ViewState(
-        val hintLabel: Int? = null,
-        val headerLabel: Int? = null,
-        val paymentStateLabel: Int? = null,
-        val illustration: Int? = null
+        @StringRes val hintLabel: Int? = null,
+        @StringRes val headerLabel: Int? = null,
+        @StringRes val paymentStateLabel: Int? = null,
+        @DrawableRes val illustration: Int? = null,
+        // TODO cardreader add tests
+        val isProgressVisible: Boolean = false,
+        val printReceiptLabel: Int? = null,
+        val sendReceiptLabel: Int? = null
     ) {
-        open val amountWithCurrencyLabel: String? = ""
+        open val amountWithCurrencyLabel: String? = null
 
-        // TODO cardreader Update LoadingDataState
-        object LoadingDataState : ViewState()
+        object LoadingDataState : ViewState(isProgressVisible = true)
 
         // TODO cardreader Update FailedPaymentState
         object FailedPaymentState : ViewState()
@@ -124,7 +131,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
             hintLabel = R.string.card_reader_payment_collect_payment_hint,
             headerLabel = R.string.card_reader_payment_collect_payment_header,
             paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
-            illustration = R.drawable.common_full_open_on_phone
+            illustration = R.drawable.ic_card_reader
         )
 
         data class ProcessingPaymentState(override val amountWithCurrencyLabel: String) :
@@ -132,21 +139,23 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                 hintLabel = R.string.card_reader_payment_processing_payment_hint,
                 headerLabel = R.string.card_reader_payment_processing_payment_header,
                 paymentStateLabel = R.string.card_reader_payment_processing_payment_state,
-                illustration = R.drawable.common_full_open_on_phone
+                illustration = R.drawable.ic_card_reader
             )
 
         data class CapturingPaymentState(override val amountWithCurrencyLabel: String) :
             ViewState(
-                hintLabel = R.string.card_reader_payment_collect_payment_hint,
+                hintLabel = R.string.card_reader_payment_capturing_payment_hint,
                 headerLabel = R.string.card_reader_payment_capturing_payment_header,
                 paymentStateLabel = R.string.card_reader_payment_capturing_payment_state,
-                illustration = R.drawable.common_full_open_on_phone
+                illustration = R.drawable.ic_card_reader
             )
 
         data class PaymentSuccessfulState(override val amountWithCurrencyLabel: String) :
             ViewState(
                 headerLabel = R.string.card_reader_payment_completed_payment_header,
-                illustration = R.drawable.common_full_open_on_phone
+                illustration = R.drawable.ic_celebration,
+                sendReceiptLabel = R.string.card_reader_payment_send_receipt,
+                printReceiptLabel = R.string.card_reader_payment_print_receipt
             )
     }
 
