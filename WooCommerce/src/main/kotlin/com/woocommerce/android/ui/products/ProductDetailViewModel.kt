@@ -998,12 +998,31 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun swapProductDraftAttributeTerms(attributeId: Long, attributeName: String, fromTerm: String, toTerm: String) {
         getDraftAttribute(attributeId, attributeName)?.let { attribute ->
-            val terms = attribute.terms
-            val fromIndex = terms.indexOf(fromTerm)
-            val toIndex = terms.indexOf(toTerm)
+            val mutableTerms = attribute.terms.toMutableList()
+            val fromIndex = mutableTerms.indexOf(fromTerm)
+            val toIndex = mutableTerms.indexOf(toTerm)
             if (fromIndex >= 0 && toIndex >= 0) {
-                Collections.swap(attribute.terms, fromIndex, toIndex)
-                updateAttributeInDraft(attribute)
+                Collections.swap(mutableTerms, fromIndex, toIndex)
+
+                // create a new attribute with the same properties except the new term list
+                val newAttribute = ProductAttribute(
+                    id = attributeId,
+                    name = attributeName,
+                    terms = mutableTerms,
+                    isVisible = attribute.isVisible,
+                    isVariation = attribute.isVariation
+                )
+
+                ArrayList<ProductAttribute>().also { updatedAttributes ->
+                    // create a list of draft attributes without the old one
+                    updatedAttributes.addAll(getProductDraftAttributes().filterNot { attribute ->
+                        attribute.id == attributeId && attribute.name == attributeName
+                    })
+
+                    // add the new attribute to the list and update the draft attributes
+                    updatedAttributes.add(newAttribute)
+                    updateProductDraft(attributes = updatedAttributes)
+                }
             }
         }
     }
