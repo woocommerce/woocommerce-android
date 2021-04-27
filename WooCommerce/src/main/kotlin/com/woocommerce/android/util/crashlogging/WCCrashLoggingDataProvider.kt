@@ -30,16 +30,12 @@ class WCCrashLoggingDataProvider @Inject constructor(
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
     override fun applicationContextProvider(): Map<String, String> {
-        with(selectedSite.getIfExists()) {
-            return if (this == null) {
-                emptyMap()
-            } else {
-                mapOf(
-                    SITE_ID_KEY to siteId.toString(),
-                    SITE_URL_KEY to url
-                )
-            }
-        }
+        return selectedSite.getIfExists()?.let {
+            mapOf(
+                SITE_ID_KEY to it.siteId.toString(),
+                SITE_URL_KEY to it.url
+            )
+        }.orEmpty()
     }
 
     override fun crashLoggingEnabled(): Boolean {
