@@ -188,6 +188,8 @@ class ProductListViewModel @AssistedInject constructor(
 
         viewState = viewState.copy(
             isEmptyViewVisible = products.isEmpty(),
+            /* if there are no products, hide Add Product button and use the empty view's button instead. */
+            isAddProductButtonVisible = products.isNotEmpty(),
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }
@@ -269,16 +271,11 @@ class ProductListViewModel @AssistedInject constructor(
             isLoading = false,
             isLoadingMore = false,
             isRefreshing = false,
-            isAddProductButtonVisible = true,
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            /* if there are no products, hide Add Product button and use the empty view's button instead. */
+            isAddProductButtonVisible = _productList.value?.isEmpty() == false,
             displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
-        )
-    }
-
-    fun hideAddProductButton() {
-        viewState = viewState.copy(
-            isAddProductButtonVisible = false
         )
     }
 
