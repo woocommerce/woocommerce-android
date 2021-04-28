@@ -1197,7 +1197,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
-        makeLocalAttributeVariationEnabled(attributeId)
+        enableLocalAttributeForVariations(attributeId)
         triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
     }
 
@@ -1286,14 +1286,17 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Converts a given Local Attribute to a Variation enabled one
      */
-    private fun makeLocalAttributeVariationEnabled(attributeId: Long) {
-        viewState.productDraft?.attributes?.toMutableList()?.apply {
-            indexOfFirst { it.id == attributeId }
+    private fun enableLocalAttributeForVariations(attributeId: Long) =
+        viewState.productDraft?.attributes?.let { attributes ->
+            attributes.indexOfFirst { it.id == attributeId }
                 .takeIf { it >= 0 }
-                ?.let { set(it, get(it).copy(isVariation = true)) }
-                ?.also { updateProductDraft(attributes = this) }
+                ?.let {
+                    attributes.toMutableList().apply {
+                        set(it, get(it).copy(isVariation = true))
+                        updateProductDraft(attributes = this)
+                    }
+                }
         }
-    }
 
     /**
      * Updates the product to the backend only if network is connected.
