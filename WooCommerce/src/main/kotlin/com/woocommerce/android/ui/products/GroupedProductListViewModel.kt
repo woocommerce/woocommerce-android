@@ -47,6 +47,8 @@ class GroupedProductListViewModel @AssistedInject constructor(
     private val selectedProductIds
         get() = productListViewState.selectedProductIds
 
+    var previousSelectedProductIds: List<Long>? = null
+
     val groupedProductListType
         get() = navArgs.groupedProductListType
 
@@ -67,6 +69,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
     fun getKeyForGroupedProductListType() = groupedProductListType.resultKey
 
     fun onProductsAdded(selectedProductIds: List<Long>) {
+        previousSelectedProductIds = selectedProductIds
         // ignore already added products
         val uniqueSelectedProductIds = selectedProductIds.minus(this.selectedProductIds)
         // TODO handle linked products
@@ -79,6 +82,9 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun onProductDeleted(product: Product) {
         // TODO handle linked products
+        if (previousSelectedProductIds == null) {
+            previousSelectedProductIds = selectedProductIds
+        }
         productListViewState = productListViewState.copy(
             selectedProductIds = selectedProductIds - product.remoteId
         )
@@ -89,6 +95,19 @@ class GroupedProductListViewModel @AssistedInject constructor(
     private fun updateProductList() {
         _productList.value = if (selectedProductIds.isNotEmpty()) {
             groupedProductListRepository.getProductList(selectedProductIds)
+        } else emptyList()
+    }
+
+    /**
+     * Helps in maintaining the position of the products in list
+     * on orientation change, after drag-and-drop
+     **/
+    fun updateReOrderedProductList(reorderedProductList: List<Product>) {
+        if (previousSelectedProductIds == null) {
+            previousSelectedProductIds = selectedProductIds
+        }
+        _productList.value = if (selectedProductIds.isNotEmpty()) {
+            reorderedProductList
         } else emptyList()
     }
 

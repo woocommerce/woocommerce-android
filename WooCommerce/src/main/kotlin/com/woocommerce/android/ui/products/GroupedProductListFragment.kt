@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
 import com.woocommerce.android.R
@@ -25,6 +26,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
@@ -38,7 +40,18 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
 
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
-        GroupedProductListAdapter(isEditMode = false, onItemDeleted = viewModel::onProductDeleted)
+        GroupedProductListAdapter(isEditMode = false, onItemDeleted = viewModel::onProductDeleted) { reOrderedProductList ->
+            viewModel.updateReOrderedProductList(reOrderedProductList)
+        }
+    }
+
+    private val itemTouchHelper by lazy {
+        DraggableItemTouchHelper(
+            dragDirs = ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            onMove = { from, to ->
+                productListAdapter.swapItems(from, to)
+            }
+        )
     }
 
     private var actionMode: ActionMode? = null
@@ -152,6 +165,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
     private fun setEditModeUI() {
         TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
         actionMode = requireActivity().startActionMode(actionModeCallback)
+        itemTouchHelper.attachToRecyclerView(binding.productsRecycler)
         binding.addGroupedProductView.isVisible = false
         productListAdapter.setEditMode(true)
     }
@@ -191,6 +205,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
         binding.addGroupedProductView.isVisible = true
         productListAdapter.setEditMode(false)
+        itemTouchHelper.attachToRecyclerView(null)
         actionMode = null
     }
 
