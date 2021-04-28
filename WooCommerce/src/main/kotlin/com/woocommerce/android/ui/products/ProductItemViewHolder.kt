@@ -29,6 +29,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
     private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
     private val selectedBackgroundColor = ContextCompat.getColor(context, R.color.color_primary)
     private val unSelectedBackgroundColor = ContextCompat.getColor(context, R.color.white)
+    private var isEditMode: Boolean = false
 
     fun bind(
         product: Product,
@@ -57,25 +58,31 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
 
         val firstImage = product.firstImageUrl
         val size: Int
-        when {
-            itemView.isActivated -> {
-                size = imageSize / 2
-                viewBinding.productImage.setImageResource(R.drawable.ic_menu_action_mode_check)
-                viewBinding.productImageFrame.setBackgroundColor(selectedBackgroundColor)
-            }
-            firstImage.isNullOrEmpty() -> {
-                size = imageSize / 2
-                viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
-                viewBinding.productImage.setImageResource(R.drawable.ic_product)
-            }
-            else -> {
-                size = imageSize
-                viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
-                val imageUrl = PhotonUtils.getPhotonImageUrl(firstImage, imageSize, imageSize)
-                GlideApp.with(context)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.ic_product)
-                    .into(viewBinding.productImage)
+        if (isEditMode) {
+            size = imageSize / 2
+            viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
+            viewBinding.productImage.setImageResource(R.drawable.ic_gridicons_align_justify)
+        } else {
+            when {
+                itemView.isActivated -> {
+                    size = imageSize / 2
+                    viewBinding.productImage.setImageResource(R.drawable.ic_menu_action_mode_check)
+                    viewBinding.productImageFrame.setBackgroundColor(selectedBackgroundColor)
+                }
+                firstImage.isNullOrEmpty() -> {
+                    size = imageSize / 2
+                    viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
+                    viewBinding.productImage.setImageResource(R.drawable.ic_product)
+                }
+                else -> {
+                    size = imageSize
+                    viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
+                    val imageUrl = PhotonUtils.getPhotonImageUrl(firstImage, imageSize, imageSize)
+                    GlideApp.with(context)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_product)
+                        .into(viewBinding.productImage)
+                }
             }
         }
 
@@ -158,4 +165,8 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             override fun getSelectionKey() = itemId
             override fun inSelectionHotspot(e: MotionEvent) = true
         }
+
+    fun setEditMode(mode: Boolean) {
+        isEditMode = mode
+    }
 }

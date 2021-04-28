@@ -42,6 +42,7 @@ class GroupedProductListAdapter(
         } else {
             holder.viewBinding.productBtnDelete.isVisible = false
         }
+        holder.setEditMode(isEditMode)
         holder.bind(product)
     }
 
