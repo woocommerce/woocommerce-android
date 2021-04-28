@@ -180,7 +180,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when collecting payment fails, then ui updated to failed state`() = runBlockingTest {
         whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
-            flow { emit(CollectingPaymentFailed) }
+            flow { emit(CollectingPaymentFailed(mock())) }
         }
 
         viewModel.start(cardReaderManager)
@@ -191,7 +191,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when processing payment fails, then ui updated to failed state`() = runBlockingTest {
         whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
-            flow { emit(ProcessingPaymentFailed) }
+            flow { emit(ProcessingPaymentFailed(mock())) }
         }
 
         viewModel.start(cardReaderManager)
@@ -202,7 +202,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when capturing payment fails, then ui updated to failed state`() = runBlockingTest {
         whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
-            flow { emit(CapturingPaymentFailed) }
+            flow { emit(CapturingPaymentFailed(mock())) }
         }
 
         viewModel.start(cardReaderManager)
