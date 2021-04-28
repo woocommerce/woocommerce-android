@@ -571,7 +571,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             secondTerm
         )
 
-        val draftAttribute = viewModel.getProductDraftAttributes()[0]
+        val draftAttribute = viewModel.productDraftAttributes[0]
         val draftTerms = draftAttribute.terms
         assertThat(draftTerms[0]).isEqualTo(secondTerm)
         assertThat(draftTerms[1]).isEqualTo(firstTerm)
