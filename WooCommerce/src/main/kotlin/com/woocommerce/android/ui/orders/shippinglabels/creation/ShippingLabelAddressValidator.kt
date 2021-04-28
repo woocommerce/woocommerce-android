@@ -6,13 +6,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult.InvalidAddress
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult.InvalidRequest
-import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress.Type
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
@@ -30,7 +29,7 @@ class ShippingLabelAddressValidator @Inject constructor(
             val result = withContext(Dispatchers.IO) {
                 shippingLabelStore.verifyAddress(
                     selectedSite.get(),
-                    address.toShippingLabelAddress(),
+                    address.toShippingLabelModel(),
                     type.toDataType()
                 )
             }
@@ -114,19 +113,5 @@ class ShippingLabelAddressValidator @Inject constructor(
                 DESTINATION -> Type.DESTINATION
             }
         }
-    }
-
-    private fun Address.toShippingLabelAddress(): ShippingLabelAddress {
-        return ShippingLabelAddress(
-            company = company,
-            name = "$firstName $lastName",
-            phone = phone,
-            country = country,
-            state = state,
-            address = address1,
-            address2 = address2,
-            city = city,
-            postcode = postcode
-        )
     }
 }

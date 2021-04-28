@@ -995,13 +995,37 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Returns the list of term names for a specific attribute assigned to the product
      */
     fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
-        val attributes = productDraftAttributes
-        attributes.forEach { attribute ->
-            if (attribute.name == attributeName) {
-                return attribute.terms
+        return getDraftAttribute(attributeId, attributeName)?.terms ?: emptyList()
+    }
+
+    /**
+     * Swaps two terms for a draft attribute
+     */
+    fun swapProductDraftAttributeTerms(attributeId: Long, attributeName: String, fromTerm: String, toTerm: String) {
+        getDraftAttribute(attributeId, attributeName)?.let { attribute ->
+            val mutableTerms = attribute.terms.toMutableList()
+            val fromIndex = mutableTerms.indexOf(fromTerm)
+            val toIndex = mutableTerms.indexOf(toTerm)
+            if (fromIndex >= 0 && toIndex >= 0) {
+                Collections.swap(mutableTerms, fromIndex, toIndex)
+                updateTermsForAttribute(attributeId, attributeName, mutableTerms)
             }
         }
-        return emptyList()
+    }
+
+    /**
+     * Updates (replaces) the terms for a single attribute in the product draft
+     */
+    private fun updateTermsForAttribute(attributeId: Long, attributeName: String, updatedTerms: List<String>) {
+        productDraftAttributes.map { attribute ->
+            if (attribute.id == attributeId && attribute.name == attributeName) {
+                attribute.copy(terms = updatedTerms)
+            } else {
+                attribute
+            }
+        }.also { attributesList ->
+            updateProductDraft(attributes = attributesList)
+        }
     }
 
     /**
@@ -1034,6 +1058,23 @@ class ProductDetailViewModel @AssistedInject constructor(
             })
 
             updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
+    /**
+     * Updates (replaces) a single attribute in the product draft
+     */
+    fun updateAttributeInDraft(attributeToUpdate: ProductAttribute) {
+        productDraftAttributes.map { attribute ->
+            if (attributeToUpdate.id == attribute.id && attributeToUpdate.name == attribute.name) {
+                attributeToUpdate
+            } else {
+                attribute
+            }
+        }.also { attributeList ->
+            if (productDraftAttributes != attributeList) {
+                updateProductDraft(attributes = attributeList)
+            }
         }
     }
 
@@ -1239,7 +1280,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productRepository.getGlobalAttributes()
 
     /**
-     * Returns true if an attribute with this name is assigned to the product draft
+     * Returns true if an attribute with this id & name is assigned to the product draft
      */
     private fun containsAttributeName(attributeName: String): Boolean {
         viewState.productDraft?.attributes?.forEach {
