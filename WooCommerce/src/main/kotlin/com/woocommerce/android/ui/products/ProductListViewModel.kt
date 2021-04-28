@@ -87,7 +87,7 @@ class ProductListViewModel @AssistedInject constructor(
     fun getSearchQuery() = viewState.query
 
     fun onSearchQueryChanged(query: String) {
-        viewState = viewState.copy(query = query, isEmptyViewVisible = false)
+        viewState = viewState.copy(query = query, isEmptyViewVisible = false, isAddProductButtonVisible = true)
 
         if (query.length > 2) {
             onSearchRequested()
