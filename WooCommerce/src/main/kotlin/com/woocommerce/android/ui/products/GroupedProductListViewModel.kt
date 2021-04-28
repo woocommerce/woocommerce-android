@@ -99,6 +99,18 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     /**
+     * Helps in restoring to previous state of product list if user
+     * clicks on back button while in edit mode. All of the operations
+     * done in edit mode will be discarded
+     **/
+    fun restorePreviousProductList(previousSelectedProductIds: List<Long>?) {
+        productListViewState = productListViewState.copy(
+            selectedProductIds = previousSelectedProductIds ?: selectedProductIds
+        )
+        updateProductList()
+    }
+
+    /**
      * Helps in maintaining the position of the products in list
      * on orientation change, after drag-and-drop
      **/
