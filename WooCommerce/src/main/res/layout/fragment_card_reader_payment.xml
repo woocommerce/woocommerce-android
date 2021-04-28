@@ -88,6 +88,18 @@
         tools:text="Tap or insert to pay" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/retry_btn"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
+        app:layout_constraintBottom_toTopOf="@id/print_receipt_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stub"
+        tools:text="Retry" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/send_receipt_btn"
         style="@style/Woo.Button.Colored"
         android:layout_width="0dp"
