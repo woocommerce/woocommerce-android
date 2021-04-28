@@ -1289,8 +1289,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun makeLocalAttributeVariationEnabled(attributeId: Long) {
         viewState.productDraft?.attributes?.toMutableList()?.apply {
             indexOfFirst { it.id == attributeId }
-                .let { set(it, get(it).copy(isVariation = true)) }
-            updateProductDraft(attributes = this)
+                .takeIf { it >= 0 }
+                ?.let { set(it, get(it).copy(isVariation = true)) }
+                ?.also { updateProductDraft(attributes = this) }
         }
     }
 
