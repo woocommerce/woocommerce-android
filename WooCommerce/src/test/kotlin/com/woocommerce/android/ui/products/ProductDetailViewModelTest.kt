@@ -30,12 +30,12 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.util.ProductUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -555,7 +555,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Re-ordering attribute terms is saved correctly`() {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         val storedProduct = product.copy(
-            type = ProductType.VARIABLE.value.toLowerCase(),
             attributes = ProductTestUtils.generateProductAttributeList()
         )
         doReturn(storedProduct).whenever(productRepository).getProduct(any())
