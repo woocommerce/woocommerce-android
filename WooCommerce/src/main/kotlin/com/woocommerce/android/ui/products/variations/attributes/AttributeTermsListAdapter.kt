@@ -15,7 +15,8 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
  * Adapter which shows a simple list of attribute term names
  */
 class AttributeTermsListAdapter(
-    private val showIcons: Boolean,
+    private val enableDragAndDrop: Boolean,
+    private val enableDeleting: Boolean,
     private val dragHelper: ItemTouchHelper? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
     interface OnTermListener {
@@ -126,13 +127,15 @@ class AttributeTermsListAdapter(
                 onTermListener.onTermClick(item)
             }
 
-            if (showIcons) {
+            if (enableDeleting) {
                 viewBinding.termDelete.setOnClickListener {
                     val item = termNames[adapterPosition]
                     removeTerm(item)
                     onTermListener.onTermDelete(item)
                 }
+            }
 
+            if (enableDragAndDrop) {
                 viewBinding.termDragHandle.setOnClickListener {
                     dragHelper?.startDrag(this)
                 }
@@ -141,8 +144,8 @@ class AttributeTermsListAdapter(
 
         fun bind(termName: String) {
             viewBinding.termName.text = termName
-            viewBinding.termDragHandle.isVisible = showIcons
-            viewBinding.termDelete.isVisible = showIcons
+            viewBinding.termDragHandle.isVisible = enableDragAndDrop
+            viewBinding.termDelete.isVisible = enableDeleting
         }
     }
 }

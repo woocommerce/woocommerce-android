@@ -221,14 +221,22 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
-        layoutManagerAssigned = initializeRecycler(binding.assignedTermList, showIcons = true)
+        layoutManagerAssigned = initializeRecycler(
+            binding.assignedTermList,
+            enableDragAndDrop = !isGlobalAttribute,
+            enableDeleting = true
+        )
         assignedTermsAdapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
         assignedTermsAdapter.setOnTermListener(assignedTermListener)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
             layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
-        layoutManagerGlobal = initializeRecycler(binding.globalTermList, showIcons = false)
+        layoutManagerGlobal = initializeRecycler(
+            binding.globalTermList,
+            enableDragAndDrop = false,
+            enableDeleting = false
+        )
         globalTermsAdapter = binding.globalTermList.adapter as AttributeTermsListAdapter
         globalTermsAdapter.setOnTermListener(globalTermListener)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
@@ -245,15 +253,19 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         }
     }
 
-    private fun initializeRecycler(recycler: RecyclerView, showIcons: Boolean): LinearLayoutManager {
+    private fun initializeRecycler(
+        recycler: RecyclerView,
+        enableDragAndDrop: Boolean,
+        enableDeleting: Boolean
+    ): LinearLayoutManager {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recycler.layoutManager = layoutManager
 
-        if (showIcons) {
-            recycler.adapter = AttributeTermsListAdapter(showIcons)
+        if (enableDragAndDrop) {
+            recycler.adapter = AttributeTermsListAdapter(enableDragAndDrop = true, enableDeleting = enableDeleting)
             itemTouchHelper.attachToRecyclerView(recycler)
         } else {
-            recycler.adapter = AttributeTermsListAdapter(showIcons)
+            recycler.adapter = AttributeTermsListAdapter(enableDragAndDrop = false, enableDeleting = enableDeleting)
         }
 
         recycler.addItemDecoration(
