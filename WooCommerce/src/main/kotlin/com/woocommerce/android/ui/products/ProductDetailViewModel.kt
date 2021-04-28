@@ -1197,6 +1197,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
+        makeLocalAttributeVariationEnabled(attributeId)
         triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
     }
 
@@ -1280,6 +1281,17 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         // take the user to the add attribute terms screen
         triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true))
+    }
+
+    /**
+     * Converts a given Local Attribute to a Variation enabled one
+     */
+    private fun makeLocalAttributeVariationEnabled(attributeId: Long) {
+        viewState.productDraft?.attributes?.toMutableList()?.apply {
+            indexOfFirst { it.id == attributeId }
+                .let { set(it, get(it).copy(isVariation = true)) }
+            updateProductDraft(attributes = this)
+        }
     }
 
     /**
