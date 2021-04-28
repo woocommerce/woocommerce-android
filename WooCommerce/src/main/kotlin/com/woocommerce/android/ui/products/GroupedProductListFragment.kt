@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
+import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -27,7 +28,8 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
-class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener {
+class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener,
+    OnActionModeEventListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -37,6 +39,11 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
         GroupedProductListAdapter(isEditMode = false, onItemDeleted = viewModel::onProductDeleted)
+    }
+
+    private var actionMode: ActionMode? = null
+    private val actionModeCallback: ProductEditActionModeCallback by lazy {
+        ProductEditActionModeCallback(this)
     }
 
     private var _binding: FragmentGroupedProductListBinding? = null
@@ -144,7 +151,50 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
 
     private fun setEditModeUI() {
         TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
+        actionMode = requireActivity().startActionMode(actionModeCallback)
         binding.addGroupedProductView.isVisible = false
         productListAdapter.setEditMode(true)
+    }
+
+    class ProductEditActionModeCallback(
+        private val onActionModeEventListener: OnActionModeEventListener
+    ) : ActionMode.Callback {
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.menu_done -> {
+                    onActionModeEventListener.onActionModeClicked()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            // display done menu button & back button
+            mode.menuInflater.inflate(R.menu.menu_action_mode_check, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu) = false
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            // exit from edit mode
+            onActionModeEventListener.onActionModeDestroyed()
+        }
+    }
+
+    override fun onActionModeCreated() {
+        // no-op
+    }
+
+    override fun onActionModeDestroyed() {
+        TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
+        binding.addGroupedProductView.isVisible = true
+        productListAdapter.setEditMode(false)
+        actionMode = null
+    }
+
+    override fun onActionModeClicked() {
+        actionMode?.finish()
     }
 }
