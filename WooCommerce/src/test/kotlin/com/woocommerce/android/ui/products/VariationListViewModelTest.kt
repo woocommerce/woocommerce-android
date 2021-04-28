@@ -63,10 +63,6 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays the product variation list view correctly`() {
         doReturn(variations).whenever(variationListRepository).getProductVariationList(productRemoteId)
-        mock<Product>().apply {
-            whenever(containsValidAttributesFor(any())).thenReturn(true)
-            whenever(productRepository.getProduct(productRemoteId)).thenReturn(this)
-        }
 
         createViewModel()
 
