@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -44,6 +47,8 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentGroupedProductListBinding.bind(view)
+
+        setHasOptionsMenu(true)
 
         setupObservers()
         setupResultHandlers()
@@ -120,4 +125,18 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
     }
 
     override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked()
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_edit, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_edit -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
