@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.Menu
@@ -87,7 +86,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
              * global term list
              */
             override fun onTermDelete(termName: String) {
-                viewModel.getProductDraftAttributes().find {
+                viewModel.productDraftAttributes.find {
                     it.isGlobalAttribute && it.id == navArgs.attributeId
                 }?.let { attribute ->
                     attribute.terms.find {
@@ -381,12 +380,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             requireActivity(),
             messageId = R.string.product_attribute_remove,
             positiveButtonId = R.string.remove,
-            posBtnAction = DialogInterface.OnClickListener { _, _ ->
+            posBtnAction = { _, _ ->
                 isConfirmRemoveDialogShowing = false
                 removeAttribute()
             },
             negativeButtonId = R.string.cancel,
-            negBtnAction = DialogInterface.OnClickListener { _, _ ->
+            negBtnAction = { _, _ ->
                 isConfirmRemoveDialogShowing = false
             }
         )
