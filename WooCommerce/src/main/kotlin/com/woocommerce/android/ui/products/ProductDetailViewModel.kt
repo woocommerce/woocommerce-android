@@ -1060,17 +1060,19 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateAttributeInDraft(attribute: ProductAttribute) {
-        ArrayList<ProductAttribute>().also { updatedAttributes ->
-            // create a list of draft attributes without the old one
-            updatedAttributes.addAll(getProductDraftAttributes().filterNot {
-                attribute.id == it.id && attribute.name == it.name
-            })
-
-            if (updatedAttributes.size < getProductDraftAttributes().size) {
-                // add the renamed attribute to the list and update the draft attributes
-                updatedAttributes.add(attribute)
-                updateProductDraft(attributes = updatedAttributes)
+    /**
+     * Updates (replaces) a single attribute in the product draft
+     */
+    fun updateAttributeInDraft(attributeToUpdate: ProductAttribute) {
+        getProductDraftAttributes().map { attribute ->
+            if (attributeToUpdate.id == attribute.id && attributeToUpdate.name == attribute.name) {
+                attributeToUpdate
+            } else {
+                attribute
+            }
+        }.also { attributeList ->
+            if (getProductDraftAttributes() != attributeList) {
+                updateProductDraft(attributes = attributeList)
             }
         }
     }
