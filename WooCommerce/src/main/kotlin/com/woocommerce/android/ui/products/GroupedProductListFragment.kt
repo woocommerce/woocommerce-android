@@ -180,6 +180,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         actionMode = requireActivity().startActionMode(actionModeCallback)
         itemTouchHelper.attachToRecyclerView(binding.productsRecycler)
         binding.addGroupedProductView.isVisible = false
+        actionMode?.title = getString(R.string.edit)
         viewModel.isEditMode = true
         productListAdapter.setEditMode(true)
     }
