@@ -49,6 +49,9 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     var previousSelectedProductIds: List<Long>? = null
 
+    // Indicates whether the screen is in edit mode or not
+    var isEditMode: Boolean = false
+
     val groupedProductListType
         get() = navArgs.groupedProductListType
 
@@ -69,13 +72,13 @@ class GroupedProductListViewModel @AssistedInject constructor(
     fun getKeyForGroupedProductListType() = groupedProductListType.resultKey
 
     fun onProductsAdded(selectedProductIds: List<Long>) {
-        previousSelectedProductIds = selectedProductIds
         // ignore already added products
         val uniqueSelectedProductIds = selectedProductIds.minus(this.selectedProductIds)
         // TODO handle linked products
         productListViewState = productListViewState.copy(
             selectedProductIds = this.selectedProductIds + uniqueSelectedProductIds
         )
+        previousSelectedProductIds = productListViewState.selectedProductIds
         track(ConnectedProductsListAction.ADDED)
         updateProductList()
     }
