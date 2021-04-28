@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
+import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
@@ -30,10 +31,13 @@ internal class CardReaderManagerImpl(
     companion object {
         private const val TAG = "CardReaderManager"
     }
+
     private lateinit var application: Application
 
     override val isInitialized: Boolean
-        get() { return terminal.isInitialized() }
+        get() {
+            return terminal.isInitialized()
+        }
 
     override val readerStatus: MutableStateFlow<CardReaderStatus> = connectionManager.readerStatus
 
@@ -76,6 +80,9 @@ internal class CardReaderManagerImpl(
 
     override suspend fun collectPayment(amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
         paymentManager.acceptPayment(amount, currency)
+
+    override suspend fun retryCollectPayment(paymentData: PaymentData): Flow<CardPaymentStatus> =
+        paymentManager.retry(paymentData)
 
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
