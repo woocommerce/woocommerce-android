@@ -63,6 +63,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
+    private lateinit var dateUtils: DateUtils
 
     private var revenueStatsModel: WCRevenueStatsModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
@@ -113,12 +114,14 @@ class MyStoreStatsView @JvmOverloads constructor(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: MyStoreStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: FormatCurrencyRounded
+        formatCurrencyForDisplay: FormatCurrencyRounded,
+        dateUtils: DateUtils
     ) {
         this.listener = listener
         this.selectedSite = selectedSite
         this.activeGranularity = period
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
+        this.dateUtils = dateUtils
 
         initChart()
 
@@ -513,10 +516,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private fun getEntryValue(dateString: String): String {
         return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils().getShortHourString(dateString).orEmpty()
+            StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
             StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
             StatsGranularity.MONTHS -> dateString.formatToMonthDateOnly()
-            StatsGranularity.YEARS -> DateUtils().getShortMonthString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
         }
     }
 
@@ -588,10 +591,10 @@ class MyStoreStatsView @JvmOverloads constructor(
          */
         private fun getLabelValue(dateString: String): String {
             return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils().getShortHourString(dateString).orEmpty()
+                StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
                 StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
                 StatsGranularity.MONTHS -> dateString.formatToDateOnly()
-                StatsGranularity.YEARS -> DateUtils().getShortMonthString(dateString).orEmpty()
+                StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
             }
         }
 

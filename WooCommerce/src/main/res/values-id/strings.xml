@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-01 09:54:04+0000
+Translation-Revision-Date: 2021-04-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">Tidak ingin membuat akun baru? Silakan kembali dan masukkan lagi alamat email Anda.</string>
+    <string name="settings_card_reader_connect">Hubungkan pembaca kartu</string>
+    <string name="settings_card_reader">Kelola pembaca kartu</string>
+    <string name="settings_store">Pengaturan toko</string>
+    <string name="product_attributes">Atribut</string>
+    <string name="order_refunds_shipping_refund_variable_notice">Anda dapat menerima pengembalian dana%1$s</string>
+    <string name="orderdetail_collect_payment_button">Terima Pembayaran</string>
+    <string name="and">dan</string>
+    <string name="product_attribute_remove">Hapus atribut ini?</string>
+    <string name="product_any_attribute_hint">Sembarang</string>
     <string name="product_attributes_error_saving">Terjadi error saat menyimpan atribut Anda</string>
     <string name="shipping_label_payments_cant_edit_warning">Hanya pemilik situs yang dapat mengelola metode pembayaran label pengiriman. Silakan hubungi Pemilik Toko %1$s (%2$s) untuk mengelola metode pembayaran.</string>
     <string name="product_detail_add_variations">Tambah variasi</string>
@@ -91,7 +101,6 @@ Language: id
     <string name="shipping_label_edit_address_loading_progress_title">Memuat data alamat</string>
     <string name="product_wip_title_m5">Tersedia fitur baru!</string>
     <string name="product_wip_message_m5">Sekarang Anda dapat menambahkan file yang dapat diunduh ke produk dan menautkan produk upsell &amp; cross-sell. Tidak lagi ingin menampilkan produk? Hapus!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Anda dapat mengembalikan dana, pengiriman, dan jumlah pajak %s</string>
     <string name="shipping_label_validation_view_map">Buka Peta</string>
     <string name="shipping_label_validation_contact_customer">Hubungi Pelanggan</string>
     <string name="shipping_label_validation_error_template">Validasi gagal: %s</string>
@@ -135,7 +144,6 @@ Language: id
     <string name="order_mark_complete">Tandai pesanan selesai</string>
     <string name="orderdetail_shipping_label_notice">Pelajari selengkapnya tentang membuat label menggunakan ponsel</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Buat label pengiriman</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">Sekarang Anda dapat membuat label pengiriman untuk semua pesanan fisik langsung dari perangkat Anda dengan plugin WooCommerce Shipping gratis. Ketuk \"Buat label pengiriman\" untuk mencoba!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Buat label pengiriman dari perangkat Anda!</string>
     <string name="orderdetail_payment_fees">Biaya</string>
     <string name="orderdetail_net">Pembayaran Bersih</string>
@@ -471,7 +479,6 @@ Language: id
     <string name="product_schedule_sale_sublabel">Otomatis mulai dan akhiri penjualan</string>
     <string name="product_schedule_sale_label">Jadwalkan obral</string>
     <string name="order_refunds_store_admin_link_text">di admin toko Anda</string>
-    <string name="order_refunds_shipping_refund_notice">Anda dapat mengembalikan dana pengiriman dan jumlah pajak %s</string>
     <string name="orders_empty_message_with_order_status_filter">Maaf, kami tidak dapat menemukan pesanan \"%s\"</string>
     <string name="product_inventory_update_sku_error">SKU telah digunakan oleh produk lain</string>
     <string name="product_shipping_settings">Pengaturan pengiriman</string>

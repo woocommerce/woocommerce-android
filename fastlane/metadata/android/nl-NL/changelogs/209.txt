@@ -1,0 +1,4 @@
+6.4:
+We made a few improvements in this release.
+We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
+We also fixed a layout issue that occurred on the shipping label formats option screen.

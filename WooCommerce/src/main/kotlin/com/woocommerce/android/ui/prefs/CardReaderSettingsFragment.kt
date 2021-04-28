@@ -9,20 +9,28 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.NotStarted
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
+import com.woocommerce.android.extensions.navigateSafely
 import kotlinx.coroutines.flow.collect
 import org.wordpress.android.util.AppLog
 
+// TODO cardreader update this comment
+/**
+ * This fragment currently contains a UI for testing purposes. However, this will change and its only job will be to
+ * determine if there is a connected card reader and redirect the user either to CardReaderConnectFragment
+ * or CardReaderDetailFragment.
+ */
 class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_reader) {
     companion object {
         const val TAG = "card-reader-settings"
@@ -62,30 +70,14 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
             }
             startObserving(binding)
         }
+        binding.redirectToConnectFragment.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_cardReaderSettingsFragment_to_cardReaderConnectFragment)
+        }
     }
 
     private fun startObserving(binding: FragmentSettingsCardReaderBinding) {
         (requireActivity().application as? WooCommerce)?.let { application ->
             // TODO cardreader Move this into a VM
-            lifecycleScope.launchWhenResumed {
-                application.cardReaderManager?.discoveryEvents?.collect { event ->
-                    AppLog.d(AppLog.T.MAIN, event.toString())
-                    when (event) {
-                        NotStarted, Started, is Failed -> {
-                            Snackbar.make(
-                                requireView(),
-                                event.javaClass.simpleName,
-                                BaseTransientBottomBar.LENGTH_SHORT
-                            ).show()
-                        }
-                        is ReadersFound -> {
-                            if (event.list.isNotEmpty()) {
-                                getCardReaderManager()?.connectToReader(event.list[0])
-                            }
-                        }
-                    }
-                }
-            }
             lifecycleScope.launchWhenResumed {
                 application.cardReaderManager?.readerStatus?.collect { status ->
                     binding.connectionStatus.text = status.name
@@ -108,8 +100,31 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                 cardReaderManager.initialize(requireActivity().application)
             }
             lifecycleScope.launchWhenResumed {
-                // TODO cardreader make sure to cancel the discovery when the user leaves the activity/app
-                cardReaderManager.startDiscovery(isSimulated = simulated)
+                cardReaderManager.discoverReaders(isSimulated = simulated).collect { event ->
+                    AppLog.d(AppLog.T.MAIN, event.toString())
+                    when (event) {
+                        Started -> {
+                            Snackbar.make(
+                                requireView(),
+                                event.javaClass.simpleName,
+                                BaseTransientBottomBar.LENGTH_SHORT
+                            ).show()
+                        }
+                        Succeeded, is Failed -> {
+                            // no-op
+                        }
+                        is ReadersFound -> {
+                            if (event.list.isNotEmpty()) {
+                                val success = getCardReaderManager()?.connectToReader(event.list[0]) ?: false
+                                Snackbar.make(
+                                    requireView(),
+                                    "Connecting to reader ${if (success) "succeeded" else "failed"}",
+                                    BaseTransientBottomBar.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
+import java.util.Locale
 
 @Module
 class AppConfigModule {
@@ -19,6 +20,9 @@ class AppConfigModule {
 
     @Provides
     fun provideUserAgent(appContext: Context) = UserAgent(appContext, USER_AGENT_APPNAME)
+
+    @Provides
+    fun provideDefaultLocale(): Locale = Locale.getDefault()
 
     @Provides
     fun providesAppPrefs(appContext: Context): AppPrefs {

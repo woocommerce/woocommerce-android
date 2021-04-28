@@ -1,7 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
 
 /**
@@ -16,8 +16,8 @@ data class ProductAttribute(
     val isVariation: Boolean = DEFAULT_IS_VARIATION
 ) : Parcelable {
     companion object {
-        val DEFAULT_VISIBLE = true
-        val DEFAULT_IS_VARIATION = false
+        const val DEFAULT_VISIBLE = true
+        const val DEFAULT_IS_VARIATION = true
     }
 
     /**

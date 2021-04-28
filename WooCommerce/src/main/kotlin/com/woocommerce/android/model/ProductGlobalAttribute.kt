@@ -1,7 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 
 /**
@@ -42,7 +42,8 @@ data class ProductGlobalAttribute(
             id = this.remoteId,
             name = this.name,
             terms = terms,
-            isVisible = true
+            isVisible = ProductAttribute.DEFAULT_VISIBLE,
+            isVariation = ProductAttribute.DEFAULT_IS_VARIATION
         )
     }
 }

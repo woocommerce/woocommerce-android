@@ -91,7 +91,6 @@ Language: nl
     <string name="shipping_label_edit_address_loading_progress_title">Adresgegevens worden geladen</string>
     <string name="product_wip_title_m5">Nieuwe functies beschikbaar!</string>
     <string name="product_wip_message_m5">Je kan nu downloadbare bestanden aan een product toevoegen en upsell- en cross-sell-producten koppelen. Wil je een product niet meer? Verplaats het naar de prullenbak!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Je kan tarieven, verzend- en belastingkosten restitueren %s</string>
     <string name="shipping_label_validation_view_map">Kaart openen</string>
     <string name="shipping_label_validation_contact_customer">Contact opnemen met klant</string>
     <string name="shipping_label_validation_error_template">Validatie mislukt: %s</string>
@@ -135,7 +134,6 @@ Language: nl
     <string name="order_mark_complete">Bestelling markeren als voltooid</string>
     <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je telefoon aanmaken</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Verzendlabel aanmaken</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">Je kan nu verzendlabels rechtstreeks vanaf je apparaat aanmaken voor alle fysieke bestellingen met de gratis WooCommerce Shipping-plugin. Tik op \'Verzendlabel aanmaken\' om te proberen!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Maak verzendlabels vanaf je apparaat!!</string>
     <string name="orderdetail_payment_fees">Toeslagen</string>
     <string name="orderdetail_net">Netto betaling</string>
@@ -471,7 +469,6 @@ Language: nl
     <string name="product_schedule_sale_sublabel">Uitverkoop automatisch beginnen en beëindigen</string>
     <string name="product_schedule_sale_label">Uitverkoop inplannen</string>
     <string name="order_refunds_store_admin_link_text">in je winkelbeheer</string>
-    <string name="order_refunds_shipping_refund_notice">Je kunt verzend- en belastingkosten restitueren %s</string>
     <string name="orders_empty_message_with_order_status_filter">Helaas kunnen we geen bestellingen voor \'%s\' vinden</string>
     <string name="product_inventory_update_sku_error">SKU wordt al door een ander product gebruikt</string>
     <string name="product_shipping_settings">Verzendinstellingen</string>

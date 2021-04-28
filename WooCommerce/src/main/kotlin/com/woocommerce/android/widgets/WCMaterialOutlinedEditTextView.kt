@@ -14,6 +14,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ViewMaterialOutlinedEdittextBinding
+import org.wordpress.android.util.ActivityUtils
 
 /**
  * Custom View that encapsulates a [TextInputLayout] and [TextInputEditText], and as such has the following
@@ -108,6 +109,17 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
 
     fun setMaxLength(max: Int) {
         binding.editText.filters += InputFilter.LengthFilter(max)
+    }
+
+    fun showKeyboard(selectAll: Boolean = false) {
+        if (binding.editText.requestFocus()) {
+            if (selectAll) {
+                binding.editText.selectAll()
+            }
+            binding.editText.postDelayed({
+                ActivityUtils.showKeyboard(binding.editText)
+            }, 100)
+        }
     }
 
     override fun onSaveInstanceState(): Parcelable? {

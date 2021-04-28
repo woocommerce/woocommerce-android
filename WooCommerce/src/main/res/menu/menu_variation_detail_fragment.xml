@@ -6,4 +6,9 @@
         android:title="@string/update"
         app:showAsAction="ifRoom"
         android:visible="false"/>
+    <item
+        android:id="@+id/menu_delete"
+        android:title="@string/delete"
+        app:showAsAction="never"
+        android:visible="true"/>
 </menu>

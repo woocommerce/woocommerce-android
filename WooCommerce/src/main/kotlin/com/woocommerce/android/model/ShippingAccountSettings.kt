@@ -1,7 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingAccountSettings
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.util.Date

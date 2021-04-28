@@ -11,12 +11,10 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_064"
+msgctxt "release_note_065"
 msgid ""
-"6.4:\n"
-"We made a few improvements in this release.\n"
-"We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.\n"
-"We also fixed a layout issue that occurred on the shipping label formats option screen.\n"
+"6.5:\n"
+"We have a shiny new feature available for beta testing! US-based merchants can create shipping labels for physical orders right from the app (for US destinations only). We've also fixed some bugs: expired shipping labels now display more accurate information, and the on-screen keyboard won't disappear when searching your order list.\n"
 msgstr ""
 
 msgctxt "release_note_063"

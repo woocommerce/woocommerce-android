@@ -49,6 +49,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var navigator: OrderNavigator
+    @Inject lateinit var dateUtils: DateUtils
 
     private val viewModel: AddOrderShipmentTrackingViewModel by viewModels { viewModelFactory }
 
@@ -115,7 +116,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
             }
 
             new.date.takeIfNotEqualTo(old?.date) {
-                DateUtils().getLocalizedLongDateString(requireActivity(), it)
+                dateUtils.getLocalizedLongDateString(requireActivity(), it)
                     .let { localizedString ->
                         binding.date.setText(localizedString.orEmpty())
                     }

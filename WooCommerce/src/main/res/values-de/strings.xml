@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-01 09:54:04+0000
+Translation-Revision-Date: 2021-04-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">Du wolltest kein neues Konto erstellen? Gehe zurück und gib deine E-Mail-Adresse erneut ein.</string>
+    <string name="settings_card_reader_connect">Kartenlesegerät verbinden</string>
+    <string name="settings_card_reader">Kartenlesegerät verwalten</string>
+    <string name="settings_store">Store-Einstellungen</string>
+    <string name="product_attributes">Eigenschaften</string>
+    <string name="order_refunds_shipping_refund_variable_notice">Du kannst %1$s rückerstatten</string>
+    <string name="orderdetail_collect_payment_button">Zahlung empfangen</string>
+    <string name="and">und</string>
+    <string name="product_attribute_remove">Diese Eigenschaft entfernen?</string>
+    <string name="product_any_attribute_hint">Jede</string>
     <string name="product_attributes_error_saving">Fehler beim Speichern deiner Attribute</string>
     <string name="shipping_label_payments_cant_edit_warning">Nur der Website-Betreiber kann die Zahlungsmethoden für Versandetiketten verwalten. Wende dich zur Verwaltung der Zahlungsmethoden bitte an den Website-Betreiber %1$s (%2$s).</string>
     <string name="product_detail_add_variations">Varianten hinzufügen</string>
@@ -91,7 +101,6 @@ Language: de
     <string name="shipping_label_edit_address_loading_progress_title">Adressdaten werden geladen</string>
     <string name="product_wip_title_m5">Neue Funktionen verfügbar!</string>
     <string name="product_wip_message_m5">Du kannst jetzt herunterladbare Dateien zu einem Produkt hinzufügen und Upsell- und Cross-Sell-Produkte verlinken. Du willst ein Produkt nicht mehr? Lege es in den Papierkorb.</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Du kannst Gebühren, Versand- und Steuerbeträge %s rückerstatten</string>
     <string name="shipping_label_validation_view_map">Karte öffnen</string>
     <string name="shipping_label_validation_contact_customer">Kunden kontaktieren</string>
     <string name="shipping_label_validation_error_template">Validierung fehlgeschlagen: %s</string>
@@ -135,7 +144,6 @@ Language: de
     <string name="order_mark_complete">Bestellung als abgeschlossen markieren</string>
     <string name="orderdetail_shipping_label_notice">Weitere Informationen zum Erstellen von Etiketten mit deinem Mobiltelefon</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Versandetikett erstellen</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">Mit dem kostenlosen WooCommerce Shipping-Plugin kannst du jetzt Versandetiketten für sämtliche Artikelbestellungen direkt über dein Gerät drucken. Tippe auf „Versandetikett erstellen“ und probiere es aus!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Erstelle Versandetiketten über dein Gerät!</string>
     <string name="orderdetail_payment_fees">Gebühren</string>
     <string name="orderdetail_net">Nettozahlung</string>
@@ -471,7 +479,6 @@ Language: de
     <string name="product_schedule_sale_sublabel">Verkauf automatisch beginnen und beenden</string>
     <string name="product_schedule_sale_label">Verkauf planen</string>
     <string name="order_refunds_store_admin_link_text">in deiner Shop-Administration</string>
-    <string name="order_refunds_shipping_refund_notice">Du kannst Versand- und Steuerbeträge %s rückerstatten</string>
     <string name="orders_empty_message_with_order_status_filter">Leider wurden für „%s“ keine Bestellungen gefunden</string>
     <string name="product_inventory_update_sku_error">Diese SKU wird bereits für ein anderes Produkt verwendet</string>
     <string name="product_shipping_settings">Einstellungen für den Versand</string>

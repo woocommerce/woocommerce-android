@@ -7,7 +7,7 @@ import com.google.i18n.addressinput.common.FormatInterpreter
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 import java.util.Locale
 
@@ -83,6 +83,9 @@ data class Address(
 
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
+            company = company,
+            name = "$firstName $lastName",
+            phone = phone,
             address = address1,
             address2 = address2,
             city = city,
