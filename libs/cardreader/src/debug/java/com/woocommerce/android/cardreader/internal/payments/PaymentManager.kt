@@ -2,6 +2,7 @@ package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus
+import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
@@ -16,6 +17,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.UnexpectedError
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
@@ -57,18 +59,34 @@ internal class PaymentManager(
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
+        processPaymentIntent(paymentIntent).collect { emit(it) }
+    }
 
-        paymentIntent = collectPayment(paymentIntent)
-        if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CONFIRMATION) {
+    fun retryPayment(paymentData: PaymentData) = processPaymentIntent((paymentData as PaymentDataImpl).paymentIntent)
+
+    private fun processPaymentIntent(data: PaymentIntent) = flow {
+        var paymentIntent = data
+        if (paymentIntent.status == null && paymentIntent.status == CANCELED) {
+            emit(UnexpectedError("Cannot retry paymentIntent with status ${paymentIntent.status}"))
             return@flow
         }
 
-        paymentIntent = processPayment(paymentIntent)
-        if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE) {
-            return@flow
+        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
+            paymentIntent = collectPayment(paymentIntent)
+            if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CONFIRMATION) {
+                return@flow
+            }
+        }
+        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION) {
+            paymentIntent = processPayment(paymentIntent)
+            if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE) {
+                return@flow
+            }
         }
 
-        capturePayment(cardReaderStore, paymentIntent)
+        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
+            capturePayment(cardReaderStore, paymentIntent)
+        }
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(
@@ -95,7 +113,10 @@ internal class PaymentManager(
             when (it) {
                 is DisplayMessageRequested -> emit(ShowAdditionalInfo)
                 is ReaderInputRequested -> emit(WaitingForInput)
-                is CollectPaymentStatus.Failure -> emit(CollectingPaymentFailed)
+                is CollectPaymentStatus.Failure -> {
+                    val paymentIntentForRetry = it.exception.paymentIntent ?: paymentIntent
+                    emit(CollectingPaymentFailed(PaymentDataImpl(paymentIntentForRetry)))
+                }
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -109,7 +130,10 @@ internal class PaymentManager(
         emit(ProcessingPayment)
         processPaymentAction.processPayment(paymentIntent).collect {
             when (it) {
-                is ProcessPaymentStatus.Failure -> emit(ProcessingPaymentFailed)
+                is ProcessPaymentStatus.Failure -> {
+                    val paymentIntentForRetry = it.exception.paymentIntent ?: paymentIntent
+                    emit(ProcessingPaymentFailed(PaymentDataImpl(paymentIntentForRetry)))
+                }
                 is ProcessPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -125,7 +149,7 @@ internal class PaymentManager(
         if (success) {
             emit(PaymentCompleted)
         } else {
-            emit(CapturingPaymentFailed)
+            emit(CapturingPaymentFailed(PaymentDataImpl(paymentIntent)))
         }
     }
 
@@ -142,3 +166,5 @@ internal class PaymentManager(
     // TODO Add Support for other currencies
     private fun isSupportedCurrency(currency: String): Boolean = currency.toLowerCase() == USD_CURRENCY
 }
+
+data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData
