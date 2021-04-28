@@ -129,4 +129,36 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
             productData?.selectedProductIds?.size
         )
     }
+
+    @Test
+    fun `Displays previously selected product list correctly after canceling edit mode`() {
+
+        // Given
+        createViewModel()
+        val previousSelectedProductIds = listOf(1L, 2L, 3L, 4L, 5L)
+        var productData: GroupedProductListViewState? = null
+        viewModel.productListViewStateData.observeForever { _, new -> productData = new }
+
+        // When
+        viewModel.restorePreviousProductList(previousSelectedProductIds)
+
+        // Then
+        assertThat(previousSelectedProductIds).isEqualTo(productData?.selectedProductIds)
+    }
+
+    @Test
+    fun `Displays current product list if previously selected list is null after canceling edit mode`() {
+
+        // Given
+        createViewModel()
+        val previousSelectedProductIds = null
+        var productData: GroupedProductListViewState? = null
+        viewModel.productListViewStateData.observeForever { _, new -> productData = new }
+
+        // When
+        viewModel.restorePreviousProductList(previousSelectedProductIds)
+
+        // Then
+        assertThat(groupedProductIds).isEqualTo(productData?.selectedProductIds)
+    }
 }
