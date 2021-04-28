@@ -113,7 +113,10 @@ internal class PaymentManager(
             when (it) {
                 is DisplayMessageRequested -> emit(ShowAdditionalInfo)
                 is ReaderInputRequested -> emit(WaitingForInput)
-                is CollectPaymentStatus.Failure -> emit(CollectingPaymentFailed)
+                is CollectPaymentStatus.Failure -> {
+                    val paymentIntentForRetry = it.exception.paymentIntent ?: paymentIntent
+                    emit(CollectingPaymentFailed(PaymentDataImpl(paymentIntentForRetry)))
+                }
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -127,7 +130,10 @@ internal class PaymentManager(
         emit(ProcessingPayment)
         processPaymentAction.processPayment(paymentIntent).collect {
             when (it) {
-                is ProcessPaymentStatus.Failure -> emit(ProcessingPaymentFailed)
+                is ProcessPaymentStatus.Failure -> {
+                    val paymentIntentForRetry = it.exception.paymentIntent ?: paymentIntent
+                    emit(ProcessingPaymentFailed(PaymentDataImpl(paymentIntentForRetry)))
+                }
                 is ProcessPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -143,7 +149,7 @@ internal class PaymentManager(
         if (success) {
             emit(PaymentCompleted)
         } else {
-            emit(CapturingPaymentFailed)
+            emit(CapturingPaymentFailed(PaymentDataImpl(paymentIntent)))
         }
     }
 
