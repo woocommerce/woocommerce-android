@@ -165,9 +165,9 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
             override val amountWithCurrencyLabel: String?,
             override val onRetryClicked: (() -> Unit)
         ) : ViewState(
-            headerLabel = R.string.card_reader_payment_payment_failed_state,
+            headerLabel = R.string.card_reader_payment_payment_failed_header,
             // TODO cardreader use a different label based on the type of the error
-            paymentStateLabel = R.string.card_reader_payment_failed_unexpected_error,
+            paymentStateLabel = R.string.card_reader_payment_failed_unexpected_error_state,
             retryLabel = R.string.retry,
             // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
