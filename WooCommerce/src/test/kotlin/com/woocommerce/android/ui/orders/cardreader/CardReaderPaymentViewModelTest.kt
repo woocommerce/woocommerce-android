@@ -29,10 +29,13 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.woocommerce.android.viewmodel.TestDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -46,6 +49,7 @@ import org.wordpress.android.fluxc.utils.AppLogWrapper
 
 private const val DUMMY_TOTAL = "10.12"
 
+@InternalCoroutinesApi
 @ExperimentalCoroutinesApi
 class CardReaderPaymentViewModelTest : BaseUnitTest() {
     companion object {
@@ -72,7 +76,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun setUp() = runBlockingTest {
         viewModel = CardReaderPaymentViewModel(
             savedState,
-            dispatchers = coroutinesTestRule.testDispatchers,
+            dispatchers = CoroutineDispatchers(TestDispatcher,TestDispatcher,TestDispatcher),
             logger = loggerWrapper,
             orderStore = orderStore
         )

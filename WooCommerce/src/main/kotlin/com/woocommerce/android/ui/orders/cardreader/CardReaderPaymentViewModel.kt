@@ -34,6 +34,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -41,6 +42,8 @@ import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T
 import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
+
+private const val ARTIFICIAL_RETRY_DELAY = 500L
 
 class CardReaderPaymentViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -89,6 +92,8 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
 
     fun retry(paymentData: PaymentData, amountLabel: String) {
         paymentFlowJob = launch {
+            viewState.postValue((LoadingDataState))
+            delay(ARTIFICIAL_RETRY_DELAY)
             cardReaderManager.retryCollectPayment(paymentData).collect { paymentStatus ->
                 onPaymentStatusChanged(paymentStatus, amountLabel)
             }
