@@ -62,7 +62,7 @@ internal class PaymentManager(
         processPaymentIntent(paymentIntent).collect { emit(it) }
     }
 
-    fun retry(paymentData: PaymentData) = processPaymentIntent((paymentData as PaymentDataImpl).paymentIntent)
+    fun retryPayment(paymentData: PaymentData) = processPaymentIntent((paymentData as PaymentDataImpl).paymentIntent)
 
     private fun processPaymentIntent(data: PaymentIntent) = flow {
         var paymentIntent = data

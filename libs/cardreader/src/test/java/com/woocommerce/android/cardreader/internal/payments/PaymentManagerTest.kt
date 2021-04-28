@@ -373,7 +373,7 @@ class PaymentManagerTest {
             }
             val paymentData = PaymentDataImpl(paymentIntent)
 
-            val result = manager.retry(paymentData).first()
+            val result = manager.retryPayment(paymentData).first()
 
             assertThat(result).isInstanceOf(CollectingPayment::class.java)
         }
@@ -386,7 +386,7 @@ class PaymentManagerTest {
             }
             val paymentData = PaymentDataImpl(paymentIntent)
 
-            val result = manager.retry(paymentData).first()
+            val result = manager.retryPayment(paymentData).first()
 
             assertThat(result).isInstanceOf(ProcessingPayment::class.java)
         }
@@ -399,7 +399,7 @@ class PaymentManagerTest {
             }
             val paymentData = PaymentDataImpl(paymentIntent)
 
-            val result = manager.retry(paymentData).first()
+            val result = manager.retryPayment(paymentData).first()
 
             assertThat(result).isInstanceOf(CapturingPayment::class.java)
         }
