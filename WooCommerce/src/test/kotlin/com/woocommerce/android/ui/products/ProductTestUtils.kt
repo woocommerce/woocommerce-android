@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.ProductVariation
@@ -121,4 +122,29 @@ object ProductTestUtils {
 
     fun generateProductImagesList() =
             (1L..10L).map { id -> generateProductImage(imageId = id) }
+
+    fun generateProductAttribute(id: Long): ProductAttribute {
+        return ProductAttribute(
+            id = id,
+            name = "attribute$id",
+            isVariation = true,
+            isVisible = true,
+            terms = ArrayList<String>().also {
+                it.add("one")
+                it.add("two")
+                it.add("three")
+            }
+        )
+    }
+
+    fun generateProductAttributeList(): List<ProductAttribute> {
+        with(ArrayList<ProductAttribute>()) {
+            add(generateProductAttribute(1))
+            add(generateProductAttribute(2))
+            add(generateProductAttribute(3))
+            add(generateProductAttribute(4))
+            add(generateProductAttribute(5))
+            return this
+        }
+    }
 }
