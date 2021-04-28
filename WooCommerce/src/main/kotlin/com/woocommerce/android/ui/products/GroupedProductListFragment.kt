@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.TransitionManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentGroupedProductListBinding
@@ -134,9 +135,15 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit -> {
+                setEditModeUI()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun setEditModeUI() {
+        TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
+        binding.addGroupedProductView.isVisible = false
     }
 }
