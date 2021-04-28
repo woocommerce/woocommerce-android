@@ -76,7 +76,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun setUp() = runBlockingTest {
         viewModel = CardReaderPaymentViewModel(
             savedState,
-            dispatchers = CoroutineDispatchers(TestDispatcher,TestDispatcher,TestDispatcher),
+            dispatchers = CoroutineDispatchers(TestDispatcher, TestDispatcher, TestDispatcher),
             logger = loggerWrapper,
             orderStore = orderStore
         )
