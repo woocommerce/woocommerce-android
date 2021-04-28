@@ -161,4 +161,28 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         // Then
         assertThat(groupedProductIds).isEqualTo(productData?.selectedProductIds)
     }
+
+    @Test
+    fun `re-ordering the product via drag-and-drop must reflect properly`() {
+
+        // Given
+        createViewModel()
+        val reorderedProductList = arrayListOf<Product>()
+        reorderedProductList.add(ProductTestUtils.generateProduct(5L))
+        reorderedProductList.add(ProductTestUtils.generateProduct(2L))
+        reorderedProductList.add(ProductTestUtils.generateProduct(3L))
+        reorderedProductList.add(ProductTestUtils.generateProduct(1L))
+        reorderedProductList.add(ProductTestUtils.generateProduct(4L))
+        val reorderedProductIdsList = reorderedProductList.map { it.remoteId }
+        var productData: GroupedProductListViewState? = null
+        assertThat(viewModel.hasChanges).isEqualTo(false)
+        viewModel.productListViewStateData.observeForever { _, new -> productData = new }
+
+        // When
+        viewModel.updateReOrderedProductList(reorderedProductList)
+
+        // Then
+        assertThat(viewModel.hasChanges).isEqualTo(true)
+        assertThat(reorderedProductIdsList).isEqualTo(productData?.selectedProductIds)
+    }
 }

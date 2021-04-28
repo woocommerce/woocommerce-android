@@ -121,7 +121,10 @@ class GroupedProductListViewModel @AssistedInject constructor(
         if (previousSelectedProductIds == null) {
             previousSelectedProductIds = selectedProductIds
         }
-        _productList.value = if (selectedProductIds.isNotEmpty()) {
+        productListViewState = productListViewState.copy(
+            selectedProductIds = reorderedProductList.map { it.remoteId }
+        )
+        _productList.value = if (reorderedProductList.isNotEmpty()) {
             reorderedProductList
         } else emptyList()
     }
