@@ -153,17 +153,6 @@ data class ProductVariation(
         } ?: options.joinToString(" - ") { o -> o.optionChoice }
     }
 
-    fun containsValidAttributesFrom(product: Product) =
-        takeIf { it.attributes.isNotEmpty() }?.let {
-            product.variationEnabledAttributes
-                .map { it.name }
-                .let { enabledAttributes ->
-                    attributes.any {
-                        enabledAttributes.contains(it.name)
-                    }
-                }
-        }
-
     @Parcelize
     data class Option(
         val attributeName: String,
