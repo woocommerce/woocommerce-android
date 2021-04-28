@@ -235,7 +235,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
             clearInvocations(cardReaderManager)
 
-            (viewModel.viewStateData.value as FailedPaymentState).onRetryClicked.invoke()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager).collectPayment(any(), anyString())
         }
@@ -248,7 +248,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start(cardReaderManager)
 
-            (viewModel.viewStateData.value as FailedPaymentState).onRetryClicked.invoke()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager).retryCollectPayment(any())
         }
@@ -262,7 +262,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start(cardReaderManager)
 
-            (viewModel.viewStateData.value as FailedPaymentState).onRetryClicked.invoke()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager).retryCollectPayment(paymentData)
         }
@@ -275,7 +275,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start(cardReaderManager)
 
-            (viewModel.viewStateData.value as FailedPaymentState).onRetryClicked.invoke()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager).retryCollectPayment(any())
         }
@@ -289,7 +289,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start(cardReaderManager)
 
-            (viewModel.viewStateData.value as FailedPaymentState).onRetryClicked.invoke()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager).retryCollectPayment(paymentData)
         }
@@ -302,7 +302,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start(cardReaderManager)
 
-            (viewModel.viewStateData.value as FailedPaymentState).onRetryClicked.invoke()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager).retryCollectPayment(any())
         }
@@ -316,7 +316,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start(cardReaderManager)
 
-            (viewModel.viewStateData.value as FailedPaymentState).onRetryClicked.invoke()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager).retryCollectPayment(paymentData)
         }
@@ -332,8 +332,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewState.illustration).isNull()
         assertThat(viewState.paymentStateLabel).isNull()
         assertThat(viewState.hintLabel).isNull()
-        assertThat(viewState.printReceiptLabel).isNull()
-        assertThat(viewState.sendReceiptLabel).isNull()
+        assertThat(viewState.primaryActionLabel).isNull()
+        assertThat(viewState.secondaryActionLabel).isNull()
     }
 
     @Test
@@ -346,8 +346,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewStateData.value!!
 
         assertThat(viewState.isProgressVisible).isFalse()
-        assertThat(viewState.printReceiptLabel).isNull()
-        assertThat(viewState.sendReceiptLabel).isNull()
+        assertThat(viewState.primaryActionLabel).isNull()
+        assertThat(viewState.secondaryActionLabel).isNull()
     }
 
     @Test
@@ -376,8 +376,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewStateData.value!!
 
         assertThat(viewState.isProgressVisible).isFalse()
-        assertThat(viewState.printReceiptLabel).isNull()
-        assertThat(viewState.sendReceiptLabel).isNull()
+        assertThat(viewState.primaryActionLabel).isNull()
+        assertThat(viewState.secondaryActionLabel).isNull()
     }
 
     @Test
@@ -406,8 +406,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewStateData.value!!
 
         assertThat(viewState.isProgressVisible).isFalse()
-        assertThat(viewState.printReceiptLabel).isNull()
-        assertThat(viewState.sendReceiptLabel).isNull()
+        assertThat(viewState.primaryActionLabel).isNull()
+        assertThat(viewState.secondaryActionLabel).isNull()
     }
 
     @Test
@@ -427,7 +427,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when payment fails, then progress and print and send buttons are hidden`() = runBlockingTest {
+    fun `when payment fails, then progress and secondary button are hidden`() = runBlockingTest {
         whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
             flow { emit(CollectingPaymentFailed(mock())) }
         }
@@ -436,8 +436,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewStateData.value!!
 
         assertThat(viewState.isProgressVisible).isFalse()
-        assertThat(viewState.printReceiptLabel).isNull()
-        assertThat(viewState.sendReceiptLabel).isNull()
+        assertThat(viewState.secondaryActionLabel).isNull()
     }
 
     @Test
@@ -454,7 +453,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewState.illustration).isEqualTo(R.drawable.img_products_error)
         assertThat(viewState.paymentStateLabel).isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
         assertThat(viewState.hintLabel).isNull()
-        assertThat(viewState.retryLabel).isEqualTo(R.string.retry)
+        assertThat(viewState.primaryActionLabel).isEqualTo(R.string.retry)
     }
 
     @Test
@@ -471,8 +470,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewState.illustration).isEqualTo(R.drawable.ic_celebration)
         assertThat(viewState.paymentStateLabel).isNull()
         assertThat(viewState.hintLabel).isNull()
-        assertThat(viewState.printReceiptLabel).isEqualTo(R.string.card_reader_payment_print_receipt)
-        assertThat(viewState.sendReceiptLabel).isEqualTo(R.string.card_reader_payment_send_receipt)
+        assertThat(viewState.primaryActionLabel).isEqualTo(R.string.card_reader_payment_print_receipt)
+        assertThat(viewState.secondaryActionLabel).isEqualTo(R.string.card_reader_payment_send_receipt)
     }
 
     @Test

@@ -81,7 +81,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                 viewState.postValue(
                     FailedPaymentState(
                         amountWithCurrencyLabel = null,
-                        onRetryClicked = { initPaymentFlow() })
+                        onPrimaryActionClicked = { initPaymentFlow() })
                 )
             }
         }
@@ -151,11 +151,11 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
         @DrawableRes val illustration: Int? = null,
         // TODO cardreader add tests
         val isProgressVisible: Boolean = false,
-        val printReceiptLabel: Int? = null,
-        val sendReceiptLabel: Int? = null,
-        val retryLabel: Int? = null
+        val primaryActionLabel: Int? = null,
+        val secondaryActionLabel: Int? = null
     ) {
-        open val onRetryClicked: (() -> Unit)? = null
+        open val onPrimaryActionClicked: (() -> Unit)? = null
+        open val onSecondaryActionClicked: (() -> Unit)? = null
         open val amountWithCurrencyLabel: String? = null
 
         object LoadingDataState : ViewState(isProgressVisible = true)
@@ -163,12 +163,12 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
         // TODO cardreader Update FailedPaymentState
         data class FailedPaymentState(
             override val amountWithCurrencyLabel: String?,
-            override val onRetryClicked: (() -> Unit)
+            override val onPrimaryActionClicked: (() -> Unit)
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_payment_failed_header,
             // TODO cardreader use a different label based on the type of the error
             paymentStateLabel = R.string.card_reader_payment_failed_unexpected_error_state,
-            retryLabel = R.string.retry,
+            primaryActionLabel = R.string.retry,
             // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
         )
@@ -200,8 +200,8 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
             ViewState(
                 headerLabel = R.string.card_reader_payment_completed_payment_header,
                 illustration = R.drawable.ic_celebration,
-                sendReceiptLabel = R.string.card_reader_payment_send_receipt,
-                printReceiptLabel = R.string.card_reader_payment_print_receipt
+                secondaryActionLabel = R.string.card_reader_payment_send_receipt,
+                primaryActionLabel = R.string.card_reader_payment_print_receipt
             )
     }
 
