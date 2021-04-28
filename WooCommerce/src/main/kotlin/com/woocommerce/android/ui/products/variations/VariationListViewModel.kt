@@ -58,15 +58,12 @@ class VariationListViewModel @AssistedInject constructor(
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
     val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
-        filterVariationsWithValidAttributes(variations).apply {
-            viewState = if (this.isEmpty()) {
-                viewState.copy(isEmptyViewVisible = true)
-            } else {
-                val anyWithoutPrice = variations.any {
-                    it.isVisible && it.regularPrice.isNotSet() && it.salePrice.isNotSet()
-                }
-                viewState.copy(isWarningVisible = anyWithoutPrice)
-            }
+        variations.apply {
+            viewState = viewState.parentProduct
+                ?.takeIf { it.variationEnabledAttributes.isEmpty() }
+                ?.let { viewState.copy(isEmptyViewVisible = true) }
+                ?: any { it.isVisible && it.regularPrice.isNotSet() && it.salePrice.isNotSet() }
+                    .let { viewState.copy(isWarningVisible = it) }
         }
     }
 
@@ -237,11 +234,6 @@ class VariationListViewModel @AssistedInject constructor(
         }
         return variations
     }
-
-    private fun filterVariationsWithValidAttributes(variations: List<ProductVariation>) =
-        viewState.parentProduct?.let { product ->
-            variations.filter { product containsValidAttributesFor it }
-        } ?: variations
 
     @Parcelize
     data class ViewState(
