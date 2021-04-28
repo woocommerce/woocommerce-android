@@ -194,7 +194,7 @@ class VariationDetailCardBuilder(
                                 .map { Pair(it.name!!, it.option!!) }
                                 .let { map.apply { putAll(it) } }
                         }.also { map ->
-                            parentProduct?.attributes
+                            parentProduct?.variationEnabledAttributes
                                 ?.filter { map.containsKey(it.name).not() }
                                 ?.map { Pair(it.name, resources.getString(string.product_any_attribute_hint)) }
                                 ?.let { map.apply { putAll(it) } }
