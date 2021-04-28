@@ -61,6 +61,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -120,7 +121,8 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     private val order: Order
     private val refunds: List<Refund>
-    private val selectedShippingLineIds: List<Long>
+    private val allShippingLineIds: List<Long>
+    private val refundableShippingLineIds: List<Long> /* Shipping lines that haven't been refunded */
 
     private val maxRefund: BigDecimal
     private val maxQuantities: Map<Long, Int>
@@ -140,13 +142,13 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     init {
         order = loadOrder(arguments.orderId)
+        allShippingLineIds = order.shippingLines.map { it.itemId }
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
-        selectedShippingLineIds = order.shippingLines.map { it.itemId }
-
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
         maxQuantities = refunds.getMaxRefundQuantities(order.items)
         gateway = loadPaymentGateway()
+        refundableShippingLineIds = getRefundableShippingLineIds()
 
         initRefundByAmountState()
         initRefundByItemsState()
@@ -190,8 +192,10 @@ class IssueRefundViewModel @AssistedInject constructor(
                     .toLowerCase(Locale.getDefault())
                 refundOptions.add(fees)
             }
-            if (order.shippingTotal > BigDecimal.ZERO) {
-                val shipping = resourceProvider.getString(R.string.shipping).toLowerCase(Locale.getDefault())
+
+            // Inform user that multiple shipping lines can only be refunded in wp-admin.
+            if (refundableShippingLineIds.size > 1) {
+                val shipping = resourceProvider.getString(R.string.multiple_shipping).toLowerCase(Locale.getDefault())
                 refundOptions.add(shipping)
             }
             if (order.totalTax > BigDecimal.ZERO) {
@@ -209,19 +213,22 @@ class IssueRefundViewModel @AssistedInject constructor(
 
         if (refundByItemsStateLiveData.hasInitialValue) {
             refundByItemsState = refundByItemsState.copy(
-                    currency = order.currency,
-                    subtotal = formatCurrency(BigDecimal.ZERO),
-                    taxes = formatCurrency(BigDecimal.ZERO),
-                    shippingSubtotal = formatCurrency(order.shippingTotal),
-                    shippingTaxes = formatCurrency(order.shippingLines.sumByBigDecimal { it.totalTax }),
-                    feesTotal = formatCurrency(order.feesTotal),
-                    formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                    isShippingRefundAvailable = order.shippingTotal > BigDecimal.ZERO,
-                    isFeesVisible = order.feesTotal > BigDecimal.ZERO,
-                    isNextButtonEnabled = false,
-                    selectedShippingLines = selectedShippingLineIds,
-                    formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
-                    refundNotice = getRefundNotice()
+                currency = order.currency,
+                subtotal = formatCurrency(BigDecimal.ZERO),
+                taxes = formatCurrency(BigDecimal.ZERO),
+                shippingSubtotal = formatCurrency(order.shippingTotal),
+                shippingTaxes = formatCurrency(order.shippingLines.sumByBigDecimal { it.totalTax }),
+                feesTotal = formatCurrency(order.feesTotal),
+                formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
+                isFeesVisible = order.feesTotal > BigDecimal.ZERO,
+                isNextButtonEnabled = false,
+                formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
+                refundNotice = getRefundNotice(),
+
+                // We only support refunding an Order with one shipping refund for now.
+                // In the future, to support multiple shipping refund, we can replace this
+                // with refundableShippingLineIds.isNotEmpty()
+                isShippingRefundAvailable = refundableShippingLineIds.size == 1
             )
         }
 
@@ -232,9 +239,10 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
         updateRefundItems(items)
 
-        val shippingLines = order.shippingLines.map {
-            ShippingRefundListItem(it)
-        }
+        /* Grab all shipping lines listed in the Order, but remove those that are already refunded previously) */
+        val shippingLines = order.shippingLines
+            .map { ShippingRefundListItem(it) }
+            .filter { refundableShippingLineIds.contains(it.shippingLine.itemId) }
         _refundShippingLines.value = shippingLines
 
         if (productsRefundLiveData.hasInitialValue) {
@@ -359,15 +367,23 @@ class IssueRefundViewModel @AssistedInject constructor(
                     val resultCall = async(dispatchers.io) {
                         return@async when (commonState.refundType) {
                             ITEMS -> {
-                                // TODO: Include selected shipping lines in `items`
+                                val allItems = mutableListOf<WCRefundItem>()
+                                if (! refundItems.value.isNullOrEmpty()) {
+                                    refundItems.value!!.forEach { allItems.add(it.toDataModel()) }
+                                }
+
+                                val selectedShipping = refundShippingLines.value?.filter {
+                                    refundByItemsState.selectedShippingLines!!.contains(it.shippingLine.itemId)
+                                }
+                                selectedShipping?.forEach { allItems.add(it.toDataModel()) }
+
                                 refundStore.createItemsRefund(
                                         selectedSite.get(),
                                         order.remoteId,
                                         refundSummaryState.refundReason ?: "",
                                         true,
                                         gateway.supportsRefunds,
-                                        refundItems.value?.map { it.toDataModel() }
-                                                ?: emptyList()
+                                        items = allItems
                                 )
                             }
                             AMOUNT -> {
@@ -596,27 +612,40 @@ class IssueRefundViewModel @AssistedInject constructor(
     private fun isInputValid() = validateInput() == VALID
 
     fun onShippingRefundMainSwitchChanged(isChecked: Boolean) {
+        val productsRefund = refundByItemsState.productsRefund
+
         if (isChecked) {
-            val shippingRefund = calculatePartialShippingTotal(refundByItemsState.selectedShippingLines!!)
+            val shippingRefund = calculatePartialShippingTotal(allShippingLineIds)
 
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = shippingRefund,
                 formattedShippingRefundTotal = formatCurrency(shippingRefund),
-                isShippingMainSwitchChecked = true
+                isShippingMainSwitchChecked = true,
+                isNextButtonEnabled = productsRefund.add(shippingRefund) > BigDecimal.ZERO,
+                selectedShippingLines = allShippingLineIds
             )
         } else {
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = 0.toBigDecimal(),
                 formattedShippingRefundTotal = formatCurrency(0.toBigDecimal()),
-                isShippingMainSwitchChecked = false
+                isShippingMainSwitchChecked = false,
+                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
+                selectedShippingLines = emptyList()
             )
         }
     }
 
     fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         val list = refundByItemsState.selectedShippingLines?.toMutableList()
+        val productsRefund = refundByItemsState.productsRefund
         if (list != null) {
-            if (isChecked) list += itemId else list -= itemId
+            if (isChecked && !list.contains(itemId)) {
+                list += itemId
+            } else {
+                list -= itemId
+            }
+
+            refundByItemsState.selectedShippingLines?.filter { it != itemId }
 
             val newShippingRefundTotal = calculatePartialShippingTotal(list)
 
@@ -625,9 +654,22 @@ class IssueRefundViewModel @AssistedInject constructor(
                 shippingSubtotal = formatCurrency(calculatePartialShippingSubtotal(list)),
                 shippingTaxes = formatCurrency(calculatePartialShippingTaxes(list)),
                 shippingRefund = newShippingRefundTotal,
-                formattedShippingRefundTotal = formatCurrency(newShippingRefundTotal)
+                formattedShippingRefundTotal = formatCurrency(newShippingRefundTotal),
+                isNextButtonEnabled = productsRefund.add(newShippingRefundTotal) > BigDecimal.ZERO
             )
         }
+    }
+
+    private fun getRefundableShippingLineIds(): List<Long> {
+        val availableShippingLines = allShippingLineIds.toMutableList()
+        refunds.forEach {
+            it.shippingLines.forEach { shippingLine ->
+                if (availableShippingLines.contains(shippingLine.itemId)) {
+                    availableShippingLines -= shippingLine.itemId
+                }
+            }
+        }
+        return availableShippingLines
     }
 
     private fun calculatePartialShippingSubtotal(selectedShippingLinesId: List<Long>): BigDecimal {
