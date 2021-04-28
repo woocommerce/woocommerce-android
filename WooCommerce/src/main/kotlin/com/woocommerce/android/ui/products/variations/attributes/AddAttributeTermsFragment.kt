@@ -73,6 +73,15 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         object : OnTermListener {
             override fun onTermClick(termName: String) {}
 
+            override fun onTermMoved(fromTermName: String, toTermName: String) {
+                viewModel.swapProductDraftAttributeTerms(
+                    navArgs.attributeId,
+                    navArgs.attributeName,
+                    fromTermName,
+                    toTermName
+                )
+            }
+
             /**
              * If the user removed a global term from the assigned term list, we need to return it to the
              * global term list
@@ -104,6 +113,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
 
             override fun onTermDelete(termName: String) {}
+            override fun onTermMoved(fromTermName: String, toTermName: String) {}
         }
     }
 
