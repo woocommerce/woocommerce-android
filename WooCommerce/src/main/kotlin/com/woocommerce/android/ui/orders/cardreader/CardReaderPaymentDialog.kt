@@ -53,6 +53,10 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
             UiHelpers.setTextOrHide(binding.printReceiptBtn, viewState.printReceiptLabel)
             UiHelpers.setTextOrHide(binding.sendReceiptBtn, viewState.sendReceiptLabel)
             UiHelpers.updateVisibility(binding.progressBar, viewState.isProgressVisible)
+            UiHelpers.setTextOrHide(binding.retryBtn, viewState.retryLabel)
+            binding.retryBtn.setOnClickListener {
+                viewState.onRetryClicked?.invoke()
+            }
         })
     }
 
