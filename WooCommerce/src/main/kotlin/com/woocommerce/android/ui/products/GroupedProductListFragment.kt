@@ -36,7 +36,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
 
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
-        GroupedProductListAdapter(viewModel::onProductDeleted)
+        GroupedProductListAdapter(isEditMode = false, onItemDeleted = viewModel::onProductDeleted)
     }
 
     private var _binding: FragmentGroupedProductListBinding? = null
@@ -145,5 +145,6 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
     private fun setEditModeUI() {
         TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
         binding.addGroupedProductView.isVisible = false
+        productListAdapter.setEditMode(true)
     }
 }

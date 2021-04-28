@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductListItemBinding
@@ -9,6 +10,7 @@ import com.woocommerce.android.extensions.areSameProductsAs
 import com.woocommerce.android.model.Product
 
 class GroupedProductListAdapter(
+    private var isEditMode: Boolean = false,
     private val onItemDeleted: (product: Product) -> Unit
 ) : RecyclerView.Adapter<ProductItemViewHolder>() {
     private val productList = ArrayList<Product>()
@@ -33,9 +35,12 @@ class GroupedProductListAdapter(
 
     override fun onBindViewHolder(holder: ProductItemViewHolder, position: Int) {
         val product = productList[position]
-
+        if (isEditMode) {
+            holder.setOnDeleteClickListener(product, onItemDeleted)
+        } else {
+            holder.viewBinding.productBtnDelete.isVisible = false
+        }
         holder.bind(product)
-        holder.setOnDeleteClickListener(product, onItemDeleted)
     }
 
     fun setProductList(products: List<Product>) {
@@ -45,5 +50,10 @@ class GroupedProductListAdapter(
             productList.addAll(products)
             diffResult.dispatchUpdatesTo(this)
         }
+    }
+
+    fun setEditMode(mode: Boolean) {
+        isEditMode = mode
+        notifyDataSetChanged()
     }
 }
