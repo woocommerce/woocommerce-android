@@ -672,7 +672,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             // The url entered is not a WordPress site.
             val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
             val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
-            val errorMessage = getString(R.string.login_not_wordpress_site, siteAddressClean)
+            val errorMessage = getString(R.string.login_not_wordpress_site_v2)
 
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)

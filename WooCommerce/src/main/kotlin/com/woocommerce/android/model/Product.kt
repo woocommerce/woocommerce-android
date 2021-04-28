@@ -559,13 +559,5 @@ fun WCProductModel.toProductReviewProductModel() =
 /**
  * Returns true if the passed attribute is in the current list of attributes
  */
-fun List<ProductAttribute>.containsAttribute(attribute: ProductAttribute): Boolean {
-    this.forEach {
-        if (attribute.id == it.id &&
-            attribute.name == it.name &&
-            attribute.terms == it.terms) {
-            return true
-        }
-    }
-    return false
-}
+fun List<ProductAttribute>.containsAttribute(attribute: ProductAttribute): Boolean =
+    this.find { attribute.id == it.id && attribute.name == it.name && attribute.terms == it.terms } != null
