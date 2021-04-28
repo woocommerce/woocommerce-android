@@ -211,8 +211,9 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     }
 
     override fun onFirstActivityResumed() {
-        // Update the WP.com account details, settings, and site list every time the app is completely restarted
-        if (networkStatus.isConnected()) {
+        // Update the WP.com account details, settings, and site list every time the app is completely restarted,
+        // only if the logged in
+        if (networkStatus.isConnected() && accountStore.hasAccessToken()) {
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
