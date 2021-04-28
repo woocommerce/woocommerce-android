@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-01 13:54:03+0000
+Translation-Revision-Date: 2021-04-16 11:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">Не хотели создавать новую учётную запись? Вернитесь и заново введите адрес эл. почты.</string>
+    <string name="settings_card_reader_connect">Подключение устройства чтения карт</string>
+    <string name="settings_card_reader">Управление устройством чтения карт</string>
+    <string name="settings_store">Сохранить настройки</string>
+    <string name="product_attributes">Атрибуты</string>
+    <string name="order_refunds_shipping_refund_variable_notice">Вы можете вернуть %1$s</string>
+    <string name="orderdetail_collect_payment_button">Сбор платежей</string>
+    <string name="and">и</string>
+    <string name="product_attribute_remove">Удалить этот атрибут?</string>
+    <string name="product_any_attribute_hint">Любой</string>
     <string name="product_attributes_error_saving">Ошибка при сохранении атрибутов</string>
     <string name="shipping_label_payments_cant_edit_warning">Только владелец сайта может управлять способами оплаты транспортных этикеток. Чтобы управлять способами оплаты, свяжитесь с владельцем магазина %1$s (%2$s).</string>
     <string name="product_detail_add_variations">Добавить варианты</string>
@@ -91,7 +101,6 @@ Language: ru
     <string name="shipping_label_edit_address_loading_progress_title">Загрузка адреса</string>
     <string name="product_wip_title_m5">Доступны новые функции!</string>
     <string name="product_wip_message_m5">Теперь вы можете добавлять к товару скачиваемые файлы и давать ссылки на сопутствующие и более дорогие товары. Товар больше не нужен? Отправьте его в корзину!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Можно получить возврат оплаты товара, доставки и суммы налогов (%s)</string>
     <string name="shipping_label_validation_view_map">Открыть карту</string>
     <string name="shipping_label_validation_contact_customer">Связаться с клиентом</string>
     <string name="shipping_label_validation_error_template">Сбой проверки: %s</string>
@@ -135,7 +144,6 @@ Language: ru
     <string name="order_mark_complete">Отметить заказ как выполненный</string>
     <string name="orderdetail_shipping_label_notice">Подробнее о распечатке этикеток с телефона</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Создание почтового бланка</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">Теперь вы можете создавать транспортные этикетки для всех физических заказов прямо со своего устройства с помощью бесплатного плагина WooCommerce Shipping. Нажмите \"Создать транспортную этикетку\" и попробуйте!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Создавайте транспортные этикетки со своего устройства!</string>
     <string name="orderdetail_payment_fees">Сборы</string>
     <string name="orderdetail_net">Чистая выплата</string>
@@ -471,7 +479,6 @@ Language: ru
     <string name="product_schedule_sale_sublabel">Автоматически начинать и завершать распродажу</string>
     <string name="product_schedule_sale_label">Запланировать распродажу</string>
     <string name="order_refunds_store_admin_link_text">в учетной записи администратора магазина</string>
-    <string name="order_refunds_shipping_refund_notice">Можно получить возврат оплаты доставки и суммы налогов (%s)</string>
     <string name="orders_empty_message_with_order_status_filter">К сожалению, мы не смогли найти заказы \"%s\"</string>
     <string name="product_inventory_update_sku_error">Артикул уже используется для другого продукта</string>
     <string name="product_shipping_settings">Настройки доставки</string>

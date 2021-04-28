@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-01 09:54:03+0000
+Translation-Revision-Date: 2021-04-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">不是要建立一個新帳號嗎？ 返回並重新輸入你的電子郵件地址。</string>
+    <string name="settings_card_reader_connect">連接讀卡機</string>
+    <string name="settings_card_reader">管理讀卡機</string>
+    <string name="settings_store">商店設定</string>
+    <string name="product_attributes">屬性</string>
+    <string name="order_refunds_shipping_refund_variable_notice">你可以退還 %1$s</string>
+    <string name="orderdetail_collect_payment_button">收取款項</string>
+    <string name="and">及</string>
+    <string name="product_attribute_remove">刪除這個屬性？</string>
+    <string name="product_any_attribute_hint">任何</string>
     <string name="product_attributes_error_saving">儲存屬性時發生錯誤</string>
     <string name="shipping_label_payments_cant_edit_warning">僅限網站擁有者管理運送標籤付款方式。 請聯絡商店擁有者 %1$s (%2$s) 管理付款方式。</string>
     <string name="product_detail_add_variations">新增款式</string>
@@ -91,7 +101,6 @@ Language: zh_TW
     <string name="shipping_label_edit_address_loading_progress_title">正在載入地址資料</string>
     <string name="product_wip_title_m5">現已推出新功能！</string>
     <string name="product_wip_message_m5">你現在可將可下載檔案新增到產品，並連結追加銷售和交叉銷售產品。 不再需要某個產品了嗎？ 移至垃圾桶！</string>
-    <string name="order_refunds_shipping_refund_notice_fees">你可以退還運費和稅款 %s</string>
     <string name="shipping_label_validation_view_map">開啟地圖</string>
     <string name="shipping_label_validation_contact_customer">聯絡客戶</string>
     <string name="shipping_label_validation_error_template">驗證失敗：%s</string>
@@ -135,7 +144,6 @@ Language: zh_TW
     <string name="order_mark_complete">將訂單標示為完成</string>
     <string name="orderdetail_shipping_label_notice">深入瞭解如何使用手機建立標籤</string>
     <string name="orderdetail_shipping_label_create_shipping_label">建立郵寄標籤</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">你現在可以使用免費的 WooCommerce Shipping 外掛程式，直接從你的裝置為所有實體訂單建立郵寄標籤。 點選「建立郵寄標籤」開始試用！</string>
     <string name="orderdetail_shipping_label_m2_wip_title">從你的裝置建立郵寄標籤！！</string>
     <string name="orderdetail_payment_fees">費用</string>
     <string name="orderdetail_net">付款淨額</string>
@@ -471,7 +479,6 @@ Language: zh_TW
     <string name="product_schedule_sale_sublabel">自動開始及結束折扣優惠</string>
     <string name="product_schedule_sale_label">在商店管理員中</string>
     <string name="order_refunds_store_admin_link_text">排程折扣優惠</string>
-    <string name="order_refunds_shipping_refund_notice">你可以退還運費和稅款 %s</string>
     <string name="orders_empty_message_with_order_status_filter">不好意思，我們找不到任何「%s」訂單</string>
     <string name="product_inventory_update_sku_error">其他商品已使用此貨號</string>
     <string name="product_shipping_settings">運送設定</string>

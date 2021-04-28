@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-31 09:54:04+0000
+Translation-Revision-Date: 2021-04-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">Vous ne voulez pas créer de nouveau compte ? Revenez en arrière et ressaisissez votre adresse e-mail.</string>
+    <string name="settings_card_reader_connect">Connecter le lecteur de carte</string>
+    <string name="settings_card_reader">Gérer le lecteur de carte</string>
+    <string name="settings_store">Paramètres de la boutique</string>
+    <string name="product_attributes">Attributs</string>
+    <string name="order_refunds_shipping_refund_variable_notice">Vous pouvez rembourser %1$s</string>
+    <string name="orderdetail_collect_payment_button">Percevoir le paiement</string>
+    <string name="and">et</string>
+    <string name="product_attribute_remove">Supprimer cet attribut ?</string>
+    <string name="product_any_attribute_hint">Toute</string>
     <string name="product_attributes_error_saving">Erreur lors de l’enregistrement de vos attributs</string>
     <string name="shipping_label_payments_cant_edit_warning">Seul le propriétaire du site peut gérer les moyens de paiement des étiquettes d’expédition. Veuillez contacter le propriétaire de la boutique %1$s (%2$s) pour gérer les moyens de paiement.</string>
     <string name="product_detail_add_variations">Ajouter des variantes</string>
@@ -91,7 +101,6 @@ Language: fr
     <string name="shipping_label_edit_address_loading_progress_title">Données d’adresse en cours de chargement</string>
     <string name="product_wip_title_m5">Nouvelles fonctionnalités disponibles !</string>
     <string name="product_wip_message_m5">Vous pouvez désormais ajouter des fichiers téléchargeables à un produit et associer des produits suggérés et des ventes croisées. Vous ne voulez plus d’un produit ? Déplacez-le vers la corbeille !</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Vous pouvez rembourser les frais, les frais d’expédition et les taxes %s</string>
     <string name="shipping_label_validation_view_map">Ouvrir une carte</string>
     <string name="shipping_label_validation_contact_customer">Contacter le client</string>
     <string name="shipping_label_validation_error_template">Échec de la validation : %s</string>
@@ -135,7 +144,6 @@ Language: fr
     <string name="order_mark_complete">Marquer la commande comme terminée</string>
     <string name="orderdetail_shipping_label_notice">En savoir plus sur la création d’étiquettes avec votre téléphone</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Créer une étiquette d’expédition</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">Vous pouvez désormais créer des étiquettes d’expédition pour les commandes physiques directement depuis votre appareil grâce à l’extension gratuite WooCommerce Shipping. Appuyez sur « Créer une étiquette d’expédition » pour essayer !</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Créez une étiquette d’expédition à partir de votre appareil !</string>
     <string name="orderdetail_payment_fees">Frais</string>
     <string name="orderdetail_net">Paiement net</string>
@@ -471,7 +479,6 @@ Language: fr
     <string name="product_schedule_sale_sublabel">Commencer et terminer automatiquement une vente</string>
     <string name="product_schedule_sale_label">Planifier une vente</string>
     <string name="order_refunds_store_admin_link_text">depuis la page administration de votre boutique</string>
-    <string name="order_refunds_shipping_refund_notice">Vous pouvez rembourser les frais d’expédition et de taxe %s</string>
     <string name="orders_empty_message_with_order_status_filter">Désolé, impossible de trouver les commandes « %s »</string>
     <string name="product_inventory_update_sku_error">Cette UGS est déjà utilisée par un autre produit</string>
     <string name="product_shipping_settings">Paramètres de livraison</string>

@@ -1,0 +1,4 @@
+6.4:
+Fizemos algumas melhorias nesta versão.
+Corrigimos um bug que impedia o aplicativo de carregar produtos quando havia um valor decimal na quantidade em estoque.
+Também corrigimos um erro no layout que ocorria na tela de opções de formatos de etiquetas de envio.

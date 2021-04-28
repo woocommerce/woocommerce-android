@@ -2,10 +2,8 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import android.text.format.DateFormat
-import com.automattic.android.tracks.CrashLogging.CrashLoggingDataProvider
-import com.woocommerce.android.R
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.formatToYYYYmmDD
-import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.util.WooLog.T.UTILS
 import org.apache.commons.lang3.time.DateUtils
 import java.text.DateFormatSymbols
@@ -14,12 +12,13 @@ import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
+import javax.inject.Inject
 
-class DateUtils(
-    val locale: Locale = Locale.getDefault(),
-    val crashLogger: CrashLoggingDataProvider = CrashUtils
+class DateUtils @Inject constructor(
+    private val locale: Locale,
+    private val crashLogger: CrashLogging
 ) {
-    val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
+    private val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
 
     private val weekOfYearStartingMondayFormat: SimpleDateFormat = SimpleDateFormat("yyyy-'W'ww", locale).apply {
         calendar = Calendar.getInstance().apply {
@@ -34,25 +33,6 @@ class DateUtils(
     private val shortMonths = DateFormatSymbols(locale).shortMonths
 
     private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-
-    /**
-     * Returns a string in the format of {date} at {time}.
-     */
-    fun getFriendlyShortDateAtTimeString(context: Context, date: Date): String {
-        val dateLabel = when (TimeGroup.getTimeGroupForDate(date)) {
-            TimeGroup.GROUP_TODAY -> {
-                context.getString(R.string.date_timeframe_today).toLowerCase(locale)
-            }
-            TimeGroup.GROUP_YESTERDAY -> {
-                context.getString(R.string.date_timeframe_yesterday).toLowerCase(locale)
-            }
-            else -> {
-                DateFormat.getDateFormat(context).format(date)
-            }
-        }
-        val timeString = DateFormat.getTimeFormat(context).format(date.time)
-        return context.getString(R.string.date_at_time, dateLabel, timeString)
-    }
 
     /**
      * Given an ISO8601 date of format YYYY-MM-DD, returns the number of days in the given month.
@@ -263,44 +243,6 @@ class DateUtils(
         }
     }
 
-    fun getDayOfWeekWithMonthAndDayFromDate(date: Date): String {
-        val dateFormat = SimpleDateFormat("EEEE, MMM dd", Locale.US)
-        return dateFormat.format(date)
-    }
-
-    /**
-     * Compares two dates to determine if [date2] is after [date1]. Note that
-     * this method strips the time information from the comparison and is only comparing
-     * the dates.
-     *
-     * @param date1 the base date for comparison
-     * @param date2 the date to determine if after [date1]
-     */
-    fun isAfterDate(date1: Date, date2: Date): Boolean {
-        val dateOnly1 = DateUtils.round(date1, Calendar.DATE)
-        val dateOnly2 = DateUtils.round(date2, Calendar.DATE)
-        return dateOnly2.after(dateOnly1)
-    }
-
-    /**
-     * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
-     *
-     * The [operator] can either be [Int::plus] or [Int::minus]
-     * [Int::plus] is passed when formatting gmtDate to local date
-     * [Int::minus] is passed when formatting local date to gmt
-     */
-    fun offsetGmtDate(dateGmt: Date, gmtOffset: Float, operator: (Int, Int) -> Int = Int::plus): Date {
-        if (gmtOffset == 0f) {
-            return dateGmt
-        }
-
-        val secondsOffset = (3600 * gmtOffset).toInt() // 3600 is the number of seconds in an hour
-        val calendar = Calendar.getInstance()
-        calendar.time = dateGmt
-        calendar.set(Calendar.SECOND, operator(calendar.get(Calendar.SECOND), secondsOffset))
-        return calendar.time
-    }
-
     /**
      * Converts the given [year] [month] [day] to a [Date] object
      * and applies the passed [gmtOffset] to the date
@@ -365,8 +307,48 @@ class DateUtils(
         }
     }
 
-    private fun String.reportAsError(e: Exception) {
+    private fun String.reportAsError(exception: Exception) {
         WooLog.e(UTILS, this)
-        (crashLogger as? CrashUtils)?.logException(e)
+        crashLogger.sendReport(exception = exception)
+    }
+
+    companion object {
+        /**
+         * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
+         *
+         * The [operator] can either be [Int::plus] or [Int::minus]
+         * [Int::plus] is passed when formatting gmtDate to local date
+         * [Int::minus] is passed when formatting local date to gmt
+         */
+        fun offsetGmtDate(dateGmt: Date, gmtOffset: Float, operator: (Int, Int) -> Int = Int::plus): Date {
+            if (gmtOffset == 0f) {
+                return dateGmt
+            }
+
+            val secondsOffset = (3600 * gmtOffset).toInt() // 3600 is the number of seconds in an hour
+            val calendar = Calendar.getInstance()
+            calendar.time = dateGmt
+            calendar.set(Calendar.SECOND, operator(calendar.get(Calendar.SECOND), secondsOffset))
+            return calendar.time
+        }
+
+        /**
+         * Compares two dates to determine if [date2] is after [date1]. Note that
+         * this method strips the time information from the comparison and is only comparing
+         * the dates.
+         *
+         * @param date1 the base date for comparison
+         * @param date2 the date to determine if after [date1]
+         */
+        fun isAfterDate(date1: Date, date2: Date): Boolean {
+            val dateOnly1 = DateUtils.round(date1, Calendar.DATE)
+            val dateOnly2 = DateUtils.round(date2, Calendar.DATE)
+            return dateOnly2.after(dateOnly1)
+        }
+
+        fun getDayOfWeekWithMonthAndDayFromDate(date: Date): String {
+            val dateFormat = SimpleDateFormat("EEEE, MMM dd", Locale.US)
+            return dateFormat.format(date)
+        }
     }
 }

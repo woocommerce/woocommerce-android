@@ -6,9 +6,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -21,7 +18,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import kotlinx.parcelize.Parcelize
 import java.util.Locale.ROOT
 
 @OpenClassOnDebug
@@ -44,9 +44,9 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             val properties = mapOf("product_type" to productTypeUiItem.type.value.toLowerCase(ROOT))
             AnalyticsTracker.track(Stat.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
-            saveUserSelection(productTypeUiItem.type)
+            saveUserSelection(productTypeUiItem)
             triggerEvent(ViewProductAdd)
-            triggerEvent(ExitWithResult(productTypeUiItem.type))
+            triggerEvent(ExitWithResult(productTypeUiItem))
         } else {
             triggerEvent(ShowDialog(
                 titleId = R.string.product_type_confirm_dialog_title,
@@ -54,13 +54,16 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
                 positiveButtonId = R.string.product_type_confirm_button,
                 negativeButtonId = R.string.cancel,
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(ExitWithResult(productTypeUiItem.type))
+                    triggerEvent(ExitWithResult(productTypeUiItem))
                 }
             ))
         }
     }
 
-    private fun saveUserSelection(type: ProductType) = prefs.setSelectedProductType(type)
+    private fun saveUserSelection(productTypeUiItem: ProductTypesBottomSheetUiItem) {
+        prefs.setSelectedProductType(productTypeUiItem.type)
+        prefs.setSelectedProductIsVirtual(productTypeUiItem.isVirtual)
+    }
 
     @Parcelize
     data class ProductTypesBottomSheetUiItem(
@@ -68,7 +71,8 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int,
-        val isEnabled: Boolean
+        val isEnabled: Boolean,
+        val isVirtual: Boolean = false
     ) : Parcelable
 
     @AssistedFactory

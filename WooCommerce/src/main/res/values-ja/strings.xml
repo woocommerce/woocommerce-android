@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-31 09:54:04+0000
+Translation-Revision-Date: 2021-04-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">新しいアカウントを作成しない場合は、 戻ってメールアドレスを再度入力してください。</string>
+    <string name="settings_card_reader_connect">カードリーダーを接続</string>
+    <string name="settings_card_reader">カードリーダーを管理</string>
+    <string name="settings_store">設定を保存</string>
+    <string name="product_attributes">属性</string>
+    <string name="order_refunds_shipping_refund_variable_notice">%1$s返金できます</string>
+    <string name="orderdetail_collect_payment_button">支払いを受け取る</string>
+    <string name="and">と</string>
+    <string name="product_attribute_remove">この属性を削除しますか ?</string>
+    <string name="product_any_attribute_hint">すべて</string>
     <string name="product_attributes_error_saving">属性の保存中にエラーが発生しました</string>
     <string name="shipping_label_payments_cant_edit_warning">配送ラベルのお支払い方法を管理できるのは、サイトの所有者のみです。 お支払い方法を管理するには、ストアの所有者 %1$s (%2$s) にお問い合わせください。</string>
     <string name="product_detail_add_variations">バリエーションを追加</string>
@@ -91,7 +101,6 @@ Language: ja_JP
     <string name="shipping_label_edit_address_loading_progress_title">住所データを読み込んでいます</string>
     <string name="product_wip_title_m5">新機能を利用できます。</string>
     <string name="product_wip_message_m5">商品にダウンロード可能なファイルを追加して、アップセルとクロスセルの商品をリンクできるようになりました。 商品が不要になりましたか ? ゴミ箱に移動しましょう。</string>
-    <string name="order_refunds_shipping_refund_notice_fees">料金、配送料、税額の払い戻しを受けられます%s</string>
     <string name="shipping_label_validation_view_map">マップを開く</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
     <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
@@ -135,7 +144,6 @@ Language: ja_JP
     <string name="order_mark_complete">注文を完了としてマーク</string>
     <string name="orderdetail_shipping_label_notice">スマートフォンでのラベル作成に関する詳細はこちら</string>
     <string name="orderdetail_shipping_label_create_shipping_label">配送ラベルを作成</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">無料の WooCommerce Shipping プラグインを使用して、お使いの端末から直接、すべての物理的な注文の配送ラベルを作成できるようになりました。 「配送ラベルを作成」をタップしてお試しください !</string>
     <string name="orderdetail_shipping_label_m2_wip_title">スマートフォンを使って配送ラベルを作成 !</string>
     <string name="orderdetail_payment_fees">手数料</string>
     <string name="orderdetail_net">支払額 (正味)</string>
@@ -471,7 +479,6 @@ Language: ja_JP
     <string name="product_schedule_sale_sublabel">セールを自動的に開始、終了する</string>
     <string name="product_schedule_sale_label">セールの予定を設定</string>
     <string name="order_refunds_store_admin_link_text">ストア管理へ</string>
-    <string name="order_refunds_shipping_refund_notice">配送料と税額%sの返金をリクエストできます。</string>
     <string name="orders_empty_message_with_order_status_filter">「%s」の注文が見つかりませんでした。</string>
     <string name="product_inventory_update_sku_error">すでに別の製品で使用されている SKU</string>
     <string name="product_shipping_settings">配送設定</string>

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-01 11:54:55+0000
+Translation-Revision-Date: 2021-04-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">¿Has creado una cuenta nueva sin querer? Vuelve e introduce de nuevo tu dirección de correo electrónico.</string>
+    <string name="settings_card_reader_connect">Conectar el lector de tarjetas</string>
+    <string name="settings_card_reader">Gestionar el lector de tarjetas</string>
+    <string name="settings_store">Ajustes de la tienda</string>
+    <string name="product_attributes">Atributos</string>
+    <string name="order_refunds_shipping_refund_variable_notice">Puedes reembolsar %1$s</string>
+    <string name="orderdetail_collect_payment_button">Recepción de pago</string>
+    <string name="and">y</string>
+    <string name="product_attribute_remove">¿Eliminar este atributo?</string>
+    <string name="product_any_attribute_hint">Cualquiera</string>
     <string name="product_attributes_error_saving">No se han podido guardar tus atributos</string>
     <string name="shipping_label_payments_cant_edit_warning">Solo el propietario del sitio puede gestionar los métodos de pago de la etiqueta de envío. Contacta con el propietario de la tienda %1$s (%2$s) para gestionar los métodos de pago.</string>
     <string name="product_detail_add_variations">Añadir variaciones</string>
@@ -91,7 +101,6 @@ Language: es
     <string name="shipping_label_edit_address_loading_progress_title">cargando los datos de la dirección</string>
     <string name="product_wip_title_m5">¡Hay nuevas funciones disponibles!</string>
     <string name="product_wip_message_m5">Ahora puedes añadir archivos descargables a un producto y enlazar productos de ventas dirigidas y cruzadas ¿Ya no quieres un producto? ¡Envíalo a la papelera!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Puedes reembolsar los importes de cuotas, envíos e impuestos %s</string>
     <string name="shipping_label_validation_view_map">Abrir mapa</string>
     <string name="shipping_label_validation_contact_customer">Contactar con el cliente</string>
     <string name="shipping_label_validation_error_template">Error de validación: %s</string>
@@ -135,7 +144,6 @@ Language: es
     <string name="order_mark_complete">Marcar el pedido como completado</string>
     <string name="orderdetail_shipping_label_notice">Obtén más información sobre la creación de etiquetas con tu teléfono</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Crear etiqueta de envío</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">Ahora puedes crear etiquetas de envío para todos los pedidos físicos directamente desde tu dispositivo con el plugin gratuito de WooCommerce Shipping. ¡Toca \"Crear etiqueta de envío\" para probarlo!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">¡Crea etiquetas de envío desde tu dispositivo!</string>
     <string name="orderdetail_payment_fees">Tasas</string>
     <string name="orderdetail_net">Pago neto</string>
@@ -471,7 +479,6 @@ Language: es
     <string name="product_schedule_sale_sublabel">Iniciar y finalizar una oferta automáticamente</string>
     <string name="product_schedule_sale_label">Programar oferta</string>
     <string name="order_refunds_store_admin_link_text">en la administración de tu tienda</string>
-    <string name="order_refunds_shipping_refund_notice">Puedes reembolsar los importes de los envíos y los impuestos %s</string>
     <string name="orders_empty_message_with_order_status_filter">No hemos encontrado pedidos de \"%s\"</string>
     <string name="product_inventory_update_sku_error">Otro producto ya usa este SKU</string>
     <string name="product_shipping_settings">Configuración de envío</string>

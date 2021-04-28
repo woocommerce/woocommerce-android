@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -761,12 +762,19 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
-        showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
             remoteProductId,
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
+    }
+
+    override fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
+        // variation detail is part of the products navigation graph, and product detail is the starting destination
+        // for that graph, so we have to use a deep link to navigate to variation detail
+        val query = "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
+        val deeplink = "wcandroid://variationDetail$query"
+        navController.navigate(Uri.parse(deeplink))
     }
 
     override fun showAddProduct() {

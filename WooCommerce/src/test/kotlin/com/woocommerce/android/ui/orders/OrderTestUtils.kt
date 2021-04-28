@@ -175,11 +175,11 @@ object OrderTestUtils {
     fun generateShippingLabel(localSiteId: Int = 1, remoteOrderId: Long, shippingLabelId: Long): ShippingLabel {
         return WCShippingLabelModel().apply {
             this.localSiteId = localSiteId
-            localOrderId = remoteOrderId
+            this.remoteOrderId = remoteOrderId
             remoteShippingLabelId = shippingLabelId
             packageName = "Package"
             serviceName = "Service"
-            dateCreated = Date().time.toString()
+            dateCreated = Date().time
         }.toAppModel()
     }
 
@@ -188,11 +188,11 @@ object OrderTestUtils {
         for (i in totalCount downTo 1) {
             result.add(WCShippingLabelModel().apply {
                 localSiteId = orderIdentifier.toIdSet().localSiteId
-                localOrderId = orderIdentifier.toIdSet().id.toLong()
+                this.remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
                 remoteShippingLabelId = i.toLong()
                 packageName = "Package$i"
                 serviceName = "Service$i"
-                dateCreated = Date().time.toString()
+                dateCreated = Date().time
             }.toAppModel())
         }
         return result

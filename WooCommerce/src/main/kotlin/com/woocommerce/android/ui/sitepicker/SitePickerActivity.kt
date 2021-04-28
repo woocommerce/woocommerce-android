@@ -44,7 +44,6 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.AndroidInjection
@@ -433,7 +432,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         progressDialog?.dismiss()
 
         selectedSite.set(site)
-        CrashUtils.setCurrentSite(site)
         FCMRegistrationIntentService.enqueueWork(this)
 
         // if we came here from login, start the main activity

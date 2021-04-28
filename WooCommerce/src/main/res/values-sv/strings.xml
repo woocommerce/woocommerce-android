@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-30 11:54:04+0000
+Translation-Revision-Date: 2021-04-20 20:35:32+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">Kunde inte markera beställningen som slutförd</string>
+    <string name="shipping_label_create_purchase_progress_message">Vänta …</string>
+    <string name="shipping_label_print_save_for_later">Spara till senare</string>
+    <string name="shipping_label_refund_expired">Etiketter som är äldre än 30 dagar kan inte återbetalas</string>
+    <string name="rename">Ändra namn</string>
+    <string name="product_rename_attribute_helper">Typ av variation, t.ex. storlek eller färg</string>
+    <string name="product_rename_attribute">Byt namn på attribut</string>
+    <string name="magic_link_not_meaning_to_create_account">Var det inte meningen att skapa ett nytt konto? Gå tillbaka och skriv din e-postadress igen.</string>
+    <string name="settings_card_reader_connect">Anslut kortläsare</string>
+    <string name="settings_card_reader">Hantera kortläsare</string>
+    <string name="settings_store">Butiksinställningar</string>
+    <string name="product_attributes">Attribut</string>
+    <string name="order_refunds_shipping_refund_variable_notice">Du kan återbetala %1$s</string>
+    <string name="orderdetail_collect_payment_button">Ta emot betalning</string>
+    <string name="and">och</string>
+    <string name="product_attribute_remove">Ta bort detta attribut?</string>
+    <string name="product_any_attribute_hint">Valfri</string>
     <string name="product_attributes_error_saving">Fel när dina attribut sparades</string>
     <string name="shipping_label_payments_cant_edit_warning">Det är bara webbplatsens ägare som kan hantera betalningsmetoderna för fraktetiketter. Kontakta butiksägaren %1$s (%2$s) för att hantera betalningsmetoder.</string>
     <string name="product_detail_add_variations">Lägg till variationer</string>
@@ -91,7 +108,6 @@ Language: sv_SE
     <string name="shipping_label_edit_address_loading_progress_title">Laddar in adressdata</string>
     <string name="product_wip_title_m5">Nya funktioner tillgängliga!</string>
     <string name="product_wip_message_m5">Du kan nu lägga till nedladdningsbara filer till en produkt och länka produkter för merföräljning och korsförsäljning. Vill du inte ha en produkt längre? Släng den!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Du kan återbetala avgifter, frakt och momsbelopp %s</string>
     <string name="shipping_label_validation_view_map">Öppna karta</string>
     <string name="shipping_label_validation_contact_customer">Kontakta kunden</string>
     <string name="shipping_label_validation_error_template">Validering misslyckades: %s</string>
@@ -135,7 +151,6 @@ Language: sv_SE
     <string name="order_mark_complete">Markera ordern som slutförd</string>
     <string name="orderdetail_shipping_label_notice">Läs mer om att skapa etiketter med hjälp av din telefon</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Skapa fraktetikett</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">Du kan nu skapa fraktetiketter för alla fysiska beställningar direkt från din enhet med hjälp av gratistillägget WooCommerce Shipping. Tryck på \"Skapa fraktetikett\" för att prova!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Skapa fraktetiketter från din enhet!</string>
     <string name="orderdetail_payment_fees">Avgifter</string>
     <string name="orderdetail_net">Nettobetalning</string>
@@ -471,7 +486,6 @@ Language: sv_SE
     <string name="product_schedule_sale_sublabel">Starta och avsluta en rea automatiskt</string>
     <string name="product_schedule_sale_label">Schemalägg rea</string>
     <string name="order_refunds_store_admin_link_text">i ditt administratörsarkiv</string>
-    <string name="order_refunds_shipping_refund_notice">Du kan återbetala frakt- och momsbelopp %s</string>
     <string name="orders_empty_message_with_order_status_filter">Vi hittade inga %s-ordrar</string>
     <string name="product_inventory_update_sku_error">SKU används redan av en annan produkt</string>
     <string name="product_shipping_settings">Fraktinställningar</string>

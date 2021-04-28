@@ -2,7 +2,6 @@ package com.woocommerce.android.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
-import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -65,7 +64,6 @@ fun Date.isToday() =
     } catch (e: Exception) {
         with("Unable to match dateString with today date. (current dateString value: $this)") {
             WooLog.e(T.UTILS, this)
-            CrashUtils.logException(e, T.UTILS, this)
         }
         null
     }
@@ -74,7 +72,7 @@ fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(cont
 
 fun Date.getMediumDate(context: Context): String = DateFormat.getMediumDateFormat(context).format(this)
 
-fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils().offsetGmtDate(it, gmtOffset) }
+fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils.offsetGmtDate(it, gmtOffset) }
 
 fun Date.formatToYYYYmmDDhhmmss(): String =
     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(this)

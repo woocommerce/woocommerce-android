@@ -7,6 +7,7 @@ import java.util.Locale
 
 enum class ProductType(@StringRes val stringResource: Int = 0, val value: String = "") {
     SIMPLE(R.string.product_type_simple, CoreProductType.SIMPLE.value),
+    VIRTUAL(R.string.product_type_virtual, CoreProductType.SIMPLE.value),
     GROUPED(R.string.product_type_grouped, CoreProductType.GROUPED.value),
     EXTERNAL(R.string.product_type_external, CoreProductType.EXTERNAL.value),
     VARIABLE(R.string.product_type_variable, CoreProductType.VARIABLE.value),
@@ -19,6 +20,7 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
                 "external" -> EXTERNAL
                 "variable" -> VARIABLE
                 "simple" -> SIMPLE
+                "virtual" -> SIMPLE
                 else -> OTHER
             }
         }

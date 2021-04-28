@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-31 15:54:04+0000
+Translation-Revision-Date: 2021-04-16 22:52:19+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">Non volevi creare un nuovo account? Torna indietro per inserire nuovamente l\'indirizzo e-mail.</string>
+    <string name="settings_card_reader_connect">Connetti lettore di carte</string>
+    <string name="settings_card_reader">Gestisci lettore di carte</string>
+    <string name="settings_store">Impostazioni del negozio</string>
+    <string name="product_attributes">Attributi</string>
+    <string name="order_refunds_shipping_refund_variable_notice">Puoi rimborsare %1$s</string>
+    <string name="orderdetail_collect_payment_button">Ricevi pagamenti</string>
+    <string name="and">e</string>
+    <string name="product_attribute_remove">Rimuovere questo attributo?</string>
+    <string name="product_any_attribute_hint">Qualsiasi</string>
     <string name="product_attributes_error_saving">Errore durante il salvataggio degli attributi</string>
     <string name="shipping_label_payments_cant_edit_warning">Solo il proprietario del sito può gestire i metodi di pagamento dell\'etichetta di spedizione. Contatta il proprietario del negozio %1$s (%2$s) per gestire i metodi di pagamento.</string>
     <string name="product_detail_add_variations">Aggiungi varianti</string>
@@ -24,7 +34,7 @@ Language: it
     <string name="shipping_label_shipping_method_local_pickup">Ritiro in sede</string>
     <string name="shipping_label_shipping_method_flat_rate">Tariffa unica</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Il cliente ha pagato %1$s (%2$s) per la spedizione</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Quando acquisti le etichette di spedizione tramite WooCommerce, ottieni dal 5% al 40% di sconto rispetto alle tariffe degli uffici postali.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Quando acquisti le etichette di spedizione tramite WooCommerce, ottieni dal 5​% 25 al 40​% 25 di sconto rispetto alle tariffe degli uffici postali.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Cos\'è lo sconto di WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Si è verificato un errore durante il caricamento delle opzioni di spedizione</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Non sono presenti opzioni di spedizione per l\'indirizzo e i pacchetti selezionati</string>
@@ -91,7 +101,6 @@ Language: it
     <string name="shipping_label_edit_address_loading_progress_title">Caricamento dei dati dell\'indirizzo</string>
     <string name="product_wip_title_m5">Nuove funzionalità disponibili.</string>
     <string name="product_wip_message_m5">Ora puoi aggiungere file scaricabili a un prodotto e collegare i prodotti di upsell e cross-sell. Non desideri più un prodotto? Spostalo nel cestino.</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Puoi rimborsare gli importi di tariffe, spedizioni e tasse %s</string>
     <string name="shipping_label_validation_view_map">Apri mappa</string>
     <string name="shipping_label_validation_contact_customer">Contatta cliente</string>
     <string name="shipping_label_validation_error_template">Convalida non riuscita: %s</string>
@@ -135,7 +144,6 @@ Language: it
     <string name="order_mark_complete">Contrassegna ordine come completo</string>
     <string name="orderdetail_shipping_label_notice">Scopri di più su come creare etichette dal telefono</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Crea etichetta di spedizione</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">Ora puoi creare etichette di spedizione per tutti gli ordini fisici direttamente dal tuo dispositivo con il plugin WooCommerce Shipping gratuito. Tocca \"Crea etichetta di spedizione\" per provarlo.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Crea etichette di spedizione dal tuo dispositivo.</string>
     <string name="orderdetail_payment_fees">Tariffe</string>
     <string name="orderdetail_net">Importo di pagamento netto</string>
@@ -471,7 +479,6 @@ Language: it
     <string name="product_schedule_sale_sublabel">Avvia e termina automaticamente una vendita</string>
     <string name="product_schedule_sale_label">Programma vendita</string>
     <string name="order_refunds_store_admin_link_text">nella tua pagina di amministrazione del negozio</string>
-    <string name="order_refunds_shipping_refund_notice">Puoi rimborsare gli importi di spedizione e tasse %s</string>
     <string name="orders_empty_message_with_order_status_filter">Siamo spiacenti, non è stato possibile trovare alcun ordine \"%s\"</string>
     <string name="product_inventory_update_sku_error">SKU già in uso da un altro prodotto</string>
     <string name="product_shipping_settings">Impostazioni spedizione</string>

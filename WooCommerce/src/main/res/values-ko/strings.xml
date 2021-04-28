@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-31 11:54:03+0000
+Translation-Revision-Date: 2021-04-16 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">새 계정을 만들 계획이 없으신가요? 뒤로 이동하여 이메일 주소를 다시 입력하세요.</string>
+    <string name="settings_card_reader_connect">카드 판독기 연결</string>
+    <string name="settings_card_reader">카드 판독기 관리</string>
+    <string name="settings_store">스토어 설정</string>
+    <string name="product_attributes">속성</string>
+    <string name="order_refunds_shipping_refund_variable_notice">%1$s 환불 가능</string>
+    <string name="orderdetail_collect_payment_button">결제받기</string>
+    <string name="and">및</string>
+    <string name="product_attribute_remove">이 속성을 제거하시겠습니까?</string>
+    <string name="product_any_attribute_hint">모든</string>
     <string name="product_attributes_error_saving">속성 저장 중 오류 발생</string>
     <string name="shipping_label_payments_cant_edit_warning">사이트 소유자만 배송 레이블 결제 수단을 관리할 수 있습니다. 결제 수단을 관리하려면 스토어 소유자 %1$s(%2$s)에게 문의하세요.</string>
     <string name="product_detail_add_variations">변형 추가</string>
@@ -91,7 +101,6 @@ Language: ko_KR
     <string name="shipping_label_edit_address_loading_progress_title">주소 데이터 로드 중</string>
     <string name="product_wip_title_m5">새 기능을 사용할 수 있습니다!</string>
     <string name="product_wip_message_m5">이제 다운로드 가능한 파일을 제품에 추가하고 상향 판매 및 교차 판매 제품을 연결할 수 있습니다. 더는 제품을 원하지 않나요? 휴지통에 버리세요!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">수수료, 배송비 및 세금(%s)을 환불할 수 있음</string>
     <string name="shipping_label_validation_view_map">지도 열기</string>
     <string name="shipping_label_validation_contact_customer">고객에게 문의</string>
     <string name="shipping_label_validation_error_template">유효성 검사 실패: %s</string>
@@ -135,7 +144,6 @@ Language: ko_KR
     <string name="order_mark_complete">주문을 완료로 표시</string>
     <string name="orderdetail_shipping_label_notice">휴대폰으로 레이블 만들기에 대해 자세히 알아보기</string>
     <string name="orderdetail_shipping_label_create_shipping_label">배송 레이블 만들기</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">이제 무료 WooCommerce 배송 플러그인으로 장치에서 직접 모든 실물 주문에 대한 배송 레이블을 만들 수 있습니다. \"배송 레이블 만들기\"를 눌러 사용해 보세요!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">장치에서 배송 레이블을 만드세요!</string>
     <string name="orderdetail_payment_fees">수수료</string>
     <string name="orderdetail_net">순 결제</string>
@@ -471,7 +479,6 @@ Language: ko_KR
     <string name="product_schedule_sale_sublabel">자동 판매 시작 및 종료</string>
     <string name="product_schedule_sale_label">판매 일정</string>
     <string name="order_refunds_store_admin_link_text">스토어 관리자에서</string>
-    <string name="order_refunds_shipping_refund_notice">배송비 및 세금(%s)을 환불할 수 있습니다.</string>
     <string name="orders_empty_message_with_order_status_filter">죄송합니다. \"%s\" 주문을 찾을 수 없습니다.</string>
     <string name="product_inventory_update_sku_error">SKU가 다른 제품에서 이미 사용 중</string>
     <string name="product_shipping_settings">배송 설정</string>

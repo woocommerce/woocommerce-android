@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-01 09:54:04+0000
+Translation-Revision-Date: 2021-04-16 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">不打算创建新帐户？ 返回以重新输入您的电子邮件地址。</string>
+    <string name="settings_card_reader_connect">连接读卡器</string>
+    <string name="settings_card_reader">管理读卡器</string>
+    <string name="settings_store">商店设置</string>
+    <string name="product_attributes">属性</string>
+    <string name="order_refunds_shipping_refund_variable_notice">您可以退款 %1$s</string>
+    <string name="orderdetail_collect_payment_button">收取付款</string>
+    <string name="and">和</string>
+    <string name="product_attribute_remove">删除这个属性？</string>
+    <string name="product_any_attribute_hint">任何</string>
     <string name="product_attributes_error_saving">保存属性时出错</string>
     <string name="shipping_label_payments_cant_edit_warning">只有站点所有者可以管理配送标签付款方式。 请联系商店所有者 %1$s (%2$s) 以管理付款方式。</string>
     <string name="product_detail_add_variations">添加变体</string>
@@ -91,7 +101,6 @@ Language: zh_CN
     <string name="shipping_label_edit_address_loading_progress_title">正在加载地址数据</string>
     <string name="product_wip_title_m5">已推出新功能！</string>
     <string name="product_wip_message_m5">您现在可以为产品添加可下载的文件，并链接追加销售和交叉销售产品。 不再想要某款产品了吗？ 将该产品移至回收站！</string>
-    <string name="order_refunds_shipping_refund_notice_fees">您可以退还运费和税款 %s</string>
     <string name="shipping_label_validation_view_map">打开地图</string>
     <string name="shipping_label_validation_contact_customer">联系客户</string>
     <string name="shipping_label_validation_error_template">验证失败：%s</string>
@@ -135,7 +144,6 @@ Language: zh_CN
     <string name="order_mark_complete">将订单标记为完成</string>
     <string name="orderdetail_shipping_label_notice">详细了解如何使用手机创建配送标签</string>
     <string name="orderdetail_shipping_label_create_shipping_label">创建配送标签</string>
-    <string name="orderdetail_shipping_label_m2_wip_message">现在，您可以利用免费的 WooCommerce Shipping 插件，直接通过您的设备为所有实体订单创建配送标签。 轻按“创建配送标签”试试看！</string>
     <string name="orderdetail_shipping_label_m2_wip_title">通过您的设备创建配送标签！！</string>
     <string name="orderdetail_payment_fees">费用</string>
     <string name="orderdetail_net">净付款</string>
@@ -471,7 +479,6 @@ Language: zh_CN
     <string name="product_schedule_sale_sublabel">自动开始和结束销售</string>
     <string name="product_schedule_sale_label">安排促销</string>
     <string name="order_refunds_store_admin_link_text">在您的店铺管理页面中</string>
-    <string name="order_refunds_shipping_refund_notice">您可以退还运费和税款 %s</string>
     <string name="orders_empty_message_with_order_status_filter">抱歉，找不到任何“%s”的订单</string>
     <string name="product_inventory_update_sku_error">SKU 已用于其他产品</string>
     <string name="product_shipping_settings">配送选项</string>

@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Parcelable
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -20,10 +17,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parcelize
 import java.io.File
+import java.util.Date
 import java.util.Locale
 
 class PrintShippingLabelViewModel @AssistedInject constructor(
@@ -33,8 +34,16 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
     private val arguments: PrintShippingLabelFragmentArgs by savedState.navArgs()
+    private val label
+        get() = repository.getShippingLabelByOrderIdAndLabelId(
+            orderId = arguments.orderId,
+            shippingLabelId = arguments.shippingLabelId
+        )
 
-    val viewStateData = LiveDataDelegate(savedState, PrintShippingLabelViewState())
+    val viewStateData = LiveDataDelegate(savedState, PrintShippingLabelViewState(
+        isLabelExpired = label?.isAnonymized == true ||
+            label?.expiryDate?.let { Date().after(it) } ?: false
+    ))
     private var viewState by viewStateData
 
     fun onPrintShippingLabelInfoSelected() {
@@ -109,6 +118,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         val paperSize: ShippingLabelPaperSize = ShippingLabelPaperSize.LABEL,
         val isProgressDialogShown: Boolean? = null,
         val previewShippingLabel: String? = null,
+        val isLabelExpired: Boolean = false,
         val tempFile: File? = null
     ) : Parcelable
 

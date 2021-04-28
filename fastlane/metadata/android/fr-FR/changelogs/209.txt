@@ -1,0 +1,4 @@
+6.4 :
+Nous avons apporté quelques améliorations à cette version.
+Nous avons résolu un bogue qui empêchait l’application de charger des produits lorsqu’il y avait une valeur décimale dans la quantité en stock.
+Nous avons également résolu un problème de mise en page qui se produisait sur l’écran d’option des formats des étiquettes d’expédition.
