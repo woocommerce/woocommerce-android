@@ -179,7 +179,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
         actionMode = requireActivity().startActionMode(actionModeCallback)
         itemTouchHelper.attachToRecyclerView(binding.productsRecycler)
-        binding.addGroupedProductView.isVisible = false
+        showAddProductButton(false)
         actionMode?.title = getString(R.string.edit)
         viewModel.isEditMode = true
         productListAdapter.setEditMode(true)
@@ -218,7 +218,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
 
     override fun onActionModeDestroyed() {
         TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
-        binding.addGroupedProductView.isVisible = true
+        showAddProductButton(true)
         productListAdapter.setEditMode(false)
         itemTouchHelper.attachToRecyclerView(null)
         // If the back button is pressed in ActionMode then undo all the operation, else save the operation
