@@ -4,14 +4,14 @@ import com.woocommerce.android.model.Product
 import org.junit.Assert
 import org.junit.Test
 
-class LinkedProductSwappingStrategyTest {
+class LinkedProductReorderingStrategyTest {
 
     @Test
     fun `after drag-and-drop of linked product from 1st to 2nd position the product list order must be correct` () {
 
         // Given
         val currentLinkedProductList = ProductTestUtils.generateProductList()
-        val productListSwappingStrategy = DefaultProductListSwappingStrategy()
+        val productListSwappingStrategy = DefaultProductListReorderingStrategy()
         val expectedLinkedProductIds = arrayListOf(2L, 1L, 3L, 4L, 5L)
 
 
@@ -34,7 +34,7 @@ class LinkedProductSwappingStrategyTest {
 
         // Given
         val currentLinkedProductList = ProductTestUtils.generateProductList()
-        val productListSwappingStrategy = DefaultProductListSwappingStrategy()
+        val productListSwappingStrategy = DefaultProductListReorderingStrategy()
         val expectedLinkedProductIds = arrayListOf(2L, 1L, 4L, 3L, 5L)
 
 

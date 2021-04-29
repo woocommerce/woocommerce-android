@@ -11,7 +11,7 @@ import com.woocommerce.android.model.Product
 
 class GroupedProductListAdapter(
     private var isEditMode: Boolean = false,
-    private val productListSwappingStrategy: ProductListSwappingStrategy = DefaultProductListSwappingStrategy(),
+    private val productListReorderingStrategy: ProductListReorderingStrategy = DefaultProductListReorderingStrategy(),
     private val onItemDeleted: (product: Product) -> Unit,
     private val onItemReOrdered: (productsList: List<Product>) -> Unit
 ) : RecyclerView.Adapter<ProductItemViewHolder>() {
@@ -64,7 +64,7 @@ class GroupedProductListAdapter(
      * Helps in re-ordering the items in the list.
      **/
     fun swapItems(from: Int, to: Int) {
-        productListSwappingStrategy.reOrderItems(from, to, productList)
+        productListReorderingStrategy.reOrderItems(from, to, productList)
         notifyItemMoved(from, to)
         onItemReOrdered(productList)
     }
