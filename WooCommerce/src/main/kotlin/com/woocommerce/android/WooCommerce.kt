@@ -3,10 +3,8 @@ package com.woocommerce.android
 import androidx.multidex.MultiDexApplication
 import com.android.volley.VolleyLog
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.di.WooCommerceGlideModule
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
-import dagger.MembersInjector
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
