@@ -292,11 +292,6 @@ class ProductListViewModel @AssistedInject constructor(
             isAddProductButtonVisible = shouldShowAddProductButton,
             displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
         )
-
-        /* When search result returns zero, the app will show empty state screen. Make sure FAB shows up in this case. */
-        if (viewState.query != null) {
-            viewState = viewState.copy(isAddProductButtonVisible = true)
-        }
     }
 
     /**
