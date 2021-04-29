@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -61,6 +62,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
+    @Inject lateinit var crashLogging: CrashLogging
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
