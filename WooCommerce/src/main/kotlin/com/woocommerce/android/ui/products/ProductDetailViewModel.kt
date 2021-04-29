@@ -10,7 +10,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_PUBLISH_TAPPED

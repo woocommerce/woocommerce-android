@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.variations
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -101,7 +100,6 @@ class VariationListRepository @Inject constructor(
             productStore
                 .generateEmptyVariation(selectedSite.get(), product.toDataModel())
                 .handleVariationCreateResult(product)
-
         }
 
     private fun WooResult<WCProductVariationModel>.handleVariationCreateResult(
