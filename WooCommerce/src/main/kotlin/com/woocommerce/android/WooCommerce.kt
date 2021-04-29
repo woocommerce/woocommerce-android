@@ -4,7 +4,6 @@ import androidx.multidex.MultiDexApplication
 import com.android.volley.VolleyLog
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.WooCommerceGlideModule
-import com.woocommerce.android.util.AppThemeUtils
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
 import dagger.MembersInjector
