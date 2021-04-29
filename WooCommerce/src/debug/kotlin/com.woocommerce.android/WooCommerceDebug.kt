@@ -1,5 +1,9 @@
 package com.woocommerce.android
 
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import android.os.StrictMode.VmPolicy
+import com.android.volley.VolleyLog
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.android.utils.FlipperUtils
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin
@@ -10,10 +14,12 @@ import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPl
 import com.facebook.soloader.SoLoader
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
-import com.woocommerce.android.di.AppComponent
-import com.woocommerce.android.di.DaggerAppComponentDebug
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.delay
 
+@HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
     override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
         override suspend fun getConnectionToken(): String {
@@ -28,12 +34,6 @@ class WooCommerceDebug : WooCommerce() {
         }
     })
 
-    override val component: AppComponent by lazy {
-        DaggerAppComponentDebug.builder()
-            .application(this)
-            .build()
-    }
-
     override fun onCreate() {
         if (FlipperUtils.shouldEnableFlipper(this)) {
             SoLoader.init(this, false)
@@ -45,5 +45,37 @@ class WooCommerceDebug : WooCommerce() {
             }.start()
         }
         super.onCreate()
+        enableStrictMode()
+    }
+
+    /**
+     * enables "strict mode" for testing - should NEVER be used in release builds
+     */
+    private fun enableStrictMode() {
+        // return if the build is not a debug build
+        if (!BuildConfig.DEBUG) {
+            WooLog.e(T.UTILS, "You should not call enableStrictMode() on a non debug build")
+            return
+        }
+
+        StrictMode.setThreadPolicy(
+            ThreadPolicy.Builder()
+                .detectDiskWrites()
+                .detectNetwork()
+                .penaltyLog()
+                .penaltyFlashScreen()
+                .build()
+        )
+
+        StrictMode.setVmPolicy(
+            VmPolicy.Builder()
+                .detectActivityLeaks()
+                .detectLeakedSqlLiteObjects()
+                .detectLeakedClosableObjects()
+                .detectLeakedRegistrationObjects()
+                .penaltyLog()
+                .build()
+        )
+        WooLog.w(T.UTILS, "Strict mode enabled")
     }
 }
