@@ -100,7 +100,7 @@ class AttributeTermsListAdapter(
     }
 
     /**
-     * When the listchanges from/to a single term we must refresh all the views since we only show the drag
+     * When the list changes from/to a single term we must refresh all the views since we only show the drag
      * handle when there's more than one term, but we delay the refresh to give the added/removed term time
      * to animate
      */
