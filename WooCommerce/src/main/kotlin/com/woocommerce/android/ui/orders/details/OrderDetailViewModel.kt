@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
@@ -214,7 +213,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.remoteId))
     }
 
-    fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager?) {
+    fun onAcceptCardPresentPaymentClicked() {
         triggerEvent(StartCardReaderPaymentFlow(order.identifier))
     }
 

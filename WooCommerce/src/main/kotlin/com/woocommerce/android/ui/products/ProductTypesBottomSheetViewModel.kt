@@ -44,9 +44,9 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             val properties = mapOf("product_type" to productTypeUiItem.type.value.toLowerCase(ROOT))
             AnalyticsTracker.track(Stat.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
-            saveUserSelection(productTypeUiItem.type)
+            saveUserSelection(productTypeUiItem)
             triggerEvent(ViewProductAdd)
-            triggerEvent(ExitWithResult(productTypeUiItem.type))
+            triggerEvent(ExitWithResult(productTypeUiItem))
         } else {
             triggerEvent(ShowDialog(
                 titleId = R.string.product_type_confirm_dialog_title,
@@ -54,13 +54,16 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
                 positiveButtonId = R.string.product_type_confirm_button,
                 negativeButtonId = R.string.cancel,
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(ExitWithResult(productTypeUiItem.type))
+                    triggerEvent(ExitWithResult(productTypeUiItem))
                 }
             ))
         }
     }
 
-    private fun saveUserSelection(type: ProductType) = prefs.setSelectedProductType(type)
+    private fun saveUserSelection(productTypeUiItem: ProductTypesBottomSheetUiItem) {
+        prefs.setSelectedProductType(productTypeUiItem.type)
+        prefs.setSelectedProductIsVirtual(productTypeUiItem.isVirtual)
+    }
 
     @Parcelize
     data class ProductTypesBottomSheetUiItem(
@@ -68,7 +71,8 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int,
-        val isEnabled: Boolean
+        val isEnabled: Boolean,
+        val isVirtual: Boolean = false
     ) : Parcelable
 
     @AssistedFactory

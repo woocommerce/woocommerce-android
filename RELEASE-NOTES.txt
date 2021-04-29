@@ -2,7 +2,7 @@
 
 6.6
 -----
-
+- [*] Added the option to create and edit a virtual product directly from the product detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3900]
 
 6.5
 -----

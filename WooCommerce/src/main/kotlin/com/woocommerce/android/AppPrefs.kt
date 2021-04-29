@@ -43,6 +43,7 @@ object AppPrefs {
         IMAGE_OPTIMIZE_ENABLED,
         SELECTED_APP_THEME,
         SELECTED_PRODUCT_TYPE,
+        SELECTED_PRODUCT_IS_VIRTUAL,
         UNIFIED_LOGIN_LAST_ACTIVE_SOURCE,
         UNIFIED_LOGIN_LAST_ACTIVE_FLOW
     }
@@ -275,6 +276,11 @@ object AppPrefs {
     fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
 
     fun getSelectedProductType(): String = getString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, "")
+
+    fun setSelectedProductIsVirtual(isVirtual: Boolean) =
+        setBoolean(DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL, isVirtual)
+
+    fun isSelectedProductVirtual(): Boolean = getBoolean(DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL, false)
 
     /**
      * Checks if the user has a saved order list tab position yet. If no position has been saved,

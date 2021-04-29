@@ -211,11 +211,7 @@
             android:id="@+id/action_orderDetailFragment_to_cardReaderPaymentDialog"
             app:destination="@id/cardReaderPaymentDialog"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="orderIdentifier"
-                app:argType="string" />
-        </action>
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -386,5 +382,9 @@
     <dialog
         android:id="@+id/cardReaderPaymentDialog"
         android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog"
-        android:label="CardReaderPaymentDialog" />
+        android:label="CardReaderPaymentDialog">
+        <argument
+            android:name="orderIdentifier"
+            app:argType="string" />
+    </dialog>
 </navigation>

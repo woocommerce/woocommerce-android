@@ -237,7 +237,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.AddressValidationFailed> {
-                transitionTo(State.OriginAddressValidationFailure, SideEffect.ShowError(AddressValidationError))
+                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(AddressValidationError))
             }
         }
 
@@ -296,7 +296,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.AddressValidationFailed> {
-                transitionTo(State.ShippingAddressValidationFailure, SideEffect.ShowError(AddressValidationError))
+                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(AddressValidationError))
             }
         }
 
@@ -610,9 +610,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class OriginAddressEditing(val data: StateMachineData) : State()
 
         @Parcelize
-        object OriginAddressValidationFailure : State()
-
-        @Parcelize
         data class ShippingAddressValidation(val data: StateMachineData) : State()
 
         @Parcelize
@@ -620,9 +617,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         @Parcelize
         data class ShippingAddressEditing(val data: StateMachineData) : State()
-
-        @Parcelize
-        object ShippingAddressValidationFailure : State()
 
         @Parcelize
         data class PackageSelection(val data: StateMachineData) : State()
