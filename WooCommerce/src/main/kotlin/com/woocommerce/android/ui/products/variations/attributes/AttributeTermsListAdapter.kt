@@ -135,7 +135,7 @@ class AttributeTermsListAdapter(
                 }
             }
 
-            if (enableDragAndDrop) {
+            if (enableDragAndDrop && termNames.size > 1) {
                 viewBinding.termDragHandle.setOnClickListener {
                     dragHelper?.startDrag(this)
                 }
@@ -144,7 +144,7 @@ class AttributeTermsListAdapter(
 
         fun bind(termName: String) {
             viewBinding.termName.text = termName
-            viewBinding.termDragHandle.isVisible = enableDragAndDrop
+            viewBinding.termDragHandle.isVisible = enableDragAndDrop && termNames.size > 1
             viewBinding.termDelete.isVisible = enableDeleting
         }
     }
