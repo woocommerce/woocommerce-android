@@ -1021,6 +1021,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 updateTermsForAttribute(attributeId, attributeName, mutableTerms)
             }
         }
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
     /**
@@ -1068,7 +1069,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             })
 
             updateProductDraft(attributes = updatedAttributes)
-            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
+            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
         }
     }
 
@@ -1125,7 +1126,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             // add the renamed attribute to the list and update the draft attributes
             updatedAttributes.add(newAttribute)
             updateProductDraft(attributes = updatedAttributes)
-            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
         }
 
         return true
@@ -1178,7 +1178,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             )
 
             updateProductDraft(attributes = updatedAttributes)
-            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
         }
     }
 
@@ -1222,7 +1221,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         updateProductDraft(attributes = updatedAttributes)
-        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
     /**
@@ -1232,9 +1231,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (hasAttributeChanges() && checkConnection()) {
             launch {
                 viewState.productDraft?.attributes?.let { attributes ->
+                    trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
                     val result = productRepository.updateProductAttributes(getRemoteProductId(), attributes)
                     if (!result) {
                         triggerEvent(ShowSnackbar(string.product_attributes_error_saving))
+                        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATE_FAILED)
+                    } else {
+                        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATE_SUCCESS)
                     }
                 }
             }
@@ -1268,7 +1271,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User tapped "Rename" on the attribute terms fragment
      */
     fun onRenameAttributeButtonClick(attributeName: String) {
-        AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED)
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED)
         triggerEvent(RenameProductAttribute(attributeName))
     }
 

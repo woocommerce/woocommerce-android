@@ -382,7 +382,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             messageId = R.string.product_attribute_remove,
             positiveButtonId = R.string.remove,
             posBtnAction = { _, _ ->
-                AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
                 isConfirmRemoveDialogShowing = false
                 removeAttribute()
             },
