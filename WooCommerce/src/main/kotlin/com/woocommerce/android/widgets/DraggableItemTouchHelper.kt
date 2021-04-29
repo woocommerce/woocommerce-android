@@ -40,7 +40,7 @@ class DraggableItemTouchHelper(
             override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
                 super.onSelectedChanged(viewHolder, actionState)
                 if (actionState == ACTION_STATE_DRAG) {
-                    viewHolder?.itemView?.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.grey_c_30))
+                    viewHolder?.itemView?.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.woo_purple_60_alpha_33))
                     onDragStarted()
                 }
             }

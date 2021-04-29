@@ -28,7 +28,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
     private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
     private val selectedBackgroundColor = ContextCompat.getColor(context, R.color.color_primary)
-    private val unSelectedBackgroundColor = ContextCompat.getColor(context, R.color.white)
+    private val unSelectedBackgroundColor = ContextCompat.getColor(context, R.color.color_surface)
     private var isEditMode: Boolean = false
 
     fun bind(
