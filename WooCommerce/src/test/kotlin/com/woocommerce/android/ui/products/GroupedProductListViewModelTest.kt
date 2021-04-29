@@ -11,6 +11,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListViewState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -122,6 +123,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever { new -> event = new }
 
         viewModel.onProductDeleted(productList.last())
+        viewModel.isActionModeClicked = true
         viewModel.onBackButtonClicked()
 
         assertThat(event).isInstanceOf(ExitWithResult::class.java)
@@ -131,20 +133,86 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays previously selected product list correctly after canceling edit mode`() {
+    fun `revert product list and undo any operation done on closing edit mode`() {
 
         // Given
         createViewModel()
-        val previousSelectedProductIds = listOf(1L, 2L, 3L, 4L, 5L)
-        var productData: GroupedProductListViewState? = null
-        viewModel.productListViewStateData.observeForever { _, new -> productData = new }
+        val previousSelectedProductIds = listOf(2L, 3L, 4L, 5L)
+        val reorderedProductList = arrayListOf<Product>()
+        reorderedProductList.apply {
+            add(ProductTestUtils.generateProduct(2L))
+            add(ProductTestUtils.generateProduct(3L))
+            add(ProductTestUtils.generateProduct(1L))
+            add(ProductTestUtils.generateProduct(4L))
+        }
+
+        var event: Event? = null
+        viewModel.event.observeForever { new -> event = new }
 
         // When
-        viewModel.restorePreviousProductList(previousSelectedProductIds)
+        viewModel.updateReOrderedProductList(reorderedProductList)
+        viewModel.isActionModeClicked = false
+        viewModel.onBackButtonClicked()
 
         // Then
-        assertThat(previousSelectedProductIds).isEqualTo(productData?.selectedProductIds)
+        assertThat(event).isInstanceOf(ExitWithResult::class.java)
+        assertThat(((event as ExitWithResult<*>).data as List<*>)).isEqualTo(
+            previousSelectedProductIds
+        )
     }
+
+    @Test
+    fun `updates product list after reordering on edit mode`() {
+
+        // Given
+        createViewModel()
+        val reorderedProductList = arrayListOf<Product>()
+        reorderedProductList.apply {
+            add(ProductTestUtils.generateProduct(2L))
+            add(ProductTestUtils.generateProduct(3L))
+            add(ProductTestUtils.generateProduct(1L))
+            add(ProductTestUtils.generateProduct(4L))
+        }
+        val reorderedProductListIds = reorderedProductList.map { it.remoteId }
+
+        var event: Event? = null
+        viewModel.event.observeForever { new -> event = new }
+
+        // When
+        viewModel.updateReOrderedProductList(reorderedProductList)
+        viewModel.isActionModeClicked = true
+        viewModel.onBackButtonClicked()
+
+        // Then
+        assertThat(event).isInstanceOf(ExitWithResult::class.java)
+        assertThat(((event as ExitWithResult<*>).data as List<*>)).isEqualTo(
+            reorderedProductListIds
+        )
+    }
+
+
+    @Test
+    fun `updates product list after deleting a product on edit mode`() {
+
+        // Given
+        createViewModel()
+        val productListAfterDeletion = arrayListOf(2L, 4L, 5L)
+
+        var event: Event? = null
+        viewModel.event.observeForever { new -> event = new }
+
+        // When
+        viewModel.onProductDeleted(ProductTestUtils.generateProduct(3L))
+        viewModel.isActionModeClicked = true
+        viewModel.onBackButtonClicked()
+
+        // Then
+        assertThat(event).isInstanceOf(ExitWithResult::class.java)
+        assertThat(((event as ExitWithResult<*>).data as List<*>)).isEqualTo(
+            productListAfterDeletion
+        )
+    }
+
 
     @Test
     fun `Displays current product list if previously selected list is null after canceling edit mode`() {
@@ -163,26 +231,35 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `re-ordering the product via drag-and-drop must reflect properly`() {
+    fun `re-ordering the product via drag-and-drop must be considered as change in list and reflect properly`() {
 
         // Given
         createViewModel()
         val reorderedProductList = arrayListOf<Product>()
-        reorderedProductList.add(ProductTestUtils.generateProduct(5L))
-        reorderedProductList.add(ProductTestUtils.generateProduct(2L))
-        reorderedProductList.add(ProductTestUtils.generateProduct(3L))
-        reorderedProductList.add(ProductTestUtils.generateProduct(1L))
-        reorderedProductList.add(ProductTestUtils.generateProduct(4L))
+        reorderedProductList.apply {
+            add(ProductTestUtils.generateProduct(5L))
+            add(ProductTestUtils.generateProduct(2L))
+            add(ProductTestUtils.generateProduct(3L))
+            add(ProductTestUtils.generateProduct(1L))
+            add(ProductTestUtils.generateProduct(4L))
+        }
         val reorderedProductIdsList = reorderedProductList.map { it.remoteId }
-        var productData: GroupedProductListViewState? = null
         assertThat(viewModel.hasChanges).isEqualTo(false)
-        viewModel.productListViewStateData.observeForever { _, new -> productData = new }
+
+        var event: Event? = null
+        viewModel.event.observeForever { new -> event = new }
 
         // When
         viewModel.updateReOrderedProductList(reorderedProductList)
+        viewModel.isActionModeClicked = true
+        viewModel.onBackButtonClicked()
 
         // Then
         assertThat(viewModel.hasChanges).isEqualTo(true)
-        assertThat(reorderedProductIdsList).isEqualTo(productData?.selectedProductIds)
+
+        assertThat(event).isInstanceOf(ExitWithResult::class.java)
+        assertThat(((event as ExitWithResult<*>).data as List<*>)).isEqualTo(
+            reorderedProductIdsList
+        )
     }
 }

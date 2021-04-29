@@ -54,9 +54,9 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         )
     }
 
-    // Used to differentiate whether ActionMode done button is clicked or the back button in ActionMode
-    // Since onDestroyActionMode is called for both
-    private var isActionModeClicked: Boolean = false
+//    // Used to differentiate whether ActionMode done button is clicked or the back button in ActionMode
+//    // Since onDestroyActionMode is called for both
+//    private var isActionModeClicked: Boolean = false
 
     private var actionMode: ActionMode? = null
     private val actionModeCallback: ProductEditActionModeCallback by lazy {
@@ -78,7 +78,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         setupObservers()
         setupResultHandlers()
 
-        // Set the UI for edit mode if its edit mode else disable drag-and-drop
+        // Set the UI for edit mode if its edit mode, else disable drag-and-drop
         if (viewModel.isEditMode) {
             setEditModeUI()
         } else {
@@ -222,18 +222,18 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         productListAdapter.setEditMode(false)
         itemTouchHelper.attachToRecyclerView(null)
         // If the back button is pressed in ActionMode then undo all the operation, else save the operation
-        if (!isActionModeClicked) {
+        if (!viewModel.isActionModeClicked) {
             viewModel.restorePreviousProductList(viewModel.previousSelectedProductIds)
         } else {
             viewModel.previousSelectedProductIds = viewModel.productListViewStateData.liveData.value?.selectedProductIds
         }
         viewModel.isEditMode = false
-        isActionModeClicked = false
+        viewModel.isActionModeClicked = false
         actionMode = null
     }
 
     override fun onActionModeClicked() {
-        isActionModeClicked = true
+        viewModel.isActionModeClicked = true
         actionMode?.finish()
     }
 }

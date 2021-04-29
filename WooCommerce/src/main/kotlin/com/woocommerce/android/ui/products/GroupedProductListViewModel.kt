@@ -52,6 +52,10 @@ class GroupedProductListViewModel @AssistedInject constructor(
     // Indicates whether the screen is in edit mode or not
     var isEditMode: Boolean = false
 
+    // Used to differentiate whether ActionMode done button is clicked or the back button in ActionMode
+    // Since onDestroyActionMode is called for both
+    var isActionModeClicked: Boolean = false
+
     val groupedProductListType
         get() = navArgs.groupedProductListType
 
@@ -142,7 +146,11 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun onBackButtonClicked(): Boolean {
         if (hasChanges) {
-            triggerEvent(ExitWithResult(selectedProductIds))
+            if (isActionModeClicked) {
+                triggerEvent(ExitWithResult(selectedProductIds))
+            } else {
+                triggerEvent(ExitWithResult(previousSelectedProductIds))
+            }
             return false
         }
         return true
