@@ -54,10 +54,6 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         )
     }
 
-//    // Used to differentiate whether ActionMode done button is clicked or the back button in ActionMode
-//    // Since onDestroyActionMode is called for both
-//    private var isActionModeClicked: Boolean = false
-
     private var actionMode: ActionMode? = null
     private val actionModeCallback: ProductEditActionModeCallback by lazy {
         ProductEditActionModeCallback(this)

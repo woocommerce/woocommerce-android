@@ -1,8 +1,10 @@
 package com.woocommerce.android.widgets
 
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.woocommerce.android.R
 
 class DraggableItemTouchHelper(
     private val dragDirs: Int,
@@ -26,6 +28,11 @@ class DraggableItemTouchHelper(
                 // no-op
             }
 
+            override fun clearView(recyclerView: RecyclerView, viewHolder: ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                viewHolder.itemView.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.color_surface))
+            }
+
             /*
              `onSelectedChanged` is triggered on any drag & drop related events
              for selected item on RecyclerView
@@ -33,6 +40,7 @@ class DraggableItemTouchHelper(
             override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
                 super.onSelectedChanged(viewHolder, actionState)
                 if (actionState == ACTION_STATE_DRAG) {
+                    viewHolder?.itemView?.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.grey_c_30))
                     onDragStarted()
                 }
             }
