@@ -2,7 +2,7 @@
 
 6.6
 -----
-
+- [*] Fixed a bug would not allow to edit the product price and sale price. [https://github.com/woocommerce/woocommerce-android/pull/3926]
 
 6.5
 -----
