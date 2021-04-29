@@ -223,7 +223,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         itemTouchHelper.attachToRecyclerView(null)
         // If the back button is pressed in ActionMode then undo all the operation, else save the operation
         if (!viewModel.isActionModeClicked) {
-            viewModel.restorePreviousProductList(viewModel.previousSelectedProductIds)
+            viewModel.restorePreviousProductList()
         } else {
             viewModel.previousSelectedProductIds = viewModel.productListViewStateData.liveData.value?.selectedProductIds
         }

@@ -11,7 +11,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListViewState
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -224,7 +223,8 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         viewModel.productListViewStateData.observeForever { _, new -> productData = new }
 
         // When
-        viewModel.restorePreviousProductList(previousSelectedProductIds)
+        viewModel.previousSelectedProductIds = previousSelectedProductIds
+        viewModel.restorePreviousProductList()
 
         // Then
         assertThat(groupedProductIds).isEqualTo(productData?.selectedProductIds)
