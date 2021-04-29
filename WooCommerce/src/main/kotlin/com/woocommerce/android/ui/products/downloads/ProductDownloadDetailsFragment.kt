@@ -31,7 +31,8 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class ProductDownloadDetailsFragment : BaseDaggerFragment(R.layout.fragment_product_download_details), BackPressListener {
+class ProductDownloadDetailsFragment :
+    BaseDaggerFragment(R.layout.fragment_product_download_details), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
 

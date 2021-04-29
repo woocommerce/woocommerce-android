@@ -17,11 +17,11 @@ import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -32,10 +32,10 @@ class ReviewDetailViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val repository: ReviewDetailRepository
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private var remoteReviewId = 0L
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    final val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateData
 
     fun start(remoteReviewId: Long, launchedFromNotification: Boolean) {

@@ -16,9 +16,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundListItem
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -35,8 +35,8 @@ class RefundDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
     private val refundStore: WCRefundStore
-) : ScopedViewModel(savedState, dispatchers) {
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+) : DaggerScopedViewModel(savedState, dispatchers) {
+    final val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _refundItems = MutableLiveData<List<RefundListItem>>()

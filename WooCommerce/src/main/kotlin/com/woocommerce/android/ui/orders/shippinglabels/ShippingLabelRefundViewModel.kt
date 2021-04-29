@@ -8,11 +8,11 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -27,14 +27,14 @@ class ShippingLabelRefundViewModel @AssistedInject constructor(
     private val repository: ShippingLabelRepository,
     private val networkStatus: NetworkStatus,
     dispatchers: CoroutineDispatchers
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private var refundJob: Job? = null
     val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
 
     private val arguments: ShippingLabelRefundFragmentArgs by savedState.navArgs()
 
-    val shippingLabelRefundViewStateData = LiveDataDelegate(savedState, ShippingLabelRefundViewState())
+    val shippingLabelRefundViewStateData = LiveDataDelegateWithArgs(savedState, ShippingLabelRefundViewState())
     private var shippingLabelRefundViewState by shippingLabelRefundViewStateData
 
     init {

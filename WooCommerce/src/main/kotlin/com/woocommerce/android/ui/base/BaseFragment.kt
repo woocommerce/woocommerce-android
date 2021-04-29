@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 
-open class BaseFragment: Fragment, BaseFragmentView {
+open class BaseFragment : Fragment, BaseFragmentView {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 

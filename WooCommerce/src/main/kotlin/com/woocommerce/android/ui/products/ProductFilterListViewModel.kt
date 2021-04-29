@@ -9,13 +9,13 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,7 +30,7 @@ class ProductFilterListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val resourceProvider: ResourceProvider
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
     }
@@ -43,10 +43,11 @@ class ProductFilterListViewModel @AssistedInject constructor(
     private val _filterOptionListItems = MutableLiveData<List<FilterListOptionItemUiModel>>()
     final val filterOptionListItems: LiveData<List<FilterListOptionItemUiModel>> = _filterOptionListItems
 
-    final val productFilterListViewStateData = LiveDataDelegate(savedState, ProductFilterListViewState())
+    final val productFilterListViewStateData = LiveDataDelegateWithArgs(savedState, ProductFilterListViewState())
     private var productFilterListViewState by productFilterListViewStateData
 
-    final val productFilterOptionListViewStateData = LiveDataDelegate(savedState, ProductFilterOptionListViewState())
+    final val productFilterOptionListViewStateData =
+        LiveDataDelegateWithArgs(savedState, ProductFilterOptionListViewState())
     private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
     /**
