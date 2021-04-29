@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
 import android.annotation.SuppressLint
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -8,10 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.concurrent.schedule
 import com.woocommerce.android.databinding.AttributeTermListItemBinding
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.TermViewHolder
-import java.util.Timer
 
 /**
  * Adapter which shows a simple list of attribute term names
@@ -83,7 +82,6 @@ class AttributeTermsListAdapter(
         if (!containsTerm(termName)) {
             termNames.add(0, termName)
             notifyItemInserted(0)
-            // if there's now two terms, we must refresh the whole list
             if (itemCount == 2) {
                 delayedChangeNotification()
             }
@@ -102,14 +100,14 @@ class AttributeTermsListAdapter(
     }
 
     /**
-     * When the list of terms changes from/to a single item we must refresh all the views since we only show the
-     * drag handle when there's more than one term, but we delay the refresh to give the added/removed term time
+     * When the listchanges from/to a single term we must refresh all the views since we only show the drag
+     * handle when there's more than one term, but we delay the refresh to give the added/removed term time
      * to animate
      */
     private fun delayedChangeNotification() {
-        Timer().schedule(250) {
+        Handler().postDelayed({
             notifyDataSetChanged()
-        }
+        }, 300)
     }
 
     fun swapItems(from: Int, to: Int) {
