@@ -266,11 +266,12 @@ class ProductListViewModel @AssistedInject constructor(
      * Resets the view state following a refresh
      */
     private fun resetViewState() {
-        // - If there are no products in default view, app shows empty view with its own add button, so hide
-        //   Add Product FAB.
-        //   - However, if there are no products as a result of searching or filtering, the empty view has no button,
-        //     so show Add Product FAB
-        // - Else If there's at least one product, show Add Product FAB.
+        // Conditionals for showing / hiding the Add Product FAB:
+        // If there are no products:
+        // - in default view, hide the Add Product FAB, because the empty view has its own add button.
+        // - in search/filter result view, show the Add Product FAB, because the empty view doesn't have add button.
+        //
+        // If there is at least one product in default or search/filter result view, show the Add Product FAB.
         val shouldShowAddProductButton =
             if (_productList.value?.isEmpty() == true) {
                 when {
