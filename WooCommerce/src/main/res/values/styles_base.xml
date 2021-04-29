@@ -44,13 +44,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <!--
-        ActionMode Style
-    -->
-    <style name="Woo.ActionMode" parent="Base.Widget.AppCompat.ActionMode">
-        <item name="actionModeCloseDrawable">@drawable/ic_close</item>
-    </style>
-
-    <!--
         AppBarLayout Style
     -->
     <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
