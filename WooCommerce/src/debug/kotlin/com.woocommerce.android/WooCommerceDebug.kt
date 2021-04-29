@@ -12,7 +12,6 @@ import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponentDebug
-import kotlinx.coroutines.delay
 
 class WooCommerceDebug : WooCommerce() {
     override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
