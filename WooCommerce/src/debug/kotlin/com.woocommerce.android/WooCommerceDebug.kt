@@ -21,10 +21,8 @@ class WooCommerceDebug : WooCommerce() {
             return result.model?.token.orEmpty()
         }
 
-        override suspend fun capturePaymentIntent(id: String): Boolean {
-            // TODO cardreader Invoke capturePayment on WCPayStore
-            delay(1000)
-            return true
+        override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): Boolean {
+            return !payStore.capturePayment(selectedSite.get(), paymentId, orderId).isError
         }
     })
 
