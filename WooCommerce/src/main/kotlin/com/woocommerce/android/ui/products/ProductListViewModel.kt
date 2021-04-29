@@ -258,7 +258,8 @@ class ProductListViewModel @AssistedInject constructor(
                     )
                     fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
                 }
-            }}
+            }
+        }
     }
 
     /**
@@ -271,10 +272,10 @@ class ProductListViewModel @AssistedInject constructor(
         //     so show Add Product FAB
         // - Else If there's at least one product, show Add Product FAB.
         val shouldShowAddProductButton =
-            if(_productList.value?.isEmpty() == true) {
+            if (_productList.value?.isEmpty() == true) {
                 when {
                     viewState.query != null -> { true }
-                    viewState.filterCount?.compareTo(0) == 1 -> { true }
+                    productFilterOptions.isNotEmpty() -> { true }
                     else -> { false }
                 }
             } else {
@@ -293,7 +294,7 @@ class ProductListViewModel @AssistedInject constructor(
         )
 
         /* When search result returns zero, the app will show empty state screen. Make sure FAB shows up in this case. */
-        if(viewState.query != null) {
+        if (viewState.query != null) {
             viewState = viewState.copy(isAddProductButtonVisible = true)
         }
     }
