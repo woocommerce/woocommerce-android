@@ -558,6 +558,32 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(productsDraft?.saleEndDateGmt).isNull()
     }
 
+    @Test
+    fun `Re-ordering attribute terms is saved correctly`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        val storedProduct = product.copy(
+            attributes = ProductTestUtils.generateProductAttributeList()
+        )
+        doReturn(storedProduct).whenever(productRepository).getProduct(any())
+
+        val attribute = storedProduct.attributes[0]
+        val firstTerm = attribute.terms[0]
+        val secondTerm = attribute.terms[1]
+
+        viewModel.start()
+        viewModel.swapProductDraftAttributeTerms(
+            attribute.id,
+            attribute.name,
+            firstTerm,
+            secondTerm
+        )
+
+        val draftAttribute = viewModel.productDraftAttributes[0]
+        val draftTerms = draftAttribute.terms
+        assertThat(draftTerms[0]).isEqualTo(secondTerm)
+        assertThat(draftTerms[1]).isEqualTo(firstTerm)
+    }
+
     private val productsDraft
         get() = viewModel.productDetailViewStateData.liveData.value?.productDraft
 }

@@ -150,6 +150,8 @@ data class Product(
                 shippingClass.isNotEmpty()
         }
     val productType get() = ProductType.fromString(type)
+    val variationEnabledAttributes
+        get() = attributes.filter { it.isVariation }
 
     /**
      * Verifies if there are any changes made to the external link settings
@@ -217,9 +219,17 @@ data class Product(
     }
 
     fun hasAttributeChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            attributes != it.attributes
-        } ?: false
+        updatedProduct?.attributes?.let { updatedAttributes ->
+            if (updatedAttributes.size != this.attributes.size) {
+                return true
+            }
+            updatedAttributes.forEach {
+                if (!this.attributes.containsAttribute(it)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
@@ -546,3 +556,9 @@ fun MediaModel.toAppModel(): Product.Image {
  */
 fun WCProductModel.toProductReviewProductModel() =
     ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
+
+/**
+ * Returns true if the passed attribute is in the current list of attributes
+ */
+fun List<ProductAttribute>.containsAttribute(attribute: ProductAttribute): Boolean =
+    this.find { attribute.id == it.id && attribute.name == it.name && attribute.terms == it.terms } != null

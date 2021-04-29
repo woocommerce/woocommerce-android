@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader
 import android.app.Application
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.math.BigDecimal
 
 /**
  * Interface for consumers who want to start accepting POC card payments.
@@ -15,5 +16,6 @@ interface CardReaderManager {
     suspend fun connectToReader(cardReader: CardReader): Boolean
 
     // TODO cardreader Stripe accepts only Int, is that ok?
-    suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus>
+    suspend fun collectPayment(amount: BigDecimal, currency: String): Flow<CardPaymentStatus>
+    suspend fun retryCollectPayment(paymentData: PaymentData): Flow<CardPaymentStatus>
 }

@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -56,8 +57,6 @@ class ProductDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters
 ) {
-    private fun isSimple(product: Product) = product.productType == SIMPLE
-
     private lateinit var originalSku: String
 
     fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
@@ -71,6 +70,7 @@ class ProductDetailCardBuilder(
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
+            VIRTUAL -> cards.addIfNotEmpty(getOtherProductCard(product))
             OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
@@ -176,14 +176,14 @@ class ProductDetailCardBuilder(
     private fun Product.downloads(): ProductProperty? {
         if (!this.isDownloadable || this.downloads.isEmpty()) return null
         return ComplexProperty(
-            title = R.string.product_downloadable_files,
+            title = string.product_downloadable_files,
             value = StringUtils.getQuantityString(
                 resourceProvider = resources,
                 quantity = this.downloads.size,
-                default = R.string.product_downloadable_files_value_multiple,
-                one = R.string.product_downloadable_files_value_single
+                default = string.product_downloadable_files_value_multiple,
+                one = string.product_downloadable_files_value_single
             ),
-            icon = R.drawable.ic_gridicons_cloud,
+            icon = drawable.ic_gridicons_cloud,
             onClick = {
                 viewModel.onEditProductCardClicked(
                     ViewProductDownloads,
@@ -193,113 +193,17 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun Product.downloadsLegacy(): ProductProperty? {
-        return if (this.isDownloadable) {
-            val limit = if (this.downloadLimit > 0) String.format(
-                resources.getString(R.string.product_download_limit_count),
-                this.downloadLimit
-            ) else ""
-            val expiry = if (this.downloadExpiry > 0) String.format(
-                resources.getString(R.string.product_download_expiry_days),
-                this.downloadExpiry
-            ) else ""
-
-            val downloadGroup = mapOf(
-                Pair(resources.getString(R.string.product_downloadable_files), this.downloads.size.toString()),
-                Pair(resources.getString(R.string.product_download_limit), limit),
-                Pair(resources.getString(R.string.product_download_expiry), expiry)
-            )
-            PropertyGroup(
-                R.string.product_downloads,
-                downloadGroup
-            )
-        } else {
-            null
-        }
-    }
-
-    // shipping group is part of the secondary card if edit product is enabled
-    private fun Product.readOnlyShipping(): ProductProperty? {
-        return if (!isSimple(this)) {
-            val shippingGroup = mapOf(
-                Pair(resources.getString(R.string.product_weight), this.getWeightWithUnits(parameters.weightUnit)),
-                Pair(resources.getString(R.string.product_size), this.getSizeWithUnits(parameters.dimensionUnit)),
-                Pair(resources.getString(R.string.product_shipping_class), this.shippingClass)
-            )
-            PropertyGroup(
-                R.string.product_shipping,
-                shippingGroup
-            )
-        } else {
-            null
-        }
-    }
-
-    // show stock properties as a group if stock management is enabled, otherwise show sku separately
-    private fun Product.readOnlyInventory(): ProductProperty {
-        return if (this.isStockManaged) {
-            val group = mapOf(
-                Pair(
-                    resources.getString(R.string.product_stock_status),
-                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
-                ),
-                Pair(
-                    resources.getString(R.string.product_backorders),
-                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
-                ),
-                Pair(
-                    resources.getString(R.string.product_stock_quantity),
-                    StringUtils.formatCountDecimal(this.stockQuantity)
-                ),
-                Pair(resources.getString(R.string.product_sku), this.sku)
-            )
-            PropertyGroup(
-                R.string.product_inventory,
-                group
-            )
-        } else {
-            ComplexProperty(
-                R.string.product_sku,
-                this.sku,
-                R.drawable.ic_gridicons_list_checkmark
-            )
-        }
-    }
-
-    private fun Product.readOnlyPrice(): ProductProperty? {
-        val hasPricingInfo = this.regularPrice != null || this.salePrice != null
-        return if (hasPricingInfo) {
-            // when there's a sale price show price & sales price as a group, otherwise show price separately
-            return if (this.salePrice.isSet()) {
-                val group = mapOf(
-                    resources.getString(R.string.product_regular_price)
-                        to PriceUtils.formatCurrency(this.regularPrice, parameters.currencyCode, currencyFormatter),
-                    resources.getString(R.string.product_sale_price)
-                        to PriceUtils.formatCurrency(this.salePrice, parameters.currencyCode, currencyFormatter)
-                )
-                PropertyGroup(R.string.product_price, group)
-            } else {
-                ComplexProperty(
-                    R.string.product_price,
-                    PriceUtils.formatCurrency(this.regularPrice, parameters.currencyCode, currencyFormatter)
-                )
-            }
-        } else {
-            null
-        }
-    }
-
     private fun Product.shortDescription(): ProductProperty? {
         return if (hasShortDescription) {
             ComplexProperty(
-                R.string.product_short_description,
+                string.product_short_description,
                 shortDescription,
-                R.drawable.ic_gridicons_align_left
+                drawable.ic_gridicons_align_left
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductShortDescriptionEditor(
                         shortDescription,
-                        resources.getString(R.string.product_short_description)
+                        resources.getString(string.product_short_description)
                     ),
                     Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
                 )
@@ -315,29 +219,29 @@ class ProductDetailCardBuilder(
         val inventory = mutableMapOf<String, String>()
 
         if (this.sku.isNotEmpty()) {
-            inventory[resources.getString(R.string.product_sku)] = this.sku
+            inventory[resources.getString(string.product_sku)] = this.sku
         }
 
         if (productType == SIMPLE || productType == VARIABLE) {
             if (this.isStockManaged) {
-                inventory[resources.getString(R.string.product_stock_quantity)] =
+                inventory[resources.getString(string.product_stock_quantity)] =
                     StringUtils.formatCountDecimal(this.stockQuantity)
-                inventory[resources.getString(R.string.product_backorders)] =
+                inventory[resources.getString(string.product_backorders)] =
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
             } else if (productType == SIMPLE) {
-                inventory[resources.getString(R.string.product_stock_status)] =
+                inventory[resources.getString(string.product_stock_status)] =
                     ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
             }
         }
 
         if (inventory.isEmpty()) {
-            inventory[""] = resources.getString(R.string.product_inventory_empty)
+            inventory[""] = resources.getString(string.product_inventory_empty)
         }
 
         return PropertyGroup(
-            R.string.product_inventory,
+            string.product_inventory,
             inventory,
-            R.drawable.ic_gridicons_list_checkmark,
+            drawable.ic_gridicons_list_checkmark,
             true
         ) {
             viewModel.onEditProductCardClicked(
@@ -363,18 +267,18 @@ class ProductDetailCardBuilder(
             val weightWithUnits = this.getWeightWithUnits(parameters.weightUnit)
             val sizeWithUnits = this.getSizeWithUnits(parameters.dimensionUnit)
             val shippingGroup = mapOf(
-                Pair(resources.getString(R.string.product_weight), weightWithUnits),
-                Pair(resources.getString(R.string.product_dimensions), sizeWithUnits),
+                Pair(resources.getString(string.product_weight), weightWithUnits),
+                Pair(resources.getString(string.product_dimensions), sizeWithUnits),
                 Pair(
-                    resources.getString(R.string.product_shipping_class),
+                    resources.getString(string.product_shipping_class),
                     viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
                 )
             )
 
             PropertyGroup(
-                R.string.product_shipping,
+                string.product_shipping,
                 shippingGroup,
-                R.drawable.ic_gridicons_shipping
+                drawable.ic_gridicons_shipping
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductShipping(
@@ -402,13 +306,13 @@ class ProductDetailCardBuilder(
             val externalGroup = if (hasExternalLink) {
                 mapOf(Pair("", this.externalUrl))
             } else {
-                mapOf(Pair("", resources.getString(R.string.product_external_empty_link)))
+                mapOf(Pair("", resources.getString(string.product_external_empty_link)))
             }
 
             PropertyGroup(
-                R.string.product_external_link,
+                string.product_external_link,
                 externalGroup,
-                R.drawable.ic_gridicons_link,
+                drawable.ic_gridicons_link,
                 hasExternalLink
             ) {
                 viewModel.onEditProductCardClicked(
@@ -436,9 +340,9 @@ class ProductDetailCardBuilder(
         )
 
         return PropertyGroup(
-            R.string.product_price,
+            string.product_price,
             pricingGroup,
-            R.drawable.ic_gridicons_money,
+            drawable.ic_gridicons_money,
             showTitle = this.regularPrice.isSet()
         ) {
             viewModel.onEditProductCardClicked(
@@ -460,14 +364,15 @@ class ProductDetailCardBuilder(
         return when (productType) {
             SIMPLE -> {
                 when {
-                    this.isDownloadable -> resources.getString(R.string.product_type_downloadable)
-                    this.isVirtual -> resources.getString(R.string.product_type_virtual)
-                    else -> resources.getString(R.string.product_type_physical)
+                    this.isVirtual -> resources.getString(string.product_type_virtual)
+                    this.isDownloadable -> resources.getString(string.product_type_downloadable)
+                    else -> resources.getString(string.product_type_physical)
                 }
             }
-            VARIABLE -> resources.getString(R.string.product_type_variable)
-            GROUPED -> resources.getString(R.string.product_type_grouped)
-            EXTERNAL -> resources.getString(R.string.product_type_external)
+            VIRTUAL -> resources.getString(string.product_type_virtual)
+            VARIABLE -> resources.getString(string.product_type_variable)
+            GROUPED -> resources.getString(string.product_type_grouped)
+            EXTERNAL -> resources.getString(string.product_type_external)
             OTHER -> this.type.capitalize() // show the actual product type string for unsupported products
         }
     }
@@ -481,9 +386,9 @@ class ProductDetailCardBuilder(
         }
 
         return ComplexProperty(
-            R.string.product_type,
-            resources.getString(R.string.product_detail_product_type_hint, productTypeDisplayName()),
-            R.drawable.ic_gridicons_product,
+            string.product_type,
+            resources.getString(string.product_detail_product_type_hint, productTypeDisplayName()),
+            drawable.ic_gridicons_product,
             onClick = if (remoteId != 0L && productType != OTHER) onClickHandler else null
         )
     }
@@ -491,15 +396,15 @@ class ProductDetailCardBuilder(
     private fun Product.productReviews(): ProductProperty? {
         return if (this.reviewsAllowed) {
             val value = when (this.ratingCount) {
-                0 -> resources.getString(R.string.product_ratings_count_zero)
-                1 -> resources.getString(R.string.product_ratings_count_one)
-                else -> resources.getString(R.string.product_ratings_count, this.ratingCount)
+                0 -> resources.getString(string.product_ratings_count_zero)
+                1 -> resources.getString(string.product_ratings_count_one)
+                else -> resources.getString(string.product_ratings_count, this.ratingCount)
             }
             RatingBar(
-                R.string.product_reviews,
+                string.product_reviews,
                 value,
                 this.averageRating,
-                R.drawable.ic_reviews
+                drawable.ic_reviews
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductReviews(this.remoteId),
@@ -518,13 +423,13 @@ class ProductDetailCardBuilder(
         val groupedProductsDesc = if (showTitle) {
             StringUtils.getPluralString(resources, groupedProductsSize, R.plurals.product_count)
         } else {
-            resources.getString(R.string.grouped_product_empty)
+            resources.getString(string.grouped_product_empty)
         }
 
         return ComplexProperty(
-            R.string.grouped_products,
+            string.grouped_products,
             groupedProductsDesc,
-            R.drawable.ic_widgets,
+            drawable.ic_widgets,
             showTitle = showTitle
         ) {
             viewModel.onEditProductCardClicked(
@@ -549,9 +454,9 @@ class ProductDetailCardBuilder(
         )
 
         return ComplexProperty(
-            R.string.product_detail_linked_products,
+            string.product_detail_linked_products,
             "$upsellDesc<br>$crossSellDesc",
-            R.drawable.ic_gridicons_reblog,
+            drawable.ic_gridicons_reblog,
             maxLines = 2
         ) {
             viewModel.onEditProductCardClicked(
@@ -564,7 +469,7 @@ class ProductDetailCardBuilder(
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
         return Editable(
-            R.string.product_detail_title_hint,
+            string.product_detail_title_hint,
             name,
             onTextChanged = viewModel::onProductTitleChanged
         )
@@ -574,19 +479,19 @@ class ProductDetailCardBuilder(
         val productDescription = this.description
         val showTitle = productDescription.isNotEmpty()
         val description = if (productDescription.isEmpty()) {
-            resources.getString(R.string.product_description_empty)
+            resources.getString(string.product_description_empty)
         } else {
             productDescription
         }
 
         return ComplexProperty(
-            R.string.product_description,
+            string.product_description,
             description,
             showTitle = showTitle
         ) {
             viewModel.onEditProductCardClicked(
                 ViewProductDescriptionEditor(
-                    productDescription, resources.getString(R.string.product_description)
+                    productDescription, resources.getString(string.product_description)
                 ),
                 PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
             )
@@ -595,21 +500,21 @@ class ProductDetailCardBuilder(
 
     // show product variations only if product type is variable and if there are variations for the product
     private fun Product.variations(): ProductProperty {
-        return if (this.numVariations > 0) {
+        return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
             val properties = mutableMapOf<String, String>()
-            for (attribute in this.attributes) {
+            for (attribute in this.variationEnabledAttributes) {
                 properties[attribute.name] = attribute.terms.size.toString()
             }
 
             PropertyGroup(
-                R.string.product_variations,
+                string.product_variations,
                 properties,
-                R.drawable.ic_gridicons_types,
-                propertyFormat = R.string.product_variation_options
+                drawable.ic_gridicons_types,
+                propertyFormat = string.product_variation_options
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductVariations(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                    PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
                 )
             }
         } else {
@@ -650,9 +555,9 @@ class ProductDetailCardBuilder(
             val categories = categories.joinToString(transform = { it.name })
 
             ComplexProperty(
-                R.string.product_categories,
+                string.product_categories,
                 categories,
-                R.drawable.ic_gridicons_folder,
+                drawable.ic_gridicons_folder,
                 maxLines = 5
             ) {
                 viewModel.onEditProductCardClicked(
@@ -670,9 +575,9 @@ class ProductDetailCardBuilder(
             val tags = this.tags.joinToString(transform = { it.name })
 
             ComplexProperty(
-                R.string.product_tags,
+                string.product_tags,
                 tags,
-                R.drawable.ic_gridicons_tag,
+                drawable.ic_gridicons_tag,
                 maxLines = 5
             ) {
                 viewModel.onEditProductCardClicked(

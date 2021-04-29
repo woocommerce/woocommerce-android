@@ -5,8 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.woocommerce.android.R
+import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
+import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -30,18 +33,27 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
 
         val binding = FragmentCardReaderPaymentBinding.bind(view)
 
-        initViews(binding)
-        initObservers()
+        initObservers(binding)
+        initViewModel()
     }
 
-    private fun initViews(binding: FragmentCardReaderPaymentBinding) {
-        // TODO cardreader remove this
-        binding.testingText.setText("Hardcoded: Card Reader Payment Fragment")
+    private fun initViewModel() {
+        val manager = (requireActivity().application as WooCommerce).cardReaderManager
+        // TODO card reader: remove !! when cardReaderManager is changed to a nonnullable type in WooCommerce
+        viewModel.start(manager!!)
     }
 
-    private fun initObservers() {
-        // TODO cardreader remove this
-        viewModel.foo()
+    private fun initObservers(binding: FragmentCardReaderPaymentBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner, Observer { viewState ->
+            UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
+            UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
+            UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
+            UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
+            UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
+            UiHelpers.setTextOrHide(binding.printReceiptBtn, viewState.printReceiptLabel)
+            UiHelpers.setTextOrHide(binding.sendReceiptBtn, viewState.sendReceiptLabel)
+            UiHelpers.updateVisibility(binding.progressBar, viewState.isProgressVisible)
+        })
     }
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector

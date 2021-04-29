@@ -52,6 +52,9 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock {
         on { getParameters(any(), any()) } doReturn (siteParams)
     }
+    private val variationRepository: VariationDetailRepository = mock {
+        on { getVariation(any(), any()) } doReturn (TEST_VARIATION)
+    }
 
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { answer -> answer.arguments[0].toString() }
@@ -60,7 +63,10 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val savedState = SavedStateWithArgs(
         savedState = SavedStateHandle(),
         arguments = null,
-        defaultArgs = VariationDetailFragmentArgs(TEST_VARIATION)
+        defaultArgs = VariationDetailFragmentArgs(
+            TEST_VARIATION.remoteProductId,
+            TEST_VARIATION.remoteVariationId
+        )
     )
 
     @Before
@@ -68,7 +74,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         sut = VariationDetailViewModel(
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
-            variationRepository = mock(),
+            variationRepository = variationRepository,
             productRepository = mock(),
             networkStatus = mock(),
             currencyFormatter = mock(),

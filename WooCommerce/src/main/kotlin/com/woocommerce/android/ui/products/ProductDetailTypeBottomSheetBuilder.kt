@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 
 class ProductDetailTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
@@ -16,6 +17,14 @@ class ProductDetailTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
                 descResource = R.string.product_type_physical_desc,
                 iconResource = R.drawable.ic_gridicons_product,
                 isEnabled = true
+            ),
+            ProductTypesBottomSheetUiItem(
+                type = VIRTUAL,
+                titleResource = R.string.product_type_virtual,
+                descResource = R.string.product_type_virtual_desc,
+                iconResource = R.drawable.ic_gridicons_cloud_outline,
+                isEnabled = true,
+                isVirtual = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = VARIABLE,
