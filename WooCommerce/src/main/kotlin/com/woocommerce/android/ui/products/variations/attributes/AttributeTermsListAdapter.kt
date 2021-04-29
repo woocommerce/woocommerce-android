@@ -80,7 +80,25 @@ class AttributeTermsListAdapter(
     fun addTerm(termName: String) {
         if (!containsTerm(termName)) {
             termNames.add(0, termName)
-            notifyItemInserted(0)
+            // if there's now two terms, we must refresh the whole list since we only show the drag handle
+            // when there's more than one term
+            if (itemCount == 2) {
+                notifyDataSetChanged()
+            } else {
+                notifyItemInserted(0)
+            }
+        }
+    }
+
+    fun removeTerm(term: String) {
+        val index = termNames.indexOf(term)
+        if (index >= 0) {
+            termNames.remove(term)
+            if (itemCount == 1) {
+                notifyDataSetChanged()
+            } else {
+                notifyItemRemoved(index)
+            }
         }
     }
 
@@ -93,14 +111,6 @@ class AttributeTermsListAdapter(
         notifyItemMoved(from, to)
 
         onTermListener.onTermMoved(fromValue, toValue)
-    }
-
-    fun removeTerm(term: String) {
-        val index = termNames.indexOf(term)
-        if (index >= 0) {
-            termNames.remove(term)
-            notifyItemRemoved(index)
-        }
     }
 
     private class TermItemDiffUtil(
