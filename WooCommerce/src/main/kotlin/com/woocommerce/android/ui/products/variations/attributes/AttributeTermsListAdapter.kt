@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.concurrent.schedule
 import com.woocommerce.android.databinding.AttributeTermListItemBinding
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.TermViewHolder
+import java.util.Timer
 
 /**
  * Adapter which shows a simple list of attribute term names
@@ -80,12 +82,10 @@ class AttributeTermsListAdapter(
     fun addTerm(termName: String) {
         if (!containsTerm(termName)) {
             termNames.add(0, termName)
-            // if there's now two terms, we must refresh the whole list since we only show the drag handle
-            // when there's more than one term
+            notifyItemInserted(0)
+            // if there's now two terms, we must refresh the whole list
             if (itemCount == 2) {
-                notifyDataSetChanged()
-            } else {
-                notifyItemInserted(0)
+                delayedChangeNotification()
             }
         }
     }
@@ -94,11 +94,21 @@ class AttributeTermsListAdapter(
         val index = termNames.indexOf(term)
         if (index >= 0) {
             termNames.remove(term)
+            notifyItemRemoved(index)
             if (itemCount == 1) {
-                notifyDataSetChanged()
-            } else {
-                notifyItemRemoved(index)
+                delayedChangeNotification()
             }
+        }
+    }
+
+    /**
+     * When the list of terms changes from/to a single item we must refresh all the views since we only show the
+     * drag handle when there's more than one term, but we delay the refresh to give the added/removed term time
+     * to animate
+     */
+    private fun delayedChangeNotification() {
+        Timer().schedule(250) {
+            notifyDataSetChanged()
         }
     }
 
