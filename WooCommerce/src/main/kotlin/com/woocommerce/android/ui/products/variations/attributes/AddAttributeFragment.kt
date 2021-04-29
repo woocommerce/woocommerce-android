@@ -153,7 +153,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             adapter = binding.attributeList.adapter as AttributeListAdapter
         }
 
-        val allDraftAttributes = viewModel.getProductDraftAttributes()
+        val allDraftAttributes = viewModel.productDraftAttributes
         val localDraftAttributes = allDraftAttributes.filter { it.isLocalAttribute }
         val globalDraftAttributes = allDraftAttributes.filter { it.isGlobalAttribute }
 
