@@ -160,10 +160,6 @@ class VariationListViewModel @AssistedInject constructor(
             variationListRepository.createEmptyVariation(this)
                 ?.copy(remoteProductId = remoteId)
                 ?.apply { syncProductToVariations(remoteId) }
-                .also {
-                    it?.let { trackWithProductId(Stat.PRODUCT_VARIATION_CREATION_SUCCESS) }
-                        ?: trackWithProductId(Stat.PRODUCT_VARIATION_CREATION_FAILED)
-                }
 
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)
@@ -243,7 +239,10 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     private fun trackWithProductId(event: Stat) {
-        track(event, mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId))
+        viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
+    }
+
+    private fun trackWithVariationId(event: Stat) {
     }
 
     @Parcelize
