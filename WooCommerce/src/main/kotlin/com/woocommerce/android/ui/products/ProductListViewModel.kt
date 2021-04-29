@@ -258,14 +258,25 @@ class ProductListViewModel @AssistedInject constructor(
                     )
                     fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
                 }
-            }
-        }
+            }}
     }
 
     /**
      * Resets the view state following a refresh
      */
     private fun resetViewState() {
+        // - If there are no products in default view, app shows empty view with its own add button, so hide
+        //   Add Product FAB.
+        //   - However, if there are no products as a result of searching, the empty view has no add button, so show
+        //   Add Product FAB.
+        // - Else If there's at least one product, show Add Product FAB.
+        val shouldShowAddProductButton =
+            if(_productList.value?.isEmpty() == true) {
+                viewState.query != null
+            } else {
+                true
+            }
+
         viewState = viewState.copy(
             isSkeletonShown = false,
             isLoading = false,
@@ -273,10 +284,14 @@ class ProductListViewModel @AssistedInject constructor(
             isRefreshing = false,
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = _productList.value?.isEmpty() == true,
-            /* if there are no products, hide Add Product button and use the empty view's button instead. */
-            isAddProductButtonVisible = _productList.value?.isEmpty() == false,
+            isAddProductButtonVisible = shouldShowAddProductButton,
             displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
         )
+
+        /* When search result returns zero, the app will show empty state screen. Make sure FAB shows up in this case. */
+        if(viewState.query != null) {
+            viewState = viewState.copy(isAddProductButtonVisible = true)
+        }
     }
 
     /**
