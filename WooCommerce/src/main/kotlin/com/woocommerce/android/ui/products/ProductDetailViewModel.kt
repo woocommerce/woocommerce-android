@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_PUBLISH_TAPPED
@@ -607,6 +608,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         AnalyticsTracker.track(statId, properties)
     }
 
+    private fun trackWithProductId(event: Stat) {
+        viewState.storedProduct?.let {
+            AnalyticsTracker.track(
+                event,
+                mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.remoteId)
+            )
+        }
+    }
+
     /**
      * Called when the user taps the Product settings menu item
      */
@@ -1058,7 +1068,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             })
 
             updateProductDraft(attributes = updatedAttributes)
-            AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_UPDATED)
+            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
         }
     }
 
@@ -1115,7 +1125,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             // add the renamed attribute to the list and update the draft attributes
             updatedAttributes.add(newAttribute)
             updateProductDraft(attributes = updatedAttributes)
-            AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_UPDATED)
+            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
         }
 
         return true
@@ -1168,7 +1178,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             )
 
             updateProductDraft(attributes = updatedAttributes)
-            AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_UPDATED)
+            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
         }
     }
 
@@ -1212,7 +1222,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         updateProductDraft(attributes = updatedAttributes)
-        AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_UPDATED)
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
     }
 
     /**
