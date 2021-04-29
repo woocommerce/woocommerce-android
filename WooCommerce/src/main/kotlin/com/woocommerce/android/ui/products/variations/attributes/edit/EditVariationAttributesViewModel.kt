@@ -75,7 +75,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     private fun loadProductAttributes() =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
-                parentProduct?.attributes
+                parentProduct?.variationEnabledAttributes
                     ?.pairAttributeWithSelectedOption()
                     ?.pairAttributeWithUnselectedOption()
                     ?.mapToAttributeSelectionGroupList()
@@ -93,7 +93,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
 
     private fun List<Pair<ProductAttribute, VariantOption>>.pairAttributeWithUnselectedOption() =
         map { it.first }.let { selectedAttributes ->
-            parentProduct?.attributes
+            parentProduct?.variationEnabledAttributes
                 ?.filter { selectedAttributes.contains(it).not() }
                 ?.map { it to VariantOption.empty }
                 ?.let { toMutableList().apply { addAll(it) } }

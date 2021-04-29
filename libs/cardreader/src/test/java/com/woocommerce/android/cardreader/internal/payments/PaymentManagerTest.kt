@@ -12,6 +12,7 @@ import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CAPTURE
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
+import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
@@ -34,6 +35,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPayme
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -146,6 +148,7 @@ class PaymentManagerTest {
         verify(createPaymentAction).createPaymentIntent(captor.capture(), anyString())
         assertThat(captor.firstValue).isEqualTo(199)
     }
+
     // END - Arguments validation and conversion
     // BEGIN - Creating Payment intent
     @Test
@@ -221,6 +224,39 @@ class PaymentManagerTest {
     }
 
     @Test
+    fun `given exception contains PaymentIntent,when collecting payment fails, then PaymentData contain that intent`() =
+        runBlockingTest {
+            val paymentIntent = mock<PaymentIntent>()
+            val terminalException = mock<TerminalException>().also {
+                whenever(it.paymentIntent).thenReturn(paymentIntent)
+            }
+            whenever(collectPaymentAction.collectPayment(anyOrNull()))
+                .thenReturn(flow { emit(CollectPaymentStatus.Failure(terminalException)) })
+
+            val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+            assertThat((result.last() as CollectingPaymentFailed).paymentData)
+                .isEqualTo(PaymentDataImpl(paymentIntent))
+        }
+
+    @Test
+    fun `given exception doesn't contain PaymentIntent,when collecting payment fails, then data contain orig intent`() =
+        runBlockingTest {
+            val terminalException = mock<TerminalException>().also {
+                whenever(it.paymentIntent).thenReturn(null)
+            }
+            whenever(collectPaymentAction.collectPayment(anyOrNull()))
+                .thenReturn(flow { emit(CollectPaymentStatus.Failure(terminalException)) })
+
+            val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+            val captor = argumentCaptor<PaymentIntent>()
+            verify(collectPaymentAction).collectPayment(captor.capture())
+            assertThat((result.last() as CollectingPaymentFailed).paymentData)
+                .isEqualTo(PaymentDataImpl(captor.firstValue))
+        }
+
+    @Test
     fun `given status not REQUIRES_CONFIRMATION, when collecting payment finishes, then flow terminates`() =
         runBlockingTest {
             whenever(collectPaymentAction.collectPayment(anyOrNull()))
@@ -253,6 +289,38 @@ class PaymentManagerTest {
 
         assertThat(result.last()).isInstanceOf(ProcessingPaymentFailed::class.java)
     }
+
+    @Test
+    fun `given exception contains PaymentIntent,when processing payment fails, then PaymentData contain that intent`() =
+        runBlockingTest {
+            val paymentIntent = mock<PaymentIntent>()
+            val terminalException = mock<TerminalException>().also {
+                whenever(it.paymentIntent).thenReturn(paymentIntent)
+            }
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Failure(terminalException)) })
+
+            val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+            assertThat((result.last() as ProcessingPaymentFailed).paymentData).isEqualTo(PaymentDataImpl(paymentIntent))
+        }
+
+    @Test
+    fun `given exception doesn't contain PaymentIntent,when processing payment fails, then data contain orig intent`() =
+        runBlockingTest {
+            val terminalException = mock<TerminalException>().also {
+                whenever(it.paymentIntent).thenReturn(null)
+            }
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Failure(terminalException)) })
+
+            val result = manager.acceptPayment(DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+            val captor = argumentCaptor<PaymentIntent>()
+            verify(processPaymentAction).processPayment(captor.capture())
+            assertThat((result.last() as ProcessingPaymentFailed).paymentData)
+                .isEqualTo(PaymentDataImpl(captor.firstValue))
+        }
 
     @Test
     fun `given status not REQUIRES_CAPTURE, when processing payment finishes, then flow terminates`() =
@@ -295,6 +363,47 @@ class PaymentManagerTest {
         assertThat(result.last()).isInstanceOf(CapturingPaymentFailed::class.java)
     }
     // END - Capturing Payment
+
+    // BEGIN - Retry
+    @Test
+    fun `given PaymentStatus REQUIRES_PAYMENT_METHOD, when retrying payment, then flow resumes on collectPayment`() =
+        runBlockingTest {
+            val paymentIntent = mock<PaymentIntent>().also {
+                whenever(it.status).thenReturn(REQUIRES_PAYMENT_METHOD)
+            }
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            val result = manager.retryPayment(paymentData).first()
+
+            assertThat(result).isInstanceOf(CollectingPayment::class.java)
+        }
+
+    @Test
+    fun `given PaymentStatus REQUIRES_CONFIRMATION, when retrying payment, then flow resumes on processPayment`() =
+        runBlockingTest {
+            val paymentIntent = mock<PaymentIntent>().also {
+                whenever(it.status).thenReturn(REQUIRES_CONFIRMATION)
+            }
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            val result = manager.retryPayment(paymentData).first()
+
+            assertThat(result).isInstanceOf(ProcessingPayment::class.java)
+        }
+
+    @Test
+    fun `given PaymentStatus REQUIRES_CAPTURE, when retrying payment, then flow resumes on capturePayment`() =
+        runBlockingTest {
+            val paymentIntent = mock<PaymentIntent>().also {
+                whenever(it.status).thenReturn(REQUIRES_CAPTURE)
+            }
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            val result = manager.retryPayment(paymentData).first()
+
+            assertThat(result).isInstanceOf(CapturingPayment::class.java)
+        }
+    // END - Retry
 
     private fun createPaymentIntent(status: PaymentIntentStatus): PaymentIntent =
         mock<PaymentIntent>().also {

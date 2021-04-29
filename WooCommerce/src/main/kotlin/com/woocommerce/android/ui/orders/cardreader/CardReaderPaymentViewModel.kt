@@ -96,10 +96,10 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                 WaitingForInput -> {
                     // TODO cardreader prompt the user to tap/insert a card
                 }
-                CapturingPaymentFailed,
-                CollectingPaymentFailed,
+                is CapturingPaymentFailed,
+                is CollectingPaymentFailed,
                 InitializingPaymentFailed,
-                ProcessingPaymentFailed -> viewState.postValue(FailedPaymentState)
+                is ProcessingPaymentFailed -> viewState.postValue(FailedPaymentState)
                 is UnexpectedError -> {
                     logger.e(T.MAIN, paymentStatus.errorCause)
                     viewState.postValue(FailedPaymentState)

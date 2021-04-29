@@ -15,12 +15,14 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
  * Adapter which shows a simple list of attribute term names
  */
 class AttributeTermsListAdapter(
-    private val showIcons: Boolean,
+    private val enableDragAndDrop: Boolean,
+    private val enableDeleting: Boolean,
     private val dragHelper: ItemTouchHelper? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
     interface OnTermListener {
         fun onTermClick(termName: String)
         fun onTermDelete(termName: String)
+        fun onTermMoved(fromTermName: String, toTermName: String)
     }
 
     private lateinit var onTermListener: OnTermListener
@@ -84,10 +86,13 @@ class AttributeTermsListAdapter(
 
     fun swapItems(from: Int, to: Int) {
         val fromValue = termNames[from]
-        termNames[from] = termNames[to]
+        val toValue = termNames[to]
+
+        termNames[from] = toValue
         termNames[to] = fromValue
-        notifyItemChanged(from)
-        notifyItemChanged(to)
+        notifyItemMoved(from, to)
+
+        onTermListener.onTermMoved(fromValue, toValue)
     }
 
     fun removeTerm(term: String) {
@@ -122,13 +127,15 @@ class AttributeTermsListAdapter(
                 onTermListener.onTermClick(item)
             }
 
-            if (showIcons) {
+            if (enableDeleting) {
                 viewBinding.termDelete.setOnClickListener {
                     val item = termNames[adapterPosition]
                     removeTerm(item)
                     onTermListener.onTermDelete(item)
                 }
+            }
 
+            if (enableDragAndDrop) {
                 viewBinding.termDragHandle.setOnClickListener {
                     dragHelper?.startDrag(this)
                 }
@@ -137,8 +144,8 @@ class AttributeTermsListAdapter(
 
         fun bind(termName: String) {
             viewBinding.termName.text = termName
-            viewBinding.termDragHandle.isVisible = showIcons
-            viewBinding.termDelete.isVisible = showIcons
+            viewBinding.termDragHandle.isVisible = enableDragAndDrop
+            viewBinding.termDelete.isVisible = enableDeleting
         }
     }
 }
