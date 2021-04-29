@@ -78,11 +78,11 @@ internal class CardReaderManagerImpl(
         return connectionManager.connectToReader(cardReader)
     }
 
-    override suspend fun collectPayment(amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
-        paymentManager.acceptPayment(amount, currency)
+    override suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
+        paymentManager.acceptPayment(orderId, amount, currency)
 
-    override suspend fun retryCollectPayment(paymentData: PaymentData): Flow<CardPaymentStatus> =
-        paymentManager.retryPayment(paymentData)
+    override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
+        paymentManager.retryPayment(orderId, paymentData)
 
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
