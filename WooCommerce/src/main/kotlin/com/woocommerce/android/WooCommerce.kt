@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 open class WooCommerce : MultiDexApplication(), HasAndroidInjector {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
-    @Inject lateinit var membersInjector: MembersInjector<WooCommerceGlideModule>
     @Inject lateinit var appInitializer: Lazy<AppInitializer>
     // TODO cardreader init this field
     open val cardReaderManager: CardReaderManager? = null
