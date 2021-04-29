@@ -242,9 +242,6 @@ class VariationListViewModel @AssistedInject constructor(
         viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
-    private fun trackWithVariationId(event: Stat) {
-    }
-
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
