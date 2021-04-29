@@ -5,10 +5,8 @@ import org.junit.Assert
 import org.junit.Test
 
 class LinkedProductReorderingStrategyTest {
-
     @Test
     fun `re-ordering linked product from 1st position to 2nd, the product list order must be correct`() {
-
         // Given
         val currentLinkedProductList = ProductTestUtils.generateProductList()
         val productListSwappingStrategy = DefaultProductListReorderingStrategy()
@@ -31,7 +29,6 @@ class LinkedProductReorderingStrategyTest {
 
     @Test
     fun `re-ordering linked product from 1st position to 2nd, and 2nd to 5th position, the product list order must be correct`() {
-
         // Given
         val currentLinkedProductList = ProductTestUtils.generateProductList()
         val productListSwappingStrategy = DefaultProductListReorderingStrategy()

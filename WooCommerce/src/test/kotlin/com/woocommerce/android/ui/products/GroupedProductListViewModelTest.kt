@@ -133,7 +133,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `revert product list and undo any operation done on closing edit mode`() {
-
         // Given
         createViewModel()
         val previousSelectedProductIds = listOf(2L, 3L, 4L, 5L)
@@ -162,7 +161,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `updates product list after reordering on edit mode`() {
-
         // Given
         createViewModel()
         val reorderedProductList = arrayListOf<Product>()
@@ -192,7 +190,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `updates product list after deleting a product on edit mode`() {
-
         // Given
         createViewModel()
         val productListAfterDeletion = arrayListOf(2L, 4L, 5L)
@@ -215,7 +212,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays current product list if previously selected list is null after canceling edit mode`() {
-
         // Given
         createViewModel()
         val previousSelectedProductIds = null
@@ -232,7 +228,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `re-ordering the product via drag-and-drop must be considered as change in list and reflect properly`() {
-
         // Given
         createViewModel()
         val reorderedProductList = arrayListOf<Product>()
