@@ -10,7 +10,6 @@ import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
-import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -151,6 +150,8 @@ data class Product(
                 shippingClass.isNotEmpty()
         }
     val productType get() = ProductType.fromString(type)
+    val variationEnabledAttributes
+        get() = attributes.filter { it.isVariation }
 
     /**
      * Verifies if there are any changes made to the external link settings
@@ -218,9 +219,17 @@ data class Product(
     }
 
     fun hasAttributeChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            attributes != it.attributes
-        } ?: false
+        updatedProduct?.attributes?.let { updatedAttributes ->
+            if (updatedAttributes.size != this.attributes.size) {
+                return true
+            }
+            updatedAttributes.forEach {
+                if (!this.attributes.containsAttribute(it)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
@@ -469,8 +478,8 @@ fun WCProductModel.toAppModel(): Product {
         permalink = this.permalink,
         externalUrl = this.externalUrl,
         buttonText = this.buttonText,
-        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
-        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
+        salePrice = this.salePrice.toBigDecimalOrNull(),
+        regularPrice = this.regularPrice.toBigDecimalOrNull(),
         // In Core, if a tax class is empty it is considered as standard and we are following the same
         // procedure here
         taxClass = if (this.taxClass.isEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass,
@@ -547,3 +556,9 @@ fun MediaModel.toAppModel(): Product.Image {
  */
 fun WCProductModel.toProductReviewProductModel() =
     ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
+
+/**
+ * Returns true if the passed attribute is in the current list of attributes
+ */
+fun List<ProductAttribute>.containsAttribute(attribute: ProductAttribute): Boolean =
+    this.find { attribute.id == it.id && attribute.name == it.name && attribute.terms == it.terms } != null

@@ -4,21 +4,23 @@ import android.app.Application
 import com.woocommerce.android.media.ProductImagesServiceModule
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
+import com.woocommerce.android.util.crashlogging.CrashLoggingModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
-import org.wordpress.android.fluxc.module.DebugOkHttpClientModule
+import org.wordpress.android.fluxc.module.OkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
 import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [
+@Component(
+    modules = [
         AndroidInjectionModule::class,
         ApplicationModule::class,
         AppConfigModule::class,
         ReleaseNetworkModule::class,
-        DebugOkHttpClientModule::class,
+        OkHttpClientModule::class,
         SelectedSiteModule::class,
         InterceptorModule::class,
         ActivityBindingModule::class,
@@ -31,7 +33,10 @@ import javax.inject.Singleton
         ProductImagesServiceModule::class,
         ThreadModule::class,
         SupportModule::class,
-        OrderFetcherModule::class])
+        OrderFetcherModule::class,
+        CrashLoggingModule::class
+    ]
+)
 interface AppComponentDebug : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {

@@ -52,7 +52,14 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         whenever(parameterRepository.getParameters(any(), any())).thenReturn(
-            SiteParameters("", "", "cm", 0f)
+            SiteParameters(
+                currencyCode = "USD",
+                currencySymbol = "$",
+                currencyPosition = null,
+                weightUnit = "kg",
+                dimensionUnit = "cm",
+                gmtOffset = 0f
+            )
         )
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
