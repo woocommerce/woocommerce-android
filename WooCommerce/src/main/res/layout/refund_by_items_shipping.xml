@@ -141,7 +141,7 @@
             app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"
             tools:text="$1.00" />
 
-            <!-- This button is needed for a future purpose. Commented out for now. -->
+            <!-- This button is used later on, to support partial refund on shipping line. -->
             <!--
             <com.google.android.material.button.MaterialButton
             android:id="@+id/issueRefund_shippingRefundTotalButton"
