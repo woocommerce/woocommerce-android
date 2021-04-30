@@ -12,7 +12,6 @@ import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponentDebug
-import kotlinx.coroutines.delay
 
 class WooCommerceDebug : WooCommerce() {
     override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
@@ -21,10 +20,8 @@ class WooCommerceDebug : WooCommerce() {
             return result.model?.token.orEmpty()
         }
 
-        override suspend fun capturePaymentIntent(id: String): Boolean {
-            // TODO cardreader Invoke capturePayment on WCPayStore
-            delay(1000)
-            return true
+        override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): Boolean {
+            return !payStore.capturePayment(selectedSite.get(), paymentId, orderId).isError
         }
     })
 
