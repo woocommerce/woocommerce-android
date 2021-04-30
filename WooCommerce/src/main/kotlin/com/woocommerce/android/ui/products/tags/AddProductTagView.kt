@@ -57,6 +57,10 @@ class AddProductTagView @JvmOverloads constructor(
 
     fun getEnteredTag() = binding.addTagsEditText.getText()
 
+    fun clearEnteredTag() {
+        binding.addTagsEditText.setText("")
+    }
+
     private fun addTag(
         tag: ProductTag,
         listener: OnProductTagClickListener
