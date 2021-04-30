@@ -126,7 +126,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides add product button correctly when loading list of products`() = test {
         // when
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+        doReturn(productList).whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
 
         createViewModel()
 
@@ -141,6 +141,27 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
+    }
+
+    @Test
+    /* We hide the Add Product FAB and use the empty view's button instead. */
+    fun `Hides add product button when list of products is empty`() = test {
+        // when
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+
+        createViewModel()
+
+        val isAddProductButtonVisible = ArrayList<Boolean>()
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                isAddProductButtonVisible.add(it)
+            }
+        }
+
+        viewModel.loadProducts()
+
+        // then
+        assertThat(isAddProductButtonVisible).containsExactly(false)
     }
 
     @Test

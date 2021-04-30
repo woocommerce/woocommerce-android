@@ -827,6 +827,8 @@
     <string name="cross_sells_desc">Products promoted in the cart when current product is selected</string>
     <string name="add_products_button">Add products</string>
     <string name="edit_products_button">Edit products</string>
+    <string name="empty_product_add_product_button">Add product</string>
+    <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
 
     <plurals name="product_count">
         <item quantity="one">%d product</item>
