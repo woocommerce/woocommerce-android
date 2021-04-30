@@ -81,7 +81,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         )
     )
 
-    private val siteParams = SiteParameters("$", "kg", "cm", 0f)
+    private val siteParams = SiteParameters(
+        currencyCode = "USD",
+        currencySymbol = "$",
+        currencyPosition = null,
+        weightUnit = "kg",
+        dimensionUnit = "cm",
+        gmtOffset = 0f
+    )
     private val parameterRepository: ParameterRepository = mock {
         on(it.getParameters(any(), any())).thenReturn(siteParams)
     }

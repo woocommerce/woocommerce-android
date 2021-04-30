@@ -36,7 +36,6 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -183,33 +182,30 @@ class VariationDetailCardBuilder(
     }
 
     private fun ProductVariation.attributes() =
-        takeIf { FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled() }
-            ?.let {
-                PropertyGroup(
-                    title = string.product_attributes,
-                    properties = mutableMapOf<String, String>()
-                        .let { map ->
-                            attributes
-                                .filter { it.name != null && it.option != null }
-                                .map { Pair(it.name!!, it.option!!) }
-                                .let { map.apply { putAll(it) } }
-                        }.also { map ->
-                            parentProduct?.variationEnabledAttributes
-                                ?.filter { map.containsKey(it.name).not() }
-                                ?.map { Pair(it.name, resources.getString(string.product_any_attribute_hint)) }
-                                ?.let { map.apply { putAll(it) } }
-                        },
-                    icon = drawable.ic_gridicons_customize,
-                    onClick = {
-                        viewModel.onEditVariationCardClicked(
-                            ViewAttributes(
-                                remoteProductId,
-                                remoteVariationId
-                            )
-                        )
-                    }
+        PropertyGroup(
+            title = string.product_attributes,
+            properties = mutableMapOf<String, String>()
+                .let { map ->
+                    attributes
+                        .filter { it.name != null && it.option != null }
+                        .map { Pair(it.name!!, it.option!!) }
+                        .let { map.apply { putAll(it) } }
+                }.also { map ->
+                    parentProduct?.variationEnabledAttributes
+                        ?.filter { map.containsKey(it.name).not() }
+                        ?.map { Pair(it.name, resources.getString(string.product_any_attribute_hint)) }
+                        ?.let { map.apply { putAll(it) } }
+                },
+            icon = drawable.ic_gridicons_customize,
+            onClick = {
+                viewModel.onEditVariationCardClicked(
+                    ViewAttributes(
+                        remoteProductId,
+                        remoteVariationId
+                    )
                 )
             }
+        )
 
     private fun ProductVariation.shipping(): ProductProperty? {
         return if (!this.isVirtual) {

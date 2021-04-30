@@ -28,6 +28,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 
@@ -80,7 +81,7 @@ class ProductPricingFragment
     private fun setupObservers(viewModel: ProductPricingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
-                setupViews(new.currency, new.decimals, viewModel.pricingData)
+                setupViews(new.currency, new.isCurrencyPrefix, viewModel.pricingData)
             }
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
                 updateProductTaxClassList(it, viewModel.pricingData)
@@ -117,23 +118,31 @@ class ProductPricingFragment
         })
     }
 
-    private fun setupViews(currency: String, decimals: Int, pricingData: PricingData) {
+    private fun setupViews(currency: String, isCurrencyPrefix: Boolean, pricingData: PricingData) {
         if (!isAdded) return
 
         with(binding.productRegularPrice) {
-            initView(currency, decimals, currencyFormatter)
-            pricingData.regularPrice?.let { setValue(it) }
-            getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.onRegularPriceEntered(it)
-            })
+            if (isCurrencyPrefix) {
+                prefixText = currency
+            } else suffixText = currency
+
+            pricingData.regularPrice?.let { setText(it.toString()) }
+            setOnTextChangedListener {
+                val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                viewModel.onRegularPriceEntered(price)
+            }
         }
 
         with(binding.productSalePrice) {
-            initView(currency, decimals, currencyFormatter)
-            pricingData.salePrice?.let { setValue(it) }
-            getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.onSalePriceEntered(it)
-            })
+            if (isCurrencyPrefix) {
+                prefixText = currency
+            } else suffixText = currency
+
+            pricingData.salePrice?.let { setText(it.toString()) }
+            setOnTextChangedListener {
+                val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                viewModel.onSalePriceEntered(price)
+            }
         }
 
         val scheduleSale = pricingData.isSaleScheduled == true
