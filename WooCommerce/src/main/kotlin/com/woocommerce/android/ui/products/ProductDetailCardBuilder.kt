@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
@@ -527,6 +528,10 @@ class ProductDetailCardBuilder(
             icon = drawable.ic_gridicons_types,
             showTitle = false,
             onClick = {
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
+                )
                 viewModel.onEditProductCardClicked(
                     AddProductAttribute(isVariationCreation = true),
                     PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
