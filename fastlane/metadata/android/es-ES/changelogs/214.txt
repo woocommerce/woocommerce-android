@@ -1,0 +1,2 @@
+6.5:
+¡Tenemos una nueva función disponible para la versión beta! Los vendedores establecidos en Estados Unidos pueden crear etiquetas de envío para sus pedidos físicos desde la aplicación (solo para destinos que se encuentren dentro del mismo país). También hemos corregido algunos errores: ahora, las etiquetas de envío vencidas muestran información más precisa y el teclado de la pantalla no desaparecerá al hacer búsquedas en la lista de pedidos.

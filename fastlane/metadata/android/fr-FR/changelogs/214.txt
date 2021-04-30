@@ -1,0 +1,2 @@
+6.5 :
+Une nouvelle fonctionnalité est disponible en version bêta ! Les commerçants basés aux États-Unis peuvent créer des étiquettes d’expédition pour les commandes physiques directement depuis l’application (disponible uniquement pour les livraisons aux États-Unis). Certains bogues ont également été résolus : les étiquettes d’expédition obsolètes affichent désormais des informations plus précises, et le clavier virtuel ne disparait plus de l’écran lorsque vous effectuez des recherches dans votre liste de commandes.

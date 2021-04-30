@@ -1,0 +1,2 @@
+6.5:
+Kami punya fitur baru yang tersedia untuk pengujian beta! Penjual yang berdomisili di AS bisa membuat label pengiriman untuk pesanan fisik langsung dari aplikasi (hanya untuk tujuan AS). Kami juga memperbaiki beberapa bug: label pengiriman kedaluwarsa sekarang menampilkan informasi yang lebih akurat, dan keyboard pada layar tidak akan hilang saat mencari daftar pesanan Anda.

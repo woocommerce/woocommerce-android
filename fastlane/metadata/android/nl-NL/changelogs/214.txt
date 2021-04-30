@@ -1,0 +1,2 @@
+6.5:
+Er is een gloednieuwe functie beschikbaar voor bètatests! Verkopers in de VS kunnen rechtstreeks in de app verzendlabels aanmaken voor fysieke bestellingen (alleen voor bestemmingen in de VS). We hebben ook een aantal problemen opgelost: verlopen verzendlabels geven nu nauwkeurigere informatie weer en het toetsenbord op het scherm verdwijnt niet als je je bestellijst doorzoekt.
