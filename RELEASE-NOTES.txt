@@ -2,7 +2,9 @@
 
 6.6
 -----
-- [**] Refunding a shipping line inside an order is now possible. [https://github.com/woocommerce/woocommerce-android/pull/3935/]
+- [***] Products: When editing a product, you can now create/delete/update product variations, product attributes and product attribute options. [https://github.com/woocommerce/woocommerce-android/pull/3946]
+- [**] Refunds: Refunding a shipping line inside an order is now possible. [https://github.com/woocommerce/woocommerce-android/pull/3935/]
+- [*] Fixed a bug would not allow to edit the product price and sale price. [https://github.com/woocommerce/woocommerce-android/pull/3926]
 - [*] Added the option to create and edit a virtual product directly from the product detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3900]
 
 6.5

@@ -50,9 +50,15 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
             UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
             UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
             UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
-            UiHelpers.setTextOrHide(binding.printReceiptBtn, viewState.printReceiptLabel)
-            UiHelpers.setTextOrHide(binding.sendReceiptBtn, viewState.sendReceiptLabel)
+            UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
+            UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
             UiHelpers.updateVisibility(binding.progressBar, viewState.isProgressVisible)
+            binding.primaryActionBtn.setOnClickListener {
+                viewState.onPrimaryActionClicked?.invoke()
+            }
+            binding.secondaryActionBtn.setOnClickListener {
+                viewState.onSecondaryActionClicked?.invoke()
+            }
         })
     }
 
