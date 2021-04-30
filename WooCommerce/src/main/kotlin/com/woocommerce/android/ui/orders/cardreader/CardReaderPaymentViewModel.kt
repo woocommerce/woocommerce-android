@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
@@ -18,6 +19,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.UnexpectedError
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
@@ -32,12 +34,16 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T
+import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
+
+private const val ARTIFICIAL_RETRY_DELAY = 500L
 
 class CardReaderPaymentViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -51,17 +57,20 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
 
+    private lateinit var cardReaderManager: CardReaderManager
+
     private var paymentFlowJob: Job? = null
 
-    fun start(cardReaderManager: CardReaderManager) {
+    final fun start(cardReaderManager: CardReaderManager) {
+        this.cardReaderManager = cardReaderManager
         // TODO cardreader Check if the payment was already processed and cancel this flow
         // TODO cardreader Make sure a reader is connected
         if (paymentFlowJob == null) {
-            initPaymentFlow(cardReaderManager)
+            initPaymentFlow()
         }
     }
 
-    private fun initPaymentFlow(cardReaderManager: CardReaderManager) {
+    private fun initPaymentFlow() {
         paymentFlowJob = launch {
             try {
                 loadOrderFromDB()?.let { order ->
@@ -72,7 +81,21 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
                 logger.e(T.MAIN, e.stackTraceToString())
-                viewState.postValue(FailedPaymentState)
+                viewState.postValue(
+                    FailedPaymentState(
+                        amountWithCurrencyLabel = null,
+                        onPrimaryActionClicked = { initPaymentFlow() })
+                )
+            }
+        }
+    }
+
+    fun retry(paymentData: PaymentData, amountLabel: String) {
+        paymentFlowJob = launch {
+            viewState.postValue((LoadingDataState))
+            delay(ARTIFICIAL_RETRY_DELAY)
+            cardReaderManager.retryCollectPayment(paymentData).collect { paymentStatus ->
+                onPaymentStatusChanged(paymentStatus, amountLabel)
             }
         }
     }
@@ -84,28 +107,44 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
         amountLabel: String
     ) {
         cardReaderManager.collectPayment(amount, currency).collect { paymentStatus ->
-            when (paymentStatus) {
-                InitializingPayment -> viewState.postValue(LoadingDataState)
-                CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
-                ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
-                CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
-                PaymentCompleted -> viewState.postValue(PaymentSuccessfulState(amountLabel))
-                ShowAdditionalInfo -> {
-                    // TODO cardreader prompt the user to take certain action eg. Remove card
-                }
-                WaitingForInput -> {
-                    // TODO cardreader prompt the user to tap/insert a card
-                }
-                is CapturingPaymentFailed,
-                is CollectingPaymentFailed,
-                InitializingPaymentFailed,
-                is ProcessingPaymentFailed -> viewState.postValue(FailedPaymentState)
-                is UnexpectedError -> {
-                    logger.e(T.MAIN, paymentStatus.errorCause)
-                    viewState.postValue(FailedPaymentState)
-                }
+            onPaymentStatusChanged(paymentStatus, amountLabel)
+        }
+    }
+
+    private fun onPaymentStatusChanged(
+        paymentStatus: CardPaymentStatus,
+        amountLabel: String
+    ) {
+        when (paymentStatus) {
+            InitializingPayment -> viewState.postValue(LoadingDataState)
+            CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
+            ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
+            CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
+            PaymentCompleted -> viewState.postValue(PaymentSuccessfulState(amountLabel))
+            ShowAdditionalInfo -> {
+                // TODO cardreader prompt the user to take certain action eg. Remove card
+            }
+            WaitingForInput -> {
+                // TODO cardreader prompt the user to tap/insert a card
+            }
+            InitializingPaymentFailed -> emitFailedPaymentState(null, amountLabel)
+            is CollectingPaymentFailed -> emitFailedPaymentState(paymentStatus.paymentData, amountLabel)
+            is ProcessingPaymentFailed -> emitFailedPaymentState(paymentStatus.paymentData, amountLabel)
+            is CapturingPaymentFailed -> emitFailedPaymentState(paymentStatus.paymentData, amountLabel)
+            is UnexpectedError -> {
+                logger.e(MAIN, paymentStatus.errorCause)
+                emitFailedPaymentState(null, amountLabel)
             }
         }
+    }
+
+    private fun emitFailedPaymentState(paymentData: PaymentData?, amountLabel: String) {
+        val onRetryClicked = if (paymentData != null) {
+            { retry(paymentData, amountLabel) }
+        } else {
+            { initPaymentFlow() }
+        }
+        viewState.postValue(FailedPaymentState(amountLabel, onRetryClicked))
     }
 
     private fun loadOrderFromDB() = orderStore.getOrderByIdentifier(arguments.orderIdentifier)
@@ -117,15 +156,27 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
         @DrawableRes val illustration: Int? = null,
         // TODO cardreader add tests
         val isProgressVisible: Boolean = false,
-        val printReceiptLabel: Int? = null,
-        val sendReceiptLabel: Int? = null
+        val primaryActionLabel: Int? = null,
+        val secondaryActionLabel: Int? = null
     ) {
+        open val onPrimaryActionClicked: (() -> Unit)? = null
+        open val onSecondaryActionClicked: (() -> Unit)? = null
         open val amountWithCurrencyLabel: String? = null
 
         object LoadingDataState : ViewState(isProgressVisible = true)
 
         // TODO cardreader Update FailedPaymentState
-        object FailedPaymentState : ViewState()
+        data class FailedPaymentState(
+            override val amountWithCurrencyLabel: String?,
+            override val onPrimaryActionClicked: (() -> Unit)
+        ) : ViewState(
+            headerLabel = R.string.card_reader_payment_payment_failed_header,
+            // TODO cardreader use a different label based on the type of the error
+            paymentStateLabel = R.string.card_reader_payment_failed_unexpected_error_state,
+            primaryActionLabel = R.string.retry,
+            // TODO cardreader optimize all newly added vector drawables
+            illustration = R.drawable.img_products_error
+        )
 
         data class CollectPaymentState(override val amountWithCurrencyLabel: String) : ViewState(
             hintLabel = R.string.card_reader_payment_collect_payment_hint,
@@ -154,8 +205,8 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
             ViewState(
                 headerLabel = R.string.card_reader_payment_completed_payment_header,
                 illustration = R.drawable.ic_celebration,
-                sendReceiptLabel = R.string.card_reader_payment_send_receipt,
-                printReceiptLabel = R.string.card_reader_payment_print_receipt
+                secondaryActionLabel = R.string.card_reader_payment_send_receipt,
+                primaryActionLabel = R.string.card_reader_payment_print_receipt
             )
     }
 
