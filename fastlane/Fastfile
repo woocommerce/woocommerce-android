@@ -392,7 +392,7 @@ platform :android do
   ########################################################################
   # Helper Lanes
   ########################################################################
-  desc "Get a list of pull request from the `milestone`"
+  desc "Get a list of pull requests from the `milestone`"
   lane :get_pullrequests_list do | options |
     get_prs_list(repository:GHHELPER_REPO, milestone:"#{options[:milestone]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
   end
