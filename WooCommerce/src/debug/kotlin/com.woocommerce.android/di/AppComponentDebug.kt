@@ -8,7 +8,7 @@ import com.woocommerce.android.util.crashlogging.CrashLoggingModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
-import org.wordpress.android.fluxc.module.DebugOkHttpClientModule
+import org.wordpress.android.fluxc.module.OkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
 import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Singleton
@@ -20,7 +20,7 @@ import javax.inject.Singleton
         ApplicationModule::class,
         AppConfigModule::class,
         ReleaseNetworkModule::class,
-        DebugOkHttpClientModule::class,
+        OkHttpClientModule::class,
         SelectedSiteModule::class,
         InterceptorModule::class,
         ActivityBindingModule::class,
