@@ -10,8 +10,8 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
+import org.wordpress.android.fluxc.module.OkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
-import org.wordpress.android.fluxc.module.ReleaseOkHttpClientModule
 import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Singleton
 
@@ -22,7 +22,7 @@ import javax.inject.Singleton
         ApplicationModule::class,
         AppConfigModule::class,
         ReleaseNetworkModule::class,
-        ReleaseOkHttpClientModule::class,
+        OkHttpClientModule::class,
         SelectedSiteModule::class,
         ThreadModule::class,
         ActivityBindingModule::class,
