@@ -178,7 +178,7 @@ platform :android do
   #####################################################################################
   # download_translations
   # -----------------------------------------------------------------------------------
-  # This lane download the string translations from GlotPress
+  # This lane downloads the string translations from GlotPress
   # -----------------------------------------------------------------------------------
   # Usage:
   # bundle exec fastlane download_translations
