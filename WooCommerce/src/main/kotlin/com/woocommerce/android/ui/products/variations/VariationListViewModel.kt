@@ -103,7 +103,7 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     fun onAddEditAttributesClick() {
-        track(PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED)
+        trackWithProductId(PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED)
         triggerEvent(ShowAttributeList)
     }
 

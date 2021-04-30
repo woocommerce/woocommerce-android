@@ -1262,7 +1262,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User tapped "Add attribute" on the attribute list fragment
      */
     fun onAddAttributeButtonClick() {
-        AnalyticsTracker.track(Stat.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
         triggerEvent(AddProductAttribute())
     }
 
