@@ -25,7 +25,6 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.getNonRefundedProducts
-import com.woocommerce.android.model.getNonRefundedShippingLabelProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
@@ -427,17 +426,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     private fun loadOrderProducts(
-        refunds: ListInfo<Refund>,
-        shippingLabels: ListInfo<ShippingLabel>
+        refunds: ListInfo<Refund>
     ): ListInfo<Order.Item> {
-        val products = if (shippingLabels.isVisible) {
-            // If there are some products not associated with any shipping labels (when shipping labels
-            // are refunded, for instance), the products card should be displayed with those products
-            shippingLabels.list.getNonRefundedShippingLabelProducts()
-        } else {
-            refunds.list.getNonRefundedProducts(order.items)
-        }
-
+        val products = refunds.list.getNonRefundedProducts(order.items)
         return ListInfo(isVisible = products.isNotEmpty(), list = products)
     }
 
@@ -501,7 +492,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         val shippingLabels = loadOrderShippingLabels()
         val shipmentTracking = loadShipmentTracking(shippingLabels)
         val orderRefunds = loadOrderRefunds()
-        val orderProducts = loadOrderProducts(orderRefunds, shippingLabels)
+        val orderProducts = loadOrderProducts(orderRefunds)
 
         if (shippingLabels.isVisible) {
             _shippingLabels.value = shippingLabels.list
