@@ -141,15 +141,17 @@ class AttributeTermsListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         init {
             viewBinding.root.setOnClickListener {
-                val item = termNames[adapterPosition]
-                onTermListener.onTermClick(item)
+                termNames.getOrNull(adapterPosition)?.let {
+                    onTermListener.onTermClick(it)
+                }
             }
 
             if (enableDeleting) {
                 viewBinding.termDelete.setOnClickListener {
-                    val item = termNames[adapterPosition]
-                    removeTerm(item)
-                    onTermListener.onTermDelete(item)
+                    termNames.getOrNull(adapterPosition)?.let {
+                        removeTerm(it)
+                        onTermListener.onTermDelete(it)
+                    }
                 }
             }
 
