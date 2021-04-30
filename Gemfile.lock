@@ -1,6 +1,5 @@
 GIT
   remote: https://github.com/wordpress-mobile/release-toolkit
-<<<<<<< HEAD
   revision: ce59a5e7b4fa75f6bb694bcfa333f85175294c3c
   tag: 0.18.0
   specs:
