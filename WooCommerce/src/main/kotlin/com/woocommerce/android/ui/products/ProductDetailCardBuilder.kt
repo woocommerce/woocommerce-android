@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag.ADD_EDIT_VARIATIONS
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -522,33 +521,18 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.emptyVariations(): ComplexProperty {
-        return if (ADD_EDIT_VARIATIONS.isEnabled()) {
-            ComplexProperty(
-                value = resources.getString(string.product_detail_add_variations),
-                icon = drawable.ic_gridicons_types,
-                showTitle = false,
-                onClick = {
-                    viewModel.onEditProductCardClicked(
-                        AddProductAttribute(isVariationCreation = true),
-                        PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-                    )
-                }
-            )
-        } else {
-            ComplexProperty(
-                title = string.product_variations,
-                value = resources.getString(string.product_detail_no_variations),
-                icon = drawable.ic_gridicons_types,
-                onClick = {
-                    viewModel.onEditProductCardClicked(
-                        ViewProductVariations(this.remoteId),
-                        PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-                    )
-                }
-            )
-        }
-    }
+    private fun Product.emptyVariations() =
+        ComplexProperty(
+            value = resources.getString(string.product_detail_add_variations),
+            icon = drawable.ic_gridicons_types,
+            showTitle = false,
+            onClick = {
+                viewModel.onEditProductCardClicked(
+                    AddProductAttribute(isVariationCreation = true),
+                    PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                )
+            }
+        )
 
     private fun Product.categories(): ProductProperty? {
         return if (hasCategories) {
