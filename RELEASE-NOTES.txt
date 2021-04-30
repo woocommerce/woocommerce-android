@@ -2,6 +2,8 @@
 
 6.6
 -----
+- [***] Products: When editing a product, you can now create/delete/update product variations, product attributes and product attribute options. [https://github.com/woocommerce/woocommerce-android/pull/3946]
+- [*] Fixed a bug would not allow to edit the product price and sale price. [https://github.com/woocommerce/woocommerce-android/pull/3926]
 - [*] Added the option to create and edit a virtual product directly from the product detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3900]
 
 6.5
