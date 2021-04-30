@@ -275,9 +275,9 @@ class ProductListViewModel @AssistedInject constructor(
         val shouldShowAddProductButton =
             if (_productList.value?.isEmpty() == true) {
                 when {
-                    viewState.query != null -> { true }
-                    productFilterOptions.isNotEmpty() -> { true }
-                    else -> { false }
+                    viewState.query != null -> true
+                    productFilterOptions.isNotEmpty() -> true
+                    else -> false
                 }
             } else {
                 true
