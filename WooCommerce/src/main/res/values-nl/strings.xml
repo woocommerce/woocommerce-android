@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-01 13:54:03+0000
+Translation-Revision-Date: 2021-04-28 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">Kan de bestelling niet als voltooid markeren</string>
+    <string name="shipping_label_create_purchase_error">Fout tijdens het aanschaffen van de labels</string>
+    <string name="shipping_label_create_purchase_progress_message">Een moment geduld…</string>
+    <string name="shipping_label_create_purchase_progress_title">Label aanschaffen</string>
+    <string name="shipping_label_reprint_expired_message">Afbeeldingen van labels ouder dan 180 dagen worden door onze technologische partners verwijderd vanwege de algemene veiligheid en gegevensprivacy.</string>
+    <string name="shipping_label_print_screen_title">Verzendlabel afdrukken</string>
+    <string name="shipping_label_print_save_for_later">Opslaan voor later</string>
+    <string name="shipping_label_print_purchase_success">Verzendlabel aangeschaft!</string>
+    <string name="shipping_label_refund_expired">Labels ouder dan 30 dagen kunnen niet worden terugbetaald</string>
+    <string name="type">Type</string>
+    <string name="rename">Hernoemen</string>
+    <string name="product_attribute_error_renaming">Fout tijdens het hernoemen van je eigenschap</string>
+    <string name="product_rename_attribute_helper">Soort variatie, zoals grootte of kleur</string>
+    <string name="product_rename_attribute">Eigenschap hernoemen</string>
     <string name="product_attributes_error_saving">Fout bij het opslaan van je eigenschappen</string>
     <string name="shipping_label_payments_cant_edit_warning">Alleen de site-eigenaar kan de betalingsmethoden voor verzendlabels beheren. Neem contact op met winkeleigenaar %1$s (%2$s) om betalingsmethoden te beheren.</string>
     <string name="product_detail_add_variations">Variaties toevoegen</string>
@@ -134,6 +148,7 @@ Language: nl
     <string name="order_mark_complete">Bestelling markeren als voltooid</string>
     <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je telefoon aanmaken</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Verzendlabel aanmaken</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">Je kunt nu verzendlabels rechtstreeks vanaf je apparaat aanmaken voor alle fysieke bestellingen met de gratis WooCommerce Shipping-plugin. Tik op \"Verzendlabel aanmaken\" om onze bètafunctie te proberen!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Maak verzendlabels vanaf je apparaat!!</string>
     <string name="orderdetail_payment_fees">Toeslagen</string>
     <string name="orderdetail_net">Netto betaling</string>
