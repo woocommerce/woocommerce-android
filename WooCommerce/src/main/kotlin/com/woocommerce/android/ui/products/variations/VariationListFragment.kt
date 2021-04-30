@@ -38,8 +38,6 @@ import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.D
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlag.ADD_EDIT_VARIATIONS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -116,19 +114,15 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
-            val mnuEditAttr = menu.add(Menu.NONE, ID_EDIT_ATTRIBUTES, Menu.NONE, R.string.product_variations_edit_attr)
-            mnuEditAttr.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-            mnuEditAttr.isVisible = false
-        }
+        val mnuEditAttr = menu.add(Menu.NONE, ID_EDIT_ATTRIBUTES, Menu.NONE, R.string.product_variations_edit_attr)
+        mnuEditAttr.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        mnuEditAttr.isVisible = false
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
-            menu.findItem(ID_EDIT_ATTRIBUTES)?.isVisible = !viewModel.isEmpty
-        }
+        menu.findItem(ID_EDIT_ATTRIBUTES)?.isVisible = !viewModel.isEmpty
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -274,17 +268,10 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
 
     private fun handleEmptyViewChanges(isEmptyViewVisible: Boolean) {
         binding.variationInfoContainer.visibility = if (isEmptyViewVisible) GONE else VISIBLE
-        if (ADD_EDIT_VARIATIONS.isEnabled()) {
-            binding.firstVariationView.updateVisibility(
-                shouldBeVisible = isEmptyViewVisible,
-                showButton = true
-            )
-        } else {
-            binding.emptyView.updateVisibility(
-                shouldBeVisible = isEmptyViewVisible,
-                showButton = false
-            )
-        }
+        binding.firstVariationView.updateVisibility(
+            shouldBeVisible = isEmptyViewVisible,
+            showButton = true
+        )
         requireActivity().invalidateOptionsMenu()
     }
 

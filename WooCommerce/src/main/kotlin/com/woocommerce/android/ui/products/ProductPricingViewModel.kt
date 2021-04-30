@@ -19,6 +19,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
@@ -58,7 +61,8 @@ class ProductPricingViewModel @AssistedInject constructor(
             ?: DEFAULT_DECIMAL_PRECISION
 
         viewState = viewState.copy(
-            currency = parameters.currencyCode,
+            currency = parameters.currencySymbol,
+            currencyPosition = parameters.currencyPosition,
             decimals = decimals,
             taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
             isTaxSectionVisible = isProductPricing
@@ -167,12 +171,15 @@ class ProductPricingViewModel @AssistedInject constructor(
         val taxClassList: List<TaxClass>? = null,
         val salePriceErrorMessage: Int? = null,
         val pricingData: PricingData = PricingData(),
-        val isTaxSectionVisible: Boolean? = null
+        val isTaxSectionVisible: Boolean? = null,
+        private val currencyPosition: CurrencyPosition? = null
     ) : Parcelable {
         val isRemoveEndDateButtonVisible: Boolean
             get() = pricingData.saleEndDate != null
         val canSaveChanges: Boolean
             get() = salePriceErrorMessage == 0 || salePriceErrorMessage == null
+        val isCurrencyPrefix: Boolean
+            get() = currencyPosition == LEFT || currencyPosition == LEFT_SPACE
     }
 
     @Parcelize
