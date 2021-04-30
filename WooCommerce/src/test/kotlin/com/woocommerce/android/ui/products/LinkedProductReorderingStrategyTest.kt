@@ -12,7 +12,6 @@ class LinkedProductReorderingStrategyTest {
         val productListSwappingStrategy = DefaultProductListReorderingStrategy()
         val expectedLinkedProductIds = arrayListOf(2L, 1L, 3L, 4L, 5L)
 
-
         // When
 
         // Imitate dragging product from 0 to 1st position
@@ -26,9 +25,8 @@ class LinkedProductReorderingStrategyTest {
         Assert.assertEquals(expectedLinkedProductIds, actualLinkedProductIds)
     }
 
-
     @Test
-    fun `re-ordering linked product from 1st position to 2nd, and 2nd to 5th position, the product list order must be correct`() {
+    fun `re-ordering product from 1st position to 2nd,and 2nd to 5th position,the order must be correct`() {
         // Given
         val currentLinkedProductList = ProductTestUtils.generateProductList()
         val productListSwappingStrategy = DefaultProductListReorderingStrategy()

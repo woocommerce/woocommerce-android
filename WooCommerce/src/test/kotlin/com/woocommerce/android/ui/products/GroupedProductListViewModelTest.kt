@@ -187,7 +187,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         )
     }
 
-
     @Test
     fun `updates product list after deleting a product on edit mode`() {
         // Given
@@ -208,7 +207,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
             productListAfterDeletion
         )
     }
-
 
     @Test
     fun `Displays current product list if previously selected list is null after canceling edit mode`() {

@@ -40,7 +40,8 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
 
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
-        GroupedProductListAdapter(isEditMode = false, onItemDeleted = viewModel::onProductDeleted) { reOrderedProductList ->
+        GroupedProductListAdapter(isEditMode = false,
+            onItemDeleted = viewModel::onProductDeleted) { reOrderedProductList ->
             viewModel.updateReOrderedProductList(reOrderedProductList)
         }
     }

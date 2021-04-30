@@ -30,7 +30,8 @@ class DraggableItemTouchHelper(
 
             override fun clearView(recyclerView: RecyclerView, viewHolder: ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
-                viewHolder.itemView.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.color_surface))
+                viewHolder.itemView.setBackgroundColor(
+                    ContextCompat.getColor(viewHolder.itemView.context, R.color.color_surface))
             }
 
             /*
@@ -40,7 +41,8 @@ class DraggableItemTouchHelper(
             override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
                 super.onSelectedChanged(viewHolder, actionState)
                 if (actionState == ACTION_STATE_DRAG) {
-                    viewHolder?.itemView?.setBackgroundColor(ContextCompat.getColor(viewHolder.itemView.context, R.color.woo_purple_60_alpha_33))
+                    viewHolder?.itemView?.setBackgroundColor(
+                        ContextCompat.getColor(viewHolder.itemView.context, R.color.woo_purple_60_alpha_33))
                     onDragStarted()
                 }
             }
