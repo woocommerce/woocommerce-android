@@ -6,6 +6,7 @@ import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -93,10 +94,7 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
 
         binding.issueRefundShippingMainSwitch.setOnCheckedChangeListener { _, isChecked: Boolean ->
             viewModel.onShippingRefundMainSwitchChanged(isChecked)
-            if (isChecked)
-                binding.issueRefundShippingSection.root.show()
-            else
-                binding.issueRefundShippingSection.root.hide()
+            binding.issueRefundShippingSection.root.isVisible = isChecked
         }
 
         // TODO: Temporarily disabled, this will be used in a future release - do not remove
@@ -158,11 +156,7 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
                 }
             }
             new.isShippingRefundAvailable?.takeIfNotEqualTo(old?.isShippingRefundAvailable) { isVisible ->
-                if (isVisible) {
-                    binding.issueRefundShippingContainer.show()
-                } else {
-                    binding.issueRefundShippingContainer.hide()
-                }
+                binding.issueRefundShippingContainer.isVisible = isVisible
             }
             new.formattedShippingRefundTotal?.takeIfNotEqualTo(old?.formattedShippingRefundTotal) {
                 shippingLinesBinding.issueRefundShippingTotal.text = it
