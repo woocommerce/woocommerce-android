@@ -177,22 +177,22 @@ platform :android do
   end
 
   #####################################################################################
-      # download_translations
-      # -----------------------------------------------------------------------------------
-      # This lane download the string translations from GlotPress
-      # -----------------------------------------------------------------------------------
-      # Usage:
-      # bundle exec fastlane download_translations
-      #####################################################################################
-    lane :download_translations do |options|
-      # Adapt the GP project URL and lint_task as needed if testing a project other than WordPress
-      android_download_translations(
-        res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
-        glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
-        locales: SUPPORTED_LOCALES,
-        lint_task: 'lintVanillaRelease'
-      )
-    end
+  # download_translations
+  # -----------------------------------------------------------------------------------
+  # This lane download the string translations from GlotPress
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane download_translations
+  #####################################################################################
+  desc "Download the latest app translations from GlotPress and update the strings.xml files accordingly"
+  lane :download_translations do |options|
+    android_download_translations(
+      res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
+      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
+      locales: SUPPORTED_LOCALES,
+      lint_task: 'lintVanillaRelease'
+    )
+  end
 
   #####################################################################################
   # finalize_release
