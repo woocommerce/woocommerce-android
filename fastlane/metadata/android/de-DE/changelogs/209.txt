@@ -1,4 +1,0 @@
-6.4:
-Wir haben in dieser Release ein paar Verbesserungen vorgenommen.
-Wir haben einen Fehler behoben, der dazu führte, dass Produkte in der App nicht geladen wurde, wenn im Lagerbestand ein Dezimalwert angegeben war.
-Außerdem haben wir ein Problem am Layout behoben, das an den Optionen für Versandetikettenformate auftrat.

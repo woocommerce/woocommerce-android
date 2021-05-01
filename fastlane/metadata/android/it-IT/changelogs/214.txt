@@ -1,0 +1,2 @@
+6.5:
+È disponibile una nuova splendida funzionalità per il beta testing. I rivenditori residenti in USA possono creare etichette di spedizione per ordini fisici proprio dall'app (solo per destinazioni USA). Abbiamo anche corretto alcuni bug: le etichette di spedizione scadute ora mostrano informazioni molto più accurate e la tastiera sulla schermata non scomparirà durante la ricerca dell'elenco degli ordini.
