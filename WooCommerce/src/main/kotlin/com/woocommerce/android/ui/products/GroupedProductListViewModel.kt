@@ -41,16 +41,11 @@ class GroupedProductListViewModel @AssistedInject constructor(
     val productList: LiveData<List<Product>> = _productList
 
     final val productListViewStateData =
-        LiveDataDelegate(savedState, GroupedProductListViewState(originalProductIds))
+        LiveDataDelegate(savedState, GroupedProductListViewState(originalProductIds, originalProductIds))
     private var productListViewState by productListViewStateData
 
     private val selectedProductIds
         get() = productListViewState.selectedProductIds
-
-    var previousSelectedProductIds: List<Long>? = null
-
-    // Indicates whether the screen is in edit mode or not
-    var isEditMode: Boolean = false
 
     // Used to differentiate whether ActionMode done button is clicked or the back button in ActionMode
     // Since onDestroyActionMode is called for both
@@ -79,19 +74,17 @@ class GroupedProductListViewModel @AssistedInject constructor(
         // ignore already added products
         val uniqueSelectedProductIds = selectedProductIds.minus(this.selectedProductIds)
         // TODO handle linked products
+        val totalProductsList = this.selectedProductIds + uniqueSelectedProductIds
         productListViewState = productListViewState.copy(
-            selectedProductIds = this.selectedProductIds + uniqueSelectedProductIds
+            selectedProductIds = totalProductsList,
+            previouslySelectedProductIds = totalProductsList
         )
-        previousSelectedProductIds = productListViewState.selectedProductIds
         track(ConnectedProductsListAction.ADDED)
         updateProductList()
     }
 
     fun onProductDeleted(product: Product) {
         // TODO handle linked products
-        if (previousSelectedProductIds == null) {
-            previousSelectedProductIds = selectedProductIds
-        }
         productListViewState = productListViewState.copy(
             selectedProductIds = selectedProductIds - product.remoteId
         )
@@ -112,7 +105,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
      **/
     fun restorePreviousProductList() {
         productListViewState = productListViewState.copy(
-            selectedProductIds = previousSelectedProductIds ?: selectedProductIds
+            selectedProductIds = productListViewState.previouslySelectedProductIds
         )
         updateProductList()
     }
@@ -122,15 +115,20 @@ class GroupedProductListViewModel @AssistedInject constructor(
      * on orientation change, after drag-and-drop
      **/
     fun updateReOrderedProductList(reorderedProductList: List<Product>) {
-        if (previousSelectedProductIds == null) {
-            previousSelectedProductIds = selectedProductIds
-        }
         productListViewState = productListViewState.copy(
             selectedProductIds = reorderedProductList.map { it.remoteId }
         )
         _productList.value = if (reorderedProductList.isNotEmpty()) {
             reorderedProductList
         } else emptyList()
+    }
+
+    fun updatePreviouslySelectedProductIds() {
+        productListViewState.previouslySelectedProductIds = selectedProductIds
+    }
+
+    fun setEditMode(mode: Boolean) {
+        productListViewState.isEditMode = mode
     }
 
     fun onAddProductButtonClicked() {
@@ -146,11 +144,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun onBackButtonClicked(): Boolean {
         if (hasChanges) {
-            if (isActionModeClicked) {
-                triggerEvent(ExitWithResult(selectedProductIds))
-            } else {
-                triggerEvent(ExitWithResult(previousSelectedProductIds))
-            }
+            triggerEvent(ExitWithResult(selectedProductIds))
             return false
         }
         return true
@@ -206,6 +200,8 @@ class GroupedProductListViewModel @AssistedInject constructor(
     @Parcelize
     data class GroupedProductListViewState(
         val selectedProductIds: List<Long>,
+        var previouslySelectedProductIds: List<Long>,
+        var isEditMode: Boolean = false, // Indicates whether the screen is in edit mode or not
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null
     ) : Parcelable {

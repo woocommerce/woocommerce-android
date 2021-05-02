@@ -40,8 +40,10 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
 
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
-        GroupedProductListAdapter(isEditMode = false,
-            onItemDeleted = viewModel::onProductDeleted) { reOrderedProductList ->
+        GroupedProductListAdapter(
+            isEditMode = false,
+            onItemDeleted = viewModel::onProductDeleted
+        ) { reOrderedProductList ->
             viewModel.updateReOrderedProductList(reOrderedProductList)
         }
     }
@@ -75,13 +77,6 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         setupObservers()
         setupResultHandlers()
 
-        // Set the UI for edit mode if its edit mode, else disable drag-and-drop
-        if (viewModel.isEditMode) {
-            setEditModeUI()
-        } else {
-            itemTouchHelper.attachToRecyclerView(null)
-        }
-
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productListAdapter
         binding.productsRecycler.isMotionEventSplittingEnabled = false
@@ -104,8 +99,12 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.loadMoreProgress.isVisible = it }
             new.isAddProductButtonVisible.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
-                if (!viewModel.isEditMode) {
+                if (!new.isEditMode) {
                     showAddProductButton(it)
+                    itemTouchHelper.attachToRecyclerView(null)
+                } else {
+                    // Set the UI for edit mode if its edit mode, else disable drag-and-drop
+                    setEditModeUI()
                 }
             }
         }
@@ -178,7 +177,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         itemTouchHelper.attachToRecyclerView(binding.productsRecycler)
         showAddProductButton(false)
         actionMode?.title = getString(R.string.edit)
-        viewModel.isEditMode = true
+        viewModel.setEditMode(true)
         productListAdapter.setEditMode(true)
     }
 
@@ -222,9 +221,9 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         if (!viewModel.isActionModeClicked) {
             viewModel.restorePreviousProductList()
         } else {
-            viewModel.previousSelectedProductIds = viewModel.productListViewStateData.liveData.value?.selectedProductIds
+            viewModel.updatePreviouslySelectedProductIds()
         }
-        viewModel.isEditMode = false
+        viewModel.setEditMode(false)
         viewModel.isActionModeClicked = false
         actionMode = null
     }
