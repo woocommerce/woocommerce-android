@@ -1,13 +1,10 @@
 package com.woocommerce.android.di
 
 import android.content.Context
-import android.util.Base64
-import com.goterl.lazycode.lazysodium.utils.Key
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import dagger.Module
 import dagger.Provides
-import org.wordpress.android.fluxc.model.encryptedlogging.EncryptedLoggingKey
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import org.wordpress.android.util.helpers.logfile.LogFileProvider
@@ -31,10 +28,6 @@ class AppConfigModule {
 
     @Provides
     fun provideLogFileProvider(context: Context): LogFileProviderInterface = LogFileProvider.fromContext(context)
-
-    @Provides fun provideEncryptedLoggingKey(): EncryptedLoggingKey {
-        return EncryptedLoggingKey(Key.fromBytes(Base64.decode("123", Base64.DEFAULT)))
-    }
 
     @Provides
     fun providesAppPrefs(appContext: Context): AppPrefs {
