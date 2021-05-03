@@ -309,7 +309,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     orderItems = products,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
-                    productClickListener = this@OrderDetailFragment
+                    productClickListener = this@OrderDetailFragment,
+                    onProductMenuItemClicked = viewModel::onCreateShippingLabelButtonTapped
                 )
             }
         }.otherwise { binding.orderDetailProductList.hide() }
