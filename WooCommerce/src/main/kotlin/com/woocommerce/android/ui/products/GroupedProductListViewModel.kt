@@ -159,7 +159,11 @@ class GroupedProductListViewModel @AssistedInject constructor(
                 selectedProductIds
             )
             if (productsInDb.isNotEmpty()) {
-                _productList.value = productsInDb
+                // sort the product list fetched from the database to match the selectedProductIds.
+                // This is done to retain the drag&drop order.
+                _productList.value = productsInDb.sortedBy {
+                    selectedProductIds.indexOf(it.remoteId)
+                }
                 productListViewState = productListViewState.copy(isSkeletonShown = false)
             } else {
                 productListViewState = productListViewState.copy(isSkeletonShown = true)
@@ -174,9 +178,13 @@ class GroupedProductListViewModel @AssistedInject constructor(
         loadMore: Boolean
     ) {
         if (networkStatus.isConnected()) {
+            // sort the product list fetched from the network to match the selectedProductIds.
+            // This is done to retain the drag&drop order.
             _productList.value = groupedProductListRepository.fetchProductList(
                 groupedProductIds, loadMore
-            )
+            ).sortedBy {
+                selectedProductIds.indexOf(it.remoteId)
+            }
         } else {
             // Network is not connected
             triggerEvent(ShowSnackbar(string.offline_error))
