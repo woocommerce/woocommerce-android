@@ -31,7 +31,8 @@ class WCCrashLoggingDataProviderTest {
             localeProvider = localeProvider,
             accountStore = accountStore,
             selectedSite = selectedSite,
-            appPrefs = appPrefs
+            appPrefs = appPrefs,
+            encryptedLogUploader = mock()
         )
     }
 

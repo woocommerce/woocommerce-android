@@ -3,6 +3,7 @@ package com.woocommerce.android.util.crashlogging
 import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
+import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -16,7 +17,8 @@ class WCCrashLoggingDataProvider @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val accountStore: AccountStore,
     private val selectedSite: SelectedSite,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val encryptedLogUploader: EncryptedLogUploader
 ) : CrashLoggingDataProvider {
     override val buildType: String = BuildConfig.BUILD_TYPE
 
@@ -50,7 +52,15 @@ class WCCrashLoggingDataProvider @Inject constructor(
         currentExtras: Map<ExtraKnownKey, String>,
         eventLevel: EventLevel
     ): Map<ExtraKnownKey, String> {
-        return emptyMap()
+
+        val uuid = "test"
+
+        encryptedLogUploader.upload(
+            uuid = uuid,
+            shouldStartUploadImmediately = eventLevel == FATAL
+        )
+
+        return mapOf(EXTRA_UUID to uuid)
     }
 
     override fun shouldDropWrappingException(module: String, type: String, value: String): Boolean {
@@ -70,5 +80,6 @@ class WCCrashLoggingDataProvider @Inject constructor(
     companion object {
         private const val SITE_ID_KEY = "site_id"
         private const val SITE_URL_KEY = "site_url"
+        private const val EXTRA_UUID = "uuid"
     }
 }
