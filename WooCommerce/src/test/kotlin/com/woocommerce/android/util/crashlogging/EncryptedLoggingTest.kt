@@ -5,7 +5,11 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ENCRYPTED_LOGGING_UPLOAD_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineTestRule
 import org.junit.Before
@@ -15,7 +19,10 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.EncryptedLogAction.RESET_UPLOAD_STATES
 import org.wordpress.android.fluxc.action.EncryptedLogAction.UPLOAD_LOG
 import org.wordpress.android.fluxc.store.EncryptedLogStore
+import org.wordpress.android.fluxc.store.EncryptedLogStore.OnEncryptedLogUploaded
+import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogError
 import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogPayload
+import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.helpers.logfile.LogFileProviderInterface
 import java.io.File
 
@@ -26,6 +33,8 @@ class EncryptedLoggingTest {
     private val encryptedLogStore: EncryptedLogStore = mock()
     private val logFileProvider: LogFileProviderInterface = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val logger: AppLogWrapper = mock()
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -37,7 +46,9 @@ class EncryptedLoggingTest {
             dispatchers = coroutinesTestRule.testDispatchers,
             encryptedLogStore = encryptedLogStore,
             logFileProvider = logFileProvider,
-            networkStatus = networkStatus
+            networkStatus = networkStatus,
+            analyticsTracker = analyticsTracker,
+            logger = logger
         )
     }
 
@@ -105,5 +116,43 @@ class EncryptedLoggingTest {
                 it?.shouldStartUploadImmediately == true
             }
         })
+    }
+
+    @Test
+    fun `should track successful upload`() {
+        sut.onEncryptedLogUploaded(event = OnEncryptedLogUploaded.EncryptedLogUploadedSuccessfully("", File("temp")))
+
+        verify(analyticsTracker, times(1)).track(ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL)
+    }
+
+    @Test
+    fun `should track failed upload when sending won't be retried`() {
+        val event = OnEncryptedLogUploaded.EncryptedLogFailedToUpload(
+            "",
+            File("temp"),
+            UploadEncryptedLogError.InvalidRequest,
+            willRetry = false
+        )
+
+        sut.onEncryptedLogUploaded(event = event)
+
+        verify(analyticsTracker, times(1)).track(
+            ENCRYPTED_LOGGING_UPLOAD_FAILED,
+            mapOf("error_type" to event.error.javaClass.simpleName)
+        )
+    }
+
+    @Test
+    fun `should not track failed upload when sending will be retried`() {
+        val event = OnEncryptedLogUploaded.EncryptedLogFailedToUpload(
+            "",
+            File("temp"),
+            UploadEncryptedLogError.InvalidRequest,
+            willRetry = true
+        )
+
+        sut.onEncryptedLogUploaded(event = event)
+
+        verifyZeroInteractions(analyticsTracker)
     }
 }
