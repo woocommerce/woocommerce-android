@@ -96,7 +96,11 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     private fun updateProductList() {
         _productList.value = if (selectedProductIds.isNotEmpty()) {
-            groupedProductListRepository.getProductList(selectedProductIds)
+            // sort the product list fetched from the database to match the selectedProductIds.
+            // This is done to retain the drag&drop order.
+            groupedProductListRepository.getProductList(selectedProductIds).sortedBy {
+                selectedProductIds.indexOf(it.remoteId)
+            }
         } else emptyList()
     }
 
