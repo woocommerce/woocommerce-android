@@ -8,7 +8,7 @@ commands:
       parameters:
         jvmargs:
           type: string
-          default: "Xmx6g"
+          default: "Xmx1536m"
       steps:
         - run:
             name: Update memory setting
