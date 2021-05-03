@@ -50,10 +50,10 @@ class EncryptedLogUploaderTest {
     }
 
     @Test
-    fun `should not request upload when log file does not exist`() {
+    fun `should not enqueue upload when log file does not exist`() {
         whenever(logFileProvider.getLogFiles()).thenReturn(emptyList())
 
-        sut.upload("uuid", false)
+        sut.enqueue("uuid", false)
 
         verify(eventBusDispatcher, never()).dispatch(argForWhich {
             type == UPLOAD_LOG
@@ -61,14 +61,14 @@ class EncryptedLogUploaderTest {
     }
 
     @Test
-    fun `should dispatch logs update when log file is available and there's network connection`() {
+    fun `should enqueue logs upload when log file is available and there's network connection`() {
         val uuid = "uuid"
         val tempFile = File("temp")
         val startImmediately = false
         whenever(logFileProvider.getLogFiles()).thenReturn(listOf(tempFile))
         whenever(networkStatus.isConnected()).thenReturn(true)
 
-        sut.upload("uuid", startImmediately)
+        sut.enqueue("uuid", startImmediately)
 
         verify(eventBusDispatcher, times(1)).dispatch(argForWhich {
             (payload as? UploadEncryptedLogPayload).let {
@@ -81,11 +81,11 @@ class EncryptedLogUploaderTest {
 
     // If the connection is not available, we shouldn't try to upload immediately
     @Test
-    fun `should not start immediately when requested but there's no network connection`() {
+    fun `should not start upload immediately when requested but there's no network connection`() {
         whenever(logFileProvider.getLogFiles()).thenReturn(listOf(File("temp")))
         whenever(networkStatus.isConnected()).thenReturn(false)
 
-        sut.upload("uuid", true)
+        sut.enqueue("uuid", true)
 
         verify(eventBusDispatcher, times(1)).dispatch(argForWhich {
             (payload as? UploadEncryptedLogPayload).let {
@@ -95,11 +95,11 @@ class EncryptedLogUploaderTest {
     }
 
     @Test
-    fun `should start immediately when requested and there's network connection`() {
+    fun `should start upload immediately when requested and there's network connection`() {
         whenever(logFileProvider.getLogFiles()).thenReturn(listOf(File("temp")))
         whenever(networkStatus.isConnected()).thenReturn(true)
 
-        sut.upload("uuid", true)
+        sut.enqueue("uuid", true)
 
         verify(eventBusDispatcher, times(1)).dispatch(argForWhich {
             (payload as? UploadEncryptedLogPayload).let {

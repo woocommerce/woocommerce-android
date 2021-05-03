@@ -30,7 +30,7 @@ class EncryptedLogUploader @Inject constructor(
         }
     }
 
-    fun upload(
+    fun enqueue(
         uuid: String,
         shouldStartUploadImmediately: Boolean
     ) {

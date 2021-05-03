@@ -1,6 +1,11 @@
 package com.woocommerce.android.util.crashlogging
 
+import com.automattic.android.tracks.crashlogging.EventLevel.INFO
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
@@ -24,6 +29,8 @@ class WCCrashLoggingDataProviderTest {
     private val accountStore: AccountStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val appPrefs: AppPrefs = mock()
+    private val encryptedLogUploader: EncryptedLogUploader = mock()
+    private val uuidGenerator: UuidGenerator = mock()
 
     @Before
     fun setUp() {
@@ -32,7 +39,8 @@ class WCCrashLoggingDataProviderTest {
             accountStore = accountStore,
             selectedSite = selectedSite,
             appPrefs = appPrefs,
-            encryptedLogUploader = mock()
+            encryptedLogUploader = encryptedLogUploader,
+            uuidGenerator = uuidGenerator
         )
     }
 
@@ -113,6 +121,28 @@ class WCCrashLoggingDataProviderTest {
         whenever(localeProvider.provideLocale()).thenReturn(Locale.CANADA)
 
         assertThat(sut.locale).isEqualTo(Locale.CANADA)
+    }
+
+    @Test
+    fun `should request encrypted logs upload when providing extras for event`() {
+        val generatedUuid = "123"
+        whenever(uuidGenerator.generateUuid()).thenReturn(generatedUuid)
+
+        val extras = sut.provideExtrasForEvent(currentExtras = emptyMap(), eventLevel = INFO)
+
+        verify(encryptedLogUploader, times(1)).enqueue(generatedUuid, false)
+        assertThat(extras).containsValue(generatedUuid)
+    }
+
+    @Test
+    fun `should not request encrypted logs upload when uuid is already provided`() {
+        val generatedUuid = "123"
+        whenever(uuidGenerator.generateUuid()).thenReturn(generatedUuid)
+
+        val extras = sut.provideExtrasForEvent(currentExtras = mapOf("uuid" to generatedUuid), eventLevel = INFO)
+
+        verify(encryptedLogUploader, never()).enqueue(any(), any())
+        assertThat(extras).containsValue(generatedUuid)
     }
 
     companion object {
