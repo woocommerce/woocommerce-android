@@ -33,7 +33,8 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
 
     fun bind(
         product: Product,
-        isActivated: Boolean = false
+        isActivated: Boolean = false,
+        showDragHandler: Boolean = true
     ) {
         viewBinding.root.isActivated = isActivated
 
@@ -58,7 +59,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
 
         val firstImage = product.firstImageUrl
         val size: Int
-        if (isEditMode) {
+        if (isEditMode && showDragHandler) {
             size = imageSize / 2
             viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
             viewBinding.productImage.setImageResource(R.drawable.ic_gridicons_align_justify)

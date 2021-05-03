@@ -174,7 +174,10 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
     private fun setEditModeUI() {
         TransitionManager.beginDelayedTransition(binding.groupedProductsRoot)
         actionMode = requireActivity().startActionMode(actionModeCallback)
-        itemTouchHelper.attachToRecyclerView(binding.productsRecycler)
+        // enable drag&drop only when we have more than 1 products
+        if (viewModel.getSelectedProductIdsList().size > 1) {
+            itemTouchHelper.attachToRecyclerView(binding.productsRecycler)
+        }
         showAddProductButton(false)
         actionMode?.title = getString(R.string.edit)
         viewModel.setEditMode(true)

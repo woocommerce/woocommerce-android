@@ -70,6 +70,8 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun getKeyForGroupedProductListType() = groupedProductListType.resultKey
 
+    fun getSelectedProductIdsList() = productListViewState.selectedProductIds
+
     fun onProductsAdded(selectedProductIds: List<Long>) {
         // ignore already added products
         val uniqueSelectedProductIds = selectedProductIds.minus(this.selectedProductIds)

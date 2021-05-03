@@ -43,15 +43,25 @@ class GroupedProductListAdapter(
             holder.viewBinding.productBtnDelete.isVisible = false
         }
         holder.setEditMode(isEditMode)
-        holder.bind(product)
+        if (productList.size > 1) {
+            holder.bind(product)
+        } else {
+            holder.bind(product, showDragHandler = false)
+        }
     }
 
     fun setProductList(products: List<Product>) {
         if (!productList.areSameProductsAs(products)) {
-            val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
-            productList.clear()
-            productList.addAll(products)
-            diffResult.dispatchUpdatesTo(this)
+            if (products.size > 1) {
+                val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
+                productList.clear()
+                productList.addAll(products)
+                diffResult.dispatchUpdatesTo(this)
+            } else {
+                productList.clear()
+                productList.addAll(products)
+                notifyDataSetChanged()
+            }
         }
     }
 
