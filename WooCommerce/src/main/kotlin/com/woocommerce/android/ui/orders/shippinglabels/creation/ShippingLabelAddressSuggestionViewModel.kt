@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SHIPPING_LABEL_ADDRESS_SUGGESTIONS_EDIT_SELECTED_ADDRESS_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SHIPPING_LABEL_ADDRESS_SUGGESTIONS_USE_SELECTED_ADDRESS_BUTTON_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
@@ -16,7 +16,10 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.android.parcel.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import kotlinx.parcelize.Parcelize
 
 class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -24,7 +27,14 @@ class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val arguments: ShippingLabelAddressSuggestionFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.enteredAddress, arguments.suggestedAddress))
+    val viewStateData = LiveDataDelegate(
+        savedState,
+        ViewState(
+            enteredAddress = arguments.enteredAddress,
+            suggestedAddress = arguments.suggestedAddress,
+            selectedAddress = arguments.suggestedAddress
+        )
+    )
     private var viewState by viewStateData
 
     init {
@@ -38,15 +48,35 @@ class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
     }
 
     fun onUseSelectedAddressTapped() {
+        trackUseAddressEvent()
+
         viewState.selectedAddress?.let {
             triggerEvent(UseSelectedAddress(it))
         }
     }
 
+    private fun trackUseAddressEvent() {
+        val addressType = if (viewState.selectedAddress == viewState.suggestedAddress) "suggested" else "original"
+        AnalyticsTracker.track(
+            SHIPPING_LABEL_ADDRESS_SUGGESTIONS_USE_SELECTED_ADDRESS_BUTTON_TAPPED,
+            mapOf("type" to addressType)
+        )
+    }
+
     fun onEditSelectedAddressTapped() {
+        trackEditAddressEvent()
+
         viewState.selectedAddress?.let {
             triggerEvent(EditSelectedAddress(it))
         }
+    }
+
+    private fun trackEditAddressEvent() {
+        val addressType = if (viewState.selectedAddress == viewState.suggestedAddress) "suggested" else "original"
+        AnalyticsTracker.track(
+            SHIPPING_LABEL_ADDRESS_SUGGESTIONS_EDIT_SELECTED_ADDRESS_BUTTON_TAPPED,
+            mapOf("type" to addressType)
+        )
     }
 
     fun onSelectedAddressChanged(isSuggestedAddress: Boolean) {

@@ -106,6 +106,7 @@
                 android:layout_marginTop="@dimen/minor_50"
                 android:paddingStart="@dimen/major_175"
                 android:paddingEnd="@dimen/major_150"
+                android:checked="true"
                 android:text="@string/shipping_label_address_suggestion_suggested_address" />
 
             <com.google.android.material.textview.MaterialTextView

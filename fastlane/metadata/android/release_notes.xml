@@ -1,102 +1,68 @@
 <ar>
-6.4:
-قمنا بالقليل من التحسينات في هذا الإصدار.
-أصلحنا خطأ كان يمنع التطبيق من تحميل المنتجات عند وجود قيمة عشرية في كمية المخزون.
-أصلحنا كذلك مشكلة تخطيط كانت تحدث في شاشة خيار تنسيقات ملصق الشحن.
+6.5:
+لدينا ميزة جديدة رائعة متاحة لاختبارات بيتا! يمكن للتجار الذين مقرهم الولايات المتحدة إنشاء ملصقات شحن للطلبات المادية مباشرةً من التطبيق (لجهات وصول الولايات المتحدة فقط). أصلحنا كذلك بعض الأخطاء: تعرض ملصقات الشحن منتهية الصلاحية الآن معلومات أكثر دقة ولن تظهر لوحة المفاتيح على الشاشة عند البحث في قائمة طلباتك.
 </ar>
 <de-DE>
-6.4:
-Wir haben in dieser Release ein paar Verbesserungen vorgenommen.
-Wir haben einen Fehler behoben, der dazu führte, dass Produkte in der App nicht geladen wurde, wenn im Lagerbestand ein Dezimalwert angegeben war.
-Außerdem haben wir ein Problem am Layout behoben, das an den Optionen für Versandetikettenformate auftrat.
+6.5:
+Es gibt eine brandneue Funktion als Beta-Version! Verkäufer in der USA können Versandetiketten für physische Bestellungen jetzt direkt in der App erstellen (nur für Lieferungen innerhalb der USA). Außerdem haben wir ein paar Fehler korrigiert: Abgelaufene Versandetiketten zeigen Informationen jetzt genauer an und die Tastatur auf dem Bildschirm verschwindet nicht mehr, wenn du deine Bestellliste durchsuchst.
 </de-DE>
 <es-ES>
-6,4:
-Hemos realizado algunas mejoras en esta versión.
-Hemos corregido un error que impedía que la aplicación cargara productos cuando había un valor decimal en la cantidad de existencias.
-También hemos solucionado un problema de diseño que se producía en la pantalla de opciones de formatos de etiquetas de envío.
+6.5:
+¡Tenemos una nueva función disponible para la versión beta! Los vendedores establecidos en Estados Unidos pueden crear etiquetas de envío para sus pedidos físicos desde la aplicación (solo para destinos que se encuentren dentro del mismo país). También hemos corregido algunos errores: ahora, las etiquetas de envío vencidas muestran información más precisa y el teclado de la pantalla no desaparecerá al hacer búsquedas en la lista de pedidos.
 </es-ES>
 <fr-FR>
-6.4 :
-Nous avons apporté quelques améliorations à cette version.
-Nous avons résolu un bogue qui empêchait l’application de charger des produits lorsqu’il y avait une valeur décimale dans la quantité en stock.
-Nous avons également résolu un problème de mise en page qui se produisait sur l’écran d’option des formats des étiquettes d’expédition.
+6.5 :
+Une nouvelle fonctionnalité est disponible en version bêta ! Les commerçants basés aux États-Unis peuvent créer des étiquettes d’expédition pour les commandes physiques directement depuis l’application (disponible uniquement pour les livraisons aux États-Unis). Certains bogues ont également été résolus : les étiquettes d’expédition obsolètes affichent désormais des informations plus précises, et le clavier virtuel ne disparait plus de l’écran lorsque vous effectuez des recherches dans votre liste de commandes.
 </fr-FR>
 <iw-IL>
-6.4:
-ביצענו כמה שיפורים בגרסה הזאת.
-תיקנו באג שמנע מהאפליקציה לטעון מוצרים כאשר הכמות במלאי הכילה ערך עשרוני.
-תיקנו גם בעיה בפריסה שהתרחשה במסך האפשרויות של הפורמטים לתוויות משלוח.
+6.5:
+יש לנו אפשרות חדשה ומבריקה שזמינה לבדיקה בביתא! מוכרים שמבוססים בארה"ב יכולים ליצור תוויות משלוח להזמנות של מוצרים פיזיים ישירות מהאפליקציה (ליעדים בתחומי ארה"ב בלבד). תיקנו גם באגים שונים: תוויות משלוח שפג תוקפן מציגות כעת מידע מדויק יותר והמקלדת שמוצגת על המסך לא תיעלם עוד בעת חיפוש ברשימת ההזמנות.
 </iw-IL>
 <id>
-6.4:
-Kami melakukan sejumlah peningkatan pada rilis ini.
-Kami memperbaiki bug yang membuat aplikasi tidak dapat memuat produk saat ada nilai desimal pada jumlah stok.
-Kami juga memperbaiki masalah tata letak yang muncul pada layar opsi format label pengiriman.
+6.5:
+Kami punya fitur baru yang tersedia untuk pengujian beta! Penjual yang berdomisili di AS bisa membuat label pengiriman untuk pesanan fisik langsung dari aplikasi (hanya untuk tujuan AS). Kami juga memperbaiki beberapa bug: label pengiriman kedaluwarsa sekarang menampilkan informasi yang lebih akurat, dan keyboard pada layar tidak akan hilang saat mencari daftar pesanan Anda.
 </id>
 <it-IT>
-6.4:
-Abbiamo apportato alcuni miglioramenti in questo rilascio.
-Abbiamo corretto un bug che impediva all'applicazione di caricare i prodotti quando era presente un valore decimale nella quantità in magazzino.
-Abbiamo anche corretto un problema di layout che si presentava sulla schermata delle opzioni dei formati dell'etichetta di spedizione.
+6.5:
+È disponibile una nuova splendida funzionalità per il beta testing. I rivenditori residenti in USA possono creare etichette di spedizione per ordini fisici proprio dall'app (solo per destinazioni USA). Abbiamo anche corretto alcuni bug: le etichette di spedizione scadute ora mostrano informazioni molto più accurate e la tastiera sulla schermata non scomparirà durante la ricerca dell'elenco degli ordini.
 </it-IT>
 <ja-JP>
-6.4:
-今回のリリースでは数か所改善しました。
-在庫数に小数値がある場合にアプリが商品を読み込めないバグを修正しました。
-配送ラベルの書式設定オプション画面で発生するレイアウトに関する問題も修正しました。
+6.5:
+素晴らしい新機能がベータテストとして利用できるようになりました。 米国在住の出品者は物理的な注文の配送ラベルをアプリから直接作成できます (配送先が米国内の場合のみ)。 バグもいくつか修正しました。有効期限が切れた配送ラベルにより正確な情報が表示されるようになり、また注文リストを検索する際にオンスクリーンキーボードが消えることがなくなりました。
 </ja-JP>
 <ko-KR>
-6.4:
-이 릴리스에서 몇 가지 개선 사항을 적용했습니다.
-재고 수량에 소수점 값이 있으면 앱에서 제품을 로드하지 못했던 버그를 수정했습니다.
-배송 레이블 형식 옵션 화면에서 발생하는 레이아웃 문제도 해결했습니다.
+6.5:
+베타 테스트에 이용할 수 있는 빛나는 새 기능이 있습니다. 미국의 판매자는 앱에서 바로 실물 주문에 대한 배송 레이블을 만들 수 있습니다(목적지가 미국인 경우에만 해당). 몇 가지 버그도 수정했습니다. 만료된 배송 레이블에 이제 더 정확한 정보가 표시되며, 주문 목록을 검색할 때 화면 키보드가 사라지지 않습니다.
 </ko-KR>
 <nl-NL>
-6.4:
-We made a few improvements in this release.
-We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
-We also fixed a layout issue that occurred on the shipping label formats option screen.
+6.5:
+Er is een gloednieuwe functie beschikbaar voor bètatests! Verkopers in de VS kunnen rechtstreeks in de app verzendlabels aanmaken voor fysieke bestellingen (alleen voor bestemmingen in de VS). We hebben ook een aantal problemen opgelost: verlopen verzendlabels geven nu nauwkeurigere informatie weer en het toetsenbord op het scherm verdwijnt niet als je je bestellijst doorzoekt.
 </nl-NL>
 <pt-BR>
-6.4:
-Fizemos algumas melhorias nesta versão.
-Corrigimos um bug que impedia o aplicativo de carregar produtos quando havia um valor decimal na quantidade em estoque.
-Também corrigimos um erro no layout que ocorria na tela de opções de formatos de etiquetas de envio.
+6.5:
+Temos uma funcionalidade inteiramente nova disponível para testes na versão beta! Os vendedores localizados nos EUA podem criar etiquetas de envio para pedidos físicos direto no app (somente para destinos nos EUA). Também corrigimos alguns problemas: as etiquetas de envio expiradas agora exibem informações mais precisas, e o teclado na tela não desaparece ao fazer pesquisas na sua lista de pedidos.
 </pt-BR>
 <ru-RU>
-6,4:
-В этом выпуске добавлено несколько улучшений.
-Исправлена ошибка, из-за которой приложение не загружало товары, когда их количество в наличии было представлено в десятичном формате.
-Мы также исправили проблему разметки, которая возникала на экране выбора формата транспортной этикетки.
+6.5:
+Мы приготовили для бета-тестирования отличную новинку! Продавцы в США могут создавать транспортные этикетки для физических заказов прямо в приложении (только для доставки в пределах США). Мы также исправили некоторые ошибки: на этикетках с истекшим сроком годности теперь отображается более точная информация, а экранная клавиатура не исчезает при поиске в списке заказов.
 </ru-RU>
 <sv-SE>
-6,4:
-Vi har gjort ett antal förbättringar i den här versionen.
-Vi har korrigerat ett fel som hindrade appen från att läsa in produkter när det fanns ett decimalvärde i lagerkvantiteten.
-Vi har också korrigerat ett layoutproblem som inträffade på alternativskärmen för fraktetikettformat.
+6.5:
+Vi har en helt ny funktion tillgänglig för betatestning! Handlare baserade i USA kan skapa fraktetiketter för fysiska beställningar direkt i appen (endast för destinationer i USA). Vi har även korrigerat några buggar: utgångna fraktetiketter visar nu mer korrekt information och tangentbordet på skärmen försvinner inte när du söker i din beställningslista.
 </sv-SE>
 <tr-TR>
-6,4:
-Bu sürümde birkaç iyileştirme yaptık.
-Stok miktarında ondalık bir değer olduğunda uygulamanın ürünleri yüklemesini engelleyen bir hatayı düzelttik.
-Gönderi etiketi biçim seçeneği ekranında oluşan düzenle ilgili bir sorunu da düzelttik.
+6.5:
+Beta testi için yepyeni bir özelliğimiz var. ABD merkezli satıcılar, doğrudan uygulamadan fiziksel siparişler için gönderim etiketleri oluşturabilirler (yalnızca ABD'deki varış noktaları için). Ayrıca bazı hataları da düzelttik: Süresi dolan gönderim etiketleri artık daha doğru bilgiler gösteriyor ve sipariş listenizde arama yaparken ekran klavyesi kaybolmuyor.
 </tr-TR>
 <zh-CN>
-6.4：
-我们在此版本中进行了一些改进。
-我们修复了在库存数量显示为小数时，应用不会加载产品的错误。
-我们也修复“配送标签格式选项屏幕上出现的布局问题。
+6.5：
+我们为 Beta 测试提供了一个出色的新功能！ 美国境内的商家可以直接从应用程序为实体订单创建配送标签（仅限目的地为美国的订单）。 我们还修复了一些错误：过期的配送标签现在将显示更准确的信息，并且在搜索订单列表时屏幕键盘不会消失。
 </zh-CN>
 <zh-TW>
-6.4：
-我們在此版本中進行了一些改善。
-我們修正了在「存貨數量」的值中有小數時，會防止應用程式載入產品的錯誤。
-我們也修正了在「運送標籤格式選項」畫面上發生的版面配置問題。
+6.5：
+我們有個閃亮新功能可供 Beta 測試！ 美國商家可以直接在應用程式中為實體訂單建立郵寄標籤 (僅收貨地在美國境內適用)。 我們也修正了一些錯誤：過期的郵寄標籤現在可以顯示更準確的資訊；螢幕小鍵盤現在不會在你搜尋訂單清單時消失。
 </zh-TW>
 <en-US>
-6.4:
-We made a few improvements in this release.
-We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
-We also fixed a layout issue that occurred on the shipping label formats option screen.
+6.5:
+We have a shiny new feature available for beta testing! US-based merchants can create shipping labels for physical orders right from the app (for US destinations only). We've also fixed some bugs: expired shipping labels now display more accurate information, and the on-screen keyboard won't disappear when searching your order list.
 </en-US>

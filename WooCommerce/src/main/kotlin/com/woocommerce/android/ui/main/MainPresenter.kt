@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
@@ -105,7 +106,7 @@ class MainPresenter @Inject constructor(
     override fun fetchSitesAfterDowngrade() {
         isFetchingSitesAfterDowngrade = true
         mainView?.showProgressDialog(R.string.loading_stores)
-        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
     }
 
     @Suppress("unused")
@@ -143,7 +144,7 @@ class MainPresenter @Inject constructor(
                 dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
                 // The user's account settings have also been fetched and stored - now we can fetch the user's sites
-                dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+                dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
             }
         }
     }

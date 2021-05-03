@@ -50,6 +50,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpack
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
@@ -214,7 +215,7 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
         if (networkStatus.isConnected()) {
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
-            dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+            dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
         }
     }
 

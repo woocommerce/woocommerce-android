@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 09:54:04+0000
+Translation-Revision-Date: 2021-04-30 15:33:21+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">No se ha podido marcar el pedido como completado</string>
+    <string name="shipping_label_create_purchase_error">Se ha producido un error al comprar las etiquetas</string>
+    <string name="shipping_label_create_purchase_progress_message">Espera…</string>
+    <string name="shipping_label_create_purchase_progress_title">Etiqueta de compra</string>
+    <string name="shipping_label_reprint_expired_message">Nuestros socios tecnológicos eliminan las imágenes de etiquetas con más de 180 días de antigüedad por motivos generales de seguridad y privacidad de datos.</string>
+    <string name="shipping_label_print_screen_title">Imprimir etiqueta de envío</string>
+    <string name="shipping_label_print_save_for_later">Guardar para más adelante</string>
+    <string name="shipping_label_print_purchase_success">¡Etiqueta de envío comprada!</string>
+    <string name="shipping_label_refund_expired">Las etiquetas de más de 30 días no se pueden reembolsar</string>
+    <string name="type">Tipo</string>
+    <string name="rename">Renombrar</string>
+    <string name="product_attribute_error_renaming">No se ha podido renombrar el atributo</string>
+    <string name="product_rename_attribute_helper">Tipo de variación; por ejemplo, tamaño o color</string>
+    <string name="product_rename_attribute">Renombrar atributo</string>
     <string name="magic_link_not_meaning_to_create_account">¿Has creado una cuenta nueva sin querer? Vuelve e introduce de nuevo tu dirección de correo electrónico.</string>
     <string name="settings_card_reader_connect">Conectar el lector de tarjetas</string>
     <string name="settings_card_reader">Gestionar el lector de tarjetas</string>
@@ -144,6 +158,7 @@ Language: es
     <string name="order_mark_complete">Marcar el pedido como completado</string>
     <string name="orderdetail_shipping_label_notice">Obtén más información sobre la creación de etiquetas con tu teléfono</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Crear etiqueta de envío</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">Ahora, puedes crear etiquetas de envío para todos los pedidos físicos directamente desde tu dispositivo con el plugin gratuito de WooCommerce Shipping. Toca en \"Crear etiqueta de envío\" para probar nuestra función beta.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">¡Crea etiquetas de envío desde tu dispositivo!</string>
     <string name="orderdetail_payment_fees">Tasas</string>
     <string name="orderdetail_net">Pago neto</string>
@@ -654,7 +669,7 @@ Language: es
     <string name="update_downloaded">Se ha descargado una actualización de Woo</string>
     <string name="install">Instalar</string>
     <string name="error_disabled_apis">No se ha podido recuperar la configuración: Algunas APIs no están disponibles para la cuenta e ID de esta aplicación OAuth.</string>
-    <string name="settings_hiring">¡Buscamos personal!</string>
+    <string name="settings_hiring">¡Trabaja con nosotros!</string>
     <string name="orderdetail_copy_tracking_number">Copiar número de seguimiento</string>
     <string name="login_refresh_app_progress">Comprobando WooCommerce…</string>
     <string name="login_refresh_app">actualizar la aplicación</string>

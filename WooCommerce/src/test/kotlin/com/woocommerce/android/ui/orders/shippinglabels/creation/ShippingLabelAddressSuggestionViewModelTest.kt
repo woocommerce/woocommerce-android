@@ -28,7 +28,7 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     private val initialViewState = ViewState(
         enteredAddress,
         suggestedAddress,
-        null,
+        suggestedAddress,
         R.string.orderdetail_shipping_label_item_shipfrom
     )
 
@@ -63,8 +63,6 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     fun `Updates the selected address`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
-
-        assertThat(viewState?.areButtonsEnabled).isFalse()
 
         viewModel.onSelectedAddressChanged(false)
         assertThat(viewState).isEqualTo(initialViewState.copy(selectedAddress = enteredAddress))

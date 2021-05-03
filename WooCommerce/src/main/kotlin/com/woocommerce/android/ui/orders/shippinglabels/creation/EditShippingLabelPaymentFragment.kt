@@ -71,7 +71,7 @@ class EditShippingLabelPaymentFragment
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                viewModel.saveSettings()
+                viewModel.onDoneButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -104,7 +104,7 @@ class EditShippingLabelPaymentFragment
                 binding.emailReceiptsCheckbox.isChecked = it
             }
             new.storeOwnerDetails?.takeIfNotEqualTo(old?.storeOwnerDetails) { details ->
-                binding.warningMessage.text = getString(
+                binding.editWarningBanner.message = getString(
                     R.string.shipping_label_payments_cant_edit_warning,
                     details.name,
                     details.wpcomUserName

@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 11:54:04+0000
+Translation-Revision-Date: 2021-04-28 17:55:00+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">Não foi possível marcar o pedido como concluído</string>
+    <string name="shipping_label_create_purchase_error">Erro ao comprar as etiquetas</string>
+    <string name="shipping_label_create_purchase_progress_message">Aguarde…</string>
+    <string name="shipping_label_create_purchase_progress_title">Comprando etiqueta</string>
+    <string name="shipping_label_reprint_expired_message">As imagens de etiqueta com mais de 180 dias são excluídas pelos nossos parceiros de tecnologia por questões de segurança geral e privacidade de dados.</string>
+    <string name="shipping_label_print_screen_title">Imprimir etiqueta de envio</string>
+    <string name="shipping_label_print_save_for_later">Salvar para mais tarde</string>
+    <string name="shipping_label_print_purchase_success">Etiqueta de envio comprada!</string>
+    <string name="shipping_label_refund_expired">Etiquetas com mais de 30 dias não podem ser reembolsadas</string>
+    <string name="type">Tipo</string>
+    <string name="rename">Renomear</string>
+    <string name="product_attribute_error_renaming">Erro ao renomear seu atributo</string>
+    <string name="product_rename_attribute_helper">Tipo de variação, como tamanho ou cor</string>
+    <string name="product_rename_attribute">Renomear atributo</string>
     <string name="magic_link_not_meaning_to_create_account">Não queria criar uma conta nova? Volte para reinserir seu endereço de e-mail.</string>
     <string name="settings_card_reader_connect">Conectar leitor de cartão</string>
     <string name="settings_card_reader">Gerenciar leitor de cartão</string>
@@ -143,6 +157,7 @@ Language: pt_BR
     <string name="order_mark_complete">Marcar pedido como concluído</string>
     <string name="orderdetail_shipping_label_notice">Saiba mais sobre como criar etiquetas no seu celular</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Criar etiqueta de envio</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">Agora você pode criar etiquetas de envio para todos os pedidos físicos diretamente no seu dispositivo com o plugin gratuito do WooCommerce Shipping. Toque em \"Criar etiqueta de envio\" para experimentar a versão beta da nossa funcionalidade!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Crie etiquetas de envio pelo seu dispositivo!</string>
     <string name="orderdetail_payment_fees">Taxas</string>
     <string name="orderdetail_net">Pagamento líquido</string>

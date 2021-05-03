@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 22:52:19+0000
+Translation-Revision-Date: 2021-04-28 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">Impossibile contrassegnare l\'ordine come completato</string>
+    <string name="shipping_label_create_purchase_error">Errore durante l\'acquisto delle etichette</string>
+    <string name="shipping_label_create_purchase_progress_message">Attendi…</string>
+    <string name="shipping_label_create_purchase_progress_title">Acquisto dell\'etichetta</string>
+    <string name="shipping_label_reprint_expired_message">Le immagini delle etichette più vecchie di 180 giorno vengono eliminate dai partner tecnologici per problemi di sicurezza e riservatezza dei dati generali.</string>
+    <string name="shipping_label_print_screen_title">Stampa etichetta di spedizione</string>
+    <string name="shipping_label_print_save_for_later">Salva per dopo</string>
+    <string name="shipping_label_print_purchase_success">Etichetta di spedizione acquistata.</string>
+    <string name="shipping_label_refund_expired">Le etichette più vecchie di 30 giorni non possono essere rimborsate</string>
+    <string name="type">Tipo</string>
+    <string name="rename">Rinomina</string>
+    <string name="product_attribute_error_renaming">Errore durante la rinomina dell\'attributo</string>
+    <string name="product_rename_attribute_helper">Tipo di variante, ad esempio dimensione o colore</string>
+    <string name="product_rename_attribute">Rinomina attributo</string>
     <string name="magic_link_not_meaning_to_create_account">Non volevi creare un nuovo account? Torna indietro per inserire nuovamente l\'indirizzo e-mail.</string>
     <string name="settings_card_reader_connect">Connetti lettore di carte</string>
     <string name="settings_card_reader">Gestisci lettore di carte</string>
@@ -144,6 +158,7 @@ Language: it
     <string name="order_mark_complete">Contrassegna ordine come completo</string>
     <string name="orderdetail_shipping_label_notice">Scopri di più su come creare etichette dal telefono</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Crea etichetta di spedizione</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">Ora puoi creare etichette di spedizione per tutti gli ordini fisici direttamente dal tuo dispositivo con il plugin WooCommerce Shipping gratuito. Tocca \"Crea etichetta di spedizione\" per provare la funzionalità beta.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Crea etichette di spedizione dal tuo dispositivo.</string>
     <string name="orderdetail_payment_fees">Tariffe</string>
     <string name="orderdetail_net">Importo di pagamento netto</string>
