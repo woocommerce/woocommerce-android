@@ -19,9 +19,8 @@ import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogPay
 import org.wordpress.android.util.helpers.logfile.LogFileProviderInterface
 import java.io.File
 
-class EncryptedLogUploaderTest {
-
-    private lateinit var sut: EncryptedLogUploader
+class EncryptedLoggingTest {
+    private lateinit var sut: EncryptedLogging
 
     private val eventBusDispatcher: Dispatcher = mock()
     private val encryptedLogStore: EncryptedLogStore = mock()
@@ -33,7 +32,7 @@ class EncryptedLogUploaderTest {
 
     @Before
     fun setUp() {
-        sut = EncryptedLogUploader(
+        sut = EncryptedLogging(
             eventBusDispatcher = eventBusDispatcher,
             dispatchers = coroutinesTestRule.testDispatchers,
             encryptedLogStore = encryptedLogStore,

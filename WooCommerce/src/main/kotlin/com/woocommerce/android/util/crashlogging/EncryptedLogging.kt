@@ -10,15 +10,16 @@ import org.wordpress.android.fluxc.store.EncryptedLogStore
 import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogPayload
 import org.wordpress.android.util.helpers.logfile.LogFileProviderInterface
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class EncryptedLogUploader @Inject constructor(
+@Singleton
+class EncryptedLogging @Inject constructor(
     dispatchers: CoroutineDispatchers,
     private val eventBusDispatcher: Dispatcher,
     private val encryptedLogStore: EncryptedLogStore,
     private val logFileProvider: LogFileProviderInterface,
     private val networkStatus: NetworkStatus
 ) {
-
     private val coroutineScope = CoroutineScope(dispatchers.io)
 
     init {

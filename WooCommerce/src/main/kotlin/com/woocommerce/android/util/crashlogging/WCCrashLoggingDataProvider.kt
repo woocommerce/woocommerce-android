@@ -18,7 +18,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
     private val accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
-    private val encryptedLogUploader: EncryptedLogUploader,
+    private val encryptedLogging: EncryptedLogging,
     private val uuidGenerator: UuidGenerator
 ) : CrashLoggingDataProvider {
     override val buildType: String = BuildConfig.BUILD_TYPE
@@ -53,7 +53,6 @@ class WCCrashLoggingDataProvider @Inject constructor(
         currentExtras: Map<ExtraKnownKey, String>,
         eventLevel: EventLevel
     ): Map<ExtraKnownKey, String> {
-
         return currentExtras + if (!currentExtras.containsKey(EXTRA_UUID)) {
             appendEncryptedLogsUuid(eventLevel)
         } else {
@@ -63,7 +62,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
 
     private fun appendEncryptedLogsUuid(eventLevel: EventLevel): Map<ExtraKnownKey, String> {
         val uuid = uuidGenerator.generateUuid()
-        encryptedLogUploader.enqueue(
+        encryptedLogging.enqueue(
             uuid = uuid,
             shouldStartUploadImmediately = eventLevel == FATAL
         )

@@ -29,7 +29,7 @@ class WCCrashLoggingDataProviderTest {
     private val accountStore: AccountStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val appPrefs: AppPrefs = mock()
-    private val encryptedLogUploader: EncryptedLogUploader = mock()
+    private val encryptedLogging: EncryptedLogging = mock()
     private val uuidGenerator: UuidGenerator = mock()
 
     @Before
@@ -39,7 +39,7 @@ class WCCrashLoggingDataProviderTest {
             accountStore = accountStore,
             selectedSite = selectedSite,
             appPrefs = appPrefs,
-            encryptedLogUploader = encryptedLogUploader,
+            encryptedLogging = encryptedLogging,
             uuidGenerator = uuidGenerator
         )
     }
@@ -130,7 +130,7 @@ class WCCrashLoggingDataProviderTest {
 
         val extras = sut.provideExtrasForEvent(currentExtras = emptyMap(), eventLevel = INFO)
 
-        verify(encryptedLogUploader, times(1)).enqueue(generatedUuid, false)
+        verify(encryptedLogging, times(1)).enqueue(generatedUuid, false)
         assertThat(extras).containsValue(generatedUuid)
     }
 
@@ -141,7 +141,7 @@ class WCCrashLoggingDataProviderTest {
 
         val extras = sut.provideExtrasForEvent(currentExtras = mapOf("uuid" to generatedUuid), eventLevel = INFO)
 
-        verify(encryptedLogUploader, never()).enqueue(any(), any())
+        verify(encryptedLogging, never()).enqueue(any(), any())
         assertThat(extras).containsValue(generatedUuid)
     }
 
