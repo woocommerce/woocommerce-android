@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.internal.firmware.actions
 
 import com.stripe.stripeterminal.callable.Callback
+import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
 import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.model.external.TerminalException
@@ -25,21 +26,32 @@ internal class InstallSoftwareUpdateAction(
     }
 
     fun installUpdate(update: ReaderSoftwareUpdate) = callbackFlow<InstallSoftwareUpdateStatus> {
-        terminal.installSoftwareUpdate(update, object : ReaderSoftwareUpdateListener {
-            override fun onReportReaderSoftwareUpdateProgress(progress: Float) {
-                this@callbackFlow.sendBlocking(Installing(progress))
-            }
-        }, object : Callback {
-            override fun onSuccess() {
-                this@callbackFlow.sendBlocking(Success)
-                this@callbackFlow.close()
-            }
+        var cancelable: Cancelable? = null
+        try {
+            cancelable = terminal.installSoftwareUpdate(update, object : ReaderSoftwareUpdateListener {
+                override fun onReportReaderSoftwareUpdateProgress(progress: Float) {
+                    this@callbackFlow.sendBlocking(Installing(progress))
+                }
+            }, object : Callback {
+                override fun onSuccess() {
+                    this@callbackFlow.sendBlocking(Success)
+                    this@callbackFlow.close()
+                }
 
-            override fun onFailure(e: TerminalException) {
-                this@callbackFlow.sendBlocking(Failed(e))
-                this@callbackFlow.close()
-            }
-        })
-        awaitClose()
+                override fun onFailure(e: TerminalException) {
+                    this@callbackFlow.sendBlocking(Failed(e))
+                    this@callbackFlow.close()
+                }
+            })
+            awaitClose()
+        } finally {
+            cancelable?.takeIf { !it.isCompleted }?.cancel(noopCallback)
+        }
     }
+}
+
+private val noopCallback = object : Callback {
+    override fun onFailure(e: TerminalException) {}
+
+    override fun onSuccess() {}
 }

@@ -2,6 +2,8 @@ package com.woocommerce.android.cardreader.internal.firmware.actions
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.Cancelable
@@ -13,9 +15,12 @@ import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftw
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -72,5 +77,38 @@ internal class InstallSoftwareUpdateActionTest {
         val result = action.installUpdate(mock()).single()
 
         assertThat(result).isInstanceOf(Failed::class.java)
+    }
+
+    @Test
+    fun `given flow not terminated, when job canceled, then update installation gets canceled`() = runBlockingTest {
+        val cancelable = mock<Cancelable>()
+        whenever(cancelable.isCompleted).thenReturn(false)
+        whenever(terminal.installSoftwareUpdate(any(), any(), any())).thenAnswer { cancelable }
+        val job = launch {
+            action.installUpdate(mock()).collect { }
+        }
+
+        job.cancel()
+        joinAll(job)
+
+        verify(cancelable).cancel(any())
+    }
+
+    @Test
+    fun `given flow already terminated, when job canceled, then reader discovery not canceled`() = runBlockingTest {
+        val cancelable = mock<Cancelable>()
+        whenever(cancelable.isCompleted).thenReturn(true)
+        whenever(terminal.installSoftwareUpdate(any(), any(), any())).thenAnswer {
+            (it.arguments[2] as Callback).onSuccess()
+            cancelable
+        }
+        val job = launch {
+            action.installUpdate(mock()).collect { }
+        }
+
+        job.cancel()
+        joinAll(job)
+
+        verify(cancelable, never()).cancel(any())
     }
 }
