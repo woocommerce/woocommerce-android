@@ -161,6 +161,15 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val item = menu.findItem(R.id.menu_edit)
+        if (viewModel.getSelectedProductIdsList().isEmpty()) {
+            item.isVisible = false
+        }
+        activity?.invalidateOptionsMenu()
+        super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit -> {
