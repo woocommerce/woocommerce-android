@@ -219,6 +219,15 @@ object OrderTestUtils {
                         totalTax = BigDecimal.ZERO,
                         price = BigDecimal.valueOf(10.00)
                     )
+                ),
+                shippingLines = listOf(
+                    Refund.ShippingLine(
+                        itemId = 42,
+                        methodId = "flat_rate",
+                        methodTitle = "DHL",
+                        total = BigDecimal.valueOf(13.00),
+                        totalTax = BigDecimal.valueOf(3.00)
+                    )
                 )
             ))
         }
@@ -290,6 +299,70 @@ object OrderTestUtils {
 //                "    \"name\":\"A fee\",\n" +
 //                "    \"total\":\"10.00\",\n" +
 //                "  }]"
+            shippingLines =
+                "[{" +
+                    "\"id\":119,\n" +
+                    "   \"method_title\":\"Shipping\",\n" +
+                    "   \"method_id\":\"free_shipping\",\n" +
+                    "   \"instance_id\":\"0\",\n" +
+                    "   \"total\":\"30.00\",\n" +
+                    "   \"total_tax\":\"0.00\",\n" +
+                    "   \"taxes\":[],\n" +
+                    "   \"meta_data\":[]}]"
+        }
+    }
+
+    fun generateOrderWithMultipleShippingLines(orderIdentifier: OrderIdentifier = "1-1-1"): WCOrderModel {
+        val orderIdSet = orderIdentifier.toIdSet()
+
+        return WCOrderModel(orderIdSet.id).apply {
+            billingFirstName = "Carissa"
+            billingLastName = "King"
+            currency = "USD"
+            dateCreated = "2018-02-02T16:11:13Z"
+            localSiteId = orderIdSet.localSiteId
+            remoteOrderId = orderIdSet.remoteOrderId
+            number = "55"
+            status = "pending"
+            total = "106.00"
+            totalTax = "0.00"
+            shippingTotal = "4.00"
+            lineItems = "[{\n" +
+                "    \"id\":1,\n" +
+                "    \"name\":\"A test\",\n" +
+                "    \"product_id\":15,\n" +
+                "    \"quantity\":1,\n" +
+                "    \"tax_class\":\"\",\n" +
+                "    \"subtotal\":\"10.00\",\n" +
+                "    \"subtotal_tax\":\"0.00\",\n" +
+                "    \"total\":\"10.00\",\n" +
+                "    \"total_tax\":\"0.00\",\n" +
+                "    \"taxes\":[],\n" +
+                "    \"meta_data\":[],\n" +
+                "    \"sku\":null,\n" +
+                "    \"price\":10\n" +
+                "  }]"
+            refundTotal = -10.0
+            shippingLines =
+                "[{" +
+                    "\"id\":119,\n" +
+                "   \"method_title\":\"Shipping\",\n" +
+                "   \"method_id\":\"free_shipping\",\n" +
+                "   \"instance_id\":\"0\",\n" +
+                "   \"total\":\"30.00\",\n" +
+                "   \"total_tax\":\"0.00\",\n" +
+                "   \"taxes\":[],\n" +
+                "   \"meta_data\":[]},\n" +
+                "{  " +
+                    "\"id\":120,\n" +
+                "   \"method_title\":\"Shipping Two\",\n" +
+                "   \"method_id\":\"\",\n" +
+                "   \"instance_id\":\"0\",\n" +
+                "   \"total\":\"20.00\",\n" +
+                "   \"total_tax\":\"0.00\",\n" +
+                "   \"taxes\":[],\n" +
+                "   \"meta_data\":[]\n" +
+                "}]"
         }
     }
 
