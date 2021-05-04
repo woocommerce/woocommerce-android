@@ -13,7 +13,7 @@ import com.woocommerce.android.databinding.FragmentGroupedProductListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -23,7 +23,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
-class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener {
+class GroupedProductListFragment : BaseDaggerFragment(R.layout.fragment_grouped_product_list), BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 

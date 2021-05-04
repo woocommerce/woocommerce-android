@@ -14,9 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAddProductCategoryBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -29,7 +28,7 @@ import dagger.Lazy
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_category), BackPressListener {
+class AddProductCategoryFragment : BaseDaggerFragment(R.layout.fragment_add_product_category), BackPressListener {
     companion object {
         const val ARG_ADDED_CATEGORY = "arg-added-category"
     }

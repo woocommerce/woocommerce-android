@@ -15,11 +15,11 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -32,7 +32,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val groupedProductListRepository: GroupedProductListRepository
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private val navArgs: GroupedProductListFragmentArgs by savedState.navArgs()
 
     private val originalProductIds = navArgs.productIds.toList()
@@ -41,7 +41,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
     val productList: LiveData<List<Product>> = _productList
 
     final val productListViewStateData =
-        LiveDataDelegate(savedState, GroupedProductListViewState(originalProductIds))
+        LiveDataDelegateWithArgs(savedState, GroupedProductListViewState(originalProductIds))
     private var productListViewState by productListViewStateData
 
     private val selectedProductIds
