@@ -20,18 +20,14 @@ apply plugin: 'io.sentry.android.gradle'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
     maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
+    maven { url 'https://a8c-libs.s3.amazonaws.com/android' }
 }
 
 allOpen {
     annotation("com.woocommerce.android.annotations.OpenClass")
-}
-
-repositories {
-    mavenCentral()
-    maven { url "https://jitpack.io" }
-    maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
-    maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
 }
 
 android {
