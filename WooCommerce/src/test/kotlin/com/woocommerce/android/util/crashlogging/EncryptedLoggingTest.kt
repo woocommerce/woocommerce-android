@@ -2,7 +2,6 @@ package com.woocommerce.android.util.crashlogging
 
 import com.nhaarman.mockitokotlin2.argForWhich
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
@@ -25,7 +24,6 @@ import org.wordpress.android.fluxc.store.EncryptedLogStore.OnEncryptedLogUploade
 import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogError
 import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogPayload
 import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.helpers.logfile.LogFileProviderInterface
 import java.io.File
 
 @RunWith(MockitoJUnitRunner::class)
@@ -34,7 +32,7 @@ class EncryptedLoggingTest {
 
     private val eventBusDispatcher: Dispatcher = mock()
     private val encryptedLogStore: EncryptedLogStore = mock()
-    private val logFileProvider: LogFileProviderInterface = mock()
+    private val wooLogFileProvider: WooLogFileProvider = mock()
     private val networkStatus: NetworkStatus = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val logger: AppLogWrapper = mock()
@@ -48,7 +46,7 @@ class EncryptedLoggingTest {
             eventBusDispatcher = eventBusDispatcher,
             dispatchers = coroutinesTestRule.testDispatchers,
             encryptedLogStore = encryptedLogStore,
-            logFileProvider = logFileProvider,
+            wooLogFileProvider = wooLogFileProvider,
             networkStatus = networkStatus,
             analyticsTracker = analyticsTracker,
             logger = logger
@@ -63,22 +61,11 @@ class EncryptedLoggingTest {
     }
 
     @Test
-    fun `should not enqueue upload when log file does not exist`() {
-        whenever(logFileProvider.getLogFiles()).thenReturn(emptyList())
-
-        sut.enqueue("uuid", false)
-
-        verify(eventBusDispatcher, never()).dispatch(argForWhich {
-            type == UPLOAD_LOG
-        })
-    }
-
-    @Test
     fun `should enqueue logs upload when log file is available and there's network connection`() {
         val uuid = "uuid"
         val tempFile = File("temp")
         val startImmediately = true
-        whenever(logFileProvider.getLogFiles()).thenReturn(listOf(tempFile))
+        whenever(wooLogFileProvider.provide()).thenReturn(tempFile)
         whenever(networkStatus.isConnected()).thenReturn(true)
 
         sut.enqueue("uuid", startImmediately)
@@ -95,7 +82,7 @@ class EncryptedLoggingTest {
     // If the connection is not available, we shouldn't try to upload immediately
     @Test
     fun `should not start upload immediately when requested but there's no network connection`() {
-        whenever(logFileProvider.getLogFiles()).thenReturn(listOf(File("temp")))
+        whenever(wooLogFileProvider.provide()).thenReturn(File("temp"))
         whenever(networkStatus.isConnected()).thenReturn(false)
 
         sut.enqueue("uuid", true)
@@ -109,7 +96,7 @@ class EncryptedLoggingTest {
 
     @Test
     fun `should start upload immediately when requested and there's network connection`() {
-        whenever(logFileProvider.getLogFiles()).thenReturn(listOf(File("temp")))
+        whenever(wooLogFileProvider.provide()).thenReturn(File("temp"))
         whenever(networkStatus.isConnected()).thenReturn(true)
 
         sut.enqueue("uuid", true)

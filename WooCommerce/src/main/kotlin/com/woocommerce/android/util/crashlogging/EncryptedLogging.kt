@@ -18,7 +18,6 @@ import org.wordpress.android.fluxc.store.EncryptedLogStore.OnEncryptedLogUploade
 import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogPayload
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T
-import org.wordpress.android.util.helpers.logfile.LogFileProviderInterface
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +26,7 @@ class EncryptedLogging @Inject constructor(
     dispatchers: CoroutineDispatchers,
     private val eventBusDispatcher: Dispatcher,
     private val encryptedLogStore: EncryptedLogStore,
-    private val logFileProvider: LogFileProviderInterface,
+    private val wooLogFileProvider: WooLogFileProvider,
     private val networkStatus: NetworkStatus,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val logger: AppLogWrapper
@@ -47,14 +46,12 @@ class EncryptedLogging @Inject constructor(
         uuid: String,
         shouldStartUploadImmediately: Boolean
     ) {
-        logFileProvider.getLogFiles().lastOrNull()?.let { logFile ->
-            val payload = UploadEncryptedLogPayload(
-                uuid = uuid,
-                file = logFile,
-                shouldStartUploadImmediately = shouldStartUploadImmediately && networkStatus.isConnected()
-            )
-            eventBusDispatcher.dispatch(EncryptedLogActionBuilder.newUploadLogAction(payload))
-        }
+        val payload = UploadEncryptedLogPayload(
+            uuid = uuid,
+            file = wooLogFileProvider.provide(),
+            shouldStartUploadImmediately = shouldStartUploadImmediately && networkStatus.isConnected()
+        )
+        eventBusDispatcher.dispatch(EncryptedLogActionBuilder.newUploadLogAction(payload))
     }
 
     @Suppress("unused")

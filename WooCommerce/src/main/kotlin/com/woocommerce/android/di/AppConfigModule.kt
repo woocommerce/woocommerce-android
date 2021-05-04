@@ -27,9 +27,6 @@ class AppConfigModule {
     fun provideDefaultLocale(): Locale = Locale.getDefault()
 
     @Provides
-    fun provideLogFileProvider(context: Context): LogFileProviderInterface = LogFileProvider.fromContext(context)
-
-    @Provides
     fun providesAppPrefs(appContext: Context): AppPrefs {
         AppPrefs.init(appContext)
         return AppPrefs

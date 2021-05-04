@@ -53,7 +53,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
         currentExtras: Map<ExtraKnownKey, String>,
         eventLevel: EventLevel
     ): Map<ExtraKnownKey, String> {
-        return currentExtras + if (!currentExtras.containsKey(EXTRA_UUID)) {
+        return currentExtras + if (currentExtras[EXTRA_UUID] != null) {
             appendEncryptedLogsUuid(eventLevel)
         } else {
             emptyMap()
