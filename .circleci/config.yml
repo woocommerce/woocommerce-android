@@ -163,9 +163,9 @@ jobs:
             echo "export FASTLANE_SKIP_UPDATE_CHECK=1" >> $BASH_ENV
             mv ~/.android/debug_a8c.keystore ~/.android/debug.keystore
             if [[ $APP_VERSION == *"-rc-"* ]]; then
-              bundle exec fastlane build_and_upload_beta skip_confirm:true create_release:true
+              bundle exec fastlane build_and_upload_beta skip_confirm:true skip_prechecks:true create_release:true
             else
-              bundle exec fastlane build_and_upload_release skip_confirm:true create_release:true
+              bundle exec fastlane build_and_upload_release skip_confirm:true skip_prechecks:true create_release:true
             fi
       - android/save-gradle-cache
       - slack/status:
