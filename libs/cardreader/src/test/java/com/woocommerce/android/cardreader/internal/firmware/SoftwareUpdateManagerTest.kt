@@ -4,34 +4,25 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.Cancelable
-import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
 import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
-import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.UpToDate
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.internal.runners.statements.Fail
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @RunWith(MockitoJUnitRunner::class)
 class SoftwareUpdateManagerTest {
@@ -128,4 +119,3 @@ class SoftwareUpdateManagerTest {
         assertThat(result).isEqualTo(SoftwareUpdateStatus.Failed("dummy message"))
     }
 }
-

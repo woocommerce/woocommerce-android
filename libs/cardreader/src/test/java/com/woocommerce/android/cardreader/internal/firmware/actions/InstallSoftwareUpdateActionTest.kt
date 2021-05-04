@@ -9,7 +9,6 @@ import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
 import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
