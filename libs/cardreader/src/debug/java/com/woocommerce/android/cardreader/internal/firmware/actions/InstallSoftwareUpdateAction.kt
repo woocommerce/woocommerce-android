@@ -5,7 +5,6 @@ import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
 import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
@@ -43,9 +42,10 @@ internal class InstallSoftwareUpdateAction(
                     this@callbackFlow.close()
                 }
             })
-            awaitClose()
         } finally {
-            cancelable?.takeIf { !it.isCompleted }?.cancel(noopCallback)
+            awaitClose {
+                cancelable?.takeIf { !it.isCompleted }?.cancel(noopCallback)
+            }
         }
     }
 }
