@@ -20,6 +20,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
 
@@ -115,11 +116,27 @@ class OrderDetailShippingLabelsAdapter(
                 return
             }
 
+            // Set up the collapsible button to show/hide the products list.
+            val expanderText = viewBinding.root.resources.getQuantityString(
+                R.plurals.shipping_label_package_details_items_count,
+                shippingLabel.products.count(),
+                shippingLabel.products.count()
+            )
+            viewBinding.shippingLabelListCountExpander.text = expanderText
+            viewBinding.shippingLabelListCountExpander.textOn = expanderText
+            viewBinding.shippingLabelListCountExpander.textOff = expanderText
+
+            viewBinding.shippingLabelListCountExpander.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked)
+                    WooAnimUtils.fadeIn(viewBinding.shippingLabelListProducts)
+                else
+                    WooAnimUtils.fadeOut(viewBinding.shippingLabelListProducts)
+            }
+
             // display tracking number details if shipping label is not refunded
             val isRefunded = shippingLabel.refund == null
             viewBinding.shippingLabelListBtnMenu.isVisible = isRefunded
             viewBinding.shippingLabelListPrintBtn.isVisible = isRefunded
-            viewBinding.shippingLabelListProducts.isVisible = isRefunded
             with(viewBinding.shippingLabelItemTrackingNumber) {
                 if (shippingLabel.refund != null) {
                     setShippingLabelTitle(

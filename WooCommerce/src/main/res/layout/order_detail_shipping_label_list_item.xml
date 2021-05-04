@@ -41,6 +41,15 @@
                 tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Show/hide products list button -->
+        <ToggleButton
+            android:id="@+id/shippingLabelList_countExpander"
+            style="@style/Woo.Card.ExpanderButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/major_85"
+            android:paddingBottom="@dimen/major_85" />
+
         <!-- Product List -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/shippingLabelList_products"
@@ -49,7 +58,9 @@
             android:nestedScrollingEnabled="false"
             tools:itemCount="3"
             tools:listitem="@layout/order_detail_product_list_item"
-            tools:targetApi="lollipop" />
+            tools:targetApi="lollipop"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <!-- Print shipping label -->
         <com.google.android.material.button.MaterialButton
