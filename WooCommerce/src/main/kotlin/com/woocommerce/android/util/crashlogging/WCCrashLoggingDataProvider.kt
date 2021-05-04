@@ -84,8 +84,8 @@ class WCCrashLoggingDataProvider @Inject constructor(
     }
 
     companion object {
-        private const val SITE_ID_KEY = "site_id"
-        private const val SITE_URL_KEY = "site_url"
-        private const val EXTRA_UUID = "uuid"
+        const val SITE_ID_KEY = "site_id"
+        const val SITE_URL_KEY = "site_url"
+        const val EXTRA_UUID = "uuid"
     }
 }

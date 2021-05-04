@@ -15,6 +15,8 @@ import com.woocommerce.android.util.CoroutineTestRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.EncryptedLogAction.RESET_UPLOAD_STATES
 import org.wordpress.android.fluxc.action.EncryptedLogAction.UPLOAD_LOG
@@ -26,6 +28,7 @@ import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.helpers.logfile.LogFileProviderInterface
 import java.io.File
 
+@RunWith(MockitoJUnitRunner::class)
 class EncryptedLoggingTest {
     private lateinit var sut: EncryptedLogging
 
@@ -74,7 +77,7 @@ class EncryptedLoggingTest {
     fun `should enqueue logs upload when log file is available and there's network connection`() {
         val uuid = "uuid"
         val tempFile = File("temp")
-        val startImmediately = false
+        val startImmediately = true
         whenever(logFileProvider.getLogFiles()).thenReturn(listOf(tempFile))
         whenever(networkStatus.isConnected()).thenReturn(true)
 

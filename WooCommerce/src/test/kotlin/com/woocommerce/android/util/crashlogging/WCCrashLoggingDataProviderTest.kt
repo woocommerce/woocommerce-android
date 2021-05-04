@@ -9,6 +9,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.EXTRA_UUID
+import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_ID_KEY
+import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_URL_KEY
 import com.woocommerce.android.util.locale.LocaleProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
@@ -52,8 +55,8 @@ class WCCrashLoggingDataProviderTest {
 
         assertThat(appContext).containsAllEntriesOf(
             mapOf(
-                "site_id" to TEST_SITE_MODEL.siteId.toString(),
-                "site_url" to TEST_SITE_MODEL.url
+                SITE_ID_KEY to TEST_SITE_MODEL.siteId.toString(),
+                SITE_URL_KEY to TEST_SITE_MODEL.url
             )
         )
     }
@@ -87,7 +90,7 @@ class WCCrashLoggingDataProviderTest {
 
     @Test
     fun `should not include extra keys for events`() {
-        assertThat(sut.extraKnownKeys()).isEmpty()
+        assertThat(sut.extraKnownKeys()).containsOnly(EXTRA_UUID)
     }
 
     @Test
@@ -137,7 +140,6 @@ class WCCrashLoggingDataProviderTest {
     @Test
     fun `should not request encrypted logs upload when uuid is already provided`() {
         val generatedUuid = "123"
-        whenever(uuidGenerator.generateUuid()).thenReturn(generatedUuid)
 
         val extras = sut.provideExtrasForEvent(currentExtras = mapOf("uuid" to generatedUuid), eventLevel = INFO)
 
