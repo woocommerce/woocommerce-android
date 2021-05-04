@@ -144,6 +144,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
             }
+            new.areShippingLabelsVisible?.takeIfNotEqualTo(old?.areShippingLabelsVisible) {
+                showProductListMenuButton(it)
+            }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it, false)
             }
@@ -257,6 +260,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             viewModel::onCreateShippingLabelButtonTapped,
             viewModel::onShippingLabelNoticeTapped
         )
+    }
+
+    private fun showProductListMenuButton(isVisible: Boolean) {
+        binding.orderDetailProductList.showProductListMenuButton(isVisible)
     }
 
     private fun showSkeleton(show: Boolean) {

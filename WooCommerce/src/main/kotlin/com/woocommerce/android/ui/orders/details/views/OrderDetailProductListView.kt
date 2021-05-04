@@ -103,4 +103,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
         binding.productListShippingLabelsNotice.isVisible = isVisible
         binding.productListShippingLabelsNotice.setOnClickListener { onShippingLabelNoticeTapped() }
     }
+
+    fun showProductListMenuButton(isVisible: Boolean) {
+        binding.productListBtnMenu.isVisible = isVisible
+    }
 }
