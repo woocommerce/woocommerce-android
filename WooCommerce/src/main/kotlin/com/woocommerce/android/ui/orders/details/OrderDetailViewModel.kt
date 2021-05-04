@@ -512,7 +512,8 @@ class OrderDetailViewModel @AssistedInject constructor(
 
         viewState = viewState.copy(
             isCreateShippingLabelButtonVisible = isShippingPluginReady &&
-                orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId),
+                orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
+                ! shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible
