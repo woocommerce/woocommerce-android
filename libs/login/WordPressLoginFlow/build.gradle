@@ -21,10 +21,10 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 repositories {
+    mavenCentral()
     google()
     jcenter()
     maven { url "https://www.jitpack.io" }
-    maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
 }
 
 android {
