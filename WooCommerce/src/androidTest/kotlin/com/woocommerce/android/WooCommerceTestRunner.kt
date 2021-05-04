@@ -8,7 +8,7 @@ import androidx.test.runner.AndroidJUnitRunner
  * Custom AndroidJUnitRunner that replaces the original application with [WooCommerceTest].
  */
 class WooCommerceTestRunner : AndroidJUnitRunner() {
-    override fun newApplication(classLoader: ClassLoader, className: String, context: Context): Application {
-        return super.newApplication(classLoader, WooCommerceTest::class.java.name, context)
+    override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application {
+        return super.newApplication(cl, WooCommerceTest_Application::class.java.name, context)
     }
 }

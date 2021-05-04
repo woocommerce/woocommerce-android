@@ -13,15 +13,17 @@ import com.bumptech.glide.load.engine.cache.DiskCache
 import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
-import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
 import java.text.NumberFormat
-import javax.inject.Inject
 import javax.inject.Named
 
 /**
@@ -29,7 +31,14 @@ import javax.inject.Named
  */
 @GlideModule
 class WooCommerceGlideModule : AppGlideModule() {
-    @field:[Inject Named("custom-ssl")] internal lateinit var requestQueue: RequestQueue
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface WooCommerceGlideEntryPoint {
+        @Named("custom-ssl")
+        fun requestQueue(): RequestQueue
+    }
+
+    private lateinit var requestQueue: RequestQueue
 
     override fun applyOptions(context: Context, builder: GlideBuilder) {
         initGlideCache(context, builder)
@@ -38,7 +47,11 @@ class WooCommerceGlideModule : AppGlideModule() {
     override fun isManifestParsingEnabled(): Boolean = false
 
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-        (context as WooCommerce).membersInjector.injectMembers(this)
+        requestQueue = EntryPoints.get(
+            context,
+            WooCommerceGlideEntryPoint::class.java
+        ).requestQueue()
+
         glide.registry.replace(GlideUrl::class.java, InputStream::class.java, VolleyUrlLoader.Factory(requestQueue))
     }
 
