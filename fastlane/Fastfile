@@ -12,7 +12,6 @@ Dotenv.load('~/.wcandroid-env.default')
 ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 ENV["PROJECT_NAME"]="WooCommerce"
 ENV["PROJECT_ROOT_FOLDER"]="./"
-ENV["validate_translations"]="lintVanillaRelease"
 REPOSITORY_NAME="woocommerce-android"
 GH_ORG_NAME="woocommerce"
 
@@ -177,6 +176,24 @@ platform :android do
   end
 
   #####################################################################################
+  # download_translations
+  # -----------------------------------------------------------------------------------
+  # This lane downloads the string translations from GlotPress
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane download_translations
+  #####################################################################################
+  desc "Download the latest app translations from GlotPress and update the strings.xml files accordingly"
+  lane :download_translations do |options|
+    android_download_translations(
+      res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
+      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
+      locales: SUPPORTED_LOCALES,
+      lint_task: 'lintVanillaRelease'
+    )
+  end
+
+  #####################################################################################
   # finalize_release
   # -----------------------------------------------------------------------------------
   # This lane finalize a release: updates store metadata and runs the release checks
@@ -193,12 +210,7 @@ platform :android do
     android_finalize_prechecks(options)
     configure_apply(force: is_ci)
     hotfix = android_current_branch_is_hotfix
-    android_download_translations(
-      res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
-      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
-      locales: SUPPORTED_LOCALES,
-      lint_task: 'lintVanillaRelease'
-    ) unless hotfix
+    download_translations(options) unless hotfix
     android_bump_version_final_release() unless hotfix
     version = android_get_release_version()
     download_metadata_strings(version: version["name"], build_number: version["code"]) unless hotfix
@@ -380,7 +392,7 @@ platform :android do
   ########################################################################
   # Helper Lanes
   ########################################################################
-  desc "Get a list of pull request from `start_tag` to the current state"
+  desc "Get a list of pull requests from the `milestone`"
   lane :get_pullrequests_list do | options |
     get_prs_list(repository:GHHELPER_REPO, milestone:"#{options[:milestone]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
   end

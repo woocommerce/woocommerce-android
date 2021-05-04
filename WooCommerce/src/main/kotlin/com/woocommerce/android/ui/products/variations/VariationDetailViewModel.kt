@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
@@ -130,7 +131,10 @@ class VariationDetailViewModel @AssistedInject constructor(
         triggerEvent(
             ShowDialog(
                 positiveBtnAction = { _, _ ->
-                    // TODO: trigger track
+                    AnalyticsTracker.track(
+                            Stat.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
+                            mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId)
+                        )
                     viewState = viewState.copy(isConfirmingDeletion = false)
                     deleteVariation()
                 },

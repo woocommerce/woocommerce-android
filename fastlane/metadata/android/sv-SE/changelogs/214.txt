@@ -1,0 +1,2 @@
+6.5:
+Vi har en helt ny funktion tillgänglig för betatestning! Handlare baserade i USA kan skapa fraktetiketter för fysiska beställningar direkt i appen (endast för destinationer i USA). Vi har även korrigerat några buggar: utgångna fraktetiketter visar nu mer korrekt information och tangentbordet på skärmen försvinner inte när du söker i din beställningslista.

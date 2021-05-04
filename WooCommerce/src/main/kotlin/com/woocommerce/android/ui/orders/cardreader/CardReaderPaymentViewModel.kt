@@ -76,7 +76,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                 loadOrderFromDB()?.let { order ->
                     order.total.toBigDecimalOrNull()?.let { amount ->
                         // TODO cardreader don't hardcode currency symbol ($)
-                        collectPaymentFlow(cardReaderManager, amount, order.currency, "$$amount")
+                        collectPaymentFlow(cardReaderManager, order.remoteOrderId, amount, order.currency, "$$amount")
                     } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
@@ -90,28 +90,30 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
         }
     }
 
-    fun retry(paymentData: PaymentData, amountLabel: String) {
+    fun retry(orderId: Long, paymentData: PaymentData, amountLabel: String) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
             delay(ARTIFICIAL_RETRY_DELAY)
-            cardReaderManager.retryCollectPayment(paymentData).collect { paymentStatus ->
-                onPaymentStatusChanged(paymentStatus, amountLabel)
+            cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
+                onPaymentStatusChanged(orderId, paymentStatus, amountLabel)
             }
         }
     }
 
     private suspend fun collectPaymentFlow(
         cardReaderManager: CardReaderManager,
+        orderId: Long,
         amount: BigDecimal,
         currency: String,
         amountLabel: String
     ) {
-        cardReaderManager.collectPayment(amount, currency).collect { paymentStatus ->
-            onPaymentStatusChanged(paymentStatus, amountLabel)
+        cardReaderManager.collectPayment(orderId, amount, currency).collect { paymentStatus ->
+            onPaymentStatusChanged(orderId, paymentStatus, amountLabel)
         }
     }
 
     private fun onPaymentStatusChanged(
+        orderId: Long,
         paymentStatus: CardPaymentStatus,
         amountLabel: String
     ) {
@@ -127,20 +129,20 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
             WaitingForInput -> {
                 // TODO cardreader prompt the user to tap/insert a card
             }
-            InitializingPaymentFailed -> emitFailedPaymentState(null, amountLabel)
-            is CollectingPaymentFailed -> emitFailedPaymentState(paymentStatus.paymentData, amountLabel)
-            is ProcessingPaymentFailed -> emitFailedPaymentState(paymentStatus.paymentData, amountLabel)
-            is CapturingPaymentFailed -> emitFailedPaymentState(paymentStatus.paymentData, amountLabel)
+            InitializingPaymentFailed -> emitFailedPaymentState(orderId, null, amountLabel)
+            is CollectingPaymentFailed -> emitFailedPaymentState(orderId, paymentStatus.paymentData, amountLabel)
+            is ProcessingPaymentFailed -> emitFailedPaymentState(orderId, paymentStatus.paymentData, amountLabel)
+            is CapturingPaymentFailed -> emitFailedPaymentState(orderId, paymentStatus.paymentData, amountLabel)
             is UnexpectedError -> {
                 logger.e(MAIN, paymentStatus.errorCause)
-                emitFailedPaymentState(null, amountLabel)
+                emitFailedPaymentState(orderId, null, amountLabel)
             }
         }
     }
 
-    private fun emitFailedPaymentState(paymentData: PaymentData?, amountLabel: String) {
+    private fun emitFailedPaymentState(orderId: Long, paymentData: PaymentData?, amountLabel: String) {
         val onRetryClicked = if (paymentData != null) {
-            { retry(paymentData, amountLabel) }
+            { retry(orderId, paymentData, amountLabel) }
         } else {
             { initPaymentFlow() }
         }

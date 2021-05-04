@@ -81,6 +81,10 @@ class ShippingLabelAddressSuggestionFragment
             new.suggestedAddress?.takeIfNotEqualTo(old?.suggestedAddress) {
                 binding.suggestedAddressText.setHtmlText(it.toStringMarkingDifferences(new.enteredAddress))
             }
+            new.selectedAddress?.takeIfNotEqualTo(old?.selectedAddress) { address ->
+                binding.suggestedAddressOption.isChecked = new.suggestedAddress == address
+                binding.enteredAddressOption.isChecked = new.enteredAddress == address
+            }
             new.areButtonsEnabled.takeIfNotEqualTo(old?.areButtonsEnabled) {
                 binding.editAddressButton.isEnabled = it
                 binding.useSuggestedAddressButton.isEnabled = it

@@ -30,7 +30,7 @@ class RefundProductListAdapter(
     private val isProductDetailList: Boolean,
     private val onItemClicked: (Long) -> Unit = { }
 ) : RecyclerView.Adapter<RefundViewHolder>() {
-    private var items = mutableListOf<RefundListItem>()
+    private var items = mutableListOf<ProductRefundListItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
         return if (isProductDetailList)
@@ -45,7 +45,7 @@ class RefundProductListAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    fun update(newItems: List<RefundListItem>) {
+    fun update(newItems: List<ProductRefundListItem>) {
         val diffResult = DiffUtil.calculateDiff(OrderItemDiffCallback(items, newItems))
         items = newItems.toMutableList()
         diffResult.dispatchUpdatesTo(this)
@@ -54,7 +54,7 @@ class RefundProductListAdapter(
     abstract class RefundViewHolder(parent: ViewGroup, @LayoutRes layout: Int) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(layout, parent, false)
     ) {
-        abstract fun bind(item: RefundListItem)
+        abstract fun bind(item: ProductRefundListItem)
     }
 
     class RefundDetailViewHolder(
@@ -69,7 +69,7 @@ class RefundProductListAdapter(
         private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
 
         @SuppressLint("SetTextI18n")
-        override fun bind(item: RefundListItem) {
+        override fun bind(item: ProductRefundListItem) {
             nameTextView.text = item.orderItem.name
 
             if (item.orderItem.sku.isBlank()) {
@@ -116,7 +116,7 @@ class RefundProductListAdapter(
         private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
 
         @SuppressLint("SetTextI18n")
-        override fun bind(item: RefundListItem) {
+        override fun bind(item: ProductRefundListItem) {
             nameTextView.text = item.orderItem.name
 
             descriptionTextView.text = itemView.context.getString(
@@ -142,7 +142,7 @@ class RefundProductListAdapter(
     }
 
     @Parcelize
-    data class RefundListItem(
+    data class ProductRefundListItem(
         val orderItem: Order.Item,
         val maxQuantity: Int = 0,
         val quantity: Int = 0
@@ -159,8 +159,8 @@ class RefundProductListAdapter(
     }
 
     class OrderItemDiffCallback(
-        private val oldList: List<RefundListItem>,
-        private val newList: List<RefundListItem>
+        private val oldList: List<ProductRefundListItem>,
+        private val newList: List<ProductRefundListItem>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition].orderItem.uniqueId == newList[newItemPosition].orderItem.uniqueId

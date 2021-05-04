@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 09:54:03+0000
+Translation-Revision-Date: 2021-04-28 09:54:59+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">无法将订单标记为完成</string>
+    <string name="shipping_label_create_purchase_error">购买标签时出错</string>
+    <string name="shipping_label_create_purchase_progress_message">请稍候…</string>
+    <string name="shipping_label_create_purchase_progress_title">购买标签</string>
+    <string name="shipping_label_reprint_expired_message">出于一般的安全和数据隐私考虑，我们的技术合作伙伴删除了 180 天以上的标签图像。</string>
+    <string name="shipping_label_print_screen_title">打印配送标签</string>
+    <string name="shipping_label_print_save_for_later">保存以供稍后查看</string>
+    <string name="shipping_label_print_purchase_success">已购买配送标签！</string>
+    <string name="shipping_label_refund_expired">超过 30 天的标签不能退款</string>
+    <string name="type">类型</string>
+    <string name="rename">重命名</string>
+    <string name="product_attribute_error_renaming">重命名属性时出错</string>
+    <string name="product_rename_attribute_helper">变体类型，例如尺寸或颜色</string>
+    <string name="product_rename_attribute">重命名属性</string>
     <string name="magic_link_not_meaning_to_create_account">不打算创建新帐户？ 返回以重新输入您的电子邮件地址。</string>
     <string name="settings_card_reader_connect">连接读卡器</string>
     <string name="settings_card_reader">管理读卡器</string>
@@ -144,6 +158,7 @@ Language: zh_CN
     <string name="order_mark_complete">将订单标记为完成</string>
     <string name="orderdetail_shipping_label_notice">详细了解如何使用手机创建配送标签</string>
     <string name="orderdetail_shipping_label_create_shipping_label">创建配送标签</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">现在，您可以利用免费的 WooCommerce Shipping 插件，直接通过您的设备为所有实体订单创建配送标签。 轻按“创建配送标签”试用我们的 Beta 版功能！</string>
     <string name="orderdetail_shipping_label_m2_wip_title">通过您的设备创建配送标签！！</string>
     <string name="orderdetail_payment_fees">费用</string>
     <string name="orderdetail_net">净付款</string>

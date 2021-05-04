@@ -366,6 +366,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED,
         EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED,
 
+        // -- Product attributes
+        PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED,
+        PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED,
+        PRODUCT_ATTRIBUTE_UPDATED,
+        PRODUCT_ATTRIBUTE_UPDATE_SUCCESS,
+        PRODUCT_ATTRIBUTE_UPDATE_FAILED,
+        PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED,
+        PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED,
+        PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED,
+
         // -- Product variation
         PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED,
         PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED,
@@ -378,6 +388,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_VARIATION_UPDATE_SUCCESS,
         PRODUCT_VARIATION_UPDATE_ERROR,
         PRODUCT_VARIATION_LOADED,
+        PRODUCT_VARIATION_ADD_FIRST_TAPPED,
+        PRODUCT_VARIATION_ADD_MORE_TAPPED,
+        PRODUCT_VARIATION_CREATION_SUCCESS,
+        PRODUCT_VARIATION_CREATION_FAILED,
+        PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
+        PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED,
+        PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED,
 
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
@@ -608,6 +625,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
         const val KEY_ORDER_ID = "order_id"
+        const val KEY_PRODUCT_ID = "product_id"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"

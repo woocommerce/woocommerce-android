@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.clearInvocations
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
@@ -85,10 +86,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
         whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
-        whenever(cardReaderManager.retryCollectPayment(any())).thenAnswer {
+        whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
     }
@@ -122,7 +123,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when initializing payment, then ui updated to initializing payment state `() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(InitializingPayment) }
         }
 
@@ -133,7 +134,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when collecting payment, then ui updated to collecting payment state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CollectingPayment) }
         }
 
@@ -144,7 +145,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when processing payment, then ui updated to processing payment state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(ProcessingPayment) }
         }
 
@@ -155,7 +156,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when capturing payment, then ui updated to capturing payment state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CapturingPayment) }
         }
 
@@ -166,7 +167,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when payment completed, then ui updated to payment successful state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(PaymentCompleted) }
         }
 
@@ -177,7 +178,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when initializing payment fails, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(InitializingPaymentFailed) }
         }
 
@@ -188,7 +189,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when collecting payment fails, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CollectingPaymentFailed(mock())) }
         }
 
@@ -199,7 +200,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when processing payment fails, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(ProcessingPaymentFailed(mock())) }
         }
 
@@ -210,7 +211,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when capturing payment fails, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CapturingPaymentFailed(mock())) }
         }
 
@@ -221,7 +222,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when unexpected error occurs during payment flow, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(UnexpectedError("")) }
         }
 
@@ -233,7 +234,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given user clicks on retry, when payment initialization fails, then flow restarted from scratch`() =
         runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.InitializingPaymentFailed) }
             }
             viewModel.start(cardReaderManager)
@@ -241,88 +242,88 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).collectPayment(any(), anyString())
+            verify(cardReaderManager).collectPayment(any(), any(), anyString())
         }
 
     @Test
     fun `given user clicks on retry, when payment collection fails, then retryCollectPayment invoked`() =
         runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CollectingPaymentFailed(mock())) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).retryCollectPayment(any())
+            verify(cardReaderManager).retryCollectPayment(any(), any())
         }
 
     @Test
     fun `given user clicks on retry, when payment collection fails, then flow retried with provided PaymentData`() =
         runBlockingTest {
             val paymentData = mock<PaymentData>()
-            whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CollectingPaymentFailed(paymentData)) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).retryCollectPayment(paymentData)
+            verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
         }
 
     @Test
     fun `given user clicks on retry, when payment processing fails, then retryCollectPayment invoked`() =
         runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.ProcessingPaymentFailed(mock())) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).retryCollectPayment(any())
+            verify(cardReaderManager).retryCollectPayment(any(), any())
         }
 
     @Test
     fun `given user clicks on retry, when payment processing fails, then flow retried with provided PaymentData`() =
         runBlockingTest {
             val paymentData = mock<PaymentData>()
-            whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.ProcessingPaymentFailed(paymentData)) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).retryCollectPayment(paymentData)
+            verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
         }
 
     @Test
     fun `given user clicks on retry, when capturing payment fails, then retryCollectPayment invoked`() =
         runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CapturingPaymentFailed(mock())) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).retryCollectPayment(any())
+            verify(cardReaderManager).retryCollectPayment(any(), any())
         }
 
     @Test
     fun `given user clicks on retry, when capturing payment fails then flow retried with provided PaymentData`() =
         runBlockingTest {
             val paymentData = mock<PaymentData>()
-            whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CapturingPaymentFailed(paymentData)) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).retryCollectPayment(paymentData)
+            verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
         }
 
     @Test
@@ -342,7 +343,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when collecting payment, then progress and buttons are hidden`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CollectingPayment) }
         }
 
@@ -356,7 +357,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when collecting payment, then correct labels and illustration is shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CollectingPayment) }
         }
 
@@ -372,7 +373,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when processing payment, then progress and buttons are hidden`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(ProcessingPayment) }
         }
 
@@ -386,7 +387,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when processing payment, then correct labels and illustration is shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(ProcessingPayment) }
         }
 
@@ -402,7 +403,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when capturing payment, then progress and buttons are hidden`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CapturingPayment) }
         }
 
@@ -416,7 +417,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when capturing payment, then correct labels and illustration is shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CapturingPayment) }
         }
 
@@ -432,7 +433,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when payment fails, then progress and secondary button are hidden`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CollectingPaymentFailed(mock())) }
         }
 
@@ -445,7 +446,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when payment fails, then correct labels, illustration and button are shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(CollectingPaymentFailed(mock())) }
         }
 
@@ -462,7 +463,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when payment succeeds, then correct labels, illustration and buttons are shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
             flow { emit(PaymentCompleted) }
         }
 
@@ -480,13 +481,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given payment flow already started, when start() is invoked, then flow is not restarted`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), anyString())).thenAnswer { flow<CardPaymentStatus> {} }
+        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer { flow<CardPaymentStatus> {} }
 
         viewModel.start(cardReaderManager)
         viewModel.start(cardReaderManager)
         viewModel.start(cardReaderManager)
         viewModel.start(cardReaderManager)
 
-        verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyString())
+        verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyOrNull(), anyString())
     }
 }

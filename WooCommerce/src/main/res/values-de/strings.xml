@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 09:54:04+0000
+Translation-Revision-Date: 2021-04-28 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">Die Bestellung konnte nicht als vollständig markiert werden.</string>
+    <string name="shipping_label_create_purchase_error">Fehler beim Kauf der Etiketten</string>
+    <string name="shipping_label_create_purchase_progress_message">Bitte warten …</string>
+    <string name="shipping_label_create_purchase_progress_title">Versandetiketten werden gekauft</string>
+    <string name="shipping_label_reprint_expired_message">Etikettenbilder, die älter als 180 Tage sind, werden von unseren Technologiepartnern aus allgemeinen Sicherheits- und Datenschutzgründen entfernt.</string>
+    <string name="shipping_label_print_screen_title">Versandetikett drucken</string>
+    <string name="shipping_label_print_save_for_later">Für später speichern</string>
+    <string name="shipping_label_print_purchase_success">Versandetikett gekauft!</string>
+    <string name="shipping_label_refund_expired">Etiketten, die älter als 30 Tage sind, können nicht rückerstattet werden.</string>
+    <string name="type">Art</string>
+    <string name="rename">Umbenennen</string>
+    <string name="product_attribute_error_renaming">Fehler beim Umbenennen deiner Attribute</string>
+    <string name="product_rename_attribute_helper">Art der Variation, z. B. Größe oder Farbe</string>
+    <string name="product_rename_attribute">Attribute umbenennen</string>
     <string name="magic_link_not_meaning_to_create_account">Du wolltest kein neues Konto erstellen? Gehe zurück und gib deine E-Mail-Adresse erneut ein.</string>
     <string name="settings_card_reader_connect">Kartenlesegerät verbinden</string>
     <string name="settings_card_reader">Kartenlesegerät verwalten</string>
@@ -144,6 +158,7 @@ Language: de
     <string name="order_mark_complete">Bestellung als abgeschlossen markieren</string>
     <string name="orderdetail_shipping_label_notice">Weitere Informationen zum Erstellen von Etiketten mit deinem Mobiltelefon</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Versandetikett erstellen</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">Mit dem kostenlosen WooCommerce Shipping-Plugin kannst du jetzt Versandetiketten für sämtliche Artikelbestellungen direkt über dein Gerät drucken. Tippe auf „Versandetikett erstellen“ und probiere unsere Beta-Version aus!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Erstelle Versandetiketten über dein Gerät!</string>
     <string name="orderdetail_payment_fees">Gebühren</string>
     <string name="orderdetail_net">Nettozahlung</string>

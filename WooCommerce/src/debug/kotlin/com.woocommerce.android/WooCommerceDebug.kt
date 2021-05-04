@@ -17,7 +17,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WCPayStore
 import javax.inject.Inject
 
@@ -32,10 +31,8 @@ class WooCommerceDebug : WooCommerce() {
             return result.model?.token.orEmpty()
         }
 
-        override suspend fun capturePaymentIntent(id: String): Boolean {
-            // TODO cardreader Invoke capturePayment on WCPayStore
-            delay(1000)
-            return true
+        override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): Boolean {
+            return !payStore.capturePayment(selectedSite.get(), paymentId, orderId).isError
         }
     })
 
@@ -54,15 +51,9 @@ class WooCommerceDebug : WooCommerce() {
     }
 
     /**
-     * enables "strict mode" for testing - should NEVER be used in release builds
+     * enables "strict mode" for testing
      */
     private fun enableStrictMode() {
-        // return if the build is not a debug build
-        if (!BuildConfig.DEBUG) {
-            WooLog.e(T.UTILS, "You should not call enableStrictMode() on a non debug build")
-            return
-        }
-
         StrictMode.setThreadPolicy(
             ThreadPolicy.Builder()
                 .detectDiskWrites()

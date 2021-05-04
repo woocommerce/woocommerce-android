@@ -29,7 +29,11 @@ class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
 
     val viewStateData = LiveDataDelegateWithArgs(
         savedState,
-        ViewState(arguments.enteredAddress, arguments.suggestedAddress)
+        ViewState(
+            enteredAddress = arguments.enteredAddress,
+            suggestedAddress = arguments.suggestedAddress,
+            selectedAddress = arguments.suggestedAddress
+        )
     )
     private var viewState by viewStateData
 
