@@ -98,9 +98,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         _productList.value = if (selectedProductIds.isNotEmpty()) {
             // sort the product list fetched from the database to match the selectedProductIds.
             // This is done to retain the drag&drop order.
-            groupedProductListRepository.getProductList(selectedProductIds).sortedBy {
-                selectedProductIds.indexOf(it.remoteId)
-            }
+            retainSelectedIdsOrder(groupedProductListRepository.getProductList(selectedProductIds))
         } else emptyList()
     }
 
@@ -167,9 +165,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
             if (productsInDb.isNotEmpty()) {
                 // sort the product list fetched from the database to match the selectedProductIds.
                 // This is done to retain the drag&drop order.
-                _productList.value = productsInDb.sortedBy {
-                    selectedProductIds.indexOf(it.remoteId)
-                }
+                _productList.value = retainSelectedIdsOrder(productsInDb)
                 productListViewState = productListViewState.copy(isSkeletonShown = false)
             } else {
                 productListViewState = productListViewState.copy(isSkeletonShown = true)
@@ -186,11 +182,9 @@ class GroupedProductListViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             // sort the product list fetched from the network to match the selectedProductIds.
             // This is done to retain the drag&drop order.
-            _productList.value = groupedProductListRepository.fetchProductList(
+            _productList.value = retainSelectedIdsOrder(groupedProductListRepository.fetchProductList(
                 groupedProductIds, loadMore
-            ).sortedBy {
-                selectedProductIds.indexOf(it.remoteId)
-            }
+            ))
         } else {
             // Network is not connected
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -211,11 +205,26 @@ class GroupedProductListViewModel @AssistedInject constructor(
             ))
     }
 
+    /**
+     * Retains order of the selected ids, useful for retaining
+     * the sort order of drag&drop of the linked products
+     *
+     * if the order of ids from the database or API is [3,5,2,1]
+     * and the order of the selected ids is [5,1,2,3], this method
+     * makes sure to match the order from the database/API to match
+     * the sort order of the selected ids
+     */
+    private fun retainSelectedIdsOrder(productsList: List<Product>): List<Product> {
+        return productsList.sortedBy {
+            selectedProductIds.indexOf(it.remoteId)
+        }
+    }
+
     @Parcelize
     data class GroupedProductListViewState(
         val selectedProductIds: List<Long>,
         var previouslySelectedProductIds: List<Long>,
-        var isEditMode: Boolean = false, // Indicates whether the screen is in edit mode or not
+        var isEditMode: Boolean = false,
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null
     ) : Parcelable {

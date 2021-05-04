@@ -65,8 +65,8 @@ class GroupedProductListAdapter(
         }
     }
 
-    fun setEditMode(mode: Boolean) {
-        isEditMode = mode
+    fun setEditMode(showEditMode: Boolean) {
+        isEditMode = showEditMode
         notifyDataSetChanged()
     }
 

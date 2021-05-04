@@ -167,7 +167,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             override fun inSelectionHotspot(e: MotionEvent) = true
         }
 
-    fun setEditMode(mode: Boolean) {
-        isEditMode = mode
+    fun setEditMode(showEditMode: Boolean) {
+        isEditMode = showEditMode
     }
 }

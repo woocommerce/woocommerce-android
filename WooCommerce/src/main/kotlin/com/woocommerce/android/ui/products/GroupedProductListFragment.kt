@@ -103,7 +103,6 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
                     showAddProductButton(it)
                     itemTouchHelper.attachToRecyclerView(null)
                 } else {
-                    // Set the UI for edit mode if its edit mode, else disable drag-and-drop
                     setEditModeUI()
                 }
             }
@@ -163,10 +162,11 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         val item = menu.findItem(R.id.menu_edit)
-        if (viewModel.getSelectedProductIdsList().isEmpty()) {
-            item.isVisible = false
+        item?.let {
+            if (viewModel.getSelectedProductIdsList().isEmpty()) {
+                it.isVisible = false
+            }
         }
-        activity?.invalidateOptionsMenu()
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -237,6 +237,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         }
         viewModel.setEditMode(false)
         viewModel.isActionModeClicked = false
+        requireActivity().invalidateOptionsMenu()
         actionMode = null
     }
 
