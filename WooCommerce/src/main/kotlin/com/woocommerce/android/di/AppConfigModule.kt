@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import java.util.Locale
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -28,6 +29,7 @@ class AppConfigModule {
     fun provideDefaultLocale(): Locale = Locale.getDefault()
 
     @Provides
+    @Singleton
     fun providesAppPrefs(appContext: Context): AppPrefs {
         AppPrefs.init(appContext)
         return AppPrefs
