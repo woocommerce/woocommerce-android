@@ -11,7 +11,6 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.tools.SelectedSite
@@ -52,15 +51,9 @@ class WooCommerceDebug : WooCommerce() {
     }
 
     /**
-     * enables "strict mode" for testing - should NEVER be used in release builds
+     * enables "strict mode" for testing
      */
     private fun enableStrictMode() {
-        // return if the build is not a debug build
-        if (!BuildConfig.DEBUG) {
-            WooLog.e(T.UTILS, "You should not call enableStrictMode() on a non debug build")
-            return
-        }
-
         StrictMode.setThreadPolicy(
             ThreadPolicy.Builder()
                 .detectDiskWrites()
