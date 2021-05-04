@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 09:54:04+0000
+Translation-Revision-Date: 2021-04-28 17:54:59+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">Impossible d’indiquer la commande comme terminée</string>
+    <string name="shipping_label_create_purchase_error">Erreur lors de l’achat des étiquettes</string>
+    <string name="shipping_label_create_purchase_progress_message">Veuillez patienter…</string>
+    <string name="shipping_label_create_purchase_progress_title">Achat d’une étiquette</string>
+    <string name="shipping_label_reprint_expired_message">Les images d’étiquettes qui ont plus de 180 jours sont supprimées par nos partenaires technologiques pour des raisons de sécurité et de confidentialité des données.</string>
+    <string name="shipping_label_print_screen_title">Imprimer l’étiquette d’expédition</string>
+    <string name="shipping_label_print_save_for_later">Enregistrer pour plus tard</string>
+    <string name="shipping_label_print_purchase_success">L’étiquette d’expédition a été achetée !</string>
+    <string name="shipping_label_refund_expired">Les étiquettes qui ont plus de 30 jours ne peuvent pas être remboursées</string>
+    <string name="type">Type</string>
+    <string name="rename">Renommer</string>
+    <string name="product_attribute_error_renaming">Erreur lors de la modification du nom de l’attribut</string>
+    <string name="product_rename_attribute_helper">Type de variation, par exemple la taille ou la couleur</string>
+    <string name="product_rename_attribute">Renommer l’attribut</string>
     <string name="magic_link_not_meaning_to_create_account">Vous ne voulez pas créer de nouveau compte ? Revenez en arrière et ressaisissez votre adresse e-mail.</string>
     <string name="settings_card_reader_connect">Connecter le lecteur de carte</string>
     <string name="settings_card_reader">Gérer le lecteur de carte</string>
@@ -144,6 +158,7 @@ Language: fr
     <string name="order_mark_complete">Marquer la commande comme terminée</string>
     <string name="orderdetail_shipping_label_notice">En savoir plus sur la création d’étiquettes avec votre téléphone</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Créer une étiquette d’expédition</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">Vous pouvez désormais créer des étiquettes d’expédition pour les commandes physiques directement depuis votre appareil grâce à l’extension gratuite WooCommerce Shipping. Appuyez sur « Créer une étiquette d’expédition » pour essayer !</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Créez une étiquette d’expédition à partir de votre appareil !</string>
     <string name="orderdetail_payment_fees">Frais</string>
     <string name="orderdetail_net">Paiement net</string>

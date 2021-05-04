@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 09:54:04+0000
+Translation-Revision-Date: 2021-04-30 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">無法將訂單標記為已完成</string>
+    <string name="shipping_label_create_purchase_error">購買標籤時發生錯誤</string>
+    <string name="shipping_label_create_purchase_progress_message">請稍候…</string>
+    <string name="shipping_label_create_purchase_progress_title">購買標籤</string>
+    <string name="shipping_label_reprint_expired_message">基於一般安全和資料隱私權的考量，我們的技術合作夥伴將刪除超過 180 天的標籤圖片。</string>
+    <string name="shipping_label_print_screen_title">列印郵寄標籤</string>
+    <string name="shipping_label_print_save_for_later">儲存以供稍後使用</string>
+    <string name="shipping_label_print_purchase_success">已購買郵寄標籤！</string>
+    <string name="shipping_label_refund_expired">超過 30 天的標籤無法退款</string>
+    <string name="type">類型</string>
+    <string name="rename">重新命名</string>
+    <string name="product_attribute_error_renaming">重新命名屬性時發生錯誤</string>
+    <string name="product_rename_attribute_helper">款式類型，例如尺寸或顏色</string>
+    <string name="product_rename_attribute">重新命名屬性</string>
     <string name="magic_link_not_meaning_to_create_account">不是要建立一個新帳號嗎？ 返回並重新輸入你的電子郵件地址。</string>
     <string name="settings_card_reader_connect">連接讀卡機</string>
     <string name="settings_card_reader">管理讀卡機</string>
@@ -144,6 +158,7 @@ Language: zh_TW
     <string name="order_mark_complete">將訂單標示為完成</string>
     <string name="orderdetail_shipping_label_notice">深入瞭解如何使用手機建立標籤</string>
     <string name="orderdetail_shipping_label_create_shipping_label">建立郵寄標籤</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">你現在可以使用免費的 WooCommerce Shipping 外掛程式，直接從你的裝置為所有實體訂單建立郵寄標籤。 點選「建立郵寄標籤」，開始試用 Beta 功能！</string>
     <string name="orderdetail_shipping_label_m2_wip_title">從你的裝置建立郵寄標籤！！</string>
     <string name="orderdetail_payment_fees">費用</string>
     <string name="orderdetail_net">付款淨額</string>

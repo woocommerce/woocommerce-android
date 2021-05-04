@@ -11,13 +11,13 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WCPayStore
 import javax.inject.Inject
 
@@ -32,10 +32,8 @@ class WooCommerceDebug : WooCommerce() {
             return result.model?.token.orEmpty()
         }
 
-        override suspend fun capturePaymentIntent(id: String): Boolean {
-            // TODO cardreader Invoke capturePayment on WCPayStore
-            delay(1000)
-            return true
+        override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): Boolean {
+            return !payStore.capturePayment(selectedSite.get(), paymentId, orderId).isError
         }
     })
 

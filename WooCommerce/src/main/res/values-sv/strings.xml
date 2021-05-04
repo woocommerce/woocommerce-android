@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-20 20:35:32+0000
+Translation-Revision-Date: 2021-04-28 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
     <string name="shipping_label_create_purchase_fulfill_error">Kunde inte markera beställningen som slutförd</string>
+    <string name="shipping_label_create_purchase_error">Ett fel uppstod vid köp av etiketterna</string>
     <string name="shipping_label_create_purchase_progress_message">Vänta …</string>
+    <string name="shipping_label_create_purchase_progress_title">Köpa etikett</string>
+    <string name="shipping_label_reprint_expired_message">Etikettbilder som är äldre än 180 dagar tas bort av våra teknikpartners i generella säkerhets- och dataskyddssyften.</string>
+    <string name="shipping_label_print_screen_title">Skriv ut fraktetikett</string>
     <string name="shipping_label_print_save_for_later">Spara till senare</string>
+    <string name="shipping_label_print_purchase_success">Fraktetikett köpt!</string>
     <string name="shipping_label_refund_expired">Etiketter som är äldre än 30 dagar kan inte återbetalas</string>
+    <string name="type">Typ</string>
     <string name="rename">Ändra namn</string>
+    <string name="product_attribute_error_renaming">Det gick inte att byta namn på ditt attribut</string>
     <string name="product_rename_attribute_helper">Typ av variation, t.ex. storlek eller färg</string>
     <string name="product_rename_attribute">Byt namn på attribut</string>
     <string name="magic_link_not_meaning_to_create_account">Var det inte meningen att skapa ett nytt konto? Gå tillbaka och skriv din e-postadress igen.</string>
@@ -151,6 +158,7 @@ Language: sv_SE
     <string name="order_mark_complete">Markera ordern som slutförd</string>
     <string name="orderdetail_shipping_label_notice">Läs mer om att skapa etiketter med hjälp av din telefon</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Skapa fraktetikett</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">Du kan nu skapa fraktetiketter för alla fysiska beställningar direkt från din enhet med hjälp av gratistillägget WooCommerce Shipping. Tryck på \"Skapa fraktetikett\" för att prova vår betafunktion!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Skapa fraktetiketter från din enhet!</string>
     <string name="orderdetail_payment_fees">Avgifter</string>
     <string name="orderdetail_net">Nettobetalning</string>

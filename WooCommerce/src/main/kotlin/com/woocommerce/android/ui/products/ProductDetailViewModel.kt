@@ -490,11 +490,11 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = hasTagChanges()
             }
             is ExitProductAttributeList -> {
-                // TODO: eventName
+                eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
             is ExitProductAddAttribute -> {
-                // TODO: eventName
+                eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
         }
@@ -605,6 +605,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
         val statId = if (it.status == DRAFT) ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED else ADD_PRODUCT_PUBLISH_TAPPED
         AnalyticsTracker.track(statId, properties)
+    }
+
+    private fun trackWithProductId(event: Stat) {
+        viewState.storedProduct?.let {
+            AnalyticsTracker.track(
+                event,
+                mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.remoteId)
+            )
+        }
     }
 
     /**
@@ -1011,6 +1020,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 updateTermsForAttribute(attributeId, attributeName, mutableTerms)
             }
         }
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
     /**
@@ -1058,6 +1068,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             })
 
             updateProductDraft(attributes = updatedAttributes)
+            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
         }
     }
 
@@ -1209,6 +1220,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         updateProductDraft(attributes = updatedAttributes)
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
     /**
@@ -1218,9 +1230,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (hasAttributeChanges() && checkConnection()) {
             launch {
                 viewState.productDraft?.attributes?.let { attributes ->
+                    trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
                     val result = productRepository.updateProductAttributes(getRemoteProductId(), attributes)
                     if (!result) {
                         triggerEvent(ShowSnackbar(string.product_attributes_error_saving))
+                        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATE_FAILED)
+                    } else {
+                        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATE_SUCCESS)
                     }
                 }
             }
@@ -1246,6 +1262,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User tapped "Add attribute" on the attribute list fragment
      */
     fun onAddAttributeButtonClick() {
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
         triggerEvent(AddProductAttribute())
     }
 
@@ -1253,6 +1270,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User tapped "Rename" on the attribute terms fragment
      */
     fun onRenameAttributeButtonClick(attributeName: String) {
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED)
         triggerEvent(RenameProductAttribute(attributeName))
     }
 

@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 14:54:04+0000
+Translation-Revision-Date: 2021-04-28 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">주문을 완료로 표시할 수 없음</string>
+    <string name="shipping_label_create_purchase_error">레이블 구매 중 오류 발생</string>
+    <string name="shipping_label_create_purchase_progress_message">기다려주세요…</string>
+    <string name="shipping_label_create_purchase_progress_title">레이블 구매</string>
+    <string name="shipping_label_reprint_expired_message">일반 보안 및 데이터 개인정보 보호를 위해 180일이 지난 레이블 이미지는 기술 파트너가 삭제합니다.</string>
+    <string name="shipping_label_print_screen_title">배송 레이블 인쇄</string>
+    <string name="shipping_label_print_save_for_later">나중에 사용할 수 있게 저장</string>
+    <string name="shipping_label_print_purchase_success">배송 레이블이 구매되었습니다!</string>
+    <string name="shipping_label_refund_expired">30일이 지난 레이블은 환불을 받을 수 없습니다.</string>
+    <string name="type">형식</string>
+    <string name="rename">이름 변경</string>
+    <string name="product_attribute_error_renaming">속성 이름 변경 중 오류 발생</string>
+    <string name="product_rename_attribute_helper">변형 유형(예: 사이즈 또는 색상)</string>
+    <string name="product_rename_attribute">속성 이름 변경</string>
     <string name="magic_link_not_meaning_to_create_account">새 계정을 만들 계획이 없으신가요? 뒤로 이동하여 이메일 주소를 다시 입력하세요.</string>
     <string name="settings_card_reader_connect">카드 판독기 연결</string>
     <string name="settings_card_reader">카드 판독기 관리</string>
@@ -144,6 +158,7 @@ Language: ko_KR
     <string name="order_mark_complete">주문을 완료로 표시</string>
     <string name="orderdetail_shipping_label_notice">휴대폰으로 레이블 만들기에 대해 자세히 알아보기</string>
     <string name="orderdetail_shipping_label_create_shipping_label">배송 레이블 만들기</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">이제 무료 WooCommerce 배송 플러그인으로 장치에서 직접 모든 실물 주문에 대한 배송 레이블을 만들 수 있습니다. \"배송 레이블 만들기\"를 눌러 베타 기능을 사용해 보세요!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">장치에서 배송 레이블을 만드세요!</string>
     <string name="orderdetail_payment_fees">수수료</string>
     <string name="orderdetail_net">순 결제</string>

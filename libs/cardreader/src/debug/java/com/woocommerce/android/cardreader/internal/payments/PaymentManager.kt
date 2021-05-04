@@ -44,7 +44,7 @@ internal class PaymentManager(
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction
 ) {
-    suspend fun acceptPayment(amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
+    suspend fun acceptPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
         if (!isSupportedCurrency(currency)) {
             emit(UnexpectedError("Unsupported currency: $currency"))
             return@flow
@@ -59,12 +59,13 @@ internal class PaymentManager(
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
-        processPaymentIntent(paymentIntent).collect { emit(it) }
+        processPaymentIntent(orderId, paymentIntent).collect { emit(it) }
     }
 
-    fun retryPayment(paymentData: PaymentData) = processPaymentIntent((paymentData as PaymentDataImpl).paymentIntent)
+    fun retryPayment(orderId: Long, paymentData: PaymentData) =
+        processPaymentIntent(orderId, (paymentData as PaymentDataImpl).paymentIntent)
 
-    private fun processPaymentIntent(data: PaymentIntent) = flow {
+    private fun processPaymentIntent(orderId: Long, data: PaymentIntent) = flow {
         var paymentIntent = data
         if (paymentIntent.status == null && paymentIntent.status == CANCELED) {
             emit(UnexpectedError("Cannot retry paymentIntent with status ${paymentIntent.status}"))
@@ -85,7 +86,7 @@ internal class PaymentManager(
         }
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
-            capturePayment(cardReaderStore, paymentIntent)
+            capturePayment(orderId, cardReaderStore, paymentIntent)
         }
     }
 
@@ -141,11 +142,12 @@ internal class PaymentManager(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
+        orderId: Long,
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
-        val success = cardReaderStore.capturePaymentIntent(paymentIntent.id)
+        val success = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)
         if (success) {
             emit(PaymentCompleted)
         } else {

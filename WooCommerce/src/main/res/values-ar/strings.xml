@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 14:54:04+0000
+Translation-Revision-Date: 2021-04-28 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">يتعذر علينا وسم الطلب على أنه مكتمل</string>
+    <string name="shipping_label_create_purchase_error">حدث خطأ في أثناء شراء الملصقات</string>
+    <string name="shipping_label_create_purchase_progress_message">يُرجى الانتظار…</string>
+    <string name="shipping_label_create_purchase_progress_title">ملصق الشراء</string>
+    <string name="shipping_label_reprint_expired_message">يتم حذف صور الملصق الأقدم من 180 يومًا بواسطة شركائنا في مجال التكنولوجيا لأسباب تتعلق بالأمان العام وخصوصية البيانات.</string>
+    <string name="shipping_label_print_screen_title">طباعة ملصق الشحن</string>
+    <string name="shipping_label_print_save_for_later">حفظ لوقت لاحق</string>
+    <string name="shipping_label_print_purchase_success">تم شراء ملصق الشحن!</string>
+    <string name="shipping_label_refund_expired">يتعذر استرداد الملصقات الأقدم من 30 يومًا</string>
+    <string name="type">النوع</string>
+    <string name="rename">إعادة التسمية</string>
+    <string name="product_attribute_error_renaming">حدث خطأ في أثناء إعادة تسمية سمتك</string>
+    <string name="product_rename_attribute_helper">نوع التباين، على سبيل المثال الحجم أو اللون</string>
+    <string name="product_rename_attribute">إعادة تسمية السمة</string>
     <string name="magic_link_not_meaning_to_create_account">ألم تقصد إنشاء حساب جديد؟ ارجع لإعادة إدخال عنوان بريدك الإلكتروني.</string>
     <string name="settings_card_reader_connect">توصيل قارئ البطاقة</string>
     <string name="settings_card_reader">إدارة قارئ البطاقة</string>
@@ -144,6 +158,7 @@ Language: ar
     <string name="order_mark_complete">وسم الطلب بأنه مكتمل</string>
     <string name="orderdetail_shipping_label_notice">معرفة المزيد عن إنشاء ملصقات باستخدام هاتفك</string>
     <string name="orderdetail_shipping_label_create_shipping_label">إنشاء ملصق الشحن</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">يمكنك الآن إنشاء ملصقات شحن لجميع الطلبات المادية مباشرةً من جهازك باستخدام إضافة الشحن المجانية عبر WooCommerce. اضغط على \"إنشاء ملصق شحن\" لتجربة ميزة بيتا الخاصة بنا!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">قم بإنشاء ملصقات الشحن من جهازك!!</string>
     <string name="orderdetail_payment_fees">الرسوم</string>
     <string name="orderdetail_net">الدفع الصافي</string>

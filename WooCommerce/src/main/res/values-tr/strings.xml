@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 11:54:04+0000
+Translation-Revision-Date: 2021-04-28 11:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">Sipariş tamamlandı olarak işaretlenemedi</string>
+    <string name="shipping_label_create_purchase_error">Etiketler satın alınırken hata oluştu</string>
+    <string name="shipping_label_create_purchase_progress_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_create_purchase_progress_title">Etiket satın alınıyor</string>
+    <string name="shipping_label_reprint_expired_message">Genel güvenlik ve veri gizliliği gibi nedenlerle 180 günden eski etiket resimleri teknoloji ortaklarımız tarafından silinir.</string>
+    <string name="shipping_label_print_screen_title">Kargo etiketini yazdır</string>
+    <string name="shipping_label_print_save_for_later">Daha sonra kullanmak için kaydet</string>
+    <string name="shipping_label_print_purchase_success">Gönderim etiketi satın alındı.</string>
+    <string name="shipping_label_refund_expired">30 günden eski etiketlere para iadesi yapılamaz</string>
+    <string name="type">Tür</string>
+    <string name="rename">Yeniden Adlandır</string>
+    <string name="product_attribute_error_renaming">Özniteliğiniz yeniden adlandırılırken hata oluştu</string>
+    <string name="product_rename_attribute_helper">Varyasyon türü (örneğin, boyut veya renk)</string>
+    <string name="product_rename_attribute">Özniteliği yeniden adlandır</string>
     <string name="magic_link_not_meaning_to_create_account">Yeni bir hesap oluşturmak istemediniz mi? E-posta adresinizi yeniden girmek için geri dönün.</string>
     <string name="settings_card_reader_connect">Kart okuyucu bağlayın</string>
     <string name="settings_card_reader">Kart okuyucuyu yönetin</string>
@@ -144,6 +158,7 @@ Language: tr
     <string name="order_mark_complete">Siparişi tamamlandı olarak işaretle</string>
     <string name="orderdetail_shipping_label_notice">Telefonunuzla etiket oluşturma hakkında daha fazla bilgi edinin</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Gönderim etiketi oluşturun</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">Artık ücretsiz WooCommerce Shipping eklentisi ile tüm fiziksel siparişler için gönderi etiketlerini doğrudan cihazınızdan oluşturabilirsiniz. Beta özelliğimizi denemek için \"Gönderim etiketi oluştur\"a dokunun.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Gönderim etiketlerini cihazınızdan oluşturun.</string>
     <string name="orderdetail_payment_fees">Masraflar</string>
     <string name="orderdetail_net">Net ödeme</string>
@@ -186,6 +201,7 @@ Language: tr
     <string name="product_downloadable_files_value_multiple">%1$d dosya</string>
     <string name="product_wip_message_m4">Artık hareket halindeyken Woo uygulamasından basit, bağlantılı ve gruplandırılmış ürünler oluşturmak mümkün. Henüz hazır değil misiniz? O halde taslak olarak kaydedin!</string>
     <string name="print_shipping_label_info_step_4">WiFi yazdırmayı &lt;b&gt;doğrudan yazıcıdan yapılandırmanız gerekebilir.&lt;/b&gt; Yazıcı ürün yazılımının güncellendiğinden emin olun ve talimatlar için yazıcınızın belgelerine bakın.</string>
+    <string name="print_shipping_label_info_step_3">Cihazınızın &lt;b&gt;varsayılan yazdırma hizmetini&lt;/b&gt; seçebilir veya &lt;b&gt;yazıcınızın markasını taşıyan uygulamayı&lt;/b&gt; yükleyebilirsiniz (bu önerilen seçenek olarak görünmelidir)</string>
     <string name="print_shipping_label_info_step_1">Yazıcınızın ve cihazınızın &lt;b&gt;aynı WiFi ağlarına&lt;/b&gt; bağlı olduğundan emin olun</string>
     <string name="settings_enable_product_adding_teaser_message">Yayına hazırlanırken yeni, basit, bağlantılı ve gruplandırılmış ürün oluşturma özelliğini deneyin</string>
     <string name="bottom_sheet_linked_products_desc">Yukarı satış ve çapraz satış ile satışları artırın</string>

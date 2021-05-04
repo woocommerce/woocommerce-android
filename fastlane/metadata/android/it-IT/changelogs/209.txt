@@ -1,4 +1,0 @@
-6.4:
-Abbiamo apportato alcuni miglioramenti in questo rilascio.
-Abbiamo corretto un bug che impediva all'applicazione di caricare i prodotti quando era presente un valore decimale nella quantità in magazzino.
-Abbiamo anche corretto un problema di layout che si presentava sulla schermata delle opzioni dei formati dell'etichetta di spedizione.

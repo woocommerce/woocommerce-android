@@ -1,4 +1,0 @@
-6,4:
-Hemos realizado algunas mejoras en esta versión.
-Hemos corregido un error que impedía que la aplicación cargara productos cuando había un valor decimal en la cantidad de existencias.
-También hemos solucionado un problema de diseño que se producía en la pantalla de opciones de formatos de etiquetas de envío.
