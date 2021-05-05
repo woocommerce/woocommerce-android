@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.main.MainActivity
 /**
  * The main fragments hosted by the bottom bar should extend this class
  */
-abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
+abstract class TopLevelFragment : BaseDaggerFragment, TopLevelFragmentView {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 

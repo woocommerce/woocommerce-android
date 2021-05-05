@@ -11,11 +11,6 @@ import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
 import com.woocommerce.android.ui.orders.OrdersModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule
-import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.ui.prefs.AppSettingsModule
-import com.woocommerce.android.ui.prefs.MainSettingsModule
-import com.woocommerce.android.ui.prefs.PrivacySettingsModule
-import com.woocommerce.android.ui.prefs.cardreader.CardReaderModule
 import com.woocommerce.android.ui.products.ProductsModule
 import com.woocommerce.android.ui.refunds.RefundsModule
 import com.woocommerce.android.ui.reviews.ReviewsModule
@@ -23,8 +18,11 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.login.di.LoginFragmentModule
 
+@InstallIn(SingletonComponent::class)
 @Module
 abstract class ActivityBindingModule {
     @ActivityScope
@@ -38,8 +36,7 @@ abstract class ActivityBindingModule {
             ReviewsModule::class,
             SitePickerModule::class,
             AztecModule::class,
-            ShippingLabelsModule::class,
-            CardReaderModule::class
+            ShippingLabelsModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 
@@ -52,15 +49,6 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector
     abstract fun provideMagicLinkInterceptActivityInjector(): MagicLinkInterceptActivity
-
-    @ActivityScope
-    @ContributesAndroidInjector(modules = [
-        AppSettingsModule::class,
-        MainSettingsModule::class,
-        PrivacySettingsModule::class,
-        CardReaderModule::class
-    ])
-    abstract fun provideAppSettingsActivityInjector(): AppSettingsActivity
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [HelpModule::class])

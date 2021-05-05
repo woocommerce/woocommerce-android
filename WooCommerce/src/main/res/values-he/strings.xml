@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 09:54:04+0000
+Translation-Revision-Date: 2021-04-28 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">לא ניתן היה לסמן את ההזמנה כ\'הושלמה\'</string>
+    <string name="shipping_label_create_purchase_error">שגיאה ברכישת התוויות</string>
+    <string name="shipping_label_create_purchase_progress_message">רק רגע…</string>
+    <string name="shipping_label_create_purchase_progress_title">רכישת תוויות</string>
+    <string name="shipping_label_reprint_expired_message">תמונות תווית שנוצרו לפני 180 יום ויותר נמחקות על ידי שותפי הטכנולוגיה שלנו מטעמים של אבטחה כללית ופרטיות הנתונים.</string>
+    <string name="shipping_label_print_screen_title">להדפיס תווית משלוח</string>
+    <string name="shipping_label_print_save_for_later">שמירה למועד מאוחר יותר</string>
+    <string name="shipping_label_print_purchase_success">תווית המשלוח נרכשה!</string>
+    <string name="shipping_label_refund_expired">לא ניתן להנפיק זיכוי עבור תוויות שנוצרו לפני 30 יום ויותר</string>
+    <string name="type">סוג</string>
+    <string name="rename">שינוי שם</string>
+    <string name="product_attribute_error_renaming">שגיאה בשנוי השם של המאפיין</string>
+    <string name="product_rename_attribute_helper">סוג כלשהו, כגון מידה או צבע</string>
+    <string name="product_rename_attribute">לשנות את שם המאפיין</string>
     <string name="magic_link_not_meaning_to_create_account">לא התכוונת ליצור חשבון חדש? יש לחזור אחורה כדי להזין מחדש את כתובת האימייל שלך.</string>
     <string name="settings_card_reader_connect">לחבר קורא כרטיסים</string>
     <string name="settings_card_reader">לנהל את קורא הכרטיסים</string>
@@ -144,6 +158,7 @@ Language: he_IL
     <string name="order_mark_complete">לסמן את ההזמנה כ\'הושלמה\'</string>
     <string name="orderdetail_shipping_label_notice">למידע נוסף על יצירת תוויות באמצעות הטלפון</string>
     <string name="orderdetail_shipping_label_create_shipping_label">ליצור תווית משלוח</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">כעת אפשר ליצור תוויות משלוח לכל ההזמנות הפיזיות ישירות מהמכשיר שלך באמצעות התוסף החינמי WooCommerce Shipping. יש להקיש על \'ליצור תווית משלוח\' כדי לנסות את אפשרות הביתא שלנו!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">אפשר ליצור תווית משלוח מהמכשיר שלך!</string>
     <string name="orderdetail_payment_fees">עמלות</string>
     <string name="orderdetail_net">תשלום נטו</string>

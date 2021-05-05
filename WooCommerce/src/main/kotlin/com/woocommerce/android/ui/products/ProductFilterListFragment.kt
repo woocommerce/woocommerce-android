@@ -17,7 +17,7 @@ import com.woocommerce.android.databinding.FragmentProductFilterListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
@@ -29,7 +29,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.Lazy
 import javax.inject.Inject
 
-class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_list),
+class ProductFilterListFragment : BaseDaggerFragment(R.layout.fragment_product_filter_list),
     OnProductFilterClickListener,
     BackPressListener {
     companion object {

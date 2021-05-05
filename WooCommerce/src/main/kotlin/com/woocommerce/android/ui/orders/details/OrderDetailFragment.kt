@@ -36,7 +36,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -59,7 +59,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
+class OrderDetailFragment : BaseDaggerFragment(R.layout.fragment_order_detail), OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }

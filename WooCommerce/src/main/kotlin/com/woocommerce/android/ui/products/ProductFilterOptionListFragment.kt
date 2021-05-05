@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductFilterOptionListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -23,7 +23,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.Lazy
 import javax.inject.Inject
 
-class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_filter_option_list),
+class ProductFilterOptionListFragment : BaseDaggerFragment(R.layout.fragment_product_filter_option_list),
     OnProductFilterOptionClickListener {
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     private val viewModel: ProductFilterListViewModel by navGraphViewModels(

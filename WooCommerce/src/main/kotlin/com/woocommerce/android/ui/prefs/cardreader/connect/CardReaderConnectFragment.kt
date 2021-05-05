@@ -10,13 +10,11 @@ import com.woocommerce.android.databinding.FragmentSettingsCardReaderConnectBind
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget.CardReaderScanScreen
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CardReaderConnectFragment : BaseFragment(R.layout.fragment_settings_card_reader_connect) {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    val viewModel: CardReaderConnectViewModel by viewModels { viewModelFactory }
+    val viewModel: CardReaderConnectViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

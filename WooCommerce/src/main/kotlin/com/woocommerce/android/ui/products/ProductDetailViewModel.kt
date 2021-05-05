@@ -80,7 +80,7 @@ import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -89,7 +89,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -118,7 +118,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productTagsRepository: ProductTagsRepository,
     private val mediaFilesRepository: MediaFilesRepository,
     private val prefs: AppPrefs
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
@@ -135,7 +135,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the product detail screen
-    val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
+    val productDetailViewStateData = LiveDataDelegateWithArgs(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
             new.productDraft?.let {
                 updateCards(it)
@@ -145,15 +145,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var viewState by productDetailViewStateData
 
     // view state for the product categories screen
-    val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
+    val productCategoriesViewStateData = LiveDataDelegateWithArgs(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
 
     // view state for the product tags screen
-    final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
+    final val productTagsViewStateData = LiveDataDelegateWithArgs(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
 
     // view state for the product downloads screen
-    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
+    final val productDownloadsViewStateData = LiveDataDelegateWithArgs(savedState, ProductDownloadsViewState())
     private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
@@ -168,13 +168,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
-    final val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
+    final val globalAttributeTermsViewStateData = LiveDataDelegateWithArgs(savedState, GlobalAttributesTermsViewState())
     private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
 
     private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
     val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
 
-    final val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
+    final val globalAttributeViewStateData = LiveDataDelegateWithArgs(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
@@ -490,11 +490,11 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = hasTagChanges()
             }
             is ExitProductAttributeList -> {
-                // TODO: eventName
+                eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
             is ExitProductAddAttribute -> {
-                // TODO: eventName
+                eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
         }
@@ -605,6 +605,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
         val statId = if (it.status == DRAFT) ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED else ADD_PRODUCT_PUBLISH_TAPPED
         AnalyticsTracker.track(statId, properties)
+    }
+
+    private fun trackWithProductId(event: Stat) {
+        viewState.storedProduct?.let {
+            AnalyticsTracker.track(
+                event,
+                mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.remoteId)
+            )
+        }
     }
 
     /**
@@ -1011,6 +1020,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 updateTermsForAttribute(attributeId, attributeName, mutableTerms)
             }
         }
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
     /**
@@ -1058,6 +1068,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             })
 
             updateProductDraft(attributes = updatedAttributes)
+            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
         }
     }
 
@@ -1209,6 +1220,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         updateProductDraft(attributes = updatedAttributes)
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
     /**
@@ -1218,9 +1230,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (hasAttributeChanges() && checkConnection()) {
             launch {
                 viewState.productDraft?.attributes?.let { attributes ->
+                    trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
                     val result = productRepository.updateProductAttributes(getRemoteProductId(), attributes)
                     if (!result) {
                         triggerEvent(ShowSnackbar(string.product_attributes_error_saving))
+                        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATE_FAILED)
+                    } else {
+                        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATE_SUCCESS)
                     }
                 }
             }
@@ -1246,6 +1262,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User tapped "Add attribute" on the attribute list fragment
      */
     fun onAddAttributeButtonClick() {
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
         triggerEvent(AddProductAttribute())
     }
 
@@ -1253,6 +1270,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User tapped "Rename" on the attribute terms fragment
      */
     fun onRenameAttributeButtonClick(attributeName: String) {
+        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED)
         triggerEvent(RenameProductAttribute(attributeName))
     }
 

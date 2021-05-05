@@ -39,12 +39,12 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -68,7 +68,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         // The required version to support shipping label creation
         const val SUPPORTED_WCS_VERSION = "1.25.11"
@@ -89,7 +89,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    final val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()

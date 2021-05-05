@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
@@ -31,14 +32,14 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -60,7 +61,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val parameterRepository: ParameterRepository,
     private val resources: ResourceProvider
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
     }
@@ -87,7 +88,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the variation detail screen
-    val variationViewStateData = LiveDataDelegate(savedState, VariationViewState()) { old, new ->
+    val variationViewStateData = LiveDataDelegateWithArgs(savedState, VariationViewState()) { old, new ->
         if (old?.variation != new.variation) {
             new.variation?.let {
                 updateCards(it)
@@ -130,7 +131,10 @@ class VariationDetailViewModel @AssistedInject constructor(
         triggerEvent(
             ShowDialog(
                 positiveBtnAction = { _, _ ->
-                    // TODO: trigger track
+                    AnalyticsTracker.track(
+                            Stat.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
+                            mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId)
+                        )
                     viewState = viewState.copy(isConfirmingDeletion = false)
                     deleteVariation()
                 },

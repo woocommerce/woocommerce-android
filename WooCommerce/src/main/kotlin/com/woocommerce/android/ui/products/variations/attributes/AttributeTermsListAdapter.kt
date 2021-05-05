@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
 import android.annotation.SuppressLint
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -81,7 +82,32 @@ class AttributeTermsListAdapter(
         if (!containsTerm(termName)) {
             termNames.add(0, termName)
             notifyItemInserted(0)
+            if (itemCount == 2) {
+                delayedChangeNotification()
+            }
         }
+    }
+
+    fun removeTerm(term: String) {
+        val index = termNames.indexOf(term)
+        if (index >= 0) {
+            termNames.remove(term)
+            notifyItemRemoved(index)
+            if (itemCount == 1) {
+                delayedChangeNotification()
+            }
+        }
+    }
+
+    /**
+     * When the list changes from/to a single term we must refresh all the views since we only show the drag
+     * handle when there's more than one term, but we delay the refresh to give the added/removed term time
+     * to animate
+     */
+    private fun delayedChangeNotification() {
+        Handler().postDelayed({
+            notifyDataSetChanged()
+        }, 300)
     }
 
     fun swapItems(from: Int, to: Int) {
@@ -93,14 +119,6 @@ class AttributeTermsListAdapter(
         notifyItemMoved(from, to)
 
         onTermListener.onTermMoved(fromValue, toValue)
-    }
-
-    fun removeTerm(term: String) {
-        val index = termNames.indexOf(term)
-        if (index >= 0) {
-            termNames.remove(term)
-            notifyItemRemoved(index)
-        }
     }
 
     private class TermItemDiffUtil(
@@ -123,19 +141,21 @@ class AttributeTermsListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         init {
             viewBinding.root.setOnClickListener {
-                val item = termNames[adapterPosition]
-                onTermListener.onTermClick(item)
+                termNames.getOrNull(adapterPosition)?.let {
+                    onTermListener.onTermClick(it)
+                }
             }
 
             if (enableDeleting) {
                 viewBinding.termDelete.setOnClickListener {
-                    val item = termNames[adapterPosition]
-                    removeTerm(item)
-                    onTermListener.onTermDelete(item)
+                    termNames.getOrNull(adapterPosition)?.let {
+                        removeTerm(it)
+                        onTermListener.onTermDelete(it)
+                    }
                 }
             }
 
-            if (enableDragAndDrop) {
+            if (enableDragAndDrop && termNames.size > 1) {
                 viewBinding.termDragHandle.setOnClickListener {
                     dragHelper?.startDrag(this)
                 }
@@ -144,7 +164,7 @@ class AttributeTermsListAdapter(
 
         fun bind(termName: String) {
             viewBinding.termName.text = termName
-            viewBinding.termDragHandle.isVisible = enableDragAndDrop
+            viewBinding.termDragHandle.isVisible = enableDragAndDrop && termNames.size > 1
             viewBinding.termDelete.isVisible = enableDeleting
         }
     }

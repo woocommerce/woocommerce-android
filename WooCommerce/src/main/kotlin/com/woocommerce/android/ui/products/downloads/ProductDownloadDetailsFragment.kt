@@ -17,7 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_DOWNLOAD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductDownloadDetailsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
@@ -31,7 +31,8 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class ProductDownloadDetailsFragment : BaseFragment(R.layout.fragment_product_download_details), BackPressListener {
+class ProductDownloadDetailsFragment :
+    BaseDaggerFragment(R.layout.fragment_product_download_details), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
 

@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-16 09:54:04+0000
+Translation-Revision-Date: 2021-04-30 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="shipping_label_create_purchase_fulfill_error">注文を完了としてマークできませんでした</string>
+    <string name="shipping_label_create_purchase_error">ラベルの購入時にエラーが発生しました</string>
+    <string name="shipping_label_create_purchase_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_create_purchase_progress_title">ラベルを購入しています</string>
+    <string name="shipping_label_reprint_expired_message">全般的なセキュリティとデータプライバシーの懸念があるため、180日以上経過したラベル画像はテクノロジーパートナーによって削除されます。</string>
+    <string name="shipping_label_print_screen_title">配送ラベルを印刷</string>
+    <string name="shipping_label_print_save_for_later">保存して後で使用</string>
+    <string name="shipping_label_print_purchase_success">配送ラベルを購入しました</string>
+    <string name="shipping_label_refund_expired">30日以上経過したラベルについては返金できません</string>
+    <string name="type">種類</string>
+    <string name="rename">タイトル変更</string>
+    <string name="product_attribute_error_renaming">属性の名前を変更する際にエラーが発生しました</string>
+    <string name="product_rename_attribute_helper">バリエーションの種類 (サイズや色など)</string>
+    <string name="product_rename_attribute">属性の名前を変更</string>
     <string name="magic_link_not_meaning_to_create_account">新しいアカウントを作成しない場合は、 戻ってメールアドレスを再度入力してください。</string>
     <string name="settings_card_reader_connect">カードリーダーを接続</string>
     <string name="settings_card_reader">カードリーダーを管理</string>
@@ -144,6 +158,7 @@ Language: ja_JP
     <string name="order_mark_complete">注文を完了としてマーク</string>
     <string name="orderdetail_shipping_label_notice">スマートフォンでのラベル作成に関する詳細はこちら</string>
     <string name="orderdetail_shipping_label_create_shipping_label">配送ラベルを作成</string>
+    <string name="orderdetail_shipping_label_m3_wip_message">無料の WooCommerce Shipping プラグインを使用して、お使いの端末から直接、すべての物理的な注文の配送ラベルを作成できるようになりました。 「配送ラベルを作成」をタップしてベータ機能をお試しください !</string>
     <string name="orderdetail_shipping_label_m2_wip_title">スマートフォンを使って配送ラベルを作成 !</string>
     <string name="orderdetail_payment_fees">手数料</string>
     <string name="orderdetail_net">支払額 (正味)</string>

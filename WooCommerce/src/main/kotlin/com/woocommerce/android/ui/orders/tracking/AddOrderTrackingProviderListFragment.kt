@@ -15,7 +15,7 @@ import com.woocommerce.android.databinding.DialogOrderTrackingProviderListBindin
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.OrderShipmentProvider
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListAdapter.OnProviderClickListener
 import com.woocommerce.android.util.StringUtils
@@ -25,7 +25,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
-class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_tracking_provider_list),
+class AddOrderTrackingProviderListFragment : BaseDaggerFragment(R.layout.dialog_order_tracking_provider_list),
     OnQueryTextListener,
     OnProviderClickListener {
     companion object {
