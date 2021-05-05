@@ -147,7 +147,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: (() -> Unit),
             override val onSecondaryActionClicked: (() -> Unit)
         ) : ViewState(
-            // TODO cardreader add support for showing reader name
+            // TODO cardreader add reader name -> migrate to UiString -> check UiStringResWithParams in WPAndroid
             headerLabel = R.string.card_reader_connect_reader_found_header,
             illustration = R.drawable.img_card_reader,
             primaryActionLabel = R.string.card_reader_connect_to_reader,
