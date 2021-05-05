@@ -391,6 +391,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
 
+            doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
+                .whenever(repository).getWooServicesPluginInfo()
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
                 it?.let { shippingLabels.addAll(it) }
@@ -406,8 +411,50 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(shippingLabels).isNotEmpty
-            assertThat(isCreateShippingLabelButtonVisible).isFalse()
-            assertThat(isProductListMenuVisible).isTrue()
+            assertThat(isCreateShippingLabelButtonVisible).isFalse
+            assertThat(isProductListMenuVisible).isTrue
+        }
+
+    @Test
+    fun `Show Create shipping label button and hide Products area menu when no shipping labels are available`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+
+            doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
+            doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
+
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+
+            doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
+                .whenever(repository).getWooServicesPluginInfo()
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+
+
+            val shippingLabels = ArrayList<ShippingLabel>()
+            viewModel.shippingLabels.observeForever {
+                it?.let { shippingLabels.addAll(it) }
+            }
+
+            var isCreateShippingLabelButtonVisible: Boolean? = null
+            var isProductListMenuVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+                isProductListMenuVisible = new.isProductListMenuVisible
+            }
+
+            viewModel.start()
+
+            assertThat(shippingLabels).isEmpty()
+            assertThat(isCreateShippingLabelButtonVisible).isTrue
+            assertThat(isProductListMenuVisible).isFalse
         }
 
     @Test
