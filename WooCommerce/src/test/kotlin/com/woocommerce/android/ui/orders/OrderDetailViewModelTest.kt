@@ -391,8 +391,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
 
-            doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
-                .whenever(repository).getWooServicesPluginInfo()
+            doReturn(WooPlugin(
+                isInstalled = true,
+                isActive = true,
+                version = OrderDetailViewModel.SUPPORTED_WCS_VERSION)
+            ).whenever(repository).getWooServicesPluginInfo()
             doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
             doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
 
@@ -432,11 +435,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
 
-            doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
-                .whenever(repository).getWooServicesPluginInfo()
+            doReturn(WooPlugin(
+                isInstalled = true,
+                isActive = true,
+                version = OrderDetailViewModel.SUPPORTED_WCS_VERSION)
+            ).whenever(repository).getWooServicesPluginInfo()
+
             doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
             doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
-
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
