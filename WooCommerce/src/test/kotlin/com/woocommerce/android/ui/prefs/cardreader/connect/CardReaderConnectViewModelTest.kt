@@ -22,7 +22,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
-import okhttp3.internal.readFieldOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
