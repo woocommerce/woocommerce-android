@@ -26,10 +26,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when initiate scan button clicked, then the app navigates to scan screen`() {
-        viewModel.onInitiateScanBtnClicked()
+    fun `when connect button clicked, then the app navigates to connect screen`() {
+        viewModel.onConnectBtnClicked()
 
         assertThat(viewModel.event.value)
-            .isInstanceOf(NavigationTarget.CardReaderScanScreen::class.java)
+            .isInstanceOf(NavigationTarget.CardReaderConnectScreen::class.java)
     }
 }
