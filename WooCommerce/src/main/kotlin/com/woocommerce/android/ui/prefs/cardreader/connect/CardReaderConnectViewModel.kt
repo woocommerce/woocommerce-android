@@ -71,7 +71,7 @@ class CardReaderConnectViewModel @AssistedInject constructor(
                     viewState.value = ScanningState(::onCancelScanningClicked)
                 }
             }
-            is ReadersFound -> {}
+            is ReadersFound -> onReadersFound(discoveryEvent)
             Succeeded -> {
                 // noop
             }
@@ -79,6 +79,25 @@ class CardReaderConnectViewModel @AssistedInject constructor(
                 // TODO cardreader show failed state
             }
         }
+    }
+
+    private fun onReadersFound(discoveryEvent: ReadersFound) {
+        if (viewState.value is ConnectingState) return
+        val availableReaders = discoveryEvent.list.filter { it.getId() != null }
+        if (availableReaders.size > 0) {
+            // TODO cardreader add support for showing multiple readers
+            val reader = availableReaders[0]
+            viewState.value = ReaderFoundState(
+                onPrimaryActionClicked = { onConnectToReaderClicked(reader) },
+                onSecondaryActionClicked = ::onCancelScanningClicked
+            )
+        } else {
+            viewState.value = ScanningState(::onCancelScanningClicked)
+        }
+    }
+
+    private fun onConnectToReaderClicked(cardReader: CardReader) {
+        // TODO cardreader implement
     }
 
     private fun onCancelScanningClicked() {
