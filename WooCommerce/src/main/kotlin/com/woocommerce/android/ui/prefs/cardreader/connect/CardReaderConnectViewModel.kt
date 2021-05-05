@@ -66,7 +66,11 @@ class CardReaderConnectViewModel @AssistedInject constructor(
 
     private fun handleScanEvent(discoveryEvent: CardReaderDiscoveryEvents) {
         when (discoveryEvent) {
-            Started -> {}
+            Started -> {
+                if (viewState.value !is ScanningState) {
+                    viewState.value = ScanningState(::onCancelScanningClicked)
+                }
+            }
             is ReadersFound -> {}
             Succeeded -> {
                 // noop
@@ -75,6 +79,10 @@ class CardReaderConnectViewModel @AssistedInject constructor(
                 // TODO cardreader show failed state
             }
         }
+    }
+
+    private fun onCancelScanningClicked() {
+        triggerEvent(Exit)
     }
 
     sealed class CardReaderConnectEvent : Event() {
