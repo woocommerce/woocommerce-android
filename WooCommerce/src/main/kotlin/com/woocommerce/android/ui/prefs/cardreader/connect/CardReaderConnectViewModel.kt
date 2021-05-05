@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReader
@@ -23,19 +24,23 @@ import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.utils.AppLogWrapper
+import javax.inject.Inject
 
-class CardReaderConnectViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
+@HiltViewModel
+class CardReaderConnectViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
     private val appLogWrapper: AppLogWrapper
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState, dispatchers) {
     private lateinit var cardReaderManager: CardReaderManager
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
@@ -156,7 +161,4 @@ class CardReaderConnectViewModel @AssistedInject constructor(
         )
         // TODO cardreader add error state
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<CardReaderConnectViewModel>
 }
