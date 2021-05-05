@@ -623,6 +623,7 @@
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
     <string name="card_reader_connect_scanning_hint">Press the power button of your reader until you see a flashing blue light</string>
+    <string name="card_reader_connect_to_reader">Connect to reader</string>
 
     <!--
         Notifications

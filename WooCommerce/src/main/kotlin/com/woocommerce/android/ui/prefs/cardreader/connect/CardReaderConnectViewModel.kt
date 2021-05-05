@@ -39,6 +39,20 @@ class CardReaderConnectViewModel @AssistedInject constructor(
             hintLabel = R.string.card_reader_connect_scanning_hint,
             secondaryActionLabel = R.string.cancel
         )
+
+        data class ReaderFoundState(
+            override val onPrimaryActionClicked: (() -> Unit),
+            override val onSecondaryActionClicked: (() -> Unit)
+        ) : ViewState(
+            headerLabel = R.string.card_reader_connect_scanning_header,
+            illustration = R.drawable.img_card_reader,
+            primaryActionLabel = R.string.card_reader_connect_to_reader,
+            secondaryActionLabel = R.string.cancel
+        )
+
+        // TODO cardreader add multiple readers found state
+
+
     }
 
     @AssistedFactory
