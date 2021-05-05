@@ -22,17 +22,17 @@ class CardReaderConnectFragment : DialogFragment(R.layout.card_reader_connect) {
 
         val binding = CardReaderConnectBinding.bind(view)
         initObservers(binding)
-        (requireActivity().application as? WooCommerce)?.cardReaderManager?.let {
-            viewModel.start(it)
-        } ?: throw IllegalStateException("CardReaderManager is null.")
     }
 
     private fun initObservers(binding: CardReaderConnectBinding) {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is InitializeCardReaderManager -> {
-                    it.cardReaderManager.initialize(requireActivity().application)
-                    viewModel.onCardReaderManagerInitialized()
+                    // TODO cardreader Inject CardReaderManager into the fragment
+                    (requireActivity().application as? WooCommerce)?.cardReaderManager?.let {
+                        it.initialize(requireActivity().application)
+                        viewModel.onCardReaderManagerInitialized(it)
+                    } ?: throw IllegalStateException("CardReaderManager is null.")
                 }
                 is Exit -> findNavController().navigateUp()
                 else -> it.isHandled = false

@@ -14,25 +14,20 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,13 +42,12 @@ class CardReaderConnectViewModel @Inject constructor(
     private val viewState = MutableLiveData<ViewState>(ScanningState(::onCancelScanningClicked))
     val viewStateData: LiveData<ViewState> = viewState
 
-    // TODO cardreader replace start with init when DI for CardReaderManager is supported
-    fun start(cardReaderManager: CardReaderManager) {
-        this.cardReaderManager = cardReaderManager
-        triggerEvent(InitializeCardReaderManager(cardReaderManager))
+    init {
+        triggerEvent(InitializeCardReaderManager)
     }
 
-    fun onCardReaderManagerInitialized() {
+    fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
+        this.cardReaderManager = cardReaderManager
         // TODO cardreader check location permissions
         viewModelScope.launch {
             startScanning()
@@ -83,7 +77,9 @@ class CardReaderConnectViewModel @Inject constructor(
                 // noop
             }
             is Failed -> {
-                // TODO cardreader show failed state
+                // TODO cardreader Replace with failed state
+                appLogWrapper.e(T.MAIN, "Scanning failed.")
+                triggerEvent(Exit)
             }
         }
     }
@@ -110,21 +106,25 @@ class CardReaderConnectViewModel @Inject constructor(
             if (success) {
                 onReaderConnected()
             } else {
-                // TODO cardreader show failed state
+                // TODO cardreader Replace with failed state
+                appLogWrapper.e(T.MAIN, "Connecting to reader failed.")
+                triggerEvent(Exit)
             }
         }
     }
 
     private fun onCancelScanningClicked() {
+        appLogWrapper.e(T.MAIN, "Connection flow interrupted by the user.")
         triggerEvent(Exit)
     }
 
     private fun onReaderConnected() {
+        appLogWrapper.e(T.MAIN, "Connecting to reader succeeded.")
         triggerEvent(Exit)
     }
 
     sealed class CardReaderConnectEvent : Event() {
-        data class InitializeCardReaderManager(val cardReaderManager: CardReaderManager) : CardReaderConnectEvent()
+        object InitializeCardReaderManager : CardReaderConnectEvent()
     }
 
     sealed class ViewState(
