@@ -4,18 +4,31 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReader
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 
 class CardReaderConnectViewModel @AssistedInject constructor(
@@ -36,15 +49,32 @@ class CardReaderConnectViewModel @AssistedInject constructor(
 
     fun onCardReaderManagerInitialized() {
         // TODO cardreader check location permissions
-        startScanning()
+        viewModelScope.launch {
+            startScanning()
+        }
     }
 
-    private fun onCancelScanningClicked() {
-        // TODO cardreader implement
+    private suspend fun startScanning() {
+        cardReaderManager
+            .discoverReaders(isSimulated = false)
+            // TODO cardreader should we move flowOn to CardReaderModule?
+            .flowOn(dispatchers.io)
+            .collect { discoveryEvent ->
+                handleScanEvent(discoveryEvent)
+            }
     }
 
-    private fun startScanning() {
-
+    private fun handleScanEvent(discoveryEvent: CardReaderDiscoveryEvents) {
+        when (discoveryEvent) {
+            Started -> {}
+            is ReadersFound -> {}
+            Succeeded -> {
+                // noop
+            }
+            is Failed -> {
+                // TODO cardreader show failed state
+            }
+        }
     }
 
     sealed class CardReaderConnectEvent : Event() {
