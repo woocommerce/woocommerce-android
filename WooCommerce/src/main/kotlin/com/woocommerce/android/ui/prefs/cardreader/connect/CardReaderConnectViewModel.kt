@@ -97,10 +97,21 @@ class CardReaderConnectViewModel @AssistedInject constructor(
     }
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
-        // TODO cardreader implement
+        viewModelScope.launch {
+            val success = cardReaderManager.connectToReader(cardReader)
+            if (success) {
+                onReaderConnected()
+            } else {
+                // TODO cardreader show failed state
+            }
+        }
     }
 
     private fun onCancelScanningClicked() {
+        triggerEvent(Exit)
+    }
+
+    private fun onReaderConnected() {
         triggerEvent(Exit)
     }
 
