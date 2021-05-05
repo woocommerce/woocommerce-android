@@ -89,11 +89,11 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -122,7 +122,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val accountStore: AccountStore,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val STATE_KEY = KEY_STATE
         private const val KEY_SHIPPING_LABELS_PARAMETERS = "key_shipping_labels_parameters"
@@ -134,7 +134,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateData
 
     init {

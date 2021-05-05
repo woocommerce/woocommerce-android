@@ -23,7 +23,7 @@ import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -34,7 +34,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class ProductSelectionListFragment : BaseFragment(R.layout.fragment_product_list),
+class ProductSelectionListFragment : BaseDaggerFragment(R.layout.fragment_product_list),
     OnLoadMoreListener,
     OnActionModeEventListener,
     OnQueryTextListener,

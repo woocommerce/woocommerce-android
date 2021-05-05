@@ -16,11 +16,11 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -44,7 +44,7 @@ class ProductListViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -53,7 +53,7 @@ class ProductListViewModel @AssistedInject constructor(
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
 
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    final val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateLiveData
 
     private final val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {

@@ -26,13 +26,13 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingRatesResult.ShippingPackage
@@ -46,7 +46,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     private val shippingLabelRepository: ShippingLabelRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_RATE_OPTION = "default"
         private const val SIGNATURE_RATE_OPTION = "signature_required"
@@ -66,7 +66,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
     private val arguments: ShippingCarrierRatesFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _shippingRates = MutableLiveData<List<PackageRateListItem>>()

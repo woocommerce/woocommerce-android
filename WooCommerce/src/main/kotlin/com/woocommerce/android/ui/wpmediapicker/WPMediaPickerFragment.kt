@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -31,7 +31,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
-class WPMediaPickerFragment : BaseFragment(R.layout.fragment_wpmedia_picker),
+class WPMediaPickerFragment : BaseDaggerFragment(R.layout.fragment_wpmedia_picker),
     WPMediaGalleryListener,
     BackPressListener {
     companion object {

@@ -243,7 +243,7 @@ platform :android do
       alpha: false,
       beta: false,
       final: true)
-    android_build_preflight()
+    android_build_preflight() unless options[:skip_prechecks]
 
     # Create the file names
     version = android_get_release_version()
@@ -286,7 +286,7 @@ platform :android do
   desc "Builds and uploads a new beta build to Google Play (without releasing it)"
   lane :build_and_upload_beta do | options |
     android_build_prechecks(skip_confirm: options[:skip_confirm], alpha: false, beta: true, final: false) unless (options[:skip_prechecks])
-    android_build_preflight() unless (options[:skip_prechecks])
+    android_build_preflight() unless options[:skip_prechecks]
 
     # Create the file names
     version = android_get_release_version()

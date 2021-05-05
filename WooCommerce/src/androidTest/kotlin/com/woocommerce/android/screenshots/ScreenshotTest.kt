@@ -1,25 +1,32 @@
 package com.woocommerce.android.screenshots
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.helpers.InitializationRule
 import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.ui.main.MainActivity
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.locale.LocaleTestRule
 
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class ScreenshotTest : TestBase() {
-    @Rule @JvmField
+    @get:Rule(order = 0)
+    val rule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
+    val initRule = InitializationRule()
+
+    @get:Rule(order = 2)
     val localeTestRule = LocaleTestRule()
 
-    @get:Rule
+    @get:Rule(order = 3)
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Test
