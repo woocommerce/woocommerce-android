@@ -21,7 +21,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
@@ -34,7 +34,7 @@ import dagger.Lazy
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
+class RefundByItemsFragment : BaseDaggerFragment(R.layout.fragment_refund_by_items),
     OnCheckedChangeListener {
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var currencyFormatter: CurrencyFormatter

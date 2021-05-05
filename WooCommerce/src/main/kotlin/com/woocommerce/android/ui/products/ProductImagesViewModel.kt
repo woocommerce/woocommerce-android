@@ -22,13 +22,13 @@ import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesS
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.swap
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -42,13 +42,13 @@ class ProductImagesViewModel @AssistedInject constructor(
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
     private val originalImages = navArgs.images.toList()
 
     val isMultiSelectionAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
 
-    val viewStateData = LiveDataDelegate(
+    val viewStateData = LiveDataDelegateWithArgs(
         savedState,
         ViewState(
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),

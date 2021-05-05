@@ -12,14 +12,14 @@ import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -32,13 +32,13 @@ class AddProductCategoryViewModel @AssistedInject constructor(
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     // view state for the add category screen
-    val addProductCategoryViewStateData = LiveDataDelegate(savedState, AddProductCategoryViewState())
+    val addProductCategoryViewStateData = LiveDataDelegateWithArgs(savedState, AddProductCategoryViewState())
     private var addProductCategoryViewState by addProductCategoryViewStateData
 
     // view state for the parent category list screen
-    val parentCategoryListViewStateData = LiveDataDelegate(savedState, ParentCategoryListViewState())
+    val parentCategoryListViewStateData = LiveDataDelegateWithArgs(savedState, ParentCategoryListViewState())
     private var parentCategoryListViewState by parentCategoryListViewStateData
 
     private val _parentCategories = MutableLiveData<List<ProductCategoryItemUiModel>>()

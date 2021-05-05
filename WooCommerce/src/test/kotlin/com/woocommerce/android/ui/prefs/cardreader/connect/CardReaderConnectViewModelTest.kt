@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.NavigationTarget
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -21,7 +20,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         viewModel = CardReaderConnectViewModel(
-            SavedStateWithArgs(SavedStateHandle(), null, null),
+            SavedStateHandle(),
             coroutinesTestRule.testDispatchers
         )
     }

@@ -27,6 +27,7 @@
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
     <string name="shipping">Shipping</string>
+    <string name="multiple_shipping">multiple shipping lines</string>
     <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
@@ -170,7 +171,7 @@
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
-    <string name="login_not_wordpress_site">The website %1$s is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
+    <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
     <string name="login_refresh_app">refresh the app</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
@@ -365,6 +366,7 @@
     <string name="shipping_label_print_save_for_later">Save for later</string>
     <string name="shipping_label_print_screen_title">Print shipping label</string>
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
+    <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
@@ -594,6 +596,29 @@
     <string name="order_shipment_tracking_progress_message">Please wait</string>
 
     <!--
+        Card Reader Payments
+    -->
+    <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
+    <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
+    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
+
+    <string name="card_reader_collect_payment">Collect payment</string>
+    <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_completed_payment_header">Payment successful</string>
+    <string name="card_reader_payment_payment_failed_header">Payment failed</string>
+
+    <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
+    <string name="card_reader_payment_processing_payment_state">Processing payment</string>
+    <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
+
+    <string name="card_reader_payment_print_receipt">Print receipt</string>
+    <string name="card_reader_payment_send_receipt">Send receipt</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
@@ -742,6 +767,7 @@
     <string name="product_short_description">Short description</string>
     <string name="product_short_description_empty">Brief summary about the product</string>
     <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_delete_dialog_title">Deleting product</string>
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
@@ -861,6 +887,8 @@
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
+    <string name="variation_create_dialog_title">Creating variation</string>
+    <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
 
     <!--
         Product images
@@ -1186,11 +1214,13 @@
 
     <!-- New Product bottom sheet -->
     <string name="product_add_type_list_header" translatable="false">@string/product_type_list_header</string>
-    <string name="product_add_type_simple">Simple product</string>
+    <string name="product_add_type_simple">Simple physical product</string>
+    <string name="product_add_type_virtual">Simple virtual product</string>
     <string name="product_add_type_variable">Variable product</string>
     <string name="product_add_type_grouped">Grouped product</string>
     <string name="product_add_type_external">External product</string>
     <string name="product_add_type_simple_desc">A unique item to sell</string>
+    <string name="product_add_type_virtual_desc">A unique digital product</string>
     <string name="product_add_type_variable_desc">A product with variations like color or size</string>
     <string name="product_add_type_grouped_desc" translatable="false">@string/product_type_grouped_desc</string>
     <string name="product_add_type_external_desc" translatable="false">@string/product_type_external_desc</string>
