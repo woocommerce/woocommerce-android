@@ -49,6 +49,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     // TODO cardreader replace start with init when DI for CardReaderManager is supported
     fun start(cardReaderManager: CardReaderManager) {
+        this.cardReaderManager = cardReaderManager
         triggerEvent(InitializeCardReaderManager(cardReaderManager))
     }
 
@@ -61,7 +62,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private suspend fun startScanning() {
         cardReaderManager
-            .discoverReaders(isSimulated = false)
+            .discoverReaders(isSimulated = true)
             // TODO cardreader should we move flowOn to CardReaderModule?
             .flowOn(dispatchers.io)
             .collect { discoveryEvent ->
@@ -102,6 +103,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
+        viewState.value = ConnectingState(::onCancelScanningClicked)
         viewModelScope.launch {
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
@@ -145,7 +147,8 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: (() -> Unit),
             override val onSecondaryActionClicked: (() -> Unit)
         ) : ViewState(
-            headerLabel = R.string.card_reader_connect_scanning_header,
+            // TODO cardreader add support for showing reader name
+            headerLabel = R.string.card_reader_connect_reader_found_header,
             illustration = R.drawable.img_card_reader,
             primaryActionLabel = R.string.card_reader_connect_to_reader,
             secondaryActionLabel = R.string.cancel
