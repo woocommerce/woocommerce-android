@@ -62,6 +62,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private suspend fun startScanning() {
         cardReaderManager
+            // TODO cardreader set isSimulated to false or add a temporary checkbox to the UI
             .discoverReaders(isSimulated = true)
             // TODO cardreader should we move flowOn to CardReaderModule?
             .flowOn(dispatchers.io)
