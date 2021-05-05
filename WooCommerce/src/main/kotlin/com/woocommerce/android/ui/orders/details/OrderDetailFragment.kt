@@ -144,7 +144,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
             }
-            new.areShippingLabelsVisible?.takeIfNotEqualTo(old?.areShippingLabelsVisible) {
+            new.isProductListMenuVisible?.takeIfNotEqualTo(old?.isProductListMenuVisible) {
                 showProductListMenuButton(it)
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
