@@ -5,7 +5,7 @@ import android.util.Base64
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingProvider
-import com.goterl.lazycode.lazysodium.utils.Key
+import com.goterl.lazysodium.utils.Key
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.util.locale.ContextBasedLocaleProvider
 import com.woocommerce.android.util.locale.LocaleProvider

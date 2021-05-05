@@ -9,8 +9,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
-import org.wordpress.android.util.helpers.logfile.LogFileProvider
-import org.wordpress.android.util.helpers.logfile.LogFileProviderInterface
 import java.util.Locale
 import javax.inject.Singleton
 

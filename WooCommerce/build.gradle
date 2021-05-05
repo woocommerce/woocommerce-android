@@ -155,7 +155,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.0.0'
+    implementation 'com.github.Automattic:Automattic-Tracks-Android:d15eb0e89aaa0250ce9b9c9f8db0411be8be2f2e'
     constraints {
         implementation('com.fasterxml.jackson.core:jackson-core:2.10.2') {
             because 'previous version from tracks conflicts with WireMock for UI tests'
@@ -194,12 +194,16 @@ dependencies {
     implementation 'com.github.vihtarb:tooltip:0.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
+
     // Dagger
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-compiler:$hiltVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
 
+    implementation "androidx.hilt:hilt-work:$androidHiltExt"
+    kapt "androidx.hilt:hilt-compiler:$androidHiltExt"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
