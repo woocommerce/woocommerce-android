@@ -27,9 +27,7 @@ import org.wordpress.android.util.AppLog
 
 // TODO cardreader update this comment
 /**
- * This fragment currently contains a UI for testing purposes. However, this will change and its only job will be to
- * determine if there is a connected card reader and redirect the user either to CardReaderConnectFragment
- * or CardReaderDetailFragment.
+ * This fragment currently contains a UI for testing purposes. It'll be removed before the release.
  */
 class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_reader) {
     companion object {
@@ -70,8 +68,8 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
             }
             startObserving(binding)
         }
-        binding.redirectToConnectFragment.setOnClickListener {
-            findNavController().navigateSafely(R.id.action_cardReaderSettingsFragment_to_cardReaderConnectFragment)
+        binding.redirectToDetailFragment.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_cardReaderSettingsFragment_to_cardReaderDetailFragment)
         }
     }
 
