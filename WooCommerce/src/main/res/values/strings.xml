@@ -619,6 +619,12 @@
     <string name="card_reader_payment_send_receipt">Send receipt</string>
 
     <!--
+            Card Reader Connection
+        -->
+    <string name="card_reader_connect_scanning_header">Scanning for readers</string>
+    <string name="card_reader_connect_scanning_hint">Press the power button of your reader until you see a flashing blue light</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
