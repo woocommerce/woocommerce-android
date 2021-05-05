@@ -36,7 +36,8 @@ class CardReaderDetailFragment : BaseFragment(R.layout.card_reader_detail) {
         viewModel.event.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is CardReaderConnectScreen ->
-                    findNavController().navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderConnectFragment)
+                    findNavController()
+                        .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderConnectFragment)
                 else ->
                     it.isHandled = false
             }
