@@ -1,5 +1,6 @@
 package com.woocommerce.android.util.crashlogging
 
+import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.EventLevel.INFO
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
@@ -133,7 +134,7 @@ class WCCrashLoggingDataProviderTest {
 
         val extras = sut.provideExtrasForEvent(currentExtras = emptyMap(), eventLevel = INFO)
 
-        verify(enqueueSendingEncryptedLogs, times(1)).invoke(generatedUuid, false)
+        verify(enqueueSendingEncryptedLogs, times(1)).invoke(generatedUuid, INFO)
         assertThat(extras).containsValue(generatedUuid)
     }
 
@@ -144,6 +145,17 @@ class WCCrashLoggingDataProviderTest {
         val extras = sut.provideExtrasForEvent(currentExtras = mapOf("uuid" to generatedUuid), eventLevel = INFO)
 
         verify(enqueueSendingEncryptedLogs, never()).invoke(any(), any())
+        assertThat(extras).containsValue(generatedUuid)
+    }
+
+    @Test
+    fun `should not upload immediately when event is fatal`() {
+        val generatedUuid = "123"
+        whenever(uuidGenerator.generateUuid()).thenReturn(generatedUuid)
+
+        val extras = sut.provideExtrasForEvent(currentExtras = emptyMap(), eventLevel = FATAL)
+
+        verify(enqueueSendingEncryptedLogs, times(1)).invoke(generatedUuid, FATAL)
         assertThat(extras).containsValue(generatedUuid)
     }
 

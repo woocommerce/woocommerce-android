@@ -3,7 +3,6 @@ package com.woocommerce.android.util.crashlogging
 import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
-import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -64,7 +63,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
         val uuid = uuidGenerator.generateUuid()
         enqueueSendingEncryptedLogs(
             uuid = uuid,
-            shouldStartUploadImmediately = eventLevel == FATAL
+            eventLevel = eventLevel
         )
         return mapOf(EXTRA_UUID to uuid)
     }
