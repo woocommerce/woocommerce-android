@@ -629,6 +629,11 @@
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
 
     <!--
+        Card Reader Detail
+    -->
+    <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
