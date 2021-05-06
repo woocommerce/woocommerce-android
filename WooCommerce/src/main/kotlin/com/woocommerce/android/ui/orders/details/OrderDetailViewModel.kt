@@ -516,8 +516,7 @@ class OrderDetailViewModel @AssistedInject constructor(
                 ! shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
-            areShippingLabelsVisible = shippingLabels.isVisible,
-            isProductListMenuVisible = shippingLabels.isVisible
+            areShippingLabelsVisible = shippingLabels.isVisible
         )
     }
 
@@ -538,8 +537,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         val refreshedProductId: Long? = null,
         val isCreateShippingLabelButtonVisible: Boolean? = null,
         val isProductListVisible: Boolean? = null,
-        val areShippingLabelsVisible: Boolean? = null,
-        val isProductListMenuVisible: Boolean? = null
+        val areShippingLabelsVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
@@ -549,6 +547,9 @@ class OrderDetailViewModel @AssistedInject constructor(
 
         val isReprintShippingLabelBannerVisible: Boolean
             get() = !isCreateShippingLabelBannerVisible && areShippingLabelsVisible == true
+
+        val isProductListMenuVisible: Boolean?
+            get() = areShippingLabelsVisible
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
