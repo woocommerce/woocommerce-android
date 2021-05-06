@@ -127,10 +127,8 @@ class OrderDetailShippingLabelsAdapter(
             viewBinding.shippingLabelListCountExpander.textOff = expanderText
 
             viewBinding.shippingLabelListCountExpander.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked)
-                    WooAnimUtils.fadeIn(viewBinding.shippingLabelListProducts)
-                else
-                    WooAnimUtils.fadeOut(viewBinding.shippingLabelListProducts)
+                if (isChecked) WooAnimUtils.fadeIn(viewBinding.shippingLabelListProducts)
+                else WooAnimUtils.fadeOut(viewBinding.shippingLabelListProducts)
             }
 
             // display tracking number details if shipping label is not refunded
