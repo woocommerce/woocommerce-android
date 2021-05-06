@@ -16,11 +16,12 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
-import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
-import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -59,11 +60,11 @@ class ProductDetailRepository @Inject constructor(
     private val taxStore: WCTaxStore
 ) {
     private var continuationUpdateProduct: Continuation<Boolean>? = null
-    private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
-    private var continuationFetchProductPassword: CancellableContinuation<String?>? = null
-    private var continuationUpdateProductPassword: CancellableContinuation<Boolean>? = null
-    private var continuationFetchProductShippingClass: CancellableContinuation<Boolean>? = null
-    private var continuationVerifySku: CancellableContinuation<Boolean>? = null
+    private var continuationFetchProduct = ContinuationWrapper<Boolean>(PRODUCTS)
+    private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
+    private var continuationUpdateProductPassword = ContinuationWrapper<Boolean>(PRODUCTS)
+    private var continuationFetchProductShippingClass = ContinuationWrapper<Boolean>(PRODUCTS)
+    private var continuationVerifySku = ContinuationWrapper<Boolean>(PRODUCTS)
 
     private var continuationAddProduct: Continuation<Pair<Boolean, Long>>? = null
 
@@ -82,39 +83,23 @@ class ProductDetailRepository @Inject constructor(
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
         lastFetchProductErrorType = null
-        try {
-            this.remoteProductId = remoteProductId
-            continuationFetchProduct?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationFetchProduct = it
-
-                val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "CancellationException while fetching single product")
+        this.remoteProductId = remoteProductId
+        continuationFetchProduct.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
         }
-
-        continuationFetchProduct = null
         return getProduct(remoteProductId)
     }
 
     suspend fun fetchProductPassword(remoteProductId: Long): String? {
-        var password: String? = null
-        try {
-            continuationFetchProductPassword?.cancel()
-            password = suspendCancellableCoroutineWithTimeout<String?>(AppConstants.REQUEST_TIMEOUT) {
-                continuationFetchProductPassword = it
-
-                val payload = WCProductStore.FetchProductPasswordPayload(selectedSite.get(), remoteProductId)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductPasswordAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "CancellationException while fetching single product")
+        val result = continuationFetchProductPassword.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = WCProductStore.FetchProductPasswordPayload(selectedSite.get(), remoteProductId)
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductPasswordAction(payload))
         }
-
-        continuationFetchProductPassword = null
-        return password
+        return when (result) {
+            is Cancellation -> null
+            is Success -> result.value
+        }
     }
 
     /**
@@ -163,21 +148,18 @@ class ProductDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun updateProductPassword(remoteProductId: Long, password: String?): Boolean {
-        return try {
-            continuationUpdateProductPassword?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationUpdateProductPassword = it
+        val result = continuationUpdateProductPassword.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = WCProductStore.UpdateProductPasswordPayload(
+                selectedSite.get(),
+                remoteProductId,
+                password ?: ""
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newUpdateProductPasswordAction(payload))
+        }
 
-                val payload = WCProductStore.UpdateProductPasswordPayload(
-                        selectedSite.get(),
-                        remoteProductId,
-                        password ?: ""
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newUpdateProductPasswordAction(payload))
-            } ?: false // request timed out
-        } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "Exception encountered while updating product password", e)
-            false
+        return when (result) {
+            is Cancellation -> false
+            is Success -> result.value
         }
     }
 
@@ -187,17 +169,13 @@ class ProductDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun isSkuAvailableRemotely(sku: String): Boolean? {
-        continuationVerifySku?.cancel()
-        return try {
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationVerifySku = it
-
-                val payload = FetchProductSkuAvailabilityPayload(selectedSite.get(), sku)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductSkuAvailabilityAction(payload))
-            } // request timed out
-        } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "Exception encountered while verifying product sku availability", e)
-            null
+        val result = continuationVerifySku.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = FetchProductSkuAvailabilityPayload(selectedSite.get(), sku)
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductSkuAvailabilityAction(payload))
+        }
+        return when (result) {
+            is Cancellation -> null
+            is Success -> result.value
         }
     }
 
@@ -207,21 +185,12 @@ class ProductDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun fetchProductShippingClassById(remoteShippingClassId: Long): ShippingClass? {
-        try {
-            continuationFetchProductShippingClass?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationFetchProduct = it
-
-                val payload = WCProductStore.FetchSingleProductShippingClassPayload(
-                        selectedSite.get(), remoteShippingClassId
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductShippingClassAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.d(PRODUCTS, "CancellationException while fetching single product shipping class")
+        continuationFetchProductShippingClass.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = WCProductStore.FetchSingleProductShippingClassPayload(
+                selectedSite.get(), remoteShippingClassId
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductShippingClassAction(payload))
         }
-
-        continuationFetchProductShippingClass = null
         return getProductShippingClassByRemoteId(remoteShippingClassId)
     }
 
@@ -237,7 +206,10 @@ class ProductDetailRepository @Inject constructor(
                 val result = taxStore.fetchTaxClassList(selectedSite.get())
                 isFetchingTaxClassList = false
                 if (result.isError) {
-                    WooLog.e(PRODUCTS, "Exception encountered while fetching tax class list: ${result.error.message}")
+                    WooLog.e(
+                        PRODUCTS,
+                        "Exception encountered while fetching tax class list: ${result.error.message}"
+                    )
                     RequestResult.ERROR
                 } else RequestResult.SUCCESS
             } else RequestResult.NO_ACTION_NEEDED
@@ -284,38 +256,34 @@ class ProductDetailRepository @Inject constructor(
     }
 
     private fun getCachedWCProductModel(remoteProductId: Long) =
-            productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+        productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
     fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
     fun isSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
 
     fun getCachedVariationCount(remoteProductId: Long) =
-            productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
+        productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
     fun getTaxClassesForSite(): List<TaxClass> =
-            taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
+        taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     /**
      * Returns the cached (SQLite) shipping class for the given [remoteShippingClassId]
      */
     fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
-            productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
+        productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
-            if (continuationFetchProduct?.isActive == true) {
-                if (event.isError) {
-                    lastFetchProductErrorType = event.error.type
-                    continuationFetchProduct?.resume(false)
-                } else {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                    continuationFetchProduct?.resume(true)
-                }
+            if (event.isError) {
+                lastFetchProductErrorType = event.error.type
+                continuationFetchProduct.continueWith(false)
             } else {
-                WooLog.w(PRODUCTS, "continuationFetchProduct is no longer active")
+                AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
+                continuationFetchProduct.continueWith(true)
             }
         }
     }
@@ -324,22 +292,16 @@ class ProductDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductPasswordChanged(event: OnProductPasswordChanged) {
         if (event.causeOfChange == FETCH_PRODUCT_PASSWORD && event.remoteProductId == remoteProductId) {
-            if (continuationFetchProductPassword?.isActive == true) {
-                if (event.isError) {
-                    continuationFetchProductPassword?.resume(null)
-                } else {
-                    continuationFetchProductPassword?.resume(event.password)
-                }
+            if (event.isError) {
+                continuationFetchProductPassword.continueWith(null)
             } else {
-                WooLog.w(PRODUCTS, "continuationFetchProductPassword is no longer active")
+                continuationFetchProductPassword.continueWith(event.password)
             }
         } else if (event.causeOfChange == UPDATE_PRODUCT_PASSWORD && event.remoteProductId == remoteProductId) {
-            if (continuationUpdateProductPassword?.isActive == true) {
-                if (event.isError) {
-                    continuationUpdateProductPassword?.resume(false)
-                } else {
-                    continuationUpdateProductPassword?.resume(true)
-                }
+            if (event.isError) {
+                continuationUpdateProductPassword.continueWith(false)
+            } else {
+                continuationUpdateProductPassword.continueWith(true)
             }
         }
     }
@@ -349,10 +311,13 @@ class ProductDetailRepository @Inject constructor(
     fun onProductUpdated(event: OnProductUpdated) {
         if (event.causeOfChange == UPDATED_PRODUCT) {
             if (event.isError) {
-                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_ERROR, mapOf(
+                AnalyticsTracker.track(
+                    PRODUCT_DETAIL_UPDATE_ERROR, mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                )
                 continuationUpdateProduct?.resume(false)
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_SUCCESS)
@@ -367,8 +332,7 @@ class ProductDetailRepository @Inject constructor(
     fun onProductSkuAvailabilityChanged(event: OnProductSkuAvailabilityChanged) {
         if (event.causeOfChange == FETCH_PRODUCT_SKU_AVAILABILITY) {
             // TODO: add event to track sku availability success
-            continuationVerifySku?.resume(event.available)
-            continuationVerifySku = null
+            continuationVerifySku.continueWith(event.available)
         }
     }
 
@@ -380,9 +344,9 @@ class ProductDetailRepository @Inject constructor(
     fun onProductShippingClassesChanged(event: OnProductShippingClassesChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT_SHIPPING_CLASS) {
             if (event.isError) {
-                continuationFetchProductShippingClass?.resume(false)
+                continuationFetchProductShippingClass.continueWith(false)
             } else {
-                continuationFetchProductShippingClass?.resume(true)
+                continuationFetchProductShippingClass.continueWith(true)
             }
         }
     }
