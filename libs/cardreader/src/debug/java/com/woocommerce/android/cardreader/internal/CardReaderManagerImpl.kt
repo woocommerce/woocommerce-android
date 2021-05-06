@@ -10,7 +10,9 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -26,7 +28,8 @@ internal class CardReaderManagerImpl(
     private val tokenProvider: TokenProvider,
     private val logWrapper: LogWrapper,
     private val paymentManager: PaymentManager,
-    private val connectionManager: ConnectionManager
+    private val connectionManager: ConnectionManager,
+    private val softwareUpdateManager: SoftwareUpdateManager
 ) : CardReaderManager {
     companion object {
         private const val TAG = "CardReaderManager"
@@ -87,4 +90,6 @@ internal class CardReaderManagerImpl(
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
     }
+
+    override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
 }
