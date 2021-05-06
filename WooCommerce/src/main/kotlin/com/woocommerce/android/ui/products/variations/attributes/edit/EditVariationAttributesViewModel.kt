@@ -106,8 +106,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
                 attributeName = productAttribute.name,
                 options = productAttribute.terms,
                 selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option),
-                noOptionSelected = selectedOption.option.isNullOrEmpty(),
-                resourceCreator = { resources.getString(it) }
+                noOptionSelected = selectedOption.option.isNullOrEmpty()
             )
         }
 
