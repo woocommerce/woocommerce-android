@@ -12,14 +12,15 @@ data class VariationAttributeSelectionGroup(
     val attributeName: String,
     var selectedOptionIndex: Int
 ) : Parcelable {
+    companion object {
+        const val anySelectionOption = "Any"
+    }
+
     val selectedOption
         get() = options.getOrNull(selectedOptionIndex) ?: ""
 
     val attributeOptions
         get() = options
-
-    private val anySelectionOption
-        get() = "Any"
 
     val isAnyOptionSelected
         get() = options.getOrNull(selectedOptionIndex) == anySelectionOption
