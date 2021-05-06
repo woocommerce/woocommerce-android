@@ -67,7 +67,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
         }
 
         val popupMenu = PopupMenu(context, binding.productListBtnMenu)
-        popupMenu.menu.add(0, 0, 0, R.string.orderdetail_products_more_button)
+        popupMenu.menu.add(0, 0, 0, R.string.orderdetail_products_recreate_shipping_label_menu)
         popupMenu.menu.findItem(0).setOnMenuItemClickListener {
             onProductMenuItemClicked()
             true
