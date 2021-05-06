@@ -20,7 +20,6 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
 
@@ -117,18 +116,20 @@ class OrderDetailShippingLabelsAdapter(
             }
 
             // Set up the collapsible button to show/hide the products list.
-            val expanderText = viewBinding.root.resources.getQuantityString(
+            viewBinding.shippingLabelListCountButtonTitle.text = viewBinding.root.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
                 shippingLabel.products.count(),
                 shippingLabel.products.count()
             )
-            viewBinding.shippingLabelListCountExpander.text = expanderText
-            viewBinding.shippingLabelListCountExpander.textOn = expanderText
-            viewBinding.shippingLabelListCountExpander.textOff = expanderText
-
-            viewBinding.shippingLabelListCountExpander.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) WooAnimUtils.fadeIn(viewBinding.shippingLabelListProducts)
-                else WooAnimUtils.fadeOut(viewBinding.shippingLabelListProducts)
+            viewBinding.shippingLabelListViewItems.setOnClickListener {
+                val isChecked = viewBinding.shippingLabelListCountButtonImage.rotation == 0F
+                if (isChecked) {
+                    viewBinding.shippingLabelListProducts.expand()
+                    viewBinding.shippingLabelListCountButtonImage.animate().rotation(180F).setDuration(200).start()
+                } else {
+                    viewBinding.shippingLabelListProducts.collapse()
+                    viewBinding.shippingLabelListCountButtonImage.animate().rotation(0F).setDuration(200).start()
+                }
             }
 
             // display tracking number details if shipping label is not refunded
