@@ -51,12 +51,12 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             ?.contentDeepEquals(viewState.updatedAttributeSelection.toTypedArray())
             ?: false
 
-    fun start(productId: Long, variationId: Long, anyAttributeResourceText: String) {
+    fun start(productId: Long, variationId: Long) {
         viewState = viewState.copy(
             parentProductID = productId,
             editableVariationID = variationId
         )
-        loadProductAttributes(anyAttributeResourceText)
+        loadProductAttributes()
     }
 
     fun exit() {
@@ -72,13 +72,13 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         viewState = viewState.copy(updatedAttributeSelection = attributeSelection)
     }
 
-    private fun loadProductAttributes(anyAttributeResourceText: String) =
+    private fun loadProductAttributes() =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
                 parentProduct?.variationEnabledAttributes
                     ?.pairAttributeWithSelectedOption()
                     ?.pairAttributeWithUnselectedOption()
-                    ?.mapToAttributeSelectionGroupList(anyAttributeResourceText)
+                    ?.mapToAttributeSelectionGroupList()
                     ?.dispatchListResult()
                     ?: updateSkeletonVisibility(visible = false)
             }
@@ -99,15 +99,14 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
                 ?.let { toMutableList().apply { addAll(it) } }
         }
 
-    private fun List<Pair<ProductAttribute, VariantOption>>.mapToAttributeSelectionGroupList(anyAttributeResourceText: String) =
+    private fun List<Pair<ProductAttribute, VariantOption>>.mapToAttributeSelectionGroupList() =
         pairMap { productAttribute, selectedOption ->
             VariationAttributeSelectionGroup(
                 id = productAttribute.id,
                 attributeName = productAttribute.name,
                 options = productAttribute.terms,
                 selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option),
-                noOptionSelected = selectedOption.option.isNullOrEmpty(),
-                anyAttributeResourceText = anyAttributeResourceText
+                noOptionSelected = selectedOption.option.isNullOrEmpty()
             )
         }
 

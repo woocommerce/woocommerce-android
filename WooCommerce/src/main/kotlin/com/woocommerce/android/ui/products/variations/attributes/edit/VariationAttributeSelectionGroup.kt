@@ -9,7 +9,6 @@ data class VariationAttributeSelectionGroup(
     private val id: Long,
     private var options: List<String>,
     private var noOptionSelected: Boolean = false,
-    private val anyAttributeResourceText: String,
     val attributeName: String,
     var selectedOptionIndex: Int
 ) : Parcelable {
@@ -20,9 +19,9 @@ data class VariationAttributeSelectionGroup(
         get() = options
 
     private val anySelectionOption
-        get() = "$anyAttributeResourceText $attributeName"
+        get() = "Any"
 
-    private val isAnyOptionSelected
+    val isAnyOptionSelected
         get() = options.getOrNull(selectedOptionIndex) == anySelectionOption
 
     init {

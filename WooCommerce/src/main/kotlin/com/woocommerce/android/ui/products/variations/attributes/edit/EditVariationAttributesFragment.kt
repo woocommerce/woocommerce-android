@@ -60,7 +60,7 @@ class EditVariationAttributesFragment :
         _binding = FragmentEditVariationAttributesBinding.bind(view)
         setupObservers()
         setupViews()
-        viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId, getString(string.product_any_attribute_hint))
+        viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId)
     }
 
     override fun onDestroyView() {
@@ -112,6 +112,7 @@ class EditVariationAttributesFragment :
             ?: binding.attributeSelectionGroupList.apply {
                 adapter = VariationAttributesAdapter(
                     selectableOptions,
+                    getString(string.product_any_attribute_hint),
                     ::displaySelectionDialog
                 )
             }
