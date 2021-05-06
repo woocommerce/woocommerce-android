@@ -6,7 +6,10 @@ import com.woocommerce.android.util.WooLogWrapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class WooLogFileProviderTest {
     private lateinit var sut: WooLogFileProvider
 

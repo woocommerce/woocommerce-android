@@ -194,16 +194,12 @@ dependencies {
     implementation 'com.github.vihtarb:tooltip:0.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
-    implementation "androidx.work:work-runtime-ktx:2.5.0"
-
     // Dagger
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-compiler:$hiltVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
 
-    implementation "androidx.hilt:hilt-work:$androidHiltExt"
-    kapt "androidx.hilt:hilt-compiler:$androidHiltExt"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
