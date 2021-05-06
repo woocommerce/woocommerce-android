@@ -21,7 +21,7 @@
         <ImageButton
             android:id="@+id/productList_btnMenu"
             style="@style/Woo.ImageButton.More"
-            android:contentDescription="@string/orderdetail_products_more_button"
+            android:contentDescription="@string/orderdetail_products_recreate_shipping_label_menu"
             android:scaleType="centerInside"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
