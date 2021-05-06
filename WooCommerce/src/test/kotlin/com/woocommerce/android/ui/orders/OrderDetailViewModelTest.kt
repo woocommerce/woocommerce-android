@@ -90,8 +90,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isShipmentTrackingAvailable = true,
         isCreateShippingLabelButtonVisible = false,
         isProductListVisible = true,
-        areShippingLabelsVisible = false,
-        isProductListMenuVisible = false
+        areShippingLabelsVisible = false
     )
 
     private val mixedProducts = listOf(
