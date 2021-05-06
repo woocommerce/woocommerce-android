@@ -57,6 +57,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
 
+
     private lateinit var cardReaderManager: CardReaderManager
 
     private var paymentFlowJob: Job? = null
