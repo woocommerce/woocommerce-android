@@ -51,12 +51,12 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             ?.contentDeepEquals(viewState.updatedAttributeSelection.toTypedArray())
             ?: false
 
-    fun start(productId: Long, variationId: Long) {
+    fun start(productId: Long, variationId: Long, anyAttributeResourceText: String) {
         viewState = viewState.copy(
             parentProductID = productId,
             editableVariationID = variationId
         )
-        loadProductAttributes()
+        loadProductAttributes(anyAttributeResourceText)
     }
 
     fun exit() {
@@ -72,13 +72,13 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         viewState = viewState.copy(updatedAttributeSelection = attributeSelection)
     }
 
-    private fun loadProductAttributes() =
+    private fun loadProductAttributes(anyAttributeResourceText: String) =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
                 parentProduct?.variationEnabledAttributes
                     ?.pairAttributeWithSelectedOption()
                     ?.pairAttributeWithUnselectedOption()
-                    ?.mapToAttributeSelectionGroupList()
+                    ?.mapToAttributeSelectionGroupList(anyAttributeResourceText)
                     ?.dispatchListResult()
                     ?: updateSkeletonVisibility(visible = false)
             }
@@ -99,7 +99,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
                 ?.let { toMutableList().apply { addAll(it) } }
         }
 
-    private fun List<Pair<ProductAttribute, VariantOption>>.mapToAttributeSelectionGroupList() =
+    private fun List<Pair<ProductAttribute, VariantOption>>.mapToAttributeSelectionGroupList(anyAttributeResourceText: String) =
         pairMap { productAttribute, selectedOption ->
             VariationAttributeSelectionGroup(
                 id = productAttribute.id,
@@ -107,7 +107,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
                 options = productAttribute.terms,
                 selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option),
                 noOptionSelected = selectedOption.option.isNullOrEmpty(),
-                resourceCreator = { resources.getString(it) }
+                anyAttributeResourceText = anyAttributeResourceText
             )
         }
 
