@@ -46,7 +46,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         return childInjector
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogProductDetailBottomSheetListBinding.inflate(inflater)
         return binding.root
     }
@@ -79,11 +79,11 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
     }
 
     private fun setupObservers() {
-        viewModel.productTypesBottomSheetList.observe(viewLifecycleOwner, Observer {
+        viewModel.productTypesBottomSheetList.observe(viewLifecycleOwner, {
             showProductTypeOptions(it)
         })
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
                 is Exit -> {
                     dismiss()
@@ -117,8 +117,6 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
     ) {
         productTypesBottomSheetAdapter.setProductTypeOptions(productTypeOptions)
     }
-
-    private fun getProductTypeListBuilder() = ProductTypeBottomSheetBuilder()
 
     private fun navigateWithSelectedResult(productTypesBottomSheetUiItem: ProductTypesBottomSheetUiItem) {
         when (navArgs.isAddProduct) {
