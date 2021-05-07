@@ -2,7 +2,7 @@ package com.woocommerce.android.cardreader
 
 import android.app.Application
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.math.BigDecimal
 
 /**
@@ -10,7 +10,7 @@ import java.math.BigDecimal
  */
 interface CardReaderManager {
     val isInitialized: Boolean
-    val readerStatus: MutableStateFlow<CardReaderStatus>
+    val readerStatus: StateFlow<CardReaderStatus>
     fun initialize(app: Application)
     fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
     suspend fun connectToReader(cardReader: CardReader): Boolean
@@ -18,4 +18,6 @@ interface CardReaderManager {
     // TODO cardreader Stripe accepts only Int, is that ok?
     suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus>
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
+
+    suspend fun updateSoftware(): Flow<SoftwareUpdateStatus>
 }

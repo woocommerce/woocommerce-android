@@ -41,9 +41,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "6.6-rc-1"
+            versionName "6.6-rc-2"
         }
-        versionCode 215
+        versionCode 216
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -150,7 +150,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
-    implementation('org.wordpress:utils:1.26') {
+    implementation('org.wordpress:utils:1.40.0') {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }

@@ -418,6 +418,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
     </style>
 
+    <style name="Woo.Button.TextButton.Expander">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
+        <item name="android:textColor">@color/color_on_surface_medium</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
     <!--  Button with only a border and no color fill  -->
     <style name="Woo.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
