@@ -20,8 +20,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         viewModel = CardReaderDetailViewModel(
-            SavedStateHandle(),
-            coroutinesTestRule.testDispatchers
+            SavedStateHandle()
         )
     }
 
