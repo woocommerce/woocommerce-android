@@ -31,7 +31,7 @@ class ProductTypeBottomSheetBuilder {
                 titleResource = string.product_type_variable_title,
                 descResource = string.product_type_variable_desc,
                 iconResource = drawable.ic_gridicons_types,
-                isEnabled = false  // TODO
+                isEnabled = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = GROUPED,
