@@ -144,6 +144,9 @@ class OrderDetailFragment : BaseDaggerFragment(R.layout.fragment_order_detail), 
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
             }
+            new.isProductListMenuVisible?.takeIfNotEqualTo(old?.isProductListMenuVisible) {
+                showProductListMenuButton(it)
+            }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it, false)
             }
@@ -259,6 +262,10 @@ class OrderDetailFragment : BaseDaggerFragment(R.layout.fragment_order_detail), 
         )
     }
 
+    private fun showProductListMenuButton(isVisible: Boolean) {
+        binding.orderDetailProductList.showProductListMenuButton(isVisible)
+    }
+
     private fun showSkeleton(show: Boolean) {
         when (show) {
             true -> skeletonView.show(binding.orderDetailContainer, R.layout.skeleton_order_detail, delayed = true)
@@ -309,7 +316,8 @@ class OrderDetailFragment : BaseDaggerFragment(R.layout.fragment_order_detail), 
                     orderItems = products,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
-                    productClickListener = this@OrderDetailFragment
+                    productClickListener = this@OrderDetailFragment,
+                    onProductMenuItemClicked = viewModel::onCreateShippingLabelButtonTapped
                 )
             }
         }.otherwise { binding.orderDetailProductList.hide() }

@@ -14,7 +14,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CardReaderConnectFragment : DialogFragment(R.layout.card_reader_connect) {
+class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_connect) {
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
