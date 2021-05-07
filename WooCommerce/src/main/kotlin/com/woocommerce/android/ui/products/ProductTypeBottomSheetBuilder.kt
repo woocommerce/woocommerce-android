@@ -16,14 +16,14 @@ class ProductTypeBottomSheetBuilder {
                 titleResource = string.product_type_simple_title,
                 descResource = string.product_type_simple_desc,
                 iconResource = drawable.ic_gridicons_product,
-                isEnabled = true
+                isEnabledForAddFlow = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
                 titleResource = string.product_type_virtual_title,
                 descResource = string.product_type_virtual_desc,
                 iconResource = drawable.ic_gridicons_cloud_outline,
-                isEnabled = true,
+                isEnabledForAddFlow = true,
                 isVirtual = true
             ),
             ProductTypesBottomSheetUiItem(
@@ -31,21 +31,21 @@ class ProductTypeBottomSheetBuilder {
                 titleResource = string.product_type_variable_title,
                 descResource = string.product_type_variable_desc,
                 iconResource = drawable.ic_gridicons_types,
-                isEnabled = true
+                isEnabledForAddFlow = false // TODO
             ),
             ProductTypesBottomSheetUiItem(
                 type = GROUPED,
                 titleResource = string.product_type_grouped_title,
                 descResource = string.product_type_grouped_desc,
                 iconResource = drawable.ic_widgets,
-                isEnabled = true
+                isEnabledForAddFlow = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = EXTERNAL,
                 titleResource = string.product_type_external_title,
                 descResource = string.product_type_external_desc,
                 iconResource = drawable.ic_gridicons_up_right,
-                isEnabled = true
+                isEnabledForAddFlow = true
             )
         )
     }
