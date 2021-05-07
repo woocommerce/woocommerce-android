@@ -17,7 +17,7 @@ class FeedbackRequestCard @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : WCElevatedConstraintLayout(ctx, attrs, defStyleAttr) {
-    private val binding = FeedbackRequestCardBinding.inflate(LayoutInflater.from(ctx))
+    private val binding = FeedbackRequestCardBinding.inflate(LayoutInflater.from(ctx), this, true)
 
     /**
      * Sets the click listeners for the buttons on this card
