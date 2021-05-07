@@ -376,7 +376,9 @@ class IssueRefundViewModel @AssistedInject constructor(
                                 }
 
                                 val selectedShipping = refundShippingLines.value?.filter {
-                                    refundByItemsState.selectedShippingLines!!.contains(it.shippingLine.itemId)
+                                    refundByItemsState.selectedShippingLines
+                                        ?.contains(it.shippingLine.itemId)
+                                        ?: false
                                 }
                                 selectedShipping?.forEach { allItems.add(it.toDataModel()) }
 
