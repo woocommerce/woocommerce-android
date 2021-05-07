@@ -155,7 +155,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.0.0'
+    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.0.1'
     constraints {
         implementation('com.fasterxml.jackson.core:jackson-core:2.10.2') {
             because 'previous version from tracks conflicts with WireMock for UI tests'
