@@ -23,12 +23,12 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -56,7 +56,7 @@ class VariationListViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
@@ -70,7 +70,7 @@ class VariationListViewModel @AssistedInject constructor(
         }
     }
 
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateLiveData
 
     private var loadingJob: Job? = null

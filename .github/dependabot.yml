@@ -5,6 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    default_labels:
+      - "bot: updated dependencies"
     reviewers:
       - "woocommerce/android-developers"
     ignore:

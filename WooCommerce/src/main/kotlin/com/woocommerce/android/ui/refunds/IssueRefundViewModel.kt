@@ -46,13 +46,13 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -66,10 +66,12 @@ import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 import java.math.BigDecimal
 import java.util.Locale
+import kotlin.collections.set
+import kotlin.collections.sumBy
 import kotlin.math.min
+import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 class IssueRefundViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -83,7 +85,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val gatewayStore: WCGatewayStore,
     private val refundStore: WCRefundStore
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val REFUND_METHOD_MANUAL = "manual"
@@ -99,19 +101,20 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val areAllItemsSelected: Boolean
         get() = refundItems.value?.all { it.quantity == it.maxQuantity } ?: false
 
-    final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
-    final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
-    final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = { _, new ->
-        updateRefundTotal(new.grandTotalRefund)
-    })
-    final val refundByAmountStateLiveData = LiveDataDelegate(
+    final val commonStateLiveData = LiveDataDelegateWithArgs(savedState, CommonViewState())
+    final val refundSummaryStateLiveData = LiveDataDelegateWithArgs(savedState, RefundSummaryViewState())
+    final val refundByItemsStateLiveData = LiveDataDelegateWithArgs(savedState, RefundByItemsViewState(),
+        onChange = { _, new ->
+            updateRefundTotal(new.grandTotalRefund)
+        })
+    final val refundByAmountStateLiveData = LiveDataDelegateWithArgs(
         savedState,
         RefundByAmountViewState(),
         onChange = { _, new ->
             updateRefundTotal(new.enteredAmount)
         }
     )
-    final val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
+    final val productsRefundLiveData = LiveDataDelegateWithArgs(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData
     private var refundByAmountState by refundByAmountStateLiveData

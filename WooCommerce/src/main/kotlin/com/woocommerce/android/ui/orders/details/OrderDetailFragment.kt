@@ -36,7 +36,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -59,7 +59,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
+class OrderDetailFragment : BaseDaggerFragment(R.layout.fragment_order_detail), OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }
@@ -143,6 +143,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             }
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
+            }
+            new.isProductListMenuVisible?.takeIfNotEqualTo(old?.isProductListMenuVisible) {
+                showProductListMenuButton(it)
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it, false)
@@ -259,6 +262,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         )
     }
 
+    private fun showProductListMenuButton(isVisible: Boolean) {
+        binding.orderDetailProductList.showProductListMenuButton(isVisible)
+    }
+
     private fun showSkeleton(show: Boolean) {
         when (show) {
             true -> skeletonView.show(binding.orderDetailContainer, R.layout.skeleton_order_detail, delayed = true)
@@ -309,7 +316,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     orderItems = products,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
-                    productClickListener = this@OrderDetailFragment
+                    productClickListener = this@OrderDetailFragment,
+                    onProductMenuItemClicked = viewModel::onCreateShippingLabelButtonTapped
                 )
             }
         }.otherwise { binding.orderDetailProductList.hide() }
