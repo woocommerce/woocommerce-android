@@ -3,6 +3,7 @@ package com.woocommerce.android.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.CoroutineScope
@@ -22,16 +23,8 @@ abstract class ScopedViewModel(
     private val _event = MultiLiveEvent<Event>()
     val event: LiveData<Event> = _event
 
-    protected var job: Job = Job()
-
     override val coroutineContext: CoroutineContext
-        get() = dispatchers.main + job
-
-    override fun onCleared() {
-        super.onCleared()
-
-        job.cancel()
-    }
+        get() = viewModelScope.coroutineContext
 
     protected fun triggerEvent(event: Event) {
         event.isHandled = false
