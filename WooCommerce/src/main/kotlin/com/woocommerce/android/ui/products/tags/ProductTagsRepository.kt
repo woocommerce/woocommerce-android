@@ -78,7 +78,6 @@ class ProductTagsRepository @Inject constructor(
      */
     suspend fun addProductTags(tagNames: List<String>): List<ProductTag> {
         addProductTagsContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-
             val payload = WCProductStore.AddProductTagsPayload(selectedSite.get(), tagNames)
             dispatcher.dispatch(WCProductActionBuilder.newAddProductTagsAction(payload))
         }

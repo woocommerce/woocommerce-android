@@ -12,9 +12,8 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -28,8 +27,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 
 class VariationListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -41,7 +38,7 @@ class VariationListRepository @Inject constructor(
         private const val PRODUCT_VARIATIONS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
     }
 
-    private var loadContinuation: Continuation<Boolean>? = null
+    private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
 
     var canLoadMoreProductVariations = true
@@ -60,20 +57,15 @@ class VariationListRepository @Inject constructor(
      * and returns the full list of product variations from the database
      */
     suspend fun fetchProductVariations(remoteProductId: Long, loadMore: Boolean = false): List<ProductVariation> {
-        try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                offset = if (loadMore) offset + PRODUCT_VARIATIONS_PAGE_SIZE else 0
-                loadContinuation = it
-                val payload = WCProductStore.FetchProductVariationsPayload(
-                        selectedSite.get(),
-                        remoteProductId,
-                        pageSize = PRODUCT_VARIATIONS_PAGE_SIZE,
-                        offset = offset
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductVariationsAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching product variations", e)
+        loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            offset = if (loadMore) offset + PRODUCT_VARIATIONS_PAGE_SIZE else 0
+            val payload = WCProductStore.FetchProductVariationsPayload(
+                selectedSite.get(),
+                remoteProductId,
+                pageSize = PRODUCT_VARIATIONS_PAGE_SIZE,
+                offset = offset
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductVariationsAction(payload))
         }
 
         return getProductVariationList(remoteProductId)
@@ -84,7 +76,7 @@ class VariationListRepository @Inject constructor(
      */
     fun getProductVariationList(remoteProductId: Long): List<ProductVariation> {
         return productStore.getVariationsForProduct(selectedSite.get(), remoteProductId)
-                .map { it.toAppModel() }
+            .map { it.toAppModel() }
     }
 
     /**
@@ -126,19 +118,18 @@ class VariationListRepository @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_PRODUCT_VARIATIONS) {
             if (event.isError) {
-                loadContinuation?.resume(false)
+                loadContinuation.continueWith(false)
                 AnalyticsTracker.track(
-                        Stat.PRODUCT_VARIANTS_LOAD_ERROR,
-                        this.javaClass.simpleName,
-                        event.error.type.toString(),
-                        event.error.message
+                    Stat.PRODUCT_VARIANTS_LOAD_ERROR,
+                    this.javaClass.simpleName,
+                    event.error.type.toString(),
+                    event.error.message
                 )
             } else {
                 canLoadMoreProductVariations = event.canLoadMore
                 AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_LOADED)
-                loadContinuation?.resume(true)
+                loadContinuation.continueWith(true)
             }
-            loadContinuation = null
         }
     }
 }
