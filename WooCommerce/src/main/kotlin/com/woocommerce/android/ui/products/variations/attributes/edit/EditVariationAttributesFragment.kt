@@ -9,6 +9,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.databinding.FragmentEditVariationAttributesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -111,6 +112,7 @@ class EditVariationAttributesFragment :
             ?: binding.attributeSelectionGroupList.apply {
                 adapter = VariationAttributesAdapter(
                     selectableOptions,
+                    getString(string.product_any_attribute_hint),
                     ::displaySelectionDialog
                 )
             }
