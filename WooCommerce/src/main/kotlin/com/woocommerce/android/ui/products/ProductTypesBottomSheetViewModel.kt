@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes

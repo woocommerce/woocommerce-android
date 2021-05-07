@@ -15,7 +15,7 @@ class ProductTypeBottomSheetBuilder {
                 type = SIMPLE,
                 titleResource = string.product_type_simple_title,
                 descResource = string.product_type_simple_desc,
-                iconResource = drawable.ic_gridicons_product,
+                iconResource = drawable.ic_gridicons_product
             ),
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
@@ -35,13 +35,13 @@ class ProductTypeBottomSheetBuilder {
                 type = GROUPED,
                 titleResource = string.product_type_grouped_title,
                 descResource = string.product_type_grouped_desc,
-                iconResource = drawable.ic_widgets,
+                iconResource = drawable.ic_widgets
             ),
             ProductTypesBottomSheetUiItem(
                 type = EXTERNAL,
                 titleResource = string.product_type_external_title,
                 descResource = string.product_type_external_desc,
-                iconResource = drawable.ic_gridicons_up_right,
+                iconResource = drawable.ic_gridicons_up_right
             )
         )
     }
