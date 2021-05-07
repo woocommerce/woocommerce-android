@@ -35,8 +35,9 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
-    fun loadProductTypes(builder: ProductTypeBottomSheetBuilder) {
-        _productTypesBottomSheetList.value = builder.buildBottomSheetList().filter { it.isEnabled }
+    fun loadProductTypes() {
+        _productTypesBottomSheetList.value = ProductTypeBottomSheetBuilder().buildBottomSheetList()
+            .filter { it.isEnabled }
     }
 
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {

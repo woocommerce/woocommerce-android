@@ -66,9 +66,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
 
         setupObservers()
 
-        val builder = getProductTypeListBuilder()
-
-        viewModel.loadProductTypes(builder = builder)
+        viewModel.loadProductTypes()
 
         binding.productDetailInfoLblTitle.text = getString(R.string.product_type_list_header)
         productTypesBottomSheetAdapter = ProductTypesBottomSheetAdapter(
@@ -120,7 +118,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         productTypesBottomSheetAdapter.setProductTypeOptions(productTypeOptions)
     }
 
-    private fun getProductTypeListBuilder() = ProductAddTypeBottomSheetBuilder()
+    private fun getProductTypeListBuilder() = ProductTypeBottomSheetBuilder()
 
     private fun navigateWithSelectedResult(productTypesBottomSheetUiItem: ProductTypesBottomSheetUiItem) {
         when (navArgs.isAddProduct) {
