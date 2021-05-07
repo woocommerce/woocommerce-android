@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentReviewsListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListAdapter
@@ -25,7 +25,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import javax.inject.Inject
 
-class ProductReviewsFragment : BaseFragment(R.layout.fragment_reviews_list),
+class ProductReviewsFragment : BaseDaggerFragment(R.layout.fragment_reviews_list),
     ReviewListAdapter.OnReviewClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 

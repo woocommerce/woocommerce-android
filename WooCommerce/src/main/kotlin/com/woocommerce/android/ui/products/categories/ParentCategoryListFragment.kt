@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductCategoriesListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.util.WooAnimUtils
@@ -22,7 +22,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import javax.inject.Inject
 
-class ParentCategoryListFragment : BaseFragment(R.layout.fragment_product_categories_list),
+class ParentCategoryListFragment : BaseDaggerFragment(R.layout.fragment_product_categories_list),
     OnLoadMoreListener,
     OnProductCategoryClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver

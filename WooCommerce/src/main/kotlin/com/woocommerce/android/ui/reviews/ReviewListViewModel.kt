@@ -25,11 +25,11 @@ import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.Ma
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.launch
@@ -52,7 +52,7 @@ class ReviewListViewModel @AssistedInject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val reviewRepository: ReviewListRepository
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
@@ -62,7 +62,7 @@ class ReviewListViewModel @AssistedInject constructor(
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    final val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateData
 
     init {

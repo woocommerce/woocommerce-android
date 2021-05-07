@@ -12,7 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditVariationAttributesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -23,7 +23,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 class EditVariationAttributesFragment :
-    BaseFragment(R.layout.fragment_edit_variation_attributes), BackPressListener {
+    BaseDaggerFragment(R.layout.fragment_edit_variation_attributes), BackPressListener {
     companion object {
         const val TAG: String = "EditVariationAttributesFragment"
         const val KEY_VARIATION_ATTRIBUTES_RESULT = "key_variation_attributes_result"
