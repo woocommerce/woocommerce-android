@@ -13,37 +13,37 @@ class ProductAddTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
         return listOf(
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
-                titleResource = string.product_add_type_simple,
-                descResource = string.product_add_type_simple_desc,
+                titleResource = string.product_type_simple_title,
+                descResource = string.product_type_simple_desc,
                 iconResource = drawable.ic_gridicons_product,
                 isEnabled = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
-                titleResource = string.product_add_type_virtual,
-                descResource = string.product_add_type_virtual_desc,
+                titleResource = string.product_type_virtual_title,
+                descResource = string.product_type_virtual_desc,
                 iconResource = drawable.ic_gridicons_cloud_outline,
                 isEnabled = true,
                 isVirtual = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = VARIABLE,
-                titleResource = string.product_add_type_variable,
-                descResource = string.product_add_type_variable_desc,
+                titleResource = string.product_type_variable_title,
+                descResource = string.product_type_variable_desc,
                 iconResource = drawable.ic_gridicons_types,
-                isEnabled = false
+                isEnabled = false  // TODO
             ),
             ProductTypesBottomSheetUiItem(
                 type = GROUPED,
-                titleResource = string.product_add_type_grouped,
-                descResource = string.product_add_type_grouped_desc,
+                titleResource = string.product_type_grouped_title,
+                descResource = string.product_type_grouped_desc,
                 iconResource = drawable.ic_widgets,
                 isEnabled = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = EXTERNAL,
-                titleResource = string.product_add_type_external,
-                descResource = string.product_add_type_external_desc,
+                titleResource = string.product_type_external_title,
+                descResource = string.product_type_external_desc,
                 iconResource = drawable.ic_gridicons_up_right,
                 isEnabled = true
             )
