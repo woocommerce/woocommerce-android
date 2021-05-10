@@ -16,6 +16,7 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -163,6 +164,17 @@ class CardReaderConnectViewModel @Inject constructor(
             hintLabel = R.string.card_reader_connect_connecting_hint,
             secondaryActionLabel = R.string.cancel
         )
+
         // TODO cardreader add error state
+        data class MissingPermissionsError(
+            override val onPrimaryActionClicked: () -> Unit,
+            override val onSecondaryActionClicked: () -> Unit
+        ) : ViewState(
+            headerLabel = R.string.card_reader_connect_failed_header,
+            illustration = R.drawable.img_card_reader_scanning,
+            hintLabel = R.string.card_reader_connect_missing_permissions,
+            primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
+            secondaryActionLabel = R.string.cancel
+        )
     }
 }
