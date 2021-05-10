@@ -53,7 +53,7 @@ class CardReaderConnectViewModel @Inject constructor(
     fun onCheckLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
-        } else {
+        } else if (viewState.value !is MissingPermissionsError) {
             triggerEvent(RequestLocationPermissions)
         }
     }
