@@ -15,22 +15,29 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductSelectionListViewModel.ProductSelectionListViewState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertFalse
 
+@ExperimentalCoroutinesApi
 class ProductSelectionListViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 10L
     }
+
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
 
     private val productList = ProductTestUtils.generateProductList()
     private val excludedProductIds = listOf(PRODUCT_REMOTE_ID)
@@ -58,7 +65,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         viewModel = spy(
             ProductSelectionListViewModel(
                 savedState,
-                coroutineDispatchers,
+                coroutinesTestRule.testDispatchers,
                 networkStatus,
                 productRepository
             )
@@ -73,7 +80,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product list view correctly`() = test {
+    fun `Displays the product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(productList).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
         )
@@ -92,7 +99,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not fetch product list from api when not connected`() = test {
+    fun `Do not fetch product list from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(false).whenever(networkStatus).isConnected()
 
         createViewModel()
@@ -109,7 +116,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list skeleton correctly`() = test {
+    fun `Shows and hides product list skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList(
             excludedProductIds = excludedProductIds
         )
@@ -128,7 +135,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list load more progress correctly`() = test {
+    fun `Shows and hides product list load more progress correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
