@@ -15,7 +15,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -25,15 +24,11 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 @ExperimentalCoroutinesApi
 class ProductListViewModelTest : BaseUnitTest() {
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
     private val savedState: SavedStateWithArgs = mock()

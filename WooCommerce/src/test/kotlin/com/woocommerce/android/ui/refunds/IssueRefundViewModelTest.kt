@@ -11,14 +11,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundByItemsViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCGatewayStore
@@ -49,8 +47,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
     }
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val savedState: SavedStateWithArgs = spy(
         SavedStateWithArgs(
             SavedStateHandle(),

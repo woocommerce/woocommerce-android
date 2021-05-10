@@ -13,7 +13,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundViewModel.ShippingLabelRefundViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -22,7 +21,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -43,8 +41,6 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     private val repository: ShippingLabelRepository = mock()
     private val networkStatus: NetworkStatus = mock()
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val shippingLabel = OrderTestUtils.generateShippingLabel(
             remoteOrderId = REMOTE_ORDER_ID, shippingLabelId = REMOTE_SHIPPING_LABEL_ID
     )

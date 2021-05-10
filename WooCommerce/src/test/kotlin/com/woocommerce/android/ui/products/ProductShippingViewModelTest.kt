@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.spy
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -17,14 +16,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class ProductShippingViewModelTest : BaseUnitTest() {
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
     private val parameterRepository: ParameterRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
 

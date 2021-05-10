@@ -15,7 +15,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.variations.VariationListRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -24,14 +23,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class VariationListViewModelTest : BaseUnitTest() {
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
     private val networkStatus: NetworkStatus = mock()
     private val variationListRepository: VariationListRepository = mock()
     private val currencyFormatter: CurrencyFormatter = mock()

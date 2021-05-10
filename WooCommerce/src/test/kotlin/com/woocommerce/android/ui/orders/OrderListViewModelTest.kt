@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.ViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
@@ -37,7 +36,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
@@ -56,9 +54,6 @@ import kotlin.test.assertTrue
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
 class OrderListViewModelTest : BaseUnitTest() {
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderListRepository = mock()

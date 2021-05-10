@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryDa
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -24,15 +23,11 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
 class ProductInventoryViewModelTest : BaseUnitTest() {
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
     private val productDetailRepository: ProductDetailRepository = mock()
 
     private val takenSku = "taken"

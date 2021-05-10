@@ -14,7 +14,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductSelectionListViewModel.ProductSelectionListViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -24,7 +23,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertFalse
 
@@ -33,9 +31,6 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 10L
     }
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private val productList = ProductTestUtils.generateProductList()
     private val excludedProductIds = listOf(PRODUCT_REMOTE_ID)

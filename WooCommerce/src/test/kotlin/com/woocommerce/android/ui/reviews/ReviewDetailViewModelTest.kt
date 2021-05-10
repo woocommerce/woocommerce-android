@@ -16,7 +16,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -25,7 +24,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -38,9 +36,6 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         const val NOTIF_ID = 300L
         const val PRODUCT_ID = 200L
     }
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private val networkStatus: NetworkStatus = mock()
     private val repository: ReviewDetailRepository = mock()

@@ -10,7 +10,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -19,7 +18,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -28,9 +26,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         private const val PRODUCT_REMOTE_ID = 1L
         private val GROUPED_PRODUCT_IDS = longArrayOf(2, 3, 4, 5)
     }
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: GroupedProductListRepository = mock()
