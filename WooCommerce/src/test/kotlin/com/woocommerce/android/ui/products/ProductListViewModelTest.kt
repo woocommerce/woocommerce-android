@@ -15,29 +15,29 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
-import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
+@ExperimentalCoroutinesApi
 class ProductListViewModelTest : BaseUnitTest() {
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
+
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
     private val savedState: SavedStateWithArgs = mock()
 
-    private val coroutineDispatchers = CoroutineDispatchers(
-        Dispatchers.Unconfined,
-        Dispatchers.Unconfined,
-        Dispatchers.Unconfined
-    )
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
 
@@ -52,7 +52,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel = spy(
                 ProductListViewModel(
                         savedState,
-                        coroutineDispatchers,
+                        coroutinesTestRule.testDispatchers,
                         productRepository,
                         networkStatus
                 )
@@ -60,7 +60,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product list view correctly`() = test {
+    fun `Displays the product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(productList).whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
 
         createViewModel()
@@ -74,7 +74,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not fetch product list from api when not connected`() = test {
+    fun `Do not fetch product list from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(false).whenever(networkStatus).isConnected()
 
         createViewModel()
@@ -91,7 +91,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list skeleton correctly`() = test {
+    fun `Shows and hides product list skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
@@ -108,7 +108,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list load more progress correctly`() = test {
+    fun `Shows and hides product list load more progress correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
@@ -124,7 +124,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides add product button correctly when loading list of products`() = test {
+    fun `Shows and hides add product button correctly when loading list of products`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         // when
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
