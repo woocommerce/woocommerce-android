@@ -73,7 +73,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onCheckBluetoothResult(enabled: Boolean) {
-        if(enabled) {
+        if (enabled) {
             onBluetoothStateVerified()
         } else {
             triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
