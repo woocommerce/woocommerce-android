@@ -47,7 +47,26 @@ class CardReaderConnectViewModel @Inject constructor(
     val viewStateData: LiveData<ViewState> = viewState
 
     init {
-        triggerEvent(InitializeCardReaderManager)
+        triggerEvent(CheckLocationPermissions)
+    }
+
+    fun onCheckLocationPermissionsResult(granted: Boolean) {
+        if (granted) {
+            onLocationPermissionsVerified()
+        } else {
+            triggerEvent(RequestLocationPermissions)
+        }
+    }
+
+    fun onRequestLocationPermissionsResult(granted: Boolean) {
+        if (granted) {
+            onLocationPermissionsVerified()
+        } else {
+            viewState.value = MissingPermissionsError(
+                onPrimaryActionClicked = ::onOpenPermissionsSettingsClicked,
+                onSecondaryActionClicked = ::onCancelClicked
+            )
+        }
     }
 
     fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
@@ -56,6 +75,11 @@ class CardReaderConnectViewModel @Inject constructor(
         viewModelScope.launch {
             startScanning()
         }
+    }
+
+    private fun onLocationPermissionsVerified() {
+        // TODO cardreader check if bluetooth is on
+        triggerEvent(InitializeCardReaderManager)
     }
 
     private suspend fun startScanning() {
@@ -115,6 +139,10 @@ class CardReaderConnectViewModel @Inject constructor(
                 triggerEvent(Exit)
             }
         }
+    }
+
+    private fun onOpenPermissionsSettingsClicked() {
+        triggerEvent(OpenPermissionsSettings)
     }
 
     private fun onCancelClicked() {
