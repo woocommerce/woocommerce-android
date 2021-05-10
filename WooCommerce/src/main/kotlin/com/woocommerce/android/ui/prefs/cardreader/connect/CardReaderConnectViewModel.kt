@@ -155,6 +155,12 @@ class CardReaderConnectViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onScreenResumed() {
+        if (viewState.value is MissingPermissionsError) {
+            triggerEvent(CheckLocationPermissions)
+        }
+    }
+
     sealed class CardReaderConnectEvent : Event() {
         object InitializeCardReaderManager : CardReaderConnectEvent()
         object CheckLocationPermissions : CardReaderConnectEvent()
