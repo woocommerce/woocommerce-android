@@ -70,39 +70,41 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that when data is changed the view state is updated`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var actual: ShippingData? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            actual = new.shippingData
+    fun `Test that when data is changed the view state is updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            var actual: ShippingData? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                actual = new.shippingData
+            }
+
+            viewModel.onDataChanged(
+                expectedData.weight,
+                expectedData.length,
+                expectedData.width,
+                expectedData.height,
+                expectedData.shippingClassSlug,
+                expectedData.shippingClassId
+            )
+
+            assertThat(actual).isEqualTo(expectedData)
         }
-
-        viewModel.onDataChanged(
-            expectedData.weight,
-            expectedData.length,
-            expectedData.width,
-            expectedData.height,
-            expectedData.shippingClassSlug,
-            expectedData.shippingClassId
-        )
-
-        assertThat(actual).isEqualTo(expectedData)
-    }
 
     @Test
-    fun `Test that a discard dialog isn't shown if no data changed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val events = mutableListOf<Event>()
-        viewModel.event.observeForever {
-            events.add(it)
+    fun `Test that a discard dialog isn't shown if no data changed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
+
+            assertThat(events).isEmpty()
+
+            viewModel.onExit()
+
+            assertThat(events.singleOrNull { it is Exit }).isNotNull
+            assertThat(events.any { it is ShowDialog }).isFalse()
+            assertThat(events.any { it is ExitWithResult<*> }).isFalse()
         }
-
-        assertThat(events).isEmpty()
-
-        viewModel.onExit()
-
-        assertThat(events.singleOrNull { it is Exit }).isNotNull
-        assertThat(events.any { it is ShowDialog }).isFalse()
-        assertThat(events.any { it is ExitWithResult<*> }).isFalse()
-    }
 
     @Test
     fun `Test that a the correct data is returned when exiting`() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -142,14 +144,15 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that the class section is not visible for variations`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        viewModel = createViewModel(RequestCodes.VARIATION_DETAIL_SHIPPING)
+    fun `Test that the class section is not visible for variations`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            viewModel = createViewModel(RequestCodes.VARIATION_DETAIL_SHIPPING)
 
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            viewState = new
+            var viewState: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                viewState = new
+            }
+
+            assertThat(viewState?.isShippingClassSectionVisible).isFalse()
         }
-
-        assertThat(viewState?.isShippingClassSectionVisible).isFalse()
-    }
 }

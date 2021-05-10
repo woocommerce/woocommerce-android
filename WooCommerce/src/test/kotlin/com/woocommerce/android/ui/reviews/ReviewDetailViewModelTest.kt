@@ -55,12 +55,13 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
 
         viewModel = spy(
-                ReviewDetailViewModel(
-                        savedState,
-                        coroutinesTestRule.testDispatchers,
-                        networkStatus,
-                        repository
-                ))
+            ReviewDetailViewModel(
+                savedState,
+                coroutinesTestRule.testDispatchers,
+                networkStatus,
+                repository
+            )
+        )
 
         doReturn(true).whenever(networkStatus).isConnected()
     }
@@ -91,35 +92,36 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Handle error in loading product review detail correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
-        doReturn(review).whenever(repository).getCachedProductReview(any())
-        doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
+    fun `Handle error in loading product review detail correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
+            doReturn(review).whenever(repository).getCachedProductReview(any())
+            doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
 
-        val skeletonShown = mutableListOf<Boolean>()
-        var productReview: ProductReview? = null
-        viewModel.viewStateData.observeForever { old, new ->
-            new.productReview?.takeIfNotEqualTo(old?.productReview) { productReview = it }
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
-        }
-
-        var snackbar: ShowSnackbar? = null
-        var markAsRead: Long? = null
-        viewModel.event.observeForever {
-            when (it) {
-                is MarkNotificationAsRead -> markAsRead = it.remoteNoteId
-                is ShowSnackbar -> snackbar = it
+            val skeletonShown = mutableListOf<Boolean>()
+            var productReview: ProductReview? = null
+            viewModel.viewStateData.observeForever { old, new ->
+                new.productReview?.takeIfNotEqualTo(old?.productReview) { productReview = it }
+                new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
             }
+
+            var snackbar: ShowSnackbar? = null
+            var markAsRead: Long? = null
+            viewModel.event.observeForever {
+                when (it) {
+                    is MarkNotificationAsRead -> markAsRead = it.remoteNoteId
+                    is ShowSnackbar -> snackbar = it
+                }
+            }
+
+            viewModel.start(REVIEW_ID, false)
+
+            Assertions.assertThat(skeletonShown).containsExactly(true, false)
+            assertEquals(NOTIF_ID, markAsRead)
+            Assertions.assertThat(productReview).isEqualTo(review)
+            verify(repository, times(1)).markNotificationAsRead(any())
+            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
         }
-
-        viewModel.start(REVIEW_ID, false)
-
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
-        assertEquals(NOTIF_ID, markAsRead)
-        Assertions.assertThat(productReview).isEqualTo(review)
-        verify(repository, times(1)).markNotificationAsRead(any())
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
-    }
 
     /**
      * Verifies the `exit` LiveData event is called when a request to moderate
@@ -152,26 +154,27 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
      * be called.
      */
     @Test
-    fun `Handle review moderation failed due to offline correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(false).whenever(networkStatus).isConnected()
+    fun `Handle review moderation failed due to offline correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(false).whenever(networkStatus).isConnected()
 
-        doReturn(review).whenever(repository).getCachedProductReview(any())
+            doReturn(review).whenever(repository).getCachedProductReview(any())
 
-        // first we must load the product review so the viewmodel will have
-        // a reference to it.
-        viewModel.start(REVIEW_ID, false)
+            // first we must load the product review so the viewmodel will have
+            // a reference to it.
+            viewModel.start(REVIEW_ID, false)
 
-        var snackbar: ShowSnackbar? = null
-        var exitCalled = false
-        viewModel.event.observeForever {
-            when (it) {
-                is Exit -> exitCalled = true
-                is ShowSnackbar -> snackbar = it
+            var snackbar: ShowSnackbar? = null
+            var exitCalled = false
+            viewModel.event.observeForever {
+                when (it) {
+                    is Exit -> exitCalled = true
+                    is ShowSnackbar -> snackbar = it
+                }
             }
-        }
 
-        viewModel.moderateReview(SPAM)
-        assertFalse(exitCalled)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
-    }
+            viewModel.moderateReview(SPAM)
+            assertFalse(exitCalled)
+            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        }
 }

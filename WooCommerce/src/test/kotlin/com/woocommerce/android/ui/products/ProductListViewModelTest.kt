@@ -50,12 +50,12 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     private fun createViewModel() {
         viewModel = spy(
-                ProductListViewModel(
-                        savedState,
-                        coroutinesTestRule.testDispatchers,
-                        productRepository,
-                        networkStatus
-                )
+            ProductListViewModel(
+                savedState,
+                coroutinesTestRule.testDispatchers,
+                productRepository,
+                networkStatus
+            )
         )
     }
 
@@ -108,40 +108,42 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list load more progress correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(true).whenever(productRepository).canLoadMoreProducts
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+    fun `Shows and hides product list load more progress correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(true).whenever(productRepository).canLoadMoreProducts
+            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
-        createViewModel()
+            createViewModel()
 
-        val isLoadingMore = ArrayList<Boolean>()
-        viewModel.viewStateLiveData.observeForever { old, new ->
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { isLoadingMore.add(it) }
+            val isLoadingMore = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { isLoadingMore.add(it) }
+            }
+
+            viewModel.loadProducts(loadMore = true)
+            assertThat(isLoadingMore).containsExactly(false, true, false)
         }
-
-        viewModel.loadProducts(loadMore = true)
-        assertThat(isLoadingMore).containsExactly(false, true, false)
-    }
 
     @Test
-    fun `Shows and hides add product button correctly when loading list of products`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        // when
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+    fun `Shows and hides add product button correctly when loading list of products`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // when
+            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
-        createViewModel()
+            createViewModel()
 
-        val isAddProductButtonVisible = ArrayList<Boolean>()
-        viewModel.viewStateLiveData.observeForever { old, new ->
-            new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
-                isAddProductButtonVisible.add(it)
+            val isAddProductButtonVisible = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                    isAddProductButtonVisible.add(it)
+                }
             }
+
+            viewModel.loadProducts()
+
+            // then
+            assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
         }
-
-        viewModel.loadProducts()
-
-        // then
-        assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
-    }
 
     @Test
     fun `Shows offline message when trashing a product without a connection`() {

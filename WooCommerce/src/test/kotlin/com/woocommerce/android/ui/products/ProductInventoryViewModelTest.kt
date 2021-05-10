@@ -97,23 +97,24 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that when data is changed the view state is updated`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var actual: InventoryData? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            actual = new.inventoryData
+    fun `Test that when data is changed the view state is updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            var actual: InventoryData? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                actual = new.inventoryData
+            }
+
+            viewModel.onDataChanged(
+                expectedData.sku,
+                expectedData.backorderStatus,
+                expectedData.isSoldIndividually,
+                expectedData.isStockManaged,
+                expectedData.stockQuantity,
+                expectedData.stockStatus
+            )
+
+            assertThat(actual).isEqualTo(expectedData)
         }
-
-        viewModel.onDataChanged(
-            expectedData.sku,
-            expectedData.backorderStatus,
-            expectedData.isSoldIndividually,
-            expectedData.isStockManaged,
-            expectedData.stockQuantity,
-            expectedData.stockStatus
-        )
-
-        assertThat(actual).isEqualTo(expectedData)
-    }
 
     @Test
     fun `Test that an error is shown if SKU is already taken`() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -138,20 +139,21 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that a discard dialog isn't shown if no data changed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val events = mutableListOf<Event>()
-        viewModel.event.observeForever {
-            events.add(it)
+    fun `Test that a discard dialog isn't shown if no data changed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
+
+            assertThat(events).isEmpty()
+
+            viewModel.onExit()
+
+            assertThat(events.singleOrNull { it is Exit }).isNotNull
+            assertThat(events.any { it is ShowDialog }).isFalse()
+            assertThat(events.any { it is ExitWithResult<*> }).isFalse()
         }
-
-        assertThat(events).isEmpty()
-
-        viewModel.onExit()
-
-        assertThat(events.singleOrNull { it is Exit }).isNotNull
-        assertThat(events.any { it is ShowDialog }).isFalse()
-        assertThat(events.any { it is ExitWithResult<*> }).isFalse()
-    }
 
     @Test
     fun `Test that a the correct data is returned when exiting`() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -181,35 +183,38 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that the individual sale switch is visible for products`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            viewState = new
-        }
+    fun `Test that the individual sale switch is visible for products`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            var viewState: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                viewState = new
+            }
 
-        assertThat(viewState?.isIndividualSaleSwitchVisible).isTrue()
-    }
+            assertThat(viewState?.isIndividualSaleSwitchVisible).isTrue()
+        }
 
     @Test
-    fun `Test that the individual sale switch is not visible for variations`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        viewModel = createViewModel(RequestCodes.VARIATION_DETAIL_INVENTORY)
+    fun `Test that the individual sale switch is not visible for variations`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            viewModel = createViewModel(RequestCodes.VARIATION_DETAIL_INVENTORY)
 
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            viewState = new
+            var viewState: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                viewState = new
+            }
+
+            assertThat(viewState?.isIndividualSaleSwitchVisible).isFalse()
         }
-
-        assertThat(viewState?.isIndividualSaleSwitchVisible).isFalse()
-    }
 
     @Test
-    fun `Test that stock quantity field is not editable if stock quantity is non-whole decimal`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        viewModel = createViewModel(RequestCodes.PRODUCT_DETAIL_INVENTORY, initialDataWithNonWholeDecimalQuantity)
+    fun `Test that stock quantity field is not editable if stock quantity is non-whole decimal`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            viewModel = createViewModel(RequestCodes.PRODUCT_DETAIL_INVENTORY, initialDataWithNonWholeDecimalQuantity)
 
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            viewState = new
+            var viewState: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                viewState = new
+            }
+            assertThat(viewState?.isStockQuantityEditable).isFalse()
         }
-        assertThat(viewState?.isStockQuantityEditable).isFalse()
-    }
 }

@@ -76,23 +76,24 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not fetch product variations from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(false).whenever(networkStatus).isConnected()
+    fun `Do not fetch product variations from api when not connected`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(false).whenever(networkStatus).isConnected()
 
-        createViewModel()
+            createViewModel()
 
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.start(productRemoteId)
+
+            verify(variationListRepository, times(1)).getProductVariationList(productRemoteId)
+            verify(variationListRepository, times(0)).fetchProductVariations(productRemoteId)
+
+            assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
         }
-
-        viewModel.start(productRemoteId)
-
-        verify(variationListRepository, times(1)).getProductVariationList(productRemoteId)
-        verify(variationListRepository, times(0)).fetchProductVariations(productRemoteId)
-
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
-    }
 
     @Test
     fun `Shows and hides product variations skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
