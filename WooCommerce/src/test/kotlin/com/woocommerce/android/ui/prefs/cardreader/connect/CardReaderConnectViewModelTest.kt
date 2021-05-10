@@ -120,7 +120,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given NOT on missing permissions screen, when apps comes to foreground, then permissions not re-requested`() =
+    fun `given NOT on missing permissions screen, when apps comes to foreground, then permissions not re-checked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
 
