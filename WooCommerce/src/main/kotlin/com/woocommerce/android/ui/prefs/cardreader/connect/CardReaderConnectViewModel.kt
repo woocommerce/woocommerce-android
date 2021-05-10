@@ -39,7 +39,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private lateinit var cardReaderManager: CardReaderManager
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
-    private val viewState = MutableLiveData<ViewState>(ScanningState(::onCancelScanningClicked))
+    private val viewState = MutableLiveData<ViewState>(ScanningState(::onCancelClicked))
     val viewStateData: LiveData<ViewState> = viewState
 
     init {
@@ -69,7 +69,7 @@ class CardReaderConnectViewModel @Inject constructor(
         when (discoveryEvent) {
             Started -> {
                 if (viewState.value !is ScanningState) {
-                    viewState.value = ScanningState(::onCancelScanningClicked)
+                    viewState.value = ScanningState(::onCancelClicked)
                 }
             }
             is ReadersFound -> onReadersFound(discoveryEvent)
@@ -92,15 +92,15 @@ class CardReaderConnectViewModel @Inject constructor(
             val reader = availableReaders[0]
             viewState.value = ReaderFoundState(
                 onPrimaryActionClicked = { onConnectToReaderClicked(reader) },
-                onSecondaryActionClicked = ::onCancelScanningClicked
+                onSecondaryActionClicked = ::onCancelClicked
             )
         } else {
-            viewState.value = ScanningState(::onCancelScanningClicked)
+            viewState.value = ScanningState(::onCancelClicked)
         }
     }
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
-        viewState.value = ConnectingState(::onCancelScanningClicked)
+        viewState.value = ConnectingState(::onCancelClicked)
         viewModelScope.launch {
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
@@ -113,7 +113,7 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onCancelScanningClicked() {
+    private fun onCancelClicked() {
         appLogWrapper.e(T.MAIN, "Connection flow interrupted by the user.")
         triggerEvent(Exit)
     }
