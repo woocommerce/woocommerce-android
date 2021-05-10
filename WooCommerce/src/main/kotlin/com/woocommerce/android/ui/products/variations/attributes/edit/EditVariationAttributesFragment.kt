@@ -2,13 +2,14 @@ package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.databinding.FragmentEditVariationAttributesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -31,7 +32,7 @@ class EditVariationAttributesFragment :
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: EditVariationAttributesViewModel by activityViewModels { viewModelFactory }
+    private val viewModel: EditVariationAttributesViewModel by viewModels { viewModelFactory }
 
     private val navArgs: EditVariationAttributesFragmentArgs by navArgs()
 
@@ -111,6 +112,7 @@ class EditVariationAttributesFragment :
             ?: binding.attributeSelectionGroupList.apply {
                 adapter = VariationAttributesAdapter(
                     selectableOptions,
+                    getString(string.product_any_attribute_hint),
                     ::displaySelectionDialog
                 )
             }

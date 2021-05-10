@@ -29,7 +29,7 @@ class OrderDetailProductListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = orderItems[position]
         val imageSize = holder.view.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-        val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.productId), imageSize, imageSize)
+        val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
         holder.view.initView(orderItems[position], productImage, formatCurrencyForDisplay)
         holder.view.setOnClickListener {
             if (item.isVariation) {

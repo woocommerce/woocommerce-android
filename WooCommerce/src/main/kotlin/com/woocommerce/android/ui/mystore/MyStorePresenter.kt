@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.mystore
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -12,6 +11,7 @@ import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -38,7 +38,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@ActivityScope
+@ActivityScoped
 class MyStorePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!

@@ -41,9 +41,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "6.6-rc-1"
+            versionName "6.6-rc-2"
         }
-        versionCode 215
+        versionCode 216
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -230,6 +230,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
     })
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"

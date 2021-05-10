@@ -371,12 +371,14 @@ class IssueRefundViewModel @AssistedInject constructor(
                         return@async when (commonState.refundType) {
                             ITEMS -> {
                                 val allItems = mutableListOf<WCRefundItem>()
-                                if (! refundItems.value.isNullOrEmpty()) {
-                                    refundItems.value!!.forEach { allItems.add(it.toDataModel()) }
+                                refundItems.value?.let {
+                                    it.forEach { item -> allItems.add(item.toDataModel()) }
                                 }
 
                                 val selectedShipping = refundShippingLines.value?.filter {
-                                    refundByItemsState.selectedShippingLines!!.contains(it.shippingLine.itemId)
+                                    refundByItemsState.selectedShippingLines
+                                        ?.contains(it.shippingLine.itemId)
+                                        ?: false
                                 }
                                 selectedShipping?.forEach { allItems.add(it.toDataModel()) }
 
