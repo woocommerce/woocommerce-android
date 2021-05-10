@@ -270,6 +270,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
+
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -304,6 +305,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
+
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -337,6 +339,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
+
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -368,6 +371,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
+
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -400,6 +404,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
+
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -429,6 +434,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
+
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value
@@ -456,6 +462,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
+
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value

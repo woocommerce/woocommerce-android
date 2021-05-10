@@ -252,7 +252,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
-
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
@@ -268,7 +267,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
-
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
@@ -283,7 +281,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
-
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
@@ -299,7 +296,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
-
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
@@ -314,7 +310,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
-
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
@@ -330,7 +325,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
-
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
