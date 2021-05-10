@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -18,27 +17,31 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ViewState
-import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 class ReviewListViewModelTest : BaseUnitTest() {
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
+
     private val networkStatus: NetworkStatus = mock()
     private val reviewListRepository: ReviewListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
     private val savedState: SavedStateWithArgs = mock()
 
-    private val coroutineDispatchers = CoroutineDispatchers(
-            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
     private lateinit var viewModel: ReviewListViewModel
 
@@ -49,7 +52,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         viewModel = spy(
                 ReviewListViewModel(
                         savedState,
-                        coroutineDispatchers,
+                        coroutinesTestRule.testDispatchers,
                         networkStatus,
                         dispatcher,
                         selectedSite,
@@ -69,7 +72,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
      * - check for unread reviews
      */
     @Test
-    fun `Load product reviews list successfully`() = test {
+    fun `Load product reviews list successfully`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
@@ -98,7 +101,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Handle loading product reviews list while offline correctly`() = test {
+    fun `Handle loading product reviews list while offline correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -120,7 +123,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Load product reviews list failed`() = test {
+    fun `Load product reviews list failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(false).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
@@ -155,7 +158,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Show and hide review list skeleton correctly`() = test {
+    fun `Show and hide review list skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
 
@@ -170,7 +173,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides review list load more progress correctly`() = test {
+    fun `Shows and hides review list load more progress correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(true).whenever(reviewListRepository).canLoadMore
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
 
@@ -184,7 +187,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Report has unread reviews status correctly`() = test {
+    fun `Report has unread reviews status correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
 
         var hasUnread = false
@@ -197,7 +200,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Refreshing reviews list handled correctly`() = test {
+    fun `Refreshing reviews list handled correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
 
@@ -214,7 +217,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Marking all reviews as read while offline handled correctly`() = test {
+    fun `Marking all reviews as read while offline handled correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: ShowSnackbar? = null
@@ -227,7 +230,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Notify UI that request to mark all as read was successful`() = test {
+    fun `Notify UI that request to mark all as read was successful`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).markAllProductReviewsAsRead()
 
@@ -246,7 +249,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Notify UI that request to mark all as read failed`() = test {
+    fun `Notify UI that request to mark all as read failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(RequestResult.ERROR).whenever(reviewListRepository).markAllProductReviewsAsRead()
 
