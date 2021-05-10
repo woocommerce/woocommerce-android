@@ -23,7 +23,9 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
-        viewModel.onRequestLocationPermissionsResult(isGranted)
+        (viewModel.event.value as? RequestLocationPermissions)?.let {
+            it.onPermissionsRequestResult.invoke(isGranted)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,11 +36,10 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     }
 
     private fun initObservers(binding: FragmentCardReaderConnectBinding) {
-        viewModel.event.observe(viewLifecycleOwner) {
-            when (it) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
                 is CheckLocationPermissions -> {
-                    val permissionsGranted = WooPermissionUtils.hasFineLocationPermission(requireContext())
-                    viewModel.onCheckLocationPermissionsResult(permissionsGranted)
+                    event.onPermissionsCheckResult(WooPermissionUtils.hasFineLocationPermission(requireContext()))
                 }
                 is RequestLocationPermissions -> {
                     WooPermissionUtils.requestFineLocationPermission(requestPermissionLauncher)
@@ -50,11 +51,11 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                     // TODO cardreader Inject CardReaderManager into the fragment
                     (requireActivity().application as? WooCommerce)?.cardReaderManager?.let {
                         it.initialize(requireActivity().application)
-                        viewModel.onCardReaderManagerInitialized(it)
+                        event.onCardManagerInitialized(it)
                     } ?: throw IllegalStateException("CardReaderManager is null.")
                 }
                 is Exit -> findNavController().navigateUp()
-                else -> it.isHandled = false
+                else -> event.isHandled = false
             }
         }
         viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->

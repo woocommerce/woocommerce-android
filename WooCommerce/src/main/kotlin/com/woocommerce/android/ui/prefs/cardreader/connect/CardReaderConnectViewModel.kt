@@ -47,18 +47,18 @@ class CardReaderConnectViewModel @Inject constructor(
     val viewStateData: LiveData<ViewState> = viewState
 
     init {
-        triggerEvent(CheckLocationPermissions)
+        triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
-    fun onCheckLocationPermissionsResult(granted: Boolean) {
+    private fun onCheckLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
         } else if (viewState.value !is MissingPermissionsError) {
-            triggerEvent(RequestLocationPermissions)
+            triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
         }
     }
 
-    fun onRequestLocationPermissionsResult(granted: Boolean) {
+    private fun onRequestLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
         } else {
@@ -69,7 +69,7 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
+    private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
         // TODO cardreader check location permissions
         viewModelScope.launch {
@@ -79,7 +79,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onLocationPermissionsVerified() {
         // TODO cardreader check if bluetooth is on
-        triggerEvent(InitializeCardReaderManager)
+        triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
     }
 
     private suspend fun startScanning() {
@@ -157,14 +157,19 @@ class CardReaderConnectViewModel @Inject constructor(
 
     fun onScreenResumed() {
         if (viewState.value is MissingPermissionsError) {
-            triggerEvent(CheckLocationPermissions)
+            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
         }
     }
 
     sealed class CardReaderConnectEvent : Event() {
-        object InitializeCardReaderManager : CardReaderConnectEvent()
-        object CheckLocationPermissions : CardReaderConnectEvent()
-        object RequestLocationPermissions : CardReaderConnectEvent()
+        data class InitializeCardReaderManager(val onCardManagerInitialized: (manager: CardReaderManager) -> Unit) :
+            CardReaderConnectEvent()
+
+        data class CheckLocationPermissions(val onPermissionsCheckResult: (Boolean) -> Unit) : CardReaderConnectEvent()
+
+        data class RequestLocationPermissions(val onPermissionsRequestResult: (Boolean) -> Unit) :
+            CardReaderConnectEvent()
+
         object OpenPermissionsSettings : CardReaderConnectEvent()
     }
 
