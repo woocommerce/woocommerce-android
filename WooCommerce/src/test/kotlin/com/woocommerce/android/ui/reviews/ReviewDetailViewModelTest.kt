@@ -18,18 +18,23 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 class ReviewDetailViewModelTest : BaseUnitTest() {
     companion object {
         const val REVIEW_ID = 1L
@@ -37,12 +42,13 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         const val PRODUCT_ID = 200L
     }
 
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
+
     private val networkStatus: NetworkStatus = mock()
     private val repository: ReviewDetailRepository = mock()
     private val savedState: SavedStateWithArgs = mock()
 
-    private val coroutineDispatchers = CoroutineDispatchers(
-            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
     private val notification = ProductReviewTestUtils.generateReviewNotification(NOTIF_ID)
@@ -54,7 +60,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         viewModel = spy(
                 ReviewDetailViewModel(
                         savedState,
-                        coroutineDispatchers,
+                        coroutinesTestRule.testDispatchers,
                         networkStatus,
                         repository
                 ))
@@ -63,7 +69,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Load the product review detail correctly`() = test {
+    fun `Load the product review detail correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(review).whenever(repository).getCachedProductReview(any())
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
@@ -88,7 +94,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Handle error in loading product review detail correctly`() = test {
+    fun `Handle error in loading product review detail correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(review).whenever(repository).getCachedProductReview(any())
         doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
@@ -123,7 +129,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
      * a review is processed successfully by the detail view.
      */
     @Test
-    fun `Handle successful review moderation correctly`() = test {
+    fun `Handle successful review moderation correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(review).whenever(repository).getCachedProductReview(any())
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchProductReview(any())
@@ -149,7 +155,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
      * be called.
      */
     @Test
-    fun `Handle review moderation failed due to offline correctly`() = test {
+    fun `Handle review moderation failed due to offline correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(false).whenever(networkStatus).isConnected()
 
         doReturn(review).whenever(repository).getCachedProductReview(any())
