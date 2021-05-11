@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -14,10 +13,10 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -35,8 +34,13 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
-    fun loadProductTypes(builder: ProductTypeBottomSheetBuilder) {
-        _productTypesBottomSheetList.value = builder.buildBottomSheetList().filter { it.isEnabled }
+    fun loadProductTypes() {
+        _productTypesBottomSheetList.value = if (navArgs.isAddProduct) {
+            ProductTypeBottomSheetBuilder().buildBottomSheetList()
+                .filter { it.isEnabledForAddFlow }
+        } else {
+            ProductTypeBottomSheetBuilder().buildBottomSheetList()
+        }
     }
 
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
@@ -53,7 +57,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
                 messageId = R.string.product_type_confirm_dialog_message,
                 positiveButtonId = R.string.product_type_confirm_button,
                 negativeButtonId = R.string.cancel,
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                positiveBtnAction = { _, _ ->
                     triggerEvent(ExitWithResult(productTypeUiItem))
                 }
             ))
@@ -71,7 +75,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int,
-        val isEnabled: Boolean,
+        val isEnabledForAddFlow: Boolean = true,
         val isVirtual: Boolean = false
     ) : Parcelable
 
