@@ -40,9 +40,9 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    dispatchers: CoroutineDispatchers,
+    private val dispatchers: CoroutineDispatchers,
     private val appLogWrapper: AppLogWrapper
-) : ScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private lateinit var cardReaderManager: CardReaderManager
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies

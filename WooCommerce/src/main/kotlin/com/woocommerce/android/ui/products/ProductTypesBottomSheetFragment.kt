@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -46,7 +45,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         return childInjector
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogProductDetailBottomSheetListBinding.inflate(inflater)
         return binding.root
     }
@@ -66,9 +65,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
 
         setupObservers()
 
-        val builder = getProductTypeListBuilder()
-
-        viewModel.loadProductTypes(builder = builder)
+        viewModel.loadProductTypes()
 
         binding.productDetailInfoLblTitle.text = getString(R.string.product_type_list_header)
         productTypesBottomSheetAdapter = ProductTypesBottomSheetAdapter(
@@ -81,11 +78,11 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
     }
 
     private fun setupObservers() {
-        viewModel.productTypesBottomSheetList.observe(viewLifecycleOwner, Observer {
+        viewModel.productTypesBottomSheetList.observe(viewLifecycleOwner, {
             showProductTypeOptions(it)
         })
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
                 is Exit -> {
                     dismiss()
@@ -118,13 +115,6 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         productTypeOptions: List<ProductTypesBottomSheetUiItem>
     ) {
         productTypesBottomSheetAdapter.setProductTypeOptions(productTypeOptions)
-    }
-
-    private fun getProductTypeListBuilder(): ProductTypeBottomSheetBuilder {
-        return when (navArgs.isAddProduct) {
-            true -> ProductAddTypeBottomSheetBuilder()
-            else -> ProductDetailTypeBottomSheetBuilder()
-        }
     }
 
     private fun navigateWithSelectedResult(productTypesBottomSheetUiItem: ProductTypesBottomSheetUiItem) {
