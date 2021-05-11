@@ -16,14 +16,12 @@ import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewMo
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize.LABEL
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize.LETTER
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -41,8 +39,6 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     private val repository: ShippingLabelRepository = mock()
     private val networkStatus: NetworkStatus = mock()
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val savedState: SavedStateWithArgs = SavedStateWithArgs(
             SavedStateHandle(),
             null,

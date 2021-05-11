@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
-import com.woocommerce.android.util.CoroutineTestRule
+import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
@@ -30,11 +30,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class ShippingLabelsStateMachineTest {
+class ShippingLabelsStateMachineTest : BaseUnitTest() {
     private lateinit var stateMachine: ShippingLabelsStateMachine
 
     private val order = OrderTestUtils.generateOrder().toAppModel()
@@ -51,9 +50,6 @@ class ShippingLabelsStateMachineTest {
             paymentsStep = PaymentsStep(NOT_READY, null)
         )
     )
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     @Before
     fun stateMachine() {

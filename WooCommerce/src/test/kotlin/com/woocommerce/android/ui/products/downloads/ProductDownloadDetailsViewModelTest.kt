@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewM
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -17,7 +16,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -35,9 +33,6 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         null,
         ProductDownloadDetailsFragmentArgs(isEditing = false, productFile = file.copy(id = null))
     )
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private val resourceProvider: ResourceProvider = mock() {
         on { getString(R.string.product_downloadable_files_edit_title) } doReturn "file"
