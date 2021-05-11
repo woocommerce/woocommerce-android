@@ -12,7 +12,6 @@ import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.PaymentMethodUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.ViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -21,7 +20,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -49,9 +47,6 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         ),
         isEmailReceiptEnabled = true
     )
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private lateinit var viewModel: EditShippingLabelPaymentViewModel
 

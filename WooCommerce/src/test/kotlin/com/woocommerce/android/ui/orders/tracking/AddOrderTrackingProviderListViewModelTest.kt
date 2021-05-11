@@ -11,7 +11,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModel.ViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -21,7 +20,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -29,9 +27,6 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
     }
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val shipmentProvidersRepository: OrderShipmentProvidersRepository = mock()
