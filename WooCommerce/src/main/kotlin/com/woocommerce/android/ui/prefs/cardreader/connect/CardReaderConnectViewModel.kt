@@ -49,7 +49,7 @@ class CardReaderConnectViewModel @Inject constructor(
     fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
         // TODO cardreader check location permissions
-        viewModelScope.launch {
+        launch {
             startScanning()
         }
     }
@@ -101,7 +101,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelScanningClicked)
-        viewModelScope.launch {
+        launch {
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
                 onReaderConnected()
