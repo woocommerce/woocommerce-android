@@ -40,7 +40,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val reader = mock<CardReader>().also { whenever(it.getId()).thenReturn("dummy id") }
 
     @Before
-    fun setUp() = runBlockingTest {
+    fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
         viewModel = CardReaderConnectViewModel(
             SavedStateHandle(),
             coroutinesTestRule.testDispatchers,
