@@ -363,7 +363,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
-    }
+        }
 
     @Test
     fun `when collecting payment, then correct labels and illustration is shown`() =
@@ -377,13 +377,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_header)
-            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_state)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
-    }
+        }
 
     @Test
     fun `when processing payment, then progress and buttons are hidden`() =
@@ -398,7 +399,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
-    }
+        }
 
     @Test
     fun `when processing payment, then correct labels and illustration is shown`() =
@@ -412,13 +413,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_header)
-            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_state)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_hint)
-    }
+        }
 
     @Test
     fun `when capturing payment, then progress and buttons are hidden`() =
@@ -433,7 +435,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
-    }
+        }
 
     @Test
     fun `when capturing payment, then correct labels and illustration is shown`() =
@@ -447,13 +449,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_header)
-            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_state)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_hint)
-    }
+        }
 
     @Test
     fun `when payment fails, then progress and secondary button are hidden`() =
@@ -467,7 +470,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
-    }
+        }
 
     @Test
     fun `when payment fails, then correct labels, illustration and button are shown`() =
@@ -481,13 +484,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_payment_failed_header)
-            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isEqualTo(R.string.retry)
-    }
+        }
 
     @Test
     fun `when payment succeeds, then correct labels, illustration and buttons are shown`() =
@@ -501,7 +505,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_completed_payment_header)
-            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_celebration)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
@@ -509,7 +514,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_payment_print_receipt)
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
                 .isEqualTo(R.string.card_reader_payment_send_receipt)
-    }
+        }
 
     @Test
     fun `given payment flow already started, when start() is invoked, then flow is not restarted`() =
