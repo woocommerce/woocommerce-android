@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
@@ -140,6 +141,52 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.event.value).isNotInstanceOf(RequestLocationPermissions::class.java)
         }
+
+    @Test
+    fun `given location disabled, when connection flow started, then location disabled error shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(LocationDisabledError::class.java)
+        }
+
+    @Test
+    fun `given location enabled, when connection flow started, then check bluetooth emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+
+            assertThat(viewModel.event.value).isInstanceOf(CheckBluetoothEnabled::class.java)
+        }
+
+    @Test
+    fun `when user clicks on open location settings, then openLocationSettings emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
+
+            (viewModel.viewStateData.value as? LocationDisabledError)?.let {
+                it.onPrimaryActionClicked.invoke()
+            }
+
+            assertThat(viewModel.event.value).isInstanceOf(OpenLocationSettings::class.java)
+        }
+
+    @Test
+    fun `when location settings closed, then checkLocationEnabled emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
+            (viewModel.viewStateData.value as? LocationDisabledError)?.let {
+                it.onPrimaryActionClicked.invoke()
+            }
+
+            (viewModel.event.value as OpenLocationSettings).onLocationSettingsClosed()
+
+            assertThat(viewModel.event.value).isInstanceOf(CheckLocationEnabled::class.java)
+        }
+
 
     @Test
     fun `given bluetooth disabled, when connection flow started, then enable-bluetooth request emitted`() =
