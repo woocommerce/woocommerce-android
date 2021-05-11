@@ -187,7 +187,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.event.value).isInstanceOf(CheckLocationEnabled::class.java)
         }
 
-
     @Test
     fun `given bluetooth disabled, when connection flow started, then enable-bluetooth request emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
