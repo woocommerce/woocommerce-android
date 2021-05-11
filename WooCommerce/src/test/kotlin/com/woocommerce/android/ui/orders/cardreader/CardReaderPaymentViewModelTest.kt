@@ -30,18 +30,14 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.TestDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -57,9 +53,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         private const val ORDER_IDENTIFIER = "1-1-1"
     }
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
     private lateinit var viewModel: CardReaderPaymentViewModel
     private val loggerWrapper: AppLogWrapper = mock()
     private val orderStore: WCOrderStore = mock()
@@ -74,10 +67,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     )
 
     @Before
-    fun setUp() = runBlockingTest {
+    fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
         viewModel = CardReaderPaymentViewModel(
             savedState,
-            dispatchers = CoroutineDispatchers(TestDispatcher, TestDispatcher, TestDispatcher),
+            dispatchers = coroutinesTestRule.testDispatchers,
             logger = loggerWrapper,
             orderStore = orderStore
         )
@@ -122,118 +115,128 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when initializing payment, then ui updated to initializing payment state `() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(InitializingPayment) }
+    fun `when initializing payment, then ui updated to initializing payment state `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(InitializingPayment) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(LoadingDataState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(LoadingDataState::class.java)
-    }
 
     @Test
-    fun `when collecting payment, then ui updated to collecting payment state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CollectingPayment) }
+    fun `when collecting payment, then ui updated to collecting payment state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(CollectPaymentState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(CollectPaymentState::class.java)
-    }
 
     @Test
-    fun `when processing payment, then ui updated to processing payment state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(ProcessingPayment) }
+    fun `when processing payment, then ui updated to processing payment state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(ProcessingPayment) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingPaymentState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingPaymentState::class.java)
-    }
 
     @Test
-    fun `when capturing payment, then ui updated to capturing payment state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CapturingPayment) }
+    fun `when capturing payment, then ui updated to capturing payment state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CapturingPayment) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(CapturingPaymentState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(CapturingPaymentState::class.java)
-    }
 
     @Test
-    fun `when payment completed, then ui updated to payment successful state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(PaymentCompleted) }
+    fun `when payment completed, then ui updated to payment successful state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(PaymentCompleted) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
-    }
 
     @Test
-    fun `when initializing payment fails, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(InitializingPaymentFailed) }
+    fun `when initializing payment fails, then ui updated to failed state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(InitializingPaymentFailed) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
 
     @Test
-    fun `when collecting payment fails, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CollectingPaymentFailed(mock())) }
+    fun `when collecting payment fails, then ui updated to failed state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CollectingPaymentFailed(mock())) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
 
     @Test
-    fun `when processing payment fails, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(ProcessingPaymentFailed(mock())) }
+    fun `when processing payment fails, then ui updated to failed state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(ProcessingPaymentFailed(mock())) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
 
     @Test
-    fun `when capturing payment fails, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CapturingPaymentFailed(mock())) }
+    fun `when capturing payment fails, then ui updated to failed state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CapturingPaymentFailed(mock())) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
 
     @Test
-    fun `when unexpected error occurs during payment flow, then ui updated to failed state`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(UnexpectedError("")) }
+    fun `when unexpected error occurs during payment flow, then ui updated to failed state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(UnexpectedError("")) }
+            }
+
+            viewModel.start(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
-
-        viewModel.start(cardReaderManager)
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
 
     @Test
     fun `given user clicks on retry, when payment initialization fails, then flow restarted from scratch`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.InitializingPaymentFailed) }
             }
@@ -247,20 +250,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user clicks on retry, when payment collection fails, then retryCollectPayment invoked`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CollectingPaymentFailed(mock())) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
         }
 
     @Test
     fun `given user clicks on retry, when payment collection fails, then flow retried with provided PaymentData`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             val paymentData = mock<PaymentData>()
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CollectingPaymentFailed(paymentData)) }
@@ -268,26 +272,28 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
         }
 
     @Test
     fun `given user clicks on retry, when payment processing fails, then retryCollectPayment invoked`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.ProcessingPaymentFailed(mock())) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
         }
 
     @Test
     fun `given user clicks on retry, when payment processing fails, then flow retried with provided PaymentData`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             val paymentData = mock<PaymentData>()
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.ProcessingPaymentFailed(paymentData)) }
@@ -295,26 +301,28 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
         }
 
     @Test
     fun `given user clicks on retry, when capturing payment fails, then retryCollectPayment invoked`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CapturingPaymentFailed(mock())) }
             }
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
         }
 
     @Test
     fun `given user clicks on retry, when capturing payment fails then flow retried with provided PaymentData`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             val paymentData = mock<PaymentData>()
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CapturingPaymentFailed(paymentData)) }
@@ -322,12 +330,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
         }
 
     @Test
-    fun `when loading data, then only progress is visible`() = runBlockingTest {
+    fun `when loading data, then only progress is visible`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         viewModel.start(cardReaderManager)
         val viewState = viewModel.viewStateData.value!!
 
@@ -342,166 +351,182 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when collecting payment, then progress and buttons are hidden`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CollectingPayment) }
-        }
+    fun `when collecting payment, then progress and buttons are hidden`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
-        assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
-        assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
     }
 
     @Test
-    fun `when collecting payment, then correct labels and illustration is shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CollectingPayment) }
-        }
+    fun `when collecting payment, then correct labels and illustration is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.headerLabel).describedAs("headerLabel")
-            .isEqualTo(R.string.card_reader_payment_collect_payment_header)
-        assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
-        assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
-        assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-            .isEqualTo(R.string.card_reader_payment_collect_payment_state)
-        assertThat(viewState.hintLabel).describedAs("hintLabel")
-            .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_collect_payment_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_collect_payment_state)
+            assertThat(viewState.hintLabel).describedAs("hintLabel")
+                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
     }
 
     @Test
-    fun `when processing payment, then progress and buttons are hidden`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(ProcessingPayment) }
-        }
+    fun `when processing payment, then progress and buttons are hidden`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(ProcessingPayment) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
-        assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
-        assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
     }
 
     @Test
-    fun `when processing payment, then correct labels and illustration is shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(ProcessingPayment) }
-        }
+    fun `when processing payment, then correct labels and illustration is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(ProcessingPayment) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.headerLabel).describedAs("headerLabel")
-            .isEqualTo(R.string.card_reader_payment_processing_payment_header)
-        assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
-        assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
-        assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-            .isEqualTo(R.string.card_reader_payment_processing_payment_state)
-        assertThat(viewState.hintLabel).describedAs("hintLabel")
-            .isEqualTo(R.string.card_reader_payment_processing_payment_hint)
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_processing_payment_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_processing_payment_state)
+            assertThat(viewState.hintLabel).describedAs("hintLabel")
+                .isEqualTo(R.string.card_reader_payment_processing_payment_hint)
     }
 
     @Test
-    fun `when capturing payment, then progress and buttons are hidden`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CapturingPayment) }
-        }
+    fun `when capturing payment, then progress and buttons are hidden`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CapturingPayment) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
-        assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
-        assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
     }
 
     @Test
-    fun `when capturing payment, then correct labels and illustration is shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CapturingPayment) }
-        }
+    fun `when capturing payment, then correct labels and illustration is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CapturingPayment) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.headerLabel).describedAs("headerLabel")
-            .isEqualTo(R.string.card_reader_payment_capturing_payment_header)
-        assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
-        assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
-        assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-            .isEqualTo(R.string.card_reader_payment_capturing_payment_state)
-        assertThat(viewState.hintLabel).describedAs("hintLabel")
-            .isEqualTo(R.string.card_reader_payment_capturing_payment_hint)
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_capturing_payment_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_capturing_payment_state)
+            assertThat(viewState.hintLabel).describedAs("hintLabel")
+                .isEqualTo(R.string.card_reader_payment_capturing_payment_hint)
     }
 
     @Test
-    fun `when payment fails, then progress and secondary button are hidden`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CollectingPaymentFailed(mock())) }
-        }
+    fun `when payment fails, then progress and secondary button are hidden`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CollectingPaymentFailed(mock())) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
-        assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
     }
 
     @Test
-    fun `when payment fails, then correct labels, illustration and button are shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(CollectingPaymentFailed(mock())) }
-        }
+    fun `when payment fails, then correct labels, illustration and button are shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(CollectingPaymentFailed(mock())) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.headerLabel).describedAs("headerLabel")
-            .isEqualTo(R.string.card_reader_payment_payment_failed_header)
-        assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
-        assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
-        assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-            .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
-        assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
-        assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isEqualTo(R.string.retry)
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_payment_failed_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isEqualTo(R.string.retry)
     }
 
     @Test
-    fun `when payment succeeds, then correct labels, illustration and buttons are shown`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-            flow { emit(PaymentCompleted) }
-        }
+    fun `when payment succeeds, then correct labels, illustration and buttons are shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(PaymentCompleted) }
+            }
 
-        viewModel.start(cardReaderManager)
-        val viewState = viewModel.viewStateData.value!!
+            viewModel.start(cardReaderManager)
+            val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.headerLabel).describedAs("headerLabel")
-            .isEqualTo(R.string.card_reader_payment_completed_payment_header)
-        assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
-        assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_celebration)
-        assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
-        assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
-        assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
-            .isEqualTo(R.string.card_reader_payment_print_receipt)
-        assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
-            .isEqualTo(R.string.card_reader_payment_send_receipt)
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_completed_payment_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isEqualTo("$$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_celebration)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_print_receipt)
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_send_receipt)
     }
 
     @Test
-    fun `given payment flow already started, when start() is invoked, then flow is not restarted`() = runBlockingTest {
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer { flow<CardPaymentStatus> {} }
+    fun `given payment flow already started, when start() is invoked, then flow is not restarted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(
+                cardReaderManager.collectPayment(
+                    any(),
+                    any(),
+                    anyString()
+                )
+            ).thenAnswer { flow<CardPaymentStatus> {} }
 
-        viewModel.start(cardReaderManager)
-        viewModel.start(cardReaderManager)
-        viewModel.start(cardReaderManager)
-        viewModel.start(cardReaderManager)
+            viewModel.start(cardReaderManager)
+            viewModel.start(cardReaderManager)
+            viewModel.start(cardReaderManager)
+            viewModel.start(cardReaderManager)
 
-        verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyOrNull(), anyString())
-    }
+            verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyOrNull(), anyString())
+        }
 }
