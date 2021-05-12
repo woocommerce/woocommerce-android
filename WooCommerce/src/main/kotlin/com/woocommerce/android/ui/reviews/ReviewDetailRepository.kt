@@ -6,11 +6,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toProductReviewProductModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.model.RequestResult.ERROR
-import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -36,8 +39,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 
 class ReviewDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -53,8 +54,8 @@ class ReviewDetailRepository @Inject constructor(
     private var remoteProductId: Long = 0L
     private var localNoteId: Int = 0
 
-    private var continuationReview: Continuation<Boolean>? = null
-    private var continuationProduct: Continuation<Boolean>? = null
+    private var continuationReview = ContinuationWrapper<Boolean>(REVIEWS)
+    private var continuationProduct = ContinuationWrapper<Boolean>(REVIEWS)
 
     init {
         dispatcher.register(this)
@@ -87,8 +88,8 @@ class ReviewDetailRepository @Inject constructor(
     suspend fun getCachedNotificationForReview(remoteReviewId: Long): NotificationModel? {
         return withContext(Dispatchers.IO) {
             notificationStore.getNotificationsForSite(
-                    site = selectedSite.get(),
-                    filterBySubtype = listOf(STORE_REVIEW.toString())
+                site = selectedSite.get(),
+                filterBySubtype = listOf(STORE_REVIEW.toString())
             ).firstOrNull { it.getCommentId() == remoteReviewId }
         }
     }
@@ -103,9 +104,12 @@ class ReviewDetailRepository @Inject constructor(
                     val payload = MarkNotificationsReadPayload(listOf(notification))
                     dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
 
-                    AnalyticsTracker.track(Stat.REVIEW_MARK_READ, mapOf(
-                            AnalyticsTracker.KEY_ID to remoteReviewId,
-                            AnalyticsTracker.KEY_NOTE_ID to notification.remoteNoteId))
+                    AnalyticsTracker.track(
+                        Stat.REVIEW_MARK_READ, mapOf(
+                        AnalyticsTracker.KEY_ID to remoteReviewId,
+                        AnalyticsTracker.KEY_NOTE_ID to notification.remoteNoteId
+                    )
+                    )
                 }
             } catch (e: CancellationException) {
                 WooLog.e(REVIEWS, "Exception encountered while marking notification as read", e)
@@ -115,30 +119,24 @@ class ReviewDetailRepository @Inject constructor(
 
     private suspend fun fetchProductByRemoteId(remoteProductId: Long): Boolean {
         this.remoteProductId = remoteProductId
-        return try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationProduct = it
-
-                val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
-            } ?: false // Timed out
-        } catch (e: CancellationException) {
-            WooLog.e(REVIEWS, "Exception encountered while fetching a single product", e)
-            false
+        val result = continuationProduct.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+        }
+        return when (result) {
+            is Cancellation -> false
+            is Success -> result.value
         }
     }
 
     private suspend fun fetchProductReviewFromApi(remoteId: Long): Boolean {
-        return try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationReview = it
-
-                val payload = WCProductStore.FetchSingleProductReviewPayload(selectedSite.get(), remoteId)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductReviewAction(payload))
-            } ?: false // Timed out
-        } catch (e: CancellationException) {
-            WooLog.e(REVIEWS, "Exception encountered while fetching a single product review", e)
-            false
+        val result = continuationReview.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = WCProductStore.FetchSingleProductReviewPayload(selectedSite.get(), remoteId)
+            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductReviewAction(payload))
+        }
+        return when (result) {
+            is Cancellation -> false
+            is Success -> result.value
         }
     }
 
@@ -158,21 +156,25 @@ class ReviewDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductReviewChanged(event: OnProductReviewChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT_REVIEW) {
-            continuationReview?.let {
+            if (continuationReview.isWaiting) {
                 if (event.isError) {
-                    AnalyticsTracker.track(Stat.REVIEW_LOAD_FAILED, mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    AnalyticsTracker.track(
+                        Stat.REVIEW_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                    )
 
-                    WooLog.e(REVIEWS, "Error fetching product review: " +
-                            "${event.error?.type} - ${event.error?.message}")
-                    it.resume(false)
+                    WooLog.e(
+                        REVIEWS, "Error fetching product review: " +
+                        "${event.error?.type} - ${event.error?.message}"
+                    )
+                    continuationReview.continueWith(false)
                 } else {
                     AnalyticsTracker.track(Stat.REVIEW_LOADED, mapOf(AnalyticsTracker.KEY_ID to remoteReviewId))
-                    it.resume(true)
+                    continuationReview.continueWith(true)
                 }
-                continuationReview = null
             }
         }
     }
@@ -181,23 +183,30 @@ class ReviewDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
-            continuationProduct?.let {
+            if (continuationReview.isWaiting) {
                 if (event.isError) {
-                    AnalyticsTracker.track(Stat.REVIEW_PRODUCT_LOAD_FAILED, mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    AnalyticsTracker.track(
+                        Stat.REVIEW_PRODUCT_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                    )
 
-                    WooLog.e(REVIEWS, "Error fetching matching product for product review: " +
-                            "${event.error?.type} - ${event.error?.message}")
-                    it.resume(false)
+                    WooLog.e(
+                        REVIEWS, "Error fetching matching product for product review: " +
+                        "${event.error?.type} - ${event.error?.message}"
+                    )
+                    continuationProduct.continueWith(false)
                 } else {
-                    AnalyticsTracker.track(Stat.REVIEW_PRODUCT_LOADED, mapOf(
-                            AnalyticsTracker.KEY_ID to remoteProductId,
-                            AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId))
-                    it.resume(true)
+                    AnalyticsTracker.track(
+                        Stat.REVIEW_PRODUCT_LOADED, mapOf(
+                        AnalyticsTracker.KEY_ID to remoteProductId,
+                        AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId
+                    )
+                    )
+                    continuationProduct.continueWith(true)
                 }
-                continuationProduct = null
             }
         }
     }
@@ -210,13 +219,18 @@ class ReviewDetailRepository @Inject constructor(
             // one who submitted the request.
             if (event.changedNotificationLocalIds.contains(localNoteId)) {
                 if (event.isError) {
-                    AnalyticsTracker.track(Stat.REVIEW_MARK_READ_FAILED, mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    AnalyticsTracker.track(
+                        Stat.REVIEW_MARK_READ_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                    )
 
-                    WooLog.e(REVIEWS, "$TAG - Error marking review notification as read: " +
-                            "${event.error?.type} - ${event.error?.message}")
+                    WooLog.e(
+                        REVIEWS, "$TAG - Error marking review notification as read: " +
+                        "${event.error?.type} - ${event.error?.message}"
+                    )
                 } else {
                     AnalyticsTracker.track(Stat.REVIEW_MARK_READ_SUCCESS)
                 }

@@ -4,11 +4,8 @@ import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
-import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -18,9 +15,8 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductShippingClassListPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
-class ProductShippingClassRepository@Inject constructor(
+class ProductShippingClassRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
@@ -29,10 +25,10 @@ class ProductShippingClassRepository@Inject constructor(
         private const val SHIPPING_CLASS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_SHIPPING_CLASS_PAGE_SIZE
     }
 
-    private var continuationShippingClasses: CancellableContinuation<Boolean>? = null
+    private var continuationShippingClasses = ContinuationWrapper<Boolean>(PRODUCTS)
 
     private var shippingClassOffset = 0
-    final var canLoadMoreShippingClasses = true
+    var canLoadMoreShippingClasses = true
         private set
 
     init {
@@ -47,27 +43,20 @@ class ProductShippingClassRepository@Inject constructor(
      * Fetches the list of shipping classes for the [selectedSite], optionally loading the next page of classes
      */
     suspend fun fetchShippingClassesForSite(loadMore: Boolean = false): List<ShippingClass> {
-        try {
-            continuationShippingClasses?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationShippingClasses = it
-                shippingClassOffset = if (loadMore) {
-                    shippingClassOffset + SHIPPING_CLASS_PAGE_SIZE
-                } else {
-                    0
-                }
-                val payload = FetchProductShippingClassListPayload(
-                        selectedSite.get(),
-                        pageSize = SHIPPING_CLASS_PAGE_SIZE,
-                        offset = shippingClassOffset
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductShippingClassListAction(payload))
+        continuationShippingClasses.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            shippingClassOffset = if (loadMore) {
+                shippingClassOffset + SHIPPING_CLASS_PAGE_SIZE
+            } else {
+                0
             }
-        } catch (e: CancellationException) {
-            WooLog.d(PRODUCTS, "CancellationException while fetching product shipping classes")
+            val payload = FetchProductShippingClassListPayload(
+                selectedSite.get(),
+                pageSize = SHIPPING_CLASS_PAGE_SIZE,
+                offset = shippingClassOffset
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductShippingClassListAction(payload))
         }
 
-        continuationShippingClasses = null
         return getProductShippingClassesForSite()
     }
 
@@ -75,7 +64,7 @@ class ProductShippingClassRepository@Inject constructor(
      * Returns a list of cached (SQLite) shipping classes for the current site
      */
     fun getProductShippingClassesForSite(): List<ShippingClass> =
-            productStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
+        productStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     /**
      * The list of shipping classes has been fetched for the current site
@@ -86,9 +75,9 @@ class ProductShippingClassRepository@Inject constructor(
         if (event.causeOfChange == FETCH_PRODUCT_SHIPPING_CLASS_LIST) {
             canLoadMoreShippingClasses = event.canLoadMore
             if (event.isError) {
-                continuationShippingClasses?.resume(false)
+                continuationShippingClasses.continueWith(false)
             } else {
-                continuationShippingClasses?.resume(true)
+                continuationShippingClasses.continueWith(true)
             }
         }
     }
