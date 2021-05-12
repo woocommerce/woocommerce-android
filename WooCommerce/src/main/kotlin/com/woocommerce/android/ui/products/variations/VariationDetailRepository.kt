@@ -12,6 +12,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -109,12 +110,16 @@ class VariationDetailRepository @Inject constructor(
         if (event.causeOfChange == FETCH_SINGLE_VARIATION &&
             event.remoteProductId == remoteProductId &&
             event.remoteVariationId == remoteVariationId) {
-            if (event.isError) {
-                lastFetchVariationErrorType = event.error?.type
-                continuationFetchVariation.continueWith(false)
+            if (continuationFetchVariation.isWaiting) {
+                if (event.isError) {
+                    lastFetchVariationErrorType = event.error?.type
+                    continuationFetchVariation.continueWith(false)
+                } else {
+                    AnalyticsTracker.track(PRODUCT_VARIATION_LOADED)
+                    continuationFetchVariation.continueWith(true)
+                }
             } else {
-                AnalyticsTracker.track(PRODUCT_VARIATION_LOADED)
-                continuationFetchVariation.continueWith(true)
+                WooLog.w(PRODUCTS, "continuationFetchVariation is no longer active")
             }
         }
     }

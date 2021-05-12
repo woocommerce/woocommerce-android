@@ -375,23 +375,25 @@ class ReviewListRepository @Inject constructor(
         } else if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
             // Since this can be called from other places, only process this event if we were the
             // one who submitted the request.
-            if (event.isError) {
-                AnalyticsTracker.track(
-                    Stat.REVIEWS_MARK_ALL_READ_FAILED, mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                )
-                )
+            if (continuationMarkAllRead.isWaiting) {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.REVIEWS_MARK_ALL_READ_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                    )
 
-                WooLog.e(
-                    REVIEWS, "Error marking all reviews as read: " +
-                    "${event.error?.type} - ${event.error?.message}"
-                )
-                continuationMarkAllRead.continueWith(ERROR)
-            } else {
-                AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
-                continuationMarkAllRead.continueWith(SUCCESS)
+                    WooLog.e(
+                        REVIEWS, "Error marking all reviews as read: " +
+                        "${event.error?.type} - ${event.error?.message}"
+                    )
+                    continuationMarkAllRead.continueWith(ERROR)
+                } else {
+                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
+                    continuationMarkAllRead.continueWith(SUCCESS)
+                }
             }
         }
     }

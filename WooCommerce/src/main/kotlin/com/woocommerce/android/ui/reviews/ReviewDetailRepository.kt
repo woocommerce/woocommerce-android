@@ -156,23 +156,25 @@ class ReviewDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductReviewChanged(event: OnProductReviewChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT_REVIEW) {
-            if (event.isError) {
-                AnalyticsTracker.track(
-                    Stat.REVIEW_LOAD_FAILED, mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                )
-                )
+            if (continuationReview.isWaiting) {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.REVIEW_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                    )
 
-                WooLog.e(
-                    REVIEWS, "Error fetching product review: " +
-                    "${event.error?.type} - ${event.error?.message}"
-                )
-                continuationReview.continueWith(false)
-            } else {
-                AnalyticsTracker.track(Stat.REVIEW_LOADED, mapOf(AnalyticsTracker.KEY_ID to remoteReviewId))
-                continuationReview.continueWith(true)
+                    WooLog.e(
+                        REVIEWS, "Error fetching product review: " +
+                        "${event.error?.type} - ${event.error?.message}"
+                    )
+                    continuationReview.continueWith(false)
+                } else {
+                    AnalyticsTracker.track(Stat.REVIEW_LOADED, mapOf(AnalyticsTracker.KEY_ID to remoteReviewId))
+                    continuationReview.continueWith(true)
+                }
             }
         }
     }
@@ -181,28 +183,30 @@ class ReviewDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
-            if (event.isError) {
-                AnalyticsTracker.track(
-                    Stat.REVIEW_PRODUCT_LOAD_FAILED, mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                )
-                )
+            if (continuationReview.isWaiting) {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.REVIEW_PRODUCT_LOAD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                    )
 
-                WooLog.e(
-                    REVIEWS, "Error fetching matching product for product review: " +
-                    "${event.error?.type} - ${event.error?.message}"
-                )
-                continuationProduct.continueWith(false)
-            } else {
-                AnalyticsTracker.track(
-                    Stat.REVIEW_PRODUCT_LOADED, mapOf(
-                    AnalyticsTracker.KEY_ID to remoteProductId,
-                    AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId
-                )
-                )
-                continuationProduct.continueWith(true)
+                    WooLog.e(
+                        REVIEWS, "Error fetching matching product for product review: " +
+                        "${event.error?.type} - ${event.error?.message}"
+                    )
+                    continuationProduct.continueWith(false)
+                } else {
+                    AnalyticsTracker.track(
+                        Stat.REVIEW_PRODUCT_LOADED, mapOf(
+                        AnalyticsTracker.KEY_ID to remoteProductId,
+                        AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId
+                    )
+                    )
+                    continuationProduct.continueWith(true)
+                }
             }
         }
     }
