@@ -9,8 +9,12 @@ import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -36,7 +40,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val reader = mock<CardReader>().also { whenever(it.getId()).thenReturn("dummy id") }
 
     @Before
-    fun setUp() = runBlockingTest {
+    fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
         viewModel = CardReaderConnectViewModel(
             SavedStateHandle(),
             coroutinesTestRule.testDispatchers,
@@ -45,9 +49,90 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when vm initialized, then initialize cardReaderManager request emitted`() {
-        assertThat(viewModel.event.value).isEqualTo(InitializeCardReaderManager)
-    }
+    fun `when vm initilized, then location permissions check requested`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            assertThat(viewModel.event.value).isInstanceOf(CheckLocationPermissions::class.java)
+        }
+
+    @Test
+    fun `given permissions enabled, when connection flow started, then initialize cardReaderManager request emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+
+            assertThat(viewModel.event.value).isInstanceOf(InitializeCardReaderManager::class.java)
+        }
+
+    @Test
+    fun `given permissions not enabled, when connection flow started, then permissions requested`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+
+            assertThat(viewModel.event.value).isInstanceOf(RequestLocationPermissions::class.java)
+        }
+
+    @Test
+    fun `given permissions granted, when permissions requested, then initialize cardReaderManager request emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+
+            (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(true)
+
+            assertThat(viewModel.event.value).isInstanceOf(InitializeCardReaderManager::class.java)
+        }
+
+    @Test
+    fun `given permissions not granted, when permissions requested, then missing permissions error shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+
+            (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingPermissionsError::class.java)
+        }
+
+    @Test
+    fun `when Open app settings button clicked, then user redirect to app settings`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
+
+            (viewModel.viewStateData.value as MissingPermissionsError).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(OpenPermissionsSettings::class.java)
+        }
+
+    @Test
+    fun `given app on missing permissions error screen, when apps comes to foreground, then permissions re-checked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
+
+            viewModel.onScreenResumed()
+
+            assertThat(viewModel.event.value).isInstanceOf(CheckLocationPermissions::class.java)
+        }
+
+    @Test
+    fun `given NOT on missing permissions screen, when apps comes to foreground, then permissions not re-checked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+
+            viewModel.onScreenResumed()
+
+            assertThat(viewModel.event.value).isNotInstanceOf(CheckLocationPermissions::class.java)
+        }
+
+    @Test
+    fun `given app on missing permissions, when apps comes to foreground, then permissions not requested`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
+            viewModel.onScreenResumed()
+
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+
+            assertThat(viewModel.event.value).isNotInstanceOf(RequestLocationPermissions::class.java)
+        }
 
     @Test
     fun `when cardReaderManager gets initilized, then scan is started`() =
@@ -62,7 +147,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(readersFound = false)
 
-            viewModel.onCardReaderManagerInitialized(cardReaderManager)
+        (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
         }
@@ -72,7 +157,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(readersFound = true)
 
-            viewModel.onCardReaderManagerInitialized(cardReaderManager)
+        (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
         }
@@ -231,6 +316,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             }
         }
         whenever(cardReaderManager.connectToReader(reader)).thenReturn(connectingSucceeds)
-        viewModel.onCardReaderManagerInitialized(cardReaderManager)
+        (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+        (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
     }
 }
