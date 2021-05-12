@@ -15,18 +15,12 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_payment), HasAndroidInjector {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
-    val viewModel: CardReaderPaymentViewModel by viewModels { viewModelFactory }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
+@AndroidEntryPoint
+class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_payment) {
+    val viewModel: CardReaderPaymentViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,6 +55,4 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
             }
         })
     }
-
-    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 }
