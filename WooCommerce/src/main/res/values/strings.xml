@@ -615,6 +615,9 @@
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
+    <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
+    <string name="card_reader_payment_failed_card_declined_state">Card declined. Please retry with a different card.</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
