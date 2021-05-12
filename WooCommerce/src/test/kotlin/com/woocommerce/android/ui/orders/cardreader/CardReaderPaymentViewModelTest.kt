@@ -388,7 +388,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment fails with no network error, then correct paymentStateLabel is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-                flow { emit(PaymentFailed(NO_NETWORK, null,"")) }
+                flow { emit(PaymentFailed(NO_NETWORK, null, "")) }
             }
 
             viewModel.start(cardReaderManager)
@@ -402,7 +402,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment fails with payment declined error, then correct paymentStateLabel is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-                flow { emit(PaymentFailed(PAYMENT_DECLINED, null,"")) }
+                flow { emit(PaymentFailed(PAYMENT_DECLINED, null, "")) }
             }
 
             viewModel.start(cardReaderManager)
