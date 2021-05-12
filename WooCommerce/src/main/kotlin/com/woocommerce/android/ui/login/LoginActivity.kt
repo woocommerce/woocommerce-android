@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDR
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.UrlUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -70,6 +71,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject internal lateinit var urlUtils: UrlUtils
 
     private var loginMode: LoginMode? = null
 
@@ -554,7 +556,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onTermsOfServiceClicked() {
-        // TODO: Signup
+        ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale)
     }
 
     //  -- END: LoginListener implementation methods
