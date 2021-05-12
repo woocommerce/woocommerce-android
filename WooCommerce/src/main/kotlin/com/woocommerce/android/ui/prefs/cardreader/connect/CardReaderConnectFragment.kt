@@ -72,7 +72,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                     WooPermissionUtils.requestFineLocationPermission(requestPermissionLauncher)
                 }
                 is OpenPermissionsSettings -> {
-                    WooPermissionUtils.showAppSettings(requireContext())
+                    WooPermissionUtils.showAppSettings(requireContext(), openInNewStack = false)
                 }
                 is CheckLocationEnabled -> {
                     event.onLocationEnabledCheckResult(locationUtils.isLocationEnabled())

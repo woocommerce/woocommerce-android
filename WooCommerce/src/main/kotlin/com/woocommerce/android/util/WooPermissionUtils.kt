@@ -163,12 +163,14 @@ object WooPermissionUtils {
     /*
      * open the device's settings page for this app so the user can edit permissions
      */
-    fun showAppSettings(context: Context) {
+    fun showAppSettings(context: Context, openInNewStack: Boolean = true) {
         val intent = Intent()
         intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
         val uri = Uri.fromParts("package", context.packageName, null)
         intent.data = uri
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        if (openInNewStack) {
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         context.startActivity(intent)
     }
 
