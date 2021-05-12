@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -50,7 +49,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -156,8 +154,6 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val savedState: SavedStateWithArgs = spy(
         SavedStateWithArgs(
             SavedStateHandle(),

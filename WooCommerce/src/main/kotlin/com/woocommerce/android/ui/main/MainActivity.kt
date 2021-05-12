@@ -64,10 +64,10 @@ import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
-import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -75,6 +75,7 @@ import org.wordpress.android.util.NetworkUtils
 import java.util.Locale
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppUpgradeActivity(),
     MainContract.View,
     HasAndroidInjector,
@@ -181,7 +182,6 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)

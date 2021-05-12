@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -27,7 +26,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
@@ -62,9 +60,6 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private val variationDetailRepository: VariationDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val parameterRepository: ParameterRepository = mock()
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
