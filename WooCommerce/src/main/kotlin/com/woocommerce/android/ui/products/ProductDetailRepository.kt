@@ -278,12 +278,14 @@ class ProductDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
-            if (event.isError) {
-                lastFetchProductErrorType = event.error.type
-                continuationFetchProduct.continueWith(false)
-            } else {
-                AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                continuationFetchProduct.continueWith(true)
+            if (continuationFetchProduct.isWaiting) {
+                if (event.isError) {
+                    lastFetchProductErrorType = event.error.type
+                    continuationFetchProduct.continueWith(false)
+                } else {
+                    AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
+                    continuationFetchProduct.continueWith(true)
+                }
             }
         }
     }
