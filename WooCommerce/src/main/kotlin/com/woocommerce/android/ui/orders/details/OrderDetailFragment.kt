@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -36,7 +35,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -54,18 +53,17 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class OrderDetailFragment : BaseDaggerFragment(R.layout.fragment_order_detail), OrderProductActionListener {
+@AndroidEntryPoint
+class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    private val viewModel: OrderDetailViewModel by viewModels { viewModelFactory }
+    private val viewModel: OrderDetailViewModel by viewModels()
 
     @Inject lateinit var navigator: OrderNavigator
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -86,11 +84,6 @@ class OrderDetailFragment : BaseDaggerFragment(R.layout.fragment_order_detail), 
 
     private val feedbackState
         get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
 
     override fun onResume() {
         super.onResume()
