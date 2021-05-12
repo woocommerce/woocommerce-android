@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.cardreader
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
@@ -10,13 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
 import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.AndroidSupportInjection
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_payment) {
