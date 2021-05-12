@@ -11,4 +11,5 @@ import kotlinx.parcelize.Parcelize
 sealed class UiString : Parcelable {
     @Parcelize data class UiStringText(val text: String) : UiString()
     @Parcelize data class UiStringRes(@StringRes val stringRes: Int) : UiString()
+    @Parcelize data class UiStringResWithParams(@StringRes val stringRes: Int, val params: List<UiString>) : UiString()
 }

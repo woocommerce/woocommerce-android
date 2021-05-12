@@ -9,6 +9,9 @@ import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringResWithParams
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
@@ -182,9 +185,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(false)
 
-            (viewModel.viewStateData.value as? BluetoothDisabledError)?.let {
-                it.onPrimaryActionClicked.invoke()
-            }
+            (viewModel.viewStateData.value as? BluetoothDisabledError)?.onPrimaryActionClicked?.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(RequestEnableBluetooth::class.java)
         }
@@ -288,7 +289,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.viewStateData.value!!.headerLabel)
             .describedAs("Check header")
-            .isEqualTo(R.string.card_reader_connect_scanning_header)
+            .isEqualTo(UiStringRes(R.string.card_reader_connect_scanning_header))
         assertThat(viewModel.viewStateData.value!!.hintLabel)
             .describedAs("Check hint")
             .isEqualTo(R.string.card_reader_connect_scanning_hint)
@@ -310,7 +311,12 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
         assertThat(viewModel.viewStateData.value!!.headerLabel)
             .describedAs("Check header")
-            .isEqualTo(R.string.card_reader_connect_reader_found_header)
+            .isEqualTo(
+                UiStringResWithParams(
+                    R.string.card_reader_connect_reader_found_header,
+                    listOf(UiStringText("<b>${reader.getId()}</b>"))
+                )
+            )
         assertThat(viewModel.viewStateData.value!!.hintLabel)
             .describedAs("Check hint")
             .isNull()
@@ -334,7 +340,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.viewStateData.value!!.headerLabel)
             .describedAs("Check header")
-            .isEqualTo(R.string.card_reader_connect_connecting_header)
+            .isEqualTo(UiStringRes(R.string.card_reader_connect_connecting_header))
         assertThat(viewModel.viewStateData.value!!.hintLabel)
             .describedAs("Check hint")
             .isEqualTo(R.string.card_reader_connect_connecting_hint)
