@@ -1,22 +1,34 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.stripe.stripeterminal.Terminal
+import com.stripe.stripeterminal.Terminal.Companion
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
+import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
-import com.woocommerce.android.cardreader.CardPaymentStatus.UnexpectedError
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.CAPTURE_ERROR
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.GENERIC_ERROR
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.MISSING_ORDER
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.NETWORK_ERROR
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.PAYMENT_ALREADY_CAPTURED
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.SERVER_ERROR
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.SUCCESS
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
@@ -27,11 +39,11 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
+import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import java.lang.ArithmeticException
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 
@@ -39,20 +51,26 @@ private const val USD_TO_CENTS_DECIMAL_PLACES = 2
 private const val USD_CURRENCY = "usd"
 
 internal class PaymentManager(
+    private val terminalWrapper: TerminalWrapper,
     private val cardReaderStore: CardReaderStore,
     private val createPaymentAction: CreatePaymentAction,
     private val collectPaymentAction: CollectPaymentAction,
-    private val processPaymentAction: ProcessPaymentAction
+    private val processPaymentAction: ProcessPaymentAction,
+    private val errorMapper: PaymentErrorMapper
 ) {
     suspend fun acceptPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
         if (!isSupportedCurrency(currency)) {
-            emit(UnexpectedError("Unsupported currency: $currency"))
+            emit(errorMapper.mapError(errorMessage = "Unsupported currency: $currency"))
             return@flow
         }
-        val amountInSmallestCurrencyUnit = try {
+        var amountInSmallestCurrencyUnit = try {
             convertBigDecimalInDollarsToIntegerInCents(amount)
         } catch (e: ArithmeticException) {
-            emit(UnexpectedError("BigDecimal amount doesn't fit into an Integer: $amount"))
+            emit(errorMapper.mapError(errorMessage = "BigDecimal amount doesn't fit into an Integer: $amount"))
+            return@flow
+        }
+        if (!terminalWrapper.isInitialized()) {
+            emit(errorMapper.mapError(errorMessage = "Reader not connected"))
             return@flow
         }
         var paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency)
@@ -68,7 +86,7 @@ internal class PaymentManager(
     private fun processPaymentIntent(orderId: Long, data: PaymentIntent) = flow {
         var paymentIntent = data
         if (paymentIntent.status == null && paymentIntent.status == CANCELED) {
-            emit(UnexpectedError("Cannot retry paymentIntent with status ${paymentIntent.status}"))
+            emit(errorMapper.mapError(errorMessage = "Cannot retry paymentIntent with status ${paymentIntent.status}"))
             return@flow
         }
 
@@ -98,7 +116,7 @@ internal class PaymentManager(
         emit(InitializingPayment)
         createPaymentAction.createPaymentIntent(amount, currency).collect {
             when (it) {
-                is Failure -> emit(InitializingPaymentFailed)
+                is Failure -> emit(errorMapper.mapError(paymentIntent, it.exception.errorMessage))
                 is Success -> paymentIntent = it.paymentIntent
             }
         }
@@ -114,10 +132,7 @@ internal class PaymentManager(
             when (it) {
                 is DisplayMessageRequested -> emit(ShowAdditionalInfo)
                 is ReaderInputRequested -> emit(WaitingForInput)
-                is CollectPaymentStatus.Failure -> {
-                    val paymentIntentForRetry = it.exception.paymentIntent ?: paymentIntent
-                    emit(CollectingPaymentFailed(PaymentDataImpl(paymentIntentForRetry)))
-                }
+                is CollectPaymentStatus.Failure -> emit(errorMapper.mapError(paymentIntent, it.exception))
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -131,10 +146,7 @@ internal class PaymentManager(
         emit(ProcessingPayment)
         processPaymentAction.processPayment(paymentIntent).collect {
             when (it) {
-                is ProcessPaymentStatus.Failure -> {
-                    val paymentIntentForRetry = it.exception.paymentIntent ?: paymentIntent
-                    emit(ProcessingPaymentFailed(PaymentDataImpl(paymentIntentForRetry)))
-                }
+                is ProcessPaymentStatus.Failure -> emit(errorMapper.mapError(paymentIntent, it.exception))
                 is ProcessPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -147,11 +159,11 @@ internal class PaymentManager(
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
-        val success = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)
-        if (success) {
+        val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)
+        if (captureResponse == SUCCESS || captureResponse == PAYMENT_ALREADY_CAPTURED) {
             emit(PaymentCompleted)
         } else {
-            emit(CapturingPaymentFailed(PaymentDataImpl(paymentIntent)))
+            emit(errorMapper.mapError(paymentIntent, captureResponse))
         }
     }
 
