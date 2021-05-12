@@ -13,8 +13,12 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -38,19 +42,43 @@ class CardReaderConnectViewModel @Inject constructor(
     private lateinit var cardReaderManager: CardReaderManager
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
-    private val viewState = MutableLiveData<ViewState>(ScanningState(::onCancelScanningClicked))
+    private val viewState = MutableLiveData<ViewState>(ScanningState(::onCancelClicked))
     val viewStateData: LiveData<ViewState> = viewState
 
     init {
-        triggerEvent(InitializeCardReaderManager)
+        triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
-    fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
+    private fun onCheckLocationPermissionsResult(granted: Boolean) {
+        if (granted) {
+            onLocationPermissionsVerified()
+        } else if (viewState.value !is MissingPermissionsError) {
+            triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
+        }
+    }
+
+    private fun onRequestLocationPermissionsResult(granted: Boolean) {
+        if (granted) {
+            onLocationPermissionsVerified()
+        } else {
+            viewState.value = MissingPermissionsError(
+                onPrimaryActionClicked = ::onOpenPermissionsSettingsClicked,
+                onSecondaryActionClicked = ::onCancelClicked
+            )
+        }
+    }
+
+    private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
         // TODO cardreader check location permissions
         launch {
             startScanning()
         }
+    }
+
+    private fun onLocationPermissionsVerified() {
+        // TODO cardreader check if bluetooth is on
+        triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
     }
 
     private suspend fun startScanning() {
@@ -68,7 +96,7 @@ class CardReaderConnectViewModel @Inject constructor(
         when (discoveryEvent) {
             Started -> {
                 if (viewState.value !is ScanningState) {
-                    viewState.value = ScanningState(::onCancelScanningClicked)
+                    viewState.value = ScanningState(::onCancelClicked)
                 }
             }
             is ReadersFound -> onReadersFound(discoveryEvent)
@@ -91,15 +119,15 @@ class CardReaderConnectViewModel @Inject constructor(
             val reader = availableReaders[0]
             viewState.value = ReaderFoundState(
                 onPrimaryActionClicked = { onConnectToReaderClicked(reader) },
-                onSecondaryActionClicked = ::onCancelScanningClicked
+                onSecondaryActionClicked = ::onCancelClicked
             )
         } else {
-            viewState.value = ScanningState(::onCancelScanningClicked)
+            viewState.value = ScanningState(::onCancelClicked)
         }
     }
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
-        viewState.value = ConnectingState(::onCancelScanningClicked)
+        viewState.value = ConnectingState(::onCancelClicked)
         launch {
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
@@ -112,7 +140,11 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onCancelScanningClicked() {
+    private fun onOpenPermissionsSettingsClicked() {
+        triggerEvent(OpenPermissionsSettings)
+    }
+
+    private fun onCancelClicked() {
         appLogWrapper.e(T.MAIN, "Connection flow interrupted by the user.")
         triggerEvent(Exit)
     }
@@ -122,8 +154,22 @@ class CardReaderConnectViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onScreenResumed() {
+        if (viewState.value is MissingPermissionsError) {
+            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+        }
+    }
+
     sealed class CardReaderConnectEvent : Event() {
-        object InitializeCardReaderManager : CardReaderConnectEvent()
+        data class InitializeCardReaderManager(val onCardManagerInitialized: (manager: CardReaderManager) -> Unit) :
+            CardReaderConnectEvent()
+
+        data class CheckLocationPermissions(val onPermissionsCheckResult: (Boolean) -> Unit) : CardReaderConnectEvent()
+
+        data class RequestLocationPermissions(val onPermissionsRequestResult: (Boolean) -> Unit) :
+            CardReaderConnectEvent()
+
+        object OpenPermissionsSettings : CardReaderConnectEvent()
     }
 
     sealed class ViewState(
@@ -162,6 +208,17 @@ class CardReaderConnectViewModel @Inject constructor(
             hintLabel = R.string.card_reader_connect_connecting_hint,
             secondaryActionLabel = R.string.cancel
         )
+
         // TODO cardreader add error state
+        data class MissingPermissionsError(
+            override val onPrimaryActionClicked: () -> Unit,
+            override val onSecondaryActionClicked: () -> Unit
+        ) : ViewState(
+            headerLabel = R.string.card_reader_connect_failed_header,
+            illustration = R.drawable.img_card_reader_scanning,
+            hintLabel = R.string.card_reader_connect_missing_permissions,
+            primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
+            secondaryActionLabel = R.string.cancel
+        )
     }
 }
