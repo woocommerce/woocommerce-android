@@ -34,8 +34,8 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         super.observe(owner, Observer { t ->
             if (pending.get()) {
                 t.isHandled = true
-                observer.onChanged(t)
                 pending.compareAndSet(t.isHandled, false)
+                observer.onChanged(t)
             }
         })
     }
