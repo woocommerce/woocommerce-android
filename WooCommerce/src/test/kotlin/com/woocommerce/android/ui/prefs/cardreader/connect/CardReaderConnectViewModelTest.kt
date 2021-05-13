@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.LocationDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
@@ -259,6 +260,27 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when scan fails, then scanning failed state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = FAILED)
+
+            (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
+        }
+
+    @Test
+    fun `given scanning failed screen shown, when user clicks on retry, then flow restarted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = FAILED)
+            (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+
+            (viewModel.viewStateData.value as ScanningFailedState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+        }
+
+    @Test
     fun `when reader found, then reader found state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = READER_FOUND)
@@ -341,6 +363,17 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
             resumeDispatcher()
+        }
+
+    @Test
+    fun `given app in scanning failed state, when user clicks on cancel, then flow finishes`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = FAILED)
+            (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+
+            (viewModel.viewStateData.value as ScanningFailedState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
         }
 
     @Test
