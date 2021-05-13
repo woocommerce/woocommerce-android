@@ -290,7 +290,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
-            illustration = R.drawable.img_card_reader_scanning,
+            illustration = R.drawable.img_products_error,
             hintLabel = R.string.card_reader_connect_scanning_failed_hint,
             primaryActionLabel = R.string.retry,
             secondaryActionLabel = R.string.cancel
@@ -301,7 +301,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
-            illustration = R.drawable.img_card_reader_connecting,
+            illustration = R.drawable.img_products_error,
             hintLabel = R.string.card_reader_connect_connecting_failed_hint,
             primaryActionLabel = R.string.retry,
             secondaryActionLabel = R.string.cancel
@@ -312,7 +312,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
-            illustration = R.drawable.img_card_reader_scanning,
+            illustration = R.drawable.img_products_error,
             hintLabel = R.string.card_reader_connect_missing_permissions_hint,
             primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
             secondaryActionLabel = R.string.cancel
@@ -323,7 +323,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
-            illustration = R.drawable.img_card_reader_scanning,
+            illustration = R.drawable.img_products_error,
             hintLabel = R.string.card_reader_connect_location_provider_disabled_hint,
             primaryActionLabel = R.string.card_reader_connect_open_location_settings,
             secondaryActionLabel = R.string.cancel
@@ -334,7 +334,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
-            illustration = R.drawable.img_card_reader_scanning,
+            illustration = R.drawable.img_products_error,
             hintLabel = R.string.card_reader_connect_bluetooth_disabled_hint,
             primaryActionLabel = R.string.card_reader_connect_open_bluetooth_settings,
             secondaryActionLabel = R.string.cancel

@@ -507,7 +507,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_card_reader_scanning)
+                .isEqualTo(R.drawable.img_products_error)
         }
 
     @Test
@@ -532,7 +532,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_card_reader_connecting)
+                .isEqualTo(R.drawable.img_products_error)
         }
 
     @Test
@@ -556,7 +556,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_card_reader_scanning)
+                .isEqualTo(R.drawable.img_products_error)
         }
 
     @Test
@@ -580,7 +580,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_card_reader_scanning)
+                .isEqualTo(R.drawable.img_products_error)
         }
 
     @Test
@@ -606,7 +606,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_card_reader_scanning)
+                .isEqualTo(R.drawable.img_products_error)
         }
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
