@@ -210,7 +210,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             viewModel.onNewShipmentTrackingAdded(it)
         }
         handleResult<Boolean>(CardReaderConnectFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
-            viewModel.onConnectToReaderResultReceived(connected)
+            if (FeatureFlag.CARD_READER.isEnabled()) {
+                viewModel.onConnectToReaderResultReceived(connected)
+            }
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
