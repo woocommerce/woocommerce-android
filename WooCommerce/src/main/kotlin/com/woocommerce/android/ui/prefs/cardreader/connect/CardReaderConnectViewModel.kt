@@ -16,7 +16,6 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.UiString.UiStringResWithParams
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
@@ -234,10 +233,10 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onSecondaryActionClicked: (() -> Unit),
             val readerId: String
         ) : ViewState(
-            // TODO cardreader add reader name -> migrate to UiString -> check UiStringResWithParams in WPAndroid
-            headerLabel = UiStringResWithParams(
-                R.string.card_reader_connect_reader_found_header,
-                listOf(UiStringText("<b>$readerId</b>"))
+            headerLabel = UiStringRes(
+                stringRes = R.string.card_reader_connect_reader_found_header,
+                params = listOf(UiStringText("<b>$readerId</b>")),
+                containsHtml = true
             ),
             illustration = R.drawable.img_card_reader,
             primaryActionLabel = R.string.card_reader_connect_to_reader,

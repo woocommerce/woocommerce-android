@@ -10,7 +10,6 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.UiString.UiStringResWithParams
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
@@ -317,9 +316,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(
-                UiStringResWithParams(
+                UiStringRes(
                     R.string.card_reader_connect_reader_found_header,
-                    listOf(UiStringText("<b>${reader.getId()}</b>"))
+                    listOf(UiStringText("<b>${reader.getId()}</b>")),
+                    true
                 )
             )
             assertThat(viewModel.viewStateData.value!!.hintLabel)
