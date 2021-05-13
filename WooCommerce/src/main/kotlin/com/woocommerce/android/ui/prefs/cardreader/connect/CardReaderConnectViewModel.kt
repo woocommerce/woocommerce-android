@@ -289,7 +289,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = UiStringRes(R.string.card_reader_scanning_failed_header),
+            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
             illustration = R.drawable.img_card_reader_scanning,
             hintLabel = R.string.card_reader_connect_scanning_failed_hint,
             primaryActionLabel = R.string.retry,
@@ -300,14 +300,13 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = UiStringRes(R.string.card_reader_connecting_failed_header),
+            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
             illustration = R.drawable.img_card_reader_connecting,
             hintLabel = R.string.card_reader_connect_connecting_failed_hint,
             primaryActionLabel = R.string.retry,
             secondaryActionLabel = R.string.cancel
         )
 
-        // TODO cardreader add error state
         data class MissingPermissionsError(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
@@ -337,7 +336,7 @@ class CardReaderConnectViewModel @Inject constructor(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
             illustration = R.drawable.img_card_reader_scanning,
             hintLabel = R.string.card_reader_connect_bluetooth_disabled_hint,
-            primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
+            primaryActionLabel = R.string.card_reader_connect_open_bluetooth_settings,
             secondaryActionLabel = R.string.cancel
         )
     }

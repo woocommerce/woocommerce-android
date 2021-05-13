@@ -415,6 +415,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = SCANNING)
 
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_scanning_header))
@@ -437,6 +438,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = READER_FOUND)
 
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
@@ -466,9 +468,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = READER_FOUND)
 
-            pauseDispatcher()
             viewModel.viewStateData.value!!.onPrimaryActionClicked!!.invoke()
 
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_connecting_header))
@@ -484,6 +486,128 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_connecting)
+        }
+
+    @Test
+    fun `when app in scanning failed state, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = FAILED)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+            assertThat(viewModel.viewStateData.value!!.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(R.string.card_reader_connect_scanning_failed_hint)
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .describedAs("Check primaryActionLabel")
+                .isEqualTo(R.string.retry)
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+                .describedAs("Check secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_card_reader_scanning)
+        }
+
+    @Test
+    fun `when app in connecting failed state, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = READER_FOUND, connectingSucceeds = false)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+            assertThat(viewModel.viewStateData.value!!.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(R.string.card_reader_connect_connecting_failed_hint)
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .describedAs("Check primaryActionLabel")
+                .isEqualTo(R.string.retry)
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+                .describedAs("Check secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_card_reader_connecting)
+        }
+
+    @Test
+    fun `when app in missing location permissions state, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingPermissionsError::class.java)
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+            assertThat(viewModel.viewStateData.value!!.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(R.string.card_reader_connect_missing_permissions_hint)
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .describedAs("Check primaryActionLabel")
+                .isEqualTo(R.string.card_reader_connect_open_permission_settings)
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+                .describedAs("Check secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_card_reader_scanning)
+        }
+
+    @Test
+    fun `when app in location disabled state, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(LocationDisabledError::class.java)
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+            assertThat(viewModel.viewStateData.value!!.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(R.string.card_reader_connect_location_provider_disabled_hint)
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .describedAs("Check primaryActionLabel")
+                .isEqualTo(R.string.card_reader_connect_open_location_settings)
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+                .describedAs("Check secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_card_reader_scanning)
+        }
+
+    @Test
+    fun `when app in bluetooth disabled state, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
+            (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(false)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BluetoothDisabledError::class.java)
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+            assertThat(viewModel.viewStateData.value!!.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(R.string.card_reader_connect_bluetooth_disabled_hint)
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .describedAs("Check primaryActionLabel")
+                .isEqualTo(R.string.card_reader_connect_open_bluetooth_settings)
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+                .describedAs("Check secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_card_reader_scanning)
         }
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
