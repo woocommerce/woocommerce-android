@@ -70,6 +70,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSl
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -256,6 +257,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(
             productDraft = ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
         )
+        //TODO: Make this publish happen when ProductDetailFragment is started
+        if(defaultProduct.type == VARIABLE.value) {
+            startPublishProduct(exitWhenDone = false)
+        }
         updateProductState(defaultProduct)
     }
 
