@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog.T
 import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -78,7 +77,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                     } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
-                logger.e(T.MAIN, e.stackTraceToString())
+                logger.e(MAIN, e.stackTraceToString())
                 viewState.postValue(
                     FailedPaymentState(
                         amountWithCurrencyLabel = null,
