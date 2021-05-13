@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
@@ -47,6 +48,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -211,7 +213,19 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked() {
-        triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+        // TODO cardreader if reader connected start payment flow
+        triggerEvent(StartCardReaderConnectFlow)
+    }
+
+    fun onConnectToReaderResultReceived(connected: Boolean) {
+        launch {
+            // this dummy delay needs to be here since the navigation component hasn't finished the previous
+            // transaction when a result is received
+            delay(1)
+            if (connected) {
+                triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+            }
+        }
     }
 
     fun onViewRefundedProductsClicked() {

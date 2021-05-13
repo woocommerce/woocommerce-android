@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -206,6 +207,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
         handleResult<OrderShipmentTracking>(AddOrderShipmentTrackingFragment.KEY_ADD_SHIPMENT_TRACKING_RESULT) {
             viewModel.onNewShipmentTrackingAdded(it)
+        }
+        handleResult<Boolean>(CardReaderConnectFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
+            viewModel.onConnectToReaderResultReceived(connected)
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
