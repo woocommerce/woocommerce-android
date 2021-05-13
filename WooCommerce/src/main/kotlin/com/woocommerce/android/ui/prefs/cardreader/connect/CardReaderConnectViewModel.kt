@@ -13,6 +13,9 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
@@ -161,12 +164,13 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReadersFound(discoveryEvent: ReadersFound) {
         if (viewState.value is ConnectingState) return
         val availableReaders = discoveryEvent.list.filter { it.getId() != null }
-        if (availableReaders.size > 0) {
+        if (availableReaders.isNotEmpty()) {
             // TODO cardreader add support for showing multiple readers
             val reader = availableReaders[0]
             viewState.value = ReaderFoundState(
                 onPrimaryActionClicked = { onConnectToReaderClicked(reader) },
-                onSecondaryActionClicked = ::onCancelClicked
+                onSecondaryActionClicked = ::onCancelClicked,
+                readerId = reader.getId().orEmpty()
             )
         } else {
             viewState.value = ScanningState(::onCancelClicked)
@@ -237,7 +241,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     sealed class ViewState(
-        @StringRes val headerLabel: Int? = null,
+        val headerLabel: UiString? = null,
         @DrawableRes val illustration: Int? = null,
         @StringRes val hintLabel: Int? = null,
         val primaryActionLabel: Int? = null,
@@ -247,7 +251,7 @@ class CardReaderConnectViewModel @Inject constructor(
         open val onSecondaryActionClicked: (() -> Unit)? = null
 
         data class ScanningState(override val onSecondaryActionClicked: (() -> Unit)) : ViewState(
-            headerLabel = R.string.card_reader_connect_scanning_header,
+            headerLabel = UiStringRes(R.string.card_reader_connect_scanning_header),
             illustration = R.drawable.img_card_reader_scanning,
             hintLabel = R.string.card_reader_connect_scanning_hint,
             secondaryActionLabel = R.string.cancel
@@ -255,10 +259,14 @@ class CardReaderConnectViewModel @Inject constructor(
 
         data class ReaderFoundState(
             override val onPrimaryActionClicked: (() -> Unit),
-            override val onSecondaryActionClicked: (() -> Unit)
+            override val onSecondaryActionClicked: (() -> Unit),
+            val readerId: String
         ) : ViewState(
-            // TODO cardreader add reader name -> migrate to UiString -> check UiStringResWithParams in WPAndroid
-            headerLabel = R.string.card_reader_connect_reader_found_header,
+            headerLabel = UiStringRes(
+                stringRes = R.string.card_reader_connect_reader_found_header,
+                params = listOf(UiStringText("<b>$readerId</b>")),
+                containsHtml = true
+            ),
             illustration = R.drawable.img_card_reader,
             primaryActionLabel = R.string.card_reader_connect_to_reader,
             secondaryActionLabel = R.string.cancel
@@ -267,7 +275,7 @@ class CardReaderConnectViewModel @Inject constructor(
         // TODO cardreader add multiple readers found state
 
         data class ConnectingState(override val onSecondaryActionClicked: (() -> Unit)) : ViewState(
-            headerLabel = R.string.card_reader_connect_connecting_header,
+            headerLabel = UiStringRes(R.string.card_reader_connect_connecting_header),
             illustration = R.drawable.img_card_reader_connecting,
             hintLabel = R.string.card_reader_connect_connecting_hint,
             secondaryActionLabel = R.string.cancel
@@ -278,7 +286,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = R.string.card_reader_connect_failed_header,
+            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
             illustration = R.drawable.img_card_reader_scanning,
             hintLabel = R.string.card_reader_connect_missing_permissions_hint,
             primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
@@ -300,7 +308,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = R.string.card_reader_connect_failed_header,
+            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
             illustration = R.drawable.img_card_reader_scanning,
             hintLabel = R.string.card_reader_connect_bluetooth_disabled_hint,
             primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
