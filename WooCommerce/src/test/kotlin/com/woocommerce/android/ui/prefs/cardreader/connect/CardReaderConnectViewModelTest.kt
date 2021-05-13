@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -25,6 +26,9 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.FAILED
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -247,9 +251,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when scan started, then scanning state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(readersFound = false)
+            init(scanState = SCANNING)
 
-        (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+            (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
         }
@@ -257,9 +261,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when reader found, then reader found state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(readersFound = true)
+            init(scanState = READER_FOUND)
 
-        (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+            (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
         }
@@ -269,7 +273,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(reader.getId()).thenReturn(null)
 
-            init(readersFound = true)
+            init(scanState = READER_FOUND)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
         }
@@ -309,7 +313,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given app in scanning state, when user clicks on cancel, then flow finishes`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(readersFound = false)
+            init(scanState = SCANNING)
 
             (viewModel.viewStateData.value as ScanningState).onSecondaryActionClicked.invoke()
 
@@ -319,7 +323,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given app in reader found state, when user clicks on cancel, then flow finishes`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(readersFound = true)
+            init(scanState = READER_FOUND)
 
             (viewModel.viewStateData.value as ReaderFoundState).onSecondaryActionClicked.invoke()
 
@@ -329,7 +333,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given app in connecting state, when user clicks on cancel, then flow finishes`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(readersFound = true)
+            init(scanState = READER_FOUND)
 
             pauseDispatcher()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -342,7 +346,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app in scanning state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(readersFound = false)
+            init(scanState = SCANNING)
 
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
@@ -364,18 +368,18 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app in readers found state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(readersFound = true)
+            init(scanState = READER_FOUND)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(
-                UiStringRes(
-                    R.string.card_reader_connect_reader_found_header,
-                    listOf(UiStringText("<b>${reader.getId()}</b>")),
-                    true
+                    UiStringRes(
+                        R.string.card_reader_connect_reader_found_header,
+                        listOf(UiStringText("<b>${reader.getId()}</b>")),
+                        true
+                    )
                 )
-            )
             assertThat(viewModel.viewStateData.value!!.hintLabel)
                 .describedAs("Check hint")
                 .isNull()
@@ -393,7 +397,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app in connecting state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(readersFound = true)
+            init(scanState = READER_FOUND)
 
             pauseDispatcher()
             viewModel.viewStateData.value!!.onPrimaryActionClicked!!.invoke()
@@ -415,11 +419,14 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.drawable.img_card_reader_connecting)
         }
 
-    private suspend fun init(readersFound: Boolean = true, connectingSucceeds: Boolean = true) {
+    private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
         whenever(cardReaderManager.discoverReaders(anyBoolean())).thenAnswer {
             flow<CardReaderDiscoveryEvents> {
-                if (readersFound) {
-                    emit(ReadersFound(listOf(reader)))
+                when (scanState) {
+                    SCANNING -> { // no-op
+                    }
+                    READER_FOUND -> emit(ReadersFound(listOf(reader)))
+                    FAILED -> emit(Failed("dummy msg"))
                 }
             }
         }
@@ -428,5 +435,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
         (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+    }
+
+    private enum class ScanResult {
+        SCANNING, READER_FOUND, FAILED
     }
 }
