@@ -296,7 +296,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = R.string.card_reader_connect_failed_header,
+            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
             illustration = R.drawable.img_card_reader_scanning,
             hintLabel = R.string.card_reader_connect_location_provider_disabled_hint,
             primaryActionLabel = R.string.card_reader_connect_open_location_settings,
