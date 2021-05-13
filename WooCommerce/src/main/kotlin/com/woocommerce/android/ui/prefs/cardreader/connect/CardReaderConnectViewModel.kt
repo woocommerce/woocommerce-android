@@ -25,10 +25,12 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.LocationDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -55,6 +57,11 @@ class CardReaderConnectViewModel @Inject constructor(
     val viewStateData: LiveData<ViewState> = viewState
 
     init {
+        startFlow()
+    }
+
+    private fun startFlow() {
+        viewState.value = ScanningState(::onCancelClicked)
         triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
@@ -153,9 +160,8 @@ class CardReaderConnectViewModel @Inject constructor(
                 // noop
             }
             is Failed -> {
-                // TODO cardreader Replace with failed state
-                appLogWrapper.e(T.MAIN, "Scanning failed.")
-                triggerEvent(Exit)
+                appLogWrapper.e(T.MAIN, "Scanning failed: ${discoveryEvent.msg}")
+                viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
             }
         }
     }
@@ -183,9 +189,8 @@ class CardReaderConnectViewModel @Inject constructor(
             if (success) {
                 onReaderConnected()
             } else {
-                // TODO cardreader Replace with failed state
                 appLogWrapper.e(T.MAIN, "Connecting to reader failed.")
-                triggerEvent(Exit)
+                viewState.value = ConnectingFailedState({ onConnectToReaderClicked(cardReader) }, ::onCancelClicked)
             }
         }
     }
@@ -277,6 +282,28 @@ class CardReaderConnectViewModel @Inject constructor(
             headerLabel = UiStringRes(R.string.card_reader_connect_connecting_header),
             illustration = R.drawable.img_card_reader_connecting,
             hintLabel = R.string.card_reader_connect_connecting_hint,
+            secondaryActionLabel = R.string.cancel
+        )
+
+        data class ScanningFailedState(
+            override val onPrimaryActionClicked: () -> Unit,
+            override val onSecondaryActionClicked: () -> Unit
+        ) : ViewState(
+            headerLabel = UiStringRes(R.string.card_reader_scanning_failed_header),
+            illustration = R.drawable.img_card_reader_scanning,
+            hintLabel = R.string.card_reader_connect_scanning_failed_hint,
+            primaryActionLabel = R.string.retry,
+            secondaryActionLabel = R.string.cancel
+        )
+
+        data class ConnectingFailedState(
+            override val onPrimaryActionClicked: () -> Unit,
+            override val onSecondaryActionClicked: () -> Unit
+        ) : ViewState(
+            headerLabel = UiStringRes(R.string.card_reader_connecting_failed_header),
+            illustration = R.drawable.img_card_reader_connecting,
+            hintLabel = R.string.card_reader_connect_connecting_failed_hint,
+            primaryActionLabel = R.string.retry,
             secondaryActionLabel = R.string.cancel
         )
 
