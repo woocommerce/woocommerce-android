@@ -213,11 +213,13 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked() {
+        // TODO cardreader add tests for this functionality
         // TODO cardreader if reader connected start payment flow
         triggerEvent(StartCardReaderConnectFlow)
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
+        // TODO cardreader add tests for this functionality
         launch {
             // this dummy delay needs to be here since the navigation component hasn't finished the previous
             // transaction when a result is received
