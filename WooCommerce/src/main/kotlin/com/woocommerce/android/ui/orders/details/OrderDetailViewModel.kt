@@ -13,6 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -212,10 +214,13 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.remoteId))
     }
 
-    fun onAcceptCardPresentPaymentClicked() {
+    fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
         // TODO cardreader add tests for this functionality
-        // TODO cardreader if reader connected start payment flow
-        triggerEvent(StartCardReaderConnectFlow)
+        if (cardReaderManager.readerStatus.value == CONNECTED) {
+            triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+        } else {
+            triggerEvent(StartCardReaderConnectFlow)
+        }
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {

@@ -10,6 +10,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
@@ -232,7 +233,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onAcceptCardPresentPaymentClicked()
+                    // TODO cardreader inject card manager into the detail fragment
+                    (requireActivity().application as WooCommerce).cardReaderManager?.let {
+                        viewModel.onAcceptCardPresentPaymentClicked(it)
+                    }
                 }
             }
         )
