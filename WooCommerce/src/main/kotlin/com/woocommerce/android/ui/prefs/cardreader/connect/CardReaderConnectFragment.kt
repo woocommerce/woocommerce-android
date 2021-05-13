@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
@@ -28,7 +27,6 @@ import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
