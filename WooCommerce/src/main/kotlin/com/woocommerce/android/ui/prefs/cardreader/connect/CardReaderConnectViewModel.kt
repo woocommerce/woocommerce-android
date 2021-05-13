@@ -113,7 +113,6 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
-        // TODO cardreader check location permissions
         launch {
             startScanning()
         }
