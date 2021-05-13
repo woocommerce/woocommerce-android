@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -156,7 +156,7 @@ class CardReaderConnectViewModel @Inject constructor(
             is Failed -> {
                 // TODO cardreader Replace with failed state
                 appLogWrapper.e(T.MAIN, "Scanning failed.")
-                triggerEvent(Exit)
+                exitFlow(connected = false)
             }
         }
     }
@@ -186,7 +186,7 @@ class CardReaderConnectViewModel @Inject constructor(
             } else {
                 // TODO cardreader Replace with failed state
                 appLogWrapper.e(T.MAIN, "Connecting to reader failed.")
-                triggerEvent(Exit)
+                exitFlow(connected = false)
             }
         }
     }
@@ -205,12 +205,16 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCancelClicked() {
         appLogWrapper.e(T.MAIN, "Connection flow interrupted by the user.")
-        triggerEvent(Exit)
+        exitFlow(connected = false)
     }
 
     private fun onReaderConnected() {
         appLogWrapper.e(T.MAIN, "Connecting to reader succeeded.")
-        triggerEvent(Exit)
+        exitFlow(connected = true)
+    }
+
+    private fun exitFlow(connected: Boolean) {
+        triggerEvent(ExitWithResult(connected))
     }
 
     fun onScreenResumed() {
