@@ -396,7 +396,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
 
             (viewModel.viewStateData.value as ScanningFailedState).onSecondaryActionClicked.invoke()
-
         }
 
     @Test
