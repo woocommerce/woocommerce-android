@@ -12,8 +12,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
@@ -529,13 +529,13 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun isPaymentCollectable(): Boolean {
         return with(order) {
-            currency == "USD"
-                && (listOf(Pending, Processing, OnHold)).any { it == status }
-                && !isOrderPaid
+            currency == "USD" &&
+                (listOf(Pending, Processing, OnHold)).any { it == status } &&
+                !isOrderPaid &&
                 // Empty payment method explanation:
                 // https://github.com/woocommerce/woocommerce/issues/29471
-                && (paymentMethod == CASH_ON_DELIVERY_PAYMENT_TYPE || paymentMethod.isEmpty())
-                && !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+                (paymentMethod == CASH_ON_DELIVERY_PAYMENT_TYPE || paymentMethod.isEmpty()) &&
+                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
         }
     }
 
