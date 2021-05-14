@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.cardreader
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
@@ -10,23 +9,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
 import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.AndroidSupportInjection
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_payment), HasAndroidInjector {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
-    val viewModel: CardReaderPaymentViewModel by viewModels { viewModelFactory }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
+@AndroidEntryPoint
+class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_payment) {
+    val viewModel: CardReaderPaymentViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,6 +48,4 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
             }
         })
     }
-
-    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 }

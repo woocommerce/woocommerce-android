@@ -6,11 +6,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.WooLog.T.REVIEWS
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
-import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -20,8 +19,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductReviewsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 
 class ProductReviewsRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -33,7 +30,7 @@ class ProductReviewsRepository @Inject constructor(
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
     }
 
-    private var continuationReviews: Continuation<Boolean>? = null
+    private var continuationReviews = ContinuationWrapper<Boolean>(PRODUCTS)
 
     private var offset = 0
     private var isFetchingProductReviews = false
@@ -57,21 +54,16 @@ class ProductReviewsRepository @Inject constructor(
         remoteProductId: Long,
         loadMore: Boolean
     ): List<ProductReview> {
-        try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                offset = if (loadMore) offset + PAGE_SIZE else 0
-                isFetchingProductReviews = true
-                continuationReviews = it
+        continuationReviews.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            offset = if (loadMore) offset + PAGE_SIZE else 0
+            isFetchingProductReviews = true
 
-                val payload = FetchProductReviewsPayload(
-                    selectedSite.get(), offset,
-                    productIds = listOf(remoteProductId),
-                    filterByStatus = listOf(PRODUCT_REVIEW_STATUS_APPROVED)
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "Exception encountered while fetching reviews for product $remoteProductId", e)
+            val payload = FetchProductReviewsPayload(
+                selectedSite.get(), offset,
+                productIds = listOf(remoteProductId),
+                filterByStatus = listOf(PRODUCT_REVIEW_STATUS_APPROVED)
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
         }
 
         return getProductReviewsFromDB(remoteProductId)
@@ -97,21 +89,25 @@ class ProductReviewsRepository @Inject constructor(
                     Stat.PRODUCT_REVIEWS_LOAD_FAILED, mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                )
+                )
 
                 WooLog.e(
                     REVIEWS, "Error fetching product review: " +
-                    "${event.error?.type} - ${event.error?.message}")
-                continuationReviews?.resume(false)
+                    "${event.error?.type} - ${event.error?.message}"
+                )
+                continuationReviews.continueWith(false)
             } else {
                 AnalyticsTracker.track(
                     Stat.PRODUCT_REVIEWS_LOADED, mapOf(
-                    AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore))
+                    AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
+                )
+                )
                 isLoadingMore = false
                 canLoadMore = event.canLoadMore
-                continuationReviews?.resume(true)
+                continuationReviews.continueWith(true)
             }
-            continuationReviews = null
         }
     }
 }

@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -14,19 +16,26 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_connect) {
     val viewModel: CardReaderConnectViewModel by viewModels()
+
+    @Inject lateinit var locationUtils: LocationUtils
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.let {
@@ -37,6 +46,12 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     private val requestEnableBluetoothLauncher = registerForActivityResult(StartActivityForResult()) { activityResult ->
         (viewModel.event.value as? RequestEnableBluetooth)?.let {
             it.onEnableBluetoothRequestResult.invoke(activityResult.resultCode == RESULT_OK)
+        }
+    }
+
+    private val requestEnableLocationProviderLauncher = registerForActivityResult(StartActivityForResult()) { _ ->
+        (viewModel.event.value as? OpenLocationSettings)?.let {
+            it.onLocationSettingsClosed.invoke()
         }
     }
 
@@ -57,7 +72,13 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                     WooPermissionUtils.requestFineLocationPermission(requestPermissionLauncher)
                 }
                 is OpenPermissionsSettings -> {
-                    WooPermissionUtils.showAppSettings(requireContext())
+                    WooPermissionUtils.showAppSettings(requireContext(), openInNewStack = false)
+                }
+                is CheckLocationEnabled -> {
+                    event.onLocationEnabledCheckResult(locationUtils.isLocationEnabled())
+                }
+                is OpenLocationSettings -> {
+                    openLocationSettings()
                 }
                 is CheckBluetoothEnabled -> {
                     val btAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -90,6 +111,15 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
             binding.secondaryActionBtn.setOnClickListener {
                 viewState.onSecondaryActionClicked?.invoke()
             }
+        }
+    }
+
+    private fun openLocationSettings() {
+        try {
+            val enableLocationIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            requestEnableLocationProviderLauncher.launch(enableLocationIntent)
+        } catch (e: ActivityNotFoundException) {
+            WooLog.e(WooLog.T.CARD_READER, "Location settings activity not found.")
         }
     }
 
