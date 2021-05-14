@@ -29,8 +29,16 @@ object UiHelpers {
 
     fun getTextOfUiString(context: Context, uiString: UiString): String =
             when (uiString) {
-                is UiStringRes -> context.getString(uiString.stringRes)
                 is UiStringText -> uiString.text
+                is UiStringRes -> context.getString(
+                    uiString.stringRes,
+                    *uiString.params.map { value ->
+                        getTextOfUiString(
+                            context,
+                            value
+                        )
+                    }.toTypedArray()
+                )
             }
 
     fun updateVisibility(view: View, visible: Boolean, setInvisible: Boolean = false) {
@@ -41,12 +49,16 @@ object UiHelpers {
         }
     }
 
-    fun setTextOrHide(view: TextView, uiString: UiString?, fmtArgs: String? = null) {
-        val text = uiString?.let { getTextOfUiString(view.context, uiString) }
-        fmtArgs?.let { args ->
-            val message = HtmlCompat.fromHtml(String.format(text!!, args), HtmlCompat.FROM_HTML_MODE_LEGACY)
-            setTextOrHide(view, message)
-        } ?: setTextOrHide(view, text)
+    fun setTextOrHide(view: TextView, uiString: UiString?) {
+        val message = uiString?.let {
+            val pureText = getTextOfUiString(view.context, it)
+            if (it.containsHtml) {
+                HtmlCompat.fromHtml(pureText, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            } else {
+                pureText
+            }
+        }
+        setTextOrHide(view, message)
     }
 
     fun setTextOrHide(view: TextView, @StringRes resId: Int?) {
