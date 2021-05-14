@@ -34,6 +34,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
@@ -48,6 +49,20 @@ class CardReaderConnectViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val appLogWrapper: AppLogWrapper
 ) : ScopedViewModel(savedState) {
+    /**
+     * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
+     * When multiple events are send synchronously to MultiLiveEvent only the first one gets handled
+     * as MultiLiveEvent.pending field gets set to false when the first events is handled and all the other events
+     * are ignored.
+     * Example: Imagine VM sends CheckPermissions event -> the view layer synchronously checks the permissions and
+     * invokes vm.permissionChecked(true), the vm sends CheckBluetoothEvent, but this event is never observed by the
+     * view layer, since `MultiLiveEvent.pending` was set to false by the previous event.
+     * Since this VM doesn't need to have support for MultiLiveEvent, it overrides _event from the parent
+     * with SingleLiveEvent.
+     */
+    protected override val _event = SingleLiveEvent<Event>()
+    override val event: LiveData<Event> = _event
+
     private lateinit var cardReaderManager: CardReaderManager
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
