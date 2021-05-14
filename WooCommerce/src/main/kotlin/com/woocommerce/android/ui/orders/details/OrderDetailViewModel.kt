@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.snackbar.Snackbar
@@ -13,12 +12,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
+import com.woocommerce.android.model.Order.Status.OnHold
+import com.woocommerce.android.model.Order.Status.Pending
+import com.woocommerce.android.model.Order.Status.Processing
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -39,12 +42,12 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -79,9 +82,14 @@ class OrderDetailViewModel @AssistedInject constructor(
         get() = navArgs.orderId.toIdSet()
 
     final var order: Order
-        get() = requireNotNull(viewState.order)
+        get() = requireNotNull(viewState.orderInfo?.order)
         set(value) {
-            viewState = viewState.copy(order = value)
+            viewState = viewState.copy(
+                orderInfo = OrderInfo(
+                    value,
+                    viewState.orderInfo?.isPaymentCollectable ?: false
+                )
+            )
         }
 
     // Keep track of the deleted shipment tracking number in case
@@ -193,7 +201,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun hasVirtualProductsOnly(): Boolean {
         return if (order.items.isNotEmpty()) {
-            val remoteProductIds = order.items.map { it.productId }
+            val remoteProductIds = order.getProductIds()
             orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
         } else false
     }
@@ -204,7 +212,8 @@ class OrderDetailViewModel @AssistedInject constructor(
                 ViewOrderStatusSelector(
                     currentStatus = orderStatus.statusKey,
                     orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
-                ))
+                )
+            )
         }
     }
 
@@ -285,7 +294,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         // display undo snackbar
         triggerEvent(ShowUndoSnackbar(
             message = snackMessage,
-            undoAction = View.OnClickListener { onOrderStatusChangeReverted() },
+            undoAction = { onOrderStatusChangeReverted() },
             dismissAction = object : Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
@@ -323,7 +332,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
                 triggerEvent(ShowUndoSnackbar(
                     message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
-                    undoAction = View.OnClickListener { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                    undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
                     dismissAction = object : Snackbar.Callback() {
                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                             super.onDismissed(transientBottomBar, event)
@@ -399,7 +408,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     private fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
-            order = order,
+            orderInfo = OrderInfo(order, isPaymentCollectable()),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
@@ -434,7 +443,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
     private fun fetchOrderProductsAsync() = async {
-        val productIds = order.items.map { it.productId }
+        val productIds = order.getProductIds()
         val numLocalProducts = orderDetailRepository.getProductCountForOrder(productIds)
         if (numLocalProducts != order.items.size) {
             orderDetailRepository.fetchProductsByRemoteIds(productIds)
@@ -513,12 +522,26 @@ class OrderDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(
             isCreateShippingLabelButtonVisible = isShippingPluginReady &&
                 orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
-                ! shippingLabels.isVisible,
+                !shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible
         )
     }
+
+    private fun isPaymentCollectable(): Boolean {
+        return with(order) {
+            currency == "USD"
+                && (listOf(Pending, Processing, OnHold)).any { it == status }
+                && !isOrderPaid
+                // Empty payment method explanation:
+                // https://github.com/woocommerce/woocommerce/issues/29471
+                && (paymentMethod == CASH_ON_DELIVERY_PAYMENT_TYPE || paymentMethod.isEmpty())
+                && !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+        }
+    }
+
+    private fun Order.getProductIds() = items.map { it.productId }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
@@ -528,7 +551,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val order: Order? = null,
+        val orderInfo: OrderInfo? = null,
         val toolbarTitle: String? = null,
         val orderStatus: OrderStatus? = null,
         val isOrderDetailSkeletonShown: Boolean? = null,
@@ -553,6 +576,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+
+    @Parcelize
+    data class OrderInfo(val order: Order? = null, val isPaymentCollectable: Boolean = false) : Parcelable
 
     @AssistedFactory
     interface Factory : ViewModelAssistedFactory<OrderDetailViewModel>

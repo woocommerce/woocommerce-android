@@ -28,6 +28,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 
     fun updatePaymentInfo(
         order: Order,
+        isPaymentCollectable: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         onIssueRefundClickListener: (view: View) -> Unit,
         onCollectCardPresentPaymentClickListener: (view: View) -> Unit
@@ -101,7 +102,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         }
 
         binding.paymentInfoIssueRefundButton.setOnClickListener(onIssueRefundClickListener)
-        if (FeatureFlag.CARD_READER.isEnabled()) {
+        if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectable) {
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
                 onCollectCardPresentPaymentClickListener
             )
