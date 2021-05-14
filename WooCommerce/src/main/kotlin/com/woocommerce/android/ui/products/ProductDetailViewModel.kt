@@ -257,8 +257,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(
             productDraft = ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
         )
-        // TODO: Make this publish happen when ProductDetailFragment is started
-        if (defaultProduct.type == VARIABLE.value) {
+        if (defaultProduct.type == VARIABLE.value
+            && defaultProduct.status == DRAFT) {
             startPublishProduct(exitWhenDone = false)
         }
         updateProductState(defaultProduct)
