@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 11:54:04+0000
+Translation-Revision-Date: 2021-05-12 16:54:52+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">מוצר דיגיטלי ייחודי</string>
+    <string name="product_add_type_virtual">מוצר דיגיטלי פשוט</string>
+    <string name="product_add_type_simple">מוצר פיזי פשוט</string>
+    <string name="variation_confirm_delete">האם ברצונך למחוק את הסוג הזה?</string>
+    <string name="variation_create_dialog_title">יוצר סוג</string>
+    <string name="product_delete_dialog_title">מוחק מוצר</string>
+    <string name="card_reader_payment_send_receipt">לשלוח קבלה</string>
+    <string name="card_reader_payment_print_receipt">להדפיס קבלה</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">התשלום נכשל. יש לנסות שוב.</string>
+    <string name="card_reader_payment_capturing_payment_state">לוכד תשלום</string>
+    <string name="card_reader_payment_processing_payment_state">מעבד תשלום</string>
+    <string name="card_reader_payment_collect_payment_state">ה-Reader מוכן</string>
+    <string name="card_reader_payment_payment_failed_header">התשלום נכשל</string>
+    <string name="card_reader_payment_completed_payment_header">התשלום בוצע בהצלחה</string>
+    <string name="card_reader_collect_payment">לגבות תשלום</string>
+    <string name="card_reader_tap_or_insert">יש להקיש או להוסיף כדי לשלם</string>
+    <string name="shipping_label_preview_pdf_app_missing">אין אפשרות להציג את תווית המשלוח בתצוגה מקדימה. יש להתקין אפליקציה לצפייה ב-PDF ולנסות שוב.</string>
+    <string name="login_not_wordpress_site_v2">לא הצלחנו למצוא אתר WordPress בכתובת שהזנת. עליך לוודא שהאפליקציה של WordPress מותקנת ושהפעלת את הגרסה האחרונה.</string>
+    <string name="multiple_shipping">מספר שורות משלוח</string>
     <string name="shipping_label_create_purchase_fulfill_error">לא ניתן היה לסמן את ההזמנה כ\'הושלמה\'</string>
     <string name="shipping_label_create_purchase_error">שגיאה ברכישת התוויות</string>
     <string name="shipping_label_create_purchase_progress_message">רק רגע…</string>
@@ -136,7 +155,6 @@ Language: he_IL
     <string name="shipping_label_edit_address_phone">טלפון</string>
     <string name="shipping_label_edit_address_company">חברה</string>
     <string name="shipping_label_edit_address_name">שם</string>
-    <string name="login_not_wordpress_site">האתר ⁦%1$s⁩ אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
     <string name="error_no_gmaps_app">האפליקציה של Google Maps נמצאה</string>
     <string name="please_wait">רק רגע…</string>
     <string name="variation_detail_update_variation_image_error">מצטערים, הסרת תמונות מסוגי מוצר נתמכת ב-WooCommerce 4.7 ומעלה.</string>
@@ -294,7 +312,6 @@ Language: he_IL
     <string name="product_add_type_external">מוצר חיצוני</string>
     <string name="product_add_type_grouped">קבוצת מוצרים</string>
     <string name="product_add_type_variable">מוצר עם וריאציות</string>
-    <string name="product_add_type_simple">מוצר רגיל</string>
     <string name="product_images_image_limit_warning">ניתן להציג רק תמונה אחת לכל סוג מוצר</string>
     <string name="product_replace_photo">להחליף את התמונה</string>
     <string name="product_add_photo">להוסיף תמונה</string>
