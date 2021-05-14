@@ -1,2 +1,0 @@
-6.5:
-Temos uma funcionalidade inteiramente nova disponível para testes na versão beta! Os vendedores localizados nos EUA podem criar etiquetas de envio para pedidos físicos direto no app (somente para destinos nos EUA). Também corrigimos alguns problemas: as etiquetas de envio expiradas agora exibem informações mais precisas, e o teclado na tela não desaparece ao fazer pesquisas na sua lista de pedidos.
