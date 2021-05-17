@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -224,12 +224,16 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCancelClicked() {
         appLogWrapper.e(T.MAIN, "Connection flow interrupted by the user.")
-        triggerEvent(Exit)
+        exitFlow(connected = false)
     }
 
     private fun onReaderConnected() {
         appLogWrapper.e(T.MAIN, "Connecting to reader succeeded.")
-        triggerEvent(Exit)
+        exitFlow(connected = true)
+    }
+
+    private fun exitFlow(connected: Boolean) {
+        triggerEvent(ExitWithResult(connected))
     }
 
     fun onScreenResumed() {
