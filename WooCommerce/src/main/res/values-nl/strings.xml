@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 13:54:04+0000
+Translation-Revision-Date: 2021-05-12 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">Een uniek digitaal product</string>
+    <string name="product_add_type_virtual">Eenvoudig virtueel product</string>
+    <string name="product_add_type_simple">Eenvoudig fysiek product</string>
+    <string name="variation_confirm_delete">Wil je deze variatie verwijderen?</string>
+    <string name="variation_create_dialog_title">Variatie wordt aangemaakt</string>
+    <string name="product_delete_dialog_title">Product verwijderen</string>
+    <string name="card_reader_payment_send_receipt">Kwitantie verzenden</string>
+    <string name="card_reader_payment_print_receipt">Kwitantie afdrukken</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Betaling mislukt. Probeer het nog eens.</string>
+    <string name="card_reader_payment_capturing_payment_state">Betaling wordt ontvangen</string>
+    <string name="card_reader_payment_processing_payment_state">Betaling wordt verwerkt</string>
+    <string name="card_reader_payment_collect_payment_state">Lezer is gereed</string>
+    <string name="card_reader_payment_payment_failed_header">Betaling mislukt</string>
+    <string name="card_reader_payment_completed_payment_header">Betaling gelukt</string>
+    <string name="card_reader_collect_payment">Betaling innen</string>
+    <string name="card_reader_tap_or_insert">Tik of voer in om te betalen</string>
+    <string name="shipping_label_preview_pdf_app_missing">Kan geen voorbeeld van verzendlabel weergeven. Installeer een PDF viewer-app en probeer het nogmaals.</string>
+    <string name="login_not_wordpress_site_v2">We konden geen WordPress-site vinden op het door jou ingevoerde adres. Zorg ervoor dat WordPress is geïnstalleerd en dat je beschikt over de meest recente versie.</string>
+    <string name="multiple_shipping">meerdere verzendregels</string>
     <string name="shipping_label_create_purchase_fulfill_error">Kan de bestelling niet als voltooid markeren</string>
     <string name="shipping_label_create_purchase_error">Fout tijdens het aanschaffen van de labels</string>
     <string name="shipping_label_create_purchase_progress_message">Een moment geduld…</string>
@@ -20,6 +39,16 @@ Language: nl
     <string name="product_attribute_error_renaming">Fout tijdens het hernoemen van je eigenschap</string>
     <string name="product_rename_attribute_helper">Soort variatie, zoals grootte of kleur</string>
     <string name="product_rename_attribute">Eigenschap hernoemen</string>
+    <string name="magic_link_not_meaning_to_create_account">Heb je per ongeluk een nieuw account aangemaakt? Ga terug om je e-mailadres opnieuw in te voeren.</string>
+    <string name="settings_card_reader_connect">Kaartlezer koppelen</string>
+    <string name="settings_card_reader">Kaartlezer beheren</string>
+    <string name="settings_store">Winkelinstellingen</string>
+    <string name="product_attributes">Eigenschappen</string>
+    <string name="order_refunds_shipping_refund_variable_notice">Terugbetaling is mogelijk %1$s</string>
+    <string name="orderdetail_collect_payment_button">Betaling innen</string>
+    <string name="and">en</string>
+    <string name="product_attribute_remove">Deze eigenschap verwijderen?</string>
+    <string name="product_any_attribute_hint">Alle</string>
     <string name="product_attributes_error_saving">Fout bij het opslaan van je eigenschappen</string>
     <string name="shipping_label_payments_cant_edit_warning">Alleen de site-eigenaar kan de betalingsmethoden voor verzendlabels beheren. Neem contact op met winkeleigenaar %1$s (%2$s) om betalingsmethoden te beheren.</string>
     <string name="product_detail_add_variations">Variaties toevoegen</string>
@@ -126,7 +155,6 @@ Language: nl
     <string name="shipping_label_edit_address_phone">Telefoonnummer</string>
     <string name="shipping_label_edit_address_company">Bedrijf</string>
     <string name="shipping_label_edit_address_name">Naam</string>
-    <string name="login_not_wordpress_site">De website %1$s is geen WordPress-website. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
     <string name="error_no_gmaps_app">Google Maps-app gevonden</string>
     <string name="please_wait">Een moment geduld …</string>
     <string name="variation_detail_update_variation_image_error">Verwijderen van afbeeldingen bij productvariaties wordt helaas alleen ondersteund in WooCommerce 4.7 of nieuwer.</string>
@@ -284,7 +312,6 @@ Language: nl
     <string name="product_add_type_external">Extern product</string>
     <string name="product_add_type_grouped">Gegroepeerd product</string>
     <string name="product_add_type_variable">Variabel product</string>
-    <string name="product_add_type_simple">Simpel product</string>
     <string name="product_images_image_limit_warning">Er kan slechts één foto worden weergegeven per productvariatie</string>
     <string name="product_replace_photo">Foto vervangen</string>
     <string name="product_add_photo">Foto toevoegen</string>

@@ -38,7 +38,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog.T
+import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -47,6 +47,7 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 @HiltViewModel
 class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    cardReaderManager: CardReaderManager?,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore
 ) : ScopedViewModel(savedState) {
@@ -56,12 +57,13 @@ class CardReaderPaymentViewModel @Inject constructor(
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
 
-    private lateinit var cardReaderManager: CardReaderManager
+    // TODO remove this, and make the constructor parameter as a non nullable property when
+    //  the actual implementation is injected in release builds
+    private val cardReaderManager = cardReaderManager!!
 
     private var paymentFlowJob: Job? = null
 
-    final fun start(cardReaderManager: CardReaderManager) {
-        this.cardReaderManager = cardReaderManager
+    final fun start() {
         // TODO cardreader Check if the payment was already processed and cancel this flow
         // TODO cardreader Make sure a reader is connected
         if (paymentFlowJob == null) {
@@ -79,7 +81,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                     } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
-                logger.e(T.MAIN, e.stackTraceToString())
+                logger.e(MAIN, e.stackTraceToString())
                 viewState.postValue(
                     FailedPaymentState(
                         errorType = GENERIC_ERROR,

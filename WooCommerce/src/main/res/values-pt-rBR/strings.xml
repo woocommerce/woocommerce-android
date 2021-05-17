@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 17:55:00+0000
+Translation-Revision-Date: 2021-05-10 22:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">Um produto digital exclusivo</string>
+    <string name="product_add_type_virtual">Produto virtual simples</string>
+    <string name="product_add_type_simple">Produto físico simples</string>
+    <string name="variation_confirm_delete">Deseja excluir esta variação?</string>
+    <string name="variation_create_dialog_title">Criando variação</string>
+    <string name="product_delete_dialog_title">Excluindo produto</string>
+    <string name="card_reader_payment_send_receipt">Enviar recibo</string>
+    <string name="card_reader_payment_print_receipt">Imprimir recibo</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Falha no pagamento. Tente novamente.</string>
+    <string name="card_reader_payment_capturing_payment_state">Obtendo pagamento</string>
+    <string name="card_reader_payment_processing_payment_state">Processando pagamento</string>
+    <string name="card_reader_payment_collect_payment_state">O Leitor está pronto</string>
+    <string name="card_reader_payment_payment_failed_header">Falha no pagamento</string>
+    <string name="card_reader_payment_completed_payment_header">Pagamento realizado com êxito</string>
+    <string name="card_reader_collect_payment">Receber pagamento</string>
+    <string name="card_reader_tap_or_insert">Toque ou insira para pagar</string>
+    <string name="shipping_label_preview_pdf_app_missing">Não é possível visualizar a etiqueta de envio. Instale um aplicativo leitor de PDF e tente novamente.</string>
+    <string name="login_not_wordpress_site_v2">Não foi possível detectar um site do WordPress no endereço inserido. Certifique-se de que o WordPress esteja instalado e a versão sendo executada seja a mais recente disponível.</string>
+    <string name="multiple_shipping">diversas linhas de remessa</string>
     <string name="shipping_label_create_purchase_fulfill_error">Não foi possível marcar o pedido como concluído</string>
     <string name="shipping_label_create_purchase_error">Erro ao comprar as etiquetas</string>
     <string name="shipping_label_create_purchase_progress_message">Aguarde…</string>
@@ -135,7 +154,6 @@ Language: pt_BR
     <string name="shipping_label_edit_address_phone">Telefone</string>
     <string name="shipping_label_edit_address_company">Empresa</string>
     <string name="shipping_label_edit_address_name">Nome</string>
-    <string name="login_not_wordpress_site">O site %1$s não é do WordPress. Para que possamos nos conectar a ele, o site precisa ter o WordPress instalado.</string>
     <string name="error_no_gmaps_app">O aplicativo do Google Maps foi encontrado</string>
     <string name="please_wait">Aguarde…</string>
     <string name="variation_detail_update_variation_image_error">A remoção de imagens nas variações de produto só é permitida no WooCommerce 4.7 ou versões posteriores.</string>
@@ -293,7 +311,6 @@ Language: pt_BR
     <string name="product_add_type_external">Produto externo</string>
     <string name="product_add_type_grouped">Grupo de produto</string>
     <string name="product_add_type_variable">Produto variável</string>
-    <string name="product_add_type_simple">Produto simples</string>
     <string name="product_images_image_limit_warning">Apenas uma foto pode ser exibida por variação de produto</string>
     <string name="product_replace_photo">Substituir foto</string>
     <string name="product_add_photo">Adicionar foto</string>

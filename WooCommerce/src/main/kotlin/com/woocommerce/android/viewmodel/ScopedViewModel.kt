@@ -1,6 +1,7 @@
 package com.woocommerce.android.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,8 +18,8 @@ import kotlin.coroutines.CoroutineContext
 abstract class ScopedViewModel(
     protected val savedState: SavedStateHandle
 ) : ViewModel(), CoroutineScope {
-    private val _event = MultiLiveEvent<Event>()
-    val event: LiveData<Event> = _event
+    protected open val _event: MutableLiveData<Event> = MultiLiveEvent<Event>()
+    open val event: LiveData<Event> = _event
 
     override val coroutineContext: CoroutineContext
         get() = viewModelScope.coroutineContext

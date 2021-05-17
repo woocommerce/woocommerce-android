@@ -1,0 +1,4 @@
+6.6:
+När du redigerar en produkt kan du nu skapa, ta bort och uppdatera variationer, attribut och attributalternativ. Du kan också skapa och redigera en virtuell produkt från produktinformationsskärmen.
+Det är nu möjligt att återbetala en fraktrad i en beställning.
+Vi har även åtgärdat ett problem som uppstod vid redigering av det ordinarie priset och reapriset för en produkt.

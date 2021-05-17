@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-30 09:54:03+0000
+Translation-Revision-Date: 2021-05-13 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">獨特的數位產品</string>
+    <string name="product_add_type_virtual">簡單的虛擬產品</string>
+    <string name="product_add_type_simple">簡單的實體產品</string>
+    <string name="variation_confirm_delete">你要刪除此「款式」嗎？</string>
+    <string name="variation_create_dialog_title">建立款式</string>
+    <string name="product_delete_dialog_title">刪除產品</string>
+    <string name="card_reader_payment_send_receipt">傳送收據</string>
+    <string name="card_reader_payment_print_receipt">列印收據</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">付款失敗。 請再試一次。</string>
+    <string name="card_reader_payment_capturing_payment_state">擷取付款</string>
+    <string name="card_reader_payment_processing_payment_state">處理付款</string>
+    <string name="card_reader_payment_collect_payment_state">閱讀器已準備就緒</string>
+    <string name="card_reader_payment_payment_failed_header">付款失敗</string>
+    <string name="card_reader_payment_completed_payment_header">付款成功</string>
+    <string name="card_reader_collect_payment">收取付款</string>
+    <string name="card_reader_tap_or_insert">點選或插入即可付款</string>
+    <string name="shipping_label_preview_pdf_app_missing">無法預覽郵寄標籤。 請安裝 PDF 檢視器應用程式，然後再試一次。</string>
+    <string name="login_not_wordpress_site_v2">我們在你輸入的位址偵測不到 WordPress 網站。 請確認已安裝 WordPress，而且正在執行最新的可用版本。</string>
+    <string name="multiple_shipping">多個出貨細項</string>
     <string name="shipping_label_create_purchase_fulfill_error">無法將訂單標記為已完成</string>
     <string name="shipping_label_create_purchase_error">購買標籤時發生錯誤</string>
     <string name="shipping_label_create_purchase_progress_message">請稍候…</string>
@@ -136,7 +155,6 @@ Language: zh_TW
     <string name="shipping_label_edit_address_phone">電話</string>
     <string name="shipping_label_edit_address_company">公司</string>
     <string name="shipping_label_edit_address_name">名稱</string>
-    <string name="login_not_wordpress_site">%1$s 網站不是 WordPress 網站。 若需要我們連結網站，該網站必須安裝 WordPress。</string>
     <string name="error_no_gmaps_app">找到 Google 地圖應用程式</string>
     <string name="please_wait">請稍候…</string>
     <string name="variation_detail_update_variation_image_error">很抱歉，WooCommerce 4.7 或以上版本才支援移除商品款式圖片的功能。</string>
@@ -294,7 +312,6 @@ Language: zh_TW
     <string name="product_add_type_external">外部商品</string>
     <string name="product_add_type_grouped">組合商品</string>
     <string name="product_add_type_variable">變化商品</string>
-    <string name="product_add_type_simple">簡單商品</string>
     <string name="product_images_image_limit_warning">每個商品子項只能顯示一張相片</string>
     <string name="product_replace_photo">替換相片</string>
     <string name="product_add_photo">新增相片</string>
