@@ -21,7 +21,7 @@ class PaymentErrorMapper {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CARD_READ_TIMED_OUT
             TerminalErrorCode.PAYMENT_DECLINED_BY_STRIPE_API -> PAYMENT_DECLINED
             TerminalErrorCode.REQUEST_TIMED_OUT -> NO_NETWORK
-            else -> CardPaymentStatusErrorType.GENERIC_ERROR
+            else -> GENERIC_ERROR
         }
         return PaymentFailed(type, paymentData, exception.errorMessage)
     }
@@ -37,7 +37,7 @@ class PaymentErrorMapper {
             CapturePaymentResponse.GENERIC_ERROR,
             CapturePaymentResponse.MISSING_ORDER,
             CapturePaymentResponse.CAPTURE_ERROR,
-            CapturePaymentResponse.SERVER_ERROR -> CardPaymentStatusErrorType.GENERIC_ERROR
+            CapturePaymentResponse.SERVER_ERROR -> GENERIC_ERROR
             CapturePaymentResponse.PAYMENT_ALREADY_CAPTURED,
             CapturePaymentResponse.SUCCESS ->
                 throw IllegalStateException("mapError(..) should never be invoked with a successful response.")
