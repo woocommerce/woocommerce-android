@@ -197,6 +197,16 @@ class PaymentManagerTest {
     }
 
     @Test
+    fun `when creating payment intent fails, then mapTerminalError invoked`() = runBlockingTest {
+        whenever(createPaymentAction.createPaymentIntent(anyInt(), anyString()))
+            .thenReturn(flow { emit(CreatePaymentStatus.Failure(mock())) })
+
+        manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+        verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
+    }
+
+    @Test
     fun `given status not REQUIRES_PAYMENT_METHOD, when creating payment finishes, then flow terminates`() =
         runBlockingTest {
             whenever(createPaymentAction.createPaymentIntent(anyInt(), anyString()))
@@ -251,6 +261,16 @@ class PaymentManagerTest {
     }
 
     @Test
+    fun `when collecting payment intent fails, then mapTerminalError invoked`() = runBlockingTest {
+        whenever(collectPaymentAction.collectPayment(anyOrNull()))
+            .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
+
+        manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+        verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
+    }
+
+    @Test
     fun `given status not REQUIRES_CONFIRMATION, when collecting payment finishes, then flow terminates`() =
         runBlockingTest {
             whenever(collectPaymentAction.collectPayment(anyOrNull()))
@@ -282,6 +302,16 @@ class PaymentManagerTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+    }
+
+    @Test
+    fun `when processing payment fails, then mapTerminalError invoked`() = runBlockingTest {
+        whenever(processPaymentAction.processPayment(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
+
+        manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+        verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
     }
 
     @Test
@@ -334,6 +364,15 @@ class PaymentManagerTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+    }
+
+    @Test
+    fun `when capturing payment fails, then mapCapturePaymentError invoked`() = runBlockingTest {
+        whenever(cardReaderStore.capturePaymentIntent(any(), anyString())).thenReturn(GENERIC_ERROR)
+
+        manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+        verify(paymentErrorMapper).mapCapturePaymentError(anyOrNull(), anyOrNull())
     }
     // END - Capturing Payment
 

@@ -101,7 +101,7 @@ internal class PaymentManager(
         emit(InitializingPayment)
         createPaymentAction.createPaymentIntent(amount, currency).collect {
             when (it) {
-                is Failure -> emit(errorMapper.mapError(paymentIntent, it.exception.errorMessage))
+                is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent
             }
         }

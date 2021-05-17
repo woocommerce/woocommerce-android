@@ -12,10 +12,13 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 
 class PaymentErrorMapper {
     fun mapTerminalError(
-        originalPaymentIntent: PaymentIntent,
+        originalPaymentIntent: PaymentIntent?,
         exception: TerminalException
     ): PaymentFailed {
-        val paymentData = PaymentDataImpl(exception.paymentIntent ?: originalPaymentIntent)
+        val paymentData =
+            originalPaymentIntent?.let {
+                PaymentDataImpl(exception.paymentIntent ?: originalPaymentIntent)
+            }
         val type = when (exception.errorCode) {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CARD_READ_TIMED_OUT
             TerminalErrorCode.PAYMENT_DECLINED_BY_STRIPE_API -> PAYMENT_DECLINED
