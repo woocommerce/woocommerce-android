@@ -66,6 +66,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
         viewModel = CardReaderPaymentViewModel(
             savedState,
+            cardReaderManager = cardReaderManager,
             logger = loggerWrapper,
             orderStore = orderStore
         )
@@ -88,7 +89,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedOrder.total).thenReturn("invalid big decimal")
         whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
 
-        viewModel.start(cardReaderManager)
+        viewModel.start()
 
         assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
     }
@@ -97,14 +98,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given Order not found in database, when payment screen shown, then FailedPayment state is shown`() {
         whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(null)
 
-        viewModel.start(cardReaderManager)
+        viewModel.start()
 
         assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
     }
 
     @Test
     fun `when payment screen shown, then loading data state is shown`() {
-        viewModel.start(cardReaderManager)
+        viewModel.start()
 
         assertThat(viewModel.viewStateData.value).isInstanceOf(LoadingDataState::class.java)
     }
@@ -116,7 +117,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(InitializingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(LoadingDataState::class.java)
         }
@@ -128,7 +129,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CollectingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(CollectPaymentState::class.java)
         }
@@ -140,7 +141,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(ProcessingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingPaymentState::class.java)
         }
@@ -152,7 +153,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CapturingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(CapturingPaymentState::class.java)
         }
@@ -164,7 +165,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(PaymentCompleted) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
         }
@@ -176,7 +177,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(InitializingPaymentFailed) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
@@ -188,7 +189,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CollectingPaymentFailed(mock())) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
@@ -200,7 +201,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(ProcessingPaymentFailed(mock())) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
@@ -212,7 +213,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CapturingPaymentFailed(mock())) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
@@ -224,7 +225,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(UnexpectedError("")) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
         }
@@ -235,7 +236,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.InitializingPaymentFailed) }
             }
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             clearInvocations(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
@@ -249,7 +250,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CollectingPaymentFailed(mock())) }
             }
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
@@ -264,7 +265,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CollectingPaymentFailed(paymentData)) }
             }
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
@@ -278,7 +279,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.ProcessingPaymentFailed(mock())) }
             }
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
@@ -293,7 +294,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.ProcessingPaymentFailed(paymentData)) }
             }
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
@@ -307,7 +308,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CapturingPaymentFailed(mock())) }
             }
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
@@ -322,7 +323,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
                 flow { emit(CardPaymentStatus.CapturingPaymentFailed(paymentData)) }
             }
-            viewModel.start(cardReaderManager)
+            viewModel.start()
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
@@ -332,7 +333,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when loading data, then only progress is visible`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        viewModel.start(cardReaderManager)
+        viewModel.start()
         val viewState = viewModel.viewStateData.value!!
 
         assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isTrue()
@@ -352,7 +353,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CollectingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
@@ -367,7 +368,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CollectingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
@@ -388,7 +389,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(ProcessingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
@@ -403,7 +404,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(ProcessingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
@@ -424,7 +425,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CapturingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
@@ -439,7 +440,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CapturingPayment) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
@@ -460,7 +461,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CollectingPaymentFailed(mock())) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
@@ -474,7 +475,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(CollectingPaymentFailed(mock())) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
@@ -495,7 +496,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow { emit(PaymentCompleted) }
             }
 
-            viewModel.start(cardReaderManager)
+            viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
@@ -522,10 +523,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 )
             ).thenAnswer { flow<CardPaymentStatus> {} }
 
-            viewModel.start(cardReaderManager)
-            viewModel.start(cardReaderManager)
-            viewModel.start(cardReaderManager)
-            viewModel.start(cardReaderManager)
+            viewModel.start()
+            viewModel.start()
+            viewModel.start()
+            viewModel.start()
 
             verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyOrNull(), anyString())
         }

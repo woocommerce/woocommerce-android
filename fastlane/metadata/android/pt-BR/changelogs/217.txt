@@ -1,0 +1,4 @@
+6.6:
+Ao editar um produto, agora você pode criar, excluir e atualizar variações, atributos e opções de atributo. Você também pode criar e editar um produto virtual na tela de detalhes do produto.
+Agora é possível reembolsar uma linha de remessa no pedido.
+Além disso, corrigimos um problema que ocorria ao editar o preço promocional ou normal de um produto.

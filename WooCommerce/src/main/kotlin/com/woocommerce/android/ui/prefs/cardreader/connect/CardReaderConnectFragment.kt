@@ -12,7 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.WooCommerce
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
@@ -36,6 +36,8 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     @Inject lateinit var locationUtils: LocationUtils
+    // TODO change this to non-nullable
+    @set:Inject var cardReaderManager: CardReaderManager? = null
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.let {
@@ -89,8 +91,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                     requestEnableBluetoothLauncher.launch(enableBtIntent)
                 }
                 is InitializeCardReaderManager -> {
-                    // TODO cardreader Inject CardReaderManager into the fragment
-                    (requireActivity().application as? WooCommerce)?.cardReaderManager?.let {
+                    cardReaderManager?.let {
                         it.initialize(requireActivity().application)
                         event.onCardManagerInitialized(it)
                     } ?: throw IllegalStateException("CardReaderManager is null.")
