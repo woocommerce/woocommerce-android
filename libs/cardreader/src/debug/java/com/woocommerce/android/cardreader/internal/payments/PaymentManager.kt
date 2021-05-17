@@ -48,7 +48,7 @@ internal class PaymentManager(
             emit(errorMapper.mapError(errorMessage = "Unsupported currency: $currency"))
             return@flow
         }
-        var amountInSmallestCurrencyUnit = try {
+        val amountInSmallestCurrencyUnit = try {
             convertBigDecimalInDollarsToIntegerInCents(amount)
         } catch (e: ArithmeticException) {
             emit(errorMapper.mapError(errorMessage = "BigDecimal amount doesn't fit into an Integer: $amount"))
@@ -58,7 +58,7 @@ internal class PaymentManager(
             emit(errorMapper.mapError(errorMessage = "Reader not connected"))
             return@flow
         }
-        var paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency)
+        val paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
