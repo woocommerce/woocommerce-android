@@ -41,6 +41,8 @@ class CardReaderDetailFragment : BaseFragment(R.layout.card_reader_detail) {
             UiHelpers.setImageOrHide(binding.illustration, it.illustration)
             UiHelpers.setTextOrHide(binding.firstHintLabel, it.firstHintLabel)
             UiHelpers.setTextOrHide(binding.secondHintLabel, it.secondHintLabel)
+            UiHelpers.setTextOrHide(binding.connectBtn, it.connectBtnLabel)
+            binding.connectBtn.setOnClickListener { _ -> it.onPrimaryActionClicked?.invoke() }
         })
     }
 }
