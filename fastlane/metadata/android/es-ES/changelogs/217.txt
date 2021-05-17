@@ -1,0 +1,4 @@
+6.6:
+Ahora, al editar un producto, puedes crear, eliminar y actualizar variaciones, atributos y opciones de atributos. También puedes crear y editar un producto virtual desde su pantalla de detalles.
+Ahora es posible reembolsar una partida de un pedido.
+También hemos corregido un problema que sucedía al editar los precios de venta y normal de un producto.
