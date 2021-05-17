@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 11:54:03+0000
+Translation-Revision-Date: 2021-05-12 12:54:51+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">En unik digital produkt</string>
+    <string name="product_add_type_virtual">Enkel virtuell produkt</string>
+    <string name="product_add_type_simple">Enkel fysisk produkt</string>
+    <string name="variation_confirm_delete">Vill du ta bort denna variant?</string>
+    <string name="variation_create_dialog_title">Skapar variation</string>
+    <string name="product_delete_dialog_title">Tar bort produkt</string>
+    <string name="card_reader_payment_send_receipt">Skicka kvitto</string>
+    <string name="card_reader_payment_print_receipt">Skriv ut kvitto</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Betalning misslyckades. Försök igen.</string>
+    <string name="card_reader_payment_capturing_payment_state">Fångar upp betalning</string>
+    <string name="card_reader_payment_processing_payment_state">Behandlar betalning</string>
+    <string name="card_reader_payment_collect_payment_state">Läsaren är redo</string>
+    <string name="card_reader_payment_payment_failed_header">Betalning misslyckades</string>
+    <string name="card_reader_payment_completed_payment_header">Betalning lyckades</string>
+    <string name="card_reader_collect_payment">Ta emot betalning</string>
+    <string name="card_reader_tap_or_insert">Tryck eller infoga för att betala</string>
+    <string name="shipping_label_preview_pdf_app_missing">Det gick inte att förhandsgranska fraktsedeln. Installera en app för PDF-visning och försök igen.</string>
+    <string name="login_not_wordpress_site_v2">Vi kunde inte detektera någon WordPress-webbplats på den angivna adressen. Se till att WordPress är installerat och att du kör den senaste tillgängliga versionen.</string>
+    <string name="multiple_shipping">flera fraktrader</string>
     <string name="shipping_label_create_purchase_fulfill_error">Kunde inte markera beställningen som slutförd</string>
     <string name="shipping_label_create_purchase_error">Ett fel uppstod vid köp av etiketterna</string>
     <string name="shipping_label_create_purchase_progress_message">Vänta …</string>
@@ -136,7 +155,6 @@ Language: sv_SE
     <string name="shipping_label_edit_address_phone">Telefon</string>
     <string name="shipping_label_edit_address_company">Företag</string>
     <string name="shipping_label_edit_address_name">Namn</string>
-    <string name="login_not_wordpress_site">Webbplatsen %1$s är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>
     <string name="error_no_gmaps_app">Google Maps-appen hittades</string>
     <string name="please_wait">Vänta …</string>
     <string name="variation_detail_update_variation_image_error">Bildborttagning på produktvarianter stöds i WooCommerce 4.7 eller senare.</string>
@@ -294,7 +312,6 @@ Language: sv_SE
     <string name="product_add_type_external">Extern produkt</string>
     <string name="product_add_type_grouped">Grupperad produkt</string>
     <string name="product_add_type_variable">Variabel produkt</string>
-    <string name="product_add_type_simple">Enkel produkt</string>
     <string name="product_images_image_limit_warning">Endast ett foto kan visas per produktvariant</string>
     <string name="product_replace_photo">Byt ut foto</string>
     <string name="product_add_photo">Lägg till foto</string>

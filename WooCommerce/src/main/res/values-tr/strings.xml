@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 11:54:04+0000
+Translation-Revision-Date: 2021-05-12 10:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">Eşsiz bir dijital ürün</string>
+    <string name="product_add_type_virtual">Basit sanal ürün</string>
+    <string name="product_add_type_simple">Basit fiziksel ürün</string>
+    <string name="variation_confirm_delete">Bu Varyasyonu silmek istiyor musunuz?</string>
+    <string name="variation_create_dialog_title">Varyasyon oluşturuluyor</string>
+    <string name="product_delete_dialog_title">Ürün siliniyor</string>
+    <string name="card_reader_payment_send_receipt">Makbuz gönder</string>
+    <string name="card_reader_payment_print_receipt">Makbuz yazdır</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Ödeme başarısız. Lütfen yeniden deneyin.</string>
+    <string name="card_reader_payment_capturing_payment_state">Ödeme yakalanıyor</string>
+    <string name="card_reader_payment_processing_payment_state">Ödeme işleniyor</string>
+    <string name="card_reader_payment_collect_payment_state">Okuyucu hazır</string>
+    <string name="card_reader_payment_payment_failed_header">Ödeme başarısız</string>
+    <string name="card_reader_payment_completed_payment_header">Ödeme başarılı</string>
+    <string name="card_reader_collect_payment">Ödemeyi topla</string>
+    <string name="card_reader_tap_or_insert">Ödemek için dokunun veya içeri sokun</string>
+    <string name="shipping_label_preview_pdf_app_missing">Gönderim etiketi önizlenemiyor. Lütfen bir PDF görüntüleyici uygulaması yükleyin ve tekrar deneyin.</string>
+    <string name="login_not_wordpress_site_v2">Girdiğiniz adreste bir WordPress sitesi tespit edemedik. Lütfen WordPress\'in kurulu olduğundan ve mevcut en son sürümü çalıştırdığınızdan emin olun.</string>
+    <string name="multiple_shipping">birden çok gönderim satırı</string>
     <string name="shipping_label_create_purchase_fulfill_error">Sipariş tamamlandı olarak işaretlenemedi</string>
     <string name="shipping_label_create_purchase_error">Etiketler satın alınırken hata oluştu</string>
     <string name="shipping_label_create_purchase_progress_message">Lütfen bekleyin…</string>
@@ -136,7 +155,6 @@ Language: tr
     <string name="shipping_label_edit_address_phone">Telefon</string>
     <string name="shipping_label_edit_address_company">Firma</string>
     <string name="shipping_label_edit_address_name">İsim</string>
-    <string name="login_not_wordpress_site">%1$s web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
     <string name="error_no_gmaps_app">Google Haritalar bulunamadı</string>
     <string name="please_wait">Lütfen bekleyin…</string>
     <string name="variation_detail_update_variation_image_error">Maalesef ürün varyasyonlarında resim kaldırma işlevi WooCommerce 4.7 veya sonraki sürümlerde desteklenmektedir.</string>
@@ -294,7 +312,6 @@ Language: tr
     <string name="product_add_type_external">Harici ürün</string>
     <string name="product_add_type_grouped">Gruplandırılmış ürün</string>
     <string name="product_add_type_variable">Varyasyonlu ürün</string>
-    <string name="product_add_type_simple">Basit ürün</string>
     <string name="product_images_image_limit_warning">Her ürün çeşidi için yalnızca bir fotoğraf görüntülenebilir</string>
     <string name="product_replace_photo">Fotoğrafı değiştir</string>
     <string name="product_add_photo">Fotoğraf ekle</string>
