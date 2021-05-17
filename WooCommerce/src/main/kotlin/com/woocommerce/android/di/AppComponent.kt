@@ -5,26 +5,24 @@ import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.media.ProductImagesServiceModule
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
+import com.woocommerce.android.util.crashlogging.CrashLoggingModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
-import org.wordpress.android.fluxc.module.ReleaseBaseModule
+import org.wordpress.android.fluxc.module.OkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
-import org.wordpress.android.fluxc.module.ReleaseOkHttpClientModule
-import org.wordpress.android.fluxc.module.ReleaseWCNetworkModule
 import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [
+@Component(
+    modules = [
         AndroidInjectionModule::class,
         ApplicationModule::class,
         AppConfigModule::class,
-        ReleaseBaseModule::class,
         ReleaseNetworkModule::class,
-        ReleaseWCNetworkModule::class,
-        ReleaseOkHttpClientModule::class,
+        OkHttpClientModule::class,
         SelectedSiteModule::class,
         ThreadModule::class,
         ActivityBindingModule::class,
@@ -35,8 +33,10 @@ import javax.inject.Singleton
         CurrencyModule::class,
         ProductImagesServiceModule::class,
         SupportModule::class,
-        OrderFetcherModule::class
-])
+        OrderFetcherModule::class,
+        CrashLoggingModule::class
+    ]
+)
 interface AppComponent : AndroidInjector<WooCommerce> {
     override fun inject(app: WooCommerce)
 

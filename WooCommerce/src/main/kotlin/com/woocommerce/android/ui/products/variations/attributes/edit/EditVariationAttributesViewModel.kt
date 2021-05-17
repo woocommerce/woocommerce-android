@@ -12,7 +12,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
@@ -26,8 +25,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductDetailRepository,
-    private val variationRepository: VariationDetailRepository,
-    private val resources: ResourceProvider
+    private val variationRepository: VariationDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     private val _editableVariationAttributeList =
         MutableLiveData<List<VariationAttributeSelectionGroup>>()
@@ -75,7 +73,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     private fun loadProductAttributes() =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
-                parentProduct?.attributes
+                parentProduct?.variationEnabledAttributes
                     ?.pairAttributeWithSelectedOption()
                     ?.pairAttributeWithUnselectedOption()
                     ?.mapToAttributeSelectionGroupList()
@@ -93,7 +91,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
 
     private fun List<Pair<ProductAttribute, VariantOption>>.pairAttributeWithUnselectedOption() =
         map { it.first }.let { selectedAttributes ->
-            parentProduct?.attributes
+            parentProduct?.variationEnabledAttributes
                 ?.filter { selectedAttributes.contains(it).not() }
                 ?.map { it to VariantOption.empty }
                 ?.let { toMutableList().apply { addAll(it) } }
@@ -106,8 +104,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
                 attributeName = productAttribute.name,
                 options = productAttribute.terms,
                 selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option),
-                noOptionSelected = selectedOption.option.isNullOrEmpty(),
-                resourceCreator = { resources.getString(it) }
+                noOptionSelected = selectedOption.option.isNullOrEmpty()
             )
         }
 

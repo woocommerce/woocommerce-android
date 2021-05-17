@@ -147,7 +147,7 @@ data class ProductVariation(
     }
 
     fun getName(parentProduct: Product? = null): String {
-        return parentProduct?.attributes?.joinToString(" - ") { attribute ->
+        return parentProduct?.variationEnabledAttributes?.joinToString(" - ") { attribute ->
             val option = options.firstOrNull { it.attributeName == attribute.name }
             option?.optionChoice ?: "Any ${attribute.name}"
         } ?: options.joinToString(" - ") { o -> o.optionChoice }

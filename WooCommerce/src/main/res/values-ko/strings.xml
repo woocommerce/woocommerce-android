@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 11:54:03+0000
+Translation-Revision-Date: 2021-05-12 10:54:13+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">고유한 디지털 제품</string>
+    <string name="product_add_type_virtual">단순한 가상 제품</string>
+    <string name="product_add_type_simple">단순한 실제 제품</string>
+    <string name="variation_confirm_delete">이 변경을 삭제하시겠어요?</string>
+    <string name="variation_create_dialog_title">변형 생성 중</string>
+    <string name="product_delete_dialog_title">제품 삭제 중</string>
+    <string name="card_reader_payment_send_receipt">영수증 발송</string>
+    <string name="card_reader_payment_print_receipt">영수증 인쇄</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">결제에 실패했습니다. 다시 시도하세요.</string>
+    <string name="card_reader_payment_capturing_payment_state">결제 캡처 중</string>
+    <string name="card_reader_payment_processing_payment_state">결제 처리 중</string>
+    <string name="card_reader_payment_collect_payment_state">리더 준비 완료</string>
+    <string name="card_reader_payment_payment_failed_header">결제 실패</string>
+    <string name="card_reader_payment_completed_payment_header">결제 성공</string>
+    <string name="card_reader_collect_payment">결제 수령</string>
+    <string name="card_reader_tap_or_insert">누르거나 삽입하여 결제하기</string>
+    <string name="shipping_label_preview_pdf_app_missing">배송 레이블을 미리 볼 수 없습니다. PDF 뷰어 앱을 설치하고 다시 시도하세요.</string>
+    <string name="login_not_wordpress_site_v2">입력하신 주소의 WordPress 사이트를 찾지 못했습니다. WordPress를 설치했고 사용 가능한 최신 버전을 실행 중인지 확인하세요.</string>
+    <string name="multiple_shipping">여러 배송 라인</string>
     <string name="shipping_label_create_purchase_fulfill_error">주문을 완료로 표시할 수 없음</string>
     <string name="shipping_label_create_purchase_error">레이블 구매 중 오류 발생</string>
     <string name="shipping_label_create_purchase_progress_message">기다려주세요…</string>
@@ -136,7 +155,6 @@ Language: ko_KR
     <string name="shipping_label_edit_address_phone">전화</string>
     <string name="shipping_label_edit_address_company">회사</string>
     <string name="shipping_label_edit_address_name">이름</string>
-    <string name="login_not_wordpress_site">%1$s 웹사이트는 WordPress 사이트가 아닙니다. 워드프레스에서 연결하려면 사이트에 워드프레스가 설치되어 있어야 합니다.</string>
     <string name="error_no_gmaps_app">Google Maps  앱을 찾았음</string>
     <string name="please_wait">기다려주세요…</string>
     <string name="variation_detail_update_variation_image_error">죄송합니다. 제품 변형의 이미지 제거는 WooCommerce 4.7 이상에서 지원됩니다.</string>
@@ -294,7 +312,6 @@ Language: ko_KR
     <string name="product_add_type_external">외부 상품</string>
     <string name="product_add_type_grouped">그룹 상품</string>
     <string name="product_add_type_variable">옵션 상품</string>
-    <string name="product_add_type_simple">단순 상품</string>
     <string name="product_images_image_limit_warning">제품 변형당 하나의 사진만 표시할 수 있습니다.</string>
     <string name="product_replace_photo">사진 바꾸기</string>
     <string name="product_add_photo">사진 추가</string>

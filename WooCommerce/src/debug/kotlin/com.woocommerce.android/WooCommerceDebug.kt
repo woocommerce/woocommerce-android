@@ -20,8 +20,8 @@ class WooCommerceDebug : WooCommerce() {
             return result.model?.token.orEmpty()
         }
 
-        override suspend fun capturePaymentIntent(id: String): Boolean {
-            return false
+        override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): Boolean {
+            return !payStore.capturePayment(selectedSite.get(), paymentId, orderId).isError
         }
     })
 

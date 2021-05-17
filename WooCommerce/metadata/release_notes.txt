@@ -1,1 +1,3 @@
-We have a shiny new feature available for beta testing! US-based merchants can create shipping labels for physical orders right from the app (for US destinations only). We've also fixed some bugs: expired shipping labels now display more accurate information, and the on-screen keyboard won't disappear when searching your order list.
+When editing a product, you can now create, delete, and update variations, attributes, and attribute options. You can also create and edit a virtual product from the product detail screen.
+It is now possible to refund a shipping line inside an order.
+We also fixed an issue that occurred when editing a product’s regular and sale prices.

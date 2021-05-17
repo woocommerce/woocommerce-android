@@ -6,6 +6,7 @@ import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -14,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundByItemsBinding
 import com.woocommerce.android.databinding.RefundByItemsProductsBinding
+import com.woocommerce.android.databinding.RefundByItemsShippingBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
@@ -23,6 +25,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
+import com.woocommerce.android.ui.refunds.RefundShippingListAdapter.OnCheckedChangeListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -31,7 +34,8 @@ import dagger.Lazy
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
+class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
+    OnCheckedChangeListener {
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
@@ -41,6 +45,9 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
 
     private var _productsBinding: RefundByItemsProductsBinding? = null
     private val productsBinding get() = _productsBinding!!
+
+    private var _shippingLinesBinding: RefundByItemsShippingBinding? = null
+    private val shippingLinesBinding get() = _shippingLinesBinding!!
 
     private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) {
         viewModelFactory.get()
@@ -56,6 +63,7 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
 
         _binding = FragmentRefundByItemsBinding.bind(view)
         _productsBinding = binding.issueRefundProductsList
+        _shippingLinesBinding = binding.issueRefundShippingSection
 
         initializeViews()
         setupObservers()
@@ -65,12 +73,16 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
         super.onDestroyView()
         _binding = null
         _productsBinding = null
+        _shippingLinesBinding = null
     }
 
     private fun initializeViews() {
         productsBinding.issueRefundProducts.layoutManager = LinearLayoutManager(context)
         productsBinding.issueRefundProducts.setHasFixedSize(true)
         productsBinding.issueRefundProducts.isMotionEventSplittingEnabled = false
+
+        shippingLinesBinding.issueRefundShippingLines.layoutManager = LinearLayoutManager(context)
+        shippingLinesBinding.issueRefundShippingLines.setHasFixedSize(true)
 
         binding.issueRefundSelectButton.setOnClickListener {
             viewModel.onSelectButtonTapped()
@@ -80,11 +92,12 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
             viewModel.onNextButtonTappedFromItems()
         }
 
+        binding.issueRefundShippingMainSwitch.setOnCheckedChangeListener { _, isChecked: Boolean ->
+            viewModel.onShippingRefundMainSwitchChanged(isChecked)
+            binding.issueRefundShippingSection.root.isVisible = isChecked
+        }
+
         // TODO: Temporarily disabled, this will be used in a future release - do not remove
-//        issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
-//            viewModel.onRefundItemsShippingSwitchChanged(isChecked)
-//        }
-//
 //        issueRefund_productsTotal.setOnClickListener {
 //            viewModel.onProductRefundAmountTapped()
 //        }
@@ -99,6 +112,9 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
                         false,
                         { uniqueId -> viewModel.onRefundQuantityTapped(uniqueId) }
                 )
+                shippingLinesBinding.issueRefundShippingLines.adapter = RefundShippingListAdapter(
+                    this,
+                    currencyFormatter.buildBigDecimalFormatter(new.currency))
             }
             new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
                 binding.issueRefundBtnNextFromItems.isEnabled = it
@@ -107,7 +123,10 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
                 productsBinding.issueRefundProductsTotal.text = it
             }
             new.shippingSubtotal?.takeIfNotEqualTo(old?.shippingSubtotal) {
-                productsBinding.issueRefundShippingTotal.text = it
+                shippingLinesBinding.issueRefundShippingSubtotal.text = it
+            }
+            new.shippingTaxes?.takeIfNotEqualTo(old?.shippingSubtotal) {
+                shippingLinesBinding.issueRefundShippingTax.text = it
             }
             new.feesTotal?.takeIfNotEqualTo(old?.feesTotal) {
                 productsBinding.issueRefundFeesTotal.text = it
@@ -124,12 +143,23 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
             new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
                 binding.issueRefundSelectButton.text = it
             }
-            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
-                if (isVisible) {
-                    productsBinding.issueRefundShippingRefundGroup.show()
-                } else {
-                    productsBinding.issueRefundShippingRefundGroup.hide()
+            new.isShippingMainSwitchChecked?.takeIfNotEqualTo(old?.isShippingMainSwitchChecked) { checked ->
+                binding.issueRefundShippingMainSwitch.isChecked = checked
+            }
+            new.selectedShippingLines?.takeIfNotEqualTo(old?.selectedShippingLines) { shippingLines ->
+                val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
+                adapter.updateToggleStates(shippingLines)
+
+                if (shippingLines.isEmpty()) {
+                    viewModel.onShippingRefundMainSwitchChanged(isChecked = false)
+                    binding.issueRefundShippingSection.root.hide()
                 }
+            }
+            new.isShippingRefundAvailable?.takeIfNotEqualTo(old?.isShippingRefundAvailable) { isVisible ->
+                binding.issueRefundShippingContainer.isVisible = isVisible
+            }
+            new.formattedShippingRefundTotal?.takeIfNotEqualTo(old?.formattedShippingRefundTotal) {
+                shippingLinesBinding.issueRefundShippingTotal.text = it
             }
             new.isRefundNoticeVisible.takeIfNotEqualTo(old?.isRefundNoticeVisible) { isVisible ->
                 if (isVisible) {
@@ -148,18 +178,15 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
                     productsBinding.issueRefundFeesGroup.hide()
                 }
             }
-            // TODO: Temporarily disabled, this will be used in a future release - do not remove
-//            new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
-//                if (isVisible) {
-//                    issueRefund_shippingSection.expand()
-//                } else {
-//                    issueRefund_shippingSection.collapse()
-//                }
-//            }
         }
 
         viewModel.refundItems.observe(viewLifecycleOwner, Observer { list ->
             val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
+            adapter.update(list)
+        })
+
+        viewModel.refundShippingLines.observe(viewLifecycleOwner, Observer { list ->
+            val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
             adapter.update(list)
         })
 
@@ -206,5 +233,9 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
 
         productsBinding.issueRefundRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
         productsBinding.issueRefundRefundNotice.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    override fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {
+        viewModel.onShippingLineSwitchChanged(isChecked, itemId)
     }
 }

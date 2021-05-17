@@ -9,12 +9,14 @@ import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
+import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.math.BigDecimal
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -29,10 +31,13 @@ internal class CardReaderManagerImpl(
     companion object {
         private const val TAG = "CardReaderManager"
     }
+
     private lateinit var application: Application
 
     override val isInitialized: Boolean
-        get() { return terminal.isInitialized() }
+        get() {
+            return terminal.isInitialized()
+        }
 
     override val readerStatus: MutableStateFlow<CardReaderStatus> = connectionManager.readerStatus
 
@@ -73,8 +78,11 @@ internal class CardReaderManagerImpl(
         return connectionManager.connectToReader(cardReader)
     }
 
-    override suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus> =
-        paymentManager.acceptPayment(amount, currency)
+    override suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
+        paymentManager.acceptPayment(orderId, amount, currency)
+
+    override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
+        paymentManager.retryPayment(orderId, paymentData)
 
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)

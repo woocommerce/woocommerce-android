@@ -43,6 +43,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
+        whenever(productRepository.getProduct(productRemoteId)).thenReturn(mock())
     }
 
     private fun createViewModel() {

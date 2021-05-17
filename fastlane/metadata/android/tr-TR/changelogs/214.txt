@@ -1,2 +1,0 @@
-6.5:
-Beta testi için yepyeni bir özelliğimiz var. ABD merkezli satıcılar, doğrudan uygulamadan fiziksel siparişler için gönderim etiketleri oluşturabilirler (yalnızca ABD'deki varış noktaları için). Ayrıca bazı hataları da düzelttik: Süresi dolan gönderim etiketleri artık daha doğru bilgiler gösteriyor ve sipariş listenizde arama yaparken ekran klavyesi kaybolmuyor.

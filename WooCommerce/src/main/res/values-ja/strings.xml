@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-30 09:54:03+0000
+Translation-Revision-Date: 2021-05-14 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">独自のデジタル製品</string>
+    <string name="product_add_type_virtual">シンプルな仮装製品</string>
+    <string name="product_add_type_simple">シンプルな物理的製品</string>
+    <string name="variation_confirm_delete">このバリエーションを削除しますか ?</string>
+    <string name="variation_create_dialog_title">バリエーションを生成しています</string>
+    <string name="product_delete_dialog_title">製品を削除しています</string>
+    <string name="card_reader_payment_send_receipt">レシートを送信</string>
+    <string name="card_reader_payment_print_receipt">レシートを印刷</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">支払いに失敗しました。 もう一度お試しください。</string>
+    <string name="card_reader_payment_capturing_payment_state">支払いをキャプチャーしています</string>
+    <string name="card_reader_payment_processing_payment_state">支払いを処理しています</string>
+    <string name="card_reader_payment_collect_payment_state">リブログの準備ができています</string>
+    <string name="card_reader_payment_payment_failed_header">支払いに失敗しました</string>
+    <string name="card_reader_payment_completed_payment_header">支払いに成功しました</string>
+    <string name="card_reader_collect_payment">支払いを受け取る</string>
+    <string name="card_reader_tap_or_insert">タップまたは挿入して支払う</string>
+    <string name="shipping_label_preview_pdf_app_missing">配送ラベルをプレビューできません。 PDF ビューアのアプリをインストールし、再試行してください。</string>
+    <string name="login_not_wordpress_site_v2">入力されたアドレスでは、WordPress サイトを検出できませんでした。 WordPress がインストールされていて、入手可能な最新のバージョンで実行されていることを確認してください。</string>
+    <string name="multiple_shipping">複数の配送ライン</string>
     <string name="shipping_label_create_purchase_fulfill_error">注文を完了としてマークできませんでした</string>
     <string name="shipping_label_create_purchase_error">ラベルの購入時にエラーが発生しました</string>
     <string name="shipping_label_create_purchase_progress_message">しばらくお待ちください…</string>
@@ -136,7 +155,6 @@ Language: ja_JP
     <string name="shipping_label_edit_address_phone">電話</string>
     <string name="shipping_label_edit_address_company">会社</string>
     <string name="shipping_label_edit_address_name">名前</string>
-    <string name="login_not_wordpress_site">ウェブサイト %1$s は WordPress のサイトではありません。 接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
     <string name="error_no_gmaps_app">Google マップアプリが見つかりました</string>
     <string name="please_wait">しばらくお待ちください…</string>
     <string name="variation_detail_update_variation_image_error">商品バリエーションの画像削除は、WooCommerce 4.7以上が対象となっています。</string>
@@ -294,7 +312,6 @@ Language: ja_JP
     <string name="product_add_type_external">外部商品</string>
     <string name="product_add_type_grouped">グループ化された商品</string>
     <string name="product_add_type_variable">バリエーションのある商品</string>
-    <string name="product_add_type_simple">基本的な商品</string>
     <string name="product_images_image_limit_warning">商品1種類につき、表示できる写真は1点のみです</string>
     <string name="product_replace_photo">写真を置換</string>
     <string name="product_add_photo">写真を追加</string>

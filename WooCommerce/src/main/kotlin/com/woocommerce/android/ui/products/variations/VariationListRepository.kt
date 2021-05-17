@@ -2,18 +2,28 @@ package com.woocommerce.android.ui.products.variations
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_CREATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_CREATION_SUCCESS
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_VARIATIONS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCProductVariationModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -81,6 +91,35 @@ class VariationListRepository @Inject constructor(
      * Returns the currency code for the site
      */
     fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+
+    /**
+     * Fires the request to create a empty variation to a given product
+     */
+    suspend fun createEmptyVariation(product: Product): ProductVariation? =
+        withContext(Dispatchers.IO) {
+            productStore
+                .generateEmptyVariation(selectedSite.get(), product.toDataModel())
+                .handleVariationCreateResult(product)
+        }
+
+    private fun WooResult<WCProductVariationModel>.handleVariationCreateResult(
+        product: Product
+    ) = if (isError) {
+        AnalyticsTracker.track(
+            PRODUCT_VARIATION_CREATION_FAILED,
+            mapOf(
+                KEY_PRODUCT_ID to product.remoteId,
+                KEY_ERROR_DESC to error.message
+            )
+        )
+        null
+    } else {
+        AnalyticsTracker.track(
+            PRODUCT_VARIATION_CREATION_SUCCESS,
+            mapOf(KEY_PRODUCT_ID to product.remoteId)
+        )
+        model?.toAppModel()
+    }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

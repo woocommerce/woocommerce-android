@@ -11,7 +11,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
@@ -51,6 +50,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragm
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -71,6 +71,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var dateUtils: DateUtils
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -126,6 +127,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     override fun openOrderProductDetail(remoteProductId: Long) {
         AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
+    }
+
+    override fun openOrderProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
+        AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
+        (activity as? MainNavigationRouter)?.showProductVariationDetail(remoteProductId, remoteVariationId)
     }
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
@@ -226,8 +232,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
-                    val manager = (requireActivity().application as? WooCommerce)?.cardReaderManager
-                    viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager = manager)
+                    viewModel.onAcceptCardPresentPaymentClicked()
                 }
             }
         )
@@ -320,9 +325,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private fun showShipmentTrackings(
         shipmentTrackings: List<OrderShipmentTracking>
     ) {
-        binding.orderDetailShipmentList.updateShipmentTrackingList(shipmentTrackings) {
-            viewModel.onDeleteShipmentTrackingClicked(it)
-        }
+        binding.orderDetailShipmentList.updateShipmentTrackingList(
+            shipmentTrackings = shipmentTrackings,
+            dateUtils = dateUtils,
+            onDeleteShipmentTrackingClicked = {
+                viewModel.onDeleteShipmentTrackingClicked(it)
+            })
     }
 
     private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {

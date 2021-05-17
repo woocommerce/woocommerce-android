@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/major_100"
         android:hint="@string/type"
+        android:imeOptions="actionDone"
         android:inputType="text"
         app:helperText="@string/product_rename_attribute_helper" />
 </LinearLayout>

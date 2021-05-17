@@ -1,2 +1,0 @@
-6.5:
-Es gibt eine brandneue Funktion als Beta-Version! Verkäufer in der USA können Versandetiketten für physische Bestellungen jetzt direkt in der App erstellen (nur für Lieferungen innerhalb der USA). Außerdem haben wir ein paar Fehler korrigiert: Abgelaufene Versandetiketten zeigen Informationen jetzt genauer an und die Tastatur auf dem Bildschirm verschwindet nicht mehr, wenn du deine Bestellliste durchsuchst.

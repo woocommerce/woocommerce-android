@@ -88,7 +88,7 @@ class VariationDetailRepository @Inject constructor(
                 continuationUpdateVariation = it
 
                 val variation = updatedVariation.toDataModel(
-                    getCachedVariation(
+                    getCachedWCVariation(
                         updatedVariation.remoteProductId,
                         updatedVariation.remoteVariationId
                     )
@@ -102,11 +102,22 @@ class VariationDetailRepository @Inject constructor(
         }
     }
 
-    private fun getCachedVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
+    /**
+     * Fires the request to delete a variation
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun deleteVariation(productID: Long, variationID: Long) =
+        productStore
+            .deleteVariation(selectedSite.get(), productID, variationID)
+            .model?.let { true }
+            ?: false
+
+    private fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
         productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
     fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
-        getCachedVariation(remoteProductId, remoteVariationId)?.toAppModel()
+        getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

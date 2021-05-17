@@ -1,11 +1,19 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
-6.6
+6.7
 -----
 
+
+6.6
+-----
+- [***] Products: When editing a product, you can now create/delete/update product variations, product attributes and product attribute options. [https://github.com/woocommerce/woocommerce-android/pull/3946]
+- [**] Refunds: Refunding a shipping line inside an order is now possible. [https://github.com/woocommerce/woocommerce-android/pull/3935/]
+- [*] Fixed a bug would not allow to edit the product price and sale price. [https://github.com/woocommerce/woocommerce-android/pull/3926]
+- [*] Added the option to create and edit a virtual product directly from the product detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3900]
 
 6.5
 -----
+* [***] Fixed bug where opening a product variation from order detail would treat it like a "regular" product rather than a variation. [https://github.com/woocommerce/woocommerce-android/pull/3822]
 - [*] Fixed bug that would cause the on-screen keyboard to disappear when searching the order list. [https://github.com/woocommerce/woocommerce-android/pull/3828]
 - [**] Beta feature: merchants from US can create shipping labels for physical orders from the app, the feature supports for now only orders where the shipping address is in the US. [https://github.com/woocommerce/woocommerce-android/pull/3844]
 - [*] Fixed a bug that resulted in displaying inaccurate information about expired shipping labels. [https://github.com/woocommerce/woocommerce-android/pull/3849]
