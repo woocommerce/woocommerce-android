@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -40,7 +38,8 @@ class CardReaderDetailViewModel @Inject constructor(
         val connectBtnLabel: Int? = null
     ) {
         open val onPrimaryActionClicked: (() -> Unit)? = null
-        data class NotConnectedState(override val onPrimaryActionClicked: (() -> Unit)): ViewState(
+
+        data class NotConnectedState(override val onPrimaryActionClicked: (() -> Unit)) : ViewState(
             headerLabel = R.string.card_reader_detail_not_connected_header,
             illustration = R.drawable.img_card_reader_not_connected,
             firstHintLabel = R.string.card_reader_detail_not_connected_first_hint_label,
