@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
@@ -20,38 +21,34 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.UnexpectedError
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog.T
 import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
+import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
 
-class CardReaderPaymentViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class CardReaderPaymentViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     cardReaderManager: CardReaderManager?,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
@@ -82,7 +79,7 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                     } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
-                logger.e(T.MAIN, e.stackTraceToString())
+                logger.e(MAIN, e.stackTraceToString())
                 viewState.postValue(
                     FailedPaymentState(
                         amountWithCurrencyLabel = null,
@@ -213,7 +210,4 @@ class CardReaderPaymentViewModel @AssistedInject constructor(
                 primaryActionLabel = R.string.card_reader_payment_print_receipt
             )
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<CardReaderPaymentViewModel>
 }

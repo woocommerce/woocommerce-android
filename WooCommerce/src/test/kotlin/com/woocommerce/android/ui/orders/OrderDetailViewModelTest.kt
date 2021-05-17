@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.clearInvocations
@@ -15,6 +13,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -36,17 +35,19 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class OrderDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
@@ -62,13 +63,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
     }
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER)
-        )
-    )
+    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
     private val orderStatus = OrderStatus(order.status.value, order.status.value)
@@ -101,8 +96,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(ViewState()))
-            .whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
 
         doReturn(WooPlugin(true, true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
@@ -110,7 +103,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel = spy(OrderDetailViewModel(
             savedState,
-            coroutinesTestRule.testDispatchers,
             appPrefsWrapper,
             networkStatus,
             resources,
@@ -119,7 +111,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         clearInvocations(
             viewModel,
-            savedState,
             selectedSite,
             repository,
             networkStatus,

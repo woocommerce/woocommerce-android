@@ -7,10 +7,8 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.toProductTag
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -21,7 +19,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductTagsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductTagChanged
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
 @OpenClassOnDebug
 class ProductTagsRepository @Inject constructor(
@@ -33,8 +30,8 @@ class ProductTagsRepository @Inject constructor(
         private const val PRODUCT_TAGS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_TAGS_PAGE_SIZE
     }
 
-    private var loadContinuation: CancellableContinuation<Boolean>? = null
-    private var addProductTagsContinuation: CancellableContinuation<Boolean>? = null
+    private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
+    private var addProductTagsContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
 
     var canLoadMoreProductTags = true
@@ -52,21 +49,15 @@ class ProductTagsRepository @Inject constructor(
      * and returns the full list of product tags from the database
      */
     suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null): List<ProductTag> {
-        try {
-            loadContinuation?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                offset = if (loadMore) offset + PRODUCT_TAGS_PAGE_SIZE else 0
-                loadContinuation = it
-                val payload = FetchProductTagsPayload(
-                    selectedSite.get(),
-                    pageSize = PRODUCT_TAGS_PAGE_SIZE,
-                    offset = offset,
-                    searchQuery = searchQuery
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductTagsAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching product tags", e)
+        loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            offset = if (loadMore) offset + PRODUCT_TAGS_PAGE_SIZE else 0
+            val payload = FetchProductTagsPayload(
+                selectedSite.get(),
+                pageSize = PRODUCT_TAGS_PAGE_SIZE,
+                offset = offset,
+                searchQuery = searchQuery
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductTagsAction(payload))
         }
 
         return getProductTags()
@@ -86,19 +77,9 @@ class ProductTagsRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun addProductTags(tagNames: List<String>): List<ProductTag> {
-        try {
-            addProductTagsContinuation?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                addProductTagsContinuation = it
-
-                val payload = WCProductStore.AddProductTagsPayload(selectedSite.get(), tagNames)
-                dispatcher.dispatch(WCProductActionBuilder.newAddProductTagsAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(
-                WooLog.T.PRODUCTS,
-                "CancellationException while adding product tags: $tagNames", e
-            )
+        addProductTagsContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = WCProductStore.AddProductTagsPayload(selectedSite.get(), tagNames)
+            dispatcher.dispatch(WCProductActionBuilder.newAddProductTagsAction(payload))
         }
         return getProductTagsByNames(tagNames)
     }
@@ -115,7 +96,7 @@ class ProductTagsRepository @Inject constructor(
         when (event.causeOfChange) {
             FETCH_PRODUCT_TAGS -> {
                 if (event.isError) {
-                    loadContinuation?.resume(false)
+                    loadContinuation.continueWith(false)
                     AnalyticsTracker.track(
                         Stat.PRODUCT_TAGS_LOAD_FAILED,
                         this.javaClass.simpleName,
@@ -125,16 +106,15 @@ class ProductTagsRepository @Inject constructor(
                 } else {
                     canLoadMoreProductTags = event.canLoadMore
                     AnalyticsTracker.track(Stat.PRODUCT_TAGS_LOADED)
-                    loadContinuation?.resume(true)
+                    loadContinuation.continueWith(true)
                 }
-                loadContinuation = null
             }
             ADDED_PRODUCT_TAGS -> {
                 // No need to handle errors because errors are currently handled by `OrderListViewModel`.
-                addProductTagsContinuation?.resume(false)
-                addProductTagsContinuation = null
+                addProductTagsContinuation.continueWith(false)
             }
-            else -> { }
+            else -> {
+            }
         }
     }
 }

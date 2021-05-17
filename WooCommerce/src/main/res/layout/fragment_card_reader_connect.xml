@@ -1,16 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface"
+    android:gravity="center"
+    android:minWidth="@dimen/floating_dialog_min_width"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/margin_extra_extra_medium_large"
+    android:paddingTop="@dimen/margin_extra_medium_large"
+    android:paddingEnd="@dimen/margin_extra_extra_medium_large"
+    android:paddingBottom="@dimen/margin_extra_medium_large">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/testing_text"
+        android:id="@+id/header_label"
+        style="@style/Woo.Card.Body.High"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        tools:text="Collect payment" />
+
+    <ImageView
+        android:id="@+id/illustration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
+        android:layout_marginBottom="@dimen/margin_extra_extra_medium_large"
+        android:contentDescription="@null"
+        tools:srcCompat="@drawable/img_card_reader_scanning" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hint_label"
+        style="@style/Woo.Card.Body.High"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_extra_medium_large"
+        android:gravity="center"
+        tools:text="Please wait" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/primary_action_btn"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Connect" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/secondary_action_btn"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        tools:text="Cancel" />
+</LinearLayout>
