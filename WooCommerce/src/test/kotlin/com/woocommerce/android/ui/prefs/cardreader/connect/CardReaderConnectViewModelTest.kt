@@ -406,7 +406,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ConnectingFailedState).onSecondaryActionClicked()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
