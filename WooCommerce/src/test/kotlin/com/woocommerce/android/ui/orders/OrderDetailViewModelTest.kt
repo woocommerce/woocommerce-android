@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.clearInvocations
@@ -15,6 +13,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -32,23 +31,23 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class OrderDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
@@ -64,16 +63,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
     }
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER)
-        )
-    )
+    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
     private val orderStatus = OrderStatus(order.status.value, order.status.value)
     private val testOrderNotes = OrderTestUtils.generateTestOrderNotes(5, ORDER_IDENTIFIER)
@@ -105,8 +96,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(ViewState()))
-            .whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
 
         doReturn(WooPlugin(true, true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
@@ -114,7 +103,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel = spy(OrderDetailViewModel(
             savedState,
-            coroutinesTestRule.testDispatchers,
             appPrefsWrapper,
             networkStatus,
             resources,
@@ -123,7 +111,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         clearInvocations(
             viewModel,
-            savedState,
             selectedSite,
             repository,
             networkStatus,
@@ -341,7 +328,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Do not display product list when shipping labels are available`() =
+    fun `Display product list when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
@@ -370,7 +357,96 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(shippingLabels).isNotEmpty
-            assertThat(areProductsVisible).isFalse()
+            assertThat(areProductsVisible).isTrue()
+        }
+
+    @Test
+    fun `Hide Create shipping label button and show Products area menu when shipping labels are available`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+
+            doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
+            doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
+
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+            doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
+
+            doReturn(WooPlugin(
+                isInstalled = true,
+                isActive = true,
+                version = OrderDetailViewModel.SUPPORTED_WCS_VERSION)
+            ).whenever(repository).getWooServicesPluginInfo()
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+
+            val shippingLabels = ArrayList<ShippingLabel>()
+            viewModel.shippingLabels.observeForever {
+                it?.let { shippingLabels.addAll(it) }
+            }
+
+            var isCreateShippingLabelButtonVisible: Boolean? = null
+            var isProductListMenuVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+                isProductListMenuVisible = new.isProductListMenuVisible
+            }
+
+            viewModel.start()
+
+            assertThat(shippingLabels).isNotEmpty
+            assertThat(isCreateShippingLabelButtonVisible).isFalse
+            assertThat(isProductListMenuVisible).isTrue
+        }
+
+    @Test
+    fun `Show Create shipping label button and hide Products area menu when no shipping labels are available`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+
+            doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
+            doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
+
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+
+            doReturn(WooPlugin(
+                isInstalled = true,
+                isActive = true,
+                version = OrderDetailViewModel.SUPPORTED_WCS_VERSION)
+            ).whenever(repository).getWooServicesPluginInfo()
+
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+
+            val shippingLabels = ArrayList<ShippingLabel>()
+            viewModel.shippingLabels.observeForever {
+                it?.let { shippingLabels.addAll(it) }
+            }
+
+            var isCreateShippingLabelButtonVisible: Boolean? = null
+            var isProductListMenuVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+                isProductListMenuVisible = new.isProductListMenuVisible
+            }
+
+            viewModel.start()
+
+            assertThat(shippingLabels).isEmpty()
+            assertThat(isCreateShippingLabelButtonVisible).isTrue
+            assertThat(isProductListMenuVisible).isFalse
         }
 
     @Test

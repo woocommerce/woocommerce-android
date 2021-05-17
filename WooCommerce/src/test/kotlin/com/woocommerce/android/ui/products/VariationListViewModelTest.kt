@@ -15,17 +15,17 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.variations.VariationListRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class VariationListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val variationListRepository: VariationListRepository = mock()
@@ -36,8 +36,6 @@ class VariationListViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: VariationListViewModel
     private val variations = ProductTestUtils.generateProductVariationList(productRemoteId)
     private val savedState: SavedStateWithArgs = mock()
-    private val coroutineDispatchers = CoroutineDispatchers(
-            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
 
     @Before
     fun setup() {
@@ -50,7 +48,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel = spy(
             VariationListViewModel(
                 savedState,
-                coroutineDispatchers,
+                coroutinesTestRule.testDispatchers,
                 variationListRepository,
                 productRepository,
                 networkStatus,
@@ -73,26 +71,27 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not fetch product variations from api when not connected`() = test {
-        doReturn(false).whenever(networkStatus).isConnected()
+    fun `Do not fetch product variations from api when not connected`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(false).whenever(networkStatus).isConnected()
 
-        createViewModel()
+            createViewModel()
 
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.start(productRemoteId)
+
+            verify(variationListRepository, times(1)).getProductVariationList(productRemoteId)
+            verify(variationListRepository, times(0)).fetchProductVariations(productRemoteId)
+
+            assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
         }
 
-        viewModel.start(productRemoteId)
-
-        verify(variationListRepository, times(1)).getProductVariationList(productRemoteId)
-        verify(variationListRepository, times(0)).fetchProductVariations(productRemoteId)
-
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
-    }
-
     @Test
-    fun `Shows and hides product variations skeleton correctly`() = test {
+    fun `Shows and hides product variations skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(emptyList<ProductVariation>())
             .whenever(variationListRepository).getProductVariationList(productRemoteId)
 
@@ -108,7 +107,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display empty view on fetch product variations error`() = test {
+    fun `Display empty view on fetch product variations error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         whenever(variationListRepository.fetchProductVariations(productRemoteId)).thenReturn(null)
         whenever(variationListRepository.getProductVariationList(productRemoteId)).thenReturn(null)
 

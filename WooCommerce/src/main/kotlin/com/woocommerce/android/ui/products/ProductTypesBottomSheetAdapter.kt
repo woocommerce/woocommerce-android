@@ -63,10 +63,6 @@ class ProductTypesBottomSheetAdapter(
             itemView.setOnClickListener {
                 onItemClicked(item)
             }
-
-            itemView.isEnabled = item.isEnabled
-            viewBinder.productDetailInfoItemName.isEnabled = item.isEnabled
-            viewBinder.productDetailInfoItemDesc.isEnabled = item.isEnabled
         }
     }
 

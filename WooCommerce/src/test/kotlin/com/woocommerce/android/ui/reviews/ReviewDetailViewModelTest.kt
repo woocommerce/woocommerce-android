@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -17,12 +16,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ViewState
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
@@ -30,6 +29,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 class ReviewDetailViewModelTest : BaseUnitTest() {
     companion object {
         const val REVIEW_ID = 1L
@@ -41,8 +41,6 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     private val repository: ReviewDetailRepository = mock()
     private val savedState: SavedStateWithArgs = mock()
 
-    private val coroutineDispatchers = CoroutineDispatchers(
-            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
     private val notification = ProductReviewTestUtils.generateReviewNotification(NOTIF_ID)
@@ -52,18 +50,19 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
 
         viewModel = spy(
-                ReviewDetailViewModel(
-                        savedState,
-                        coroutineDispatchers,
-                        networkStatus,
-                        repository
-                ))
+            ReviewDetailViewModel(
+                savedState,
+                coroutinesTestRule.testDispatchers,
+                networkStatus,
+                repository
+            )
+        )
 
         doReturn(true).whenever(networkStatus).isConnected()
     }
 
     @Test
-    fun `Load the product review detail correctly`() = test {
+    fun `Load the product review detail correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(review).whenever(repository).getCachedProductReview(any())
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
@@ -88,42 +87,43 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Handle error in loading product review detail correctly`() = test {
-        doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
-        doReturn(review).whenever(repository).getCachedProductReview(any())
-        doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
+    fun `Handle error in loading product review detail correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
+            doReturn(review).whenever(repository).getCachedProductReview(any())
+            doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
 
-        val skeletonShown = mutableListOf<Boolean>()
-        var productReview: ProductReview? = null
-        viewModel.viewStateData.observeForever { old, new ->
-            new.productReview?.takeIfNotEqualTo(old?.productReview) { productReview = it }
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
-        }
-
-        var snackbar: ShowSnackbar? = null
-        var markAsRead: Long? = null
-        viewModel.event.observeForever {
-            when (it) {
-                is MarkNotificationAsRead -> markAsRead = it.remoteNoteId
-                is ShowSnackbar -> snackbar = it
+            val skeletonShown = mutableListOf<Boolean>()
+            var productReview: ProductReview? = null
+            viewModel.viewStateData.observeForever { old, new ->
+                new.productReview?.takeIfNotEqualTo(old?.productReview) { productReview = it }
+                new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
             }
+
+            var snackbar: ShowSnackbar? = null
+            var markAsRead: Long? = null
+            viewModel.event.observeForever {
+                when (it) {
+                    is MarkNotificationAsRead -> markAsRead = it.remoteNoteId
+                    is ShowSnackbar -> snackbar = it
+                }
+            }
+
+            viewModel.start(REVIEW_ID, false)
+
+            Assertions.assertThat(skeletonShown).containsExactly(true, false)
+            assertEquals(NOTIF_ID, markAsRead)
+            Assertions.assertThat(productReview).isEqualTo(review)
+            verify(repository, times(1)).markNotificationAsRead(any())
+            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
         }
-
-        viewModel.start(REVIEW_ID, false)
-
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
-        assertEquals(NOTIF_ID, markAsRead)
-        Assertions.assertThat(productReview).isEqualTo(review)
-        verify(repository, times(1)).markNotificationAsRead(any())
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
-    }
 
     /**
      * Verifies the `exit` LiveData event is called when a request to moderate
      * a review is processed successfully by the detail view.
      */
     @Test
-    fun `Handle successful review moderation correctly`() = test {
+    fun `Handle successful review moderation correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(review).whenever(repository).getCachedProductReview(any())
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchProductReview(any())
@@ -149,26 +149,27 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
      * be called.
      */
     @Test
-    fun `Handle review moderation failed due to offline correctly`() = test {
-        doReturn(false).whenever(networkStatus).isConnected()
+    fun `Handle review moderation failed due to offline correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(false).whenever(networkStatus).isConnected()
 
-        doReturn(review).whenever(repository).getCachedProductReview(any())
+            doReturn(review).whenever(repository).getCachedProductReview(any())
 
-        // first we must load the product review so the viewmodel will have
-        // a reference to it.
-        viewModel.start(REVIEW_ID, false)
+            // first we must load the product review so the viewmodel will have
+            // a reference to it.
+            viewModel.start(REVIEW_ID, false)
 
-        var snackbar: ShowSnackbar? = null
-        var exitCalled = false
-        viewModel.event.observeForever {
-            when (it) {
-                is Exit -> exitCalled = true
-                is ShowSnackbar -> snackbar = it
+            var snackbar: ShowSnackbar? = null
+            var exitCalled = false
+            viewModel.event.observeForever {
+                when (it) {
+                    is Exit -> exitCalled = true
+                    is ShowSnackbar -> snackbar = it
+                }
             }
-        }
 
-        viewModel.moderateReview(SPAM)
-        assertFalse(exitCalled)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
-    }
+            viewModel.moderateReview(SPAM)
+            assertFalse(exitCalled)
+            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        }
 }

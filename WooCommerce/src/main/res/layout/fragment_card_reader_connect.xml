@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -15,7 +14,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/header_label"
-        style="@style/Woo.TextView.Subtitle2"
+        style="@style/Woo.Card.Body.High"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -26,15 +25,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
+        android:layout_marginBottom="@dimen/margin_extra_extra_medium_large"
         android:contentDescription="@null"
         tools:srcCompat="@drawable/img_card_reader_scanning" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/hint_label"
-        style="@style/Woo.TextView.Subtitle2"
+        style="@style/Woo.Card.Body.High"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
+        android:layout_marginBottom="@dimen/margin_extra_medium_large"
         android:gravity="center"
         tools:text="Please wait" />
 
@@ -43,7 +43,6 @@
         style="@style/Woo.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
         tools:text="Connect" />
 
     <com.google.android.material.button.MaterialButton
@@ -51,6 +50,6 @@
         style="@style/Woo.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_extra_large"
+        android:layout_marginTop="@dimen/margin_medium"
         tools:text="Cancel" />
 </LinearLayout>

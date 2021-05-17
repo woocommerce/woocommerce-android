@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,9 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
-    savedState: SavedStateHandle,
-    dispatchers: CoroutineDispatchers
-) : ScopedViewModel(savedState, dispatchers) {
+    savedState: SavedStateHandle
+) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(
         NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     )

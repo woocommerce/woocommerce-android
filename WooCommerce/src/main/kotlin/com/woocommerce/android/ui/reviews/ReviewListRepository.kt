@@ -7,15 +7,16 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -41,8 +42,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 
 class ReviewListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -54,10 +53,10 @@ class ReviewListRepository @Inject constructor(
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
     }
 
-    private var continuationReview: Continuation<Boolean>? = null
-    private var continuationProduct: Continuation<Boolean>? = null
-    private var continuationNotification: Continuation<Boolean>? = null
-    private var continuationMarkAllRead: Continuation<RequestResult>? = null
+    private var continuationReview = ContinuationWrapper<Boolean>(REVIEWS)
+    private var continuationProduct = ContinuationWrapper<Boolean>(REVIEWS)
+    private var continuationNotification = ContinuationWrapper<Boolean>(REVIEWS)
+    private var continuationMarkAllRead = ContinuationWrapper<RequestResult>(REVIEWS)
 
     private var offset = 0
     private var isFetchingProductReviews = false
@@ -104,8 +103,8 @@ class ReviewListRepository @Inject constructor(
                      */
                     if (wasFetchReviewsSuccess) {
                         getProductReviewsFromDB().map { it.remoteProductId }
-                                .distinct()
-                                .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
+                            .distinct()
+                            .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
                     }
                 }
 
@@ -128,21 +127,20 @@ class ReviewListRepository @Inject constructor(
     suspend fun markAllProductReviewsAsRead(): RequestResult {
         return if (getHasUnreadCachedProductReviews()) {
             val unreadProductReviews = notificationStore.getNotificationsForSite(
-                    site = selectedSite.get(),
-                    filterBySubtype = listOf(STORE_REVIEW.toString()))
-            try {
-                suspendCoroutineWithTimeout<RequestResult>(AppConstants.REQUEST_TIMEOUT) {
-                    continuationMarkAllRead = it
+                site = selectedSite.get(),
+                filterBySubtype = listOf(STORE_REVIEW.toString())
+            )
+            val result = continuationMarkAllRead.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+                val payload = MarkNotificationsReadPayload(unreadProductReviews)
+                dispatcher.dispatch(
+                    NotificationActionBuilder.newMarkNotificationsReadAction(payload)
+                )
 
-                    val payload = MarkNotificationsReadPayload(unreadProductReviews)
-                    dispatcher.dispatch(
-                            NotificationActionBuilder.newMarkNotificationsReadAction(payload))
-
-                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ)
-                } ?: ERROR // block timed out. Return error.
-            } catch (e: CancellationException) {
-                WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
-                ERROR
+                AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ)
+            }
+            return when (result) {
+                is Cancellation -> ERROR
+                is Success -> result.value
             }
         } else {
             WooLog.d(REVIEWS, "Mark all as read: No unread product reviews found. Exiting...")
@@ -186,8 +184,9 @@ class ReviewListRepository @Inject constructor(
     suspend fun getHasUnreadCachedProductReviews(): Boolean {
         return coroutineScope {
             notificationStore.hasUnreadNotificationsForSite(
-                    site = selectedSite.get(),
-                    filterBySubtype = listOf(STORE_REVIEW.toString()))
+                site = selectedSite.get(),
+                filterBySubtype = listOf(STORE_REVIEW.toString())
+            )
         }
     }
 
@@ -195,17 +194,12 @@ class ReviewListRepository @Inject constructor(
      * Fetch products from the API and suspends until finished.
      */
     private suspend fun fetchProductsByRemoteId(remoteProductIds: List<Long>) {
-        try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationProduct = it
-
-                val payload = FetchProductsPayload(
-                        selectedSite.get(),
-                        remoteProductIds = remoteProductIds)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(REVIEWS, "Exception encountered while attempting to fetch products by remote ID", e)
+        continuationProduct.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = FetchProductsPayload(
+                selectedSite.get(),
+                remoteProductIds = remoteProductIds
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
         }
     }
 
@@ -213,32 +207,28 @@ class ReviewListRepository @Inject constructor(
      * Fetches notifications from the API. We use these results to populate [ProductReview.read].
      */
     private suspend fun fetchNotifications(): Boolean {
-        return try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationNotification = it
-
-                val payload = FetchNotificationsPayload()
-                dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
-            } ?: false // request timed out
-        } catch (e: CancellationException) {
-            WooLog.e(REVIEWS, "Exception encountered while fetching product review notifications", e)
-            false
+        val result = continuationNotification.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = FetchNotificationsPayload()
+            dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
+        }
+        return when (result) {
+            is Cancellation -> false
+            is Success -> result.value
         }
     }
 
     private suspend fun fetchProductReviewsFromApi(loadMore: Boolean): Boolean {
-        return try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                offset = if (loadMore) offset + PAGE_SIZE else 0
-                isFetchingProductReviews = true
-                continuationReview = it
+        val result = continuationReview.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            offset = if (loadMore) offset + PAGE_SIZE else 0
+            isFetchingProductReviews = true
 
-                val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
-            } ?: false // request timed out
-        } catch (e: CancellationException) {
-            WooLog.e(REVIEWS, "Exception encountered while fetching product reviews", e)
-            false
+            val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
+        }
+
+        return when (result) {
+            is Cancellation -> false
+            is Success -> result.value
         }
     }
 
@@ -279,8 +269,8 @@ class ReviewListRepository @Inject constructor(
     private suspend fun getReviewNotifReadValueByRemoteIdMap(): Map<Long, Boolean> {
         return withContext(Dispatchers.IO) {
             notificationStore.getNotificationsForSite(
-                    site = selectedSite.get(),
-                    filterBySubtype = listOf(STORE_REVIEW.toString())
+                site = selectedSite.get(),
+                filterBySubtype = listOf(STORE_REVIEW.toString())
             ).associate { it.getCommentId() to it.read }
         }
     }
@@ -290,19 +280,23 @@ class ReviewListRepository @Inject constructor(
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_PRODUCTS) {
             if (event.isError) {
-                AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOAD_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                AnalyticsTracker.track(
+                    Stat.REVIEWS_PRODUCTS_LOAD_FAILED, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                )
+                )
 
-                WooLog.e(REVIEWS, "Error fetching matching product for product review: " +
-                        "${event.error?.type} - ${event.error?.message}")
-                continuationProduct?.resume(false)
+                WooLog.e(
+                    REVIEWS, "Error fetching matching product for product review: " +
+                    "${event.error?.type} - ${event.error?.message}"
+                )
+                continuationProduct.continueWith(false)
             } else {
                 AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOADED)
-                continuationProduct?.resume(true)
+                continuationProduct.continueWith(true)
             }
-            continuationProduct = null
         }
     }
 
@@ -312,32 +306,43 @@ class ReviewListRepository @Inject constructor(
         if (event.causeOfChange == FETCH_PRODUCT_REVIEWS) {
             isFetchingProductReviews = false
             if (event.isError) {
-                AnalyticsTracker.track(Stat.REVIEWS_LOAD_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                AnalyticsTracker.track(
+                    Stat.REVIEWS_LOAD_FAILED, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                )
+                )
 
-                WooLog.e(REVIEWS, "Error fetching product review: " +
-                        "${event.error?.type} - ${event.error?.message}")
-                continuationReview?.resume(false)
+                WooLog.e(
+                    REVIEWS, "Error fetching product review: " +
+                    "${event.error?.type} - ${event.error?.message}"
+                )
+                continuationReview.continueWith(false)
             } else {
-                AnalyticsTracker.track(Stat.REVIEWS_LOADED, mapOf(
-                        AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore))
+                AnalyticsTracker.track(
+                    Stat.REVIEWS_LOADED, mapOf(
+                    AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
+                )
+                )
                 isLoadingMore = false
                 canLoadMore = event.canLoadMore
-                continuationReview?.resume(true)
+                continuationReview.continueWith(true)
             }
-            continuationReview = null
         } else if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
             if (event.isError) {
                 AnalyticsTracker.track(
-                        Stat.REVIEW_ACTION_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    Stat.REVIEW_ACTION_FAILED, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                )
+                )
 
-                WooLog.e(REVIEWS, "${ReviewListFragment.TAG} - Error pushing product review status " +
-                        "changes to server!: ${event.error?.type} - ${event.error?.message}")
+                WooLog.e(
+                    REVIEWS, "${ReviewListFragment.TAG} - Error pushing product review status " +
+                    "changes to server!: ${event.error?.type} - ${event.error?.message}"
+                )
             } else {
                 AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
             }
@@ -349,38 +354,46 @@ class ReviewListRepository @Inject constructor(
     fun onNotificationChanged(event: OnNotificationChanged) {
         if (event.causeOfChange == FETCH_NOTIFICATIONS) {
             if (event.isError) {
-                AnalyticsTracker.track(Stat.NOTIFICATIONS_LOAD_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                AnalyticsTracker.track(
+                    Stat.NOTIFICATIONS_LOAD_FAILED, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                )
+                )
 
-                WooLog.e(REVIEWS, "Error fetching product review notifications: " +
-                        "${event.error?.type} - ${event.error?.message}")
-                continuationNotification?.resume(false)
+                WooLog.e(
+                    REVIEWS, "Error fetching product review notifications: " +
+                    "${event.error?.type} - ${event.error?.message}"
+                )
+                continuationNotification.continueWith(false)
             } else {
                 AnalyticsTracker.track(Stat.NOTIFICATIONS_LOADED)
 
-                continuationNotification?.resume(true)
+                continuationNotification.continueWith(true)
             }
-            continuationNotification = null
         } else if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
             // Since this can be called from other places, only process this event if we were the
             // one who submitted the request.
-            continuationMarkAllRead?.let {
+            if (continuationMarkAllRead.isWaiting) {
                 if (event.isError) {
-                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_FAILED, mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    AnalyticsTracker.track(
+                        Stat.REVIEWS_MARK_ALL_READ_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                    )
 
-                    WooLog.e(REVIEWS, "Error marking all reviews as read: " +
-                            "${event.error?.type} - ${event.error?.message}")
-                    it.resume(ERROR)
+                    WooLog.e(
+                        REVIEWS, "Error marking all reviews as read: " +
+                        "${event.error?.type} - ${event.error?.message}"
+                    )
+                    continuationMarkAllRead.continueWith(ERROR)
                 } else {
                     AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
-                    it.resume(SUCCESS)
+                    continuationMarkAllRead.continueWith(SUCCESS)
                 }
-                continuationMarkAllRead = null
             }
         }
     }
