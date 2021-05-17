@@ -6,7 +6,9 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
@@ -53,6 +55,11 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
         (viewModel.event.value as? OpenLocationSettings)?.let {
             it.onLocationSettingsClosed.invoke()
         }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        dialog!!.setCanceledOnTouchOutside(false)
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

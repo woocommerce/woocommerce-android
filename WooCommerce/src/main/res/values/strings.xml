@@ -605,6 +605,10 @@
     <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
+    <string name="card_reader_payment_collect_payment_loading_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Connecting to reader</string>
+
     <string name="card_reader_collect_payment">Collect payment</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>

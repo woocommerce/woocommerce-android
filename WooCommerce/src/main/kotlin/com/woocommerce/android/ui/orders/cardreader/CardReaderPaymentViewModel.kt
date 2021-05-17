@@ -162,7 +162,12 @@ class CardReaderPaymentViewModel @Inject constructor(
         open val onSecondaryActionClicked: (() -> Unit)? = null
         open val amountWithCurrencyLabel: String? = null
 
-        object LoadingDataState : ViewState(isProgressVisible = true)
+        object LoadingDataState : ViewState(
+            headerLabel = R.string.card_reader_payment_collect_payment_loading_header,
+            hintLabel = R.string.card_reader_payment_collect_payment_loading_hint,
+            paymentStateLabel = R.string.card_reader_payment_collect_payment_loading_payment_state,
+            isProgressVisible = true
+        )
 
         // TODO cardreader Update FailedPaymentState
         data class FailedPaymentState(
