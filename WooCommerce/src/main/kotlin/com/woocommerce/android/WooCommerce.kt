@@ -2,7 +2,6 @@ package com.woocommerce.android
 
 import androidx.multidex.MultiDexApplication
 import com.android.volley.VolleyLog
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
 import dagger.android.AndroidInjector
@@ -14,8 +13,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     // inject it lazily to avoid creating it before initializing WellSql
     @Inject lateinit var appInitializer: Lazy<AppInitializer>
-    // TODO cardreader init this field
-    open val cardReaderManager: CardReaderManager? = null
 
     override fun onCreate() {
         super.onCreate()

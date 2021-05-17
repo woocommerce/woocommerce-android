@@ -109,7 +109,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         (requireActivity().application as? WooCommerce)?.let { application ->
             // TODO cardreader Move this into a VM
             lifecycleScope.launchWhenResumed {
-                application.cardReaderManager?.readerStatus?.collect { status ->
+                cardReaderManager?.readerStatus?.collect { status ->
                     binding.connectionStatus.text = status.name
                     when (status) {
                         CONNECTING, NOT_CONNECTED -> binding.updateReaderSoftware.isEnabled = false
