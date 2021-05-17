@@ -257,8 +257,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(
             productDraft = ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
         )
-        if (defaultProduct.type == VARIABLE.value
-            && defaultProduct.status == DRAFT) {
+        if (defaultProduct.type == VARIABLE.value &&
+            defaultProduct.status == DRAFT) {
             startPublishProduct(exitWhenDone = false)
         }
         updateProductState(defaultProduct)
