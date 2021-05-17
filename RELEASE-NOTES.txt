@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+6.8
+-----
+
+
 6.7
 -----
 - [*] It's now possible to purchase more shipping labels on orders that already has one. [https://github.com/woocommerce/woocommerce-android/pull/3961]
