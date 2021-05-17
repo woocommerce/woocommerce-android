@@ -29,6 +29,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -66,6 +67,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
+    private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER))
     private val orderStatus = OrderStatus(order.status.value, order.status.value)
     private val testOrderNotes = OrderTestUtils.generateTestOrderNotes(5, ORDER_IDENTIFIER)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(5, ORDER_IDENTIFIER)
@@ -74,7 +76,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: OrderDetailViewModel
 
     private val orderWithParameters = ViewState(
-        order = order,
+        orderInfo = orderInfo,
         isRefreshing = false,
         isOrderDetailSkeletonShown = false,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
@@ -121,7 +123,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays the order detail view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
-        val expectedViewState = orderWithParameters.copy(order = nonRefundedOrder)
+
+        val expectedViewState = orderWithParameters.copy(orderInfo = orderInfo.copy(order = nonRefundedOrder))
 
         doReturn(nonRefundedOrder).whenever(repository).getOrder(any())
 
@@ -189,6 +192,234 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         assertThat(refunds).isEmpty()
         assertThat(shippingLabels).isEmpty()
     }
+
+    @Test
+    fun `show collect button when usd not paid and no subscriptions and cod and processing`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonPaidOrder = order.copy(
+                currency = "USD",
+                paymentMethod = "cod",
+                paymentMethodTitle = "Title",
+                datePaid = null,
+                status = Order.Status.Processing
+            )
+
+            doReturn(nonPaidOrder).whenever(repository).getOrder(any())
+            doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(repository).hasSubscriptionProducts(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+
+            assertThat(orderData!!.orderInfo!!.isPaymentCollectable).isTrue()
+        }
+
+    @Test
+    fun `show collect button when usd not paid and no subscriptions and empty method and processing`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonPaidOrder = order.copy(
+                currency = "USD",
+                paymentMethod = "",
+                paymentMethodTitle = "Title",
+                datePaid = null,
+                status = Order.Status.Processing
+            )
+
+            doReturn(nonPaidOrder).whenever(repository).getOrder(any())
+            doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(repository).hasSubscriptionProducts(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+
+            assertThat(orderData!!.orderInfo!!.isPaymentCollectable).isTrue()
+        }
+
+    @Test
+    fun `show collect button when usd not paid and no subscriptions and empty method and onhold`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonPaidOrder = order.copy(
+                currency = "USD",
+                paymentMethod = "",
+                paymentMethodTitle = "Title",
+                datePaid = null,
+                status = Order.Status.OnHold
+            )
+
+            doReturn(nonPaidOrder).whenever(repository).getOrder(any())
+            doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(repository).hasSubscriptionProducts(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+
+            assertThat(orderData!!.orderInfo!!.isPaymentCollectable).isTrue()
+        }
+
+    @Test
+    fun `show collect button when usd not paid and no subscriptions and empty method and pending`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonPaidOrder = order.copy(
+                currency = "USD",
+                paymentMethod = "",
+                paymentMethodTitle = "Title",
+                datePaid = null,
+                status = Order.Status.Pending
+            )
+
+            doReturn(nonPaidOrder).whenever(repository).getOrder(any())
+            doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(repository).hasSubscriptionProducts(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+
+            assertThat(orderData!!.orderInfo!!.isPaymentCollectable).isTrue()
+        }
+
+    @Test
+    fun `hide collect button when euro not paid and no subscriptions and empty method and pending`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonPaidOrder = order.copy(
+                currency = "EUR",
+                paymentMethod = "",
+                paymentMethodTitle = "Title",
+                datePaid = null,
+                status = Order.Status.Pending
+            )
+
+            doReturn(nonPaidOrder).whenever(repository).getOrder(any())
+            doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+
+            assertThat(orderData!!.orderInfo!!.isPaymentCollectable).isFalse()
+        }
+
+    @Test
+    fun `hide collect button when usd paid and no subscriptions and empty method and pending`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonPaidOrder = order.copy(
+                currency = "USD",
+                paymentMethod = "",
+                paymentMethodTitle = "",
+                datePaid = null,
+                status = Order.Status.Pending
+            )
+
+            doReturn(nonPaidOrder).whenever(repository).getOrder(any())
+            doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+
+            assertThat(orderData!!.orderInfo!!.isPaymentCollectable).isFalse()
+        }
+
+    @Test
+    fun `hide collect button when usd paid and subscriptions and empty method and pending`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonPaidOrder = order.copy(
+                currency = "USD",
+                paymentMethod = "",
+                paymentMethodTitle = "",
+                datePaid = null,
+                status = Order.Status.Pending
+            )
+
+            doReturn(nonPaidOrder).whenever(repository).getOrder(any())
+            doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+
+            assertThat(orderData!!.orderInfo!!.isPaymentCollectable).isFalse()
+        }
+
+    @Test
+    fun `hide collect button when usd paid and subscriptions and empty method and failed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonPaidOrder = order.copy(
+                currency = "USD",
+                paymentMethod = "",
+                paymentMethodTitle = "",
+                datePaid = null,
+                status = Order.Status.Failed
+            )
+
+            doReturn(nonPaidOrder).whenever(repository).getOrder(any())
+            doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+
+            assertThat(orderData!!.orderInfo!!.isPaymentCollectable).isFalse()
+        }
 
     @Test
     fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
@@ -600,7 +831,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         var newOrder: Order? = null
         viewModel.viewStateData.observeForever { old, new ->
-            new.order?.takeIfNotEqualTo(old?.order) { newOrder = it }
+            new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) { newOrder = it.order }
         }
 
         viewModel.start()

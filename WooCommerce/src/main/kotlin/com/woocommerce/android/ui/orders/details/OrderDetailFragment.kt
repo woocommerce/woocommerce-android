@@ -129,7 +129,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.order?.takeIfNotEqualTo(old?.order) { showOrderDetail(it) }
+            new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) { showOrderDetail(it.order!!, it.isPaymentCollectable) }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
                 showMarkOrderCompleteButton(it)
@@ -215,7 +215,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
     }
 
-    private fun showOrderDetail(order: Order) {
+    private fun showOrderDetail(order: Order, isPaymentCollectable: Boolean) {
         binding.orderDetailOrderStatus.updateOrder(order)
         binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
         binding.orderDetailCustomerInfo.updateCustomerInfo(
@@ -224,6 +224,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
+            isPaymentCollectable = isPaymentCollectable,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onCollectCardPresentPaymentClickListener = {

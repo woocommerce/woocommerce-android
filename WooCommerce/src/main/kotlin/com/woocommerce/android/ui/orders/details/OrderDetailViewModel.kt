@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -13,12 +12,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
+import com.woocommerce.android.model.Order.Status.OnHold
+import com.woocommerce.android.model.Order.Status.Pending
+import com.woocommerce.android.model.Order.Status.Processing
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -77,9 +80,14 @@ class OrderDetailViewModel @Inject constructor(
         get() = navArgs.orderId.toIdSet()
 
     final var order: Order
-        get() = requireNotNull(viewState.order)
+        get() = requireNotNull(viewState.orderInfo?.order)
         set(value) {
-            viewState = viewState.copy(order = value)
+            viewState = viewState.copy(
+                orderInfo = OrderInfo(
+                    value,
+                    viewState.orderInfo?.isPaymentCollectable ?: false
+                )
+            )
         }
 
     // Keep track of the deleted shipment tracking number in case
@@ -191,7 +199,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun hasVirtualProductsOnly(): Boolean {
         return if (order.items.isNotEmpty()) {
-            val remoteProductIds = order.items.map { it.productId }
+            val remoteProductIds = order.getProductIds()
             orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
         } else false
     }
@@ -202,7 +210,8 @@ class OrderDetailViewModel @Inject constructor(
                 ViewOrderStatusSelector(
                     currentStatus = orderStatus.statusKey,
                     orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
-                ))
+                )
+            )
         }
     }
 
@@ -283,7 +292,7 @@ class OrderDetailViewModel @Inject constructor(
         // display undo snackbar
         triggerEvent(ShowUndoSnackbar(
             message = snackMessage,
-            undoAction = View.OnClickListener { onOrderStatusChangeReverted() },
+            undoAction = { onOrderStatusChangeReverted() },
             dismissAction = object : Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
@@ -321,7 +330,7 @@ class OrderDetailViewModel @Inject constructor(
 
                 triggerEvent(ShowUndoSnackbar(
                     message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
-                    undoAction = View.OnClickListener { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                    undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
                     dismissAction = object : Snackbar.Callback() {
                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                             super.onDismissed(transientBottomBar, event)
@@ -397,7 +406,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
-            order = order,
+            orderInfo = OrderInfo(order, isPaymentCollectable()),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
@@ -432,7 +441,7 @@ class OrderDetailViewModel @Inject constructor(
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
     private fun fetchOrderProductsAsync() = async {
-        val productIds = order.items.map { it.productId }
+        val productIds = order.getProductIds()
         val numLocalProducts = orderDetailRepository.getProductCountForOrder(productIds)
         if (numLocalProducts != order.items.size) {
             orderDetailRepository.fetchProductsByRemoteIds(productIds)
@@ -511,12 +520,26 @@ class OrderDetailViewModel @Inject constructor(
         viewState = viewState.copy(
             isCreateShippingLabelButtonVisible = isShippingPluginReady &&
                 orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
-                ! shippingLabels.isVisible,
+                !shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible
         )
     }
+
+    private fun isPaymentCollectable(): Boolean {
+        return with(order) {
+            currency == "USD" &&
+                (listOf(Pending, Processing, OnHold)).any { it == status } &&
+                !isOrderPaid &&
+                // Empty payment method explanation:
+                // https://github.com/woocommerce/woocommerce/issues/29471
+                (paymentMethod == CASH_ON_DELIVERY_PAYMENT_TYPE || paymentMethod.isEmpty()) &&
+                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+        }
+    }
+
+    private fun Order.getProductIds() = items.map { it.productId }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
@@ -526,7 +549,7 @@ class OrderDetailViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val order: Order? = null,
+        val orderInfo: OrderInfo? = null,
         val toolbarTitle: String? = null,
         val orderStatus: OrderStatus? = null,
         val isOrderDetailSkeletonShown: Boolean? = null,
@@ -549,6 +572,9 @@ class OrderDetailViewModel @Inject constructor(
         val isProductListMenuVisible: Boolean?
             get() = areShippingLabelsVisible
     }
+
+    @Parcelize
+    data class OrderInfo(val order: Order? = null, val isPaymentCollectable: Boolean = false) : Parcelable
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }
