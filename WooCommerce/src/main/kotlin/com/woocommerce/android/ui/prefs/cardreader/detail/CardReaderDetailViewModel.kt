@@ -33,10 +33,12 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     sealed class ViewState(
-        val headerLabel: Int? = null
+        val headerLabel: Int? = null,
+        val illustration: Int? = null
     ) {
         object NotConnectedState: ViewState(
-            headerLabel = R.string.card_reader_detail_not_connected_header
+            headerLabel = R.string.card_reader_detail_not_connected_header,
+            illustration = R.drawable.img_card_reader_not_connected
         )
     }
 }
