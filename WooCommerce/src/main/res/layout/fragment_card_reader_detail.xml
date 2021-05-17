@@ -4,37 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="?attr/colorSurface"
     android:gravity="center_horizontal"
-    android:background="?attr/colorSurface">
+    android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/header_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Connect your card reader"/>
+        tools:text="Connect your card reader" />
 
     <ImageView
         android:id="@+id/illustration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:src = "@drawable/img_card_reader_not_connected"/>
+        tools:src="@drawable/img_card_reader_not_connected" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/first_hint_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Make sure card reader is charged"/>
+        tools:text="Make sure card reader is charged" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/second_hint_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Turn card reader on and place it next to mobile device"/>
+        tools:text="Turn card reader on and place it next to mobile device" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/connect_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Connect card reader"/>
+        tools:text="Connect card reader" />
 </LinearLayout>
