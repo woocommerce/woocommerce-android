@@ -14,6 +14,7 @@ import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
@@ -72,6 +73,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var dateUtils: DateUtils
+
+    // TODO cardreader change this to non-nullable
+    @set:Inject var cardReaderManager: CardReaderManager? = null
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -235,8 +239,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
-                    // TODO cardreader inject card manager into the detail fragment
-                    (requireActivity().application as WooCommerce).cardReaderManager?.let {
+                    cardReaderManager?.let {
                         viewModel.onAcceptCardPresentPaymentClicked(it)
                     }
                 }
