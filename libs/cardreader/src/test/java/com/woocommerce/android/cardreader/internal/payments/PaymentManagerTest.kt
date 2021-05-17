@@ -103,9 +103,9 @@ class PaymentManagerTest {
             .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(REQUIRES_CAPTURE))) })
 
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString())).thenReturn(CapturePaymentResponse.SUCCESS)
-        whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<TerminalException>()))
+        whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull<TerminalException>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
-        whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<CapturePaymentResponse>()))
+        whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull<CapturePaymentResponse>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<String>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))

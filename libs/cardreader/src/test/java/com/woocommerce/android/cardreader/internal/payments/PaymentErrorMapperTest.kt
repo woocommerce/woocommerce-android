@@ -37,7 +37,7 @@ class PaymentErrorMapperTest {
         val originalPaymentIntent = mock<PaymentIntent>()
         whenever(terminalException.paymentIntent).thenReturn(testingPaymentIntent)
 
-        val result = mapper.mapError(originalPaymentIntent, terminalException)
+        val result = mapper.mapTerminalError(originalPaymentIntent, terminalException)
 
         assertThat((result.paymentDataForRetry as PaymentDataImpl).paymentIntent).isEqualTo(testingPaymentIntent)
     }
@@ -48,7 +48,7 @@ class PaymentErrorMapperTest {
         val originalPaymentIntent = mock<PaymentIntent>()
         whenever(terminalException.paymentIntent).thenReturn(testingPaymentIntent)
 
-        val result = mapper.mapError(originalPaymentIntent, terminalException)
+        val result = mapper.mapTerminalError(originalPaymentIntent, terminalException)
 
         assertThat((result.paymentDataForRetry as PaymentDataImpl).paymentIntent).isEqualTo(originalPaymentIntent)
     }
@@ -57,7 +57,7 @@ class PaymentErrorMapperTest {
     fun `when CARD_READ_TIMED_OUT Terminal exception thrown, then CARD_READ_TIMED_OUT type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.CARD_READ_TIMED_OUT)
 
-        val result = mapper.mapError(mock(), terminalException)
+        val result = mapper.mapTerminalError(mock(), terminalException)
 
         assertThat(result.type).isEqualTo(CARD_READ_TIMED_OUT)
     }
@@ -66,7 +66,7 @@ class PaymentErrorMapperTest {
     fun `when PAYMENT_DECLINED_BY_STRIPE_API Terminal exception thrown, then PAYMENT_DECLINED type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.PAYMENT_DECLINED_BY_STRIPE_API)
 
-        val result = mapper.mapError(mock(), terminalException)
+        val result = mapper.mapTerminalError(mock(), terminalException)
 
         assertThat(result.type).isEqualTo(PAYMENT_DECLINED)
     }
@@ -75,7 +75,7 @@ class PaymentErrorMapperTest {
     fun `when REQUEST_TIMED_OUT Terminal exception thrown, then NO_NETWORK type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.REQUEST_TIMED_OUT)
 
-        val result = mapper.mapError(mock(), terminalException)
+        val result = mapper.mapTerminalError(mock(), terminalException)
 
         assertThat(result.type).isEqualTo(NO_NETWORK)
     }
@@ -84,53 +84,53 @@ class PaymentErrorMapperTest {
     fun `when other Terminal exception thrown, then GENERIC_ERROR type returned`() {
         whenever(terminalException.errorCode).thenReturn(mock())
 
-        val result = mapper.mapError(mock(), terminalException)
+        val result = mapper.mapTerminalError(mock(), terminalException)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
     }
 
     @Test
     fun `when NETWORK_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapError(mock(), CapturePaymentResponse.NETWORK_ERROR)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.NETWORK_ERROR)
 
         assertThat(result.type).isEqualTo(NO_NETWORK)
     }
 
     @Test
     fun `when GENERIC_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapError(mock(), CapturePaymentResponse.GENERIC_ERROR)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.GENERIC_ERROR)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
     }
 
     @Test
     fun `when MISSING_ORDER capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapError(mock(), CapturePaymentResponse.MISSING_ORDER)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.MISSING_ORDER)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
     }
 
     @Test
     fun `when CAPTURE_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapError(mock(), CapturePaymentResponse.CAPTURE_ERROR)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.CAPTURE_ERROR)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
     }
 
     @Test
     fun `when SERVER_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapError(mock(), CapturePaymentResponse.SERVER_ERROR)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.SERVER_ERROR)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
     }
 
     @Test(expected = IllegalStateException::class)
     fun `when PAYMENT_ALREADY_CAPTURED capture payment exception thrown, then IllegalStateException thrown`() {
-        mapper.mapError(mock(), CapturePaymentResponse.PAYMENT_ALREADY_CAPTURED)
+        mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.PAYMENT_ALREADY_CAPTURED)
     }
 
     @Test(expected = IllegalStateException::class)
     fun `when SUCCESS capture payment exception thrown, then IllegalStateException thrown`() {
-        mapper.mapError(mock(), CapturePaymentResponse.SUCCESS)
+        mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.SUCCESS)
     }
 }

@@ -117,7 +117,7 @@ internal class PaymentManager(
             when (it) {
                 is DisplayMessageRequested -> emit(ShowAdditionalInfo)
                 is ReaderInputRequested -> emit(WaitingForInput)
-                is CollectPaymentStatus.Failure -> emit(errorMapper.mapError(paymentIntent, it.exception))
+                is CollectPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -131,7 +131,7 @@ internal class PaymentManager(
         emit(ProcessingPayment)
         processPaymentAction.processPayment(paymentIntent).collect {
             when (it) {
-                is ProcessPaymentStatus.Failure -> emit(errorMapper.mapError(paymentIntent, it.exception))
+                is ProcessPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is ProcessPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -148,7 +148,7 @@ internal class PaymentManager(
         if (captureResponse == SUCCESS || captureResponse == PAYMENT_ALREADY_CAPTURED) {
             emit(PaymentCompleted)
         } else {
-            emit(errorMapper.mapError(paymentIntent, captureResponse))
+            emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }
 

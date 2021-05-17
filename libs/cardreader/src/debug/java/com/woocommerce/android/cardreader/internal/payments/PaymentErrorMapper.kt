@@ -11,7 +11,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 
 class PaymentErrorMapper {
-    fun mapError(
+    fun mapTerminalError(
         originalPaymentIntent: PaymentIntent,
         exception: TerminalException
     ): PaymentFailed {
@@ -25,7 +25,7 @@ class PaymentErrorMapper {
         return PaymentFailed(type, paymentData, exception.errorMessage)
     }
 
-    fun mapError(
+    fun mapCapturePaymentError(
         originalPaymentIntent: PaymentIntent,
         capturePaymentResponse: CapturePaymentResponse
     ): PaymentFailed {
