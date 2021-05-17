@@ -39,6 +39,8 @@ class CardReaderDetailFragment : BaseFragment(R.layout.card_reader_detail) {
         viewModel.viewStateData.observe(viewLifecycleOwner, Observer {
             UiHelpers.setTextOrHide(binding.headerLabel, it.headerLabel)
             UiHelpers.setImageOrHide(binding.illustration, it.illustration)
+            UiHelpers.setTextOrHide(binding.firstHintLabel, it.firstHintLabel)
+            UiHelpers.setTextOrHide(binding.secondHintLabel, it.secondHintLabel)
         })
     }
 }
