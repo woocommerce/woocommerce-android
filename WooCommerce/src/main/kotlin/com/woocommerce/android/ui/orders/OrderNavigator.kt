@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
@@ -111,6 +112,11 @@ class OrderNavigator @Inject constructor() {
             is StartShippingLabelCreationFlow -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderIdentifier)
+                fragment.findNavController().navigateSafely(action)
+            }
+            is StartCardReaderConnectFlow -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToCardReaderConnectDialog()
                 fragment.findNavController().navigateSafely(action)
             }
             is StartCardReaderPaymentFlow -> {

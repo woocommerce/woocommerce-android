@@ -330,7 +330,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(true))
         }
 
     @Test
@@ -363,7 +363,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ScanningState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
@@ -373,7 +373,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
@@ -385,7 +385,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             (viewModel.viewStateData.value as ConnectingState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
             resumeDispatcher()
         }
 
@@ -406,7 +406,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ConnectingFailedState).onSecondaryActionClicked()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
