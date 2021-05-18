@@ -92,11 +92,11 @@ class ShippingLabelRepository @Inject constructor(
         packages: List<ShippingLabelPackage>
     ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
         val carrierRates = shippingLabelStore.getShippingRates(
-            selectedSite.get(),
-            order.remoteId,
-            origin.toShippingLabelModel(),
-            destination.toShippingLabelModel(),
-            packages.mapIndexed { i, box ->
+            site = selectedSite.get(),
+            orderId = order.remoteId,
+            origin = origin.toShippingLabelModel(),
+            destination = destination.toShippingLabelModel(),
+            packages = packages.mapIndexed { i, box ->
                 val pack = requireNotNull(box.selectedPackage)
                 WCShippingLabelModel.ShippingLabelPackage(
                     id = box.packageId,
@@ -107,7 +107,8 @@ class ShippingLabelRepository @Inject constructor(
                     weight = box.weight,
                     isLetter = pack.isLetter
                 )
-            }
+            },
+            customsData = null
         )
 
         return when {
@@ -172,6 +173,7 @@ class ShippingLabelRepository @Inject constructor(
                 shipmentId = rate.shipmentId,
                 rateId = rate.rateId,
                 serviceId = rate.serviceId,
+                serviceName = rate.serviceName,
                 carrierId = rate.carrierId,
                 products = labelPackage.items.map { it.productId }
             )
@@ -181,7 +183,8 @@ class ShippingLabelRepository @Inject constructor(
             orderId = orderId,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
-            packagesData = packagesData
+            packagesData = packagesData,
+            customsData = null
         ).let { result ->
             when {
                 result.isError -> WooResult(result.error)
