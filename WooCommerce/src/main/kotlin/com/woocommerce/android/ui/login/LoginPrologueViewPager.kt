@@ -26,8 +26,15 @@ class LoginPrologueViewPager : WCViewPager {
             R.drawable.img_prologue_reviews
         )
 
+        private val stringIds = arrayOf(
+            R.string.login_prologue_label_analytics,
+            R.string.login_prologue_label_orders,
+            R.string.login_prologue_label_products,
+            R.string.login_prologue_label_reviews
+        )
+
         override fun getItem(position: Int): Fragment {
-            return LoginPrologueViewPagerItemFragment.newInstance(drawableIds[position])
+            return LoginPrologueViewPagerItemFragment.newInstance(drawableIds[position], stringIds[position])
         }
 
         override fun getCount(): Int {
