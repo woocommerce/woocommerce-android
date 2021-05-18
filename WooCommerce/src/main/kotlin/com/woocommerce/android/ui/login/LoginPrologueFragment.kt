@@ -43,7 +43,7 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
 
-        fragmentManager?.let { binding.viewPager.initViewPager(it) }
+        binding.viewPager.initViewPager(parentFragmentManager)
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
