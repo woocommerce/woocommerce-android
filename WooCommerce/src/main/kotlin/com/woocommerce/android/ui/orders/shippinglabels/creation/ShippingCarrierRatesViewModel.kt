@@ -3,9 +3,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -26,15 +23,18 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import kotlinx.parcelize.Parcelize
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingRatesResult.ShippingPackage
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient.ShippingRatesApiResponse.ShippingOption.Rate
@@ -192,6 +192,10 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                     it.packageId == pkg.boxId && it.serviceId == default.serviceId
                 }?.option
 
+                val insuranceFormatted = default.insurance?.toBigDecimalOrNull()
+                    ?.let { resourceProvider.getString(R.string.shipping_label_rate_insurance_up_to, it.format()) }
+                    ?: default.insurance
+
                 ShippingRateItem(
                     serviceId = default.serviceId,
                     title = default.title,
@@ -200,8 +204,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                     carrier = getCarrier(default),
                     isTrackingAvailable = default.hasTracking,
                     isFreePickupAvailable = default.isPickupFree,
-                    isInsuranceAvailable = default.insurance > BigDecimal.ZERO,
-                    insuranceCoverage = default.insurance.format(),
+                    isInsuranceAvailable = !insuranceFormatted.isNullOrEmpty(),
+                    insuranceCoverage = insuranceFormatted,
                     options = options,
                     selectedOption = selectedOption
                 )

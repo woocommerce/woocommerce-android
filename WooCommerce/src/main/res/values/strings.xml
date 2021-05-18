@@ -489,7 +489,8 @@
     <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
     <string name="shipping_label_rate_included_options_tracking">%s tracking</string>
-    <string name="shipping_label_rate_included_options_insurance">Insurance (up to %s)</string>
+    <string name="shipping_label_rate_insurance_up_to">up to %s</string>
+    <string name="shipping_label_rate_included_options_insurance">Insurance (%s)</string>
     <string name="shipping_label_rate_included_options_free_pickup">Eligible for free pickup</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
     <string name="shipping_label_selected_rates_description">%s rates selected</string>
