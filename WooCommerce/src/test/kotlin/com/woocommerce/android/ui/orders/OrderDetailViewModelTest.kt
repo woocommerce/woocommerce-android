@@ -194,7 +194,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // WHEN
             viewModel.start()
 
-
             // THEN
             assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
         }
@@ -207,7 +206,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // WHEN
             viewModel.start()
-
 
             // THEN
             assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
