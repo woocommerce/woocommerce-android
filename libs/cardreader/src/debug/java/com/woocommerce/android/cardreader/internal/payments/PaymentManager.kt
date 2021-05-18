@@ -161,7 +161,7 @@ internal class PaymentManager(
     }
 
     // TODO Add Support for other currencies
-    private fun isSupportedCurrency(currency: String): Boolean = currency.toLowerCase(Locale.ROOT) == USD_CURRENCY
+    private fun isSupportedCurrency(currency: String): Boolean = currency.equals(USD_CURRENCY, ignoreCase = true)
 }
 
 data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData
