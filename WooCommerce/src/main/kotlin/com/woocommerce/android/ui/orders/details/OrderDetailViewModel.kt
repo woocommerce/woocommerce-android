@@ -508,10 +508,12 @@ class OrderDetailViewModel @Inject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
+        val isOrderEligibleForSLCreation = isShippingPluginReady &&
+            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
+
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = isShippingPluginReady &&
-                orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
-                ! shippingLabels.isVisible,
+            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,
+            isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible
@@ -535,7 +537,8 @@ class OrderDetailViewModel @Inject constructor(
         val refreshedProductId: Long? = null,
         val isCreateShippingLabelButtonVisible: Boolean? = null,
         val isProductListVisible: Boolean? = null,
-        val areShippingLabelsVisible: Boolean? = null
+        val areShippingLabelsVisible: Boolean? = null,
+        val isProductListMenuVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
@@ -545,9 +548,6 @@ class OrderDetailViewModel @Inject constructor(
 
         val isReprintShippingLabelBannerVisible: Boolean
             get() = !isCreateShippingLabelBannerVisible && areShippingLabelsVisible == true
-
-        val isProductListMenuVisible: Boolean?
-            get() = areShippingLabelsVisible
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
