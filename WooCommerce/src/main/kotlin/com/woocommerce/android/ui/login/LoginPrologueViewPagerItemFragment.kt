@@ -1,32 +1,25 @@
 package com.woocommerce.android.ui.login
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentImageViewerBinding
-import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.databinding.FragmentLoginPrologueViewpagerItemBinding
 
 /**
  * Displays a single image in the login prologue view pager
  */
-class LoginPrologueViewPagerFragment : Fragment(R.layout.fragment_login_prologue_viewpager_item) {
+class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prologue_viewpager_item) {
     companion object {
         private const val ARG_DRAWABLE_ID = "drawable_id"
 
-        fun newInstance(@DrawableRes drawableId: Int): LoginPrologueViewPagerFragment {
+        fun newInstance(@DrawableRes drawableId: Int): LoginPrologueViewPagerItemFragment {
             val args = Bundle().also {
                 it.putInt(ARG_DRAWABLE_ID, drawableId)
             }
-            LoginPrologueViewPagerFragment().also {
+            LoginPrologueViewPagerItemFragment().also {
                 it.arguments = args
                 return it
             }
@@ -35,8 +28,11 @@ class LoginPrologueViewPagerFragment : Fragment(R.layout.fragment_login_prologue
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val drawableId = arguments?.getInt(ARG_DRAWABLE_ID)
-        // val binding = FragmentLoginPrologueViewPagerItem.bind(view)
+        val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
+        arguments?.let { args ->
+            val drawableId = args.getInt(ARG_DRAWABLE_ID)
+            binding.imageView.setImageResource(drawableId)
+        }
     }
 
     override fun onResume() {

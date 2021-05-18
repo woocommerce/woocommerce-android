@@ -13,8 +13,8 @@ class LoginPrologueViewPager : WCViewPager {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
-    private fun initViewPager(fm: FragmentManager) {
-        val adapter = ViewPagerAdapter(fm)
+    fun initViewPager(fm: FragmentManager) {
+        adapter = ViewPagerAdapter(fm)
     }
 
     private inner class ViewPagerAdapter(fm: FragmentManager) :
@@ -27,7 +27,7 @@ class LoginPrologueViewPager : WCViewPager {
         )
 
         override fun getItem(position: Int): Fragment {
-            return LoginPrologueViewPagerFragment.newInstance(drawableIds[position])
+            return LoginPrologueViewPagerItemFragment.newInstance(drawableIds[position])
         }
 
         override fun getCount(): Int {

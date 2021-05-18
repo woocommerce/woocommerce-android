@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
-import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.PROLOGUE
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
@@ -44,8 +43,10 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
 
+        fragmentManager?.let { binding.viewPager.initViewPager(it) }
+
         if (savedInstanceState == null) {
-            unifiedLoginTracker.track(Flow.PROLOGUE, PROLOGUE)
+            unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
         }
     }
 
