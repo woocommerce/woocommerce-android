@@ -85,7 +85,7 @@ class OrderDetailViewModel @Inject constructor(
             viewState = viewState.copy(
                 orderInfo = OrderInfo(
                     value,
-                    viewState.orderInfo?.isPaymentCollectable ?: false
+                    viewState.orderInfo?.isPaymentCollectableWithCardReader ?: false
                 )
             )
         }
@@ -406,7 +406,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
-            orderInfo = OrderInfo(order, isPaymentCollectable()),
+            orderInfo = OrderInfo(order, isPaymentCollectableWithCardReader()),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
@@ -527,9 +527,9 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private fun isPaymentCollectable(): Boolean {
+    private fun isPaymentCollectableWithCardReader(): Boolean {
         return with(order) {
-            currency == "USD" &&
+            currency.equals("USD", ignoreCase = true) &&
                 (listOf(Pending, Processing, OnHold)).any { it == status } &&
                 !isOrderPaid &&
                 // Empty payment method explanation:
@@ -574,7 +574,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     @Parcelize
-    data class OrderInfo(val order: Order? = null, val isPaymentCollectable: Boolean = false) : Parcelable
+    data class OrderInfo(val order: Order? = null, val isPaymentCollectableWithCardReader: Boolean = false) : Parcelable
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }
