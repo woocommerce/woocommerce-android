@@ -23,6 +23,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
@@ -34,10 +35,12 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchSingleOrderPayload
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
@@ -273,6 +276,11 @@ class NotificationHandler @Inject constructor(
             // Fire off the event to fetch the actual notification from the api
             dispatcher.dispatch(NotificationActionBuilder
                     .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
+
+            dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(FetchSingleOrderPayload(
+                site = siteStore.getSiteBySiteId(it.remoteSiteId),
+                remoteOrderId = it.getRemoteOrderId()!!
+            )))
         }
 
         // don't display the notification if user chose to disable this type of notification - note
