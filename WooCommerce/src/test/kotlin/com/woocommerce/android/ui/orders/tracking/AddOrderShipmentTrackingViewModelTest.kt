@@ -14,7 +14,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -24,7 +23,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -36,9 +34,6 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private val savedState: SavedStateWithArgs = spy(
         SavedStateWithArgs(

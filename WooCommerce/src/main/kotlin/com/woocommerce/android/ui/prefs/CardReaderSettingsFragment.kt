@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -20,21 +21,40 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
+import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTING
+import com.woocommerce.android.cardreader.CardReaderStatus.NOT_CONNECTED
+import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
 import com.woocommerce.android.extensions.navigateSafely
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.wordpress.android.util.AppLog
+import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 // TODO cardreader update this comment
 /**
- * This fragment currently contains a UI for testing purposes. However, this will change and its only job will be to
- * determine if there is a connected card reader and redirect the user either to CardReaderConnectFragment
- * or CardReaderDetailFragment.
+ * This fragment currently contains a UI for testing purposes. It'll be removed before the release.
  */
-class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_reader) {
+@AndroidEntryPoint
+class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_reader), CoroutineScope {
     companion object {
         const val TAG = "card-reader-settings"
     }
+
+    @set:Inject var cardReaderManager: CardReaderManager? = null
+
+    protected var job: Job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     private val requestPermissionLauncher =
         registerForActivityResult(
@@ -53,6 +73,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentSettingsCardReaderBinding.bind(view)
+        startObserving(binding)
         binding.connectReaderButton.setOnClickListener {
             // TODO cardreader move this into a vm
             // TODO cardreader implement connect reader button
@@ -68,10 +89,19 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
             } else {
                 requestPermissionLauncher.launch(permissionType)
             }
-            startObserving(binding)
         }
-        binding.redirectToConnectFragment.setOnClickListener {
-            findNavController().navigateSafely(R.id.action_cardReaderSettingsFragment_to_cardReaderConnectFragment)
+        binding.updateReaderSoftware.setOnClickListener {
+            launch(Dispatchers.Default) {
+                try {
+                    cardReaderManager?.let {
+                        updateReaderSoftware(it, binding.softwareUpdateStatus)
+                    }
+                } catch (e: CancellationException) {
+                }
+            }
+        }
+        binding.redirectToDetailFragment.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_cardReaderSettingsFragment_to_cardReaderDetailFragment)
         }
     }
 
@@ -79,8 +109,12 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         (requireActivity().application as? WooCommerce)?.let { application ->
             // TODO cardreader Move this into a VM
             lifecycleScope.launchWhenResumed {
-                application.cardReaderManager?.readerStatus?.collect { status ->
+                cardReaderManager?.readerStatus?.collect { status ->
                     binding.connectionStatus.text = status.name
+                    when (status) {
+                        CONNECTING, NOT_CONNECTED -> binding.updateReaderSoftware.isEnabled = false
+                        CONNECTED -> binding.updateReaderSoftware.isEnabled = true
+                    }
                 }
             }
         }
@@ -95,7 +129,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
 
     // TODO cardreader move this into a VM
     private fun connectToReader(simulated: Boolean) {
-        getCardReaderManager()?.let { cardReaderManager ->
+        cardReaderManager?.let { cardReaderManager ->
             if (!cardReaderManager.isInitialized) {
                 cardReaderManager.initialize(requireActivity().application)
             }
@@ -115,7 +149,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                         }
                         is ReadersFound -> {
                             if (event.list.isNotEmpty()) {
-                                val success = getCardReaderManager()?.connectToReader(event.list[0]) ?: false
+                                val success = cardReaderManager.connectToReader(event.list[0]) ?: false
                                 Snackbar.make(
                                     requireView(),
                                     "Connecting to reader ${if (success) "succeeded" else "failed"}",
@@ -129,6 +163,25 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         }
     }
 
-    private fun getCardReaderManager(): CardReaderManager? =
-        (requireActivity().application as? WooCommerce)?.cardReaderManager
+    private suspend fun updateReaderSoftware(
+        cardReaderManager: CardReaderManager,
+        softwareUpdateStatus: MaterialTextView
+    ) {
+        cardReaderManager.updateSoftware().collect { event ->
+            withContext(Dispatchers.Main) {
+                softwareUpdateStatus.setText(
+                    event.javaClass.simpleName + if (event is Installing) {
+                        " ${event.progress * 100}%"
+                    } else {
+                        ""
+                    }
+                )
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
 }

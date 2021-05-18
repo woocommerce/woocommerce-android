@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 15:54:57+0000
+Translation-Revision-Date: 2021-05-12 14:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">Уникальный цифровой продукт</string>
+    <string name="product_add_type_virtual">Простой виртуальный продукт</string>
+    <string name="product_add_type_simple">Простой физический продукт</string>
+    <string name="variation_confirm_delete">Хотите удалить этот вариант?</string>
+    <string name="variation_create_dialog_title">Создание варианта</string>
+    <string name="product_delete_dialog_title">Удаление продукта</string>
+    <string name="card_reader_payment_send_receipt">Отправить квитанцию</string>
+    <string name="card_reader_payment_print_receipt">Печать квитанции</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Не удалось оплатить. Повторите попытку.</string>
+    <string name="card_reader_payment_capturing_payment_state">Получение платежа</string>
+    <string name="card_reader_payment_processing_payment_state">Обработка платежа</string>
+    <string name="card_reader_payment_collect_payment_state">\"Чтиво\" готово</string>
+    <string name="card_reader_payment_payment_failed_header">Не удалось оплатить</string>
+    <string name="card_reader_payment_completed_payment_header">Оплата прошла успешно</string>
+    <string name="card_reader_collect_payment">Сбор платежей</string>
+    <string name="card_reader_tap_or_insert">Коснитесь или вставьте для оплаты</string>
+    <string name="shipping_label_preview_pdf_app_missing">Не удалось просмотреть транспортную этикетку. Установите приложение для просмотра PDF-файлов и повторите попытку.</string>
+    <string name="login_not_wordpress_site_v2">Мы не смогли найти сайт WordPress по указанному вами адресу. Убедитесь, что WordPress установлен, и что вы используете самую последнюю версию.</string>
+    <string name="multiple_shipping">несколько строк данных доставки</string>
     <string name="shipping_label_create_purchase_fulfill_error">Не удалось отметить заказ как выполненный</string>
     <string name="shipping_label_create_purchase_error">Возникла ошибка при покупке этикеток </string>
     <string name="shipping_label_create_purchase_progress_message">Пожалуйста, подождите…</string>
@@ -136,7 +155,6 @@ Language: ru
     <string name="shipping_label_edit_address_phone">Телефон</string>
     <string name="shipping_label_edit_address_company">Компания</string>
     <string name="shipping_label_edit_address_name">Имя</string>
-    <string name="login_not_wordpress_site">Веб-сайт %1$s не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
     <string name="error_no_gmaps_app">Приложение \"Google Карты\" найдено</string>
     <string name="please_wait">Пожалуйста, подождите…</string>
     <string name="variation_detail_update_variation_image_error">Удаление изображений вариантов продуктов поддерживается в версии WooCommerce 4.7 и более поздних.</string>
@@ -294,7 +312,6 @@ Language: ru
     <string name="product_add_type_external">Внешний товар</string>
     <string name="product_add_type_grouped">Сгруппированный товар</string>
     <string name="product_add_type_variable">Вариативный товар</string>
-    <string name="product_add_type_simple">Простой товар</string>
     <string name="product_images_image_limit_warning">Для каждого варианта товара можно добавить только одну фотографию</string>
     <string name="product_replace_photo">Заменить фотографию</string>
     <string name="product_add_photo">Добавить фотографию</string>

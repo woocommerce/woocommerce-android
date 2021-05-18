@@ -136,7 +136,6 @@ Language: id
     <string name="shipping_label_edit_address_phone">Telepon</string>
     <string name="shipping_label_edit_address_company">Perusahaan</string>
     <string name="shipping_label_edit_address_name">Nama</string>
-    <string name="login_not_wordpress_site">Situs web %1$s bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
     <string name="error_no_gmaps_app">Aplikasi Google Maps tidak ditemukan</string>
     <string name="please_wait">Harap tunggu…</string>
     <string name="variation_detail_update_variation_image_error">Maaf, penghapusan gambar pada variasi produk baru bisa dilakukan di WooCommerce 4.7 atau yang lebih baru.</string>
@@ -294,7 +293,6 @@ Language: id
     <string name="product_add_type_external">Produk eksternal</string>
     <string name="product_add_type_grouped">Produk dikelompokkan</string>
     <string name="product_add_type_variable">Produk variabel</string>
-    <string name="product_add_type_simple">Produk simpel</string>
     <string name="product_images_image_limit_warning">Hanya satu foto per variasi produk dapat ditampilkan</string>
     <string name="product_replace_photo">Ganti foto</string>
     <string name="product_add_photo">Tambahkan foto</string>

@@ -10,13 +10,11 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -35,9 +33,6 @@ class VariationDetailViewModelTest : BaseUnitTest() {
             saleEndDateGmt = SALE_END_DATE
         )
     }
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     private lateinit var sut: VariationDetailViewModel
 
