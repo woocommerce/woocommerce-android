@@ -9,9 +9,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.util.CoroutineTestRule
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -32,9 +30,6 @@ class EnqueueSendingEncryptedLogsTest {
     private val wooLogFileProvider: WooLogFileProvider = mock {
         on { provide() } doReturn tempFile
     }
-
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
 
     @Before
     fun setUp() {
