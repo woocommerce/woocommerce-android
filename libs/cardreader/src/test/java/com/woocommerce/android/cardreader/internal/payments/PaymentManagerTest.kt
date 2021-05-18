@@ -26,7 +26,6 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
-import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.GENERIC_ERROR
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
@@ -102,10 +101,11 @@ class PaymentManagerTest {
         whenever(processPaymentAction.processPayment(anyOrNull()))
             .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(REQUIRES_CAPTURE))) })
 
-        whenever(cardReaderStore.capturePaymentIntent(any(), anyString())).thenReturn(CapturePaymentResponse.SUCCESS)
+        whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+            .thenReturn(CapturePaymentResponse.Successful.Success)
         whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull<TerminalException>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
-        whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull<CapturePaymentResponse>()))
+        whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<String>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
@@ -349,7 +349,7 @@ class PaymentManagerTest {
     @Test
     fun `given payment already captured, when capturing payment, then PaymentCompleted is emitted`() = runBlockingTest {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
-            .thenReturn(CapturePaymentResponse.PAYMENT_ALREADY_CAPTURED)
+            .thenReturn(CapturePaymentResponse.Successful.PaymentAlreadyCaptured)
 
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
             .takeUntil(PaymentCompleted).toList()
@@ -359,7 +359,8 @@ class PaymentManagerTest {
 
     @Test
     fun `when capturing payment fails, then error emitted`() = runBlockingTest {
-        whenever(cardReaderStore.capturePaymentIntent(any(), anyString())).thenReturn(GENERIC_ERROR)
+        whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+            .thenReturn(CapturePaymentResponse.Error.GenericError)
 
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
 
@@ -368,7 +369,8 @@ class PaymentManagerTest {
 
     @Test
     fun `when capturing payment fails, then mapCapturePaymentError invoked`() = runBlockingTest {
-        whenever(cardReaderStore.capturePaymentIntent(any(), anyString())).thenReturn(GENERIC_ERROR)
+        whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+            .thenReturn(CapturePaymentResponse.Error.GenericError)
 
         manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
 

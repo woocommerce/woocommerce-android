@@ -12,8 +12,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
-import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.PAYMENT_ALREADY_CAPTURED
-import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.SUCCESS
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
@@ -31,6 +30,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
+import java.util.Locale
 
 private const val USD_TO_CENTS_DECIMAL_PLACES = 2
 private const val USD_CURRENCY = "usd"
@@ -144,11 +144,9 @@ internal class PaymentManager(
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
-        val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)
-        if (captureResponse == SUCCESS || captureResponse == PAYMENT_ALREADY_CAPTURED) {
-            emit(PaymentCompleted)
-        } else {
-            emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
+        when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
+            is CapturePaymentResponse.Successful -> emit(PaymentCompleted)
+            is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }
 

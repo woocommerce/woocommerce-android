@@ -9,6 +9,11 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErr
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.CaptureError
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.GenericError
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.MissingOrder
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.ServerError
 
 class PaymentErrorMapper {
     fun mapTerminalError(
@@ -30,19 +35,16 @@ class PaymentErrorMapper {
 
     fun mapCapturePaymentError(
         originalPaymentIntent: PaymentIntent,
-        capturePaymentResponse: CapturePaymentResponse
+        capturePaymentResponse: CapturePaymentResponse.Error
     ): PaymentFailed {
         val paymentData = PaymentDataImpl(originalPaymentIntent)
         val message = "Capturing payment failed: $capturePaymentResponse"
         val type = when (capturePaymentResponse) {
-            CapturePaymentResponse.NETWORK_ERROR -> NO_NETWORK
-            CapturePaymentResponse.GENERIC_ERROR,
-            CapturePaymentResponse.MISSING_ORDER,
-            CapturePaymentResponse.CAPTURE_ERROR,
-            CapturePaymentResponse.SERVER_ERROR -> GENERIC_ERROR
-            CapturePaymentResponse.PAYMENT_ALREADY_CAPTURED,
-            CapturePaymentResponse.SUCCESS ->
-                throw IllegalStateException("mapError(..) should never be invoked with a successful response.")
+            NetworkError -> NO_NETWORK
+            GenericError,
+            MissingOrder,
+            CaptureError,
+            ServerError -> GENERIC_ERROR
         }
         return PaymentFailed(type, paymentData, message)
     }

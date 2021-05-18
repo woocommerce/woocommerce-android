@@ -91,46 +91,36 @@ class PaymentErrorMapperTest {
 
     @Test
     fun `when NETWORK_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.NETWORK_ERROR)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.NetworkError)
 
         assertThat(result.type).isEqualTo(NO_NETWORK)
     }
 
     @Test
     fun `when GENERIC_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.GENERIC_ERROR)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.GenericError)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
     }
 
     @Test
     fun `when MISSING_ORDER capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.MISSING_ORDER)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.MissingOrder)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
     }
 
     @Test
     fun `when CAPTURE_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.CAPTURE_ERROR)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.CaptureError)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
     }
 
     @Test
     fun `when SERVER_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.SERVER_ERROR)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.ServerError)
 
         assertThat(result.type).isEqualTo(GENERIC_ERROR)
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun `when PAYMENT_ALREADY_CAPTURED capture payment exception thrown, then IllegalStateException thrown`() {
-        mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.PAYMENT_ALREADY_CAPTURED)
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun `when SUCCESS capture payment exception thrown, then IllegalStateException thrown`() {
-        mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.SUCCESS)
     }
 }
