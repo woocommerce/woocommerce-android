@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
-import java.util.Locale
 
 private const val USD_TO_CENTS_DECIMAL_PLACES = 2
 private const val USD_CURRENCY = "usd"
