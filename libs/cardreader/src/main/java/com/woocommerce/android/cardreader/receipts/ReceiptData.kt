@@ -18,6 +18,6 @@ data class CardInfo(
 
 data class ReceiptLineItem(
     val title: String,
-    val quantity: String,
-    val amount: String
+    val quantity: Int,
+    val amount: Int
 )

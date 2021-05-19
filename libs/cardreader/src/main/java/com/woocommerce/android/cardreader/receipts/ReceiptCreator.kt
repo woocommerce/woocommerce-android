@@ -48,7 +48,7 @@ class ReceiptCreator {
             </head>
                 <body>
                     <header>
-                        <h1>${paymentData.storeName.orEmpty()}</h1>
+                        <h1>${buildReceiptTitle(paymentData)}</h1>
                         <h3>${AMOUNT_PAID_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
                         <p>
                             ${paymentData.amount / 100} ${paymentData.currency.toUpperCase(Locale.getDefault())}
@@ -118,6 +118,11 @@ class ReceiptCreator {
             $APPLICATION_NAME: $applicationPreferredName<br/>
             $AID: $dedicatedFileName
         """
+    }
+
+    private fun buildReceiptTitle(parameters: ReceiptData): String {
+        val storeName = parameters.storeName ?: return RECEIPT_TITLE
+        return String.format(RECEIPT_FROM_FORMAT, storeName)
     }
 
     companion object {
