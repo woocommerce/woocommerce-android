@@ -8,16 +8,17 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
-import com.woocommerce.android.cardreader.CardPaymentStatus.UnexpectedError
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
@@ -27,6 +28,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -82,8 +84,10 @@ class CardReaderPaymentViewModel @Inject constructor(
                 logger.e(MAIN, e.stackTraceToString())
                 viewState.postValue(
                     FailedPaymentState(
+                        errorType = GENERIC_ERROR,
                         amountWithCurrencyLabel = null,
-                        onPrimaryActionClicked = { initPaymentFlow() })
+                        onPrimaryActionClicked = { initPaymentFlow() }
+                    )
                 )
             }
         }
@@ -128,24 +132,16 @@ class CardReaderPaymentViewModel @Inject constructor(
             WaitingForInput -> {
                 // TODO cardreader prompt the user to tap/insert a card
             }
-            InitializingPaymentFailed -> emitFailedPaymentState(orderId, null, amountLabel)
-            is CollectingPaymentFailed -> emitFailedPaymentState(orderId, paymentStatus.paymentData, amountLabel)
-            is ProcessingPaymentFailed -> emitFailedPaymentState(orderId, paymentStatus.paymentData, amountLabel)
-            is CapturingPaymentFailed -> emitFailedPaymentState(orderId, paymentStatus.paymentData, amountLabel)
-            is UnexpectedError -> {
-                logger.e(MAIN, paymentStatus.errorCause)
-                emitFailedPaymentState(orderId, null, amountLabel)
-            }
+            is PaymentFailed -> emitFailedPaymentState(orderId, paymentStatus, amountLabel)
         }
     }
 
-    private fun emitFailedPaymentState(orderId: Long, paymentData: PaymentData?, amountLabel: String) {
-        val onRetryClicked = if (paymentData != null) {
-            { retry(orderId, paymentData, amountLabel) }
-        } else {
-            { initPaymentFlow() }
-        }
-        viewState.postValue(FailedPaymentState(amountLabel, onRetryClicked))
+    private fun emitFailedPaymentState(orderId: Long, error: PaymentFailed, amountLabel: String) {
+        WooLog.e(WooLog.T.ORDERS, error.errorMessage)
+        val onRetryClicked = error.paymentDataForRetry?.let {
+            { retry(orderId, it, amountLabel) }
+        } ?: { initPaymentFlow() }
+        viewState.postValue(FailedPaymentState(error.type, amountLabel, onRetryClicked))
     }
 
     private fun loadOrderFromDB() = orderStore.getOrderByIdentifier(arguments.orderIdentifier)
@@ -168,12 +164,17 @@ class CardReaderPaymentViewModel @Inject constructor(
 
         // TODO cardreader Update FailedPaymentState
         data class FailedPaymentState(
+            val errorType: CardPaymentStatusErrorType,
             override val amountWithCurrencyLabel: String?,
             override val onPrimaryActionClicked: (() -> Unit)
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_payment_failed_header,
-            // TODO cardreader use a different label based on the type of the error
-            paymentStateLabel = R.string.card_reader_payment_failed_unexpected_error_state,
+            paymentStateLabel = when (errorType) {
+                NO_NETWORK -> R.string.card_reader_payment_failed_no_network_state
+                PAYMENT_DECLINED -> R.string.card_reader_payment_failed_card_declined_state
+                CARD_READ_TIMED_OUT,
+                GENERIC_ERROR -> R.string.card_reader_payment_failed_unexpected_error_state
+            },
             primaryActionLabel = R.string.retry,
             // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
