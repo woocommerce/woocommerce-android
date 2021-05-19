@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+6.8
+-----
+
+
 6.7
 -----
 - [***] Products: It's now possible to create a Variable Product from the Product section
