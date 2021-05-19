@@ -11,7 +11,7 @@ import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
 
 class AttributeListAdapter(
-    private val onItemClick: (attributeId: Long, attributeName: String) -> Unit
+    private inline val onItemClick: (attributeId: Long, attributeName: String) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
     private var attributeList = listOf<ProductAttribute>()
 
