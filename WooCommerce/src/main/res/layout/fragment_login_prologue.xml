@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_150"
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/minor_100"
         android:text="@string/login_store_address"
@@ -59,10 +60,12 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabIndicator"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_150"
-        app:layout_constraintBottom_toTopOf="@id/button_login_store"
-        app:layout_constraintTop_toBottomOf="@id/viewPager" />
+        app:layout_constraintBottom_toTopOf="@+id/button_login_store"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@drawable/indicator_selector"
+        app:tabGravity="center" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
