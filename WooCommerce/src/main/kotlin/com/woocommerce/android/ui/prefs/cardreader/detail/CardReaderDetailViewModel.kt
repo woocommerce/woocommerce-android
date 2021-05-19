@@ -28,21 +28,17 @@ class CardReaderDetailViewModel @Inject constructor(
         object CardReaderConnectScreen : NavigationTarget()
     }
 
-    sealed class ViewState(
-        val headerLabel: Int? = null,
-        val illustration: Int? = null,
-        val firstHintLabel: Int? = null,
-        val secondHintLabel: Int? = null,
-        val connectBtnLabel: Int? = null
-    ) {
-        open val onPrimaryActionClicked: (() -> Unit)? = null
-
-        data class NotConnectedState(override val onPrimaryActionClicked: (() -> Unit)) : ViewState(
+    sealed class ViewState() {
+        data class NotConnectedState(val onPrimaryActionClicked: (() -> Unit)) : ViewState(
             headerLabel = R.string.card_reader_detail_not_connected_header,
             illustration = R.drawable.img_card_reader_not_connected,
             firstHintLabel = R.string.card_reader_detail_not_connected_first_hint_label,
             secondHintLabel = R.string.card_reader_detail_not_connected_second_hint_label,
             connectBtnLabel = R.string.card_reader_details_not_connected_connect_button_label
+        )
+
+        data class ConnectedState(): ViewState(
+
         )
     }
 }

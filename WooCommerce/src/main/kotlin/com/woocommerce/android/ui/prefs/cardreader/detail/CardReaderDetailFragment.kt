@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.prefs.cardreader.detail
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.util.UiHelpers
@@ -22,11 +22,16 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
 
+        initUI(binding)
         initObservers(binding)
     }
 
+    private fun initUI(binding: FragmentCardReaderDetailBinding) {
+        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(R.color.woo_red_30)
+    }
+
     private fun initObservers(binding: FragmentCardReaderDetailBinding) {
-        viewModel.event.observe(viewLifecycleOwner, Observer {
+        viewModel.event.observe(viewLifecycleOwner, {
             when (it) {
                 is CardReaderConnectScreen ->
                     findNavController()
@@ -36,13 +41,13 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
             }
         })
 
-        viewModel.viewStateData.observe(viewLifecycleOwner, Observer {
-            UiHelpers.setTextOrHide(binding.headerLabel, it.headerLabel)
-            UiHelpers.setImageOrHide(binding.illustration, it.illustration)
-            UiHelpers.setTextOrHide(binding.firstHintLabel, it.firstHintLabel)
-            UiHelpers.setTextOrHide(binding.secondHintLabel, it.secondHintLabel)
-            UiHelpers.setTextOrHide(binding.connectBtn, it.connectBtnLabel)
-            binding.connectBtn.setOnClickListener { _ -> it.onPrimaryActionClicked?.invoke() }
+        viewModel.viewStateData.observe(viewLifecycleOwner, {
+            UiHelpers.setTextOrHide(binding.readerDisconnectedState.headerLabel, it.headerLabel)
+            UiHelpers.setImageOrHide(binding.readerDisconnectedState.illustration, it.illustration)
+            UiHelpers.setTextOrHide(binding.readerDisconnectedState.firstHintLabel, it.firstHintLabel)
+            UiHelpers.setTextOrHide(binding.readerDisconnectedState.secondHintLabel, it.secondHintLabel)
+            UiHelpers.setTextOrHide(binding.readerDisconnectedState.connectBtn, it.connectBtnLabel)
+            binding.readerDisconnectedState.connectBtn.setOnClickListener { _ -> it.onPrimaryActionClicked?.invoke() }
         })
     }
 }

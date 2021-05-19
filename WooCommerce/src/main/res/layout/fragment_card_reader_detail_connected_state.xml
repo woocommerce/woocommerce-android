@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:drawableStart="@drawable/ic_info_outline_24dp"
+        android:drawablePadding="@dimen/major_100"
+        android:id="@+id/enforced_update_tv"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/woo_red_5"
+        android:padding="@dimen/major_100"
+        android:text="@string/card_reader_detail_connected_enforced_update_software" />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Woo.TextView.Overline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/card_reader_detail_connected_header" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/reader_name_tv"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="CHB204909005931" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/reader_battery_tv"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="@string/card_reader_detail_connected_battery_percentage" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/primary_action_btn"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        tools:text="@string/card_reader_detail_connected_update_software" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/secondary_action_btn"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        tools:text="@string/card_reader_detail_connected_update_disconnect_reader" />
+</LinearLayout>
