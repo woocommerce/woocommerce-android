@@ -290,7 +290,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has processing sttus then show collect button`() =
+    fun `when order has processing status then show collect button`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             initForCheckIfOrderCollectable(paymentStatus = Order.Status.Processing)
