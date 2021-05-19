@@ -248,6 +248,21 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_addAttributeTermsFragment_to_attributeListFragment"
+            app:destination="@id/attributeListFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:popUpTo="@id/addAttributeFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="isVariationCreation"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
