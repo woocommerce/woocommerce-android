@@ -6,6 +6,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
@@ -24,12 +25,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
 
-        initUI(binding)
         initObservers(binding)
-    }
-
-    private fun initUI(binding: FragmentCardReaderDetailBinding) {
-        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(R.color.woo_red_30)
     }
 
     private fun initObservers(binding: FragmentCardReaderDetailBinding) {
@@ -57,6 +53,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         primaryActionBtn.setOnClickListener { state.primaryButtonState.onActionClicked() }
                         UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState.text)
                         secondaryActionBtn.setOnClickListener { state.secondaryButtonState.onActionClicked }
+                        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(R.color.woo_red_50)
                     }
                 }
                 is NotConnectedState -> {
@@ -71,7 +68,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         }
                     }
                 }
-            }
+            }.exhaustive
         })
     }
 }

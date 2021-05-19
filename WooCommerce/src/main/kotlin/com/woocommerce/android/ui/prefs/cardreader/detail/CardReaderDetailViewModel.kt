@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -33,7 +35,9 @@ class CardReaderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     CONNECTED -> viewState.value = ConnectedState(
-                        enforceReaderUpdate = UiStringRes(R.string.card_reader_detail_connected_enforced_update_software),
+                        enforceReaderUpdate = UiStringRes(
+                            R.string.card_reader_detail_connected_enforced_update_software
+                        ),
                         // todo cardreader make reader name be part of the connected status
                         readerName = UiStringText("HC: CHB204909005931"),
                         // todo cardreader make reader's battery level be part of the connected status
@@ -53,7 +57,7 @@ class CardReaderDetailViewModel @Inject constructor(
                     else -> viewState.value = NotConnectedState(
                         onPrimaryActionClicked = ::onConnectBtnClicked
                     )
-                }
+                }.exhaustive
             }
         }
     }
@@ -63,11 +67,11 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onUpdateReaderClicked() {
-        // TODO cardreader implement
+        // TODO cardreader implement update functionality
     }
 
     private fun onDisconnectClicked() {
-        // TODO cardreader implement
+        // TODO cardreader implement disconnect functionality
     }
 
     sealed class NavigationTarget : Event() {
@@ -78,11 +82,11 @@ class CardReaderDetailViewModel @Inject constructor(
         data class NotConnectedState(
             val onPrimaryActionClicked: (() -> Unit)
         ) : ViewState() {
-            val headerLabel: Int = R.string.card_reader_detail_not_connected_header
-            val illustration: Int = R.drawable.img_card_reader_not_connected
-            val firstHintLabel: Int = R.string.card_reader_detail_not_connected_first_hint_label
-            val secondHintLabel: Int = R.string.card_reader_detail_not_connected_second_hint_label
-            val connectBtnLabel: Int = R.string.card_reader_details_not_connected_connect_button_label
+            val headerLabel = UiStringRes(R.string.card_reader_detail_not_connected_header)
+            @DrawableRes val illustration = R.drawable.img_card_reader_not_connected
+            val firstHintLabel = UiStringRes(R.string.card_reader_detail_not_connected_first_hint_label)
+            val secondHintLabel = UiStringRes(R.string.card_reader_detail_not_connected_second_hint_label)
+            val connectBtnLabel = UiStringRes(R.string.card_reader_details_not_connected_connect_button_label)
         }
 
         data class ConnectedState(
