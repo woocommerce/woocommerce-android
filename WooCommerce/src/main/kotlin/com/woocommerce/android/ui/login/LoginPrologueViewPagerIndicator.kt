@@ -7,7 +7,7 @@ import android.widget.LinearLayout
 import com.woocommerce.android.R
 
 /**
- * Simple list of images used below the prologue view pager to indicate with page is selected
+ * Simple list of oval images used below the prologue view pager to indicate which page is selected
  */
 class LoginPrologueViewPagerIndicator : LinearLayout {
     companion object {

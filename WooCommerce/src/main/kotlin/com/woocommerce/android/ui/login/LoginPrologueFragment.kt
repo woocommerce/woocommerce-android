@@ -48,10 +48,11 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
         binding.viewPager.initViewPager(parentFragmentManager)
         binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
-                binding.tabIndicator.setSelectedIndicator(position)
+                binding.viewPagerIndicator.setSelectedIndicator(position)
             }
         })
-        binding.tabIndicator.setListener(object : OnIndicatorClickedListener {
+
+        binding.viewPagerIndicator.setListener(object : OnIndicatorClickedListener {
             override fun onIndicatorClicked(index: Int) {
                 binding.viewPager.currentItem = index
             }
