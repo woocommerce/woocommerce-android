@@ -10,10 +10,6 @@ import com.woocommerce.android.R
  * Simple list of oval images used below the prologue view pager to indicate which page is selected
  */
 class LoginPrologueViewPagerIndicator : LinearLayout {
-    companion object {
-        private const val NUM_INDICATORS = 4
-    }
-
     interface OnIndicatorClickedListener {
         fun onIndicatorClicked(index: Int)
     }
@@ -25,7 +21,7 @@ class LoginPrologueViewPagerIndicator : LinearLayout {
         orientation = HORIZONTAL
         val padding = context.resources.getDimensionPixelSize(R.dimen.margin_small)
 
-        for (i in 0 until NUM_INDICATORS) {
+        for (i in 0 until LoginPrologueViewPager.NUM_PAGES) {
             ImageView(context).also { imageView ->
                 imageView.setImageResource(R.drawable.ic_tab_indicator)
                 imageView.isSelected = i == 0
@@ -45,7 +41,7 @@ class LoginPrologueViewPagerIndicator : LinearLayout {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     fun setSelectedIndicator(index: Int) {
-        for (i in 0 until NUM_INDICATORS) {
+        for (i in 0 until LoginPrologueViewPager.NUM_PAGES) {
             indicators[i].isSelected = i == index
         }
     }

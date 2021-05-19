@@ -45,7 +45,7 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
 
-        binding.viewPager.initViewPager(parentFragmentManager)
+        binding.viewPager.initViewPager(childFragmentManager)
         binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 binding.viewPagerIndicator.setSelectedIndicator(position)
