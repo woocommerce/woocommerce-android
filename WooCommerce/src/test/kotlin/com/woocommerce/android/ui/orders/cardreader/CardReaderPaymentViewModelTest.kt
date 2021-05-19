@@ -233,11 +233,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewStateData.value!!
 
         assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isTrue()
-        assertThat(viewState.headerLabel).describedAs("headerLabel").isNull()
+        assertThat(viewState.headerLabel).describedAs("headerLabel")
+            .isEqualTo(R.string.card_reader_payment_collect_payment_loading_header)
         assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isNull()
         assertThat(viewState.illustration).describedAs("illustration").isNull()
-        assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
-        assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+        assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+            .isEqualTo(R.string.card_reader_payment_collect_payment_loading_payment_state)
+        assertThat(viewState.hintLabel).describedAs("hintLabel")
+            .isEqualTo(R.string.card_reader_payment_collect_payment_loading_hint)
         assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
         assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
     }
