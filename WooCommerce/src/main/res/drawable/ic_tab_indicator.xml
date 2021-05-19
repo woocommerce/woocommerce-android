@@ -2,13 +2,13 @@
     <item android:state_selected="true">
         <shape android:shape="oval">
             <solid android:color="@color/woo_gray_5" />
-            <stroke android:width="1dp" android:color="@android:color/transparent" />
+            <size android:width="@dimen/tab_indicator_size" android:height="@dimen/tab_indicator_size" />
         </shape>
     </item>
     <item>
         <shape android:shape="oval">
             <solid android:color="@color/woo_purple_50" />
-            <stroke android:width="@dimen/tab_indicator_size" android:color="@android:color/transparent" />
+            <size android:width="@dimen/tab_indicator_size" android:height="@dimen/tab_indicator_size" />
         </shape>
     </item>
 </selector>

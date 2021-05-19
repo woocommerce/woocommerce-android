@@ -49,8 +49,9 @@
         app:layout_constraintBottom_toTopOf="@+id/button_login_store"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@drawable/ic_tab_indicator"
         app:tabGravity="center"
-        app:tabIndicator="@drawable/ic_tab_indicator" />
+        app:tabIndicator="@null" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_store"
