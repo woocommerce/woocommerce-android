@@ -43,7 +43,7 @@ class ReceiptCreator {
                        display: inline-block;
                     }
                     p { line-height: ${lineHeight}pt; margin: 0 0 ${MARGIN / 2} 0; }
-                    ${cardIconCSS()}
+                    ${buildIconCSS(paymentData.cardInfo.brand)}
                 </style>
             </head>
                 <body>
@@ -59,7 +59,7 @@ class ReceiptCreator {
                         </p>
                         <h3>${PAYMENT_METHOD_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            <span class="card-icon ${paymentData.cardInfo.brand.iconName}-icon"></span> - ${paymentData.cardInfo.last4CardDigits}
+                            <span class="card-icon ${getIconClass(paymentData.cardInfo.brand)}"></span> - ${paymentData.cardInfo.last4CardDigits}
                         </p>
                     </header>
                     <h3>${SUMMARY_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
@@ -74,13 +74,13 @@ class ReceiptCreator {
         """
     }
 
-    // TODO cardreader add css only for the card used for this transaction
-    private fun cardIconCSS(): String =
-        CardBrand.values().joinToString(separator = "\\n\\n") { cardBrand ->
-            ".${cardBrand.iconName}-icon { " +
-                "background-image: url(\"data:image/svg+xml;base64,${cardBrand.base64Data}\") " +
-                "}"
-        }
+    private fun buildIconCSS(cardBrand: PaymentCardBrand): String {
+        return ".${getIconClass(cardBrand)} { " +
+            "background-image: url(\"data:image/svg+xml;base64,${cardBrand.base64Data}\") " +
+            "}"
+    }
+
+    private fun getIconClass(cardBrand: PaymentCardBrand) = "${cardBrand.iconName}-icon"
 
     private fun summaryTable(receiptData: ReceiptData): String {
         val builder = StringBuilder()
