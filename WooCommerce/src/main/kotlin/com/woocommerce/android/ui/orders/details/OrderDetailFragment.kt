@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
@@ -47,6 +48,7 @@ import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -70,6 +72,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var dateUtils: DateUtils
+
+    // TODO cardreader change this to non-nullable
+    @set:Inject var cardReaderManager: CardReaderManager? = null
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -129,7 +134,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) { showOrderDetail(it.order!!, it.isPaymentCollectable) }
+            new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
+                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader)
+            }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
                 showMarkOrderCompleteButton(it)
@@ -207,6 +214,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleResult<OrderShipmentTracking>(AddOrderShipmentTrackingFragment.KEY_ADD_SHIPMENT_TRACKING_RESULT) {
             viewModel.onNewShipmentTrackingAdded(it)
         }
+        handleResult<Boolean>(CardReaderConnectFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
+            if (FeatureFlag.CARD_READER.isEnabled()) {
+                viewModel.onConnectToReaderResultReceived(connected)
+            }
+        }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
         }
@@ -215,7 +227,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
     }
 
-    private fun showOrderDetail(order: Order, isPaymentCollectable: Boolean) {
+    private fun showOrderDetail(order: Order, isPaymentCollectableWithCardReader: Boolean) {
         binding.orderDetailOrderStatus.updateOrder(order)
         binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
         binding.orderDetailCustomerInfo.updateCustomerInfo(
@@ -224,12 +236,14 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
-            isPaymentCollectable = isPaymentCollectable,
+            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onAcceptCardPresentPaymentClicked()
+                    cardReaderManager?.let {
+                        viewModel.onAcceptCardPresentPaymentClicked(it)
+                    }
                 }
             }
         )

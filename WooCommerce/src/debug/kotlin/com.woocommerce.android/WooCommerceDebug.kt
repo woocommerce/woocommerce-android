@@ -11,31 +11,12 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
-import com.woocommerce.android.cardreader.CardReaderManagerFactory
-import com.woocommerce.android.cardreader.CardReaderStore
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.HiltAndroidApp
-import org.wordpress.android.fluxc.store.WCPayStore
-import javax.inject.Inject
 
 @HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
-    @Inject lateinit var payStore: WCPayStore
-    @Inject lateinit var selectedSite: SelectedSite
-
-    override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
-        override suspend fun getConnectionToken(): String {
-            val result = payStore.fetchConnectionToken(selectedSite.get())
-            return result.model?.token.orEmpty()
-        }
-
-        override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): Boolean {
-            return !payStore.capturePayment(selectedSite.get(), paymentId, orderId).isError
-        }
-    })
-
     override fun onCreate() {
         if (FlipperUtils.shouldEnableFlipper(this)) {
             SoLoader.init(this, false)

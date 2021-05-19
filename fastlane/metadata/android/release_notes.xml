@@ -1,68 +1,102 @@
 <ar>
-6.5:
-لدينا ميزة جديدة رائعة متاحة لاختبارات بيتا! يمكن للتجار الذين مقرهم الولايات المتحدة إنشاء ملصقات شحن للطلبات المادية مباشرةً من التطبيق (لجهات وصول الولايات المتحدة فقط). أصلحنا كذلك بعض الأخطاء: تعرض ملصقات الشحن منتهية الصلاحية الآن معلومات أكثر دقة ولن تظهر لوحة المفاتيح على الشاشة عند البحث في قائمة طلباتك.
+6.6:
+- يمكنك الآن عند تحرير منتج ما إنشاء أنواع متنوعة، وسمات، وخيارات السمات وحذفها وتحديثها. يمكنك كذلك إنشاء منتج افتراضي وتحريره من شاشة تفاصيل المنتج.
+أصبح من الممكن الآن استرداد أموال خط الشحن داخل طلب ما.
+أصلحنا كذلك مشكلة كانت تحدث عند تحرير أسعار المنتج العادية وأسعار الخصومات.
 </ar>
 <de-DE>
-6.5:
-Es gibt eine brandneue Funktion als Beta-Version! Verkäufer in der USA können Versandetiketten für physische Bestellungen jetzt direkt in der App erstellen (nur für Lieferungen innerhalb der USA). Außerdem haben wir ein paar Fehler korrigiert: Abgelaufene Versandetiketten zeigen Informationen jetzt genauer an und die Tastatur auf dem Bildschirm verschwindet nicht mehr, wenn du deine Bestellliste durchsuchst.
+6.6:
+Du kannst beim Bearbeiten eines Produktes jetzt Variationen, Attribute und Attributsoptionen erstellen, löschen und aktualisieren. Außerdem hast du die Möglichkeit, ein virtuelles Produkt in der Produktdetailansicht zu erstellen und zu bearbeiten.
+Du kannst den Versand jetzt innerhalb einer Bestellung rückerstatten.
+Zudem haben wir einen Fehler behoben, der beim Bearbeiten der herkömmlichen Preise und Angebotspreise von Produkten auftrat.
 </de-DE>
 <es-ES>
-6.5:
-¡Tenemos una nueva función disponible para la versión beta! Los vendedores establecidos en Estados Unidos pueden crear etiquetas de envío para sus pedidos físicos desde la aplicación (solo para destinos que se encuentren dentro del mismo país). También hemos corregido algunos errores: ahora, las etiquetas de envío vencidas muestran información más precisa y el teclado de la pantalla no desaparecerá al hacer búsquedas en la lista de pedidos.
+6.6:
+Ahora, al editar un producto, puedes crear, eliminar y actualizar variaciones, atributos y opciones de atributos. También puedes crear y editar un producto virtual desde su pantalla de detalles.
+Ahora es posible reembolsar una partida de un pedido.
+También hemos corregido un problema que sucedía al editar los precios de venta y normal de un producto.
 </es-ES>
 <fr-FR>
-6.5 :
-Une nouvelle fonctionnalité est disponible en version bêta ! Les commerçants basés aux États-Unis peuvent créer des étiquettes d’expédition pour les commandes physiques directement depuis l’application (disponible uniquement pour les livraisons aux États-Unis). Certains bogues ont également été résolus : les étiquettes d’expédition obsolètes affichent désormais des informations plus précises, et le clavier virtuel ne disparait plus de l’écran lorsque vous effectuez des recherches dans votre liste de commandes.
+6.6 :
+Lorsque vous modifiez un produit, vous pouvez désormais créer, supprimer et mettre à jour des variantes, des attributs et des options d’attribut. Vous pouvez également créer et modifier un produit virtuel à partir de l’écran Détails sur le produit.
+Il est désormais possible de rembourser une ligne de livraison dans une commande.
+Nous avons également résolu un problème survenant lors de l’édition des prix de ventes et standard du produit.
 </fr-FR>
 <iw-IL>
-6.5:
-יש לנו אפשרות חדשה ומבריקה שזמינה לבדיקה בביתא! מוכרים שמבוססים בארה"ב יכולים ליצור תוויות משלוח להזמנות של מוצרים פיזיים ישירות מהאפליקציה (ליעדים בתחומי ארה"ב בלבד). תיקנו גם באגים שונים: תוויות משלוח שפג תוקפן מציגות כעת מידע מדויק יותר והמקלדת שמוצגת על המסך לא תיעלם עוד בעת חיפוש ברשימת ההזמנות.
+6.6:
+כאשר עורכים מוצר, אפשר ליצור, למחוק ולעדכן את הסוגים, המאפיינים ואת אפשרויות המאפיינים של המוצר. אפשר גם ליצור ולערוך מוצרים וירטואליים מהמסך של פרטי המוצר.
+כעת אפשר להנפיק החזר כספי עבור שורת משלוח בתוך הזמנה.
+תיקנו גם בעיה שהתרחשה כאשר עורכים את המחירים הרגילים ואת מחירי המבצע של המוצר.
 </iw-IL>
 <id>
-6.5:
-Kami punya fitur baru yang tersedia untuk pengujian beta! Penjual yang berdomisili di AS bisa membuat label pengiriman untuk pesanan fisik langsung dari aplikasi (hanya untuk tujuan AS). Kami juga memperbaiki beberapa bug: label pengiriman kedaluwarsa sekarang menampilkan informasi yang lebih akurat, dan keyboard pada layar tidak akan hilang saat mencari daftar pesanan Anda.
+6.6:
+Ketika menyunting produk, sekarang Anda bisa membuat, menghapus, dan memperbarui variasi, atribut, dan opsi atribut. Anda juga bisa membuat dan menyunting produk virtual dari layar detail produk.
+Sekarang dimungkinkan untuk mengembalikan dana baris pengiriman di dalam sebuah pemesanan.
+Kami juga memperbaiki masalah yang terjadi saat menyunting harga normal dan harga diskon produk.
 </id>
 <it-IT>
-6.5:
-È disponibile una nuova splendida funzionalità per il beta testing. I rivenditori residenti in USA possono creare etichette di spedizione per ordini fisici proprio dall'app (solo per destinazioni USA). Abbiamo anche corretto alcuni bug: le etichette di spedizione scadute ora mostrano informazioni molto più accurate e la tastiera sulla schermata non scomparirà durante la ricerca dell'elenco degli ordini.
+6.6:
+Quando viene modificato un prodotto, ora puoi creare, eliminare e aggiornare le varianti, gli attributi e le opzioni degli attributi. Puoi anche creare e modificare un prodotto virtuale dalla schermata dei dettagli del prodotto.
+Ora è possibile rimborsare una riga della spedizione all'interno di un ordine.
+Abbiamo anche corretto un problema che si verificava durante la modifica dei prezzi normali e di vendita di un prodotto.
 </it-IT>
 <ja-JP>
-6.5:
-素晴らしい新機能がベータテストとして利用できるようになりました。 米国在住の出品者は物理的な注文の配送ラベルをアプリから直接作成できます (配送先が米国内の場合のみ)。 バグもいくつか修正しました。有効期限が切れた配送ラベルにより正確な情報が表示されるようになり、また注文リストを検索する際にオンスクリーンキーボードが消えることがなくなりました。
+6.6:
+製品情報を編集するとき、バリエーション、属性、属性の選択肢の作成、削除、更新ができるようになりました。 また、製品の詳細画面から仮想製品を作成、編集することもできます。
+注文内の配送ラインの返金が可能になりました。
+製品の標準価格およびセール価格を編集するときに発生する問題も修正されました。
 </ja-JP>
 <ko-KR>
-6.5:
-베타 테스트에 이용할 수 있는 빛나는 새 기능이 있습니다. 미국의 판매자는 앱에서 바로 실물 주문에 대한 배송 레이블을 만들 수 있습니다(목적지가 미국인 경우에만 해당). 몇 가지 버그도 수정했습니다. 만료된 배송 레이블에 이제 더 정확한 정보가 표시되며, 주문 목록을 검색할 때 화면 키보드가 사라지지 않습니다.
+6.6:
+제품을 편집할 때 이제는 변형, 속성, 속성 옵션을 생성, 삭제, 업데이트할 수 있습니다. 제품 상세 정보 페이지에서 가상 제품을 생성하고 편집할 수도 있습니다.
+이제는 주문 내부 배송 라인 환불이 가능합니다.
+제품의 정상 가격과 할인 가격을 편집할 때 발생하던 문제도 해결했습니다.
 </ko-KR>
 <nl-NL>
-6.5:
-Er is een gloednieuwe functie beschikbaar voor bètatests! Verkopers in de VS kunnen rechtstreeks in de app verzendlabels aanmaken voor fysieke bestellingen (alleen voor bestemmingen in de VS). We hebben ook een aantal problemen opgelost: verlopen verzendlabels geven nu nauwkeurigere informatie weer en het toetsenbord op het scherm verdwijnt niet als je je bestellijst doorzoekt.
+6.6:
+Tijdens het bijwerken van een product kun je nu variaties, eigenschappen en eigenschapopties maken, verwijderen en bijwerken. Je kunt ook vanaf het scherm productgegevens een virtueel product maken en bijwerken.
+Je kunt nu een verzendregel terugstorten binnen een bestelling.
+We hebben ook een probleem verholpen dat zich voordeed wanneer de reguliere en verkoopprijs van een product werden bijgewerkt.
 </nl-NL>
 <pt-BR>
-6.5:
-Temos uma funcionalidade inteiramente nova disponível para testes na versão beta! Os vendedores localizados nos EUA podem criar etiquetas de envio para pedidos físicos direto no app (somente para destinos nos EUA). Também corrigimos alguns problemas: as etiquetas de envio expiradas agora exibem informações mais precisas, e o teclado na tela não desaparece ao fazer pesquisas na sua lista de pedidos.
+6.6:
+Ao editar um produto, agora você pode criar, excluir e atualizar variações, atributos e opções de atributo. Você também pode criar e editar um produto virtual na tela de detalhes do produto.
+Agora é possível reembolsar uma linha de remessa no pedido.
+Além disso, corrigimos um problema que ocorria ao editar o preço promocional ou normal de um produto.
 </pt-BR>
 <ru-RU>
-6.5:
-Мы приготовили для бета-тестирования отличную новинку! Продавцы в США могут создавать транспортные этикетки для физических заказов прямо в приложении (только для доставки в пределах США). Мы также исправили некоторые ошибки: на этикетках с истекшим сроком годности теперь отображается более точная информация, а экранная клавиатура не исчезает при поиске в списке заказов.
+6.6
+При изменении товара теперь можно создавать, удалять и обновлять варианты, атрибуты и опции атрибутов. На экране сведений о продукте также можно создать виртуальный товар и внести в него изменения.
+В настоящее время можно вернуть средства по строке доставки внутри заказа.
+Мы также устранили проблему, которая происходила при изменении обычной и распродажной цены продукта.
 </ru-RU>
 <sv-SE>
-6.5:
-Vi har en helt ny funktion tillgänglig för betatestning! Handlare baserade i USA kan skapa fraktetiketter för fysiska beställningar direkt i appen (endast för destinationer i USA). Vi har även korrigerat några buggar: utgångna fraktetiketter visar nu mer korrekt information och tangentbordet på skärmen försvinner inte när du söker i din beställningslista.
+6.6:
+När du redigerar en produkt kan du nu skapa, ta bort och uppdatera variationer, attribut och attributalternativ. Du kan också skapa och redigera en virtuell produkt från produktinformationsskärmen.
+Det är nu möjligt att återbetala en fraktrad i en beställning.
+Vi har även åtgärdat ett problem som uppstod vid redigering av det ordinarie priset och reapriset för en produkt.
 </sv-SE>
 <tr-TR>
-6.5:
-Beta testi için yepyeni bir özelliğimiz var. ABD merkezli satıcılar, doğrudan uygulamadan fiziksel siparişler için gönderim etiketleri oluşturabilirler (yalnızca ABD'deki varış noktaları için). Ayrıca bazı hataları da düzelttik: Süresi dolan gönderim etiketleri artık daha doğru bilgiler gösteriyor ve sipariş listenizde arama yaparken ekran klavyesi kaybolmuyor.
+6.6:
+Bir ürünü düzenlerken artık ürün varyasyonlarını, ürün özelliklerini ve ürün özelliği seçeneklerini oluşturabilir, silebilir ve güncelleyebilirsiniz. Ayrıca ürün detay ekranından sanal bir ürün oluşturabilir ve düzenleyebilirsiniz
+Artık bir siparişin gönderim satırından iade yapmak mümkün.
+Bir ürünün normal ve indirimli fiyatlarını düzenlerken oluşan bir sorunu da düzelttik.
 </tr-TR>
 <zh-CN>
-6.5：
-我们为 Beta 测试提供了一个出色的新功能！ 美国境内的商家可以直接从应用程序为实体订单创建配送标签（仅限目的地为美国的订单）。 我们还修复了一些错误：过期的配送标签现在将显示更准确的信息，并且在搜索订单列表时屏幕键盘不会消失。
+6.6：
+编辑产品时，您现在可以创建、删除和更新变体、属性和属性选项。 您还可以从产品详情屏幕创建和编辑虚拟产品。
+现在，您可以在订单内退还货运公司费用。
+我们还修复了在编辑产品常规价格和促销价格时出现的问题。
 </zh-CN>
 <zh-TW>
-6.5：
-我們有個閃亮新功能可供 Beta 測試！ 美國商家可以直接在應用程式中為實體訂單建立郵寄標籤 (僅收貨地在美國境內適用)。 我們也修正了一些錯誤：過期的郵寄標籤現在可以顯示更準確的資訊；螢幕小鍵盤現在不會在你搜尋訂單清單時消失。
+6.6：
+現在編輯產品時，可以建立、刪除和更新款式、屬性和屬性選項。 你也可以從產品詳細資料畫面建立和編輯虛擬產品。
+現在可以針對訂單中的某個出貨細項退款。
+我們也解決了編輯產品的原價和售價時發生的問題。
 </zh-TW>
 <en-US>
-6.5:
-We have a shiny new feature available for beta testing! US-based merchants can create shipping labels for physical orders right from the app (for US destinations only). We've also fixed some bugs: expired shipping labels now display more accurate information, and the on-screen keyboard won't disappear when searching your order list.
+6.6:
+When editing a product, you can now create, delete, and update variations, attributes, and attribute options. You can also create and edit a virtual product from the product detail screen.
+It is now possible to refund a shipping line inside an order.
+We also fixed an issue that occurred when editing a product’s regular and sale prices.
 </en-US>
