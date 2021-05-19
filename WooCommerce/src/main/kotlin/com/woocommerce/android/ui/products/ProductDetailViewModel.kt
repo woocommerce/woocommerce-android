@@ -1253,9 +1253,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
-    fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
+    fun onAttributeListItemClick(attributeId: Long, attributeName: String, isVariationCreation: Boolean) {
         enableLocalAttributeForVariations(attributeId)
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false, isVariationCreation))
     }
 
     /**
@@ -1312,7 +1312,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called from the attribute list when the user enters a new attribute
      */
-    fun addLocalAttribute(attributeName: String) {
+    fun addLocalAttribute(attributeName: String, isVariationCreation: Boolean) {
         if (containsAttributeName(attributeName)) {
             triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
             return
@@ -1339,7 +1339,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductDraft(attributes = attributes)
 
         // take the user to the add attribute terms screen
-        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true))
+        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true, isVariationCreation))
     }
 
     /**

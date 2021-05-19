@@ -131,7 +131,9 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     private fun showAttributes(attributes: List<ProductAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
+            adapter = AttributeListAdapter { attributeId, attributeName ->
+                viewModel.onAttributeListItemClick(attributeId, attributeName, navArgs.isVariationCreation)
+            }
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as AttributeListAdapter

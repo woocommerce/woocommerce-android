@@ -113,7 +113,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             val attributeName = binding.attributeEditText.text?.toString() ?: ""
             if (attributeName.isNotBlank()) {
                 binding.attributeEditText.text?.clear()
-                viewModel.addLocalAttribute(attributeName)
+                viewModel.addLocalAttribute(attributeName, navArgs.isVariationCreation)
             }
             true
         }
@@ -147,7 +147,9 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
+            adapter = AttributeListAdapter { attributeId, attributeName ->
+                viewModel.onAttributeListItemClick(attributeId, attributeName, navArgs.isVariationCreation)
+            }
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as AttributeListAdapter
