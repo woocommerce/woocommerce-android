@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
@@ -44,6 +45,11 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
         }
 
         binding.viewPager.initViewPager(parentFragmentManager)
+        binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                binding.tabIndicator.setSelectedIndicator(position)
+            }
+        })
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)

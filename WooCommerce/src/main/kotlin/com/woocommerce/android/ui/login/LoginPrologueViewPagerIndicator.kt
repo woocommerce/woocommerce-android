@@ -26,6 +26,7 @@ class LoginPrologueViewPagerIndicator : LinearLayout {
                 imageView.isSelected = index == 0
                 this.addView(imageView)
                 indicators.add(imageView)
+
                 (imageView.layoutParams as MarginLayoutParams).also {
                     it.marginEnd = margin
                     it.marginStart = margin
