@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 13:54:04+0000
+Translation-Revision-Date: 2021-05-12 22:54:14+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">منتج رقمي فريد</string>
+    <string name="product_add_type_virtual">منتج افتراضي بسيط</string>
+    <string name="product_add_type_simple">منتج مادي بسيط</string>
+    <string name="variation_confirm_delete">هل ترغب في حذف هذه المجموعة المتنوعة؟</string>
+    <string name="variation_create_dialog_title">إنشاء مجموعة متنوعة</string>
+    <string name="product_delete_dialog_title">حذف منتج</string>
+    <string name="card_reader_payment_send_receipt">إرسال إيصال</string>
+    <string name="card_reader_payment_print_receipt">طباعة إيصال</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">فشلت عملية الدفع. يُرجى المحاولة مرة أخرى.</string>
+    <string name="card_reader_payment_capturing_payment_state">تسجيل الدفع</string>
+    <string name="card_reader_payment_processing_payment_state">معالجة الدفع</string>
+    <string name="card_reader_payment_collect_payment_state">القارئ جاهز</string>
+    <string name="card_reader_payment_payment_failed_header">فشلت عملية الدفع</string>
+    <string name="card_reader_payment_completed_payment_header">تمت عملية الدفع بنجاح</string>
+    <string name="card_reader_collect_payment">تحصيل المدفوعات</string>
+    <string name="card_reader_tap_or_insert">النقر أو الإدراج للدفع</string>
+    <string name="shipping_label_preview_pdf_app_missing">تتعذر معاينة ملصق الشحن. يرجى تثبيت تطبيق عارض ملفات PDF والمحاولة مرة أخرى.</string>
+    <string name="login_not_wordpress_site_v2">لم نتمكن من اكتشاف موقع ووردبريس على العنوان الذي أدخلته. يرجى التأكُّد من تثبيت ووردبريس، وأنك تقوم بتشغيل أحدث إصدار متاح.</string>
+    <string name="multiple_shipping">خطوط شحن متعددة</string>
     <string name="shipping_label_create_purchase_fulfill_error">يتعذر علينا وسم الطلب على أنه مكتمل</string>
     <string name="shipping_label_create_purchase_error">حدث خطأ في أثناء شراء الملصقات</string>
     <string name="shipping_label_create_purchase_progress_message">يُرجى الانتظار…</string>
@@ -136,7 +155,6 @@ Language: ar
     <string name="shipping_label_edit_address_phone">الهاتف</string>
     <string name="shipping_label_edit_address_company">الشركة</string>
     <string name="shipping_label_edit_address_name">الاسم</string>
-    <string name="login_not_wordpress_site">موقع الويب ⁦%1$s⁩ ليس موقع ووردبريس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
     <string name="error_no_gmaps_app">تم العثور على تطبيق خرائط غوغل</string>
     <string name="please_wait">يُرجى الانتظار…</string>
     <string name="variation_detail_update_variation_image_error">عذرًا، إنَّ إزالة الصورة بشأن مجموعات المنتج المتنوعة مدعومة في WooCommerce الإصدار 4.7 أو أحدث.</string>
@@ -294,7 +312,6 @@ Language: ar
     <string name="product_add_type_external">منتج خارجي</string>
     <string name="product_add_type_grouped">منتج مجمع</string>
     <string name="product_add_type_variable">منتج متعدد الأنواع</string>
-    <string name="product_add_type_simple">منتج بسيط</string>
     <string name="product_images_image_limit_warning">لا يمكن عرض سوى صورة واحدة فقط لكل تباين من تباينات المنتج</string>
     <string name="product_replace_photo">استبدال صورة</string>
     <string name="product_add_photo">إضافة صورة</string>

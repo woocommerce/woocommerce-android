@@ -13,6 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
+import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -35,6 +37,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
@@ -50,6 +53,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -219,8 +223,25 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.remoteId))
     }
 
-    fun onAcceptCardPresentPaymentClicked() {
-        triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+    fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
+        // TODO cardreader add tests for this functionality
+        if (cardReaderManager.readerStatus.value == CONNECTED) {
+            triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+        } else {
+            triggerEvent(StartCardReaderConnectFlow)
+        }
+    }
+
+    fun onConnectToReaderResultReceived(connected: Boolean) {
+        // TODO cardreader add tests for this functionality
+        launch {
+            // this dummy delay needs to be here since the navigation component hasn't finished the previous
+            // transaction when a result is received
+            delay(1)
+            if (connected) {
+                triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+            }
+        }
     }
 
     fun onViewRefundedProductsClicked() {

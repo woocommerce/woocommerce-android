@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 11:54:04+0000
+Translation-Revision-Date: 2021-05-12 12:54:50+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_add_type_virtual_desc">Ein eindeutiges, digitales Produkt</string>
+    <string name="product_add_type_virtual">Einfaches virtuelles Produkt</string>
+    <string name="product_add_type_simple">Einfaches physisches Produkt</string>
+    <string name="variation_confirm_delete">Möchtest du diese Variante wirklich löschen?</string>
+    <string name="variation_create_dialog_title">Variante erstellen</string>
+    <string name="product_delete_dialog_title">Produkt wird gelöscht</string>
+    <string name="card_reader_payment_send_receipt">Beleg senden</string>
+    <string name="card_reader_payment_print_receipt">Beleg drucken</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Bezahlen fehlgeschlagen. Bitte versuch es noch einmal.</string>
+    <string name="card_reader_payment_capturing_payment_state">Zahlung wird erfasst</string>
+    <string name="card_reader_payment_processing_payment_state">Zahlung wird bearbeitet</string>
+    <string name="card_reader_payment_collect_payment_state">Kartenlesegerät ist bereit</string>
+    <string name="card_reader_payment_payment_failed_header">Bezahlen fehlgeschlagen</string>
+    <string name="card_reader_payment_completed_payment_header">Zahlung erfolgreich</string>
+    <string name="card_reader_collect_payment">Zahlung empfangen</string>
+    <string name="card_reader_tap_or_insert">Karte zum Bezahlen auflegen oder einstecken</string>
+    <string name="shipping_label_preview_pdf_app_missing">Es kann keine Vorschau des Versandetiketts angezeigt werden. Bitte installiere eine App zum Öffnen von PDF-Dateien und versuche es erneut.</string>
+    <string name="login_not_wordpress_site_v2">An der von dir eingegeben Adresse konnten wir keine WordPress-Website finden. Bitte stelle sicher, dass WordPress installiert ist und du über die aktuelle Version verfügst.</string>
+    <string name="multiple_shipping">mehrere Versandzeilen</string>
     <string name="shipping_label_create_purchase_fulfill_error">Die Bestellung konnte nicht als vollständig markiert werden.</string>
     <string name="shipping_label_create_purchase_error">Fehler beim Kauf der Etiketten</string>
     <string name="shipping_label_create_purchase_progress_message">Bitte warten …</string>
@@ -136,7 +155,6 @@ Language: de
     <string name="shipping_label_edit_address_phone">Telefon</string>
     <string name="shipping_label_edit_address_company">Firma</string>
     <string name="shipping_label_edit_address_name">Name</string>
-    <string name="login_not_wordpress_site">Die Website %1$s ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
     <string name="error_no_gmaps_app">Google Maps-App wurde gefunden</string>
     <string name="please_wait">Bitte warten …</string>
     <string name="variation_detail_update_variation_image_error">Das Entfernen von Bildern für Produktvarianten wird leider nur in WooCommerce 4.7 oder höher unterstützt.</string>
@@ -294,7 +312,6 @@ Language: de
     <string name="product_add_type_external">Externes Produkt</string>
     <string name="product_add_type_grouped">Gruppiertes Produkt</string>
     <string name="product_add_type_variable">Variables Produkt</string>
-    <string name="product_add_type_simple">Einfaches Produkt</string>
     <string name="product_images_image_limit_warning">Für eine Produktvariante kann immer nur ein Foto angezeigt werden</string>
     <string name="product_replace_photo">Foto ersetzen</string>
     <string name="product_add_photo">Foto hinzufügen</string>
