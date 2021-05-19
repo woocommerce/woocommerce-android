@@ -48,7 +48,7 @@ class ReceiptCreator {
                         <h1>${buildReceiptTitle(paymentData)}</h1>
                         <h3>${AMOUNT_PAID_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            ${paymentData.amount / 100} ${paymentData.currency.toUpperCase(Locale.getDefault())}
+                            ${paymentData.amount} ${paymentData.currency.toUpperCase(Locale.getDefault())}
                         </p>
                         <h3>${DATE_PAID_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
                         <p>
@@ -93,7 +93,7 @@ class ReceiptCreator {
                         $AMOUNT_PAID_SECTION_TITLE
                     </td>
                     <td>
-                        ${receiptData.amount / 100} ${receiptData.currency}
+                        ${receiptData.amount} ${receiptData.currency}
                     </td>
                 </tr>
             """
