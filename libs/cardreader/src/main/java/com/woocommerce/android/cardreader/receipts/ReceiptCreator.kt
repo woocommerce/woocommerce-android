@@ -131,13 +131,14 @@ class ReceiptCreator {
         const val ICON_HEIGHT = LINE_HEIGHT
         const val ICON_WIDTH = ICON_HEIGHT * 4 / 3
 
-        const val APPLICATION_NAME = "HC: WooCommerce"
-        const val RECEIPT_FROM_FORMAT = "HC: Receipt from %1$@"
-        const val RECEIPT_TITLE = "HC: Receipt"
-        const val AMOUNT_PAID_SECTION_TITLE = "HC: Amount paid"
-        const val DATE_PAID_SECTION_TITLE = "HC: Date paid"
-        const val PAYMENT_METHOD_SECTION_TITLE = "HC: Payment method"
-        const val SUMMARY_SECTION_TITLE = "HC: Summary"
-        const val AID = "HC: AID"
+        // TODO cardreader Move all these strings into strings.xml
+        const val APPLICATION_NAME = "Application name"
+        const val RECEIPT_FROM_FORMAT = "Receipt from %s"
+        const val RECEIPT_TITLE = "Receipt"
+        const val AMOUNT_PAID_SECTION_TITLE = "Amount paid"
+        const val DATE_PAID_SECTION_TITLE = "Date paid"
+        const val PAYMENT_METHOD_SECTION_TITLE = "Payment method"
+        const val SUMMARY_SECTION_TITLE = "Summary"
+        const val AID = "AID"
     }
 }
