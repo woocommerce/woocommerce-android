@@ -6,8 +6,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueViewpagerItemBinding
+import org.wordpress.android.util.DisplayUtils
 
 /**
  * Displays a single image and label in the login prologue view pager
@@ -30,15 +30,12 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
         arguments?.let { args ->
             binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             binding.textView.setText(args.getInt(ARG_STRING_ID))
+            binding.textView.layoutParams.width = DisplayUtils.getDisplayPixelWidth() / 2
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
     }
 }

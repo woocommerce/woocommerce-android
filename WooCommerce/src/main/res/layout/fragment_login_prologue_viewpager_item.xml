@@ -15,9 +15,11 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView"
-        style="@style/Woo.Card.Title"
+        style="@style/Woo.TextView.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        tools:text="Greetings!" />
+        android:gravity="center"
+        tools:layout_width="200dp"
+        tools:text="@string/login_prologue_label_analytics" />
 </LinearLayout>
