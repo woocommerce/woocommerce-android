@@ -6,7 +6,7 @@ import java.util.Locale
  * Most parts of this class were copied from woocommerce-ios codebase.
  */
 class ReceiptCreator {
-    // TODO cardreader ideally move receipt creating to the backend
+    // TODO cardreader ideally move receipt creation to the backend
     fun createHtmlReceipt(paymentData: ReceiptData): String {
         val lineHeight = FONT_SIZE * 1.5
         val iconHeight = lineHeight
@@ -59,14 +59,14 @@ class ReceiptCreator {
                         </p>
                         <h3>${PAYMENT_METHOD_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            <span class="card-icon ${getIconClass(paymentData.cardInfo.brand)}"></span> - ${paymentData.cardInfo.last4CardDigits}
+                            <span class="card-icon ${buildIconClass(paymentData.cardInfo.brand)}"></span> - ${paymentData.cardInfo.last4CardDigits}
                         </p>
                     </header>
                     <h3>${SUMMARY_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
-                    ${summaryTable(paymentData)}
+                    ${buildSummaryTable(paymentData)}
                     <footer>
                         <p>
-                            ${requiredItems(paymentData)}
+                            ${buildRequiredItems(paymentData)}
                         </p>
                     </footer>
                 </body>
@@ -75,14 +75,14 @@ class ReceiptCreator {
     }
 
     private fun buildIconCSS(cardBrand: PaymentCardBrand): String {
-        return ".${getIconClass(cardBrand)} { " +
+        return ".${buildIconClass(cardBrand)} { " +
             "background-image: url(\"data:image/svg+xml;base64,${cardBrand.base64Data}\") " +
             "}"
     }
 
-    private fun getIconClass(cardBrand: PaymentCardBrand) = "${cardBrand.iconName}-icon"
+    private fun buildIconClass(cardBrand: PaymentCardBrand) = "${cardBrand.iconName}-icon"
 
-    private fun summaryTable(receiptData: ReceiptData): String {
+    private fun buildSummaryTable(receiptData: ReceiptData): String {
         val builder = StringBuilder()
         builder.append("<table>")
         receiptData.purchasedProducts.forEach { item ->
@@ -106,7 +106,7 @@ class ReceiptCreator {
     }
 
     // TODO cardreader Add support for other countries (eg. use a factory to get something like RequiredItemsBuilder)
-    private fun requiredItems(paymentData: ReceiptData): String {
+    private fun buildRequiredItems(paymentData: ReceiptData): String {
         val applicationPreferredName = paymentData.applicationPreferredName ?: return "<br/>"
         val dedicatedFileName = paymentData.dedicatedFileName ?: return "<br/>"
 
