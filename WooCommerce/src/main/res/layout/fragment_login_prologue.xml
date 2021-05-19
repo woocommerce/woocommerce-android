@@ -41,17 +41,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_prologue" />
 
-    <com.google.android.material.tabs.TabLayout
+    <com.woocommerce.android.ui.login.LoginPrologueViewPagerIndicator
         android:id="@+id/tabIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/major_150"
         app:layout_constraintBottom_toTopOf="@+id/button_login_store"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tabBackground="@drawable/ic_tab_indicator"
-        app:tabGravity="center"
-        app:tabIndicator="@null" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_store"

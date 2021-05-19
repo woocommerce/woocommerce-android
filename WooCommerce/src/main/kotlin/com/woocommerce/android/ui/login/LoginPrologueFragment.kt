@@ -44,7 +44,6 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
         }
 
         binding.viewPager.initViewPager(parentFragmentManager)
-        binding.tabIndicator.setupWithViewPager(binding.viewPager)
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
