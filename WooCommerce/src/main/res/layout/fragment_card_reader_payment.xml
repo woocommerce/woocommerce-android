@@ -11,15 +11,6 @@
     android:paddingEnd="@dimen/margin_extra_extra_medium_large"
     android:paddingBottom="@dimen/margin_extra_medium_large">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/header_label"
         style="@style/Woo.TextView.Subtitle2"
@@ -49,30 +40,44 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
         android:contentDescription="@null"
-        app:layout_constraintBottom_toTopOf="@id/stub"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/amount_label"
         tools:srcCompat="@drawable/ic_card_reader" />
 
-    <ViewStub
-        android:id="@+id/stub"
+    <FrameLayout
+        android:id="@+id/progress_bar_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingTop="84dp"
+        android:paddingBottom="@dimen/margin_extra_medium_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/illustration" />
+        app:layout_constraintTop_toBottomOf="@id/amount_label">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/progress_bar_large"
+            android:layout_height="@dimen/progress_bar_large" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/content_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="illustration,progress_bar_wrapper" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/payment_state_label"
         style="@style/Woo.TextView.Subtitle2"
+        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
-        app:layout_constraintBottom_toTopOf="@id/hint_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stub"
+        app:layout_constraintTop_toBottomOf="@id/content_group"
         tools:text="Reader is ready" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -81,8 +86,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small_medium"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/margin_extra_medium_large"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/payment_state_label"
         tools:text="Tap or insert to pay" />
@@ -90,25 +96,24 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/primary_action_btn"
         style="@style/Woo.Button.Colored"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
-        app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stub"
+        app:layout_constraintTop_toBottomOf="@id/payment_state_label"
         tools:text="Send receipt" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/secondary_action_btn"
         style="@style/Woo.Button.Outlined"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_extra_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/primary_action_btn"
+        android:layout_marginTop="@dimen/margin_extra_large"
         tools:text="Print receipt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
