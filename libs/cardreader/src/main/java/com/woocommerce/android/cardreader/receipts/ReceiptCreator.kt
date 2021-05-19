@@ -8,9 +8,6 @@ import java.util.Locale
 class ReceiptCreator {
     // TODO cardreader ideally move receipt creation to the backend
     fun createHtmlReceipt(paymentData: ReceiptData): String {
-        val lineHeight = FONT_SIZE * 1.5
-        val iconHeight = lineHeight
-        val iconWidth = iconHeight * 4 / 3
         return """
             <html>
             <head>
@@ -35,14 +32,14 @@ class ReceiptCreator {
                         padding-top: ${MARGIN}pt;
                     }
                     .card-icon {
-                       width: ${iconWidth}pt;
-                       height: ${iconHeight}pt;
+                       width: ${ICON_WIDTH}pt;
+                       height: ${ICON_HEIGHT}pt;
                        vertical-align: top;
                        background-repeat: no-repeat;
                        background-position-y: center;
                        display: inline-block;
                     }
-                    p { line-height: ${lineHeight}pt; margin: 0 0 ${MARGIN / 2} 0; }
+                    p { line-height: ${LINE_HEIGHT}pt; margin: 0 0 ${MARGIN / 2} 0; }
                     ${buildIconCSS(paymentData.cardInfo.brand)}
                 </style>
             </head>
@@ -130,6 +127,9 @@ class ReceiptCreator {
         const val TITLE_FONT_SIZE: Int = 24
         const val FONT_SIZE: Int = 12
         const val FOOTER_FONT_SIZE: Int = 10
+        const val LINE_HEIGHT = FONT_SIZE * 1.5
+        const val ICON_HEIGHT = LINE_HEIGHT
+        const val ICON_WIDTH = ICON_HEIGHT * 4 / 3
 
         const val APPLICATION_NAME = "HC: WooCommerce"
         const val RECEIPT_FROM_FORMAT = "HC: Receipt from %1$@"
