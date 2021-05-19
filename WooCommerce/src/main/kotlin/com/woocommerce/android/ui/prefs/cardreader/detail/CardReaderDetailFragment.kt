@@ -3,13 +3,15 @@ package com.woocommerce.android.ui.prefs.cardreader.detail
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,11 +24,16 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
 
+        initUI(binding)
         initObservers(binding)
     }
 
+    private fun initUI(binding: FragmentCardReaderDetailBinding) {
+        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(R.color.woo_red_30)
+    }
+
     private fun initObservers(binding: FragmentCardReaderDetailBinding) {
-        viewModel.event.observe(viewLifecycleOwner, Observer {
+        viewModel.event.observe(viewLifecycleOwner, {
             when (it) {
                 is CardReaderConnectScreen ->
                     findNavController()
@@ -36,13 +43,35 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
             }
         })
 
-        viewModel.viewStateData.observe(viewLifecycleOwner, Observer {
-            UiHelpers.setTextOrHide(binding.headerLabel, it.headerLabel)
-            UiHelpers.setImageOrHide(binding.illustration, it.illustration)
-            UiHelpers.setTextOrHide(binding.firstHintLabel, it.firstHintLabel)
-            UiHelpers.setTextOrHide(binding.secondHintLabel, it.secondHintLabel)
-            UiHelpers.setTextOrHide(binding.connectBtn, it.connectBtnLabel)
-            binding.connectBtn.setOnClickListener { _ -> it.onPrimaryActionClicked?.invoke() }
+        viewModel.viewStateData.observe(viewLifecycleOwner, { state ->
+            UiHelpers.updateVisibility(binding.readerConnectedState.root, state is ConnectedState)
+            UiHelpers.updateVisibility(binding.readerDisconnectedState.root, state is NotConnectedState)
+
+            when (state) {
+                is ConnectedState -> {
+                    with(binding.readerConnectedState) {
+                        UiHelpers.setTextOrHide(enforcedUpdateTv, state.enforceReaderUpdate)
+                        UiHelpers.setTextOrHide(readerNameTv, state.readerName)
+                        UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
+                        UiHelpers.setTextOrHide(primaryActionBtn, state.primaryButtonState.text)
+                        primaryActionBtn.setOnClickListener { state.primaryButtonState.onActionClicked() }
+                        UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState.text)
+                        secondaryActionBtn.setOnClickListener { state.secondaryButtonState.onActionClicked }
+                    }
+                }
+                is NotConnectedState -> {
+                    with(binding.readerDisconnectedState) {
+                        UiHelpers.setTextOrHide(headerLabel, state.headerLabel)
+                        UiHelpers.setImageOrHide(illustration, state.illustration)
+                        UiHelpers.setTextOrHide(firstHintLabel, state.firstHintLabel)
+                        UiHelpers.setTextOrHide(secondHintLabel, state.secondHintLabel)
+                        UiHelpers.setTextOrHide(connectBtn, state.connectBtnLabel)
+                        connectBtn.setOnClickListener {
+                            state.onPrimaryActionClicked.invoke()
+                        }
+                    }
+                }
+            }
         })
     }
 }

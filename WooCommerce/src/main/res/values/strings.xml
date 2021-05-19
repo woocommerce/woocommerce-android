@@ -647,6 +647,12 @@
     <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
     <string name="card_reader_details_not_connected_connect_button_label">Connect card reader</string>
 
+    <string name="card_reader_detail_connected_header">CONNECTED READER</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s\% battery</string>
+    <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
+
     <!--
         Notifications
     -->
