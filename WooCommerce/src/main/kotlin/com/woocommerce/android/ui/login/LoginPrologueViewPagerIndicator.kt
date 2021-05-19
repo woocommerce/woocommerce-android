@@ -23,22 +23,18 @@ class LoginPrologueViewPagerIndicator : LinearLayout {
 
     init {
         orientation = HORIZONTAL
-        val margin = context.resources.getDimensionPixelSize(R.dimen.margin_small)
+        val padding = context.resources.getDimensionPixelSize(R.dimen.margin_small)
 
         for (i in 0 until NUM_INDICATORS) {
             ImageView(context).also { imageView ->
                 imageView.setImageResource(R.drawable.ic_tab_indicator)
                 imageView.isSelected = i == 0
+                imageView.setPadding(padding, 0, padding, 0)
                 this.addView(imageView)
                 indicators.add(imageView)
 
                 imageView.setOnClickListener {
                     itemClicked(i)
-                }
-
-                (imageView.layoutParams as MarginLayoutParams).also {
-                    it.marginEnd = margin
-                    it.marginStart = margin
                 }
             }
         }
