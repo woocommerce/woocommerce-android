@@ -17,9 +17,7 @@ import com.woocommerce.android.model.ShippingRate.Option.SIGNATURE
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.PackageRateListItem
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.FEDEX
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -54,6 +52,9 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         private const val CARRIER_USPS_KEY = "usps"
         private const val CARRIER_UPS_KEY = "ups"
         private const val CARRIER_FEDEX_KEY = "fedex"
+        private const val CARRIER_DHL_EXPRESS_KEY = "dhlexpress"
+        private const val CARRIER_DHL_ECOMMERCE_KEY = "dhlecommerce"
+        private const val CARRIER_DHL_ECOMMERCE_ASIA_KEY = "dhlecommerceasia"
         private const val FLAT_RATE_KEY = "flat_rate"
         private const val FREE_SHIPPING_KEY = "free_shipping"
         private const val LOCAL_PICKUP_KEY = "local_pickup"
@@ -244,10 +245,11 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
 
     private fun getCarrier(it: Rate) =
         when (it.carrierId) {
-            CARRIER_USPS_KEY -> USPS
-            CARRIER_FEDEX_KEY -> FEDEX
-            CARRIER_UPS_KEY -> UPS
-            else -> throw IllegalArgumentException("Unsupported carrier ID: `${it.carrierId}`")
+            CARRIER_USPS_KEY -> ShippingCarrier.USPS
+            CARRIER_FEDEX_KEY -> ShippingCarrier.FEDEX
+            CARRIER_UPS_KEY -> ShippingCarrier.UPS
+            CARRIER_DHL_EXPRESS_KEY, CARRIER_DHL_ECOMMERCE_KEY, CARRIER_DHL_ECOMMERCE_ASIA_KEY -> ShippingCarrier.DHL
+            else -> ShippingCarrier.UNKNOWN
         }
 
     fun onShippingRateSelected(rate: ShippingRate) {
