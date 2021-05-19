@@ -237,6 +237,10 @@
         <argument
             android:name="isNewAttribute"
             app:argType="boolean" />
+        <argument
+            android:name="isVariationCreation"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_attributeTermsFragment_to_renameAttributeFragment"
             app:destination="@id/renameAttributeFragment"
