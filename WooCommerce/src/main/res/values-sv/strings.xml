@@ -59,7 +59,6 @@ Language: sv_SE
     <string name="shipping_label_rate_included_options_signature_required_free">Berättigar till gratis signaturkrav</string>
     <string name="shipping_label_rate_included_options_free_pickup">Berättigar till gratis upphämtning </string>
     <string name="shipping_label_rate_included_options_insurance">Försäkring (upp till %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">%s-spårning</string>
     <string name="shipping_label_rate_included_options">Inkluderar %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Måste signeras av en vuxen (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Signatur obligatoriskt (%s)</string>

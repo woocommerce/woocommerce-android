@@ -59,7 +59,6 @@ Language: it
     <string name="shipping_label_rate_included_options_signature_required_free">Idoneo per il requisito della firma gratuita</string>
     <string name="shipping_label_rate_included_options_free_pickup">Idoneo per il ritiro gratuito</string>
     <string name="shipping_label_rate_included_options_insurance">Assicurazione (fino a %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">Tracciabilità %s</string>
     <string name="shipping_label_rate_included_options">Includi %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Firma di un adulto richiesta (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Firma richiesta (%s)</string>
