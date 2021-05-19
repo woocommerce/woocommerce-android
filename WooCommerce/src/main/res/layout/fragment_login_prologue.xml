@@ -17,6 +17,41 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/img_woo_logo" />
 
+    <ImageView
+        android:id="@+id/image_prologue_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
+        app:srcCompat="@drawable/img_prologue_bg" />
+
+    <!-- TODO: test in landscape -->
+    <com.woocommerce.android.ui.login.LoginPrologueViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/major_150"
+        android:layout_marginBottom="@dimen/major_150"
+        app:layout_constraintBottom_toTopOf="@+id/tabIndicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_prologue" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/button_login_store"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@drawable/indicator_selector"
+        app:tabGravity="center" />
+
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_store"
         style="@style/Woo.Button.Colored"
@@ -45,27 +80,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- TODO: test in landscape -->
-    <com.woocommerce.android.ui.login.LoginPrologueViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/major_150"
-        android:layout_marginBottom="@dimen/major_150"
-        app:layout_constraintBottom_toTopOf="@+id/tabIndicator"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue" />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/button_login_store"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tabBackground="@drawable/indicator_selector"
-        app:tabGravity="center" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
