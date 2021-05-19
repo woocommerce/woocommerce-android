@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -168,11 +169,24 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        // we don't want to show the Remove menu item if this is new attribute
-        menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute
+        /**
+         * we only want to show the Next menu item if we're under the creation of
+         * the first variation for a Variable Product
+         */
+        menu.findItem(R.id.menu_next)?.isVisible = navArgs.isVariationCreation
 
-        // we don't want to show the Rename menu item if this is new attribute or a global attribute
-        menu.findItem(R.id.menu_rename)?.isVisible = !navArgs.isNewAttribute && !isGlobalAttribute
+        /** we don't want to show the Remove menu item if this is new attribute
+         * or if we're under the First variation creation flow
+         */
+        menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute && !navArgs.isVariationCreation
+
+        /** we don't want to show the Rename menu item if this is new attribute or a global attribute,
+         * or if we're under the First variation creation flow
+         */
+        menu.findItem(R.id.menu_rename)?.isVisible =
+            !navArgs.isNewAttribute &&
+                !isGlobalAttribute &&
+                !navArgs.isVariationCreation
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -183,6 +197,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
             R.id.menu_rename -> {
                 viewModel.onRenameAttributeButtonClick(attributeName)
+                true
+            }
+            R.id.menu_next -> {
+                AddAttributeTermsFragmentDirections.actionAddAttributeTermsFragmentToAttributeListFragment(
+                    isVariationCreation = navArgs.isVariationCreation
+                ).run { findNavController().navigateSafely(this) }
                 true
             }
             else -> super.onOptionsItemSelected(item)
