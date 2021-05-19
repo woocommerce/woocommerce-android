@@ -10,7 +10,7 @@ import com.woocommerce.android.databinding.FragmentLoginPrologueViewpagerItemBin
 import org.wordpress.android.util.DisplayUtils
 
 /**
- * Displays a single image and label in the login prologue view pager
+ * Displays a single image and text label in the login prologue view pager
  */
 class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prologue_viewpager_item) {
     companion object {
@@ -35,7 +35,11 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
         arguments?.let { args ->
             binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             binding.textView.setText(args.getInt(ARG_STRING_ID))
-            binding.textView.layoutParams.width = DisplayUtils.getDisplayPixelWidth() / 2
+            binding.textView.layoutParams.width = if (DisplayUtils.isLandscape(context)) {
+                (DisplayUtils.getDisplayPixelWidth() * 0.45).toInt()
+            } else {
+                (DisplayUtils.getDisplayPixelWidth() * 0.65).toInt()
+            }
         }
     }
 }
