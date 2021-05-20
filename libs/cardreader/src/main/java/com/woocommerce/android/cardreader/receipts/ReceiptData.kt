@@ -3,7 +3,7 @@ package com.woocommerce.android.cardreader.receipts
 data class ReceiptData(
     val staticTexts: ReceiptStaticTexts,
     val purchasedProducts: List<ReceiptLineItem>,
-    val amount: Int,
+    val amount: Float,
     val currency: String,
     val receiptDate: String,
     val storeName: String?,
@@ -20,7 +20,7 @@ data class CardInfo(
 data class ReceiptLineItem(
     val title: String,
     val quantity: Int,
-    val amount: Int
+    val amount: Float
 )
 
 data class ReceiptStaticTexts(
