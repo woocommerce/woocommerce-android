@@ -17,7 +17,9 @@
             android:layout_height="wrap_content"
             tools:context=".ui.common.UserEligibilityErrorFragment">
 
-            <include layout="@layout/toolbar_login" />
+            <include
+                android:id="@+id/toolbar_login"
+                layout="@layout/toolbar_login" />
 
             <Button
                 android:id="@+id/button_help"

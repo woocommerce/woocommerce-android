@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.common
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
@@ -13,10 +14,11 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.User
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_error) {
+class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_error), BackPressListener {
     private val viewModel: UserEligibilityErrorViewModel by viewModels()
 
     private var _binding: FragmentUserEligibilityErrorBinding? = null
@@ -24,10 +26,11 @@ class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_e
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentUserEligibilityErrorBinding.bind(view)
 
         (activity as AppCompatActivity).supportActionBar?.hide()
-
-        _binding = FragmentUserEligibilityErrorBinding.bind(view)
+        val toolbar = binding.toolbarLogin.findViewById(R.id.toolbar) as Toolbar
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
         setupView()
         setupObservers(viewModel)
@@ -73,5 +76,10 @@ class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_e
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        activity?.finish()
+        return false
     }
 }
