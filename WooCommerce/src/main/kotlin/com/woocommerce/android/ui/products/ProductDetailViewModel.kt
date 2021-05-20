@@ -81,6 +81,7 @@ import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -90,7 +91,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -257,11 +257,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState = viewState.copy(
             productDraft = ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
         )
-        if (defaultProduct.type == VARIABLE.value &&
-            defaultProduct.status == DRAFT) {
-            startPublishProduct(exitWhenDone = false)
-        }
         updateProductState(defaultProduct)
+        startSilentlyIfVariableProduct()
     }
 
     fun getProduct() = viewState
@@ -591,11 +588,12 @@ class ProductDetailViewModel @AssistedInject constructor(
             trackPublishing(it)
 
             viewState = viewState.copy(isProgressDialogShown = true)
+
             launch {
                 val isSuccess = addProduct(it)
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
-
+                    triggerEvent(ShowSnackbar(pickAddProductRequestSnackbarText(isSuccess)))
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
                     }
@@ -605,6 +603,29 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
         }
     }
+
+    private fun startSilentlyIfVariableProduct() = launch {
+        viewState.productDraft
+            ?.takeIf { it.type == VARIABLE.value && it.status == DRAFT }
+            ?.takeIf { addProduct(it) }
+            ?.let { AnalyticsTracker.track(ADD_PRODUCT_SUCCESS) }
+            ?: AnalyticsTracker.track(ADD_PRODUCT_FAILED)
+    }
+
+    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean) =
+        if (productWasAdded) {
+            if (isDraftProduct()) {
+                string.product_detail_publish_product_draft_success
+            } else {
+                string.product_detail_publish_product_success
+            }
+        } else {
+            if (isDraftProduct()) {
+                string.product_detail_publish_product_draft_error
+            } else {
+                string.product_detail_publish_product_error
+            }
+        }
 
     private fun trackPublishing(it: Product) {
         val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
@@ -1407,22 +1428,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private suspend fun addProduct(product: Product): Boolean {
         var isSuccess = false
         if (checkConnection()) {
-            @StringRes val successId = if (isDraftProduct()) {
-                string.product_detail_publish_product_draft_success
-            } else {
-                string.product_detail_publish_product_success
-            }
-
-            @StringRes val failId = if (isDraftProduct()) {
-                string.product_detail_publish_product_draft_error
-            } else {
-                string.product_detail_publish_product_error
-            }
-
             val result = productRepository.addProduct(product)
             isSuccess = result.first
             if (isSuccess) {
-                triggerEvent(ShowSnackbar(successId))
                 viewState = viewState.copy(
                     productDraft = null,
                     productBeforeEnteringFragment = getProduct().storedProduct,
@@ -1431,8 +1439,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                 val newProductRemoteId = result.second
                 loadRemoteProduct(newProductRemoteId)
                 triggerEvent(RefreshMenu)
-            } else {
-                triggerEvent(ShowSnackbar(failId))
             }
         }
         viewState = viewState.copy(isProgressDialogShown = false)
