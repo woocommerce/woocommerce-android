@@ -53,6 +53,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.junit.MockitoJUnitRunner
 import java.math.BigDecimal
+import kotlin.reflect.KClass
 
 private const val TIMEOUT = 1000L
 private val DUMMY_AMOUNT = BigDecimal(0)
@@ -70,13 +71,14 @@ class PaymentManagerTest {
     private val collectPaymentAction: CollectPaymentAction = mock()
     private val processPaymentAction: ProcessPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
+    private val paymeInfoMapper: PaymentInfoMapper = mock()
 
     private val expectedSequence = listOf(
-        InitializingPayment,
-        CollectingPayment,
-        ProcessingPayment,
-        CapturingPayment,
-        PaymentCompleted
+        InitializingPayment::class,
+        CollectingPayment::class,
+        ProcessingPayment::class,
+        CapturingPayment::class,
+        PaymentCompleted::class
     )
 
     @Before
@@ -87,7 +89,8 @@ class PaymentManagerTest {
             createPaymentAction,
             collectPaymentAction,
             processPaymentAction,
-            paymentErrorMapper
+            paymentErrorMapper,
+            paymeInfoMapper
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(createPaymentAction.createPaymentIntent(anyInt(), anyString()))
@@ -109,6 +112,8 @@ class PaymentManagerTest {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<String>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
+        whenever(paymeInfoMapper.mapPaymentIntentToPaymentInfo(anyOrNull()))
+            .thenReturn(mock())
     }
 
     // BEGIN - Arguments validation and conversion
@@ -122,7 +127,7 @@ class PaymentManagerTest {
     @Test
     fun `when currency is USD, then flow initiated`() = runBlockingTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
-            .takeUntil(InitializingPayment).toList()
+            .takeUntil(InitializingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(InitializingPayment::class.java)
     }
@@ -181,7 +186,7 @@ class PaymentManagerTest {
     @Test
     fun `when creating payment intent starts, then InitializingPayment is emitted`() = runBlockingTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
-            .takeUntil(InitializingPayment).toList()
+            .takeUntil(InitializingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(InitializingPayment::class.java)
     }
@@ -225,7 +230,7 @@ class PaymentManagerTest {
     @Test
     fun `when collecting payment starts, then CollectingPayment is emitted`() = runBlockingTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
-            .takeUntil(CollectingPayment).toList()
+            .takeUntil(CollectingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(CollectingPayment::class.java)
     }
@@ -289,7 +294,7 @@ class PaymentManagerTest {
     @Test
     fun `when processing payment starts, then ProcessingPayment is emitted`() = runBlockingTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
-            .takeUntil(ProcessingPayment).toList()
+            .takeUntil(ProcessingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(ProcessingPayment::class.java)
     }
@@ -333,7 +338,7 @@ class PaymentManagerTest {
     @Test
     fun `when capturing payment starts, then CapturingPayment is emitted`() = runBlockingTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
-            .takeUntil(CapturingPayment).toList()
+            .takeUntil(CapturingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(CapturingPayment::class.java)
     }
@@ -341,7 +346,7 @@ class PaymentManagerTest {
     @Test
     fun `when capturing payment succeeds, then PaymentCompleted is emitted`() = runBlockingTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
-            .takeUntil(PaymentCompleted).toList()
+            .takeUntil(PaymentCompleted::class).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentCompleted::class.java)
     }
@@ -352,7 +357,7 @@ class PaymentManagerTest {
             .thenReturn(CapturePaymentResponse.Successful.PaymentAlreadyCaptured)
 
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
-            .takeUntil(PaymentCompleted).toList()
+            .takeUntil(PaymentCompleted::class).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentCompleted::class.java)
     }
@@ -425,12 +430,12 @@ class PaymentManagerTest {
             whenever(it.id).thenReturn("dummyId")
         }
 
-    private fun <T> Flow<T>.takeUntil(untilStatus: CardPaymentStatus): Flow<T> =
+    private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =
         this.take(expectedSequence.indexOf(untilStatus) + 1)
             // the below lines are here just as a safeguard to verify that the expectedSequence is defined correctly
             .withIndex()
             .onEach {
-                if (expectedSequence[it.index] != it.value) {
+                if (expectedSequence[it.index] != it.value!!::class) {
                     throw IllegalStateException(
                         "`PaymentManagerTest.expectedSequence` does not match received " +
                             "events. Please verify that `PaymentManagerTest.expectedSequence` is defined correctly."
