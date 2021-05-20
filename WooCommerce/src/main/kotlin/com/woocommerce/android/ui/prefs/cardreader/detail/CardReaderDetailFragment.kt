@@ -49,10 +49,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         UiHelpers.setTextOrHide(enforcedUpdateTv, state.enforceReaderUpdate)
                         UiHelpers.setTextOrHide(readerNameTv, state.readerName)
                         UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
-                        UiHelpers.setTextOrHide(primaryActionBtn, state.primaryButtonState.text)
-                        primaryActionBtn.setOnClickListener { state.primaryButtonState.onActionClicked() }
-                        UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState.text)
-                        secondaryActionBtn.setOnClickListener { state.secondaryButtonState.onActionClicked }
+                        UiHelpers.setTextOrHide(primaryActionBtn, state.primaryButtonState?.text)
+                        primaryActionBtn.setOnClickListener { state.primaryButtonState?.onActionClicked?.invoke() }
+                        UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState?.text)
+                        secondaryActionBtn.setOnClickListener { state.secondaryButtonState?.onActionClicked?.invoke() }
                         binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(R.color.woo_red_50)
                     }
                 }

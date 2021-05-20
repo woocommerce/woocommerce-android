@@ -5,5 +5,14 @@ inline fun <T> T.takeIfNotEqualTo(other: T?, block: (T) -> Unit) {
         block(this)
 }
 
+/**
+ * Used to convert when statement into expression. In this case compiler check if all the cases are handled
+ *
+ * when (sealedClass) {
+ *
+ *      }.exhaustive
+ *
+ * https://proandroiddev.com/til-when-is-when-exhaustive-31d69f630a8b
+ */
 val Any?.exhaustive
     get() = Unit

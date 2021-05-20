@@ -93,8 +93,8 @@ class CardReaderDetailViewModel @Inject constructor(
             val enforceReaderUpdate: UiString,
             val readerName: UiString,
             val readerBattery: UiString,
-            val primaryButtonState: ButtonState,
-            val secondaryButtonState: ButtonState
+            val primaryButtonState: ButtonState?,
+            val secondaryButtonState: ButtonState?
         ) : ViewState() {
             data class ButtonState(
                 val onActionClicked: (() -> Unit),
