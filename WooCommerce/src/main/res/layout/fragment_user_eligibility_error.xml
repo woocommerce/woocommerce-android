@@ -17,19 +17,6 @@
             android:layout_height="wrap_content"
             tools:context=".ui.common.UserEligibilityErrorFragment">
 
-            <include
-                android:id="@+id/toolbar_login"
-                layout="@layout/toolbar_login" />
-
-            <Button
-                android:id="@+id/button_help"
-                style="@style/Woo.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/help"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_displayname"
                 android:layout_width="wrap_content"

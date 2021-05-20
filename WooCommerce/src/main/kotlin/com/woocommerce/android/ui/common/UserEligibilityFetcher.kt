@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.store.WCUserStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,13 +24,14 @@ class UserEligibilityFetcher @Inject constructor(
 
     fun fetchUserEligibility() {
         launch(Dispatchers.Default) {
-            val requestResult = userStore.fetchUserRole(selectedSite.get())
-            requestResult.model?.let {
+            fetchUserInfo()?.let {
                 appPrefs.setIsUserEligible(it.isUserEligible())
                 appPrefs.setUserEmail(it.email)
             }
         }
     }
+
+    suspend fun fetchUserInfo(): WCUserModel? = userStore.fetchUserRole(selectedSite.get()).model
 
     fun getUserByEmail(email: String) = userStore.getUserByEmail(selectedSite.get(), email)
 }
