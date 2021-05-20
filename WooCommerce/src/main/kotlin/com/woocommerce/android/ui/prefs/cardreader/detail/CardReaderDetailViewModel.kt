@@ -45,10 +45,7 @@ class CardReaderDetailViewModel @Inject constructor(
                             R.string.card_reader_detail_connected_battery_percentage,
                             listOf(UiStringText("999"))
                         ),
-                        primaryButtonState = ButtonState(
-                            onActionClicked = ::onUpdateReaderClicked,
-                            text = null
-                        ),
+                        primaryButtonState = null,
                         secondaryButtonState = ButtonState(
                             onActionClicked = ::onDisconnectClicked,
                             text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
@@ -98,7 +95,7 @@ class CardReaderDetailViewModel @Inject constructor(
         ) : ViewState() {
             data class ButtonState(
                 val onActionClicked: (() -> Unit),
-                val text: UiString?
+                val text: UiString
             )
         }
     }
