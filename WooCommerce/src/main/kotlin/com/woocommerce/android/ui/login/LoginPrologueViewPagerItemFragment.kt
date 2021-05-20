@@ -16,18 +16,15 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     companion object {
         private const val ARG_DRAWABLE_ID = "drawable_id"
         private const val ARG_STRING_ID = "string_id"
-        private const val ARG_SHOW_IMAGES = "show_images"
 
         fun newInstance(
             @DrawableRes drawableId: Int,
             @StringRes stringId: Int,
-            showImages: Boolean
         ): LoginPrologueViewPagerItemFragment {
             LoginPrologueViewPagerItemFragment().also {
                 it.arguments = Bundle().also {
                     it.putInt(ARG_DRAWABLE_ID, drawableId)
                     it.putInt(ARG_STRING_ID, stringId)
-                    it.putBoolean(ARG_SHOW_IMAGES, showImages)
                 }
                 return it
             }
@@ -37,9 +34,12 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // hide images in landscape TODO don't hide on landscape tablets
+        val showImages = !DisplayUtils.isLandscape(context)
+
         val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
         arguments?.let { args ->
-            if (args.getBoolean(ARG_SHOW_IMAGES)) {
+            if (showImages) {
                 binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             } else {
                 binding.imageView.visibility = View.GONE

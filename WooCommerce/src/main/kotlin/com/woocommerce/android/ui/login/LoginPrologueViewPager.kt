@@ -14,18 +14,9 @@ class LoginPrologueViewPager : WCViewPager {
         const val NUM_PAGES = 4
     }
 
-    private var showImages = true
-
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-
-    init {
-        // hide images in landscape TODO don't hide on landscape tablets
-        if (DisplayUtils.isLandscape(context)) {
-            showImages = false
-        }
-    }
 
     fun initViewPager(fm: FragmentManager) {
         adapter = ViewPagerAdapter(fm)
@@ -50,8 +41,7 @@ class LoginPrologueViewPager : WCViewPager {
         override fun getItem(position: Int): Fragment {
             return LoginPrologueViewPagerItemFragment.newInstance(
                 drawableIds[position],
-                stringIds[position],
-                showImages
+                stringIds[position]
             )
         }
 
