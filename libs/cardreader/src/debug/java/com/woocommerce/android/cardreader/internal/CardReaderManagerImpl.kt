@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
+import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
@@ -61,9 +62,7 @@ internal class CardReaderManagerImpl(
                 }
             })
 
-            // TODO cardreader: Set LogLevel depending on build flavor.
-            // Choose the level of messages that should be logged to your console
-            val logLevel = LogLevel.VERBOSE
+            val logLevel = if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.ERROR
 
             initStripeTerminal(logLevel)
         } else {
