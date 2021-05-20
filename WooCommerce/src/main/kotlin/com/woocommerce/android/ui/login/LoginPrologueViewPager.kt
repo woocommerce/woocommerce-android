@@ -20,11 +20,14 @@ class LoginPrologueViewPager : WCViewPager {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
-    fun initViewPager(fm: FragmentManager) {
+    init {
         // hide images in landscape TODO don't hide on landscape tablets
         if (DisplayUtils.isLandscape(context)) {
             showImages = false
         }
+    }
+
+    fun initViewPager(fm: FragmentManager) {
         adapter = ViewPagerAdapter(fm)
     }
 
