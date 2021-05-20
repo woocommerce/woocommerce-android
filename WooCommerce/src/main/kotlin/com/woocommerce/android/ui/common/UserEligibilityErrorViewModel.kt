@@ -55,10 +55,6 @@ class UserEligibilityErrorViewModel @Inject constructor(
         }
     }
 
-    fun onLearnMoreButtonClicked() {
-        // TODO: will be implemented in another commit
-    }
-
     @Parcelize
     data class ViewState(
         val user: User? = null,

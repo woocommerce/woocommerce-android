@@ -26,4 +26,7 @@ object AppUrls {
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
+
+    const val WOOCOMMERCE_USER_ROLES =
+        "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
 }

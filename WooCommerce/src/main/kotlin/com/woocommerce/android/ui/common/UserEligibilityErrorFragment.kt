@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -19,6 +20,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -73,7 +75,9 @@ class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_e
             setOnClickListener { viewModel.onLogoutButtonClicked() }
         }
 
-        binding.btnSecondaryAction.setOnClickListener { viewModel.onLearnMoreButtonClicked() }
+        binding.btnSecondaryAction.setOnClickListener {
+            ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.WOOCOMMERCE_USER_ROLES)
+        }
     }
 
     private fun setupObservers(viewModel: UserEligibilityErrorViewModel) {
