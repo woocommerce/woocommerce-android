@@ -124,13 +124,13 @@ class ReceiptCreator {
         return String.format(receiptData.staticTexts.receiptFromFormat, storeName)
     }
 
-    companion object {
-        const val MARGIN: Int = 16
-        const val TITLE_FONT_SIZE: Int = 24
-        const val FONT_SIZE: Int = 12
-        const val FOOTER_FONT_SIZE: Int = 10
-        const val LINE_HEIGHT = FONT_SIZE * 1.5
-        const val ICON_HEIGHT = LINE_HEIGHT
-        const val ICON_WIDTH = ICON_HEIGHT * 4 / 3
+    private companion object {
+        private const val MARGIN: Int = 16
+        private const val TITLE_FONT_SIZE: Int = 24
+        private const val FONT_SIZE: Int = 12
+        private const val FOOTER_FONT_SIZE: Int = 10
+        private const val LINE_HEIGHT = FONT_SIZE * 1.5
+        private const val ICON_HEIGHT = LINE_HEIGHT
+        private const val ICON_WIDTH = ICON_HEIGHT * 4 / 3
     }
 }
