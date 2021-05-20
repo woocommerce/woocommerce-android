@@ -3,7 +3,9 @@ package com.woocommerce.android.cardreader.receipts
 import java.util.Locale
 
 /**
- * Most parts of this class were copied from woocommerce-ios codebase.
+ * Most parts of this class were copied from woocommerce-ios codebase. Ideally don't make vital changes to the structure
+ * as we want to keep the solution consistent across platforms. The more similar the code is the easier it is to copy
+ * changes from iOS to Android and vice versa.
  */
 class ReceiptCreator {
     // TODO cardreader ideally move receipt creation to the backend
