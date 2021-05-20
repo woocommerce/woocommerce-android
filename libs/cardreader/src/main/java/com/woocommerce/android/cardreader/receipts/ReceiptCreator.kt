@@ -46,20 +46,20 @@ class ReceiptCreator {
                 <body>
                     <header>
                         <h1>${buildReceiptTitle(paymentData)}</h1>
-                        <h3>${AMOUNT_PAID_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
+                        <h3>${paymentData.staticTexts.amountPaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
                             ${paymentData.amount} ${paymentData.currency.toUpperCase(Locale.getDefault())}
                         </p>
-                        <h3>${DATE_PAID_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
+                        <h3>${paymentData.staticTexts.datePaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
                             ${paymentData.receiptDate}
                         </p>
-                        <h3>${PAYMENT_METHOD_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
+                        <h3>${paymentData.staticTexts.paymentMethodSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
                             <span class="card-icon ${buildIconClass(paymentData.cardInfo.brand)}"></span> - ${paymentData.cardInfo.last4CardDigits}
                         </p>
                     </header>
-                    <h3>${SUMMARY_SECTION_TITLE.toUpperCase(Locale.getDefault())}</h3>
+                    <h3>${paymentData.staticTexts.summarySectionTitle.toUpperCase(Locale.getDefault())}</h3>
                     ${buildSummaryTable(paymentData)}
                     <footer>
                         <p>
@@ -90,7 +90,7 @@ class ReceiptCreator {
             """
                 <tr>
                     <td>
-                        $AMOUNT_PAID_SECTION_TITLE
+                        ${receiptData.staticTexts.amountPaidSectionTitle}
                     </td>
                     <td>
                         ${receiptData.amount} ${receiptData.currency}
@@ -112,14 +112,14 @@ class ReceiptCreator {
             are required in the US (see https://stripe.com/docs/terminal/checkout/receipts#custom)
         */
         return """
-            $APPLICATION_NAME: $applicationPreferredName<br/>
-            $AID: $dedicatedFileName
+            ${paymentData.staticTexts.applicationName}: $applicationPreferredName<br/>
+            ${paymentData.staticTexts.aid}: $dedicatedFileName
         """
     }
 
     private fun buildReceiptTitle(parameters: ReceiptData): String {
-        val storeName = parameters.storeName ?: return RECEIPT_TITLE
-        return String.format(RECEIPT_FROM_FORMAT, storeName)
+        val storeName = parameters.storeName ?: return parameters.staticTexts.receiptTitle
+        return String.format(parameters.staticTexts.receiptFromFormat, storeName)
     }
 
     companion object {
@@ -130,15 +130,5 @@ class ReceiptCreator {
         const val LINE_HEIGHT = FONT_SIZE * 1.5
         const val ICON_HEIGHT = LINE_HEIGHT
         const val ICON_WIDTH = ICON_HEIGHT * 4 / 3
-
-        // TODO cardreader Move all these strings into strings.xml
-        const val APPLICATION_NAME = "Application name"
-        const val RECEIPT_FROM_FORMAT = "Receipt from %s"
-        const val RECEIPT_TITLE = "Receipt"
-        const val AMOUNT_PAID_SECTION_TITLE = "Amount paid"
-        const val DATE_PAID_SECTION_TITLE = "Date paid"
-        const val PAYMENT_METHOD_SECTION_TITLE = "Payment method"
-        const val SUMMARY_SECTION_TITLE = "Summary"
-        const val AID = "AID"
     }
 }
