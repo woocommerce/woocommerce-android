@@ -195,6 +195,8 @@
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
     <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
+    <string name="user_role_access_error_msg">It looks like you don\'t have the correct user role to view this role. WooCommerce mobile supports access only for Administrators and Shop Managers. To gain access, please contact your store owner.</string>
+    <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <!--
         My Store View
     -->
