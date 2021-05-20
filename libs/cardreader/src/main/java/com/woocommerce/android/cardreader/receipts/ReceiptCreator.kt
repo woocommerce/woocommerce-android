@@ -85,7 +85,7 @@ class ReceiptCreator {
         val builder = StringBuilder()
         builder.append("<table>")
         receiptData.purchasedProducts.forEach { item ->
-            builder.append("<tr><td>${item.title} × ${item.quantity}</td>")
+            builder.append("<tr><td>${item.title} &#215; ${item.quantity}</td>")
                 .append("<td>${item.amount} ${receiptData.currency}</td></tr>")
         }
         builder.append(
