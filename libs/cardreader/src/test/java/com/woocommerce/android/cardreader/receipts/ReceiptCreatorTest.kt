@@ -31,10 +31,10 @@ class ReceiptCreatorTest {
                 aid = "AID"
             ),
             purchasedProducts = listOf(
-                ReceiptLineItem(title = "T-shirt", quantity = 3, amount = 30f),
-                ReceiptLineItem(title = "Hoodie", quantity = 1, amount = 15f)
+                ReceiptLineItem(title = "T-shirt", quantity = 3, itemsTotalAmount = 30f),
+                ReceiptLineItem(title = "Hoodie", quantity = 1, itemsTotalAmount = 15f)
             ),
-            amount = 45f,
+            chargedAmount = 45f,
             currency = "USD",
             receiptDate = "19.5.2021",
             storeName = "The Best Woo store",

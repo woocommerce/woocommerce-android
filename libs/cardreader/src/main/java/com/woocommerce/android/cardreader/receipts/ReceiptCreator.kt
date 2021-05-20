@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader.receipts
 
-import java.text.DecimalFormat
 import java.util.Locale
 
 /**
@@ -51,7 +50,7 @@ class ReceiptCreator {
                         <h1>${buildReceiptTitle(receiptData)}</h1>
                         <h3>${receiptData.staticTexts.amountPaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            ${"%.2f".format(receiptData.amount)} ${receiptData.currency.toUpperCase(Locale.getDefault())}
+                            ${"%.2f".format(receiptData.chargedAmount)} ${receiptData.currency.toUpperCase(Locale.getDefault())}
                         </p>
                         <h3>${receiptData.staticTexts.datePaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
@@ -87,7 +86,7 @@ class ReceiptCreator {
         builder.append("<table>")
         receiptData.purchasedProducts.forEach { item ->
             builder.append("<tr><td>${item.title} &#215; ${item.quantity}</td>")
-                .append("<td>${"%.2f".format(item.amount)} ${receiptData.currency}</td></tr>")
+                .append("<td>${"%.2f".format(item.itemsTotalAmount)} ${receiptData.currency}</td></tr>")
         }
         builder.append(
             """
@@ -96,7 +95,7 @@ class ReceiptCreator {
                         ${receiptData.staticTexts.amountPaidSectionTitle}
                     </td>
                     <td>
-                        ${"%.2f".format(receiptData.amount)} ${receiptData.currency}
+                        ${"%.2f".format(receiptData.chargedAmount)} ${receiptData.currency}
                     </td>
                 </tr>
             """
