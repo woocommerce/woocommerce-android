@@ -10,6 +10,7 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/major_150"
         android:importantForAccessibility="no"
         tools:src="@drawable/img_prologue_analytics" />
 
@@ -19,7 +20,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/major_150"
         android:gravity="center"
         tools:layout_width="200dp"
         tools:text="@string/login_prologue_label_analytics" />

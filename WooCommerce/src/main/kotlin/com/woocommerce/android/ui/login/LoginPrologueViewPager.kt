@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.WCViewPager
+import org.wordpress.android.util.DisplayUtils
 
 class LoginPrologueViewPager : WCViewPager {
     companion object {

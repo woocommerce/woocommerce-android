@@ -17,7 +17,10 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
         private const val ARG_DRAWABLE_ID = "drawable_id"
         private const val ARG_STRING_ID = "string_id"
 
-        fun newInstance(@DrawableRes drawableId: Int, @StringRes stringId: Int): LoginPrologueViewPagerItemFragment {
+        fun newInstance(
+            @DrawableRes drawableId: Int,
+            @StringRes stringId: Int,
+        ): LoginPrologueViewPagerItemFragment {
             LoginPrologueViewPagerItemFragment().also {
                 it.arguments = Bundle().also {
                     it.putInt(ARG_DRAWABLE_ID, drawableId)
@@ -31,9 +34,16 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // hide images in landscape TODO don't hide on landscape tablets
+        val showImages = !DisplayUtils.isLandscape(context)
+
         val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
         arguments?.let { args ->
-            binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
+            if (showImages) {
+                binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
+            } else {
+                binding.imageView.visibility = View.GONE
+            }
             binding.textView.setText(args.getInt(ARG_STRING_ID))
             binding.textView.layoutParams.width = if (DisplayUtils.isLandscape(context)) {
                 (DisplayUtils.getDisplayPixelWidth() * 0.45).toInt()
