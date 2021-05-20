@@ -26,7 +26,7 @@ class CardReaderModule {
     @Singleton
     fun provideCardReaderManager(): CardReaderManager = object : CardReaderManager {
         override val isInitialized: Boolean = false
-        override val readerStatus: StateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NOT_CONNECTED)
+        override val readerStatus: StateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NotConnected)
 
         override fun initialize(app: Application) {}
 

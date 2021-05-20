@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
+import com.woocommerce.android.cardreader.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -34,17 +36,12 @@ class CardReaderDetailViewModel @Inject constructor(
         launch {
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
-                    CONNECTED -> viewState.value = ConnectedState(
+                    is Connected -> viewState.value = ConnectedState(
                         enforceReaderUpdate = UiStringRes(
                             R.string.card_reader_detail_connected_enforced_update_software
                         ),
-                        // todo cardreader make reader name be part of the connected status
-                        readerName = UiStringText("HC: CHB204909005931"),
-                        // todo cardreader make reader's battery level be part of the connected status
-                        readerBattery = UiStringRes(
-                            R.string.card_reader_detail_connected_battery_percentage,
-                            listOf(UiStringText("999"))
-                        ),
+                        readerName = status.cardReader.getReadersName(),
+                        readerBattery = status.cardReader.getReadersBatteryLevel(),
                         primaryButtonState = ButtonState(
                             onActionClicked = ::onUpdateReaderClicked,
                             text = null
@@ -74,6 +71,23 @@ class CardReaderDetailViewModel @Inject constructor(
         // TODO cardreader implement disconnect functionality
     }
 
+    private fun CardReader.getReadersName(): UiString {
+        return with(id) {
+            if (isNullOrEmpty())
+                UiStringRes(R.string.card_reader_detail_connected_reader_unknown)
+            else UiStringText(this)
+        }
+    }
+
+    private fun CardReader.getReadersBatteryLevel(): UiString? {
+        return currentBatteryLevel?.let {
+            UiStringRes(
+                R.string.card_reader_detail_connected_battery_percentage,
+                listOf(UiStringText(it.formatToString()))
+            )
+        }
+    }
+
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
     }
@@ -92,7 +106,7 @@ class CardReaderDetailViewModel @Inject constructor(
         data class ConnectedState(
             val enforceReaderUpdate: UiString,
             val readerName: UiString,
-            val readerBattery: UiString,
+            val readerBattery: UiString?,
             val primaryButtonState: ButtonState?,
             val secondaryButtonState: ButtonState?
         ) : ViewState() {
