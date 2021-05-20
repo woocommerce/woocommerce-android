@@ -7,7 +7,7 @@ import java.util.Locale
  */
 class ReceiptCreator {
     // TODO cardreader ideally move receipt creation to the backend
-    fun createHtmlReceipt(paymentData: ReceiptData): String {
+    fun createHtmlReceipt(receiptData: ReceiptData): String {
         return """
             <html>
             <head>
@@ -40,30 +40,30 @@ class ReceiptCreator {
                        display: inline-block;
                     }
                     p { line-height: ${LINE_HEIGHT}pt; margin: 0 0 ${MARGIN / 2} 0; }
-                    ${buildIconCSS(paymentData.cardInfo.brand)}
+                    ${buildIconCSS(receiptData.cardInfo.brand)}
                 </style>
             </head>
                 <body>
                     <header>
-                        <h1>${buildReceiptTitle(paymentData)}</h1>
-                        <h3>${paymentData.staticTexts.amountPaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
+                        <h1>${buildReceiptTitle(receiptData)}</h1>
+                        <h3>${receiptData.staticTexts.amountPaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            ${paymentData.amount} ${paymentData.currency.toUpperCase(Locale.getDefault())}
+                            ${receiptData.amount} ${receiptData.currency.toUpperCase(Locale.getDefault())}
                         </p>
-                        <h3>${paymentData.staticTexts.datePaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
+                        <h3>${receiptData.staticTexts.datePaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            ${paymentData.receiptDate}
+                            ${receiptData.receiptDate}
                         </p>
-                        <h3>${paymentData.staticTexts.paymentMethodSectionTitle.toUpperCase(Locale.getDefault())}</h3>
+                        <h3>${receiptData.staticTexts.paymentMethodSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            <span class="card-icon ${buildIconClass(paymentData.cardInfo.brand)}"></span> - ${paymentData.cardInfo.last4CardDigits}
+                            <span class="card-icon ${buildIconClass(receiptData.cardInfo.brand)}"></span> - ${receiptData.cardInfo.last4CardDigits}
                         </p>
                     </header>
-                    <h3>${paymentData.staticTexts.summarySectionTitle.toUpperCase(Locale.getDefault())}</h3>
-                    ${buildSummaryTable(paymentData)}
+                    <h3>${receiptData.staticTexts.summarySectionTitle.toUpperCase(Locale.getDefault())}</h3>
+                    ${buildSummaryTable(receiptData)}
                     <footer>
                         <p>
-                            ${buildRequiredItems(paymentData)}
+                            ${buildRequiredItems(receiptData)}
                         </p>
                     </footer>
                 </body>
@@ -103,23 +103,23 @@ class ReceiptCreator {
     }
 
     // TODO cardreader Add support for other countries (eg. use a factory to get something like RequiredItemsBuilder)
-    private fun buildRequiredItems(paymentData: ReceiptData): String {
-        val applicationPreferredName = paymentData.applicationPreferredName ?: return "<br/>"
-        val dedicatedFileName = paymentData.dedicatedFileName ?: return "<br/>"
+    private fun buildRequiredItems(receiptData: ReceiptData): String {
+        val applicationPreferredName = receiptData.applicationPreferredName ?: return "<br/>"
+        val dedicatedFileName = receiptData.dedicatedFileName ?: return "<br/>"
 
         /*
             According to the documentation, only `Application name` and dedicatedFileName (aka AID)
             are required in the US (see https://stripe.com/docs/terminal/checkout/receipts#custom)
         */
         return """
-            ${paymentData.staticTexts.applicationName}: $applicationPreferredName<br/>
-            ${paymentData.staticTexts.aid}: $dedicatedFileName
+            ${receiptData.staticTexts.applicationName}: $applicationPreferredName<br/>
+            ${receiptData.staticTexts.aid}: $dedicatedFileName
         """
     }
 
-    private fun buildReceiptTitle(parameters: ReceiptData): String {
-        val storeName = parameters.storeName ?: return parameters.staticTexts.receiptTitle
-        return String.format(parameters.staticTexts.receiptFromFormat, storeName)
+    private fun buildReceiptTitle(receiptData: ReceiptData): String {
+        val storeName = receiptData.storeName ?: return receiptData.staticTexts.receiptTitle
+        return String.format(receiptData.staticTexts.receiptFromFormat, storeName)
     }
 
     companion object {
