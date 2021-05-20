@@ -652,6 +652,14 @@
     <string name="card_reader_connect_open_bluetooth_settings">Open settings</string>
 
     <!--
+        Card Reader Detail
+    -->
+    <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Connect card reader</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
