@@ -35,12 +35,12 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
 
         val binding = FragmentLoginPrologueBinding.bind(view)
 
-        binding.buttonLoginStore.setOnClickListener {
+        binding.buttonContainer.buttonLoginStore.setOnClickListener {
             // Login with site address
             prologueFinishedListener?.onPrimaryButtonClicked()
         }
 
-        binding.buttonLoginWpcom.setOnClickListener {
+        binding.buttonContainer.buttonLoginWpcom.setOnClickListener {
             // Login with WordPress.com account
             prologueFinishedListener?.onSecondaryButtonClicked()
         }

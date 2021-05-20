@@ -16,12 +16,18 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     companion object {
         private const val ARG_DRAWABLE_ID = "drawable_id"
         private const val ARG_STRING_ID = "string_id"
+        private const val ARG_SHOW_IMAGES = "show_images"
 
-        fun newInstance(@DrawableRes drawableId: Int, @StringRes stringId: Int): LoginPrologueViewPagerItemFragment {
+        fun newInstance(
+            @DrawableRes drawableId: Int,
+            @StringRes stringId: Int,
+            showImages: Boolean
+        ): LoginPrologueViewPagerItemFragment {
             LoginPrologueViewPagerItemFragment().also {
                 it.arguments = Bundle().also {
                     it.putInt(ARG_DRAWABLE_ID, drawableId)
                     it.putInt(ARG_STRING_ID, stringId)
+                    it.putBoolean(ARG_SHOW_IMAGES, showImages)
                 }
                 return it
             }
@@ -33,7 +39,11 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
 
         val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
         arguments?.let { args ->
-            binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
+            if (args.getBoolean(ARG_SHOW_IMAGES)) {
+                binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
+            } else {
+                binding.imageView.visibility = View.INVISIBLE
+            }
             binding.textView.setText(args.getInt(ARG_STRING_ID))
             binding.textView.layoutParams.width = if (DisplayUtils.isLandscape(context)) {
                 (DisplayUtils.getDisplayPixelWidth() * 0.45).toInt()
