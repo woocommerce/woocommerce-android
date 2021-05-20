@@ -224,6 +224,11 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
+        if (!presenter.isUserEligible()) {
+            showUserEligibilityErrorScreen()
+            return
+        }
+
         initFragment(savedInstanceState)
 
         // show the app rating dialog if it's time
@@ -539,6 +544,10 @@ class MainActivity : AppUpgradeActivity(),
     override fun showSitePickerScreen() {
         SitePickerActivity.showSitePickerFromLogin(this)
         finish()
+    }
+
+    override fun showUserEligibilityErrorScreen() {
+        // TODO: will be implemented in a separate commit
     }
 
     override fun showSettingsScreen() {

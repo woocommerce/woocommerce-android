@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
@@ -43,6 +44,7 @@ class MainPresenterTest {
     private val notificationStore: NotificationStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val productImageMap: ProductImageMap = mock()
+    private val appPrefs: AppPrefs = mock()
 
     private lateinit var mainPresenter: MainPresenter
 
@@ -58,7 +60,8 @@ class MainPresenterTest {
                         wooCommerceStore,
                         notificationStore,
                         selectedSite,
-                        productImageMap
+                        productImageMap,
+                        appPrefs
                 )
         )
         mainPresenter.takeView(mainContractView)
