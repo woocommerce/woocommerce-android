@@ -32,8 +32,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         val state = viewModel.viewStateData.value as ConnectedState
         assertThat(state.enforceReaderUpdate)
             .isEqualTo(UiStringRes(R.string.card_reader_detail_connected_enforced_update_software))
-        assertThat(state.primaryButtonState.text).isNull()
-        assertThat(state.secondaryButtonState.text)
+        assertThat(state.primaryButtonState?.text).isNull()
+        assertThat(state.secondaryButtonState?.text)
             .isEqualTo(UiStringRes(R.string.card_reader_detail_connected_disconnect_reader))
     }
 
