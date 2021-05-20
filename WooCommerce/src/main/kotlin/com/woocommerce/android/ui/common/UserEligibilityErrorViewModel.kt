@@ -6,12 +6,10 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.User
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WCUserStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -19,8 +17,7 @@ import javax.inject.Inject
 class UserEligibilityErrorViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
-    private val userStore: WCUserStore,
-    private val selectedSite: SelectedSite
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) : ScopedViewModel(savedState) {
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -28,16 +25,12 @@ class UserEligibilityErrorViewModel @Inject constructor(
     final fun start() {
         val email = appPrefs.getUserEmail()
         if (email.isNotEmpty()) {
-            val user = userStore.getUserByEmail(selectedSite.get(), email)
+            val user = userEligibilityFetcher.getUserByEmail(email)
             viewState = viewState.copy(user = user?.toAppModel())
         }
     }
 
     fun onLogoutButtonClicked() {
-        // TODO: will be implemented in another commit
-    }
-
-    fun onHelpButtonClicked() {
         // TODO: will be implemented in another commit
     }
 

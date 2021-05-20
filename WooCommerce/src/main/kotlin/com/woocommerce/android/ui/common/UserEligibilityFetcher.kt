@@ -30,4 +30,6 @@ class UserEligibilityFetcher @Inject constructor(
             }
         }
     }
+
+    fun getUserByEmail(email: String) = userStore.getUserByEmail(selectedSite.get(), email)
 }

@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -46,6 +47,8 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn(SiteModel()).whenever(selectedSite).get()
+
         fetcher = spy(
             UserEligibilityFetcher(
                 appPrefsWrapper,
@@ -71,6 +74,17 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
         assertThat(appPrefsWrapper.isUserEligible()).isEqualTo(expectedUser.isUserEligible())
         assertThat(appPrefsWrapper.getUserEmail()).isEqualTo(expectedUser.email)
         assertFalse(appPrefsWrapper.isUserEligible())
+    }
+
+    @Test
+    fun `Get user info from db correctly`() {
+        doReturn(expectedUser).whenever(userStore).getUserByEmail(any(), any())
+
+        val user = fetcher.getUserByEmail(expectedUser.email)
+
+        assertThat(user).isEqualTo(expectedUser)
+        assertThat(user?.isUserEligible()).isEqualTo(expectedUser.isUserEligible())
+        assertThat(user?.email).isEqualTo(expectedUser.email)
     }
 
     @Test
