@@ -37,12 +37,12 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         })
 
         viewModel.viewStateData.observe(viewLifecycleOwner, Observer {
-            UiHelpers.setTextOrHide(binding.headerLabel, it.headerLabel)
-            UiHelpers.setImageOrHide(binding.illustration, it.illustration)
-            UiHelpers.setTextOrHide(binding.firstHintLabel, it.firstHintLabel)
-            UiHelpers.setTextOrHide(binding.secondHintLabel, it.secondHintLabel)
-            UiHelpers.setTextOrHide(binding.connectBtn, it.connectBtnLabel)
-            binding.connectBtn.setOnClickListener { _ -> it.onPrimaryActionClicked?.invoke() }
+            UiHelpers.setTextOrHide(binding.cardReaderDetailConnectHeaderLabel, it.headerLabel)
+            UiHelpers.setImageOrHide(binding.cardReaderDetailIllustration, it.illustration)
+            UiHelpers.setTextOrHide(binding.cardReaderDetailFirstHintLabel, it.firstHintLabel)
+            UiHelpers.setTextOrHide(binding.cardReaderDetailSecondHintLabel, it.secondHintLabel)
+            UiHelpers.setTextOrHide(binding.cardReaderDetailConnectBtn, it.connectBtnLabel)
+            binding.cardReaderDetailConnectBtn.setOnClickListener { _ -> it.onPrimaryActionClicked?.invoke() }
         })
     }
 }
