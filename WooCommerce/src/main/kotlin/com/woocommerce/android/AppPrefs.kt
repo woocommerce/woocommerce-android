@@ -46,7 +46,8 @@ object AppPrefs {
         SELECTED_PRODUCT_IS_VIRTUAL,
         UNIFIED_LOGIN_LAST_ACTIVE_SOURCE,
         UNIFIED_LOGIN_LAST_ACTIVE_FLOW,
-        IS_USER_ELIGIBLE
+        IS_USER_ELIGIBLE,
+        USER_EMAIL
     }
 
     /**
@@ -179,6 +180,10 @@ object AppPrefs {
     fun isUserEligible() = getBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, true)
 
     fun setIsUserEligible(isUserEligible: Boolean) = setBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, isUserEligible)
+
+    fun getUserEmail() = getString(DeletablePrefKey.USER_EMAIL)
+
+    fun setUserEmail(email: String) = setString(DeletablePrefKey.USER_EMAIL, email)
 
     /**
      * Flag to check products features are enabled
