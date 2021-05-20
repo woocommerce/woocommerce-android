@@ -21,12 +21,12 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
             @DrawableRes drawableId: Int,
             @StringRes stringId: Int
         ): LoginPrologueViewPagerItemFragment {
-            LoginPrologueViewPagerItemFragment().also {
-                it.arguments = Bundle().also {
-                    it.putInt(ARG_DRAWABLE_ID, drawableId)
-                    it.putInt(ARG_STRING_ID, stringId)
+            LoginPrologueViewPagerItemFragment().also { fragment ->
+                fragment.arguments = Bundle().also { bundle ->
+                    bundle.putInt(ARG_DRAWABLE_ID, drawableId)
+                    bundle.putInt(ARG_STRING_ID, stringId)
                 }
-                return it
+                return fragment
             }
         }
     }
