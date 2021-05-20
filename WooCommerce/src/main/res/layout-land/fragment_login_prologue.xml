@@ -26,6 +26,7 @@
             android:id="@+id/viewPagerIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/minor_100"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -54,7 +55,6 @@
             style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="@dimen/minor_100"
