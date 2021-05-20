@@ -176,7 +176,7 @@ object AppPrefs {
 
     fun setV4StatsSupported(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
 
-    fun isUserEligible() = getBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, false)
+    fun isUserEligible() = getBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, true)
 
     fun setIsUserEligible(isUserEligible: Boolean) = setBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, isUserEligible)
 
