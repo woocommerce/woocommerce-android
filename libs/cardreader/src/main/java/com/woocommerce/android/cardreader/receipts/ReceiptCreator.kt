@@ -42,7 +42,7 @@ class ReceiptCreator {
                        display: inline-block;
                     }
                     p { line-height: ${LINE_HEIGHT}pt; margin: 0 0 ${MARGIN / 2} 0; }
-                    ${buildIconCSS(receiptData.cardInfo.brand)}
+                    ${buildIconCSS(receiptData.paymentInfo.cardInfo.brand)}
                 </style>
             </head>
                 <body>
@@ -50,15 +50,20 @@ class ReceiptCreator {
                         <h1>${buildReceiptTitle(receiptData)}</h1>
                         <h3>${receiptData.staticTexts.amountPaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            ${"%.2f".format(receiptData.chargedAmount)} ${receiptData.currency.toUpperCase(Locale.getDefault())}
+                            ${"%.2f".format(receiptData.paymentInfo.chargedAmount)} ${
+            receiptData.paymentInfo.currency.toUpperCase(
+                Locale.getDefault()
+            )
+        }
                         </p>
                         <h3>${receiptData.staticTexts.datePaidSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            ${receiptData.receiptDate}
+                            ${receiptData.paymentInfo.receiptDate}
                         </p>
                         <h3>${receiptData.staticTexts.paymentMethodSectionTitle.toUpperCase(Locale.getDefault())}</h3>
                         <p>
-                            <span class="card-icon ${buildIconClass(receiptData.cardInfo.brand)}"></span> - ${receiptData.cardInfo.last4CardDigits}
+                            <span class="card-icon ${buildIconClass(receiptData.paymentInfo.cardInfo.brand)}">
+                            </span> - ${receiptData.paymentInfo.cardInfo.last4CardDigits}
                         </p>
                     </header>
                     <h3>${receiptData.staticTexts.summarySectionTitle.toUpperCase(Locale.getDefault())}</h3>
@@ -86,7 +91,7 @@ class ReceiptCreator {
         builder.append("<table>")
         receiptData.purchasedProducts.forEach { item ->
             builder.append("<tr><td>${item.title} &#215; ${item.quantity}</td>")
-                .append("<td>${"%.2f".format(item.itemsTotalAmount)} ${receiptData.currency}</td></tr>")
+                .append("<td>${"%.2f".format(item.itemsTotalAmount)} ${receiptData.paymentInfo.currency}</td></tr>")
         }
         builder.append(
             """
@@ -95,7 +100,7 @@ class ReceiptCreator {
                         ${receiptData.staticTexts.amountPaidSectionTitle}
                     </td>
                     <td>
-                        ${"%.2f".format(receiptData.chargedAmount)} ${receiptData.currency}
+                        ${"%.2f".format(receiptData.paymentInfo.chargedAmount)} ${receiptData.paymentInfo.currency}
                     </td>
                 </tr>
             """
@@ -106,8 +111,8 @@ class ReceiptCreator {
 
     // TODO cardreader Add support for other countries (eg. use a factory to get something like RequiredItemsBuilder)
     private fun buildRequiredItems(receiptData: ReceiptData): String {
-        val applicationPreferredName = receiptData.applicationPreferredName ?: return "<br/>"
-        val dedicatedFileName = receiptData.dedicatedFileName ?: return "<br/>"
+        val applicationPreferredName = receiptData.paymentInfo.applicationPreferredName
+        val dedicatedFileName = receiptData.paymentInfo.dedicatedFileName
 
         /*
             According to the documentation, only `Application name` and dedicatedFileName (aka AID)
