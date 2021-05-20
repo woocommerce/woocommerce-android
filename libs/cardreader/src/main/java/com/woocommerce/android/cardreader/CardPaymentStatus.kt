@@ -1,5 +1,7 @@
 package com.woocommerce.android.cardreader
 
+import com.woocommerce.android.cardreader.receipts.PaymentInfo
+
 sealed class CardPaymentStatus {
     object InitializingPayment : CardPaymentStatus()
     object CollectingPayment : CardPaymentStatus()
@@ -7,7 +9,7 @@ sealed class CardPaymentStatus {
     object ShowAdditionalInfo : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
     object CapturingPayment : CardPaymentStatus()
-    object PaymentCompleted : CardPaymentStatus()
+    data class PaymentCompleted(val paymentInfo: PaymentInfo) : CardPaymentStatus()
 
     data class PaymentFailed(
         val type: CardPaymentStatusErrorType,
