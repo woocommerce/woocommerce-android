@@ -33,6 +33,22 @@ class UserEligibilityErrorViewModel @Inject constructor(
         }
     }
 
+    fun onLogoutButtonClicked() {
+        // TODO: will be implemented in another commit
+    }
+
+    fun onHelpButtonClicked() {
+        // TODO: will be implemented in another commit
+    }
+
+    fun onRetryButtonClicked() {
+        // TODO: will be implemented in another commit
+    }
+
+    fun onLearnMoreButtonClicked() {
+        // TODO: will be implemented in another commit
+    }
+
     @Parcelize
     data class ViewState(
         val user: User? = null

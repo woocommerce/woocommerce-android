@@ -11,6 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentUserEligibilityErrorBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.User
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,16 +38,19 @@ class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_e
         with(btnBinding.buttonPrimary) {
             visibility = View.VISIBLE
             text = getString(R.string.retry)
-            setOnClickListener { /* Retry the user's eligibility request */ }
+            setOnClickListener { viewModel.onRetryButtonClicked() }
         }
 
         with(btnBinding.buttonSecondary) {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
-            setOnClickListener { /* Redirect to login screen */ }
+            setOnClickListener { viewModel.onLogoutButtonClicked() }
         }
 
-        binding.btnSecondaryAction.setOnClickListener { /* Add link to troubleshooting page */ }
+        binding.btnSecondaryAction.setOnClickListener { viewModel.onLearnMoreButtonClicked() }
+        binding.buttonHelp.setOnClickListener {
+            startActivity(HelpActivity.createIntent(requireActivity(), Origin.USER_ELIGIBILITY_ERROR, null))
+        }
     }
 
     private fun setupObservers(viewModel: UserEligibilityErrorViewModel) {
