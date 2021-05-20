@@ -19,7 +19,7 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
 
         fun newInstance(
             @DrawableRes drawableId: Int,
-            @StringRes stringId: Int,
+            @StringRes stringId: Int
         ): LoginPrologueViewPagerItemFragment {
             LoginPrologueViewPagerItemFragment().also {
                 it.arguments = Bundle().also {
