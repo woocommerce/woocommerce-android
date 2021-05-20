@@ -24,6 +24,7 @@
         android:layout_marginTop="@dimen/major_350"
         android:importantForAccessibility="no"
         android:adjustViewBounds="true"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
