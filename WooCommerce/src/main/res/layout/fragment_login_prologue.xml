@@ -53,8 +53,8 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <include
-        app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/buttonContainer"
-        layout="@layout/login_prologue_buttons" />
+        layout="@layout/login_prologue_buttons"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
