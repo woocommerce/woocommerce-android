@@ -45,7 +45,8 @@ object AppPrefs {
         SELECTED_PRODUCT_TYPE,
         SELECTED_PRODUCT_IS_VIRTUAL,
         UNIFIED_LOGIN_LAST_ACTIVE_SOURCE,
-        UNIFIED_LOGIN_LAST_ACTIVE_FLOW
+        UNIFIED_LOGIN_LAST_ACTIVE_FLOW,
+        IS_USER_ELIGIBLE
     }
 
     /**
@@ -174,6 +175,10 @@ object AppPrefs {
     fun isV4StatsSupported() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
 
     fun setV4StatsSupported(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
+
+    fun isUserEligible() = getBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, false)
+
+    fun setIsUserEligible(isUserEligible: Boolean) = setBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, isUserEligible)
 
     /**
      * Flag to check products features are enabled
