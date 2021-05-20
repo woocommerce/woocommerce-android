@@ -501,6 +501,17 @@
     <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
     <string name="shipping_label_selected_rates_description">%s rates selected</string>
     <string name="shipping_label_selected_rates_total_description">%s total</string>
+    <string name="shipping_label_customs_return_to_sender">Return to sender if package is unabled to be delivered</string>
+    <string name="shipping_label_customs_contents_type_hint">Contents type</string>
+    <string name="shipping_label_customs_restriction_type_hint">Restriction type</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Contents details</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Restriction details</string>
+    <string name="shipping_label_customs_itn_hint" translatable="false">ITN</string>
+    <string name="shipping_label_customs_package_content">Package content</string>
+    <string name="shipping_label_customs_item_description_hint">Description</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS Tariff number (Optional)</string>
+    <string name="shipping_label_customs_origin_country_hint">Origin country</string>
+    <string name="shipping_label_customs_origin_country_explanation">Country where the product was manufactured or assembled</string>
     <!--
             Refunds
         -->
