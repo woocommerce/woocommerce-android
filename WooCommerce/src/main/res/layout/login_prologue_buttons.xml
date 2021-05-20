@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/buttonContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_store"
@@ -13,10 +17,7 @@
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
         android:text="@string/login_store_address"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@+id/button_login_wpcom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textAllCaps="false" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_wpcom"
@@ -27,9 +28,6 @@
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/major_150"
         android:text="@string/login_wpcom"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textAllCaps="false" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

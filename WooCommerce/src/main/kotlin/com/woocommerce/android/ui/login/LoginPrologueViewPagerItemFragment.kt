@@ -42,7 +42,7 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
             if (args.getBoolean(ARG_SHOW_IMAGES)) {
                 binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             } else {
-                binding.imageView.visibility = View.INVISIBLE
+                binding.imageView.visibility = View.GONE
             }
             binding.textView.setText(args.getInt(ARG_STRING_ID))
             binding.textView.layoutParams.width = if (DisplayUtils.isLandscape(context)) {
