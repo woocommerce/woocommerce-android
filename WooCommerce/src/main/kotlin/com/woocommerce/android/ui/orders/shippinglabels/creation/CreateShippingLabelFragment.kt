@@ -23,6 +23,7 @@ import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCustomsForm
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
@@ -242,6 +243,11 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
                             shippingLabelId = event.labels.first().id,
                             isReprint = false
                         )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowCustomsForm -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToShippingCustomsFragment()
                     findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
