@@ -7,7 +7,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -20,6 +19,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.User
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -33,7 +33,7 @@ import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_error), BackPressListener {
+class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibility_error), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: UserEligibilityErrorViewModel by viewModels()
@@ -136,6 +136,8 @@ class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_e
         progressDialog?.dismiss()
         progressDialog = null
     }
+
+    override fun getFragmentTitle() = ""
 
     override fun onResume() {
         super.onResume()

@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/major_200"
                 android:importantForAccessibility="no"
-                android:src="@drawable/img_login_jetpack_required"
+                android:src="@drawable/img_user_access_error"
                 app:layout_constraintBottom_toTopOf="@+id/text_error_message"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +68,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.7" />
+                app:layout_constraintVertical_bias="0.8" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_secondary_action"
