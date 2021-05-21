@@ -23,8 +23,7 @@
         android:id="@+id/content_icon"
         android:layout_width="@dimen/image_minor_50"
         android:layout_height="@dimen/image_minor_50"
-        android:layout_marginTop="@dimen/major_100"
-        app:layout_constraintBottom_toTopOf="@id/item_description_edit_text"
+        app:layout_constraintBottom_toBottomOf="@id/barrier"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_gridicons_list_checkmark" />
@@ -43,101 +42,84 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/expand_icon"
-        android:layout_width="@dimen/image_minor_50"
-        android:layout_height="@dimen/image_minor_50"
+        android:layout_width="@dimen/image_major_50"
+        android:layout_height="@dimen/image_major_50"
+        android:background="@drawable/ripple_grey_oval"
+        android:padding="@dimen/major_75"
         android:src="@drawable/ic_arrow_down"
         android:tint="@color/color_on_surface_high"
         app:layout_constraintBottom_toBottomOf="@id/content_icon"
-        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/content_icon" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier"
         android:layout_width="0dp"
-        android:layout_height="@dimen/major_100"
+        android:layout_height="0dp"
         app:barrierDirection="bottom"
-        app:barrierMargin="@dimen/major_100"
         app:constraint_referenced_ids="content_icon, expand_icon, line_title" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/details_group"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="visible"
-        app:constraint_referenced_ids="item_description_edit_text, hs_tariff_number_edit_text, hs_tariff_number_infos, weight_edit_text, value_edit_text, country_spinner, country_description" />
-
-    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-        android:id="@+id/item_description_edit_text"
+    <LinearLayout
+        android:id="@+id/details_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/shipping_label_customs_item_description_hint"
+        android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/barrier" />
+        app:layout_constraintTop_toBottomOf="@id/barrier">
 
-    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-        android:id="@+id/hs_tariff_number_edit_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
-        android:hint="@string/shipping_label_customs_hs_tariff_hint"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/item_description_edit_text" />
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/item_description_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/shipping_label_customs_item_description_hint" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/hs_tariff_number_infos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceBody2"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/hs_tariff_number_edit_text"
-        tools:text="Learn more about HS Tariff number" />
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/hs_tariff_number_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:hint="@string/shipping_label_customs_hs_tariff_hint"
+            android:inputType="number" />
 
-    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-        android:id="@+id/weight_edit_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
-        app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/hs_tariff_number_infos"
-        tools:hint="Weight (oz per unit)" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/hs_tariff_number_infos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBody2"
+            tools:text="Learn more about HS Tariff number" />
 
-    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-        android:id="@+id/value_edit_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
-        app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/weight_edit_text"
-        tools:hint="Value ($ per unit)" />
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/weight_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            tools:hint="Weight (oz per unit)" />
 
-    <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-        android:id="@+id/country_spinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
-        android:hint="@string/shipping_label_customs_origin_country_hint"
-        app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/value_edit_text" />
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/value_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            tools:hint="Value ($ per unit)" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/country_description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:layout_marginBottom="@dimen/major_100"
-        android:gravity="start"
-        android:text="@string/shipping_label_customs_origin_country_explanation"
-        android:textAppearance="?attr/textAppearanceCaption"
-        app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/country_spinner"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+            android:id="@+id/country_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:hint="@string/shipping_label_customs_origin_country_hint" />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/country_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:gravity="start"
+            android:text="@string/shipping_label_customs_origin_country_explanation"
+            android:textAppearance="?attr/textAppearanceCaption" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

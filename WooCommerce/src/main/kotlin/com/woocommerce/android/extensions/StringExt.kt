@@ -1,12 +1,11 @@
 package com.woocommerce.android.extensions
 
 import android.text.Spannable
-import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
+import androidx.core.text.buildSpannedString
 import com.woocommerce.android.widgets.WooClickableSpan
 import org.apache.commons.text.StringEscapeUtils
-import java.lang.NumberFormatException
 
 /**
  * Checks if a given string is a number (supports positive or negative numbers)
@@ -73,27 +72,20 @@ fun String.configureStringClick(
     clickAction: WooClickableSpan,
     textField: TextView
 ) {
-    SpannableString(this)
-        .buildClickableUrlSpan(clickableContent, this, clickAction)
-        .let {
-            textField.apply {
-                setText(it, TextView.BufferType.SPANNABLE)
-                movementMethod = LinkMovementMethod.getInstance()
-            }
+    buildSpannedString {
+        append(this@configureStringClick)
+        setSpan(
+            clickAction,
+            indexOf(clickableContent),
+            indexOf(clickableContent) + clickableContent.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+    }.let {
+        textField.apply {
+            setText(it, TextView.BufferType.SPANNABLE)
+            movementMethod = LinkMovementMethod.getInstance()
         }
-}
-
-private fun SpannableString.buildClickableUrlSpan(
-    clickableContent: String,
-    fullContent: String,
-    clickAction: WooClickableSpan
-) = apply {
-    setSpan(
-        clickAction,
-        (fullContent.length - clickableContent.length),
-        fullContent.length,
-        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-    )
+    }
 }
 
 fun String.semverCompareTo(otherVersion: String): Int {

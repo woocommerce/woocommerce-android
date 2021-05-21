@@ -8,6 +8,8 @@ import java.math.BigDecimal
 
 @Parcelize
 data class CustomsPackage(
+    val id: String,
+    val box: ShippingPackage,
     val returnToSender: Boolean,
     val contentsType: ContentsType,
     val restrictionType: RestrictionType,
