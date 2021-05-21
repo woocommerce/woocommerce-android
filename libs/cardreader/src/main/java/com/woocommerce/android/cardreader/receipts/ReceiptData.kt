@@ -4,10 +4,10 @@ data class ReceiptData(
     val staticTexts: ReceiptStaticTexts,
     val purchasedProducts: List<ReceiptLineItem>,
     val storeName: String?,
-    val paymentInfo: PaymentInfo
+    val receiptPaymentInfo: ReceiptPaymentInfo
 )
 
-data class PaymentInfo(
+data class ReceiptPaymentInfo(
     val chargedAmount: Float,
     val currency: String,
     val receiptDate: Long,

@@ -14,7 +14,6 @@ import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CAP
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
 import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
@@ -33,6 +32,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -71,7 +71,7 @@ class PaymentManagerTest {
     private val collectPaymentAction: CollectPaymentAction = mock()
     private val processPaymentAction: ProcessPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
-    private val paymeInfoMapper: PaymentInfoMapper = mock()
+    private val receiptPaymentInfoMapper: ReceiptPaymentInfoMapper = mock()
 
     private val expectedSequence = listOf(
         InitializingPayment::class,
@@ -90,7 +90,7 @@ class PaymentManagerTest {
             collectPaymentAction,
             processPaymentAction,
             paymentErrorMapper,
-            paymeInfoMapper
+            receiptPaymentInfoMapper
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(createPaymentAction.createPaymentIntent(anyInt(), anyString()))
@@ -112,7 +112,7 @@ class PaymentManagerTest {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<String>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
-        whenever(paymeInfoMapper.mapPaymentIntentToPaymentInfo(anyOrNull()))
+        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(anyOrNull()))
             .thenReturn(mock())
     }
 

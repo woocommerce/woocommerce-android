@@ -24,10 +24,9 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import com.woocommerce.android.cardreader.receipts.PaymentInfo
+import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
@@ -43,7 +42,7 @@ internal class PaymentManager(
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction,
     private val errorMapper: PaymentErrorMapper,
-    private val paymentInfoMapper: PaymentInfoMapper
+    private val receiptPaymentInfoMapper: ReceiptPaymentInfoMapper
 ) {
     suspend fun acceptPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
         if (!isSupportedCurrency(currency)) {
@@ -91,8 +90,7 @@ internal class PaymentManager(
         }
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
-            // TODO cardreader handle IllegalStateException
-            val paymentInfo = paymentInfoMapper.mapPaymentIntentToPaymentInfo(paymentIntent)
+            val paymentInfo = receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(paymentIntent)
             capturePayment(paymentInfo, orderId, cardReaderStore, paymentIntent)
         }
     }
@@ -143,14 +141,14 @@ internal class PaymentManager(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
-        paymentInfo: PaymentInfo,
+        receiptPaymentInfo: ReceiptPaymentInfo,
         orderId: Long,
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
-            is CapturePaymentResponse.Successful -> emit(PaymentCompleted(paymentInfo))
+            is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptPaymentInfo))
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }

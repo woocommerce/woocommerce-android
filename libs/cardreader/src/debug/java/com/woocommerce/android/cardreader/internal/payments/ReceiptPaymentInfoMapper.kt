@@ -3,12 +3,12 @@ package com.woocommerce.android.cardreader.internal.payments
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.woocommerce.android.cardreader.receipts.CardInfo
 import com.woocommerce.android.cardreader.receipts.PaymentCardBrand
-import com.woocommerce.android.cardreader.receipts.PaymentInfo
+import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import kotlin.math.pow
 
-class PaymentInfoMapper {
+class ReceiptPaymentInfoMapper {
     @Throws(IllegalStateException::class)
-    fun mapPaymentIntentToPaymentInfo(paymentIntent: PaymentIntent): PaymentInfo {
+    fun mapPaymentIntentToPaymentInfo(paymentIntent: PaymentIntent): ReceiptPaymentInfo {
         val charge = paymentIntent.getCharges().getOrNull(0)
             ?: throw IllegalStateException("PaymentIntent does not contain any Charges")
         val chargedTotalAmount = charge.amount.toFloat() / 10f.pow(USD_TO_CENTS_DECIMAL_PLACES)
@@ -28,7 +28,7 @@ class PaymentInfoMapper {
         val dedicatedFileName = receiptDetails.dedicatedFileName
             ?: throw IllegalStateException("PaymentIntent does not contain dedicatedFileName")
 
-        return PaymentInfo(
+        return ReceiptPaymentInfo(
             chargedAmount = chargedTotalAmount,
             currency,
             receiptDate,

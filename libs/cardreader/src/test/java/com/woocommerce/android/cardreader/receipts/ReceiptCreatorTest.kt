@@ -35,7 +35,7 @@ class ReceiptCreatorTest {
                 ReceiptLineItem(title = "Hoodie", quantity = 1, itemsTotalAmount = 15f)
             ),
             storeName = "The Best Woo store",
-            paymentInfo = PaymentInfo(
+            receiptPaymentInfo = ReceiptPaymentInfo(
                 chargedAmount = 45f,
                 currency = "USD",
                 receiptDate = 0,// "19.5.2021", // todo card reader use date formatter
