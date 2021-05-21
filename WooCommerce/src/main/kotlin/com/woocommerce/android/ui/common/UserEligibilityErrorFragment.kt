@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.common
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -19,12 +21,15 @@ import com.woocommerce.android.model.User
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -92,6 +97,16 @@ class UserEligibilityErrorFragment : Fragment(layout.fragment_user_eligibility_e
                 }
                 is Exit -> {
                     findNavController().navigateUp()
+                }
+                is Logout -> {
+                    requireActivity().apply {
+                        setResult(Activity.RESULT_CANCELED)
+                        val intent = Intent(activity, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        LoginMode.WOO_LOGIN_MODE.putInto(intent)
+                        startActivity(intent)
+                        finish()
+                    }
                 }
                 else -> event.isHandled = false
             }
