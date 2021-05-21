@@ -72,9 +72,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var dateUtils: DateUtils
-
-    // TODO cardreader change this to non-nullable
-    @set:Inject var cardReaderManager: CardReaderManager? = null
+    @Inject lateinit var cardReaderManager: CardReaderManager
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -241,7 +239,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
-                    cardReaderManager?.let {
+                    cardReaderManager.let {
                         viewModel.onAcceptCardPresentPaymentClicked(it)
                     }
                 }

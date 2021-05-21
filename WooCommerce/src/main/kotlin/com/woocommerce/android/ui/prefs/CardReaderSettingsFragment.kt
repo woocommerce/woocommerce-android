@@ -49,7 +49,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         const val TAG = "card-reader-settings"
     }
 
-    @set:Inject var cardReaderManager: CardReaderManager? = null
+    @Inject lateinit var cardReaderManager: CardReaderManager
 
     protected var job: Job = Job()
 
@@ -93,7 +93,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         binding.updateReaderSoftware.setOnClickListener {
             launch(Dispatchers.Default) {
                 try {
-                    cardReaderManager?.let {
+                    cardReaderManager.let {
                         updateReaderSoftware(it, binding.softwareUpdateStatus)
                     }
                 } catch (e: CancellationException) {
@@ -109,7 +109,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         (requireActivity().application as? WooCommerce)?.let { application ->
             // TODO cardreader Move this into a VM
             lifecycleScope.launchWhenResumed {
-                cardReaderManager?.readerStatus?.collect { status ->
+                cardReaderManager.readerStatus.collect { status ->
                     binding.connectionStatus.text = status.name
                     when (status) {
                         CONNECTING, NOT_CONNECTED -> binding.updateReaderSoftware.isEnabled = false
@@ -129,7 +129,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
 
     // TODO cardreader move this into a VM
     private fun connectToReader(simulated: Boolean) {
-        cardReaderManager?.let { cardReaderManager ->
+        cardReaderManager.let { cardReaderManager ->
             if (!cardReaderManager.isInitialized) {
                 cardReaderManager.initialize(requireActivity().application)
             }

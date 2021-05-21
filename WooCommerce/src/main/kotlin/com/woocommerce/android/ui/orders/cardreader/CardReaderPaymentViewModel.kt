@@ -47,7 +47,7 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 @HiltViewModel
 class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    cardReaderManager: CardReaderManager?,
+    private val cardReaderManager: CardReaderManager,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore
 ) : ScopedViewModel(savedState) {
@@ -56,10 +56,6 @@ class CardReaderPaymentViewModel @Inject constructor(
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
-
-    // TODO remove this, and make the constructor parameter as a non nullable property when
-    //  the actual implementation is injected in release builds
-    private val cardReaderManager = cardReaderManager!!
 
     private var paymentFlowJob: Job? = null
 
