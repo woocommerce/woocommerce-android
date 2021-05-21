@@ -1,13 +1,14 @@
 package com.woocommerce.android.cardreader.receipts
 
 import java.util.Locale
+import javax.inject.Inject
 
 /**
  * Most parts of this class were copied from woocommerce-ios codebase. Ideally don't make vital changes to the structure
  * as we want to keep the solution consistent across platforms. The more similar the code is the easier it is to copy
  * changes from iOS to Android and vice versa.
  */
-class ReceiptCreator {
+class ReceiptCreator @Inject constructor() {
     // TODO cardreader ideally move receipt creation to the backend
     // todo cardreader add a date formatter so we can format receiptDate
     fun createHtmlReceipt(receiptData: ReceiptData): String {
@@ -91,7 +92,9 @@ class ReceiptCreator {
         val builder = StringBuilder()
         builder.append("<table>")
         receiptData.purchasedProducts.forEach { item ->
-            builder.append("<tr><td>${item.title} &#215; ${item.quantity}</td>")
+            builder.append(
+                "<tr><td>${item.title} &#215; ${formatFloat(item.quantity)}</td>"
+            )
                 .append("<td>${"%.2f".format(item.itemsTotalAmount)} ")
                 .append("${receiptData.receiptPaymentInfo.currency}</td></tr>")
         }
@@ -130,6 +133,12 @@ class ReceiptCreator {
         val storeName = receiptData.storeName ?: return receiptData.staticTexts.receiptTitle
         return String.format(receiptData.staticTexts.receiptFromFormat, storeName)
     }
+
+    /**
+     * Shows decimal places only when the number is not an integer
+     */
+    private fun formatFloat(number: Float): String =
+        if (number.rem(1f).equals(0f)) number.toInt().toString() else "%.2f".format(number)
 
     private companion object {
         private const val MARGIN: Int = 16
