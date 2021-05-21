@@ -24,7 +24,7 @@ data class CustomsLine(
     val originCountry: String
 ) : Parcelable
 
-enum class ContentsType(@StringRes title: Int) {
+enum class ContentsType(@StringRes val title: Int) {
     Merchandise(R.string.shipping_label_customs_contents_type_merchandise),
     Documents(R.string.shipping_label_customs_contents_type_documents),
     Gift(R.string.shipping_label_customs_contents_type_gifts),
@@ -32,7 +32,7 @@ enum class ContentsType(@StringRes title: Int) {
     Other(R.string.shipping_label_customs_contents_type_other);
 }
 
-enum class RestrictionType(@StringRes title: Int) {
+enum class RestrictionType(@StringRes val title: Int) {
     None(R.string.shipping_label_customs_restriction_type_none),
     Quarantine(R.string.shipping_label_customs_restriction_type_quarantine),
     SanitaryInspection(R.string.shipping_label_customs_restriction_type_sanitary_inspection),
