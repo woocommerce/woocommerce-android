@@ -335,6 +335,13 @@ class PaymentManagerTest {
 
     // END - Processing Payment
     // BEGIN - Capturing Payment
+    @Test(expected = IllegalStateException::class)
+    fun `when mapping ReceiptPaymentInfo fails, then IllegalStateException thrown`() = runBlockingTest {
+        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalStateException(""))
+
+        manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+    }
+
     @Test
     fun `when capturing payment starts, then CapturingPayment is emitted`() = runBlockingTest {
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY)
@@ -349,6 +356,16 @@ class PaymentManagerTest {
             .takeUntil(PaymentCompleted::class).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentCompleted::class.java)
+    }
+
+    @Test
+    fun `when capturing payment succeeds, then PaymentCompleted event contains receipt data`() = runBlockingTest {
+        val mockedReceiptData = mock<ReceiptPaymentInfo>()
+        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenReturn(mockedReceiptData)
+
+        val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+        assertThat((result.last() as PaymentCompleted).receiptPaymentInfo).isEqualTo(mockedReceiptData)
     }
 
     @Test
