@@ -2,7 +2,7 @@
 
 6.8
 -----
-
+- [*] New descriptive error screen displayed for users without admin or shop manager access to the store. [https://github.com/woocommerce/woocommerce-android/pull/4074]
 
 6.7
 -----
