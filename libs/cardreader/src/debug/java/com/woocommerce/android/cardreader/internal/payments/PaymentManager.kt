@@ -5,9 +5,11 @@ import com.stripe.stripeterminal.model.external.PaymentIntentStatus
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
@@ -90,7 +92,13 @@ internal class PaymentManager(
         }
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
-            val paymentInfo = receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(paymentIntent)
+            val paymentInfo = try {
+                receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(paymentIntent)
+            } catch (e: IllegalStateException) {
+                // todo cardreader cancel the payment intent
+                emit(PaymentFailed(GENERIC_ERROR, null, e.message ?: "Unexpected error"))
+                return@flow
+            }
             capturePayment(paymentInfo, orderId, cardReaderStore, paymentIntent)
         }
     }

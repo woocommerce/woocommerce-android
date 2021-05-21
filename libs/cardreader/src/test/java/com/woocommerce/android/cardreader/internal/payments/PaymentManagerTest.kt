@@ -335,11 +335,22 @@ class PaymentManagerTest {
 
     // END - Processing Payment
     // BEGIN - Capturing Payment
-    @Test(expected = IllegalStateException::class)
-    fun `when mapping ReceiptPaymentInfo fails, then IllegalStateException thrown`() = runBlockingTest {
+    @Test
+    fun `when mapping ReceiptPaymentInfo fails, then PaymentFailed emitted`() = runBlockingTest {
         whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalStateException(""))
 
-        manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+        val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+        assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+    }
+
+    @Test
+    fun `when mapping ReceiptPaymentInfo fails, then PaymentData for retry are empty`() = runBlockingTest {
+        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalStateException(""))
+
+        val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
+
+        assertThat((result.last() as PaymentFailed).paymentDataForRetry).isNull()
     }
 
     @Test
