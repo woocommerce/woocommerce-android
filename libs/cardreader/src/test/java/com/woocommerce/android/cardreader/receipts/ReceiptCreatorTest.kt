@@ -38,7 +38,7 @@ class ReceiptCreatorTest {
             receiptPaymentInfo = ReceiptPaymentInfo(
                 chargedAmount = 45f,
                 currency = "USD",
-                receiptDate = 0,// "19.5.2021", // todo card reader use date formatter
+                receiptDate = 0, // "19.5.2021", // todo card reader use date formatter
                 applicationPreferredName = "WooCommerce for Android",
                 dedicatedFileName = "abcdef",
                 cardInfo = CardInfo("1234", VISA)

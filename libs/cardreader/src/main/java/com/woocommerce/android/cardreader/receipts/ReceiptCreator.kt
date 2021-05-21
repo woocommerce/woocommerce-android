@@ -92,7 +92,8 @@ class ReceiptCreator {
         builder.append("<table>")
         receiptData.purchasedProducts.forEach { item ->
             builder.append("<tr><td>${item.title} &#215; ${item.quantity}</td>")
-                .append("<td>${"%.2f".format(item.itemsTotalAmount)} ${receiptData.receiptPaymentInfo.currency}</td></tr>")
+                .append("<td>${"%.2f".format(item.itemsTotalAmount)} ")
+                .append("${receiptData.receiptPaymentInfo.currency}</td></tr>")
         }
         builder.append(
             """

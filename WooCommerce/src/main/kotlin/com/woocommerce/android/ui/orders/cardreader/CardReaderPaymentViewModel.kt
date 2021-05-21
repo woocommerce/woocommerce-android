@@ -125,7 +125,7 @@ class CardReaderPaymentViewModel @Inject constructor(
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
-            PaymentCompleted -> viewState.postValue(PaymentSuccessfulState(amountLabel))
+            is PaymentCompleted -> viewState.postValue(PaymentSuccessfulState(amountLabel))
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
             }
