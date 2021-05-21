@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -89,6 +90,8 @@ internal class CardReaderManagerImpl(
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
     }
+
+    override suspend fun getSoftwareUpdateStatus(): Flow<SoftwareUpdateAvailability> = softwareUpdateManager.getSoftwareUpdateStatus()
 
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
 }

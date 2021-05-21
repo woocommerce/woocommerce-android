@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction
@@ -46,7 +46,7 @@ class SoftwareUpdateManagerTest {
     fun `when check for udpate started, then Initializing emitted`() = runBlockingTest {
         val result = updateManager.updateSoftware().single()
 
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Initializing)
+        assertThat(result).isEqualTo(SoftwareUpdateAvailability.Initializing)
     }
 
     @Test
@@ -55,7 +55,7 @@ class SoftwareUpdateManagerTest {
 
         val result = updateManager.updateSoftware().toList().last()
 
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.UpToDate)
+        assertThat(result).isEqualTo(SoftwareUpdateAvailability.UpToDate)
     }
 
     @Test
@@ -64,7 +64,7 @@ class SoftwareUpdateManagerTest {
 
         val result = updateManager.updateSoftware().toList().last()
 
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.CheckForUpdatesFailed)
+        assertThat(result).isEqualTo(SoftwareUpdateAvailability.CheckForUpdatesFailed)
     }
 
     @Test
@@ -87,7 +87,7 @@ class SoftwareUpdateManagerTest {
 
         val result = updateManager.updateSoftware().toList().last()
 
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Installing(0.1f))
+        assertThat(result).isEqualTo(SoftwareUpdateAvailability.Installing(0.1f))
     }
 
     @Test
@@ -100,7 +100,7 @@ class SoftwareUpdateManagerTest {
 
         val result = updateManager.updateSoftware().toList().last()
 
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Success)
+        assertThat(result).isEqualTo(SoftwareUpdateAvailability.Success)
     }
 
     @Test
@@ -116,6 +116,6 @@ class SoftwareUpdateManagerTest {
 
         val result = updateManager.updateSoftware().toList().last()
 
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Failed("dummy message"))
+        assertThat(result).isEqualTo(SoftwareUpdateAvailability.Failed("dummy message"))
     }
 }
