@@ -33,6 +33,7 @@ import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
@@ -81,6 +82,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private lateinit var siteAdapter: SitePickerAdapter
@@ -432,6 +434,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         progressDialog?.dismiss()
 
         selectedSite.set(site)
+        // fetch user info
+        userEligibilityFetcher.fetchUserEligibility()
         FCMRegistrationIntentService.enqueueWork(this)
 
         // if we came here from login, start the main activity
