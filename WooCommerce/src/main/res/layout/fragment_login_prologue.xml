@@ -35,8 +35,10 @@
 
     <com.woocommerce.android.ui.login.LoginPrologueViewPager
         android:id="@+id/viewPager"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintWidth_percent="0.5"
         app:layout_constraintBottom_toTopOf="@+id/viewPagerIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

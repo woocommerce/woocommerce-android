@@ -45,11 +45,6 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
                 binding.imageView.visibility = View.GONE
             }
             binding.textView.setText(args.getInt(ARG_STRING_ID))
-            binding.textView.layoutParams.width = if (DisplayUtils.isLandscape(context)) {
-                (DisplayUtils.getDisplayPixelWidth() * 0.45).toInt()
-            } else {
-                (DisplayUtils.getDisplayPixelWidth() * 0.65).toInt()
-            }
         }
     }
 }
