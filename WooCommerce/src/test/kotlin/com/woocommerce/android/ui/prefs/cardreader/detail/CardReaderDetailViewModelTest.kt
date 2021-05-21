@@ -23,6 +23,19 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with connected state should emit connected view state`() {
         // GIVEN
+        val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectedState::class.java)
+    }
+
+    @Test
+    fun `when view model init with connected state should emit correct values of connected state`() {
+        // GIVEN
         val batteryLevel = 1.6F
         val readerName = "CH3231H"
         val reader: CardReader = mock {
@@ -36,23 +49,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectedState::class.java)
-    }
-
-    @Test
-    fun `when view model init with connected state should emit correct values of connected state`() {
-        // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.CONNECTED)
-        whenever(cardReaderManager.readerStatus).thenReturn(status)
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
         verifyConnectedState(
             viewModel,
             UiStringText(readerName),
-            UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("1.6")))
+            UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2")))
         )
     }
 
@@ -93,7 +93,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with not connected state should emit correct values not connected state`() {
         // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.NOT_CONNECTED)
+        val status = MutableStateFlow(CardReaderStatus.NotConnected)
         whenever(cardReaderManager.readerStatus).thenReturn(status)
 
         // WHEN
@@ -106,7 +106,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with connecting state should emit not connected view state`() {
         // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.CONNECTING)
+        val status = MutableStateFlow(CardReaderStatus.Connecting)
         whenever(cardReaderManager.readerStatus).thenReturn(status)
 
         // WHEN

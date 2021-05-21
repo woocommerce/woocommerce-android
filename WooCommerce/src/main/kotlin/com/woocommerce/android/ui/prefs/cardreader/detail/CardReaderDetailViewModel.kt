@@ -9,7 +9,6 @@ import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.exhaustive
-import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -23,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
@@ -81,7 +81,7 @@ class CardReaderDetailViewModel @Inject constructor(
         return currentBatteryLevel?.let {
             UiStringRes(
                 R.string.card_reader_detail_connected_battery_percentage,
-                listOf(UiStringText(it.formatToString()))
+                listOf(UiStringText(it.roundToInt().toString()))
             )
         }
     }
