@@ -7,6 +7,7 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginPrologueViewpagerItemBinding
+import com.woocommerce.android.extensions.hide
 import org.wordpress.android.util.DisplayUtils
 
 /**
@@ -34,15 +35,17 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // hide images in landscape TODO don't hide on landscape tablets
-        val showImages = !DisplayUtils.isLandscape(context)
+        // hide images in landscape unless this device is a tablet
+        val hideImages = DisplayUtils.isLandscape(context) &&
+            !DisplayUtils.isTablet(context) &&
+            !DisplayUtils.isXLargeTablet(context)
 
         val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
         arguments?.let { args ->
-            if (showImages) {
-                binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
+            if (hideImages) {
+                binding.imageView.hide()
             } else {
-                binding.imageView.visibility = View.GONE
+                binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             }
             binding.textView.setText(args.getInt(ARG_STRING_ID))
         }
