@@ -10,6 +10,7 @@ import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
@@ -61,6 +62,10 @@ class ShippingCustomsViewModel @Inject constructor(
                 )
             )
         )
+    }
+
+    fun onDoneButtonClicked() {
+        triggerEvent(Exit)
     }
 
     @Parcelize
