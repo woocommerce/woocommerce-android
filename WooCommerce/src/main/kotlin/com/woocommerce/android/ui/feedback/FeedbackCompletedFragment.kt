@@ -40,7 +40,7 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment(R.layout.fragme
         binding.completionHelpGuide.setClickableText(
             content = getString(R.string.feedback_completed_description, contactUsText),
             clickableContent = contactUsText,
-            clickAction = WooClickableSpan { activity?.startHelpActivity(FEEDBACK_SURVEY) },
+            clickAction = WooClickableSpan { activity?.startHelpActivity(FEEDBACK_SURVEY) }
         )
         binding.btnBackToStore.setOnClickListener { activity?.onBackPressed() }
     }

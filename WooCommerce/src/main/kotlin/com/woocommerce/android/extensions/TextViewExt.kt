@@ -73,7 +73,7 @@ fun TextView.setDrawableColor(@ColorRes colorRes: Int) {
 fun TextView.setClickableText(
     content: String,
     clickableContent: String,
-    clickAction: WooClickableSpan,
+    clickAction: WooClickableSpan
 ) {
     SpannableString(content).apply {
         setSpan(

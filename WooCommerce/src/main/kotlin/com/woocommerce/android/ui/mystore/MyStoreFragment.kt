@@ -174,7 +174,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         binding.myStoreStatsAvailabilityMessage.setClickableText(
             content = getString(R.string.my_store_stats_availability_description, contactUsText),
             clickableContent = contactUsText,
-            clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) },
+            clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) }
         )
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
