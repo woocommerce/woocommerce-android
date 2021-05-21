@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?attr/colorSurface">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -31,7 +32,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_user_roles"
-                style="@style/Woo.TextView.Body1"
+                style="@style/Woo.TextView.Body2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toTopOf="@+id/imageView2"
@@ -56,14 +57,14 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_error_message"
-                style="@style/Woo.TextView.Body1"
+                style="@style/Woo.TextView.Body2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_150"
                 android:layout_marginEnd="@dimen/major_150"
                 android:text="@string/user_role_access_error_msg"
                 android:textAlignment="center"
-                android:textColor="@color/color_on_surface_high"
+                android:textColor="@color/color_on_surface_medium"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
