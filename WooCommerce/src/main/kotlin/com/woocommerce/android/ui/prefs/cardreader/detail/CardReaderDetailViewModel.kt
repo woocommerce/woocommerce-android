@@ -26,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
-    val cardReaderManager: CardReaderManager,
+    // TODO cardreader change this to non-nullable
+    val cardReaderManager: CardReaderManager?,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>()
@@ -34,7 +35,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     init {
         launch {
-            cardReaderManager.readerStatus.collect { status ->
+            cardReaderManager!!.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> viewState.value = ConnectedState(
                         enforceReaderUpdate = UiStringRes(
@@ -42,10 +43,7 @@ class CardReaderDetailViewModel @Inject constructor(
                         ),
                         readerName = status.cardReader.getReadersName(),
                         readerBattery = status.cardReader.getReadersBatteryLevel(),
-                        primaryButtonState = ButtonState(
-                            onActionClicked = ::onUpdateReaderClicked,
-                            text = null
-                        ),
+                        primaryButtonState = null,
                         secondaryButtonState = ButtonState(
                             onActionClicked = ::onDisconnectClicked,
                             text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
@@ -112,7 +110,7 @@ class CardReaderDetailViewModel @Inject constructor(
         ) : ViewState() {
             data class ButtonState(
                 val onActionClicked: (() -> Unit),
-                val text: UiString?
+                val text: UiString
             )
         }
     }

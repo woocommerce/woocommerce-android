@@ -318,7 +318,8 @@ class EditShippingLabelAddressFragment
             viewModel.onUseAddressAsIsButtonClicked()
         }
         binding.countrySpinner.onClick {
-            viewModel.onCountrySpinnerTapped()
+            // TODO enable this only for M4
+            // viewModel.onCountrySpinnerTapped()
         }
         binding.stateSpinner.onClick {
             viewModel.onStateSpinnerTapped()

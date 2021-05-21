@@ -57,14 +57,14 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     }
                 }
                 is NotConnectedState -> {
-                    with(binding.readerDisconnectedState) {
-                        UiHelpers.setTextOrHide(headerLabel, state.headerLabel)
-                        UiHelpers.setImageOrHide(illustration, state.illustration)
-                        UiHelpers.setTextOrHide(firstHintLabel, state.firstHintLabel)
-                        UiHelpers.setTextOrHide(secondHintLabel, state.secondHintLabel)
-                        UiHelpers.setTextOrHide(connectBtn, state.connectBtnLabel)
-                        connectBtn.setOnClickListener {
-                            state.onPrimaryActionClicked.invoke()
+                    viewModel.viewStateData.observe(viewLifecycleOwner) {
+                        with(binding.readerDisconnectedState) {
+                            UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
+                            UiHelpers.setImageOrHide(cardReaderDetailIllustration, state.illustration)
+                            UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
+                            UiHelpers.setTextOrHide(cardReaderDetailSecondHintLabel, state.secondHintLabel)
+                            UiHelpers.setTextOrHide(cardReaderDetailConnectBtn, state.connectBtnLabel)
+                            cardReaderDetailConnectBtn.setOnClickListener { state.onPrimaryActionClicked.invoke() }
                         }
                     }
                 }

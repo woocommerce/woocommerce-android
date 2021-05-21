@@ -36,6 +36,19 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel()
 
         // THEN
+        assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectedState::class.java)
+    }
+
+    @Test
+    fun `when view model init with connected state should emit correct values of connected state`() {
+        // GIVEN
+        val status = MutableStateFlow(CardReaderStatus.CONNECTED)
+        whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
         verifyConnectedState(
             viewModel,
             UiStringText(readerName),
@@ -74,11 +87,37 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel()
 
         // THEN
+        assertThat(viewModel.viewStateData.value).isInstanceOf(NotConnectedState::class.java)
+    }
+
+    @Test
+    fun `when view model init with not connected state should emit correct values not connected state`() {
+        // GIVEN
+        val status = MutableStateFlow(CardReaderStatus.NOT_CONNECTED)
+        whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
         verifyNotConnectedState(viewModel)
     }
 
     @Test
-    fun `when view model init with connection state should emit not connected view state`() {
+    fun `when view model init with connecting state should emit not connected view state`() {
+        // GIVEN
+        val status = MutableStateFlow(CardReaderStatus.CONNECTING)
+        whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.viewStateData.value).isInstanceOf(NotConnectedState::class.java)
+    }
+
+    @Test
+    fun `when view model init with connecting state should emit correct values not connected state`() {
         // GIVEN
         val status = MutableStateFlow(CardReaderStatus.Connecting)
         whenever(cardReaderManager.readerStatus).thenReturn(status)
