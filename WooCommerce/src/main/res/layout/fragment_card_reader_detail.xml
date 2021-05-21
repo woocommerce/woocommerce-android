@@ -1,40 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
-    android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/card_reader_detail_connect_header_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Connect your card reader" />
+    <include
+        android:id="@+id/reader_connected_state"
+        layout="@layout/fragment_card_reader_detail_connected_state" />
 
-    <ImageView
-        android:id="@+id/card_reader_detail_illustration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:src="@drawable/img_card_reader_not_connected" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/card_reader_detail_first_hint_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Make sure card reader is charged" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/card_reader_detail_second_hint_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Turn card reader on and place it next to mobile device" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/card_reader_detail_connect_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Connect card reader" />
-</LinearLayout>
+    <include
+        android:id="@+id/reader_disconnected_state"
+        layout="@layout/fragment_card_reader_detail_disconnected_state" />
+</FrameLayout>
