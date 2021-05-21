@@ -67,12 +67,14 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/barrier">
+        app:layout_constraintTop_toBottomOf="@id/barrier"
+        tools:visibility="visible">
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/item_description_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
             android:hint="@string/shipping_label_customs_item_description_hint" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView

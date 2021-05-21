@@ -64,6 +64,7 @@
         style="@style/Woo.CheckBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
         android:text="@string/shipping_label_customs_return_to_sender"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
