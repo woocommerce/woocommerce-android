@@ -11,8 +11,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingCustomsLineListItemBinding
 import com.woocommerce.android.databinding.ShippingCustomsListItemBinding
 import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.configureStringClick
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.CustomsLine
 import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsAdapter.PackageCustomsViewHolder
@@ -51,12 +51,16 @@ class ShippingCustomsAdapter : RecyclerView.Adapter<PackageCustomsViewHolder>() 
             }
 
             val learnMoreText = context.getString(R.string.learn_more)
-            context.getString(R.string.shipping_label_customs_learn_more_itn, learnMoreText)
-                .configureStringClick(
-                    learnMoreText,
-                    WooClickableSpan { ChromeCustomTabUtils.launchUrl(context, AppUrls.SHIPPING_LABEL_CUSTOMS_ITN) },
-                    binding.itnDescription
-                )
+            binding.itnDescription.setClickableText(
+                content = context.getString(R.string.shipping_label_customs_learn_more_itn, learnMoreText),
+                clickableContent = learnMoreText,
+                clickAction = WooClickableSpan {
+                    ChromeCustomTabUtils.launchUrl(
+                        context,
+                        AppUrls.SHIPPING_LABEL_CUSTOMS_ITN
+                    )
+                }
+            )
         }
 
         @SuppressLint("SetTextI18n")
@@ -109,13 +113,18 @@ class ShippingCustomsLineAdapter : RecyclerView.Adapter<CustomsLineViewHolder>()
                 }
             }
             val learnMoreText = context.getString(R.string.learn_more)
-            context.getString(R.string.shipping_label_customs_learn_more_hs_tariff_number, learnMoreText)
-                .configureStringClick(
-                    learnMoreText,
-                    WooClickableSpan { ChromeCustomTabUtils.launchUrl(context, AppUrls.SHIPPING_LABEL_CUSTOMS_HS_TARIFF_NUMBER) },
-                    binding.hsTariffNumberInfos
-                )
+            binding.hsTariffNumberInfos.setClickableText(
+                content = context.getString(R.string.shipping_label_customs_learn_more_hs_tariff_number, learnMoreText),
+                clickableContent = learnMoreText,
+                clickAction = WooClickableSpan {
+                    ChromeCustomTabUtils.launchUrl(
+                        context,
+                        AppUrls.SHIPPING_LABEL_CUSTOMS_HS_TARIFF_NUMBER
+                    )
+                }
+            )
         }
+
         fun bind(customsPackage: CustomsLine) {
             binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
             binding.itemDescriptionEditText.setText(customsPackage.itemDescription)
