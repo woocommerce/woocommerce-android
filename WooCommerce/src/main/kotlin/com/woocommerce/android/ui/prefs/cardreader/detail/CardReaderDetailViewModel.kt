@@ -26,8 +26,7 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
-    // TODO cardreader change this to non-nullable
-    val cardReaderManager: CardReaderManager?,
+    val cardReaderManager: CardReaderManager,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>()
@@ -35,7 +34,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     init {
         launch {
-            cardReaderManager!!.readerStatus.collect { status ->
+            cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> viewState.value = ConnectedState(
                         enforceReaderUpdate = UiStringRes(
