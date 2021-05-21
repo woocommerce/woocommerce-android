@@ -144,6 +144,8 @@ class CardReaderPaymentViewModel @Inject constructor(
         viewState.postValue(FailedPaymentState(error.type, amountLabel, onRetryClicked))
     }
 
+    // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
+
     private fun loadOrderFromDB() = orderStore.getOrderByIdentifier(arguments.orderIdentifier)
 
     sealed class ViewState(
