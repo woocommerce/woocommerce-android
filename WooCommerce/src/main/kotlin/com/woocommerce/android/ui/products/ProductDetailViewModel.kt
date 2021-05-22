@@ -210,6 +210,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     val isProductPublished: Boolean
         get() = viewState.productDraft?.status == ProductStatus.PUBLISH
 
+    private val isDraftingProduct
+        get() = (viewState.productDraft?.status == DRAFT) and isProductUnstored.not()
+
     /**
      * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
      * */
@@ -218,9 +221,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val isProductUnstored
         get() = viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
-
-    private val isDraftingProduct
-        get() = (viewState.productDraft?.status == DRAFT) and isProductUnstored.not()
 
     val isAddingUnstoredProduct
         get() = isAddFlowEntryPoint and isProductUnstored
@@ -724,11 +724,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called before entering any product screen to save of copy of the product prior to the user making any
      * changes in that specific screen
-     *
-     * if it's a Variable product that's not stored at the site yet, post it to the site in order to
      */
     fun updateProductBeforeEnteringFragment() {
-        if(isProductUnstored) storeSilentlyWhenVariableProduct()
         viewState.productBeforeEnteringFragment = viewState.productDraft ?: viewState.storedProduct
     }
 
