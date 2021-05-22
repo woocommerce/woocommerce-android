@@ -220,10 +220,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         get() = viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
 
     private val isDraftingProduct
-        get() = viewState.productDraft?.status == DRAFT
+        get() = (viewState.productDraft?.status == DRAFT) and isProductUnstored.not()
 
     val isAddingUnstoredProduct
-        get() = isAddFlowEntryPoint && isProductUnstored
+        get() = isAddFlowEntryPoint and isProductUnstored
 
     /**
      * Validates if the view model was started for the **add** flow AND there is an already valid product id
@@ -237,7 +237,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
      * */
     val isAddFlow: Boolean
-        get() = isAddFlowEntryPoint && (isDraftingProduct || isProductUnstored)
+        get() = isAddFlowEntryPoint and (isDraftingProduct or isProductUnstored)
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
