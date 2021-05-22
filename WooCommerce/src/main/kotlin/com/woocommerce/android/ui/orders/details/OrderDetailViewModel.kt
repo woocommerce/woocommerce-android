@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderCo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
@@ -421,7 +422,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onMarkOrderCompleteButtonTapped() {
         AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-        onOrderStatusChanged(CoreOrderStatus.COMPLETED.value)
+        triggerEvent(ViewOrderFulfillInfo(order.identifier))
     }
 
     private fun updateOrderState() {
