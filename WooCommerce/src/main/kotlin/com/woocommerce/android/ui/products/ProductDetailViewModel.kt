@@ -267,7 +267,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             productDraft = ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
         )
         updateProductState(defaultProduct)
-        startSilentlyIfVariableProduct()
     }
 
     fun getProduct() = viewState
@@ -584,6 +583,18 @@ class ProductDetailViewModel @AssistedInject constructor(
         startPublishProduct()
     }
 
+    fun storeSilentlyWhenVariableProduct() = launch {
+        viewState.productDraft
+            ?.takeIf {
+                isProductUnstored and
+                    (it.type == VARIABLE.value) and
+                    (it.status == DRAFT)
+            }
+            ?.takeIf { addProduct(it) }
+            ?.let { AnalyticsTracker.track(ADD_PRODUCT_SUCCESS) }
+            ?: AnalyticsTracker.track(ADD_PRODUCT_FAILED)
+    }
+
     private fun startUpdateProduct() {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
@@ -611,14 +622,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                 }
             }
         }
-    }
-
-    private fun startSilentlyIfVariableProduct() = launch {
-        viewState.productDraft
-            ?.takeIf { it.type == VARIABLE.value && it.status == DRAFT }
-            ?.takeIf { addProduct(it) }
-            ?.let { AnalyticsTracker.track(ADD_PRODUCT_SUCCESS) }
-            ?: AnalyticsTracker.track(ADD_PRODUCT_FAILED)
     }
 
     private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean) =
@@ -721,8 +724,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called before entering any product screen to save of copy of the product prior to the user making any
      * changes in that specific screen
+     *
+     * if it's a Variable product that's not stored at the site yet, post it to the site in order to
      */
     fun updateProductBeforeEnteringFragment() {
+        if(isProductUnstored) storeSilentlyWhenVariableProduct()
         viewState.productBeforeEnteringFragment = viewState.productDraft ?: viewState.storedProduct
     }
 

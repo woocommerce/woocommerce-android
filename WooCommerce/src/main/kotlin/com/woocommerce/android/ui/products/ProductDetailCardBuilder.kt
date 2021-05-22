@@ -532,6 +532,7 @@ class ProductDetailCardBuilder(
                     Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
                     mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
                 )
+                viewModel.storeSilentlyWhenVariableProduct()
                 viewModel.onEditProductCardClicked(
                     AddProductAttribute(isVariationCreation = true),
                     PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
