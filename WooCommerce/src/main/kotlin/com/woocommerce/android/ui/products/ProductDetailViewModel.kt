@@ -586,7 +586,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun storeSilentlyWhenVariableProduct() = launch {
         viewState.productDraft
             ?.takeIf {
-                isProductStoredAtSite and
+                isProductStoredAtSite.not() and
                     (it.type == VARIABLE.value) and
                     (it.status == DRAFT)
             }
