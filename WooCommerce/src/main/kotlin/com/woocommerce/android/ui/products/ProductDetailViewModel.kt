@@ -210,8 +210,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     val isProductPublished: Boolean
         get() = viewState.productDraft?.status == ProductStatus.PUBLISH
 
-    private val isDraftingProduct
-        get() = (viewState.productDraft?.status == DRAFT) and isProductUnstored.not()
+    private val isProductUnderCreation
+        get() = (viewState.productDraft?.status == DRAFT) or isProductStoredAtSite.not()
+
+    private val isProductStoredAtSite
+        get() = viewState.productDraft?.remoteId != DEFAULT_ADD_NEW_PRODUCT_ID
 
     /**
      * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
@@ -219,11 +222,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val isAddFlowEntryPoint: Boolean
         get() = navArgs.isAddProduct
 
-    private val isProductUnstored
-        get() = viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
-
     val isAddingUnstoredProduct
-        get() = isAddFlowEntryPoint and isProductUnstored
+        get() = isAddFlowEntryPoint and isProductStoredAtSite.not()
 
     /**
      * Validates if the view model was started for the **add** flow AND there is an already valid product id
@@ -237,7 +237,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
      * */
     val isAddFlow: Boolean
-        get() = isAddFlowEntryPoint and (isDraftingProduct or isProductUnstored)
+        get() = isAddFlowEntryPoint and isProductUnderCreation
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
@@ -586,7 +586,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun storeSilentlyWhenVariableProduct() = launch {
         viewState.productDraft
             ?.takeIf {
-                isProductUnstored and
+                isProductStoredAtSite and
                     (it.type == VARIABLE.value) and
                     (it.status == DRAFT)
             }
