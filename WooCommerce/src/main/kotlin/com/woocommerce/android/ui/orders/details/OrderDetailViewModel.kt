@@ -563,8 +563,6 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun Order.getProductIds() = items.map { it.productId }
-
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductImageChanged(event: OnProductImageChanged) {
