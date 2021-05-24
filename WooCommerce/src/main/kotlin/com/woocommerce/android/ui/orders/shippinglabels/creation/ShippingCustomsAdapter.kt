@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.AppUrls
@@ -24,15 +26,10 @@ import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
     private val listener: ShippingCustomsFormListener,
-) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
+) : ListAdapter<CustomsPackage, PackageCustomsViewHolder>(CustomsPackageDiffCallback()) {
     init {
         setHasStableIds(true)
     }
-    var customsPackages: List<CustomsPackage> = emptyList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackageCustomsViewHolder {
         val binding = ShippingCustomsListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -40,10 +37,8 @@ class ShippingCustomsAdapter(
     }
 
     override fun onBindViewHolder(holder: PackageCustomsViewHolder, position: Int) {
-        holder.bind(customsPackages[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = customsPackages.size
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
@@ -104,12 +99,20 @@ class ShippingCustomsAdapter(
             binding.restrictionTypeSpinner.setText(customsPackage.restrictionType.title)
             if (binding.itnEditText.getText() != customsPackage.itn) {
                 binding.itnEditText.setText(customsPackage.itn)
+                binding.itnEditText.setSelection(customsPackage.itn.length, customsPackage.itn.length)
             }
             binding.itnEditText.error = if (!customsPackage.isItnValid) {
                 context.getString(R.string.shipping_label_customs_itn_invalid_format)
             } else null
             linesAdapter.customsLines = customsPackage.lines
         }
+    }
+
+    private class CustomsPackageDiffCallback : DiffUtil.ItemCallback<CustomsPackage>() {
+        override fun areItemsTheSame(oldItem: CustomsPackage, newItem: CustomsPackage): Boolean =
+            oldItem.id == newItem.id
+
+        override fun areContentsTheSame(oldItem: CustomsPackage, newItem: CustomsPackage): Boolean = oldItem == newItem
     }
 }
 

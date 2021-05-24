@@ -69,7 +69,7 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
     private fun setupObservers(binding: FragmentShippingCustomsBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
             new.customsPackages.takeIfNotEqualTo(old?.customsPackages) { customsPackages ->
-                customsAdapter.customsPackages = customsPackages
+                customsAdapter.submitList(customsPackages)
             }
         })
         viewModel.event.observe(viewLifecycleOwner, { event ->
