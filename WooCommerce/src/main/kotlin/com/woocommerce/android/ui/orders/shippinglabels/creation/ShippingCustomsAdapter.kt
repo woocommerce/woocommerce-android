@@ -25,6 +25,9 @@ import com.woocommerce.android.widgets.WooClickableSpan
 class ShippingCustomsAdapter(
     private val listener: ShippingCustomsFormListener,
 ) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
+    init {
+        setHasStableIds(true)
+    }
     var customsPackages: List<CustomsPackage> = emptyList()
         set(value) {
             field = value
@@ -41,6 +44,10 @@ class ShippingCustomsAdapter(
     }
 
     override fun getItemCount(): Int = customsPackages.size
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
 
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy { ShippingCustomsLineAdapter() }
@@ -92,9 +99,15 @@ class ShippingCustomsAdapter(
                 adapterPosition + 1
             )
             binding.packageName.text = "- ${customsPackage.box.title}"
+            binding.returnCheckbox.isChecked = customsPackage.returnToSender
             binding.contentsTypeSpinner.setText(customsPackage.contentsType.title)
             binding.restrictionTypeSpinner.setText(customsPackage.restrictionType.title)
-            binding.itnEditText.setText(customsPackage.itn)
+            if (binding.itnEditText.getText() != customsPackage.itn) {
+                binding.itnEditText.setText(customsPackage.itn)
+            }
+            binding.itnEditText.error = if (!customsPackage.isItnValid) {
+                context.getString(R.string.shipping_label_customs_itn_invalid_format)
+            } else null
             linesAdapter.customsLines = customsPackage.lines
         }
     }

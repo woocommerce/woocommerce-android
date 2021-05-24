@@ -17,6 +17,8 @@ import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import javax.inject.Inject
 
+private val ITN_REGEX = Regex("^(?:(?:AES X\\d{14})|(?:NOEEI 30\\.\\d{1,2}(?:\\([a-z]\\)(?:\\(\\d\\))?)?))\$")
+
 @HiltViewModel
 class ShippingCustomsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -95,3 +97,6 @@ class ShippingCustomsViewModel @Inject constructor(
         val customsPackages: List<CustomsPackage> = emptyList()
     ) : Parcelable
 }
+
+val CustomsPackage.isItnValid
+    get() = itn.isEmpty() || ITN_REGEX.matches(itn)

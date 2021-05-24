@@ -507,6 +507,7 @@
     <string name="shipping_label_customs_contents_type_other_hint">Contents details</string>
     <string name="shipping_label_customs_restriction_type_other_hint">Restriction details</string>
     <string name="shipping_label_customs_itn_hint" translatable="false">ITN</string>
+    <string name="shipping_label_customs_itn_invalid_format">Invalid format</string>
     <string name="shipping_label_customs_package_content">Package content</string>
     <string name="shipping_label_customs_item_description_hint">Description</string>
     <string name="shipping_label_customs_hs_tariff_hint">HS Tariff number (Optional)</string>
