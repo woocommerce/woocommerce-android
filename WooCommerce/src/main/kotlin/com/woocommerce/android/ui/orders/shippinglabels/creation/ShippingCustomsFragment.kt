@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingCustomsBinding
@@ -25,7 +26,14 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
 
     private val viewModel: ShippingCustomsViewModel by viewModels()
 
-    private val customsAdapter: ShippingCustomsAdapter by lazy { ShippingCustomsAdapter() }
+    private val customsAdapter: ShippingCustomsAdapter by lazy {
+        ShippingCustomsAdapter(
+            onReturnToSenderChanged = viewModel::onReturnToSenderChanged,
+            onContentsTypeChanged = viewModel::onContentsTypeChanged,
+            onRestrictionTypeChanged = viewModel::onRestrictionTypeChanged,
+            onItnChanged = viewModel::onItnChanged
+        )
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -54,6 +62,10 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
         binding.packagesList.apply {
             this.adapter = customsAdapter
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            itemAnimator = DefaultItemAnimator().apply {
+                // Disable change animations to avoid duplicating viewholders
+                supportsChangeAnimations = false
+            }
         }
 
         setupObservers(binding)

@@ -13,14 +13,21 @@ import com.woocommerce.android.databinding.ShippingCustomsListItemBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.setClickableText
+import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.CustomsLine
 import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsAdapter.PackageCustomsViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
-class ShippingCustomsAdapter : RecyclerView.Adapter<PackageCustomsViewHolder>() {
+class ShippingCustomsAdapter(
+    private val onReturnToSenderChanged: (Int, Boolean) -> Unit,
+    private val onContentsTypeChanged: (Int, ContentsType) -> Unit,
+    private val onRestrictionTypeChanged: (Int, RestrictionType) -> Unit,
+    private val onItnChanged: (Int, String) -> Unit
+) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
     var customsPackages: List<CustomsPackage> = emptyList()
         set(value) {
             field = value
@@ -38,7 +45,7 @@ class ShippingCustomsAdapter : RecyclerView.Adapter<PackageCustomsViewHolder>() 
 
     override fun getItemCount(): Int = customsPackages.size
 
-    class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
+    inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy { ShippingCustomsLineAdapter() }
         private val context
             get() = binding.root.context
@@ -61,6 +68,24 @@ class ShippingCustomsAdapter : RecyclerView.Adapter<PackageCustomsViewHolder>() 
                     )
                 }
             )
+
+            // Setup listeners
+            binding.returnCheckbox.setOnCheckedChangeListener { _, isChecked ->
+                onReturnToSenderChanged(adapterPosition, isChecked)
+            }
+            binding.contentsTypeSpinner.setup(
+                values = ContentsType.values(),
+                onSelected = { onContentsTypeChanged(adapterPosition, it) },
+                mapper = { context.getString(it.title) }
+            )
+            binding.restrictionTypeSpinner.setup(
+                values = RestrictionType.values(),
+                onSelected = { onRestrictionTypeChanged(adapterPosition, it) },
+                mapper = { context.getString(it.title) }
+            )
+            binding.itnEditText.setOnTextChangedListener {
+                it?.let { onItnChanged(adapterPosition, it.toString()) }
+            }
         }
 
         @SuppressLint("SetTextI18n")

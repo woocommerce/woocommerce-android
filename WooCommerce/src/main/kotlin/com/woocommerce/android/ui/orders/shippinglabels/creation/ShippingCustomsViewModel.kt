@@ -64,6 +64,28 @@ class ShippingCustomsViewModel @Inject constructor(
         )
     }
 
+    fun onReturnToSenderChanged(position: Int, returnToSender: Boolean) {
+        updatePackage(position, viewState.customsPackages[position].copy(returnToSender = returnToSender))
+    }
+
+    fun onContentsTypeChanged(position: Int, contentsType: ContentsType) {
+        updatePackage(position, viewState.customsPackages[position].copy(contentsType = contentsType))
+    }
+
+    fun onRestrictionTypeChanged(position: Int, restrictionType: RestrictionType) {
+        updatePackage(position, viewState.customsPackages[position].copy(restrictionType = restrictionType))
+    }
+
+    fun onItnChanged(position: Int, itn: String) {
+        updatePackage(position, viewState.customsPackages[position].copy(itn = itn))
+    }
+
+    private fun updatePackage(position: Int, item: CustomsPackage) {
+        val customsPackages = viewState.customsPackages.toMutableList()
+        customsPackages[position] = item
+        viewState = viewState.copy(customsPackages = customsPackages)
+    }
+
     fun onDoneButtonClicked() {
         triggerEvent(Exit)
     }
