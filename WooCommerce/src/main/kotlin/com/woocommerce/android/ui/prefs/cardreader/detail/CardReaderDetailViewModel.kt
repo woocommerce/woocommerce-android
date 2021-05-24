@@ -34,7 +34,7 @@ class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val viewState = MutableLiveData<ViewState>()
+    private val viewState = MutableLiveData<ViewState>(Loading)
     val viewStateData: LiveData<ViewState> = viewState
 
     init {
@@ -49,13 +49,13 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private suspend fun checkForUpdates() {
-        cardReaderManager.getSoftwareUpdateStatus().collect { updateStatus ->
+        cardReaderManager.softwareUpdateAvailability().collect { updateStatus ->
             val readerStatus = cardReaderManager.readerStatus.value
             if (readerStatus !is Connected) return@collect
             when (updateStatus) {
                 Initializing -> viewState.value = Loading
-                UpToDate -> showConnectedState(readerStatus, updateAvailable = true)
-                is UpdateAvailable -> showConnectedState(readerStatus)
+                UpToDate -> showConnectedState(readerStatus)
+                is UpdateAvailable -> showConnectedState(readerStatus, updateAvailable = true)
                 CheckForUpdatesFailed -> showConnectedState(readerStatus).also {
                     triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
                 }

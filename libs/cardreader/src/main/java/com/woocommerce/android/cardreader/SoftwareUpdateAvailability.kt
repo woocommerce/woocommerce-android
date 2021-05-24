@@ -19,5 +19,3 @@ sealed class SoftwareUpdateAvailability {
     }
     object CheckForUpdatesFailed : SoftwareUpdateAvailability()
 }
-
-

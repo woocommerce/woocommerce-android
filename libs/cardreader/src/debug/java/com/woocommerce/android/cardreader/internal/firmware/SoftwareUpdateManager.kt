@@ -32,21 +32,22 @@ internal class SoftwareUpdateManager(
         }
     }
 
-    suspend fun getSoftwareUpdateStatus() = flow {
+    suspend fun softwareUpdateStatus() = flow {
         emit(Initializing)
 
         when (val status = checkUpdatesAction.checkUpdates()) {
             CheckSoftwareUpdates.UpToDate -> emit(SoftwareUpdateAvailability.UpToDate)
             is CheckSoftwareUpdates.Failed -> emit(SoftwareUpdateAvailability.CheckForUpdatesFailed)
-            is CheckSoftwareUpdates.UpdateAvailable -> emit(
-                SoftwareUpdateAvailability.UpdateAvailable(
-                    hasConfigUpdate = status.updateData.hasConfigUpdate,
-                    hasFirmwareUpdate = status.updateData.hasFirmwareUpdate,
-                    hasKeyUpdate = status.updateData.hasKeyUpdate,
-                    timeEstimate = status.updateData.timeEstimate.mapToTimeEstimate(),
-                    version = status.updateData.version
+            is CheckSoftwareUpdates.UpdateAvailable ->
+                emit(
+                    SoftwareUpdateAvailability.UpdateAvailable(
+                        hasConfigUpdate = status.updateData.hasConfigUpdate,
+                        hasFirmwareUpdate = status.updateData.hasFirmwareUpdate,
+                        hasKeyUpdate = status.updateData.hasKeyUpdate,
+                        timeEstimate = status.updateData.timeEstimate.mapToTimeEstimate(),
+                        version = status.updateData.version
+                    )
                 )
-            )
         }
     }
 

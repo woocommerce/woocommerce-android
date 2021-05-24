@@ -91,7 +91,8 @@ internal class CardReaderManagerImpl(
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
     }
 
-    override suspend fun getSoftwareUpdateStatus(): Flow<SoftwareUpdateAvailability> = softwareUpdateManager.getSoftwareUpdateStatus()
+    override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> =
+        softwareUpdateManager.softwareUpdateStatus()
 
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
 }

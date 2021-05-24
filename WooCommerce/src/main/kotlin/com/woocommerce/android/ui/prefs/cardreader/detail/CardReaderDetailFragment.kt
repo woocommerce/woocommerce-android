@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
@@ -17,6 +19,7 @@ import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewMo
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,13 +35,20 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
     }
 
     private fun initObservers(binding: FragmentCardReaderDetailBinding) {
-        viewModel.event.observe(viewLifecycleOwner, {
-            when (it) {
+        viewModel.event.observe(viewLifecycleOwner, { event ->
+            when (event) {
                 is CardReaderConnectScreen ->
                     findNavController()
                         .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderConnectFragment)
+                is ShowSnackbar -> {
+                    Snackbar.make(
+                        binding.root,
+                        getString(event.message),
+                        BaseTransientBottomBar.LENGTH_LONG
+                    ).show()
+                }
                 else ->
-                    it.isHandled = false
+                    event.isHandled = false
             }
         })
 

@@ -8,6 +8,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import dagger.Module
 import dagger.Provides
@@ -45,5 +46,7 @@ class CardReaderModule {
             flow {}
 
         override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = flow {}
+
+        override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> = flow {}
     }
 }
