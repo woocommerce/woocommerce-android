@@ -44,6 +44,14 @@ class OrderFulfillViewModel @Inject constructor(
     private val _shipmentTrackings = MutableLiveData<List<OrderShipmentTracking>>()
     val shipmentTrackings: LiveData<List<OrderShipmentTracking>> = _shipmentTrackings
 
+    final var order: Order
+        get() = requireNotNull(viewState.order)
+        set(value) {
+            viewState = viewState.copy(
+                order = value
+            )
+        }
+
     init {
         start()
     }
@@ -60,8 +68,7 @@ class OrderFulfillViewModel @Inject constructor(
     private fun displayOrderDetails(order: Order) {
         viewState = viewState.copy(
             order = order,
-            toolbarTitle = resourceProvider.getString(R.string.order_fulfill_title),
-            isShipmentTrackingAvailable = appPrefs.isTrackingExtensionAvailable() && !hasVirtualProductsOnly(order)
+            toolbarTitle = resourceProvider.getString(R.string.order_fulfill_title)
         )
     }
 
@@ -71,12 +78,14 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     private fun displayShipmentTrackings() {
-        if (viewState.isShipmentTrackingAvailable == true) {
+        val trackingAvailable = appPrefs.isTrackingExtensionAvailable() && !hasVirtualProductsOnly()
+        viewState = viewState.copy(isShipmentTrackingAvailable = trackingAvailable)
+        if (trackingAvailable) {
             _shipmentTrackings.value = repository.getOrderShipmentTrackings(orderIdSet.id)
         }
     }
 
-    fun hasVirtualProductsOnly(order: Order): Boolean {
+    fun hasVirtualProductsOnly(): Boolean {
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.getProductIds()
             repository.hasVirtualProductsOnly(remoteProductIds)
