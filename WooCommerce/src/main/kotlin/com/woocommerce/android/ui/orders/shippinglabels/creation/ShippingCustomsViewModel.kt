@@ -21,7 +21,7 @@ import javax.inject.Inject
 class ShippingCustomsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     shippingLabelRepository: ShippingLabelRepository
-) : ScopedViewModel(savedStateHandle) {
+) : ScopedViewModel(savedStateHandle), ShippingCustomsFormListener {
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
@@ -64,19 +64,19 @@ class ShippingCustomsViewModel @Inject constructor(
         )
     }
 
-    fun onReturnToSenderChanged(position: Int, returnToSender: Boolean) {
+    override fun onReturnToSenderChanged(position: Int, returnToSender: Boolean) {
         updatePackage(position, viewState.customsPackages[position].copy(returnToSender = returnToSender))
     }
 
-    fun onContentsTypeChanged(position: Int, contentsType: ContentsType) {
+    override fun onContentsTypeChanged(position: Int, contentsType: ContentsType) {
         updatePackage(position, viewState.customsPackages[position].copy(contentsType = contentsType))
     }
 
-    fun onRestrictionTypeChanged(position: Int, restrictionType: RestrictionType) {
+    override fun onRestrictionTypeChanged(position: Int, restrictionType: RestrictionType) {
         updatePackage(position, viewState.customsPackages[position].copy(restrictionType = restrictionType))
     }
 
-    fun onItnChanged(position: Int, itn: String) {
+    override fun onItnChanged(position: Int, itn: String) {
         updatePackage(position, viewState.customsPackages[position].copy(itn = itn))
     }
 

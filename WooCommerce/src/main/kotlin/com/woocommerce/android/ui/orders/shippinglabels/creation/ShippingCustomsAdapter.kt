@@ -23,10 +23,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
-    private val onReturnToSenderChanged: (Int, Boolean) -> Unit,
-    private val onContentsTypeChanged: (Int, ContentsType) -> Unit,
-    private val onRestrictionTypeChanged: (Int, RestrictionType) -> Unit,
-    private val onItnChanged: (Int, String) -> Unit
+    private val listener: ShippingCustomsFormListener,
 ) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
     var customsPackages: List<CustomsPackage> = emptyList()
         set(value) {
@@ -71,20 +68,20 @@ class ShippingCustomsAdapter(
 
             // Setup listeners
             binding.returnCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                onReturnToSenderChanged(adapterPosition, isChecked)
+                listener.onReturnToSenderChanged(adapterPosition, isChecked)
             }
             binding.contentsTypeSpinner.setup(
                 values = ContentsType.values(),
-                onSelected = { onContentsTypeChanged(adapterPosition, it) },
+                onSelected = { listener.onContentsTypeChanged(adapterPosition, it) },
                 mapper = { context.getString(it.title) }
             )
             binding.restrictionTypeSpinner.setup(
                 values = RestrictionType.values(),
-                onSelected = { onRestrictionTypeChanged(adapterPosition, it) },
+                onSelected = { listener.onRestrictionTypeChanged(adapterPosition, it) },
                 mapper = { context.getString(it.title) }
             )
             binding.itnEditText.setOnTextChangedListener {
-                it?.let { onItnChanged(adapterPosition, it.toString()) }
+                it?.let { listener.onItnChanged(adapterPosition, it.toString()) }
             }
         }
 
@@ -159,4 +156,11 @@ class ShippingCustomsLineAdapter : RecyclerView.Adapter<CustomsLineViewHolder>()
             binding.countrySpinner.setText(customsPackage.originCountry)
         }
     }
+}
+
+interface ShippingCustomsFormListener {
+    fun onReturnToSenderChanged(position: Int, returnToSender: Boolean)
+    fun onContentsTypeChanged(position: Int, contentsType: ContentsType)
+    fun onRestrictionTypeChanged(position: Int, restrictionType: RestrictionType)
+    fun onItnChanged(position: Int, itn: String)
 }
