@@ -17,6 +17,8 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     companion object {
         private const val ARG_DRAWABLE_ID = "drawable_id"
         private const val ARG_STRING_ID = "string_id"
+        private const val PORTRAIT_RATIO = 0.65f
+        private const val LANDSCAPE_RATIO = 0.45f
 
         fun newInstance(
             @DrawableRes drawableId: Int,
@@ -46,6 +48,11 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
                 binding.imageView.hide()
             } else {
                 binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
+            }
+            binding.textView.layoutParams.width = if (DisplayUtils.isLandscape(context)) {
+                (DisplayUtils.getDisplayPixelWidth() * LANDSCAPE_RATIO).toInt()
+            } else {
+                (DisplayUtils.getDisplayPixelWidth() * PORTRAIT_RATIO).toInt()
             }
             binding.textView.setText(args.getInt(ARG_STRING_ID))
         }
