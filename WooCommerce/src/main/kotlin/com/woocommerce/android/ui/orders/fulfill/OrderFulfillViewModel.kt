@@ -7,11 +7,14 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -102,6 +105,27 @@ class OrderFulfillViewModel @Inject constructor(
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
+    }
+
+    fun onAddShipmentTrackingClicked() {
+        triggerEvent(
+            AddOrderShipmentTracking(
+                orderIdentifier = order.identifier,
+                orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
+                isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
+            )
+        )
+    }
+
+    fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
+        AnalyticsTracker.track(
+            ORDER_TRACKING_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+        )
+        _shipmentTrackings.value = repository.getOrderShipmentTrackings(orderIdSet.id)
     }
 
     @Parcelize

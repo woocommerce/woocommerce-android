@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderFulfillBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -19,8 +20,10 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -77,6 +80,7 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
 
         setHasOptionsMenu(true)
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
@@ -108,9 +112,16 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_ORDER_FULFILL_RESULT, event.data)
+                is OrderNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun setupResultHandlers(viewModel: OrderFulfillViewModel) {
+        handleResult<OrderShipmentTracking>(AddOrderShipmentTrackingFragment.KEY_ADD_SHIPMENT_TRACKING_RESULT) {
+            viewModel.onNewShipmentTrackingAdded(it)
+        }
     }
 
     private fun showOrderDetail(order: Order) {
@@ -142,7 +153,7 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
     private fun showAddShipmentTracking(show: Boolean) {
         with(binding.orderDetailShipmentList) {
             isVisible = show
-            showAddTrackingButton(show) { /* will be added in a separate commit */ }
+            showAddTrackingButton(show) { viewModel.onAddShipmentTrackingClicked() }
         }
     }
 

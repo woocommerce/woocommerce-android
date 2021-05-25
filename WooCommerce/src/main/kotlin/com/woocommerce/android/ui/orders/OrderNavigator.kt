@@ -68,7 +68,7 @@ class OrderNavigator @Inject constructor() {
             }
             is AddOrderShipmentTracking -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToAddOrderShipmentTrackingFragment(
+                    .actionGlobalAddOrderShipmentTrackingFragment(
                         target.orderIdentifier, target.orderTrackingProvider, target.isCustomProvider
                     )
                 fragment.findNavController().navigateSafely(action)
