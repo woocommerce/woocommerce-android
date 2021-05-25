@@ -38,7 +38,8 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
         super.onViewCreated(view, savedInstanceState)
 
         // hide images in landscape unless this device is a tablet
-        val hideImages = DisplayUtils.isLandscape(context) &&
+        val isLandscape = DisplayUtils.isLandscape(context)
+        val hideImages = isLandscape &&
             !DisplayUtils.isTablet(context) &&
             !DisplayUtils.isXLargeTablet(context)
 
@@ -49,7 +50,7 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
             } else {
                 binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             }
-            binding.textView.layoutParams.width = if (DisplayUtils.isLandscape(context)) {
+            binding.textView.layoutParams.width = if (isLandscape) {
                 (DisplayUtils.getDisplayPixelWidth() * LANDSCAPE_RATIO).toInt()
             } else {
                 (DisplayUtils.getDisplayPixelWidth() * PORTRAIT_RATIO).toInt()
