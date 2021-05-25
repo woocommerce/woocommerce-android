@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.model.data.WCLocationModel
 data class Location(
     val code: String,
     val name: String,
-    val parentCode: String = "",
+    val parentCode: String = ""
 ) : Parcelable
 
 fun WCLocationModel.toAppModel(): Location {

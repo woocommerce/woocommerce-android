@@ -29,7 +29,7 @@ class ShippingCustomsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     shippingLabelRepository: ShippingLabelRepository,
     parameterRepository: ParameterRepository,
-    private val dataStore: WCDataStore,
+    private val dataStore: WCDataStore
 ) : ScopedViewModel(savedStateHandle), ShippingCustomsFormListener {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
