@@ -5,6 +5,8 @@ import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -18,6 +20,9 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillRepository
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -26,7 +31,11 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -113,5 +122,190 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         assertThat(shipmentTrackings).isNotEmpty
         assertThat(shipmentTrackings).isEqualTo(testOrderShipmentTrackings)
         assertThat(products).isNotEmpty
+    }
+
+    @Test
+    fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val order = order.copy(items = emptyList())
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+            viewModel.start()
+            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+        }
+
+    @Test
+    fun `hasVirtualProductsOnly returns true if and only if there are no physical products for the order`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
+            val virtualItems = listOf(item.copy(productId = 3), item.copy(productId = 4))
+            val virtualOrder = order.copy(items = virtualItems)
+
+            doReturn(true).whenever(repository).hasVirtualProductsOnly(listOf(3, 4))
+            doReturn(virtualOrder).whenever(repository).getOrder(any())
+
+            viewModel.start()
+
+            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(true)
+        }
+
+    @Test
+    fun `hasVirtualProductsOnly returns false if there are both virtual and physical products for the order`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
+            val mixedItems = listOf(item, item.copy(productId = 2))
+            val mixedOrder = order.copy(items = mixedItems)
+
+            doReturn(false).whenever(repository).hasVirtualProductsOnly(listOf(1, 2))
+            doReturn(mixedOrder).whenever(repository).getOrder(any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+            viewModel.start()
+
+            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+        }
+
+    @Test
+    fun `Do not display product list when all products are refunded`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+            // product list should not be empty when products are not refunded
+            val products = ArrayList<Order.Item>()
+            viewModel.productList.observeForever {
+                it?.let { products.addAll(it) }
+            }
+
+            viewModel.start()
+
+            assertThat(products).isEmpty()
+        }
+
+    @Test
+    fun `Update order status when network connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        doReturn(order).whenever(repository).getOrder(any())
+        doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+        var snackBar: ShowSnackbar? = null
+        var exit: ExitWithResult<*>? = null
+        viewModel.event.observeForever {
+            if (it is ExitWithResult<*>) exit = it
+            else if (it is ShowSnackbar) snackBar = it
+        }
+
+        viewModel.start()
+        viewModel.onMarkOrderCompleteButtonClicked()
+
+        assertThat(exit).isEqualTo(ExitWithResult(
+            CoreOrderStatus.COMPLETED.value, OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
+        ))
+        assertNull(snackBar)
+    }
+
+    @Test
+    fun `Do not update order status when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        doReturn(order).whenever(repository).getOrder(any())
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        var snackbar: ShowSnackbar? = null
+        var exit: ExitWithResult<*>? = null
+        viewModel.event.observeForever {
+            if (it is ExitWithResult<*>) exit = it
+            else if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.order = order
+        viewModel.onMarkOrderCompleteButtonClicked()
+
+        assertNull(exit)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
+    }
+
+    @Test
+    fun `refresh shipping tracking items when an item is added`() = runBlockingTest {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+
+        doReturn(order).whenever(repository).getOrder(any())
+
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+        doReturn(testOrderShipmentTrackings).doReturn(addedShipmentTrackings)
+            .whenever(repository).getOrderShipmentTrackings(any())
+
+        var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
+        viewModel.shipmentTrackings.observeForever {
+            it?.let { orderShipmentTrackings = it }
+        }
+
+        viewModel.start()
+        viewModel.onNewShipmentTrackingAdded(shipmentTracking)
+
+        verify(repository, times(2)).getOrderShipmentTrackings(any())
+        assertThat(orderShipmentTrackings).isEqualTo(addedShipmentTrackings)
+    }
+
+    @Test
+    fun `handle onBackButtonClicked when new shipment tracking is added`() = runBlockingTest {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+
+        doReturn(order).whenever(repository).getOrder(any())
+
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+        doReturn(testOrderShipmentTrackings).doReturn(addedShipmentTrackings)
+            .whenever(repository).getOrderShipmentTrackings(any())
+
+        var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
+        viewModel.shipmentTrackings.observeForever {
+            it?.let { orderShipmentTrackings = it }
+        }
+
+        var exit: Exit? = null
+        var exitWithResult: ExitWithResult<*>? = null
+        viewModel.event.observeForever {
+            if (it is ExitWithResult<*>) exitWithResult = it
+            else if (it is Exit) exit = it
+        }
+
+        viewModel.start()
+        viewModel.onNewShipmentTrackingAdded(shipmentTracking)
+
+        verify(repository, times(2)).getOrderShipmentTrackings(any())
+        assertThat(orderShipmentTrackings).isEqualTo(addedShipmentTrackings)
+
+        viewModel.onBackButtonClicked()
+        assertNull(exit)
+        assertThat(exitWithResult).isEqualTo(ExitWithResult(
+            true, OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT
+        ))
+    }
+
+    @Test
+    fun `handle onBackButtonClicked when no shipment is added`() = runBlockingTest {
+        doReturn(order).whenever(repository).getOrder(any())
+        doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+        var exit: Exit? = null
+        var exitWithResult: ExitWithResult<*>? = null
+        viewModel.event.observeForever {
+            if (it is ExitWithResult<*>) exitWithResult = it
+            else if (it is Exit) exit = it
+        }
+
+        viewModel.start()
+        viewModel.onBackButtonClicked()
+
+        assertNotNull(exit)
+        assertNull(exitWithResult)
     }
 }
