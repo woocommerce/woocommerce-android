@@ -162,9 +162,7 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
     ) {
         binding.orderDetailShipmentList.updateShipmentTrackingList(
             shipmentTrackings = shipmentTrackings,
-            dateUtils = dateUtils,
-            onDeleteShipmentTrackingClicked = {
-                /* will be added in a separate commit */
-            })
+            dateUtils = dateUtils
+        )
     }
 }
