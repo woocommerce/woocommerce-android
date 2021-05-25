@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
+import com.woocommerce.android.cardreader.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -225,7 +225,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
         // TODO cardreader add tests for this functionality
-        if (cardReaderManager.readerStatus.value == CONNECTED) {
+        if (cardReaderManager.readerStatus.value is Connected) {
             triggerEvent(StartCardReaderPaymentFlow(order.identifier))
         } else {
             triggerEvent(StartCardReaderConnectFlow)

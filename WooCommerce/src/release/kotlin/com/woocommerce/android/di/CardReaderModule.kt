@@ -6,7 +6,7 @@ import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
-import com.woocommerce.android.cardreader.CardReaderStatus.NOT_CONNECTED
+import com.woocommerce.android.cardreader.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import dagger.Module
@@ -27,7 +27,7 @@ class CardReaderModule {
     @Singleton
     fun provideCardReaderManager(): CardReaderManager = object : CardReaderManager {
         override val isInitialized: Boolean = false
-        override val readerStatus: StateFlow<CardReaderStatus> = MutableStateFlow(NOT_CONNECTED)
+        override val readerStatus: StateFlow<CardReaderStatus> = MutableStateFlow(NotConnected)
 
         override fun initialize(app: Application) {}
 
