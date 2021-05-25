@@ -38,6 +38,7 @@ class ReceiptPaymentInfoMapper {
     }
 
     private fun mapToPaymentCardBrand(brand: String?): PaymentCardBrand {
-        return PaymentCardBrand.values().firstOrNull { it.key == brand } ?: PaymentCardBrand.UNKNOWN
+        return PaymentCardBrand.values().firstOrNull { it.key.equals(brand, ignoreCase = true) }
+            ?: PaymentCardBrand.UNKNOWN
     }
 }
