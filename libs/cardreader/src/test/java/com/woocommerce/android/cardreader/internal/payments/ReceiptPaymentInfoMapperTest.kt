@@ -45,42 +45,42 @@ class ReceiptPaymentInfoMapperTest {
         assertThat(result).isNotNull
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `when application preferred name not available, then exception thrown`() {
         whenever(mockedReceiptDetails.applicationPreferredName).thenReturn(null)
 
         receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(mockedPaymentIntent)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `when dedicated file name not available, then exception thrown`() {
         whenever(mockedReceiptDetails.dedicatedFileName).thenReturn(null)
 
         receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(mockedPaymentIntent)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `when charge not available, then exception thrown`() {
         whenever(mockedPaymentIntent.getCharges()).thenReturn(listOf())
 
         receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(mockedPaymentIntent)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `when payment method details not available, then exception thrown`() {
         whenever(mockedCharge.paymentMethodDetails).thenReturn(null)
 
         receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(mockedPaymentIntent)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `when card present details not available, then exception thrown`() {
         whenever(mockedPaymentMethodDetails.cardPresentDetails).thenReturn(null)
 
         receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(mockedPaymentIntent)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `when card receipt details not available, then exception thrown`() {
         whenever(mockedCardPresentDetails.receiptDetails).thenReturn(null)
 
