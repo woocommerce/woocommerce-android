@@ -157,12 +157,10 @@ class ShippingCustomsLineAdapter(
         init {
             binding.expandIcon.setOnClickListener {
                 if (binding.expandIcon.rotation == 0f) {
-                    binding.expandIcon.rotation = 180f
-                    // binding.expandIcon.animate().rotation(180f).start()
+                    binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
                 } else {
-                    binding.expandIcon.rotation = 0f
-                    // binding.expandIcon.animate().rotation(0f).start()
+                    binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
                 }
             }
