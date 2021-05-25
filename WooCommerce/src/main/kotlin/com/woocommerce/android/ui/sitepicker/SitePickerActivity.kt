@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.sitepicker
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
@@ -33,7 +33,6 @@ import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
@@ -45,6 +44,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.AndroidInjection
@@ -82,12 +82,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private lateinit var siteAdapter: SitePickerAdapter
 
-    private var progressDialog: ProgressDialog? = null
+    private var progressDialog: CustomProgressDialog? = null
     private var calledFromLogin: Boolean = false
     private var currentSite: SiteModel? = null
     private var skeletonView = SkeletonView()
@@ -308,7 +307,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     override fun showStoreList(wcSites: List<SiteModel>) {
-        progressDialog?.takeIf { it.isShowing }?.dismiss()
+        hideProgressDialog()
         showUserInfo(centered = false)
 
         if (deferLoadingSitesIntoView) {
@@ -420,22 +419,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                     mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
         }
 
-        progressDialog = ProgressDialog.show(this, null, getString(R.string.login_verifying_site))
+        showProgressDialog(R.string.login_verifying_site)
         presenter.verifySiteApiVersion(site)
 
         // Preemptively also update the site settings so we have them available sooner
         presenter.updateWooSiteSettings(site)
     }
 
-    /**
-     * User selected a site and it passed verification - make it the selected site and finish
-     */
-    override fun siteVerificationPassed(site: SiteModel) {
-        progressDialog?.dismiss()
-
-        selectedSite.set(site)
-        // fetch user info
-        userEligibilityFetcher.fetchUserEligibility()
+    override fun userVerificationCompleted() {
         FCMRegistrationIntentService.enqueueWork(this)
 
         // if we came here from login, start the main activity
@@ -454,8 +445,37 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         finish()
     }
 
-    override fun siteVerificationFailed(site: SiteModel) {
+    override fun showProgressDialog(@StringRes title: Int) {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(title),
+            getString(R.string.product_update_dialog_message)
+        ).also { it.show(supportFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    override fun hideProgressDialog() {
         progressDialog?.dismiss()
+        progressDialog = null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        hideProgressDialog()
+    }
+
+    /**
+     * User selected a site and it passed verification - make it the selected site and finish
+     */
+    override fun siteVerificationPassed(site: SiteModel) {
+        selectedSite.set(site)
+
+        // fetch user info
+        presenter.fetchUserRoleFromAPI(site)
+    }
+
+    override fun siteVerificationFailed(site: SiteModel) {
+        hideProgressDialog()
 
         // re-select the previous site, if there was one
         siteAdapter.selectedSiteId = currentSite?.siteId ?: 0L
@@ -467,7 +487,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
     @Suppress("WrongConstant")
     override fun siteVerificationError(site: SiteModel) {
-        progressDialog?.dismiss()
+        hideProgressDialog()
 
         val siteName = if (!TextUtils.isEmpty(site.name)) site.name else getString(R.string.untitled)
         Snackbar.make(
@@ -676,12 +696,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             spannable.setSpan(
                     WooClickableSpan {
                         AnalyticsTracker.track(Stat.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
+                        showProgressDialog(R.string.login_refresh_app_progress_jetpack)
 
-                        progressDialog?.takeIf { !it.isShowing }?.dismiss()
-                        progressDialog = ProgressDialog.show(
-                                this@SitePickerActivity,
-                                null,
-                                getString(R.string.login_refresh_app_progress_jetpack))
                         // Tell the presenter to fetch a fresh list of
                         // sites from the API. When the results come back the login
                         // process will restart again.
@@ -767,11 +783,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                         AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
                         unifiedLoginTracker.trackClick(Click.REFRESH_APP)
 
-                        progressDialog?.takeIf { !it.isShowing }?.dismiss()
-                        progressDialog = ProgressDialog.show(
-                                this@SitePickerActivity,
-                                null,
-                                getString(R.string.login_refresh_app_progress))
+                        showProgressDialog(R.string.login_refresh_app_progress)
                         presenter.fetchUpdatedSiteFromAPI(site)
                     },
                     (notWooMessage.length - refreshAppText.length),
