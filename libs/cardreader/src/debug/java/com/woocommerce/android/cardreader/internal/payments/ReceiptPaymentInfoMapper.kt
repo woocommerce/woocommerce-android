@@ -11,7 +11,7 @@ class ReceiptPaymentInfoMapper {
     fun mapPaymentIntentToPaymentInfo(paymentIntent: PaymentIntent): ReceiptPaymentInfo {
         val charge = paymentIntent.getCharges().getOrNull(0)
             ?: throw IllegalStateException("PaymentIntent does not contain any Charges")
-        val chargedTotalAmount = charge.amount.toFloat() / 10f.pow(USD_TO_CENTS_DECIMAL_PLACES)
+        val chargedTotalAmount = charge.amount / 10f.pow(USD_TO_CENTS_DECIMAL_PLACES)
         val receiptDate = charge.created
         val currency = charge.currency.orEmpty()
 
