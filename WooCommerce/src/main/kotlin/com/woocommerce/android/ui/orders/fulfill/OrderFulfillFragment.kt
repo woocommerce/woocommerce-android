@@ -19,6 +19,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
@@ -32,10 +33,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), OrderProductActionListener {
+class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), OrderProductActionListener,
+    BackPressListener {
     companion object {
         val TAG: String = OrderFulfillFragment::class.java.simpleName
-        const val KEY_ORDER_FULFILL_RESULT = "key_order_fulfill_result"
     }
 
     private val viewModel: OrderFulfillViewModel by viewModels()
@@ -91,6 +92,11 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
         (activity as? MainNavigationRouter)?.showProductVariationDetail(remoteProductId, remoteVariationId)
     }
 
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
+    }
+
     private fun setupObservers(viewModel: OrderFulfillViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) {
@@ -111,7 +117,7 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(KEY_ORDER_FULFILL_RESULT, event.data)
+                is ExitWithResult<*> -> navigateBackWithResult(event.key!!, event.data)
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }

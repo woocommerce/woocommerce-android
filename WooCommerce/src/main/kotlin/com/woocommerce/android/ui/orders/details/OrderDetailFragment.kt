@@ -44,7 +44,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
-import com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragment
+import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
@@ -213,8 +213,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleResult<OrderShipmentTracking>(AddOrderShipmentTrackingFragment.KEY_ADD_SHIPMENT_TRACKING_RESULT) {
             viewModel.onNewShipmentTrackingAdded(it)
         }
-        handleResult<String>(OrderFulfillFragment.KEY_ORDER_FULFILL_RESULT) {
+        handleResult<String>(OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT) {
             viewModel.onOrderStatusChanged(it)
+        }
+        handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
+            viewModel.refreshShipmentTracking()
         }
         handleResult<Boolean>(CardReaderConnectFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
             if (FeatureFlag.CARD_READER.isEnabled()) {

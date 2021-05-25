@@ -16,6 +16,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -37,6 +38,11 @@ class OrderFulfillViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val repository: OrderFulfillRepository
 ) : ScopedViewModel(savedState) {
+    companion object {
+        const val KEY_ORDER_FULFILL_RESULT = "key_order_fulfill_result"
+        const val KEY_REFRESH_SHIPMENT_TRACKING_RESULT = "key_refresh_shipment_tracking_result"
+    }
+
     private val navArgs: OrderFulfillFragmentArgs by savedState.navArgs()
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -101,7 +107,7 @@ class OrderFulfillViewModel @Inject constructor(
 
     fun onMarkOrderCompleteButtonClicked() {
         if (networkStatus.isConnected()) {
-            triggerEvent(ExitWithResult(CoreOrderStatus.COMPLETED.value))
+            triggerEvent(ExitWithResult(CoreOrderStatus.COMPLETED.value, key = KEY_ORDER_FULFILL_RESULT))
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -125,13 +131,21 @@ class OrderFulfillViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
         )
+        viewState = viewState.copy(shouldRefreshShipmentTracking = true)
         _shipmentTrackings.value = repository.getOrderShipmentTrackings(orderIdSet.id)
+    }
+
+    fun onBackButtonClicked() {
+        if (viewState.shouldRefreshShipmentTracking) {
+            triggerEvent(ExitWithResult(true, key = KEY_REFRESH_SHIPMENT_TRACKING_RESULT))
+        } else triggerEvent(Exit)
     }
 
     @Parcelize
     data class ViewState(
         val order: Order? = null,
         val toolbarTitle: String? = null,
-        val isShipmentTrackingAvailable: Boolean? = null
+        val isShipmentTrackingAvailable: Boolean? = null,
+        val shouldRefreshShipmentTracking: Boolean = false
     ) : Parcelable
 }

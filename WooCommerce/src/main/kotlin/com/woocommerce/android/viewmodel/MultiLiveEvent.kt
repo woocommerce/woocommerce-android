@@ -109,7 +109,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
 
         object Exit : Event()
 
-        data class ExitWithResult<out T>(val data: T) : Event()
+        data class ExitWithResult<out T>(val data: T, val key: String? = null) : Event()
 
         data class LaunchUrlInChromeTab(val url: String) : Event()
 

@@ -277,6 +277,10 @@ class OrderDetailViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
         )
+        refreshShipmentTracking()
+    }
+
+    fun refreshShipmentTracking() {
         _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
     }
 
