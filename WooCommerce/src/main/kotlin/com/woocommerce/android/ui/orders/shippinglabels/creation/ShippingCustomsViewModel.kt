@@ -117,18 +117,14 @@ class ShippingCustomsViewModel @Inject constructor(
 
     override fun onWeightChanged(packagePosition: Int, linePosition: Int, weight: String) {
         val weightValue = weight.trim('.').ifEmpty { null }?.toFloat() ?: 0f
-        if (viewState.customsPackages[packagePosition].lines[linePosition].weight != weightValue) {
-            val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(weight = weightValue)
-            updateLine(packagePosition, linePosition, newLine)
-        }
+        val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(weight = weightValue)
+        updateLine(packagePosition, linePosition, newLine)
     }
 
     override fun onItemValueChanged(packagePosition: Int, linePosition: Int, itemValue: String) {
         val value = itemValue.trim('.').ifEmpty { null }?.toBigDecimal() ?: BigDecimal.ZERO
-        if (viewState.customsPackages[packagePosition].lines[linePosition].value != value) {
-            val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(value = value)
-            updateLine(packagePosition, linePosition, newLine)
-        }
+        val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(value = value)
+        updateLine(packagePosition, linePosition, newLine)
     }
 
     override fun onOriginCountryChanged(packagePosition: Int, linePosition: Int, country: Location) {
@@ -137,6 +133,9 @@ class ShippingCustomsViewModel @Inject constructor(
     }
 
     private fun updatePackage(position: Int, item: CustomsPackage) {
+        // Early return if the same item is passed
+        if (viewState.customsPackages[position] == item) return
+
         val customsPackages = viewState.customsPackages.toMutableList()
         customsPackages[position] = item
         viewState = viewState.copy(customsPackages = customsPackages)
