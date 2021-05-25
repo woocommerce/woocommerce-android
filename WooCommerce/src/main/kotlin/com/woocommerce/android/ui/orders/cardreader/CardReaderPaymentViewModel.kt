@@ -172,7 +172,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     private fun onPrintReceiptClicked(receiptPaymentInfo: ReceiptPaymentInfo) {
         launch {
             buildHtmlReceipt(receiptPaymentInfo)?.let { htmlReceipt ->
-                triggerEvent(PrintReceipt(htmlReceipt))
+                triggerEvent(PrintReceipt(htmlReceipt, "receipt-${receiptPaymentInfo.dedicatedFileName}"))
             }
         }
     }
@@ -239,7 +239,7 @@ class CardReaderPaymentViewModel @Inject constructor(
         withContext(dispatchers.io) { orderStore.getOrderByIdentifier(arguments.orderIdentifier) }
 
     sealed class CardReaderPaymentEvent : Event() {
-        data class PrintReceipt(val htmlReceipt: String) : CardReaderPaymentEvent()
+        data class PrintReceipt(val htmlReceipt: String, val documentName: String) : CardReaderPaymentEvent()
         data class SendReceipt(val htmlReceipt: String) : CardReaderPaymentEvent()
     }
 

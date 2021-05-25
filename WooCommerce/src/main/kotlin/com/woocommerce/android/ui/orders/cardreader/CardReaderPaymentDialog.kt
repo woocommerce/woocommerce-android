@@ -40,7 +40,11 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     private fun initObservers(binding: FragmentCardReaderPaymentBinding) {
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
-                is PrintReceipt -> printHtmlHelper.printReceipt(requireActivity(), event.htmlReceipt, "")
+                is PrintReceipt -> printHtmlHelper.printReceipt(
+                    requireActivity(),
+                    event.htmlReceipt,
+                    event.documentName
+                )
                 else -> event.isHandled = false
             }
         })
