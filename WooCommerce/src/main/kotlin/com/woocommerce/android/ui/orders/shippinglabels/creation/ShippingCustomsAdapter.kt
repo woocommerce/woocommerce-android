@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.CustomsLine
 import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsAdapter.PackageCustomsViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
@@ -28,6 +29,7 @@ import com.woocommerce.android.widgets.WooClickableSpan
 class ShippingCustomsAdapter(
     private val weightUnit: String,
     private val currencyUnit: String,
+    private val countries: Array<Location>,
     private val listener: ShippingCustomsFormListener
 ) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
     init {
@@ -60,7 +62,12 @@ class ShippingCustomsAdapter(
 
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy {
-            ShippingCustomsLineAdapter(weightUnit, currencyUnit, listener)
+            ShippingCustomsLineAdapter(
+                weightUnit = weightUnit,
+                currencyUnit = currencyUnit,
+                countries = countries,
+                listener = listener
+            )
         }
         private val context
             get() = binding.root.context
@@ -147,6 +154,7 @@ class ShippingCustomsAdapter(
 class ShippingCustomsLineAdapter(
     private val weightUnit: String,
     private val currencyUnit: String,
+    private val countries: Array<Location>,
     private val listener: ShippingCustomsFormListener
 ) : RecyclerView.Adapter<CustomsLineViewHolder>() {
     init {
@@ -218,6 +226,11 @@ class ShippingCustomsLineAdapter(
             binding.valueEditText.setOnTextChangedListener {
                 it?.let { listener.onItemValueChanged(parentItemPosition, adapterPosition, it.toString()) }
             }
+            binding.countrySpinner.setup(
+                values = countries,
+                onSelected = { listener.onOriginCountryChanged(parentItemPosition, adapterPosition, it) },
+                mapper = { it.name }
+            )
         }
 
         fun bind(customsLine: CustomsLine) {
@@ -230,7 +243,7 @@ class ShippingCustomsLineAdapter(
 
             binding.weightEditText.setTextIfDifferent(customsLine.weight.formatToString())
             binding.valueEditText.setTextIfDifferent(customsLine.value.toPlainString())
-            binding.countrySpinner.setText(customsLine.originCountry)
+            binding.countrySpinner.setText(customsLine.originCountry.name)
         }
     }
 
@@ -261,4 +274,5 @@ interface ShippingCustomsFormListener {
     fun onHsTariffNumberChanged(packagePosition: Int, linePosition: Int, hsTariffNumber: String)
     fun onWeightChanged(packagePosition: Int, linePosition: Int, weight: String)
     fun onItemValueChanged(packagePosition: Int, linePosition: Int, itemValue: String)
+    fun onOriginCountryChanged(packagePosition: Int, linePosition: Int, country: Location)
 }

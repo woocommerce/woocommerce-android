@@ -5,9 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.CustomsLine
 import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -15,6 +17,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCDataStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -26,6 +29,7 @@ class ShippingCustomsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     shippingLabelRepository: ShippingLabelRepository,
     parameterRepository: ParameterRepository,
+    private val dataStore: WCDataStore,
 ) : ScopedViewModel(savedStateHandle), ShippingCustomsFormListener {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
@@ -40,6 +44,9 @@ class ShippingCustomsViewModel @Inject constructor(
 
     val currencyUnit: String
         get() = parameters.currencySymbol.orEmpty()
+
+    val countries: List<Location>
+        get() = dataStore.getCountries().map { it.toAppModel() }
 
     init {
         // TODO fake data
@@ -66,7 +73,7 @@ class ShippingCustomsViewModel @Inject constructor(
                             hsTariffNumber = "",
                             weight = 1.5f,
                             value = BigDecimal.valueOf(15),
-                            originCountry = "United States"
+                            originCountry = Location("US", "United States")
                         ),
                         CustomsLine(
                             itemId = 1L,
@@ -74,7 +81,7 @@ class ShippingCustomsViewModel @Inject constructor(
                             hsTariffNumber = "",
                             weight = 1.5f,
                             value = BigDecimal.valueOf(15),
-                            originCountry = "United States"
+                            originCountry = Location("US", "United States")
                         )
                     )
                 )
@@ -122,6 +129,11 @@ class ShippingCustomsViewModel @Inject constructor(
             val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(value = value)
             updateLine(packagePosition, linePosition, newLine)
         }
+    }
+
+    override fun onOriginCountryChanged(packagePosition: Int, linePosition: Int, country: Location) {
+        val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(originCountry = country)
+        updateLine(packagePosition, linePosition, newLine)
     }
 
     private fun updatePackage(position: Int, item: CustomsPackage) {

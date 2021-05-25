@@ -24,7 +24,7 @@ data class CustomsLine(
     val hsTariffNumber: String,
     val weight: Float,
     val value: BigDecimal,
-    val originCountry: String
+    val originCountry: Location
 ) : Parcelable
 
 enum class ContentsType(@StringRes val title: Int) {
