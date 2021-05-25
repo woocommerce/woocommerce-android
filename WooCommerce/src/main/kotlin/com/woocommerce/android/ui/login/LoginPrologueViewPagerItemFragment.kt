@@ -17,8 +17,11 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     companion object {
         private const val ARG_DRAWABLE_ID = "drawable_id"
         private const val ARG_STRING_ID = "string_id"
-        private const val PORTRAIT_RATIO = 0.65f
-        private const val LANDSCAPE_RATIO = 0.45f
+
+        private const val LABEL_RATIO_PORTRAIT = 0.65f
+        private const val LABEL_RATIO_LANDSCAPE = 0.45f
+        private const val IMAGE_RATIO_PORTRAIT = 0.65f
+        private const val IMAGE_RATIO_LANDSCAOE = 0.35f
 
         fun newInstance(
             @DrawableRes drawableId: Int,
@@ -39,21 +42,27 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
 
         // hide images in landscape unless this device is a tablet
         val isLandscape = DisplayUtils.isLandscape(context)
-        val hideImages = isLandscape &&
-            !DisplayUtils.isTablet(context) &&
-            !DisplayUtils.isXLargeTablet(context)
+        val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
+        val hideImages = isLandscape && !isTablet
 
-        val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
         arguments?.let { args ->
+            val screenWidth = DisplayUtils.getDisplayPixelWidth()
+            val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
+
             if (hideImages) {
                 binding.imageView.hide()
             } else {
+                binding.imageView.layoutParams.width = if (isLandscape) {
+                    (screenWidth * IMAGE_RATIO_LANDSCAOE).toInt()
+                } else {
+                    (screenWidth * IMAGE_RATIO_PORTRAIT).toInt()
+                }
                 binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             }
             binding.textView.layoutParams.width = if (isLandscape) {
-                (DisplayUtils.getDisplayPixelWidth() * LANDSCAPE_RATIO).toInt()
+                (screenWidth * LABEL_RATIO_LANDSCAPE).toInt()
             } else {
-                (DisplayUtils.getDisplayPixelWidth() * PORTRAIT_RATIO).toInt()
+                (screenWidth * LABEL_RATIO_PORTRAIT).toInt()
             }
             binding.textView.setText(args.getInt(ARG_STRING_ID))
         }
