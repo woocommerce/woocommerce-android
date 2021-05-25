@@ -17,7 +17,8 @@ import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import javax.inject.Inject
 
-private val ITN_REGEX = Regex("^(?:(?:AES X\\d{14})|(?:NOEEI 30\\.\\d{1,2}(?:\\([a-z]\\)(?:\\(\\d\\))?)?))\$")
+private val ITN_REGEX = Regex("""^(?:(?:AES X\d{14})|(?:NOEEI 30\.\d{1,2}(?:\([a-z]\)(?:\(\d\))?)?))${'$'}""")
+private val HS_TARIFF_NUMBER_REGEX = Regex("""^\d{6}$""")
 
 @HiltViewModel
 class ShippingCustomsViewModel @Inject constructor(
@@ -47,6 +48,7 @@ class ShippingCustomsViewModel @Inject constructor(
                     itn = "",
                     lines = listOf(
                         CustomsLine(
+                            itemId = 0L,
                             itemDescription = "Water bottle",
                             hsTariffNumber = "",
                             weight = 1.5f,
@@ -54,6 +56,7 @@ class ShippingCustomsViewModel @Inject constructor(
                             originCountry = "United States"
                         ),
                         CustomsLine(
+                            itemId = 1L,
                             itemDescription = "Water bottle 2",
                             hsTariffNumber = "",
                             weight = 1.5f,
@@ -82,10 +85,27 @@ class ShippingCustomsViewModel @Inject constructor(
         updatePackage(position, viewState.customsPackages[position].copy(itn = itn))
     }
 
+    override fun onItemDescriptionChanged(packagePosition: Int, linePosition: Int, description: String) {
+        val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(itemDescription = description)
+        updateLine(packagePosition, linePosition, newLine)
+    }
+
+    override fun onHsTariffNumberChanged(packagePosition: Int, linePosition: Int, hsTariffNumber: String) {
+        val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(hsTariffNumber = hsTariffNumber)
+        updateLine(packagePosition, linePosition, newLine)
+    }
+
     private fun updatePackage(position: Int, item: CustomsPackage) {
         val customsPackages = viewState.customsPackages.toMutableList()
         customsPackages[position] = item
         viewState = viewState.copy(customsPackages = customsPackages)
+    }
+
+    private fun updateLine(packagePosition: Int, linePosition: Int, line: CustomsLine) {
+        val customsPackage = viewState.customsPackages[packagePosition]
+        val customsLines = customsPackage.lines.toMutableList()
+        customsLines[linePosition] = line
+        updatePackage(packagePosition, customsPackage.copy(lines = customsLines))
     }
 
     fun onDoneButtonClicked() {
@@ -100,3 +120,6 @@ class ShippingCustomsViewModel @Inject constructor(
 
 val CustomsPackage.isItnValid
     get() = itn.isEmpty() || ITN_REGEX.matches(itn)
+
+val CustomsLine.isHsTariffNumberValid
+    get() = hsTariffNumber.isEmpty() || HS_TARIFF_NUMBER_REGEX.matches(hsTariffNumber)

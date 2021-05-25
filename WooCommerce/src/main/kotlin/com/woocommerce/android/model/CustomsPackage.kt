@@ -19,6 +19,7 @@ data class CustomsPackage(
 
 @Parcelize
 data class CustomsLine(
+    val itemId: Long,
     val itemDescription: String,
     val hsTariffNumber: String,
     val weight: Float,

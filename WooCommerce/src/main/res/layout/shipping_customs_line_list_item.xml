@@ -75,6 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
+            android:inputType="text"
             android:hint="@string/shipping_label_customs_item_description_hint" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView

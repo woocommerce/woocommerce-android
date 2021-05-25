@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -25,7 +26,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
-    private val listener: ShippingCustomsFormListener,
+    private val listener: ShippingCustomsFormListener
 ) : ListAdapter<CustomsPackage, PackageCustomsViewHolder>(CustomsPackageDiffCallback()) {
     init {
         setHasStableIds(true)
@@ -45,7 +46,7 @@ class ShippingCustomsAdapter(
     }
 
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
-        private val linesAdapter: ShippingCustomsLineAdapter by lazy { ShippingCustomsLineAdapter() }
+        private val linesAdapter: ShippingCustomsLineAdapter by lazy { ShippingCustomsLineAdapter(listener) }
         private val context
             get() = binding.root.context
 
@@ -54,6 +55,9 @@ class ShippingCustomsAdapter(
                 itemAnimator = null
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 adapter = linesAdapter
+                itemAnimator = DefaultItemAnimator().apply {
+                    supportsChangeAnimations = false
+                }
             }
 
             val learnMoreText = context.getString(R.string.learn_more)
@@ -97,13 +101,12 @@ class ShippingCustomsAdapter(
             binding.returnCheckbox.isChecked = customsPackage.returnToSender
             binding.contentsTypeSpinner.setText(customsPackage.contentsType.title)
             binding.restrictionTypeSpinner.setText(customsPackage.restrictionType.title)
-            if (binding.itnEditText.getText() != customsPackage.itn) {
-                binding.itnEditText.setText(customsPackage.itn)
-                binding.itnEditText.setSelection(customsPackage.itn.length, customsPackage.itn.length)
-            }
+            binding.itnEditText.setTextIfDifferent(customsPackage.itn)
             binding.itnEditText.error = if (!customsPackage.isItnValid) {
                 context.getString(R.string.shipping_label_customs_itn_invalid_format)
             } else null
+
+            linesAdapter.parentItemPosition = adapterPosition
             linesAdapter.customsLines = customsPackage.lines
         }
     }
@@ -116,12 +119,27 @@ class ShippingCustomsAdapter(
     }
 }
 
-class ShippingCustomsLineAdapter : RecyclerView.Adapter<CustomsLineViewHolder>() {
+class ShippingCustomsLineAdapter(
+    private val listener: ShippingCustomsFormListener
+) : RecyclerView.Adapter<CustomsLineViewHolder>() {
+    init {
+        setHasStableIds(true)
+    }
+
     var customsLines: List<CustomsLine> = emptyList()
         set(value) {
+            val diffResult = DiffUtil.calculateDiff(CustomsLineDiffCallback(field, value))
             field = value
-            notifyDataSetChanged()
+            diffResult.dispatchUpdatesTo(this)
         }
+
+    var parentItemPosition: Int = -1
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemCount(): Int = customsLines.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomsLineViewHolder {
         val binding = ShippingCustomsLineListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -132,9 +150,7 @@ class ShippingCustomsLineAdapter : RecyclerView.Adapter<CustomsLineViewHolder>()
         holder.bind(customsLines[position])
     }
 
-    override fun getItemCount(): Int = customsLines.size
-
-    class CustomsLineViewHolder(val binding: ShippingCustomsLineListItemBinding) : ViewHolder(binding.root) {
+    inner class CustomsLineViewHolder(val binding: ShippingCustomsLineListItemBinding) : ViewHolder(binding.root) {
         private val context
             get() = binding.root.context
 
@@ -161,15 +177,43 @@ class ShippingCustomsLineAdapter : RecyclerView.Adapter<CustomsLineViewHolder>()
                     )
                 }
             )
+
+            binding.itemDescriptionEditText.setOnTextChangedListener {
+                it?.let { listener.onItemDescriptionChanged(parentItemPosition, adapterPosition, it.toString()) }
+            }
+            binding.hsTariffNumberEditText.setOnTextChangedListener {
+                it?.let { listener.onHsTariffNumberChanged(parentItemPosition, adapterPosition, it.toString()) }
+            }
         }
 
-        fun bind(customsPackage: CustomsLine) {
+        fun bind(customsLine: CustomsLine) {
             binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
-            binding.itemDescriptionEditText.setText(customsPackage.itemDescription)
-            binding.hsTariffNumberEditText.setText(customsPackage.hsTariffNumber)
-            binding.weightEditText.setText(customsPackage.weight.toString())
-            binding.valueEditText.setText(customsPackage.value.toPlainString())
-            binding.countrySpinner.setText(customsPackage.originCountry)
+            binding.itemDescriptionEditText.setTextIfDifferent(customsLine.itemDescription)
+            binding.hsTariffNumberEditText.setTextIfDifferent(customsLine.hsTariffNumber)
+            binding.hsTariffNumberEditText.error = if (!customsLine.isHsTariffNumberValid) {
+                context.getString(R.string.shipping_label_customs_itn_invalid_format)
+            } else null
+
+            binding.weightEditText.setText(customsLine.weight.toString())
+            binding.valueEditText.setText(customsLine.value.toPlainString())
+            binding.countrySpinner.setText(customsLine.originCountry)
+        }
+    }
+
+    private class CustomsLineDiffCallback(
+        private val oldList: List<CustomsLine>,
+        private val newList: List<CustomsLine>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].itemId == newList[newItemPosition].itemId
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
         }
     }
 }
@@ -179,4 +223,6 @@ interface ShippingCustomsFormListener {
     fun onContentsTypeChanged(position: Int, contentsType: ContentsType)
     fun onRestrictionTypeChanged(position: Int, restrictionType: RestrictionType)
     fun onItnChanged(position: Int, itn: String)
+    fun onItemDescriptionChanged(packagePosition: Int, linePosition: Int, description: String)
+    fun onHsTariffNumberChanged(packagePosition: Int, linePosition: Int, hsTariffNumber: String)
 }
