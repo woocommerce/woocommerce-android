@@ -22,13 +22,24 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.receipts.ReceiptCreator
+import com.woocommerce.android.cardreader.receipts.ReceiptData
+import com.woocommerce.android.cardreader.receipts.ReceiptLineItem
+import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
+import com.woocommerce.android.cardreader.receipts.ReceiptStaticTexts
+import com.woocommerce.android.extensions.roundError
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +47,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T.MAIN
@@ -48,11 +61,15 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     cardReaderManager: CardReaderManager?,
+    private val receiptCreator: ReceiptCreator,
+    private val selectedSite: SelectedSite,
+    private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
+    // TODO cardreader if payment succeeds we need to save the state as otherwise the payment might be collected twice
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
@@ -125,7 +142,15 @@ class CardReaderPaymentViewModel @Inject constructor(
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
-            is PaymentCompleted -> viewState.postValue(PaymentSuccessfulState(amountLabel))
+            // TODO cardreader store receipt data into a persistent storage
+            is PaymentCompleted -> viewState.postValue(
+                PaymentSuccessfulState(
+                    amountLabel,
+                    // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
+                    { onPrintReceiptClicked(paymentStatus.receiptPaymentInfo) },
+                    { onSendReceiptClicked(paymentStatus.receiptPaymentInfo) }
+                )
+            )
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
             }
@@ -144,9 +169,79 @@ class CardReaderPaymentViewModel @Inject constructor(
         viewState.postValue(FailedPaymentState(error.type, amountLabel, onRetryClicked))
     }
 
+    private fun onPrintReceiptClicked(receiptPaymentInfo: ReceiptPaymentInfo) {
+        launch {
+            buildHtmlReceipt(receiptPaymentInfo)?.let { htmlReceipt ->
+                triggerEvent(PrintReceipt(htmlReceipt))
+            }
+        }
+    }
+
+    private fun onSendReceiptClicked(receiptPaymentInfo: ReceiptPaymentInfo) {
+        launch {
+            buildHtmlReceipt(receiptPaymentInfo)?.let { htmlReceipt ->
+                triggerEvent(SendReceipt(htmlReceipt))
+            }
+        }
+    }
+
+    private suspend fun buildHtmlReceipt(receiptPaymentInfo: ReceiptPaymentInfo): String? {
+        return loadOrderFromDB()?.let { order ->
+            val receiptData = buildReceiptDataModel(order, receiptPaymentInfo)
+            receiptCreator.createHtmlReceipt(receiptData)
+        }
+    }
+
+    // TODO cardreader move to a util method
+    private fun buildReceiptDataModel(order: WCOrderModel, receiptPaymentInfo: ReceiptPaymentInfo) = ReceiptData(
+        // todo cardreader replace with resources from strings.xml
+        staticTexts = ReceiptStaticTexts(
+            applicationName = "Application name",
+            receiptFromFormat = "Receipt from %s",
+            receiptTitle = "Receipt",
+            amountPaidSectionTitle = "Amount paid",
+            datePaidSectionTitle = "Date paid",
+            paymentMethodSectionTitle = "Payment method",
+            summarySectionTitle = "Summary",
+            aid = "AID"
+        ),
+        purchasedProducts = createReceiptLineItems(order),
+        storeName = selectedSite.get().displayName,
+        receiptPaymentInfo = receiptPaymentInfo
+    )
+
+    // TODO cardreader move to a util method or a repository
+    private fun createReceiptLineItems(order: WCOrderModel): List<ReceiptLineItem> {
+        val products = order.getLineItemList().map {
+            // todo cardreader do we need to manually add tax
+            val total = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+            ReceiptLineItem(title = it.name.orEmpty(), quantity = it.quantity ?: 1f, itemsTotalAmount = total)
+        }
+        // todo cardreader it seems that fee and shipping lines do not appear on the receipt
+        val fees = order.getFeeLineList()
+            .filterNot { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO != BigDecimal.ZERO }
+            .map {
+                val total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+                ReceiptLineItem(title = it.name.orEmpty(), quantity = 1f, itemsTotalAmount = total)
+            }
+        val shipping = order.getShippingLineList()
+            .filterNot { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO != BigDecimal.ZERO }
+            .map {
+            val total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            ReceiptLineItem(title = it.methodTitle.orEmpty(), quantity = 1f, itemsTotalAmount = total)
+        }
+        return products + fees + shipping
+    }
+
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
 
-    private fun loadOrderFromDB() = orderStore.getOrderByIdentifier(arguments.orderIdentifier)
+    private suspend fun loadOrderFromDB() =
+        withContext(dispatchers.io) { orderStore.getOrderByIdentifier(arguments.orderIdentifier) }
+
+    sealed class CardReaderPaymentEvent : Event() {
+        data class PrintReceipt(val htmlReceipt: String) : CardReaderPaymentEvent()
+        data class SendReceipt(val htmlReceipt: String) : CardReaderPaymentEvent()
+    }
 
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
@@ -210,12 +305,16 @@ class CardReaderPaymentViewModel @Inject constructor(
                 illustration = R.drawable.ic_card_reader
             )
 
-        data class PaymentSuccessfulState(override val amountWithCurrencyLabel: String) :
+        data class PaymentSuccessfulState(
+            override val amountWithCurrencyLabel: String,
+            override val onPrimaryActionClicked: (() -> Unit),
+            override val onSecondaryActionClicked: (() -> Unit)
+        ) :
             ViewState(
                 headerLabel = R.string.card_reader_payment_completed_payment_header,
                 illustration = R.drawable.ic_celebration,
-                secondaryActionLabel = R.string.card_reader_payment_send_receipt,
-                primaryActionLabel = R.string.card_reader_payment_print_receipt
+                primaryActionLabel = R.string.card_reader_payment_print_receipt,
+                secondaryActionLabel = R.string.card_reader_payment_send_receipt
             )
     }
 }

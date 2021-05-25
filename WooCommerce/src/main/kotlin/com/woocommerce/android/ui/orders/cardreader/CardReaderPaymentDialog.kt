@@ -1,13 +1,20 @@
 package com.woocommerce.android.ui.orders.cardreader
 
+import android.content.Context
 import android.os.Bundle
+import android.print.PrintAttributes
+import android.print.PrintManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,6 +41,12 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     }
 
     private fun initObservers(binding: FragmentCardReaderPaymentBinding) {
+        viewModel.event.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is PrintReceipt -> printReceipt(event.htmlReceipt)
+                else -> event.isHandled = false
+            }
+        })
         viewModel.viewStateData.observe(viewLifecycleOwner, { viewState ->
             UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
             UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
@@ -50,5 +63,46 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
                 viewState.onSecondaryActionClicked?.invoke()
             }
         })
+    }
+
+    private fun printReceipt(htmlReceipt: String) {
+        // Create a WebView object specifically for printing
+        val webView = WebView(requireContext())
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = false
+
+            override fun onPageFinished(view: WebView, url: String) {
+                createWebPrintJob(view)
+//                mWebView = null
+            }
+        }
+
+        webView.loadDataWithBaseURL(null, htmlReceipt, "text/HTML", "UTF-8", null)
+
+        // Keep a reference to WebView object until you pass the PrintDocumentAdapter
+        // to the PrintManager
+//        mWebView = webView
+    }
+
+    private fun createWebPrintJob(webView: WebView) {
+        // Get a PrintManager instance
+        (activity?.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let { printManager ->
+
+            val jobName = "${getString(R.string.app_name)} Document"
+
+            // Get a print adapter instance
+            val printAdapter = webView.createPrintDocumentAdapter(jobName)
+
+            // Create a print job with name and adapter instance
+            printManager.print(
+                jobName,
+                printAdapter,
+                PrintAttributes.Builder().build()
+            ).also { printJob ->
+
+                // Save the job object for later status checking
+//                printJobs += printJob
+            }
+        }
     }
 }
