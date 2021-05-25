@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.AppUrls
@@ -27,9 +26,20 @@ import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
     private val listener: ShippingCustomsFormListener
-) : ListAdapter<CustomsPackage, PackageCustomsViewHolder>(CustomsPackageDiffCallback()) {
+) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
     init {
         setHasStableIds(true)
+    }
+
+    var customsPackages: List<CustomsPackage> = emptyList()
+        set(value) {
+            val diffResult = DiffUtil.calculateDiff(CustomsPackageDiffCallback(field, value))
+            field = value
+            diffResult.dispatchUpdatesTo(this)
+        }
+
+    override fun getItemCount(): Int {
+        return customsPackages.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackageCustomsViewHolder {
@@ -38,7 +48,7 @@ class ShippingCustomsAdapter(
     }
 
     override fun onBindViewHolder(holder: PackageCustomsViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(customsPackages[position])
     }
 
     override fun getItemId(position: Int): Long {
@@ -111,11 +121,21 @@ class ShippingCustomsAdapter(
         }
     }
 
-    private class CustomsPackageDiffCallback : DiffUtil.ItemCallback<CustomsPackage>() {
-        override fun areItemsTheSame(oldItem: CustomsPackage, newItem: CustomsPackage): Boolean =
-            oldItem.id == newItem.id
+    private class CustomsPackageDiffCallback(
+        private val oldList: List<CustomsPackage>,
+        private val newList: List<CustomsPackage>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldList.size
 
-        override fun areContentsTheSame(oldItem: CustomsPackage, newItem: CustomsPackage): Boolean = oldItem == newItem
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].id == newList[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
     }
 }
 
