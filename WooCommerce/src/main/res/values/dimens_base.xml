@@ -116,5 +116,6 @@ so that's the baseline as defined in `major_100`.
     <dimen name="expanded_toolbar_height">108dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="floating_dialog_min_width">280dp</dimen>
+    <dimen name="progress_bar_mid">56dp</dimen>
     <dimen name="progress_bar_large">100dp</dimen>
 </resources>

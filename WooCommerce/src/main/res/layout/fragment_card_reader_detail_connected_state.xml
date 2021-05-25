@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
-        android:background="@color/woo_red_5"
+        android:background="@color/update_needed_background_color"
         android:drawableStart="@drawable/ic_info_outline_24dp"
         android:drawablePadding="@dimen/major_100"
         android:padding="@dimen/major_100"

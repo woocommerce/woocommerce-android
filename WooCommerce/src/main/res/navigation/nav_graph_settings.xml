@@ -56,6 +56,15 @@
         android:id="@+id/cardReaderConnectFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
         android:label="CardReaderConnectFragment" />
+    <dialog
+        android:id="@+id/cardReaderUpdateDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
+        android:label="CardReaderUpdateDialogFragment" >
+        <argument
+            android:name="skipUpdate"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
     <fragment
         android:id="@+id/cardReaderDetailFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailFragment"
@@ -63,6 +72,11 @@
         <action
             android:id="@+id/action_cardReaderDetailFragment_to_cardReaderConnectFragment"
             app:destination="@id/cardReaderConnectFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderDetailFragment_to_cardReaderUpdateDialogFragment"
+            app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>

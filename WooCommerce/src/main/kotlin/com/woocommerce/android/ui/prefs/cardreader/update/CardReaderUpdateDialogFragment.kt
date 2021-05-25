@@ -4,10 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogCardReaderUpdateBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,19 +33,30 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
     }
 
     private fun initObservers(binding: DialogCardReaderUpdateBinding) {
-        viewModel.viewStateData.observe(viewLifecycleOwner, { state ->
+        viewModel.event.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is ExitWithResult<*> -> navigateBackWithResult(
+                    KEY_READER_UPDATE_RESULT,
+                    event.data as UpdateResult
+                )
+                else -> event.isHandled = false
+            }
+        })
 
+        viewModel.viewStateData.observe(viewLifecycleOwner, { state ->
+            with(binding) {
+                UiHelpers.setTextOrHide(updateReaderTitleTv, state.title)
+                UiHelpers.setTextOrHide(updateReaderDescriptionTv, state.description)
+                UiHelpers.updateVisibility(updateReaderProgressGroup, state.showProgress)
+                UiHelpers.setTextOrHide(updateReaderPrimaryActionBtn, state.primaryButton?.text)
+                updateReaderPrimaryActionBtn.setOnClickListener { state.primaryButton?.onActionClicked?.invoke() }
+                UiHelpers.setTextOrHide(updateReaderSecondaryActionBtn, state.secondaryButton?.text)
+                updateReaderSecondaryActionBtn.setOnClickListener { state.secondaryButton?.onActionClicked?.invoke() }
+            }
         })
     }
 
     companion object {
-        internal const val KEY_SKIP_UPDATE = "key_skip_update"
-
-        fun newInstance(skipUpdate: Boolean) =
-            CardReaderUpdateDialogFragment().apply {
-                arguments = Bundle().apply {
-                    putBoolean(KEY_SKIP_UPDATE, skipUpdate)
-                }
-            }
+        const val KEY_READER_UPDATE_RESULT = "key_reader_update_result"
     }
 }

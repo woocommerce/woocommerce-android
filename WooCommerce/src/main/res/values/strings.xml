@@ -662,6 +662,8 @@
     <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
     <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
     <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed. Please try again later</string>
+    <string name="card_reader_detail_connected_update_success">Reader\’s software updated</string>
+    <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed. Please try again later</string>
 
     <!--
         Card Reader Software update
@@ -672,7 +674,7 @@
     <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly. Do you want to update it now?</string>
     <string name="card_reader_software_update_title">Software update</string>
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
-    <string name="card_reader_software_update_success">Reader’s software updated</string>
+    <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
 
     <!--
         Notifications
