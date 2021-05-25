@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderFulfillBinding
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
@@ -22,6 +23,8 @@ import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -29,6 +32,7 @@ import javax.inject.Inject
 class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), OrderProductActionListener {
     companion object {
         val TAG: String = OrderFulfillFragment::class.java.simpleName
+        const val KEY_ORDER_FULFILL_RESULT = "key_order_fulfill_result"
     }
 
     private val viewModel: OrderFulfillViewModel by viewModels()
@@ -99,6 +103,14 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
         viewModel.shipmentTrackings.observe(viewLifecycleOwner, Observer {
             showShipmentTrackings(it)
         })
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_ORDER_FULFILL_RESULT, event.data)
+                else -> event.isHandled = false
+            }
+        })
     }
 
     private fun showOrderDetail(order: Order) {
@@ -106,6 +118,9 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly()
         )
+        binding.buttonMarkOrderCompete.setOnClickListener {
+            viewModel.onMarkOrderCompleteButtonClicked()
+        }
     }
 
     private fun showOrderProducts(products: List<Order.Item>, currency: String) {
