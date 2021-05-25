@@ -18,8 +18,8 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
         private const val ARG_DRAWABLE_ID = "drawable_id"
         private const val ARG_STRING_ID = "string_id"
 
-        private const val RATIO_PORTRAIT = 0.65f
-        private const val RATIO_LANDSCAPE = 0.3f
+        private const val RATIO_PORTRAIT = 0.6f
+        private const val RATIO_LANDSCAPE = 0.2f
 
         fun newInstance(
             @DrawableRes drawableId: Int,
