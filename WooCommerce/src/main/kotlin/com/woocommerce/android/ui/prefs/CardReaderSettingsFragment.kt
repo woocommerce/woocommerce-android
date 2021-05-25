@@ -21,11 +21,12 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
-import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTING
-import com.woocommerce.android.cardreader.CardReaderStatus.NOT_CONNECTED
+import com.woocommerce.android.cardreader.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.CardReaderStatus.Connecting
+import com.woocommerce.android.cardreader.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateSafely
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
@@ -106,15 +107,15 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
     }
 
     private fun startObserving(binding: FragmentSettingsCardReaderBinding) {
-        (requireActivity().application as? WooCommerce)?.let { application ->
+        (requireActivity().application as? WooCommerce)?.let {
             // TODO cardreader Move this into a VM
             lifecycleScope.launchWhenResumed {
                 cardReaderManager.readerStatus.collect { status ->
-                    binding.connectionStatus.text = status.name
+                    binding.connectionStatus.text = status::class.simpleName!!.toUpperCase()
                     when (status) {
-                        CONNECTING, NOT_CONNECTED -> binding.updateReaderSoftware.isEnabled = false
-                        CONNECTED -> binding.updateReaderSoftware.isEnabled = true
-                    }
+                        Connecting, NotConnected -> binding.updateReaderSoftware.isEnabled = false
+                        is Connected -> binding.updateReaderSoftware.isEnabled = true
+                    }.exhaustive
                 }
             }
         }

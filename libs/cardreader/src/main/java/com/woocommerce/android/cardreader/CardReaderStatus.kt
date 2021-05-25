@@ -1,7 +1,7 @@
 package com.woocommerce.android.cardreader
 
-enum class CardReaderStatus {
-    NOT_CONNECTED,
-    CONNECTED,
-    CONNECTING
+sealed class CardReaderStatus {
+    object NotConnected : CardReaderStatus()
+    data class Connected(val cardReader: CardReader) : CardReaderStatus()
+    object Connecting : CardReaderStatus()
 }
