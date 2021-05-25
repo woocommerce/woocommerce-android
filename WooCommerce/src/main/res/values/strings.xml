@@ -153,8 +153,13 @@
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login_wpcom">Continue with WordPress.com</string>
     <string name="login_store_address">Enter your store address</string>
-    <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
+
+    <string name="login_prologue_label_analytics">Track sales and high perfoming products</string>
+    <string name="login_prologue_label_orders">Manage your store orders on the go</string>
+    <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
+    <string name="login_prologue_label_reviews">Monitor and approve your product reviews</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
@@ -607,6 +612,10 @@
     <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
+    <string name="card_reader_payment_collect_payment_loading_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Connecting to reader</string>
+
     <string name="card_reader_collect_payment">Collect payment</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
@@ -617,6 +626,9 @@
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
+    <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
+    <string name="card_reader_payment_failed_card_declined_state">Card declined. Please retry with a different card.</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
@@ -640,6 +652,20 @@
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Open settings</string>
+
+    <!--
+        Card Reader Detail
+    -->
+    <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Connect card reader</string>
+
+    <string name="card_reader_detail_connected_header">CONNECTED READER</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% battery</string>
+    <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
 
     <!--
         Notifications
