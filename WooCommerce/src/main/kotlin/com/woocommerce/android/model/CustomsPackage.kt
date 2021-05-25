@@ -12,7 +12,9 @@ data class CustomsPackage(
     val box: ShippingPackage,
     val returnToSender: Boolean,
     val contentsType: ContentsType,
+    val contentsDescription: String? = null,
     val restrictionType: RestrictionType,
+    val restrictionDescription: String? = null,
     val itn: String,
     val lines: List<CustomsLine>
 ) : Parcelable

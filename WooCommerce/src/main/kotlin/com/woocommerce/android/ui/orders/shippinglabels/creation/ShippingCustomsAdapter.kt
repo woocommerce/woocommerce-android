@@ -3,11 +3,15 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingCustomsLineListItemBinding
@@ -103,11 +107,17 @@ class ShippingCustomsAdapter(
                 onSelected = { listener.onContentsTypeChanged(adapterPosition, it) },
                 mapper = { context.getString(it.title) }
             )
+            binding.contentsTypeDescription.setOnTextChangedListener {
+                it?.let { listener.onContentsDescriptionChanged(adapterPosition, it.toString()) }
+            }
             binding.restrictionTypeSpinner.setup(
                 values = RestrictionType.values(),
                 onSelected = { listener.onRestrictionTypeChanged(adapterPosition, it) },
                 mapper = { context.getString(it.title) }
             )
+            binding.restrictionTypeDescription.setOnTextChangedListener {
+                it?.let { listener.onRestrictionDescriptionChanged(adapterPosition, it.toString()) }
+            }
             binding.itnEditText.setOnTextChangedListener {
                 it?.let { listener.onItnChanged(adapterPosition, it.toString()) }
             }
@@ -121,8 +131,21 @@ class ShippingCustomsAdapter(
             )
             binding.packageName.text = "- ${customsPackage.box.title}"
             binding.returnCheckbox.isChecked = customsPackage.returnToSender
+
+            // Animate any potential change to visibility of the description fields
+            val transition = AutoTransition().apply {
+                binding.root.children.forEach { addTarget(it) }
+            }
+            TransitionManager.beginDelayedTransition(binding.root, transition)
+
             binding.contentsTypeSpinner.setText(customsPackage.contentsType.title)
+            binding.contentsTypeDescription.setTextIfDifferent(customsPackage.contentsDescription.orEmpty())
+            binding.contentsTypeDescription.isVisible = customsPackage.contentsType == ContentsType.Other
+
             binding.restrictionTypeSpinner.setText(customsPackage.restrictionType.title)
+            binding.restrictionTypeDescription.setTextIfDifferent(customsPackage.restrictionDescription.orEmpty())
+            binding.restrictionTypeDescription.isVisible = customsPackage.restrictionType == RestrictionType.Other
+
             binding.itnEditText.setTextIfDifferent(customsPackage.itn)
             binding.itnEditText.error = if (!customsPackage.isItnValid) {
                 context.getString(R.string.shipping_label_customs_itn_invalid_format)
@@ -268,7 +291,9 @@ class ShippingCustomsLineAdapter(
 interface ShippingCustomsFormListener {
     fun onReturnToSenderChanged(position: Int, returnToSender: Boolean)
     fun onContentsTypeChanged(position: Int, contentsType: ContentsType)
+    fun onContentsDescriptionChanged(position: Int, contentsDescription: String)
     fun onRestrictionTypeChanged(position: Int, restrictionType: RestrictionType)
+    fun onRestrictionDescriptionChanged(position: Int, restrictionDescription: String)
     fun onItnChanged(position: Int, itn: String)
     fun onItemDescriptionChanged(packagePosition: Int, linePosition: Int, description: String)
     fun onHsTariffNumberChanged(packagePosition: Int, linePosition: Int, hsTariffNumber: String)

@@ -97,8 +97,19 @@ class ShippingCustomsViewModel @Inject constructor(
         updatePackage(position, viewState.customsPackages[position].copy(contentsType = contentsType))
     }
 
+    override fun onContentsDescriptionChanged(position: Int, contentsDescription: String) {
+        updatePackage(position, viewState.customsPackages[position].copy(contentsDescription = contentsDescription))
+    }
+
     override fun onRestrictionTypeChanged(position: Int, restrictionType: RestrictionType) {
         updatePackage(position, viewState.customsPackages[position].copy(restrictionType = restrictionType))
+    }
+
+    override fun onRestrictionDescriptionChanged(position: Int, restrictionDescription: String) {
+        updatePackage(
+            position,
+            viewState.customsPackages[position].copy(restrictionDescription = restrictionDescription)
+        )
     }
 
     override fun onItnChanged(position: Int, itn: String) {
