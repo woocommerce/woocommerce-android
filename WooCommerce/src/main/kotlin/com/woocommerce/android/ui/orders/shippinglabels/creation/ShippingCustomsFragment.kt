@@ -27,7 +27,7 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
     private val viewModel: ShippingCustomsViewModel by viewModels()
 
     private val customsAdapter: ShippingCustomsAdapter by lazy {
-        ShippingCustomsAdapter(viewModel)
+        ShippingCustomsAdapter(viewModel.weightUnit, viewModel.currencyUnit, viewModel)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

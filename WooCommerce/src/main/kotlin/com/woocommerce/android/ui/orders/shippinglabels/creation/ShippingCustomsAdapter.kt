@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.ShippingCustomsLineListItemBinding
 import com.woocommerce.android.databinding.ShippingCustomsListItemBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.CustomsLine
@@ -25,6 +26,8 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
+    private val weightUnit: String,
+    private val currencyUnit: String,
     private val listener: ShippingCustomsFormListener
 ) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
     init {
@@ -56,7 +59,9 @@ class ShippingCustomsAdapter(
     }
 
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
-        private val linesAdapter: ShippingCustomsLineAdapter by lazy { ShippingCustomsLineAdapter(listener) }
+        private val linesAdapter: ShippingCustomsLineAdapter by lazy {
+            ShippingCustomsLineAdapter(weightUnit, currencyUnit, listener)
+        }
         private val context
             get() = binding.root.context
 
@@ -140,6 +145,8 @@ class ShippingCustomsAdapter(
 }
 
 class ShippingCustomsLineAdapter(
+    private val weightUnit: String,
+    private val currencyUnit: String,
     private val listener: ShippingCustomsFormListener
 ) : RecyclerView.Adapter<CustomsLineViewHolder>() {
     init {
@@ -184,6 +191,9 @@ class ShippingCustomsLineAdapter(
                     binding.detailsLayout.collapse()
                 }
             }
+            binding.weightEditText.hint = context.getString(R.string.shipping_label_customs_weight_hint, weightUnit)
+            binding.valueEditText.hint = context.getString(R.string.shipping_label_customs_value_hint, currencyUnit)
+
             val learnMoreText = context.getString(R.string.learn_more)
             binding.hsTariffNumberInfos.setClickableText(
                 content = context.getString(R.string.shipping_label_customs_learn_more_hs_tariff_number, learnMoreText),
@@ -202,6 +212,12 @@ class ShippingCustomsLineAdapter(
             binding.hsTariffNumberEditText.setOnTextChangedListener {
                 it?.let { listener.onHsTariffNumberChanged(parentItemPosition, adapterPosition, it.toString()) }
             }
+            binding.weightEditText.setOnTextChangedListener {
+                it?.let { listener.onWeightChanged(parentItemPosition, adapterPosition, it.toString()) }
+            }
+            binding.valueEditText.setOnTextChangedListener {
+                it?.let { listener.onItemValueChanged(parentItemPosition, adapterPosition, it.toString()) }
+            }
         }
 
         fun bind(customsLine: CustomsLine) {
@@ -212,8 +228,8 @@ class ShippingCustomsLineAdapter(
                 context.getString(R.string.shipping_label_customs_itn_invalid_format)
             } else null
 
-            binding.weightEditText.setText(customsLine.weight.toString())
-            binding.valueEditText.setText(customsLine.value.toPlainString())
+            binding.weightEditText.setTextIfDifferent(customsLine.weight.formatToString())
+            binding.valueEditText.setTextIfDifferent(customsLine.value.toPlainString())
             binding.countrySpinner.setText(customsLine.originCountry)
         }
     }
@@ -243,4 +259,6 @@ interface ShippingCustomsFormListener {
     fun onItnChanged(position: Int, itn: String)
     fun onItemDescriptionChanged(packagePosition: Int, linePosition: Int, description: String)
     fun onHsTariffNumberChanged(packagePosition: Int, linePosition: Int, hsTariffNumber: String)
+    fun onWeightChanged(packagePosition: Int, linePosition: Int, weight: String)
+    fun onItemValueChanged(packagePosition: Int, linePosition: Int, itemValue: String)
 }

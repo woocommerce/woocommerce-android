@@ -98,6 +98,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
+            android:inputType="numberDecimal"
             tools:hint="Weight (oz per unit)" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -105,6 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
+            android:inputType="numberDecimal"
             tools:hint="Value ($ per unit)" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView

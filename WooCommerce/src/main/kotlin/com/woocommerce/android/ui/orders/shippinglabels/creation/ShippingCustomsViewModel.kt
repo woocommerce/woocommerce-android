@@ -9,6 +9,7 @@ import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,10 +24,22 @@ private val HS_TARIFF_NUMBER_REGEX = Regex("""^\d{6}$""")
 @HiltViewModel
 class ShippingCustomsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    shippingLabelRepository: ShippingLabelRepository
+    shippingLabelRepository: ShippingLabelRepository,
+    parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedStateHandle), ShippingCustomsFormListener {
+    companion object {
+        private const val KEY_PARAMETERS = "key_parameters"
+    }
+
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    private val parameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
+    val weightUnit: String
+        get() = parameters.weightUnit.orEmpty()
+
+    val currencyUnit: String
+        get() = parameters.currencySymbol.orEmpty()
 
     init {
         // TODO fake data
@@ -93,6 +106,22 @@ class ShippingCustomsViewModel @Inject constructor(
     override fun onHsTariffNumberChanged(packagePosition: Int, linePosition: Int, hsTariffNumber: String) {
         val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(hsTariffNumber = hsTariffNumber)
         updateLine(packagePosition, linePosition, newLine)
+    }
+
+    override fun onWeightChanged(packagePosition: Int, linePosition: Int, weight: String) {
+        val weightValue = weight.trim('.').ifEmpty { null }?.toFloat() ?: 0f
+        if (viewState.customsPackages[packagePosition].lines[linePosition].weight != weightValue) {
+            val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(weight = weightValue)
+            updateLine(packagePosition, linePosition, newLine)
+        }
+    }
+
+    override fun onItemValueChanged(packagePosition: Int, linePosition: Int, itemValue: String) {
+        val value = itemValue.trim('.').ifEmpty { null }?.toBigDecimal() ?: BigDecimal.ZERO
+        if (viewState.customsPackages[packagePosition].lines[linePosition].value != value) {
+            val newLine = viewState.customsPackages[packagePosition].lines[linePosition].copy(value = value)
+            updateLine(packagePosition, linePosition, newLine)
+        }
     }
 
     private fun updatePackage(position: Int, item: CustomsPackage) {
