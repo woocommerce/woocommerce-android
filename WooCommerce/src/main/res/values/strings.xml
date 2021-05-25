@@ -327,6 +327,7 @@
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
+    <string name="order_fulfill_completed">&#127881; Order completed!</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
@@ -356,6 +357,7 @@
         Fulfill order
     -->
     <string name="order_fulfill_title">Review order</string>
+    <string name="order_fulfill_email_info">The customer will receive an email once order is completed</string>
 
     <!--
         Print shipping labels

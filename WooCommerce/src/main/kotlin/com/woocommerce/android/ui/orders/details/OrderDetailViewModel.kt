@@ -399,6 +399,9 @@ class OrderDetailViewModel @Inject constructor(
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
                     order = order.copy(status = Status.fromValue(newStatus))
+                    if (newStatus == CoreOrderStatus.COMPLETED.value) {
+                        triggerEvent(ShowSnackbar(string.order_fulfill_completed))
+                    }
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
