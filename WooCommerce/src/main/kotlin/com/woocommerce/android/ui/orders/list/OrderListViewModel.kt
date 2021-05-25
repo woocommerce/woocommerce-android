@@ -20,8 +20,6 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
-import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
@@ -434,19 +432,6 @@ class OrderListViewModel @AssistedInject constructor(
             }
             allPagedListWrapper?.invalidateData()
             processingPagedListWrapper?.invalidateData()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationReceivedEvent) {
-        // a new order notification came in so refresh the active order list
-        if (event.channel == NEW_ORDER) {
-            if (isSearching) {
-                activePagedListWrapper?.fetchFirstPage()
-            }
-            allPagedListWrapper?.fetchFirstPage()
-            processingPagedListWrapper?.fetchFirstPage()
         }
     }
 

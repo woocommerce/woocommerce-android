@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -23,7 +24,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
@@ -37,10 +37,14 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Kind.STORE_ORDER
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchSingleOrderPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
@@ -277,10 +281,9 @@ class NotificationHandler @Inject constructor(
             dispatcher.dispatch(NotificationActionBuilder
                     .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
 
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(FetchSingleOrderPayload(
-                site = siteStore.getSiteBySiteId(it.remoteSiteId),
-                remoteOrderId = it.getRemoteOrderId()!!
-            )))
+            if (it.type == STORE_ORDER) {
+                dispatchNewOrderEvents(it)
+            }
         }
 
         // don't display the notification if user chose to disable this type of notification - note
@@ -336,6 +339,30 @@ class NotificationHandler @Inject constructor(
         }
 
         EventBus.getDefault().post(NotificationReceivedEvent(noteType))
+    }
+
+    @VisibleForTesting
+    fun dispatchNewOrderEvents(model: NotificationModel) {
+        dispatcher.dispatch(
+            WCOrderActionBuilder.newFetchOrderListAction(
+                FetchOrderListPayload(
+                    offset = 0,
+                    listDescriptor = WCOrderListDescriptor(site = siteStore.getSiteBySiteId(model.remoteSiteId))
+                )
+            )
+        )
+
+        dispatcher.dispatch(
+            WCOrderActionBuilder.newFetchOrderListAction(
+                FetchOrderListPayload(
+                    offset = 0,
+                    listDescriptor = WCOrderListDescriptor(
+                        site = siteStore.getSiteBySiteId(model.remoteSiteId),
+                        statusFilter = PROCESSING.value
+                    )
+                )
+            )
+        )
     }
 
     /**
