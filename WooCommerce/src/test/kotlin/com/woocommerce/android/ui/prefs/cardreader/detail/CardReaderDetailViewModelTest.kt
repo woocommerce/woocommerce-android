@@ -48,7 +48,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state and update up to date should emit connected view state`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             initConnectedState()
 
@@ -60,25 +60,26 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when view model init with connected state should emit correct values of connected state`() = runBlockingTest {
-        // GIVEN
-        initConnectedState()
+    fun `when view model init with connected state should emit correct values of connected state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
 
-        // WHEN
-        val viewModel = createViewModel()
+            // WHEN
+            val viewModel = createViewModel()
 
-        // THEN
-        verifyConnectedState(
-            viewModel,
-            UiStringText(READER_NAME),
-            UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2"))),
-            updateAvailable = false
-        )
-    }
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2"))),
+                updateAvailable = false
+            )
+        }
 
     @Test
     fun `when view model init with connected state and empty name should emit connected view state with fallbacks`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             initConnectedState(readersName = null, batteryLevel = null)
 
@@ -136,7 +137,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state should invoke software update availability`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -150,7 +151,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state and update available should emit connected state with update`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
 
@@ -168,7 +169,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state and check failed should emit connected state without update`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
 
@@ -278,7 +279,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         readersName: String? = READER_NAME,
         batteryLevel: Float? = 1.6F,
         updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.UpToDate
-    ) = runBlockingTest {
+    ) = coroutinesTestRule.testDispatcher.runBlockingTest {
         val reader: CardReader = mock {
             on { id }.thenReturn(readersName)
             on { currentBatteryLevel }.thenReturn(batteryLevel)
