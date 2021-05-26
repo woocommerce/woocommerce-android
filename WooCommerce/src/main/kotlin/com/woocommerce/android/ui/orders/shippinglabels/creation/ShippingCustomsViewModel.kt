@@ -285,7 +285,7 @@ class ShippingCustomsViewModel @Inject constructor(
 
     private fun CustomsLine.validateHsTariff(): String? {
         return if (hsTariffNumber.isEmpty() || HS_TARIFF_NUMBER_REGEX.matches(hsTariffNumber)) null
-        else resourceProvider.getString(R.string.shipping_label_customs_itn_invalid_format)
+        else resourceProvider.getString(R.string.shipping_label_customs_hs_tariff_invalid_format)
     }
 
     @Parcelize
