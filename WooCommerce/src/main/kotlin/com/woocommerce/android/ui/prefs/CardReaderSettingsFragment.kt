@@ -94,9 +94,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         binding.updateReaderSoftware.setOnClickListener {
             launch(Dispatchers.Default) {
                 try {
-                    cardReaderManager.let {
-                        updateReaderSoftware(it, binding.softwareUpdateStatus)
-                    }
+                    updateReaderSoftware(cardReaderManager, binding.softwareUpdateStatus)
                 } catch (e: CancellationException) {
                 }
             }

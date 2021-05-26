@@ -667,6 +667,7 @@
     <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
     <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
     <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
+    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed. Please try again later</string>
 
     <!--
         Notifications
