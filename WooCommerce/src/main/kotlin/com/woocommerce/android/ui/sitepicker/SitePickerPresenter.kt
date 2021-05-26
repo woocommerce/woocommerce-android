@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.sitepicker
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T

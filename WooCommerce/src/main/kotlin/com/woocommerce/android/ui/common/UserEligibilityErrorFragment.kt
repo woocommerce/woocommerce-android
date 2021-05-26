@@ -59,7 +59,9 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
-            startActivity(HelpActivity.createIntent(requireActivity(), Origin.USER_ELIGIBILITY_ERROR, null))
+            startActivity(HelpActivity.createIntent(
+                requireActivity(), Origin.USER_ELIGIBILITY_ERROR, listOf(binding.textUserRoles.text.toString())
+            ))
             return true
         }
 
