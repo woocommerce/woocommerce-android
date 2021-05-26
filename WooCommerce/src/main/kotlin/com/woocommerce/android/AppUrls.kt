@@ -26,4 +26,8 @@ object AppUrls {
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
+
+    const val SHIPPING_LABEL_CUSTOMS_ITN = "https://pe.usps.com/text/imm/immc5_010.htm"
+    const val SHIPPING_LABEL_CUSTOMS_HS_TARIFF_NUMBER =
+        "https://docs.woocommerce.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-29"
 }
