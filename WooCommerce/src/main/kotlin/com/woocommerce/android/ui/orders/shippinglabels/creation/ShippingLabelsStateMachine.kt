@@ -27,8 +27,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -133,11 +131,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.DataLoading> {
             on<Event.DataLoaded> { event ->
+                val isInternational = event.shippingAddress.country != event.originAddress.country
                 val steps = StepsState(
                     originAddressStep = OriginAddressStep(READY, event.originAddress),
                     shippingAddressStep = ShippingAddressStep(NOT_READY, event.shippingAddress),
                     packagingStep = PackagingStep(NOT_READY, emptyList()),
-                    customsStep = CustomsStep(NOT_READY),
+                    customsStep = CustomsStep(NOT_READY, isVisible = isInternational, data = emptyList()),
                     carrierStep = CarrierStep(NOT_READY, emptyList()),
                     paymentsStep = PaymentsStep(NOT_READY, event.currentPaymentMethod)
                 )
@@ -354,7 +353,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         state<State.CustomsDeclaration> {
             on<Event.CustomsFormFilledOut> {
                 val newData = data.copy(
-                    stepsState = data.stepsState.updateStep(data.stepsState.customsStep, Unit)
+                    stepsState = data.stepsState.updateStep(data.stepsState.customsStep, emptyList())
                 )
                 transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.customsStep))
             }
@@ -476,9 +475,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
         @Parcelize
         data class CustomsStep(
             override val status: StepStatus,
-            override val isVisible: Boolean = FeatureFlag.SHIPPING_LABELS_M4.isEnabled() && !PackageUtils.isTesting(),
-            override val data: Unit = Unit
-        ) : Step<Unit>()
+            override val isVisible: Boolean,
+            override val data: List<CustomsPackage>
+        ) : Step<List<CustomsPackage>>()
 
         @Parcelize
         data class CarrierStep(
@@ -515,14 +514,20 @@ class ShippingLabelsStateMachine @Inject constructor() {
             return when (currentStep) {
                 is OriginAddressStep -> copy(
                     originAddressStep = originAddressStep.copy(status = DONE, data = newData as Address),
-                    shippingAddressStep = shippingAddressStep.copy(status = READY)
+                    shippingAddressStep = shippingAddressStep.copy(status = READY),
+                    customsStep = customsStep.copy(
+                        isVisible = (newData as Address).country != shippingAddressStep.data.country
+                    )
                 )
                 is ShippingAddressStep -> copy(
                     shippingAddressStep = shippingAddressStep.copy(
                         status = DONE,
                         data = newData as Address
                     ),
-                    packagingStep = packagingStep.copy(status = READY)
+                    packagingStep = packagingStep.copy(status = READY),
+                    customsStep = customsStep.copy(
+                        isVisible = (newData as Address).country != originAddressStep.data.country
+                    )
                 )
                 is PackagingStep -> {
                     val newPackagingStep = packagingStep.copy(
@@ -563,17 +568,23 @@ class ShippingLabelsStateMachine @Inject constructor() {
             return when (currentStep) {
                 is OriginAddressStep -> copy(
                     originAddressStep = originAddressStep.copy(data = newData as Address),
-                    carrierStep = invalidateCarrierStepIfNeeded()
+                    carrierStep = invalidateCarrierStepIfNeeded(),
+                    customsStep = customsStep.copy(
+                        isVisible = (newData as Address).country != shippingAddressStep.data.country
+                    )
                 )
                 is ShippingAddressStep -> copy(
                     shippingAddressStep = shippingAddressStep.copy(data = newData as Address),
-                    carrierStep = invalidateCarrierStepIfNeeded()
+                    carrierStep = invalidateCarrierStepIfNeeded(),
+                    customsStep = customsStep.copy(
+                        isVisible = (newData as Address).country != originAddressStep.data.country
+                    )
                 )
                 is PackagingStep -> copy(
                     packagingStep = packagingStep.copy(data = newData as List<ShippingLabelPackage>),
                     carrierStep = invalidateCarrierStepIfNeeded()
                 )
-                is CustomsStep -> copy(customsStep = customsStep.copy(data = newData as Unit))
+                is CustomsStep -> copy(customsStep = customsStep.copy(data = newData as List<CustomsPackage>))
                 is CarrierStep -> copy(carrierStep = carrierStep.copy(data = newData as List<ShippingRate>))
                 is PaymentsStep -> copy(paymentsStep = paymentsStep.copy(data = newData as PaymentMethod))
             }
