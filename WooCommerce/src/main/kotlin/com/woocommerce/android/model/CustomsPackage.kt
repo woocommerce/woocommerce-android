@@ -25,8 +25,8 @@ data class CustomsLine(
     val itemDescription: String,
     val hsTariffNumber: String,
     val quantity: Double,
-    val weight: Float,
-    val value: BigDecimal,
+    val weight: Float?,
+    val value: BigDecimal?,
     val originCountry: Location
 ) : Parcelable
 

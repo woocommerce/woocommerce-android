@@ -134,17 +134,19 @@ class ShippingCustomsAdapter(
 
             // Animate any potential change to visibility of the description fields
             val transition = AutoTransition().apply {
-                binding.root.children.forEach { addTarget(it) }
+                binding.root.children.filter { it !is RecyclerView }.forEach { addTarget(it) }
             }
             TransitionManager.beginDelayedTransition(binding.root, transition)
 
             binding.contentsTypeSpinner.setText(customsPackage.contentsType.title)
             binding.contentsTypeDescription.setTextIfDifferent(customsPackage.contentsDescription.orEmpty())
             binding.contentsTypeDescription.isVisible = customsPackage.contentsType == ContentsType.Other
+            binding.contentsTypeDescription.error = validationState.contentsDescriptionErrorMessage
 
             binding.restrictionTypeSpinner.setText(customsPackage.restrictionType.title)
             binding.restrictionTypeDescription.setTextIfDifferent(customsPackage.restrictionDescription.orEmpty())
             binding.restrictionTypeDescription.isVisible = customsPackage.restrictionType == RestrictionType.Other
+            binding.restrictionTypeDescription.error = validationState.restrictionDescriptionErrorMessage
 
             binding.itnEditText.setTextIfDifferent(customsPackage.itn)
             binding.itnEditText.error = validationState.itnErrorMessage
@@ -257,12 +259,19 @@ class ShippingCustomsLineAdapter(
         fun bind(uiState: CustomsLineUiState) {
             val (customsLine, validationState) = uiState
             binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
+
             binding.itemDescriptionEditText.setTextIfDifferent(customsLine.itemDescription)
+            binding.itemDescriptionEditText.error = validationState.itemDescriptionErrorMessage
+
             binding.hsTariffNumberEditText.setTextIfDifferent(customsLine.hsTariffNumber)
             binding.hsTariffNumberEditText.error = validationState.hsTariffErrorMessage
 
-            binding.weightEditText.setTextIfDifferent(customsLine.weight.formatToString())
-            binding.valueEditText.setTextIfDifferent(customsLine.value.toPlainString())
+            binding.weightEditText.setTextIfDifferent(customsLine.weight?.formatToString().orEmpty())
+            binding.weightEditText.error = validationState.weightErrorMessage
+
+            binding.valueEditText.setTextIfDifferent(customsLine.value?.toPlainString().orEmpty())
+            binding.valueEditText.error = validationState.valueErrorMessage
+
             binding.countrySpinner.setText(customsLine.originCountry.name)
         }
     }

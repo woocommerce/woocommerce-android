@@ -529,6 +529,11 @@
     <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s about HS Tariff number</string>
     <string name="shipping_label_customs_value_hint">Value (%1$s per unit)</string>
     <string name="shipping_label_customs_weight_hint">Weight (%1$s per unit)</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Please describe what kind of goods this package contains.</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Please describe what kind of restrictions this package must have.</string>
+    <string name="shipping_label_customs_required_field">This field is required</string>
+    <string name="shipping_label_customs_weight_zero_error">Weight must be greater than zero</string>
+    <string name="shipping_label_customs_value_zero_error">Declared value must be greater than zero</string>
     <!--
             Refunds
         -->

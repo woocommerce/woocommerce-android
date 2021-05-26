@@ -100,10 +100,14 @@ class ShippingCustomsViewModel @Inject constructor(
             customsPackages = fakePackages.map {
                 CustomsPackageUiState(
                     data = it,
-                    validationState = validatePackage(it)
+                    validationState = it.validate()
                 )
             }
         )
+    }
+
+    fun onDoneButtonClicked() {
+        triggerEvent(Exit)
     }
 
     override fun onReturnToSenderChanged(position: Int, returnToSender: Boolean) {
@@ -147,7 +151,7 @@ class ShippingCustomsViewModel @Inject constructor(
     }
 
     override fun onWeightChanged(packagePosition: Int, linePosition: Int, weight: String) {
-        val weightValue = weight.trim('.').ifEmpty { null }?.toFloat() ?: 0f
+        val weightValue = weight.trim('.').ifEmpty { null }?.toFloat()
         val newLine = viewState.customsPackages[packagePosition].data.lines[linePosition].copy(weight = weightValue)
         updateLine(packagePosition, linePosition, newLine)
     }
@@ -175,59 +179,108 @@ class ShippingCustomsViewModel @Inject constructor(
         if (viewState.customsPackages[position].data == item) return
 
         val customsPackages = viewState.customsPackages.toMutableList()
-        customsPackages[position] = CustomsPackageUiState(item, validatePackage(item))
+        customsPackages[position] = CustomsPackageUiState(item, item.validate())
         viewState = viewState.copy(customsPackages = customsPackages)
     }
 
-    private fun validatePackage(item: CustomsPackage): PackageValidationState {
-        return PackageValidationState(
-            itnErrorMessage = validateItn(item),
-            linesValidationState = item.lines.map {
-                LineValidationState(
-                    hsTariffErrorMessage = validateHsTarrif(it.hsTariffNumber)
-                )
-            }
-        )
-    }
-
-    fun onDoneButtonClicked() {
-        triggerEvent(Exit)
-    }
-
-    private fun validateItn(customsPackage: CustomsPackage): String? {
-        val itn = customsPackage.itn
-        return if (itn.isNotEmpty()) {
-            if (ITN_REGEX.matches(itn)) null
-            else resourceProvider.getString(R.string.shipping_label_customs_itn_invalid_format)
-        } else {
-            val classesAbove2500usd = customsPackage.lines
-                .filter { it.hsTariffNumber.isNotEmpty() && validateHsTarrif(it.hsTariffNumber) == null }
-                .groupBy { it.hsTariffNumber }
-                .map { entry -> Pair(entry.key, entry.value.sumByBigDecimal { it.quantity.toBigDecimal() * it.value }) }
-                .filter { (_, value) -> value > BigDecimal.valueOf(2500.0) }
-
-            when {
-                classesAbove2500usd.isNotEmpty() -> {
-                    resourceProvider.getString(
-                        R.string.shipping_label_customs_itn_required_items_over_2500,
-                        classesAbove2500usd[0].first
-                    )
-                }
-                USPS_ITN_REQUIRED_DESTINATIONS.contains(args.destinationCountryCode) -> {
-                    val destinationCountryName = countries.firstOrNull { it.code == args.destinationCountryCode }
-                        ?.name ?: args.destinationCountryCode
-
-                    resourceProvider.getString(
-                        R.string.shipping_label_customs_itn_required_country,
-                        destinationCountryName
-                    )
+    private fun CustomsPackage.validate(): PackageValidationState {
+        fun CustomsPackage.validateContentsType(): String? {
+            return when {
+                contentsType != ContentsType.Other -> null
+                contentsDescription.isNullOrBlank() -> {
+                    resourceProvider.getString(R.string.shipping_label_customs_contents_type_description_missing)
                 }
                 else -> null
             }
         }
+
+        fun CustomsPackage.validateRestrictionType(): String? {
+            return when {
+                restrictionType != RestrictionType.Other -> null
+                restrictionDescription.isNullOrBlank() -> {
+                    resourceProvider.getString(R.string.shipping_label_customs_restriction_type_description_missing)
+                }
+                else -> null
+            }
+        }
+
+        fun CustomsPackage.validateItn(): String? {
+            val itn = itn
+            return if (itn.isNotEmpty()) {
+                if (ITN_REGEX.matches(itn)) null
+                else resourceProvider.getString(R.string.shipping_label_customs_itn_invalid_format)
+            } else {
+                val classesAbove2500usd = lines
+                    .filter { it.hsTariffNumber.isNotEmpty() && it.validateHsTariff() == null }
+                    .groupBy { it.hsTariffNumber }
+                    .map { entry ->
+                        Pair(entry.key, entry.value.sumByBigDecimal {
+                            it.quantity.toBigDecimal() * (it.value ?: BigDecimal.ZERO)
+                        })
+                    }
+                    .filter { (_, value) -> value > BigDecimal.valueOf(2500.0) }
+
+                when {
+                    classesAbove2500usd.isNotEmpty() -> {
+                        resourceProvider.getString(
+                            R.string.shipping_label_customs_itn_required_items_over_2500,
+                            classesAbove2500usd[0].first
+                        )
+                    }
+                    USPS_ITN_REQUIRED_DESTINATIONS.contains(args.destinationCountryCode) -> {
+                        val destinationCountryName = countries.firstOrNull { it.code == args.destinationCountryCode }
+                            ?.name ?: args.destinationCountryCode
+
+                        resourceProvider.getString(
+                            R.string.shipping_label_customs_itn_required_country,
+                            destinationCountryName
+                        )
+                    }
+                    else -> null
+                }
+            }
+        }
+
+        return PackageValidationState(
+            itnErrorMessage = validateItn(),
+            contentsDescriptionErrorMessage = validateContentsType(),
+            restrictionDescriptionErrorMessage = validateRestrictionType(),
+            linesValidationState = lines.map { it.validate() }
+        )
     }
 
-    private fun validateHsTarrif(hsTariffNumber: String): String? {
+    private fun CustomsLine.validate(): LineValidationState {
+        fun CustomsLine.validateItemDescription(): String? {
+            return if (itemDescription.isBlank()) {
+                resourceProvider.getString(R.string.shipping_label_customs_required_field)
+            } else null
+        }
+
+        fun CustomsLine.validateWeight(): String? {
+            return when (weight) {
+                null -> resourceProvider.getString(R.string.shipping_label_customs_required_field)
+                0f -> resourceProvider.getString(R.string.shipping_label_customs_weight_zero_error)
+                else -> null
+            }
+        }
+
+        fun CustomsLine.validateValue(): String? {
+            return when (value) {
+                null -> resourceProvider.getString(R.string.shipping_label_customs_required_field)
+                BigDecimal.ZERO -> resourceProvider.getString(R.string.shipping_label_customs_value_zero_error)
+                else -> null
+            }
+        }
+
+        return LineValidationState(
+            itemDescriptionErrorMessage = validateItemDescription(),
+            hsTariffErrorMessage = validateHsTariff(),
+            weightErrorMessage = validateWeight(),
+            valueErrorMessage = validateValue()
+        )
+    }
+
+    private fun CustomsLine.validateHsTariff(): String? {
         return if (hsTariffNumber.isEmpty() || HS_TARIFF_NUMBER_REGEX.matches(hsTariffNumber)) null
         else resourceProvider.getString(R.string.shipping_label_customs_itn_invalid_format)
     }
@@ -251,12 +304,17 @@ class ShippingCustomsViewModel @Inject constructor(
     @Parcelize
     data class PackageValidationState(
         val itnErrorMessage: String? = null,
+        val contentsDescriptionErrorMessage: String? = null,
+        val restrictionDescriptionErrorMessage: String? = null,
         val linesValidationState: List<LineValidationState> = emptyList()
     ) : Parcelable
 
     @Parcelize
     data class LineValidationState(
-        val hsTariffErrorMessage: String? = null
+        val itemDescriptionErrorMessage: String? = null,
+        val hsTariffErrorMessage: String? = null,
+        val weightErrorMessage: String? = null,
+        val valueErrorMessage: String? = null
     ) : Parcelable
 }
 
