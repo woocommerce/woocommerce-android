@@ -142,12 +142,14 @@ class ShippingCustomsViewModel @Inject constructor(
     }
 
     override fun onItemDescriptionChanged(packagePosition: Int, linePosition: Int, description: String) {
-        val newLine = viewState.customsPackages[packagePosition].data.lines[linePosition].copy(itemDescription = description)
+        val newLine = viewState.customsPackages[packagePosition].data
+            .lines[linePosition].copy(itemDescription = description)
         updateLine(packagePosition, linePosition, newLine)
     }
 
     override fun onHsTariffNumberChanged(packagePosition: Int, linePosition: Int, hsTariffNumber: String) {
-        val newLine = viewState.customsPackages[packagePosition].data.lines[linePosition].copy(hsTariffNumber = hsTariffNumber)
+        val newLine = viewState.customsPackages[packagePosition].data
+            .lines[linePosition].copy(hsTariffNumber = hsTariffNumber)
         updateLine(packagePosition, linePosition, newLine)
     }
 
@@ -334,4 +336,3 @@ class ShippingCustomsViewModel @Inject constructor(
 }
 
 typealias CustomsLineUiState = Pair<CustomsLine, LineValidationState>
-
