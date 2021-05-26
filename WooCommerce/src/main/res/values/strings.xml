@@ -153,8 +153,13 @@
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login_wpcom">Continue with WordPress.com</string>
     <string name="login_store_address">Enter your store address</string>
-    <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
+
+    <string name="login_prologue_label_analytics">Track sales and high perfoming products</string>
+    <string name="login_prologue_label_orders">Manage your store orders on the go</string>
+    <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
+    <string name="login_prologue_label_reviews">Monitor and approve your product reviews</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
@@ -492,8 +497,10 @@
     <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
     <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
-    <string name="shipping_label_rate_included_options_tracking">%s tracking</string>
-    <string name="shipping_label_rate_included_options_insurance">Insurance (up to %s)</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s tracking</string>
+    <string name="shipping_label_rate_included_options_tracking">tracking</string>
+    <string name="shipping_label_rate_insurance_up_to">up to %s</string>
+    <string name="shipping_label_rate_included_options_insurance">Insurance (%s)</string>
     <string name="shipping_label_rate_included_options_free_pickup">Eligible for free pickup</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
     <string name="shipping_label_selected_rates_description">%s rates selected</string>
@@ -649,6 +656,22 @@
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Open settings</string>
+
+    <!--
+        Card Reader Detail
+    -->
+    <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Connect card reader</string>
+
+    <string name="card_reader_detail_connected_header">CONNECTED READER</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% battery</string>
+    <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
+    <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
+    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed. Please try again later</string>
 
     <!--
         Notifications

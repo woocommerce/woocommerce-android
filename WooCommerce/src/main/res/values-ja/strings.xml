@@ -59,7 +59,6 @@ Language: ja_JP
     <string name="shipping_label_rate_included_options_signature_required_free">無料の署名要件を利用可能</string>
     <string name="shipping_label_rate_included_options_free_pickup">無料の受け取りを利用可能</string>
     <string name="shipping_label_rate_included_options_insurance">保険 (最大%s)</string>
-    <string name="shipping_label_rate_included_options_tracking">%s追跡</string>
     <string name="shipping_label_rate_included_options">含む %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">成年の署名が必要 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">署名が必要 (%s)</string>
