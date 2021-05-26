@@ -187,7 +187,7 @@ class ProductListViewModel @AssistedInject constructor(
         _productList.value = products
 
         viewState = viewState.copy(
-            isEmptyViewVisible = products.isEmpty() && viewState.isLoading != true,
+            isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }
