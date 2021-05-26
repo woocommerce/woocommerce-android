@@ -107,7 +107,7 @@ class CardReaderManagerImplTest {
         }
 
     @Test
-    fun `software update status calls software upadte manager`() = runBlockingTest {
+    fun `software update status calls software update manager`() = runBlockingTest {
         cardReaderManager.softwareUpdateAvailability()
 
         verify(softwareUpdateManager).softwareUpdateStatus()
