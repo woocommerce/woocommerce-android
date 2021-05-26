@@ -21,12 +21,11 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.ContentsType
-import com.woocommerce.android.model.CustomsLine
-import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsAdapter.PackageCustomsViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
@@ -40,7 +39,7 @@ class ShippingCustomsAdapter(
         setHasStableIds(true)
     }
 
-    var customsPackages: List<CustomsPackage> = emptyList()
+    var customsPackages: List<CustomsPackageUiState> = emptyList()
         set(value) {
             val diffResult = DiffUtil.calculateDiff(CustomsPackageDiffCallback(field, value))
             field = value
@@ -124,7 +123,8 @@ class ShippingCustomsAdapter(
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(customsPackage: CustomsPackage) {
+        fun bind(uiState: CustomsPackageUiState) {
+            val (customsPackage, validationState) = uiState
             binding.packageId.text = context.getString(
                 R.string.orderdetail_shipping_label_item_header,
                 adapterPosition + 1
@@ -147,25 +147,23 @@ class ShippingCustomsAdapter(
             binding.restrictionTypeDescription.isVisible = customsPackage.restrictionType == RestrictionType.Other
 
             binding.itnEditText.setTextIfDifferent(customsPackage.itn)
-            binding.itnEditText.error = if (!customsPackage.isItnValid) {
-                context.getString(R.string.shipping_label_customs_itn_invalid_format)
-            } else null
+            binding.itnEditText.error = validationState.itnErrorMessage
 
             linesAdapter.parentItemPosition = adapterPosition
-            linesAdapter.customsLines = customsPackage.lines
+            linesAdapter.customsLines = uiState.customsLinesUiState
         }
     }
 
     private class CustomsPackageDiffCallback(
-        private val oldList: List<CustomsPackage>,
-        private val newList: List<CustomsPackage>
+        private val oldList: List<CustomsPackageUiState>,
+        private val newList: List<CustomsPackageUiState>
     ) : DiffUtil.Callback() {
         override fun getOldListSize(): Int = oldList.size
 
         override fun getNewListSize(): Int = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
+            return oldList[oldItemPosition].data.id == newList[newItemPosition].data.id
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -184,7 +182,7 @@ class ShippingCustomsLineAdapter(
         setHasStableIds(true)
     }
 
-    var customsLines: List<CustomsLine> = emptyList()
+    var customsLines: List<CustomsLineUiState> = emptyList()
         set(value) {
             val diffResult = DiffUtil.calculateDiff(CustomsLineDiffCallback(field, value))
             field = value
@@ -256,13 +254,12 @@ class ShippingCustomsLineAdapter(
             )
         }
 
-        fun bind(customsLine: CustomsLine) {
+        fun bind(uiState: CustomsLineUiState) {
+            val (customsLine, validationState) = uiState
             binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
             binding.itemDescriptionEditText.setTextIfDifferent(customsLine.itemDescription)
             binding.hsTariffNumberEditText.setTextIfDifferent(customsLine.hsTariffNumber)
-            binding.hsTariffNumberEditText.error = if (!customsLine.isHsTariffNumberValid) {
-                context.getString(R.string.shipping_label_customs_itn_invalid_format)
-            } else null
+            binding.hsTariffNumberEditText.error = validationState.hsTariffErrorMessage
 
             binding.weightEditText.setTextIfDifferent(customsLine.weight.formatToString())
             binding.valueEditText.setTextIfDifferent(customsLine.value.toPlainString())
@@ -271,15 +268,15 @@ class ShippingCustomsLineAdapter(
     }
 
     private class CustomsLineDiffCallback(
-        private val oldList: List<CustomsLine>,
-        private val newList: List<CustomsLine>
+        private val oldList: List<CustomsLineUiState>,
+        private val newList: List<CustomsLineUiState>
     ) : DiffUtil.Callback() {
         override fun getOldListSize(): Int = oldList.size
 
         override fun getNewListSize(): Int = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].itemId == newList[newItemPosition].itemId
+            return oldList[oldItemPosition].first.itemId == newList[newItemPosition].first.itemId
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

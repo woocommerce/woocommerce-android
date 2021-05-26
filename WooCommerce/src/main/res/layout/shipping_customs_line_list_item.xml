@@ -84,7 +84,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
             android:hint="@string/shipping_label_customs_hs_tariff_hint"
-            android:inputType="number" />
+            android:inputType="number"
+            android:maxLength="6"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/hs_tariff_number_infos"

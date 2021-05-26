@@ -407,5 +407,12 @@
         android:id="@+id/shippingCustomsFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment"
         android:label="ShippingCustomsFragment"
-        tools:layout="@layout/fragment_shipping_customs" />
+        tools:layout="@layout/fragment_shipping_customs">
+        <argument
+            android:name="destinationCountryCode"
+            app:argType="string" />
+        <argument
+            android:name="customsPackages"
+            app:argType="com.woocommerce.android.model.CustomsPackage[]" />
+    </fragment>
 </navigation>
