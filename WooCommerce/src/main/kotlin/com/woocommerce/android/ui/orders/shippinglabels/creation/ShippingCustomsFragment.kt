@@ -25,6 +25,7 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
     }
 
     private val viewModel: ShippingCustomsViewModel by viewModels()
+    private lateinit var doneMenuItem: MenuItem
 
     private val customsAdapter: ShippingCustomsAdapter by lazy {
         ShippingCustomsAdapter(
@@ -39,6 +40,8 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
         super.onCreateOptionsMenu(menu, inflater)
 
         inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSubmitForm ?: false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -68,13 +71,18 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
             }
         }
 
-        setupObservers(binding)
+        setupObservers()
     }
 
-    private fun setupObservers(binding: FragmentShippingCustomsBinding) {
+    private fun setupObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
             new.customsPackages.takeIfNotEqualTo(old?.customsPackages) { customsPackages ->
                 customsAdapter.customsPackages = customsPackages
+            }
+            new.canSubmitForm.takeIfNotEqualTo(old?.canSubmitForm) { canSubmitForm ->
+                if (::doneMenuItem.isInitialized) {
+                    doneMenuItem.isVisible = canSubmitForm
+                }
             }
         })
         viewModel.event.observe(viewLifecycleOwner, { event ->

@@ -21,6 +21,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCDataStore
 import java.math.BigDecimal
@@ -288,7 +289,11 @@ class ShippingCustomsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val customsPackages: List<CustomsPackageUiState> = emptyList()
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val canSubmitForm: Boolean
+            get() = customsPackages.all { it.validationState.isValid }
+    }
 
     @Parcelize
     data class CustomsPackageUiState(
@@ -307,7 +312,12 @@ class ShippingCustomsViewModel @Inject constructor(
         val contentsDescriptionErrorMessage: String? = null,
         val restrictionDescriptionErrorMessage: String? = null,
         val linesValidationState: List<LineValidationState> = emptyList()
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isValid
+            get() = itnErrorMessage == null && contentsDescriptionErrorMessage == null &&
+                restrictionDescriptionErrorMessage == null && linesValidationState.all { it.isValid }
+    }
 
     @Parcelize
     data class LineValidationState(
@@ -315,7 +325,12 @@ class ShippingCustomsViewModel @Inject constructor(
         val hsTariffErrorMessage: String? = null,
         val weightErrorMessage: String? = null,
         val valueErrorMessage: String? = null
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isValid
+            get() = itemDescriptionErrorMessage == null && hsTariffErrorMessage == null &&
+                weightErrorMessage == null && valueErrorMessage == null
+    }
 }
 
 typealias CustomsLineUiState = Pair<CustomsLine, LineValidationState>
