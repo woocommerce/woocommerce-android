@@ -39,21 +39,20 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.7"
+                app:layout_constraintVertical_bias="0.6"
                 tools:text="\@droidtester2018" />
 
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/major_200"
                 android:importantForAccessibility="no"
                 android:src="@drawable/img_user_access_error"
-                app:layout_constraintBottom_toTopOf="@+id/text_error_message"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.45"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_error_message"
@@ -62,14 +61,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_150"
                 android:layout_marginEnd="@dimen/major_150"
+                android:layout_marginTop="@dimen/major_300"
+                app:layout_goneMarginTop="@dimen/minor_00"
                 android:text="@string/user_role_access_error_msg"
                 android:textAlignment="center"
                 android:textColor="@color/color_on_surface_medium"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.8" />
+                app:layout_constraintTop_toBottomOf="@+id/imageView2"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_secondary_action"

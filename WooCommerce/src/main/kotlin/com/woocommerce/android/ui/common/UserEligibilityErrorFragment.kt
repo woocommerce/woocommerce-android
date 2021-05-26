@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -30,6 +31,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -60,7 +62,7 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
             startActivity(HelpActivity.createIntent(
-                requireActivity(), Origin.USER_ELIGIBILITY_ERROR, listOf(binding.textUserRoles.text.toString())
+                requireActivity(), Origin.USER_ELIGIBILITY_ERROR, arrayListOf(binding.textUserRoles.text.toString())
             ))
             return true
         }
@@ -69,6 +71,13 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
     }
 
     private fun setupView() {
+        // hide images in landscape unless this device is a tablet
+        val isLandscape = DisplayUtils.isLandscape(context)
+        val hideImages = isLandscape &&
+            !DisplayUtils.isTablet(context) &&
+            !DisplayUtils.isXLargeTablet(context)
+        binding.imageView2.isVisible = !hideImages
+
         val btnBinding = binding.epilogueButtonBar
         with(btnBinding.buttonPrimary) {
             visibility = View.VISIBLE
