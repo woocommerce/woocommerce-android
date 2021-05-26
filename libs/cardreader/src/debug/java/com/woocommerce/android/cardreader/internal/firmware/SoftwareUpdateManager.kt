@@ -29,7 +29,7 @@ internal class SoftwareUpdateManager(
     suspend fun softwareUpdateStatus() = flow {
         emit(Initializing)
 
-        when (val status = checkUpdatesAction.checkUpdates()) {
+        when (checkUpdatesAction.checkUpdates()) {
             CheckSoftwareUpdates.UpToDate -> emit(SoftwareUpdateAvailability.UpToDate)
             is CheckSoftwareUpdates.Failed -> emit(SoftwareUpdateAvailability.CheckForUpdatesFailed)
             is CheckSoftwareUpdates.UpdateAvailable -> emit(SoftwareUpdateAvailability.UpdateAvailable)
