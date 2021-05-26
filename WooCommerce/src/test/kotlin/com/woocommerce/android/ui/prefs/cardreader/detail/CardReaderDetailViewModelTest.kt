@@ -189,7 +189,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state and update available should send card reader update screen event`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
 
