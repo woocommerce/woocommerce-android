@@ -12,9 +12,11 @@ import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,10 +27,10 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
-
     private val cardReaderManager: CardReaderManager = mock {
         onBlocking { softwareUpdateAvailability() }
             .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.Initializing))
+        onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
     @Test
@@ -183,6 +185,56 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             assertThat(viewModel.event.value)
                 .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
         }
+
+    @Test
+    fun `when view model init with connected state and update available should send card reader update screen event`() =
+        runBlockingTest {
+            // GIVEN
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(skipUpdate = true))
+        }
+
+    @Test
+    fun `when on update result with success should send snackbar event with success text`() {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUpdateResult(UpdateResult.SUCCESS)
+
+        // THEN
+        assertThat(viewModel.event.value)
+            .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+    }
+
+    @Test
+    fun `when on update result with failed should send snackbar event with failed text`() {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUpdateResult(UpdateResult.FAILED)
+
+        // THEN
+        assertThat(viewModel.event.value)
+            .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
+    }
+
+    @Test
+    fun `when on update result with skipped should do nothing`() {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUpdateResult(UpdateResult.SKIPPED)
+
+        // THEN
+        assertThat(viewModel.event.value).isNull()
+    }
 
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {
         val state = viewModel.viewStateData.value as NotConnectedState
