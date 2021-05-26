@@ -210,34 +210,35 @@ class ProductDetailViewModel @AssistedInject constructor(
     val isProductPublished: Boolean
         get() = viewState.productDraft?.status == ProductStatus.PUBLISH
 
-    private val isProductUnderCreation
-        get() = (viewState.productDraft?.status == DRAFT) or isProductStoredAtSite.not()
-
-    private val isProductStoredAtSite
-        get() = viewState.productDraft?.remoteId != DEFAULT_ADD_NEW_PRODUCT_ID
-
     /**
-     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
-     * */
-    private val isAddFlowEntryPoint: Boolean
-        get() = navArgs.isAddProduct
-
-    val isAddingUnstoredProduct
-        get() = isAddFlowEntryPoint and isProductStoredAtSite.not()
-
-    /**
-     * Validates if the view model was started for the **add** flow AND there is an already valid product id
-     * value to check.
-     *
-     * [isAddFlowEntryPoint] can be TRUE/FALSE
+     * Validates if the product exists at the Store or if it's currently defined only inside the app
      *
      * [viewState.productDraft.remoteId]
      * .can be [NULL] - no product draft available yet
      * .can be [DEFAULT_ADD_NEW_PRODUCT_ID] - navArgs.remoteProductId is set to default
      * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
-     * */
+     */
+    private val isProductStoredAtSite
+        get() = viewState.productDraft?.remoteId != DEFAULT_ADD_NEW_PRODUCT_ID
+
+    /**
+     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
+     */
+    private val isAddFlowEntryPoint: Boolean
+        get() = navArgs.isAddProduct
+
+    /**
+     * Validates if the view model was started for the **add** flow AND the product still isn't posted at the site.
+     */
+    val isAddingUnstoredProduct
+        get() = isAddFlowEntryPoint and isProductStoredAtSite.not()
+
+    /**
+     * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
+     */
     val isAddFlow: Boolean
-        get() = isAddFlowEntryPoint and isProductUnderCreation
+        get() = isAddFlowEntryPoint and
+            ((viewState.productDraft?.status == DRAFT) or isProductStoredAtSite.not())
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
