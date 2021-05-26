@@ -25,7 +25,6 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
-
     private val cardReaderManager: CardReaderManager = mock {
         onBlocking { softwareUpdateAvailability() }
             .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.Initializing))
