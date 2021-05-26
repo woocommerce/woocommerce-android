@@ -228,10 +228,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         get() = navArgs.isAddProduct
 
     /**
-     * Validates if the view model was started for the **add** flow AND the product still isn't posted at the site.
+     * Validates if the current product can be changed to DRAFT status.
      */
-    val isAddingUnstoredProduct
-        get() = isAddFlowEntryPoint and isProductStoredAtSite.not()
+    val canBeStoredAsDraft
+        get() = isAddFlowEntryPoint and
+            isProductStoredAtSite.not() and
+            (viewState.productDraft?.status != DRAFT)
 
     /**
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.

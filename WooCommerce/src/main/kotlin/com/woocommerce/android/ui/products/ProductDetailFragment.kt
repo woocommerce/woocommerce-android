@@ -345,7 +345,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
             this.isVisible = viewModel.isTrashEnabled
         }
 
-        menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.isAddingUnstoredProduct && viewModel.hasChanges()
+        menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.canBeStoredAsDraft && viewModel.hasChanges()
 
         updateMenuItem?.let {
             it.title = if (viewModel.isAddFlow) getString(publishTitleId) else getString(updateTitleId)
