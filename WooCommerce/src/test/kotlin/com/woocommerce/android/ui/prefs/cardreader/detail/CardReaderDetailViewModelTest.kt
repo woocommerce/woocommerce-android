@@ -25,6 +25,7 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
+
     private val cardReaderManager: CardReaderManager = mock {
         onBlocking { softwareUpdateAvailability() }
             .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.Initializing))
@@ -44,7 +45,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when view model init with connected state and update up to date should emit loading view state`() =
+    fun `when view model init with connected state and update up to date should emit connected view state`() =
         runBlockingTest {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
@@ -62,16 +63,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with connected state should emit correct values of connected state`() = runBlockingTest {
         // GIVEN
-        val batteryLevel = 1.6F
-        val readerName = "CH3231H"
-        val reader: CardReader = mock {
-            on { id }.thenReturn(readerName)
-            on { currentBatteryLevel }.thenReturn(batteryLevel)
-        }
-        val status = MutableStateFlow(CardReaderStatus.Connected(reader))
-        whenever(cardReaderManager.readerStatus).thenReturn(status)
-        whenever(cardReaderManager.softwareUpdateAvailability())
-            .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.UpToDate))
+        initConnectedState()
 
         // WHEN
         val viewModel = createViewModel()
@@ -79,7 +71,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         // THEN
         verifyConnectedState(
             viewModel,
-            UiStringText(readerName),
+            UiStringText(READER_NAME),
             UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2"))),
             updateAvailable = false
         )
@@ -89,14 +81,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when view model init with connected state and empty name should emit connected view state with fallbacks`() =
         runBlockingTest {
             // GIVEN
-            val reader: CardReader = mock {
-                on { id }.thenReturn(null)
-                on { currentBatteryLevel }.thenReturn(null)
-            }
-            val status = MutableStateFlow(CardReaderStatus.Connected(reader))
-            whenever(cardReaderManager.readerStatus).thenReturn(status)
-            whenever(cardReaderManager.softwareUpdateAvailability())
-                .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.UpToDate))
+            initConnectedState(readersName = null, batteryLevel = null)
 
             // WHEN
             val viewModel = createViewModel()
@@ -151,7 +136,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when view model init with connected state should emit correct values not connected state`() =
+    fun `when view model init with connected state should invoke software update availability`() =
         runBlockingTest {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
@@ -168,26 +153,15 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when view model init with connected state and update available should emit connected state with update`() =
         runBlockingTest {
             // GIVEN
-            val batteryLevel = 1.6F
-            val readerName = "CH3231H"
-            val reader: CardReader = mock {
-                on { id }.thenReturn(readerName)
-                on { currentBatteryLevel }.thenReturn(batteryLevel)
-            }
-            val status = MutableStateFlow(CardReaderStatus.Connected(reader))
-            whenever(cardReaderManager.readerStatus).thenReturn(status)
-            val updateAvailable: SoftwareUpdateAvailability.UpdateAvailable = mock()
-            whenever(cardReaderManager.softwareUpdateAvailability())
-                .thenReturn(MutableStateFlow(updateAvailable))
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
 
             // WHEN
             val viewModel = createViewModel()
 
             // THEN
-            // THEN
             verifyConnectedState(
                 viewModel,
-                UiStringText(readerName),
+                UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2"))),
                 updateAvailable = true
             )
@@ -197,16 +171,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when view model init with connected state and check failed should emit connected state without update`() =
         runBlockingTest {
             // GIVEN
-            val batteryLevel = 1.6F
-            val readerName = "CH3231H"
-            val reader: CardReader = mock {
-                on { id }.thenReturn(readerName)
-                on { currentBatteryLevel }.thenReturn(batteryLevel)
-            }
-            val status = MutableStateFlow(CardReaderStatus.Connected(reader))
-            whenever(cardReaderManager.readerStatus).thenReturn(status)
-            whenever(cardReaderManager.softwareUpdateAvailability())
-                .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.CheckForUpdatesFailed))
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
 
             // WHEN
             val viewModel = createViewModel()
@@ -214,7 +179,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             // THEN
             verifyConnectedState(
                 viewModel,
-                UiStringText(readerName),
+                UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2"))),
                 updateAvailable = false
             )
@@ -260,8 +225,26 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
     }
 
+    private fun initConnectedState(
+        readersName: String? = READER_NAME,
+        batteryLevel: Float? = 1.6F,
+        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.UpToDate
+    ) = runBlockingTest {
+        val reader: CardReader = mock {
+            on { id }.thenReturn(readersName)
+            on { currentBatteryLevel }.thenReturn(batteryLevel)
+        }
+        val status = MutableStateFlow(CardReaderStatus.Connected(reader))
+        whenever(cardReaderManager.readerStatus).thenReturn(status)
+        whenever(cardReaderManager.softwareUpdateAvailability()).thenReturn(MutableStateFlow(updateAvailable))
+    }
+
     private fun createViewModel() = CardReaderDetailViewModel(
         cardReaderManager,
         SavedStateHandle()
     )
+
+    private companion object {
+        private const val READER_NAME = "CH3231H"
+    }
 }

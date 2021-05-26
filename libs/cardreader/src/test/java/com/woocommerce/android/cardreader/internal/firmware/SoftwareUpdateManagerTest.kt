@@ -5,10 +5,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate.UpdateTimeEstimate
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.UpdateAvailable.TimeEstimate
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
@@ -151,15 +149,9 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `when software update check returns up to date then updateavailable emitted`() = runBlockingTest {
+    fun `when software update check returns update available then updateavailable emitted`() = runBlockingTest {
         // GIVEN
-        val updateData: ReaderSoftwareUpdate = mock {
-            on { timeEstimate }.thenReturn(UpdateTimeEstimate.LESS_THAN_ONE_MINUTE)
-            on { hasConfigUpdate }.thenReturn(true)
-            on { hasFirmwareUpdate }.thenReturn(true)
-            on { hasKeyUpdate }.thenReturn(true)
-            on { version }.thenReturn("10")
-        }
+        val updateData: ReaderSoftwareUpdate = mock()
         val updateStatus = CheckSoftwareUpdates.UpdateAvailable(updateData)
         whenever(checkUpdatesAction.checkUpdates()).thenReturn(updateStatus)
 
@@ -171,99 +163,7 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `when software update check returns up to date then updateavailable emitted with correct data`() =
-        runBlockingTest {
-            // GIVEN
-            val updateData: ReaderSoftwareUpdate = mock {
-                on { hasConfigUpdate }.thenReturn(true)
-                on { hasFirmwareUpdate }.thenReturn(true)
-                on { hasKeyUpdate }.thenReturn(true)
-                on { timeEstimate }.thenReturn(UpdateTimeEstimate.LESS_THAN_ONE_MINUTE)
-                on { version }.thenReturn("10")
-            }
-            val updateStatus = CheckSoftwareUpdates.UpdateAvailable(updateData)
-            whenever(checkUpdatesAction.checkUpdates()).thenReturn(updateStatus)
-
-            // WHEN
-            val status = updateManager.softwareUpdateStatus().toList().last()
-
-            // THEN
-            val updateAvailable = status as SoftwareUpdateAvailability.UpdateAvailable
-            assertThat(updateAvailable.hasConfigUpdate).isTrue
-            assertThat(updateAvailable.hasFirmwareUpdate).isTrue
-            assertThat(updateAvailable.hasKeyUpdate).isTrue
-            assertThat(updateAvailable.version).isEqualTo("10")
-            assertThat(updateAvailable.timeEstimate).isEqualTo(TimeEstimate.LESS_THAN_ONE_MINUTE)
-        }
-
-    @Test
-    fun `when software update check returns up to date with one min then updateavailable emitted with one min`() =
-        runBlockingTest {
-            // GIVEN
-            val updateData: ReaderSoftwareUpdate = mock {
-                on { hasConfigUpdate }.thenReturn(true)
-                on { hasFirmwareUpdate }.thenReturn(true)
-                on { hasKeyUpdate }.thenReturn(true)
-                on { version }.thenReturn("10")
-                on { timeEstimate }.thenReturn(UpdateTimeEstimate.ONE_TO_TWO_MINUTES)
-            }
-            val updateStatus = CheckSoftwareUpdates.UpdateAvailable(updateData)
-            whenever(checkUpdatesAction.checkUpdates()).thenReturn(updateStatus)
-
-            // WHEN
-            val status = updateManager.softwareUpdateStatus().toList().last()
-
-            // THEN
-            val updateAvailable = status as SoftwareUpdateAvailability.UpdateAvailable
-            assertThat(updateAvailable.timeEstimate).isEqualTo(TimeEstimate.ONE_TO_TWO_MINUTES)
-        }
-
-    @Test
-    fun `when software update check returns up to date with two min then updateavailable emitted with two min`() =
-        runBlockingTest {
-            // GIVEN
-            val updateData: ReaderSoftwareUpdate = mock {
-                on { hasConfigUpdate }.thenReturn(true)
-                on { hasFirmwareUpdate }.thenReturn(true)
-                on { hasKeyUpdate }.thenReturn(true)
-                on { version }.thenReturn("10")
-                on { timeEstimate }.thenReturn(UpdateTimeEstimate.TWO_TO_FIVE_MINUTES)
-            }
-            val updateStatus = CheckSoftwareUpdates.UpdateAvailable(updateData)
-            whenever(checkUpdatesAction.checkUpdates()).thenReturn(updateStatus)
-
-            // WHEN
-            val status = updateManager.softwareUpdateStatus().toList().last()
-
-            // THEN
-            val updateAvailable = status as SoftwareUpdateAvailability.UpdateAvailable
-            assertThat(updateAvailable.timeEstimate).isEqualTo(TimeEstimate.TWO_TO_FIVE_MINUTES)
-        }
-
-    @Test
-    fun `when software update check returns up to date with five min then updateavailable emitted with five min`() =
-        runBlockingTest {
-            // GIVEN
-            val updateData: ReaderSoftwareUpdate = mock {
-                on { hasConfigUpdate }.thenReturn(true)
-                on { hasFirmwareUpdate }.thenReturn(true)
-                on { hasKeyUpdate }.thenReturn(true)
-                on { version }.thenReturn("10")
-                on { timeEstimate }.thenReturn(UpdateTimeEstimate.FIVE_TO_FIFTEEN_MINUTES)
-            }
-            val updateStatus = CheckSoftwareUpdates.UpdateAvailable(updateData)
-            whenever(checkUpdatesAction.checkUpdates()).thenReturn(updateStatus)
-
-            // WHEN
-            val status = updateManager.softwareUpdateStatus().toList().last()
-
-            // THEN
-            val updateAvailable = status as SoftwareUpdateAvailability.UpdateAvailable
-            assertThat(updateAvailable.timeEstimate).isEqualTo(TimeEstimate.FIVE_TO_FIFTEEN_MINUTES)
-        }
-
-    @Test
-    fun `when software update check returns failed then check fauled emitted`() = runBlockingTest {
+    fun `when software update check returns failed then check failed emitted`() = runBlockingTest {
         // GIVEN
         whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.Failed(mock()))
 
