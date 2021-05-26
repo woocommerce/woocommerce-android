@@ -44,7 +44,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when view model init with connected state and update up to date should emit loading view state`() =
+    fun `when view model init with connected state and update up to date should emit connectedd view state`() =
         runBlockingTest {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
@@ -151,7 +151,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when view model init with connected state should emit correct values not connected state`() =
+    fun `when view model init with connected state should invoke software update availability`() =
         runBlockingTest {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
@@ -183,7 +183,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = createViewModel()
 
-            // THEN
             // THEN
             verifyConnectedState(
                 viewModel,
