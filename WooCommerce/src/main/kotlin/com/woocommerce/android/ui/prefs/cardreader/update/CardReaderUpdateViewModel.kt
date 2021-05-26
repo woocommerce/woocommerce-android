@@ -75,24 +75,24 @@ class CardReaderUpdateViewModel @Inject constructor(
         val description: UiString? = null,
         val showProgress: Boolean = false,
         open val primaryButton: ButtonState? = null,
-        open val secondaryButton: ButtonState? = null,
+        open val secondaryButton: ButtonState? = null
     ) {
         data class ExplanationState(
             override val primaryButton: ButtonState?,
             override val secondaryButton: ButtonState?
         ) : ViewState(
             title = UiStringRes(R.string.card_reader_software_update_title),
-            description = UiStringRes(R.string.card_reader_software_update_description),
+            description = UiStringRes(R.string.card_reader_software_update_description)
         )
 
         object UpdatingState : ViewState(
             title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
-            showProgress = true,
+            showProgress = true
         )
 
         data class ButtonState(
             val onActionClicked: (() -> Unit),
-            val text: UiString,
+            val text: UiString
         )
     }
 
