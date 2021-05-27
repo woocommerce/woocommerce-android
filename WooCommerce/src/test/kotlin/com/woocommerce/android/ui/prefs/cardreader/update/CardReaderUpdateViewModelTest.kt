@@ -63,34 +63,36 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when click on primary btn explanation state with initializing should emit updating state`() = runBlockingTest {
-        // GIVEN
-        val viewModel = createViewModel()
-        whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+    fun `when click on primary btn explanation state with initializing should emit updating state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
 
-        // WHEN
-        (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
 
-        // THEN
-        assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
-    }
+            // THEN
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
+        }
 
     @Test
-    fun `when click on primary btn explanation state with installing should emit updating state`() = runBlockingTest {
-        // GIVEN
-        val viewModel = createViewModel()
-        whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Installing(0f)))
+    fun `when click on primary btn explanation state with installing should emit updating state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Installing(0f)))
 
-        // WHEN
-        (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
 
-        // THEN
-        assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
-    }
+            // THEN
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
+        }
 
     @Test
     fun `when click on primary btn explanation state with initializing should emit updating state with values`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
@@ -104,7 +106,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when click on primary btn explanation state with success should emit exit with success result`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Success))
@@ -119,7 +121,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when click on primary btn explanation state with up to date should emit exit with skip result`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
@@ -134,7 +136,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when click on primary btn explanation state with failed should emit exit with failed result`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Failed("")))
@@ -149,7 +151,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when click on secondary btn explanation state should emit exit with skip result`() =
-        runBlockingTest {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
 
