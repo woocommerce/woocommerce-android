@@ -2,6 +2,7 @@
 
 6.8
 -----
+- [**] Fixed bug that caused a jumbled screen the very first time the product list is viewed. [https://github.com/woocommerce/woocommerce-android/pull/4090]
 - [*] Updated empty state illustrations. [https://github.com/woocommerce/woocommerce-android/pull/3678]
 - [*] Various design tweaks on empty state screen [https://github.com/woocommerce/woocommerce-android/pull/3879]
 
