@@ -24,6 +24,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
@@ -90,6 +92,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
+        whenever(receiptDataMapper.mapToReceiptData(any(), any())).thenReturn(mock())
+        whenever(receiptCreator.createHtmlReceipt(any())).thenReturn("test receipt")
     }
 
     @Test
@@ -463,5 +467,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyOrNull(), anyString())
+        }
+
+    @Test
+    fun `when user clicks on print receipt button, then PrintReceipt event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(PaymentCompleted(mock())) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
+        }
+
+    @Test
+    fun `when user clicks on send receipt button, then SendReceipt event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(PaymentCompleted(mock())) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
         }
 }
