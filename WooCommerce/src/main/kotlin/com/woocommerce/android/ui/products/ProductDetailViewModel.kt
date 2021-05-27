@@ -619,9 +619,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
             launch {
                 val isSuccess = addProduct(it)
+                triggerEvent(ShowSnackbar(pickAddProductRequestSnackbarText(isSuccess)))
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
-                    triggerEvent(ShowSnackbar(pickAddProductRequestSnackbarText(isSuccess)))
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
                     }

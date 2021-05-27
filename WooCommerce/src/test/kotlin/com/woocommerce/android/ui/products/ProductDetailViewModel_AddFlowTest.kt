@@ -251,8 +251,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onUpdateButtonClicked()
 
         // then
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
+        assertThat(successSnackbarShown).isTrue
+        assertThat(productData?.isProgressDialogShown).isFalse
     }
 
     @Test
