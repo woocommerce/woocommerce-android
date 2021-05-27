@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingCustomsBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -92,16 +94,15 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
         })
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
-                // TODO use EDIT_CUSTOMS_CLOSED for ExitWIthResult event, and EDIT_CUSTOMS_CLOSED for Exit
-                is Exit -> navigateBackWithNotice(EDIT_CUSTOMS_RESULT)
+                is ExitWithResult<*> -> navigateBackWithResult(EDIT_CUSTOMS_RESULT, event.data)
+                is Exit -> navigateBackWithNotice(EDIT_CUSTOMS_CLOSED)
                 else -> event.isHandled = false
             }
         })
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        // TODO pass this to the ViewModel
-        navigateBackWithNotice(EDIT_CUSTOMS_RESULT)
+        viewModel.onBackButtonClicked()
         return false
     }
 }

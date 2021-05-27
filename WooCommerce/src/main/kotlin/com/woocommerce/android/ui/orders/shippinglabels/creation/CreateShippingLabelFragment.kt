@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
@@ -49,6 +50,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.Companion.EDIT_PAYMENTS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment.Companion.SHIPPING_CARRIERS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment.Companion.SHIPPING_CARRIERS_RESULT
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment.Companion.EDIT_CUSTOMS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment.Companion.EDIT_CUSTOMS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
@@ -129,8 +131,11 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
         handleResult<List<ShippingRate>>(SHIPPING_CARRIERS_RESULT) {
             viewModel.onShippingCarriersSelected(it)
         }
-        handleNotice(EDIT_CUSTOMS_RESULT) {
-            viewModel.onCustomsFilledOut()
+        handleResult<List<CustomsPackage>>(EDIT_CUSTOMS_RESULT) {
+            viewModel.onCustomsFilledOut(it)
+        }
+        handleNotice(EDIT_CUSTOMS_CLOSED) {
+            viewModel.onCustomsEditCanceled()
         }
     }
 

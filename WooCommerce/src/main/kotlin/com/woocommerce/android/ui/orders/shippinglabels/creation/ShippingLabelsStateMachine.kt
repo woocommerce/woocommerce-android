@@ -364,11 +364,14 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
 
         state<State.CustomsDeclaration> {
-            on<Event.CustomsFormFilledOut> {
+            on<Event.CustomsFormFilledOut> { event ->
                 val newData = data.copy(
-                    stepsState = data.stepsState.updateStep(data.stepsState.customsStep, emptyList())
+                    stepsState = data.stepsState.updateStep(data.stepsState.customsStep, event.customsPackages)
                 )
                 transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.customsStep))
+            }
+            on<Event.EditCustomsCanceled> {
+                transitionTo((State.WaitingForInput(data)))
             }
         }
 
@@ -701,7 +704,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object CustomsDeclarationStarted : UserInput()
         object EditCustomsRequested : UserInput()
-        object CustomsFormFilledOut : Event()
+        object EditCustomsCanceled : Event()
+        data class CustomsFormFilledOut(val customsPackages: List<CustomsPackage>) : Event()
 
         object ShippingCarrierSelectionStarted : UserInput()
         object EditShippingCarrierRequested : UserInput()

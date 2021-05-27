@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.CustomsFormFilledOut
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditCustomsCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
@@ -618,8 +619,12 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         stateMachine.handleEvent(ShippingCarrierSelectionCanceled)
     }
 
-    fun onCustomsFilledOut() {
-        stateMachine.handleEvent(CustomsFormFilledOut)
+    fun onCustomsFilledOut(customsPackages: List<CustomsPackage>) {
+        stateMachine.handleEvent(CustomsFormFilledOut(customsPackages))
+    }
+
+    fun onCustomsEditCanceled() {
+        stateMachine.handleEvent(EditCustomsCanceled)
     }
 
     fun onWooDiscountInfoClicked() {

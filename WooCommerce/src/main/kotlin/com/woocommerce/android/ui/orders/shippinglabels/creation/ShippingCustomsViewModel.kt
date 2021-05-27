@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -141,6 +142,10 @@ class ShippingCustomsViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
+        triggerEvent(ExitWithResult(viewState.customsPackages.map { it.data }))
+    }
+
+    fun onBackButtonClicked() {
         triggerEvent(Exit)
     }
 
