@@ -298,6 +298,13 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"/>
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_shippingCustomsFragment"
+            app:destination="@id/shippingCustomsFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/shippingLabelAddressSuggestionFragment"
@@ -406,6 +413,11 @@
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
         android:label="CardReaderConnectDialog">
     </dialog>
+    <fragment
+        android:id="@+id/shippingCustomsFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment"
+        android:label="ShippingCustomsFragment"
+        tools:layout="@layout/fragment_shipping_customs" />
     <action
         android:id="@+id/action_global_addOrderShipmentTrackingFragment"
         app:destination="@id/addOrderShipmentTrackingFragment"
