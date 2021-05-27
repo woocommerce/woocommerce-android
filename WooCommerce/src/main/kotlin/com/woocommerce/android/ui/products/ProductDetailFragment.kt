@@ -274,6 +274,8 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
             if (status != ProductStatus.PUBLISH) {
                 binding.frameStatusBadge.show()
                 binding.textStatusBadge.text = status.toLocalizedString(requireActivity())
+            } else {
+                binding.frameStatusBadge.hide()
             }
         }
 
