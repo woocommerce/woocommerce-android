@@ -236,6 +236,36 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isNull()
     }
 
+    @Test
+    fun `when on disconnect button clicked with success should do nothing`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            whenever(cardReaderManager.disconnectReader()).thenReturn(true)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectedState::class.java)
+        }
+
+    @Test
+    fun `when on disconnect button clicked with fail should change to not connected state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            whenever(cardReaderManager.disconnectReader()).thenReturn(false)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isInstanceOf(NotConnectedState::class.java)
+        }
+
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {
         val state = viewModel.viewStateData.value as NotConnectedState
         assertThat(state.headerLabel)

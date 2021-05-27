@@ -47,10 +47,14 @@ class CardReaderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> checkForUpdates()
-                    else -> viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
+                    else -> showNotConnectedState()
                 }
             }.exhaustive
         }
+    }
+
+    private fun showNotConnectedState() {
+        viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     }
 
     private suspend fun checkForUpdates() {
@@ -109,7 +113,10 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onDisconnectClicked() {
-        // TODO cardreader implement disconnect functionality
+        launch {
+            val disconnectionResult = cardReaderManager.disconnectReader()
+            if (!disconnectionResult) showNotConnectedState()
+        }
     }
 
     fun onUpdateResult(updateResult: UpdateResult) {
