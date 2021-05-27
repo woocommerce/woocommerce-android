@@ -59,7 +59,6 @@ Language: ar
     <string name="shipping_label_rate_included_options_signature_required_free">مؤهل لمتطلبات التوقيع المجاني</string>
     <string name="shipping_label_rate_included_options_free_pickup">مؤهل للاقتناء المجاني</string>
     <string name="shipping_label_rate_included_options_insurance">التأمين (يصل إلى %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">تعقُّب %s</string>
     <string name="shipping_label_rate_included_options">يتضمن %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">يلزم توقيع شخص بالغ (%s)</string>
     <string name="shipping_label_rate_option_signature_required">يلزم التوقيع (%s)</string>

@@ -94,7 +94,7 @@ internal class PaymentManager(
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
             val paymentInfo = try {
                 receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(paymentIntent)
-            } catch (e: IllegalStateException) {
+            } catch (e: IllegalArgumentException) {
                 // todo cardreader cancel the payment intent
                 emit(PaymentFailed(GENERIC_ERROR, null, e.message ?: "Unexpected error"))
                 return@flow

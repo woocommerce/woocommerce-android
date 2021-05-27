@@ -59,7 +59,6 @@ Language: de
     <string name="shipping_label_rate_included_options_signature_required_free">Für kostenlose Signaturanforderung berechtigt</string>
     <string name="shipping_label_rate_included_options_free_pickup">Für kostenlose Abholung berechtigt</string>
     <string name="shipping_label_rate_included_options_insurance">Versicherung (bis zu %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">Sendungsverfolgung für %s</string>
     <string name="shipping_label_rate_included_options">Enthält %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Unterschrift von einem Erwachsenen erforderlich (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Unterschrift erforderlich (%s)</string>

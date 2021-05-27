@@ -13,7 +13,7 @@ import com.woocommerce.android.util.WooLog.T
  *
  * https://github.com/woocommerce/woocommerce-android/issues/1729
  */
-class WCViewPager @JvmOverloads constructor(
+open class WCViewPager @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ViewPager(context, attrs) {

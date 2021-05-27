@@ -40,7 +40,6 @@ Language: id
     <string name="shipping_label_rate_included_options_signature_required_free">Memenuhi syarat untuk diproses tanpa tanda tangan</string>
     <string name="shipping_label_rate_included_options_free_pickup">Memenuhi syarat untuk penjemputan gratis</string>
     <string name="shipping_label_rate_included_options_insurance">Asuransi (hingga %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">%s pelacakan</string>
     <string name="shipping_label_rate_included_options">Sertakan %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Tanda tangan orang dewasa wajib diisi (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Tanda tangan wajib diisi (%s)</string>

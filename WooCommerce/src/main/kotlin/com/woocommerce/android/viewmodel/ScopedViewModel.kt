@@ -18,7 +18,7 @@ import kotlin.coroutines.CoroutineContext
 abstract class ScopedViewModel(
     protected val savedState: SavedStateHandle
 ) : ViewModel(), CoroutineScope {
-    protected open val _event: MutableLiveData<Event> = MultiLiveEvent<Event>()
+    protected open val _event: MutableLiveData<Event> = MultiLiveEvent()
     open val event: LiveData<Event> = _event
 
     override val coroutineContext: CoroutineContext

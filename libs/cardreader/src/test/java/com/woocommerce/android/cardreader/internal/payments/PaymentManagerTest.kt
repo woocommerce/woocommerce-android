@@ -337,7 +337,7 @@ class PaymentManagerTest {
     // BEGIN - Capturing Payment
     @Test
     fun `when mapping ReceiptPaymentInfo fails, then PaymentFailed emitted`() = runBlockingTest {
-        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalStateException(""))
+        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalArgumentException(""))
 
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
 
@@ -346,7 +346,7 @@ class PaymentManagerTest {
 
     @Test
     fun `when mapping ReceiptPaymentInfo fails, then PaymentData for retry are empty`() = runBlockingTest {
-        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalStateException(""))
+        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalArgumentException(""))
 
         val result = manager.acceptPayment(DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY).toList()
 
