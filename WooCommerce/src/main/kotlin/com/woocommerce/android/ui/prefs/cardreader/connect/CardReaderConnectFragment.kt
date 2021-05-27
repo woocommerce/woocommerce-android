@@ -38,8 +38,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     @Inject lateinit var locationUtils: LocationUtils
-    // TODO change this to non-nullable
-    @set:Inject var cardReaderManager: CardReaderManager? = null
+    @Inject lateinit var cardReaderManager: CardReaderManager
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.let {
@@ -98,10 +97,10 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                     requestEnableBluetoothLauncher.launch(enableBtIntent)
                 }
                 is InitializeCardReaderManager -> {
-                    cardReaderManager?.let {
+                    cardReaderManager.let {
                         it.initialize(requireActivity().application)
                         event.onCardManagerInitialized(it)
-                    } ?: throw IllegalStateException("CardReaderManager is null.")
+                    }
                 }
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_CONNECT_TO_READER_RESULT, event.data as Boolean)

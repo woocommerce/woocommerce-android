@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
+import com.woocommerce.android.cardreader.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -225,7 +225,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
         // TODO cardreader add tests for this functionality
-        if (cardReaderManager.readerStatus.value == CONNECTED) {
+        if (cardReaderManager.readerStatus.value is Connected) {
             triggerEvent(StartCardReaderPaymentFlow(order.identifier))
         } else {
             triggerEvent(StartCardReaderConnectFlow)
@@ -538,10 +538,12 @@ class OrderDetailViewModel @Inject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
+        val isOrderEligibleForSLCreation = isShippingPluginReady &&
+            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
+
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = isShippingPluginReady &&
-                orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
-                !shippingLabels.isVisible,
+            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,
+            isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible
@@ -579,7 +581,8 @@ class OrderDetailViewModel @Inject constructor(
         val refreshedProductId: Long? = null,
         val isCreateShippingLabelButtonVisible: Boolean? = null,
         val isProductListVisible: Boolean? = null,
-        val areShippingLabelsVisible: Boolean? = null
+        val areShippingLabelsVisible: Boolean? = null,
+        val isProductListMenuVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
@@ -589,9 +592,6 @@ class OrderDetailViewModel @Inject constructor(
 
         val isReprintShippingLabelBannerVisible: Boolean
             get() = !isCreateShippingLabelBannerVisible && areShippingLabelsVisible == true
-
-        val isProductListMenuVisible: Boolean?
-            get() = areShippingLabelsVisible
     }
 
     @Parcelize

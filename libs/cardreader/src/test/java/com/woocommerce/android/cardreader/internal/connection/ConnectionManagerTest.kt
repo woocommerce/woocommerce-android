@@ -52,7 +52,7 @@ class ConnectionManagerTest {
 
         val result = connectionManager.discoverReaders(true).toList()
 
-        assertThat((result.first() as ReadersFound).list.first().getId())
+        assertThat((result.first() as ReadersFound).list.first().id)
             .isEqualTo(dummyReaderId)
     }
 
@@ -81,7 +81,7 @@ class ConnectionManagerTest {
         connectionManager.onUnexpectedReaderDisconnect(mock())
 
         assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.NOT_CONNECTED
+            CardReaderStatus.NotConnected
         )
     }
 
@@ -90,7 +90,7 @@ class ConnectionManagerTest {
         connectionManager.onConnectionStatusChange(NOT_CONNECTED)
 
         assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.NOT_CONNECTED
+            CardReaderStatus.NotConnected
         )
     }
 
@@ -99,17 +99,17 @@ class ConnectionManagerTest {
         connectionManager.onConnectionStatusChange(CONNECTING)
 
         assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.CONNECTING
+            CardReaderStatus.Connecting
         )
     }
 
     @Test
     fun `when reader connection established, then observers get notified`() {
+        val cardReader = CardReaderImpl(mock())
+        whenever(terminalWrapper.getConnectedReader()).thenReturn(cardReader)
         connectionManager.onConnectionStatusChange(CONNECTED)
 
-        assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.CONNECTED
-        )
+        assertThat(connectionManager.readerStatus.value).isEqualTo(CardReaderStatus.Connected(cardReader))
     }
 
     @Test
