@@ -627,6 +627,15 @@
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
 
+    <string name="card_reader_receipt_application_name_title">Application name</string>
+    <string name="card_reader_receipt_from_title">Receipt from %s</string>
+    <string name="card_reader_receipt_title">Receipt</string>
+    <string name="card_reader_receipt_amount_paid_title">Amount paid</string>
+    <string name="card_reader_receipt_date_paid_title">Date paid</string>
+    <string name="card_reader_receipt_payment_method_title">Payment method</string>
+    <string name="card_reader_receipt_summary_title">Summary</string>
+    <string name="card_reader_receipt_aid_title">AID</string>
+
     <!--
             Card Reader Connection
         -->

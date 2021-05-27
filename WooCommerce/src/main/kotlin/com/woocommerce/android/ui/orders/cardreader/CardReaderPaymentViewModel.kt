@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
@@ -24,10 +23,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.receipts.ReceiptCreator
-import com.woocommerce.android.cardreader.receipts.ReceiptData
 import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
-import com.woocommerce.android.cardreader.receipts.ReceiptStaticTexts
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
@@ -38,9 +34,8 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.receipts.ReceiptLineItemMapper
+import com.woocommerce.android.util.receipts.ReceiptDataMapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,7 +44,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T.MAIN
@@ -63,12 +57,10 @@ class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     cardReaderManager: CardReaderManager?,
     private val receiptCreator: ReceiptCreator,
-    private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore,
-    private val receiptLineItemMapper: ReceiptLineItemMapper,
-    private val resourceProvider: ResourceProvider
+    private val receiptDataMapper: ReceiptDataMapper
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
@@ -190,35 +182,10 @@ class CardReaderPaymentViewModel @Inject constructor(
 
     private suspend fun buildHtmlReceipt(receiptPaymentInfo: ReceiptPaymentInfo): String? {
         return loadOrderFromDB()?.let { order ->
-            val receiptData = buildReceiptDataModel(order, receiptPaymentInfo)
+            val receiptData = receiptDataMapper.mapToReceiptData(order, receiptPaymentInfo)
             receiptCreator.createHtmlReceipt(receiptData)
         }
     }
-
-    // TODO cardreader move to a util method
-    private fun buildReceiptDataModel(order: WCOrderModel, receiptPaymentInfo: ReceiptPaymentInfo) = ReceiptData(
-        staticTexts = ReceiptStaticTexts(
-            applicationName = resourceProvider
-                .getString(string.card_reader_payment_print_receipt_application_name_title),
-            receiptFromFormat = resourceProvider
-                .getString(string.card_reader_payment_print_receipt_from_title),
-            receiptTitle = resourceProvider
-                .getString(string.card_reader_payment_print_receipt_receipt_title),
-            amountPaidSectionTitle = resourceProvider
-                .getString(string.card_reader_payment_print_receipt_amount_paid_title),
-            datePaidSectionTitle = resourceProvider
-                .getString(string.card_reader_payment_print_receipt_date_paid_title),
-            paymentMethodSectionTitle = resourceProvider
-                .getString(string.card_reader_payment_print_receipt_payment_method_title),
-            summarySectionTitle = resourceProvider
-                .getString(string.card_reader_payment_print_receipt_summary_title),
-            aid = resourceProvider
-                .getString(string.card_reader_payment_print_receipt_aid_title)
-        ),
-        purchasedProducts = receiptLineItemMapper.createReceiptLineItems(order),
-        storeName = selectedSite.get().displayName,
-        receiptPaymentInfo = receiptPaymentInfo
-    )
 
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
 
