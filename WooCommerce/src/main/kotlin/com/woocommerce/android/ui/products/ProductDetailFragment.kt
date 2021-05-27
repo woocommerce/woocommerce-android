@@ -334,7 +334,10 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
         }
 
         // visibility of these menu items depends on whether we're in the add product flow
-        menu.findItem(R.id.menu_view_product)?.isVisible = viewModel.isProductPublished && !viewModel.isProductUnderCreation
+        menu.findItem(R.id.menu_view_product)?.isVisible =
+            viewModel.isProductPublished &&
+                !viewModel.isProductUnderCreation
+
         menu.findItem(R.id.menu_share)?.isVisible = !viewModel.isProductUnderCreation
         menu.findItem(R.id.menu_product_settings)?.isVisible = true
 

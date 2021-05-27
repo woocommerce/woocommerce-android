@@ -602,7 +602,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private fun startUpdateProduct() {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
-        if(isAddFlowEntryPoint) updateProductDraft(productStatus = PUBLISH)
+        if (isAddFlowEntryPoint) updateProductDraft(productStatus = PUBLISH)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
