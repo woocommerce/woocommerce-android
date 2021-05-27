@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -20,7 +19,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
@@ -37,8 +35,6 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock()
     private val shippingRepository: ShippingLabelRepository = mock()
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val savedState: SavedStateWithArgs = spy(
         SavedStateWithArgs(
             SavedStateHandle(),
@@ -52,7 +48,14 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         whenever(parameterRepository.getParameters(any(), any())).thenReturn(
-            SiteParameters("", "", "cm", 0f)
+            SiteParameters(
+                currencyCode = "USD",
+                currencySymbol = "$",
+                currencyPosition = null,
+                weightUnit = "kg",
+                dimensionUnit = "cm",
+                gmtOffset = 0f
+            )
         )
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))

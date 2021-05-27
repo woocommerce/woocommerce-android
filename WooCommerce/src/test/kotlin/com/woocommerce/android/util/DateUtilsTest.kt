@@ -1,7 +1,6 @@
 package com.woocommerce.android.util
 
-import com.automattic.android.tracks.CrashLogging.CrashLoggingDataProvider
-import com.automattic.android.tracks.TracksUser
+import com.nhaarman.mockitokotlin2.mock
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
@@ -24,16 +23,7 @@ class DateUtilsTest {
     fun setUp() {
         dateUtilsUnderTest = DateUtils(
             Locale.US,
-            object : CrashLoggingDataProvider {
-                override fun sentryDSN() = ""
-                override fun getUserHasOptedOut() = false
-                override fun buildType() = ""
-                override fun releaseName() = ""
-                override fun currentUser(): TracksUser? = null
-                override fun applicationContext() = emptyMap<String, Any>()
-                override fun userContext(): MutableMap<String, Any> = mutableMapOf()
-                override fun locale(): Locale? = null
-            }
+            crashLogger = mock()
         )
     }
 

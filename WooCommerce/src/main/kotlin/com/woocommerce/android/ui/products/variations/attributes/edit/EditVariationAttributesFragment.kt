@@ -2,17 +2,18 @@ package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.databinding.FragmentEditVariationAttributesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -23,7 +24,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 class EditVariationAttributesFragment :
-    BaseFragment(R.layout.fragment_edit_variation_attributes), BackPressListener {
+    BaseDaggerFragment(R.layout.fragment_edit_variation_attributes), BackPressListener {
     companion object {
         const val TAG: String = "EditVariationAttributesFragment"
         const val KEY_VARIATION_ATTRIBUTES_RESULT = "key_variation_attributes_result"
@@ -31,7 +32,7 @@ class EditVariationAttributesFragment :
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: EditVariationAttributesViewModel by activityViewModels { viewModelFactory }
+    private val viewModel: EditVariationAttributesViewModel by viewModels { viewModelFactory }
 
     private val navArgs: EditVariationAttributesFragmentArgs by navArgs()
 
@@ -111,6 +112,7 @@ class EditVariationAttributesFragment :
             ?: binding.attributeSelectionGroupList.apply {
                 adapter = VariationAttributesAdapter(
                     selectableOptions,
+                    getString(string.product_any_attribute_hint),
                     ::displaySelectionDialog
                 )
             }

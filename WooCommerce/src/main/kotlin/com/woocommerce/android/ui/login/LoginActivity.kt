@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.automattic.android.tracks.CrashLogging.CrashLogging
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -29,6 +28,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDR
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.UrlUtils
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -71,6 +71,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject internal lateinit var urlUtils: UrlUtils
 
     private var loginMode: LoginMode? = null
 
@@ -300,7 +301,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
         loginAnalyticsListener.trackLoginSocialSuccess()
-        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -358,7 +358,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
-        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -447,7 +446,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
-        CrashLogging.setNeedsDataRefresh()
         showMainActivityAndFinish()
     }
 
@@ -558,7 +556,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onTermsOfServiceClicked() {
-        // TODO: Signup
+        ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale)
     }
 
     //  -- END: LoginListener implementation methods
@@ -676,7 +674,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             // The url entered is not a WordPress site.
             val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
             val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
-            val errorMessage = getString(R.string.login_not_wordpress_site, siteAddressClean)
+            val errorMessage = getString(R.string.login_not_wordpress_site_v2)
 
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)

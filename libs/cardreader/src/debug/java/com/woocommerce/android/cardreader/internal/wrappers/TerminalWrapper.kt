@@ -9,12 +9,17 @@ import com.stripe.stripeterminal.callable.DiscoveryListener
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.callable.ReaderCallback
 import com.stripe.stripeterminal.callable.ReaderDisplayListener
+import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateCallback
+import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
 import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.log.LogLevel
 import com.stripe.stripeterminal.model.external.DiscoveryConfiguration
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentParameters
 import com.stripe.stripeterminal.model.external.Reader
+import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
+import com.woocommerce.android.cardreader.CardReader
+import com.woocommerce.android.cardreader.CardReaderImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
 
 /**
@@ -50,4 +55,13 @@ internal class TerminalWrapper {
 
     fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().processPayment(paymentIntent, callback)
+
+    fun checkForUpdate(callback: ReaderSoftwareUpdateCallback) = Terminal.getInstance().checkForUpdate(callback)
+    fun installSoftwareUpdate(
+        updateData: ReaderSoftwareUpdate,
+        listener: ReaderSoftwareUpdateListener,
+        callback: Callback
+    ) = Terminal.getInstance().installUpdate(updateData, listener, callback)
+
+    fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 }

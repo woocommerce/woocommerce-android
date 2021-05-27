@@ -10,6 +10,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * A wrapper class for a [CancellableContinuation], which handles some of the most common errors when a continuation
@@ -70,6 +71,13 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
     fun continueWith(value: T) {
         if (continuation?.isActive == true) {
             continuation?.resume(value)
+        }
+    }
+
+    @Synchronized
+    fun continueWithException(exception: Throwable) {
+        if (continuation?.isActive == true) {
+            continuation?.resumeWithException(exception)
         }
     }
 

@@ -14,19 +14,19 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductSelectionListViewModel.ProductSelectionListViewState
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse
 
+@ExperimentalCoroutinesApi
 class ProductSelectionListViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 10L
@@ -49,16 +49,13 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         )
     )
 
-    private val coroutineDispatchers = CoroutineDispatchers(
-        Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
-
     private lateinit var viewModel: ProductSelectionListViewModel
 
     private fun createViewModel() {
         viewModel = spy(
             ProductSelectionListViewModel(
                 savedState,
-                coroutineDispatchers,
+                coroutinesTestRule.testDispatchers,
                 networkStatus,
                 productRepository
             )
@@ -73,7 +70,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product list view correctly`() = test {
+    fun `Displays the product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(productList).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
         )
@@ -92,7 +89,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not fetch product list from api when not connected`() = test {
+    fun `Do not fetch product list from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(false).whenever(networkStatus).isConnected()
 
         createViewModel()
@@ -109,7 +106,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list skeleton correctly`() = test {
+    fun `Shows and hides product list skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList(
             excludedProductIds = excludedProductIds
         )
@@ -128,22 +125,23 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list load more progress correctly`() = test {
-        doReturn(true).whenever(productRepository).canLoadMoreProducts
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(
-            excludedProductIds = excludedProductIds
-        )
+    fun `Shows and hides product list load more progress correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(true).whenever(productRepository).canLoadMoreProducts
+            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(
+                excludedProductIds = excludedProductIds
+            )
 
-        createViewModel()
+            createViewModel()
 
-        val isLoadingMore = ArrayList<Boolean>()
-        viewModel.productSelectionListViewStateLiveData.observeForever { old, new ->
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { isLoadingMore.add(it) }
+            val isLoadingMore = ArrayList<Boolean>()
+            viewModel.productSelectionListViewStateLiveData.observeForever { old, new ->
+                new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { isLoadingMore.add(it) }
+            }
+
+            viewModel.onLoadMoreRequested()
+            assertThat(isLoadingMore).containsExactly(false, true, false)
         }
-
-        viewModel.onLoadMoreRequested()
-        assertThat(isLoadingMore).containsExactly(false, true, false)
-    }
 
     @Test
     fun `ExitWithResult event dispatched correctly when done menu button clicked`() {

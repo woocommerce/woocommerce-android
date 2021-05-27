@@ -9,12 +9,11 @@ import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -26,15 +25,14 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductDetailRepository,
-    private val variationRepository: VariationDetailRepository,
-    private val resources: ResourceProvider
-) : ScopedViewModel(savedState, dispatchers) {
+    private val variationRepository: VariationDetailRepository
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private val _editableVariationAttributeList =
         MutableLiveData<List<VariationAttributeSelectionGroup>>()
 
     val editableVariationAttributeList = _editableVariationAttributeList
 
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateLiveData
 
     private val selectedVariation
@@ -75,7 +73,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     private fun loadProductAttributes() =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
-                parentProduct?.attributes
+                parentProduct?.variationEnabledAttributes
                     ?.pairAttributeWithSelectedOption()
                     ?.pairAttributeWithUnselectedOption()
                     ?.mapToAttributeSelectionGroupList()
@@ -93,7 +91,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
 
     private fun List<Pair<ProductAttribute, VariantOption>>.pairAttributeWithUnselectedOption() =
         map { it.first }.let { selectedAttributes ->
-            parentProduct?.attributes
+            parentProduct?.variationEnabledAttributes
                 ?.filter { selectedAttributes.contains(it).not() }
                 ?.map { it to VariantOption.empty }
                 ?.let { toMutableList().apply { addAll(it) } }
@@ -106,8 +104,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
                 attributeName = productAttribute.name,
                 options = productAttribute.terms,
                 selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option),
-                noOptionSelected = selectedOption.option.isNullOrEmpty(),
-                resourceCreator = { resources.getString(it) }
+                noOptionSelected = selectedOption.option.isNullOrEmpty()
             )
         }
 

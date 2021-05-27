@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/reader_connected_state"
+        layout="@layout/fragment_card_reader_detail_connected_state" />
+
+    <include
+        android:id="@+id/reader_disconnected_state"
+        layout="@layout/fragment_card_reader_detail_disconnected_state" />
+
+    <ProgressBar
+        android:layout_gravity="center"
+        android:id="@+id/reader_connected_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</FrameLayout>

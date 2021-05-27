@@ -13,12 +13,12 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundListItem
+import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -35,12 +35,12 @@ class RefundDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
     private val refundStore: WCRefundStore
-) : ScopedViewModel(savedState, dispatchers) {
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+) : DaggerScopedViewModel(savedState, dispatchers) {
+    final val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val _refundItems = MutableLiveData<List<RefundListItem>>()
-    final val refundItems: LiveData<List<RefundListItem>> = _refundItems
+    private val _refundItems = MutableLiveData<List<ProductRefundListItem>>()
+    final val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems
 
     private lateinit var formatCurrency: (BigDecimal) -> String
 
@@ -67,7 +67,7 @@ class RefundDetailViewModel @AssistedInject constructor(
         val refundedProducts = groupedRefunds.keys.mapNotNull { id ->
             order.items.firstOrNull { it.uniqueId == id }?.let { item ->
                 groupedRefunds[id]?.sumBy { it.quantity }?.let { quantity ->
-                    RefundListItem(item, quantity = quantity)
+                    ProductRefundListItem(item, quantity = quantity)
                 }
             }
         }
@@ -85,7 +85,7 @@ class RefundDetailViewModel @AssistedInject constructor(
     private fun displayRefundDetails(refund: Refund, order: Order) {
         if (refund.items.isNotEmpty()) {
             val items = refund.items.map { refundItem ->
-                RefundListItem(
+                ProductRefundListItem(
                     order.items.first { it.uniqueId == refundItem.uniqueId },
                     quantity = refundItem.quantity
                 )

@@ -3,11 +3,12 @@ package com.woocommerce.android.ui.orders.list
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -19,8 +20,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 
 class OrderListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -35,7 +34,7 @@ class OrderListRepository @Inject constructor(
 
     private var isFetchingOrderStatusOptions = false
     private var isFetchingPaymentGateways = false
-    private var continuationOrderStatus: Continuation<RequestResult>? = null
+    private var continuationOrderStatus = ContinuationWrapper<RequestResult>(ORDERS)
 
     init {
         dispatcher.register(this)
@@ -47,20 +46,18 @@ class OrderListRepository @Inject constructor(
 
     suspend fun fetchOrderStatusOptionsFromApi(): RequestResult {
         return if (!isFetchingOrderStatusOptions) {
-            try {
-                suspendCoroutineWithTimeout<RequestResult>(AppConstants.REQUEST_TIMEOUT) {
-                    isFetchingOrderStatusOptions = true
-                    continuationOrderStatus = it
+            val result = continuationOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+                isFetchingOrderStatusOptions = true
 
-                    dispatcher.dispatch(
-                            WCOrderActionBuilder.newFetchOrderStatusOptionsAction(
-                                    FetchOrderStatusOptionsPayload(selectedSite.get())
-                            )
+                dispatcher.dispatch(
+                    WCOrderActionBuilder.newFetchOrderStatusOptionsAction(
+                        FetchOrderStatusOptionsPayload(selectedSite.get())
                     )
-                } ?: RequestResult.ERROR // request timed out
-            } catch (e: CancellationException) {
-                WooLog.e(ORDERS, "TAG - Exception encountered while fetching order status options", e)
-                RequestResult.ERROR
+                )
+            }
+            return when (result) {
+                is Cancellation -> RequestResult.ERROR
+                is Success -> result.value
             }
         } else RequestResult.NO_ACTION_NEEDED
     }
@@ -107,15 +104,14 @@ class OrderListRepository @Inject constructor(
     fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
         isFetchingOrderStatusOptions = false
 
-        continuationOrderStatus?.let {
-            if (event.isError) {
-                WooLog.e(ORDERS,
-                        "$TAG - Error fetching order status options from the api : ${event.error.message}")
-                it.resume(RequestResult.ERROR)
-            } else {
-                it.resume(RequestResult.SUCCESS)
-            }
-            continuationOrderStatus = null
+        if (event.isError) {
+            WooLog.e(
+                ORDERS,
+                "$TAG - Error fetching order status options from the api : ${event.error.message}"
+            )
+            continuationOrderStatus.continueWith(RequestResult.ERROR)
+        } else {
+            continuationOrderStatus.continueWith(RequestResult.SUCCESS)
         }
     }
 }

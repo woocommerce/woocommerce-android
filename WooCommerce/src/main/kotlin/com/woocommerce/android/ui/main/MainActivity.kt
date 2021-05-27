@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -63,10 +64,10 @@ import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
-import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -74,6 +75,7 @@ import org.wordpress.android.util.NetworkUtils
 import java.util.Locale
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppUpgradeActivity(),
     MainContract.View,
     HasAndroidInjector,
@@ -180,7 +182,6 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -761,12 +762,19 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
-        showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
             remoteProductId,
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
+    }
+
+    override fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
+        // variation detail is part of the products navigation graph, and product detail is the starting destination
+        // for that graph, so we have to use a deep link to navigate to variation detail
+        val query = "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
+        val deeplink = "wcandroid://variationDetail$query"
+        navController.navigate(Uri.parse(deeplink))
     }
 
     override fun showAddProduct() {

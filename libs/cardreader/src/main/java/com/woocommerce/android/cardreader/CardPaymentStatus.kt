@@ -1,15 +1,28 @@
 package com.woocommerce.android.cardreader
 
+import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
+
 sealed class CardPaymentStatus {
     object InitializingPayment : CardPaymentStatus()
-    object InitializingPaymentFailed : CardPaymentStatus()
     object CollectingPayment : CardPaymentStatus()
-    object CollectingPaymentFailed : CardPaymentStatus()
     object WaitingForInput : CardPaymentStatus()
     object ShowAdditionalInfo : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
-    object ProcessingPaymentFailed : CardPaymentStatus()
     object CapturingPayment : CardPaymentStatus()
-    object CapturingPaymentFailed : CardPaymentStatus()
-    object PaymentCompleted : CardPaymentStatus()
+    data class PaymentCompleted(val receiptPaymentInfo: ReceiptPaymentInfo) : CardPaymentStatus()
+
+    data class PaymentFailed(
+        val type: CardPaymentStatusErrorType,
+        val paymentDataForRetry: PaymentData?,
+        val errorMessage: String
+    ) : CardPaymentStatus()
+
+    enum class CardPaymentStatusErrorType {
+        CARD_READ_TIMED_OUT,
+        NO_NETWORK,
+        PAYMENT_DECLINED,
+        GENERIC_ERROR
+    }
 }
+
+interface PaymentData

@@ -28,19 +28,17 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.util.ProductUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -81,7 +79,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         )
     )
 
-    private val siteParams = SiteParameters("$", "kg", "cm", 0f)
+    private val siteParams = SiteParameters(
+        currencyCode = "USD",
+        currencySymbol = "$",
+        currencyPosition = null,
+        weightUnit = "kg",
+        dimensionUnit = "cm",
+        gmtOffset = 0f
+    )
     private val parameterRepository: ParameterRepository = mock {
         on(it.getParameters(any(), any())).thenReturn(siteParams)
     }
@@ -89,8 +94,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val prefs: AppPrefs = mock()
     private val productUtils = ProductUtils()
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val productWithTagsAndCategories = ProductTestUtils.generateProductWithTagsAndCategories(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
@@ -549,6 +552,32 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.updateProductDraft(saleEndDate = null)
 
         assertThat(productsDraft?.saleEndDateGmt).isNull()
+    }
+
+    @Test
+    fun `Re-ordering attribute terms is saved correctly`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        val storedProduct = product.copy(
+            attributes = ProductTestUtils.generateProductAttributeList()
+        )
+        doReturn(storedProduct).whenever(productRepository).getProduct(any())
+
+        val attribute = storedProduct.attributes[0]
+        val firstTerm = attribute.terms[0]
+        val secondTerm = attribute.terms[1]
+
+        viewModel.start()
+        viewModel.swapProductDraftAttributeTerms(
+            attribute.id,
+            attribute.name,
+            firstTerm,
+            secondTerm
+        )
+
+        val draftAttribute = viewModel.productDraftAttributes[0]
+        val draftTerms = draftAttribute.terms
+        assertThat(draftTerms[0]).isEqualTo(secondTerm)
+        assertThat(draftTerms[1]).isEqualTo(firstTerm)
     }
 
     private val productsDraft

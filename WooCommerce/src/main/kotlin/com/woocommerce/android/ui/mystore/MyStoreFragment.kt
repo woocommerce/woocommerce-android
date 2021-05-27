@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -19,7 +20,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.configureStringClick
+import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -59,6 +61,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var dateUtils: DateUtils
+    @Inject lateinit var crashLogging: CrashLogging
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -149,13 +153,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             }
         }
 
-        myStoreDateBar.initView()
+        myStoreDateBar.initView(dateUtils)
 
         binding.myStoreStats.initView(
             activeGranularity,
             listener = this,
             selectedSite = selectedSite,
-            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
+            dateUtils = dateUtils
         )
 
         binding.myStoreTopPerformers.initView(
@@ -166,12 +171,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         )
 
         val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
-        getString(R.string.my_store_stats_availability_description, contactUsText)
-            .configureStringClick(
-                clickableContent = contactUsText,
-                clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) },
-                textField = binding.myStoreStatsAvailabilityMessage
-            )
+        binding.myStoreStatsAvailabilityMessage.setClickableText(
+            content = getString(R.string.my_store_stats_availability_description, contactUsText),
+            clickableContent = contactUsText,
+            clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) }
+        )
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 

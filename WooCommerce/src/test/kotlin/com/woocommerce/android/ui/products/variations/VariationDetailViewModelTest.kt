@@ -10,13 +10,11 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -36,14 +34,21 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         )
     }
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
     private lateinit var sut: VariationDetailViewModel
 
-    private val siteParams = SiteParameters("$", "kg", "cm", 0f)
+    private val siteParams = SiteParameters(
+        currencyCode = "USD",
+        currencySymbol = "$",
+        currencyPosition = null,
+        weightUnit = "kg",
+        dimensionUnit = "cm",
+        gmtOffset = 0f
+    )
     private val parameterRepository: ParameterRepository = mock {
         on { getParameters(any(), any()) } doReturn (siteParams)
+    }
+    private val variationRepository: VariationDetailRepository = mock {
+        on { getVariation(any(), any()) } doReturn (TEST_VARIATION)
     }
 
     private val resourceProvider: ResourceProvider = mock {
@@ -53,7 +58,10 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val savedState = SavedStateWithArgs(
         savedState = SavedStateHandle(),
         arguments = null,
-        defaultArgs = VariationDetailFragmentArgs(TEST_VARIATION)
+        defaultArgs = VariationDetailFragmentArgs(
+            TEST_VARIATION.remoteProductId,
+            TEST_VARIATION.remoteVariationId
+        )
     )
 
     @Before
@@ -61,7 +69,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         sut = VariationDetailViewModel(
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
-            variationRepository = mock(),
+            variationRepository = variationRepository,
             productRepository = mock(),
             networkStatus = mock(),
             currencyFormatter = mock(),

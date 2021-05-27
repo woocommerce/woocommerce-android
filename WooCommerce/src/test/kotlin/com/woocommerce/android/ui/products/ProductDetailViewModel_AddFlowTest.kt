@@ -12,9 +12,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -42,7 +41,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -77,7 +75,14 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         )
     )
 
-    private val siteParams = SiteParameters("$", "kg", "cm", 0f)
+    private val siteParams = SiteParameters(
+        currencyCode = "USD",
+        currencySymbol = "$",
+        currencyPosition = null,
+        weightUnit = "kg",
+        dimensionUnit = "cm",
+        gmtOffset = 0f
+    )
     private val parameterRepository: ParameterRepository = mock {
         on(it.getParameters(any(), any())).thenReturn(siteParams)
     }
@@ -88,8 +93,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     private val productUtils = ProductUtils()
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private lateinit var viewModel: ProductDetailViewModel
 

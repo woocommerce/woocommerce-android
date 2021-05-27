@@ -1,4 +1,0 @@
-6,4:
-Bu sürümde birkaç iyileştirme yaptık.
-Stok miktarında ondalık bir değer olduğunda uygulamanın ürünleri yüklemesini engelleyen bir hatayı düzelttik.
-Gönderi etiketi biçim seçeneği ekranında oluşan düzenle ilgili bir sorunu da düzelttik.

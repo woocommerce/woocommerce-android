@@ -27,6 +27,7 @@
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
     <string name="shipping">Shipping</string>
+    <string name="multiple_shipping">multiple shipping lines</string>
     <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
@@ -170,7 +171,7 @@
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
-    <string name="login_not_wordpress_site">The website %1$s is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
+    <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
     <string name="login_refresh_app">refresh the app</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
@@ -299,6 +300,7 @@
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="orderdetail_collect_payment_button">Collect Payment</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">Create new shipping label</string>
     <string name="orderdetail_shipping_label_item_header">Package %d</string>
     <string name="orderdetail_shipping_label_item_menu">Refund shipping label</string>
     <string name="orderdetail_shipping_label_item_shipfrom">Ship from</string>
@@ -365,6 +367,7 @@
     <string name="shipping_label_print_save_for_later">Save for later</string>
     <string name="shipping_label_print_screen_title">Print shipping label</string>
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
+    <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
@@ -448,6 +451,7 @@
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
     </plurals>
+    <string name="shipping_label_items_count_placeholder">Items count</string>
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
     <string name="shipping_label_packages_loading_message">Please wait…</string>
@@ -592,6 +596,48 @@
     <string name="order_shipment_tracking_custom_provider_section_name">Custom Carrier</string>
     <string name="order_shipment_tracking_progress_title">Adding tracking</string>
     <string name="order_shipment_tracking_progress_message">Please wait</string>
+
+    <!--
+        Card Reader Payments
+    -->
+    <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
+    <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
+    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
+
+    <string name="card_reader_collect_payment">Collect payment</string>
+    <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
+    <string name="card_reader_payment_completed_payment_header">Payment successful</string>
+    <string name="card_reader_payment_payment_failed_header">Payment failed</string>
+
+    <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
+    <string name="card_reader_payment_processing_payment_state">Processing payment</string>
+    <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
+
+    <string name="card_reader_payment_print_receipt">Print receipt</string>
+    <string name="card_reader_payment_send_receipt">Send receipt</string>
+
+    <!--
+            Card Reader Connection
+        -->
+    <string name="card_reader_connect_scanning_header">Scanning for readers</string>
+    <string name="card_reader_connect_scanning_hint">Press the power button of your reader until you see a flashing blue light</string>
+    <string name="card_reader_connect_reader_found_header">Do you want to connect reader %s?</string>
+    <string name="card_reader_connect_to_reader">Connect to reader</string>
+    <string name="card_reader_connect_connecting_header">Connecting to reader</string>
+    <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_connect_failed_header">Connecting to reader failed</string>
+    <string name="card_reader_connect_scanning_failed_hint">We couldn\'t find any readers.</string>
+    <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
+    <string name="card_reader_connect_missing_permissions_hint">Missing required location permission</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Location is disabled</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth is disabled</string>
+    <string name="card_reader_connect_open_permission_settings">Open settings</string>
+    <string name="card_reader_connect_open_location_settings">Open settings</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Open settings</string>
 
     <!--
         Notifications
@@ -742,6 +788,7 @@
     <string name="product_short_description">Short description</string>
     <string name="product_short_description_empty">Brief summary about the product</string>
     <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_delete_dialog_title">Deleting product</string>
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
@@ -861,6 +908,8 @@
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
+    <string name="variation_create_dialog_title">Creating variation</string>
+    <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
 
     <!--
         Product images
@@ -1173,27 +1222,21 @@
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
 
-    <!-- Product Add more details Bottom sheet -->
+    <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
-    <string name="product_type_physical_desc">An item you ship to the customer</string>
-    <string name="product_type_variation_desc">A product with variations like color or size</string>
-    <string name="product_type_virtual_desc">A service or digital download</string>
+    <string name="product_type_simple_title">Simple physical productt</string>
+    <string name="product_type_simple_desc">A unique physical product that you may have to ship to the customer</string>
+    <string name="product_type_virtual_title">Simple virtual product</string>
+    <string name="product_type_virtual_desc">A unique digital product like services, downloadable books, music or videos</string>
+    <string name="product_type_variable_title">Variable product</string>
+    <string name="product_type_variable_desc">A product with variations like color or size</string>
+    <string name="product_type_grouped_title">Grouped product</string>
     <string name="product_type_grouped_desc">A collection of related products</string>
+    <string name="product_type_external_title">External product</string>
     <string name="product_type_external_desc">Link a product to an external website</string>
     <string name="product_type_confirm_dialog_title">Are you sure you want to change the product type?</string>
     <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
     <string name="product_type_confirm_button">Yes, change</string>
-
-    <!-- New Product bottom sheet -->
-    <string name="product_add_type_list_header" translatable="false">@string/product_type_list_header</string>
-    <string name="product_add_type_simple">Simple product</string>
-    <string name="product_add_type_variable">Variable product</string>
-    <string name="product_add_type_grouped">Grouped product</string>
-    <string name="product_add_type_external">External product</string>
-    <string name="product_add_type_simple_desc">A unique item to sell</string>
-    <string name="product_add_type_variable_desc">A product with variations like color or size</string>
-    <string name="product_add_type_grouped_desc" translatable="false">@string/product_type_grouped_desc</string>
-    <string name="product_add_type_external_desc" translatable="false">@string/product_type_external_desc</string>
 
     <!-- New Product screen -->
     <string name="product_add_tool_bar_title">New Product</string>

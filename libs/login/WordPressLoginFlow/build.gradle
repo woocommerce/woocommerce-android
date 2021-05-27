@@ -21,10 +21,10 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 repositories {
+    mavenCentral()
     google()
     jcenter()
     maven { url "https://www.jitpack.io" }
-    maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
 }
 
 android {
@@ -65,7 +65,7 @@ dependencies {
             exclude group: "org.wordpress", module: "utils"
         }
     } else {
-        implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:1.6.22") {
+        implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:1.17.0") {
             exclude group: "com.android.support"
             exclude group: "org.wordpress", module: "utils"
         }
@@ -83,7 +83,7 @@ dependencies {
 
     lintChecks 'org.wordpress:lint:1.0.2'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:2.28.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.robolectric:robolectric:4.5.1'

@@ -20,9 +20,10 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCustomsForm
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
@@ -48,6 +49,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.Companion.EDIT_PAYMENTS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment.Companion.SHIPPING_CARRIERS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment.Companion.SHIPPING_CARRIERS_RESULT
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment.Companion.EDIT_CUSTOMS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
@@ -61,7 +63,7 @@ import com.woocommerce.android.widgets.WCEmptyView
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label) {
+class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_shipping_label) {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -126,6 +128,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         }
         handleResult<List<ShippingRate>>(SHIPPING_CARRIERS_RESULT) {
             viewModel.onShippingCarriersSelected(it)
+        }
+        handleNotice(EDIT_CUSTOMS_RESULT) {
+            viewModel.onCustomsFilledOut()
         }
     }
 
@@ -242,6 +247,11 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             shippingLabelId = event.labels.first().id,
                             isReprint = false
                         )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowCustomsForm -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToShippingCustomsFragment()
                     findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false

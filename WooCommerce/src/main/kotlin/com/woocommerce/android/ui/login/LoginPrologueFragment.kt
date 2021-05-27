@@ -3,12 +3,13 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
+import com.woocommerce.android.ui.login.LoginPrologueViewPagerIndicator.OnIndicatorClickedListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
-import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.PROLOGUE
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
@@ -44,8 +45,21 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
 
+        binding.viewPager.initViewPager(childFragmentManager)
+        binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                binding.viewPagerIndicator.setSelectedIndicator(position)
+            }
+        })
+
+        binding.viewPagerIndicator.setListener(object : OnIndicatorClickedListener {
+            override fun onIndicatorClicked(index: Int) {
+                binding.viewPager.currentItem = index
+            }
+        })
+
         if (savedInstanceState == null) {
-            unifiedLoginTracker.track(Flow.PROLOGUE, PROLOGUE)
+            unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
         }
     }
 

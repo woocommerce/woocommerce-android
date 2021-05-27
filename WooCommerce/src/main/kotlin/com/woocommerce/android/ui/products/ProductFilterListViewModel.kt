@@ -8,14 +8,15 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.ui.products.ProductType.OTHER
+import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,7 +31,7 @@ class ProductFilterListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val resourceProvider: ResourceProvider
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
     }
@@ -38,15 +39,16 @@ class ProductFilterListViewModel @AssistedInject constructor(
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
 
     private val _filterListItems = MutableLiveData<List<FilterListItemUiModel>>()
-    final val filterListItems: LiveData<List<FilterListItemUiModel>> = _filterListItems
+    val filterListItems: LiveData<List<FilterListItemUiModel>> = _filterListItems
 
     private val _filterOptionListItems = MutableLiveData<List<FilterListOptionItemUiModel>>()
-    final val filterOptionListItems: LiveData<List<FilterListOptionItemUiModel>> = _filterOptionListItems
+    val filterOptionListItems: LiveData<List<FilterListOptionItemUiModel>> = _filterOptionListItems
 
-    final val productFilterListViewStateData = LiveDataDelegate(savedState, ProductFilterListViewState())
+    val productFilterListViewStateData = LiveDataDelegateWithArgs(savedState, ProductFilterListViewState())
     private var productFilterListViewState by productFilterListViewStateData
 
-    final val productFilterOptionListViewStateData = LiveDataDelegate(savedState, ProductFilterOptionListViewState())
+    val productFilterOptionListViewStateData =
+        LiveDataDelegateWithArgs(savedState, ProductFilterOptionListViewState())
     private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
     /**
@@ -55,7 +57,7 @@ class ProductFilterListViewModel @AssistedInject constructor(
      *
      * If no filters are previously selected, the map is empty.
      */
-    private final val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
+    private val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
         val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
                 ?: mutableMapOf()
         arguments.selectedStockStatus?.let { params.put(STOCK_STATUS, it) }
@@ -183,7 +185,7 @@ class ProductFilterListViewModel @AssistedInject constructor(
                         TYPE,
                         resourceProvider.getString(string.product_type),
                         addDefaultFilterOption(
-                                ProductType.values().filterNot { it == OTHER }.map {
+                                ProductType.values().filterNot { it == OTHER || it == VIRTUAL }.map {
                                     FilterListOptionItemUiModel(
                                             resourceProvider.getString(it.stringResource),
                                             filterOptionItemValue = it.value,

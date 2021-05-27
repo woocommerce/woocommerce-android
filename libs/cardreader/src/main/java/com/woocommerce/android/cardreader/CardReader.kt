@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader
 
 interface CardReader {
-    fun getId(): String?
+    val id: String?
+    val currentBatteryLevel: Float?
 }

@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTaxStatus.Taxable
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -24,10 +23,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Calendar
@@ -39,7 +38,14 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val productRepository: ProductDetailRepository = mock()
 
-    private val siteParams = SiteParameters("$", "kg", "cm", 0f)
+    private val siteParams = SiteParameters(
+        currencyCode = "USD",
+        currencySymbol = "$",
+        currencyPosition = LEFT,
+        weightUnit = "kg",
+        dimensionUnit = "cm",
+        gmtOffset = 0f
+    )
     private val parameterRepository: ParameterRepository = mock {
         on(it.getParameters(any(), any())).thenReturn(siteParams)
     }
@@ -62,9 +68,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         )
     )
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
-
     private lateinit var viewModel: ProductPricingViewModel
 
     private val taxClasses = listOf(
@@ -72,7 +75,8 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         TaxClass("weird")
     )
     private val viewState = ViewState(
-        currency = "$",
+        currency = siteParams.currencySymbol,
+        currencyPosition = siteParams.currencyPosition,
         decimals = 2,
         taxClassList = taxClasses,
         salePriceErrorMessage = null,
@@ -85,7 +89,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         val siteSettings = mock<WCSettingsModel> {
             on(it.currencyDecimalNumber).thenReturn(viewState.decimals)
         }
-
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
         doReturn(taxClasses).whenever(productRepository).getTaxClassesForSite()

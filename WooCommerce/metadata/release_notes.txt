@@ -1,4 +1,2 @@
-- [*] Fixed bug that would cause the on-screen keyboard to disappear when searching the order list. [https://github.com/woocommerce/woocommerce-android/pull/3828]
-- [**] Beta feature: merchants from US can create shipping labels for physical orders from the app, the feature supports for now only orders where the shipping address is in the US. [https://github.com/woocommerce/woocommerce-android/pull/3844]
-- [*] Fixed a bug that resulted in displaying inaccurate information about expired shipping labels. [https://github.com/woocommerce/woocommerce-android/pull/3849]
+We have heard that orders may get fulfilled in multiple shipments. With this update, you can now print more than one label for an order. We also fixed a few other small things to make your experience better.
 

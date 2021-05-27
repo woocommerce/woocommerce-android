@@ -10,15 +10,18 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
@@ -30,7 +33,7 @@ class ProductPricingViewModel @AssistedInject constructor(
     wooCommerceStore: WooCommerceStore,
     selectedSite: SelectedSite,
     parameterRepository: ParameterRepository
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -44,7 +47,7 @@ class ProductPricingViewModel @AssistedInject constructor(
         parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
     }
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState(pricingData = navArgs.pricingData))
+    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState(pricingData = navArgs.pricingData))
     private var viewState by viewStateData
 
     val pricingData
@@ -58,7 +61,8 @@ class ProductPricingViewModel @AssistedInject constructor(
             ?: DEFAULT_DECIMAL_PRECISION
 
         viewState = viewState.copy(
-            currency = parameters.currencyCode,
+            currency = parameters.currencySymbol,
+            currencyPosition = parameters.currencyPosition,
             decimals = decimals,
             taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
             isTaxSectionVisible = isProductPricing
@@ -167,12 +171,15 @@ class ProductPricingViewModel @AssistedInject constructor(
         val taxClassList: List<TaxClass>? = null,
         val salePriceErrorMessage: Int? = null,
         val pricingData: PricingData = PricingData(),
-        val isTaxSectionVisible: Boolean? = null
+        val isTaxSectionVisible: Boolean? = null,
+        private val currencyPosition: CurrencyPosition? = null
     ) : Parcelable {
         val isRemoveEndDateButtonVisible: Boolean
             get() = pricingData.saleEndDate != null
         val canSaveChanges: Boolean
             get() = salePriceErrorMessage == 0 || salePriceErrorMessage == null
+        val isCurrencyPrefix: Boolean
+            get() = currencyPosition == LEFT || currencyPosition == LEFT_SPACE
     }
 
     @Parcelize

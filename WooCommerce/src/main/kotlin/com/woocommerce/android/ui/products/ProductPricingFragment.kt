@@ -28,7 +28,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+import java.math.BigDecimal
 import java.util.Date
+import javax.inject.Inject
 
 class ProductPricingFragment
     : BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
@@ -45,6 +47,8 @@ class ProductPricingFragment
 
     private var _binding: FragmentProductPricingBinding? = null
     private val binding get() = _binding!!
+
+    @Inject lateinit var dateUtils: DateUtils
 
     override fun onPause() {
         super.onPause()
@@ -77,7 +81,7 @@ class ProductPricingFragment
     private fun setupObservers(viewModel: ProductPricingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
-                setupViews(new.currency, new.decimals, viewModel.pricingData)
+                setupViews(new.currency, new.isCurrencyPrefix, viewModel.pricingData)
             }
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
                 updateProductTaxClassList(it, viewModel.pricingData)
@@ -114,23 +118,31 @@ class ProductPricingFragment
         })
     }
 
-    private fun setupViews(currency: String, decimals: Int, pricingData: PricingData) {
+    private fun setupViews(currency: String, isCurrencyPrefix: Boolean, pricingData: PricingData) {
         if (!isAdded) return
 
         with(binding.productRegularPrice) {
-            initView(currency, decimals, currencyFormatter)
-            pricingData.regularPrice?.let { setValue(it) }
-            getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.onRegularPriceEntered(it)
-            })
+            if (isCurrencyPrefix) {
+                prefixText = currency
+            } else suffixText = currency
+
+            pricingData.regularPrice?.let { setText(it.toString()) }
+            setOnTextChangedListener {
+                val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                viewModel.onRegularPriceEntered(price)
+            }
         }
 
         with(binding.productSalePrice) {
-            initView(currency, decimals, currencyFormatter)
-            pricingData.salePrice?.let { setValue(it) }
-            getCurrencyEditText().value.observe(viewLifecycleOwner, Observer {
-                viewModel.onSalePriceEntered(it)
-            })
+            if (isCurrencyPrefix) {
+                prefixText = currency
+            } else suffixText = currency
+
+            pricingData.salePrice?.let { setText(it.toString()) }
+            setOnTextChangedListener {
+                val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                viewModel.onSalePriceEntered(price)
+            }
         }
 
         val scheduleSale = pricingData.isSaleScheduled == true
@@ -150,7 +162,7 @@ class ProductPricingFragment
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(binding.scheduleSaleStartDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils().localDateToGmt(
+                    val selectedDate = dateUtils.localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, true
                     )
 
@@ -164,7 +176,7 @@ class ProductPricingFragment
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(binding.scheduleSaleEndDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils().localDateToGmt(
+                    val selectedDate = dateUtils.localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, false
                     )
 
@@ -268,9 +280,9 @@ class ProductPricingFragment
         dateSetListener: OnDateSetListener
     ): DatePickerDialog {
         val dateString = if (spinnerEditText.getText().isNotBlank())
-            DateUtils().formatToYYYYmmDD(spinnerEditText.getText())
+            dateUtils.formatToYYYYmmDD(spinnerEditText.getText())
         else
-            DateUtils().formatToYYYYmmDD(Date().formatToMMMddYYYY())
+            dateUtils.formatToYYYYmmDD(Date().formatToMMMddYYYY())
         val (year, month, day) = dateString?.split("-").orEmpty()
         val datePicker = DatePickerDialog(
                 requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
@@ -287,7 +299,7 @@ class ProductPricingFragment
      * If given [date] is null, current date is used
      */
     private fun formatSaleDateForDisplay(date: Date?, gmtOffset: Float): String {
-        val currentDate = DateUtils().offsetGmtDate(Date(), gmtOffset)
+        val currentDate = DateUtils.offsetGmtDate(Date(), gmtOffset)
         val dateOnSaleFrom = date?.offsetGmtDate(gmtOffset) ?: currentDate
         return dateOnSaleFrom.formatToMMMddYYYY()
     }

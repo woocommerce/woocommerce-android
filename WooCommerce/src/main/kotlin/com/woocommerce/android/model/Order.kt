@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.ShippingMethod
 import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.model.Order.Status.OnHold
@@ -53,7 +54,8 @@ data class Order(
     val billingAddress: Address,
     val shippingAddress: Address,
     val shippingMethods: List<ShippingMethod>,
-    val items: List<Item>
+    val items: List<Item>,
+    val shippingLines: List<ShippingLine>
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = paymentMethodTitle.isEmpty() && datePaid == null
@@ -100,6 +102,15 @@ data class Order(
         @IgnoredOnParcel
         val isVariation: Boolean = variationId != 0L
     }
+
+    @Parcelize
+    data class ShippingLine(
+        val itemId: Long,
+        val methodId: String,
+        val methodTitle: String,
+        val totalTax: BigDecimal,
+        val total: BigDecimal
+    ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
         return when {
@@ -257,7 +268,16 @@ fun WCOrderModel.toAppModel(): Order {
                                 it.variationId ?: 0,
                                 it.getAttributesAsString()
                         )
-                    }
+                    },
+            shippingLines = getShippingLineList().map {
+                ShippingLine(
+                    it.id!!,
+                    it.methodId ?: StringUtils.EMPTY,
+                    it.methodTitle ?: StringUtils.EMPTY,
+                    it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                    it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+                )
+            }
     )
 }
 

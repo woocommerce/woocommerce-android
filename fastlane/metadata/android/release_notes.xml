@@ -1,102 +1,102 @@
 <ar>
-6.4:
-قمنا بالقليل من التحسينات في هذا الإصدار.
-أصلحنا خطأ كان يمنع التطبيق من تحميل المنتجات عند وجود قيمة عشرية في كمية المخزون.
-أصلحنا كذلك مشكلة تخطيط كانت تحدث في شاشة خيار تنسيقات ملصق الشحن.
+6.6:
+- يمكنك الآن عند تحرير منتج ما إنشاء أنواع متنوعة، وسمات، وخيارات السمات وحذفها وتحديثها. يمكنك كذلك إنشاء منتج افتراضي وتحريره من شاشة تفاصيل المنتج.
+أصبح من الممكن الآن استرداد أموال خط الشحن داخل طلب ما.
+أصلحنا كذلك مشكلة كانت تحدث عند تحرير أسعار المنتج العادية وأسعار الخصومات.
 </ar>
 <de-DE>
-6.4:
-Wir haben in dieser Release ein paar Verbesserungen vorgenommen.
-Wir haben einen Fehler behoben, der dazu führte, dass Produkte in der App nicht geladen wurde, wenn im Lagerbestand ein Dezimalwert angegeben war.
-Außerdem haben wir ein Problem am Layout behoben, das an den Optionen für Versandetikettenformate auftrat.
+6.6:
+Du kannst beim Bearbeiten eines Produktes jetzt Variationen, Attribute und Attributsoptionen erstellen, löschen und aktualisieren. Außerdem hast du die Möglichkeit, ein virtuelles Produkt in der Produktdetailansicht zu erstellen und zu bearbeiten.
+Du kannst den Versand jetzt innerhalb einer Bestellung rückerstatten.
+Zudem haben wir einen Fehler behoben, der beim Bearbeiten der herkömmlichen Preise und Angebotspreise von Produkten auftrat.
 </de-DE>
 <es-ES>
-6,4:
-Hemos realizado algunas mejoras en esta versión.
-Hemos corregido un error que impedía que la aplicación cargara productos cuando había un valor decimal en la cantidad de existencias.
-También hemos solucionado un problema de diseño que se producía en la pantalla de opciones de formatos de etiquetas de envío.
+6.6:
+Ahora, al editar un producto, puedes crear, eliminar y actualizar variaciones, atributos y opciones de atributos. También puedes crear y editar un producto virtual desde su pantalla de detalles.
+Ahora es posible reembolsar una partida de un pedido.
+También hemos corregido un problema que sucedía al editar los precios de venta y normal de un producto.
 </es-ES>
 <fr-FR>
-6.4 :
-Nous avons apporté quelques améliorations à cette version.
-Nous avons résolu un bogue qui empêchait l’application de charger des produits lorsqu’il y avait une valeur décimale dans la quantité en stock.
-Nous avons également résolu un problème de mise en page qui se produisait sur l’écran d’option des formats des étiquettes d’expédition.
+6.6 :
+Lorsque vous modifiez un produit, vous pouvez désormais créer, supprimer et mettre à jour des variantes, des attributs et des options d’attribut. Vous pouvez également créer et modifier un produit virtuel à partir de l’écran Détails sur le produit.
+Il est désormais possible de rembourser une ligne de livraison dans une commande.
+Nous avons également résolu un problème survenant lors de l’édition des prix de ventes et standard du produit.
 </fr-FR>
 <iw-IL>
-6.4:
-ביצענו כמה שיפורים בגרסה הזאת.
-תיקנו באג שמנע מהאפליקציה לטעון מוצרים כאשר הכמות במלאי הכילה ערך עשרוני.
-תיקנו גם בעיה בפריסה שהתרחשה במסך האפשרויות של הפורמטים לתוויות משלוח.
+6.6:
+כאשר עורכים מוצר, אפשר ליצור, למחוק ולעדכן את הסוגים, המאפיינים ואת אפשרויות המאפיינים של המוצר. אפשר גם ליצור ולערוך מוצרים וירטואליים מהמסך של פרטי המוצר.
+כעת אפשר להנפיק החזר כספי עבור שורת משלוח בתוך הזמנה.
+תיקנו גם בעיה שהתרחשה כאשר עורכים את המחירים הרגילים ואת מחירי המבצע של המוצר.
 </iw-IL>
 <id>
-6.4:
-Kami melakukan sejumlah peningkatan pada rilis ini.
-Kami memperbaiki bug yang membuat aplikasi tidak dapat memuat produk saat ada nilai desimal pada jumlah stok.
-Kami juga memperbaiki masalah tata letak yang muncul pada layar opsi format label pengiriman.
+6.6:
+Ketika menyunting produk, sekarang Anda bisa membuat, menghapus, dan memperbarui variasi, atribut, dan opsi atribut. Anda juga bisa membuat dan menyunting produk virtual dari layar detail produk.
+Sekarang dimungkinkan untuk mengembalikan dana baris pengiriman di dalam sebuah pemesanan.
+Kami juga memperbaiki masalah yang terjadi saat menyunting harga normal dan harga diskon produk.
 </id>
 <it-IT>
-6.4:
-Abbiamo apportato alcuni miglioramenti in questo rilascio.
-Abbiamo corretto un bug che impediva all'applicazione di caricare i prodotti quando era presente un valore decimale nella quantità in magazzino.
-Abbiamo anche corretto un problema di layout che si presentava sulla schermata delle opzioni dei formati dell'etichetta di spedizione.
+6.6:
+Quando viene modificato un prodotto, ora puoi creare, eliminare e aggiornare le varianti, gli attributi e le opzioni degli attributi. Puoi anche creare e modificare un prodotto virtuale dalla schermata dei dettagli del prodotto.
+Ora è possibile rimborsare una riga della spedizione all'interno di un ordine.
+Abbiamo anche corretto un problema che si verificava durante la modifica dei prezzi normali e di vendita di un prodotto.
 </it-IT>
 <ja-JP>
-6.4:
-今回のリリースでは数か所改善しました。
-在庫数に小数値がある場合にアプリが商品を読み込めないバグを修正しました。
-配送ラベルの書式設定オプション画面で発生するレイアウトに関する問題も修正しました。
+6.6:
+製品情報を編集するとき、バリエーション、属性、属性の選択肢の作成、削除、更新ができるようになりました。 また、製品の詳細画面から仮想製品を作成、編集することもできます。
+注文内の配送ラインの返金が可能になりました。
+製品の標準価格およびセール価格を編集するときに発生する問題も修正されました。
 </ja-JP>
 <ko-KR>
-6.4:
-이 릴리스에서 몇 가지 개선 사항을 적용했습니다.
-재고 수량에 소수점 값이 있으면 앱에서 제품을 로드하지 못했던 버그를 수정했습니다.
-배송 레이블 형식 옵션 화면에서 발생하는 레이아웃 문제도 해결했습니다.
+6.6:
+제품을 편집할 때 이제는 변형, 속성, 속성 옵션을 생성, 삭제, 업데이트할 수 있습니다. 제품 상세 정보 페이지에서 가상 제품을 생성하고 편집할 수도 있습니다.
+이제는 주문 내부 배송 라인 환불이 가능합니다.
+제품의 정상 가격과 할인 가격을 편집할 때 발생하던 문제도 해결했습니다.
 </ko-KR>
 <nl-NL>
-6.4:
-We made a few improvements in this release.
-We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
-We also fixed a layout issue that occurred on the shipping label formats option screen.
+6.6:
+Tijdens het bijwerken van een product kun je nu variaties, eigenschappen en eigenschapopties maken, verwijderen en bijwerken. Je kunt ook vanaf het scherm productgegevens een virtueel product maken en bijwerken.
+Je kunt nu een verzendregel terugstorten binnen een bestelling.
+We hebben ook een probleem verholpen dat zich voordeed wanneer de reguliere en verkoopprijs van een product werden bijgewerkt.
 </nl-NL>
 <pt-BR>
-6.4:
-Fizemos algumas melhorias nesta versão.
-Corrigimos um bug que impedia o aplicativo de carregar produtos quando havia um valor decimal na quantidade em estoque.
-Também corrigimos um erro no layout que ocorria na tela de opções de formatos de etiquetas de envio.
+6.6:
+Ao editar um produto, agora você pode criar, excluir e atualizar variações, atributos e opções de atributo. Você também pode criar e editar um produto virtual na tela de detalhes do produto.
+Agora é possível reembolsar uma linha de remessa no pedido.
+Além disso, corrigimos um problema que ocorria ao editar o preço promocional ou normal de um produto.
 </pt-BR>
 <ru-RU>
-6,4:
-В этом выпуске добавлено несколько улучшений.
-Исправлена ошибка, из-за которой приложение не загружало товары, когда их количество в наличии было представлено в десятичном формате.
-Мы также исправили проблему разметки, которая возникала на экране выбора формата транспортной этикетки.
+6.6
+При изменении товара теперь можно создавать, удалять и обновлять варианты, атрибуты и опции атрибутов. На экране сведений о продукте также можно создать виртуальный товар и внести в него изменения.
+В настоящее время можно вернуть средства по строке доставки внутри заказа.
+Мы также устранили проблему, которая происходила при изменении обычной и распродажной цены продукта.
 </ru-RU>
 <sv-SE>
-6,4:
-Vi har gjort ett antal förbättringar i den här versionen.
-Vi har korrigerat ett fel som hindrade appen från att läsa in produkter när det fanns ett decimalvärde i lagerkvantiteten.
-Vi har också korrigerat ett layoutproblem som inträffade på alternativskärmen för fraktetikettformat.
+6.6:
+När du redigerar en produkt kan du nu skapa, ta bort och uppdatera variationer, attribut och attributalternativ. Du kan också skapa och redigera en virtuell produkt från produktinformationsskärmen.
+Det är nu möjligt att återbetala en fraktrad i en beställning.
+Vi har även åtgärdat ett problem som uppstod vid redigering av det ordinarie priset och reapriset för en produkt.
 </sv-SE>
 <tr-TR>
-6,4:
-Bu sürümde birkaç iyileştirme yaptık.
-Stok miktarında ondalık bir değer olduğunda uygulamanın ürünleri yüklemesini engelleyen bir hatayı düzelttik.
-Gönderi etiketi biçim seçeneği ekranında oluşan düzenle ilgili bir sorunu da düzelttik.
+6.6:
+Bir ürünü düzenlerken artık ürün varyasyonlarını, ürün özelliklerini ve ürün özelliği seçeneklerini oluşturabilir, silebilir ve güncelleyebilirsiniz. Ayrıca ürün detay ekranından sanal bir ürün oluşturabilir ve düzenleyebilirsiniz
+Artık bir siparişin gönderim satırından iade yapmak mümkün.
+Bir ürünün normal ve indirimli fiyatlarını düzenlerken oluşan bir sorunu da düzelttik.
 </tr-TR>
 <zh-CN>
-6.4：
-我们在此版本中进行了一些改进。
-我们修复了在库存数量显示为小数时，应用不会加载产品的错误。
-我们也修复“配送标签格式选项屏幕上出现的布局问题。
+6.6：
+编辑产品时，您现在可以创建、删除和更新变体、属性和属性选项。 您还可以从产品详情屏幕创建和编辑虚拟产品。
+现在，您可以在订单内退还货运公司费用。
+我们还修复了在编辑产品常规价格和促销价格时出现的问题。
 </zh-CN>
 <zh-TW>
-6.4：
-我們在此版本中進行了一些改善。
-我們修正了在「存貨數量」的值中有小數時，會防止應用程式載入產品的錯誤。
-我們也修正了在「運送標籤格式選項」畫面上發生的版面配置問題。
+6.6：
+現在編輯產品時，可以建立、刪除和更新款式、屬性和屬性選項。 你也可以從產品詳細資料畫面建立和編輯虛擬產品。
+現在可以針對訂單中的某個出貨細項退款。
+我們也解決了編輯產品的原價和售價時發生的問題。
 </zh-TW>
 <en-US>
-6.4:
-We made a few improvements in this release.
-We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
-We also fixed a layout issue that occurred on the shipping label formats option screen.
+6.6:
+When editing a product, you can now create, delete, and update variations, attributes, and attribute options. You can also create and edit a virtual product from the product detail screen.
+It is now possible to refund a shipping line inside an order.
+We also fixed an issue that occurred when editing a product’s regular and sale prices.
 </en-US>

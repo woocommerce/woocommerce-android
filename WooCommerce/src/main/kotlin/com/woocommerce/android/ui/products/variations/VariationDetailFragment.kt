@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,13 +19,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.databinding.FragmentVariationDetailBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
@@ -35,6 +37,7 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -45,11 +48,12 @@ import org.wordpress.android.util.ActivityUtils
 import java.util.Date
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail),
+class VariationDetailFragment : BaseDaggerFragment(R.layout.fragment_variation_detail),
     BackPressListener,
     OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
+        const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -94,6 +98,11 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_variation_detail_fragment, menu)
         doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
@@ -112,6 +121,10 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
+                true
+            }
+            R.id.menu_delete -> {
+                viewModel.onDeleteVariationClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -187,12 +200,16 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.variation.takeIfNotEqualTo(old?.variation) {
-                variationName = new.variation.getName(new.parentProduct)
-                showVariationDetails(it)
+            new.variation.takeIfNotEqualTo(old?.variation) { newVariation ->
+                newVariation?.let {
+                    variationName = it.getName(new.parentProduct)
+                    showVariationDetails(it)
+                }
             }
             new.parentProduct.takeIfNotEqualTo(old?.parentProduct) { product ->
-                variationName = new.variation.getName(product)
+                new.variation?.let {
+                    variationName = it.getName(product)
+                }
             }
             new.uploadingImageUri.takeIfNotEqualTo(old?.uploadingImageUri) {
                 if (it != null) {
@@ -203,12 +220,17 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 }
             }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                showProgressDialog(it, R.string.product_update_dialog_title)
+            }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) {
                 doneOrUpdateMenuItem?.isVisible = it
             }
             new.isDoneButtonEnabled?.takeIfNotEqualTo(old?.isDoneButtonEnabled) {
                 doneOrUpdateMenuItem?.isEnabled = it
+            }
+            new.isDeleteDialogShown?.takeIfNotEqualTo(old?.isDeleteDialogShown) {
+                showProgressDialog(it, R.string.product_delete_dialog_title)
             }
         }
 
@@ -222,6 +244,7 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 is VariationNavigationTarget -> {
                     navigator.navigate(this, event)
                 }
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
                 is Exit -> requireActivity().onBackPressed()
                 else -> event.isHandled = false
@@ -258,11 +281,11 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
         }
     }
 
-    private fun showProgressDialog(show: Boolean) {
+    private fun showProgressDialog(show: Boolean, @StringRes title: Int) {
         if (show) {
             hideProgressDialog()
             progressDialog = CustomProgressDialog.show(
-                getString(R.string.product_update_dialog_title),
+                getString(title),
                 getString(R.string.product_update_dialog_message)
             ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
             progressDialog?.isCancelable = false

@@ -76,7 +76,9 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductVariations -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToVariationListFragment(target.remoteId)
+                        .actionProductDetailFragmentToVariationListFragment(
+                            target.remoteId
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -285,8 +287,15 @@ class ProductNavigator @Inject constructor() {
             }
 
             is AddProductAttribute -> {
-                val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment()
-                fragment.findNavController().navigate(action)
+                when (target.isVariationCreation) {
+                    true -> ProductDetailFragmentDirections
+                        .actionProductDetailFragmentToAddAttributeFragment(isVariationCreation = true)
+                        .run { fragment.findNavController().navigate(this) }
+
+                    else -> AttributeListFragmentDirections
+                        .actionAttributeListFragmentToAddAttributeFragment()
+                        .run { fragment.findNavController().navigate(this) }
+                }
             }
 
             is RenameProductAttribute -> {

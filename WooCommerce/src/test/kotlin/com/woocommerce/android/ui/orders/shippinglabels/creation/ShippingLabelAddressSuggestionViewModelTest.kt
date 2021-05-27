@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -17,7 +16,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -28,12 +26,10 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     private val initialViewState = ViewState(
         enteredAddress,
         suggestedAddress,
-        null,
+        suggestedAddress,
         R.string.orderdetail_shipping_label_item_shipfrom
     )
 
-    @get:Rule
-    var coroutinesTestRule = CoroutineTestRule()
     private val savedState: SavedStateWithArgs = spy(
         SavedStateWithArgs(
             SavedStateHandle(),
@@ -63,8 +59,6 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     fun `Updates the selected address`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
-
-        assertThat(viewState?.areButtonsEnabled).isFalse()
 
         viewModel.onSelectedAddressChanged(false)
         assertThat(viewState).isEqualTo(initialViewState.copy(selectedAddress = enteredAddress))

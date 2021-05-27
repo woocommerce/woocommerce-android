@@ -17,13 +17,13 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -39,10 +39,10 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val dataStore: WCDataStore,
     private val site: SelectedSite
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private val arguments: EditShippingLabelAddressFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
+    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState(arguments.address))
     private var viewState by viewStateData
 
     private val countries: List<WCLocationModel>

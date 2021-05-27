@@ -108,7 +108,6 @@
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
     </fragment>
 
-    <!-- TODO ? -->
     <action
         android:id="@+id/action_global_productDetailFragment"
         app:destination="@id/nav_graph_products"

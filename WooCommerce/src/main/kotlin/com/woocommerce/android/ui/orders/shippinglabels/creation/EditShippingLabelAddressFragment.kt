@@ -27,7 +27,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
@@ -48,7 +48,7 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class EditShippingLabelAddressFragment
-    : BaseFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
+    : BaseDaggerFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
@@ -318,7 +318,8 @@ class EditShippingLabelAddressFragment
             viewModel.onUseAddressAsIsButtonClicked()
         }
         binding.countrySpinner.onClick {
-            viewModel.onCountrySpinnerTapped()
+            // TODO enable this only for M4
+            // viewModel.onCountrySpinnerTapped()
         }
         binding.stateSpinner.onClick {
             viewModel.onStateSpinnerTapped()

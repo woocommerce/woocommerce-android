@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.variations.attributes.edit.VariationA
 
 class VariationAttributesAdapter(
     var sourceData: MutableList<VariationAttributeSelectionGroup>,
+    private val anyAttributeResourceText: String,
     private val onGroupClickListener: (VariationAttributeSelectionGroup) -> Unit
 ) : RecyclerView.Adapter<VariationAttributeSelectionViewHolder>() {
     override fun getItemCount() = sourceData.size
@@ -45,9 +46,16 @@ class VariationAttributesAdapter(
         fun bind(item: VariationAttributeSelectionGroup) {
             viewBinding.attributeOptionsSpinner.apply {
                 hint = item.attributeName
-                setText(item.selectedOption)
+                setText(item.selectedOptionDisplayText())
                 setClickListener { onGroupClickListener(item) }
             }
         }
+
+        private fun VariationAttributeSelectionGroup.selectedOptionDisplayText() =
+            if (isAnyOptionSelected) {
+                "$anyAttributeResourceText $attributeName"
+            } else {
+                selectedOption
+            }
     }
 }

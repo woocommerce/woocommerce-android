@@ -9,12 +9,11 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
-import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -27,8 +26,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationUpdated
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 
 @OpenClassOnDebug
 class VariationDetailRepository @Inject constructor(
@@ -36,8 +33,8 @@ class VariationDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    private var continuationUpdateVariation: Continuation<Boolean>? = null
-    private var continuationFetchVariation: CancellableContinuation<Boolean>? = null
+    private var continuationUpdateVariation = ContinuationWrapper<Boolean>(PRODUCTS)
+    private var continuationFetchVariation = ContinuationWrapper<Boolean>(PRODUCTS)
 
     private var remoteProductId: Long = 0L
     private var remoteVariationId: Long = 0L
@@ -55,25 +52,16 @@ class VariationDetailRepository @Inject constructor(
 
     suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
         lastFetchVariationErrorType = null
-        try {
-            this.remoteProductId = remoteProductId
-            this.remoteVariationId = remoteVariationId
-            continuationFetchVariation?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationFetchVariation = it
-
-                val payload = WCProductStore.FetchSingleVariationPayload(
-                    selectedSite.get(),
-                    remoteProductId,
-                    remoteVariationId
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newFetchSingleVariationAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "CancellationException while fetching single variation")
+        this.remoteProductId = remoteProductId
+        this.remoteVariationId = remoteVariationId
+        continuationFetchVariation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val payload = WCProductStore.FetchSingleVariationPayload(
+                selectedSite.get(),
+                remoteProductId,
+                remoteVariationId
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleVariationAction(payload))
         }
-
-        continuationFetchVariation = null
         return getVariation(remoteProductId, remoteVariationId)
     }
 
@@ -83,30 +71,38 @@ class VariationDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun updateVariation(updatedVariation: ProductVariation): Boolean {
-        return try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                continuationUpdateVariation = it
-
-                val variation = updatedVariation.toDataModel(
-                    getCachedVariation(
-                        updatedVariation.remoteProductId,
-                        updatedVariation.remoteVariationId
-                    )
+        val result = continuationUpdateVariation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val variation = updatedVariation.toDataModel(
+                getCachedWCVariation(
+                    updatedVariation.remoteProductId,
+                    updatedVariation.remoteVariationId
                 )
-                val payload = WCProductStore.UpdateVariationPayload(selectedSite.get(), variation)
-                dispatcher.dispatch(WCProductActionBuilder.newUpdateVariationAction(payload))
-            } ?: false // request timed out
-        } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "Exception encountered while updating variation", e)
-            false
+            )
+            val payload = WCProductStore.UpdateVariationPayload(selectedSite.get(), variation)
+            dispatcher.dispatch(WCProductActionBuilder.newUpdateVariationAction(payload))
+        }
+        return when (result) {
+            is Cancellation -> false
+            is Success -> result.value
         }
     }
 
-    private fun getCachedVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
+    /**
+     * Fires the request to delete a variation
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun deleteVariation(productID: Long, variationID: Long) =
+        productStore
+            .deleteVariation(selectedSite.get(), productID, variationID)
+            .model?.let { true }
+            ?: false
+
+    private fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
         productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
     fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
-        getCachedVariation(remoteProductId, remoteVariationId)?.toAppModel()
+        getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
@@ -114,13 +110,13 @@ class VariationDetailRepository @Inject constructor(
         if (event.causeOfChange == FETCH_SINGLE_VARIATION &&
             event.remoteProductId == remoteProductId &&
             event.remoteVariationId == remoteVariationId) {
-            if (continuationFetchVariation?.isActive == true) {
+            if (continuationFetchVariation.isWaiting) {
                 if (event.isError) {
                     lastFetchVariationErrorType = event.error?.type
-                    continuationFetchVariation?.resume(false)
+                    continuationFetchVariation.continueWith(false)
                 } else {
                     AnalyticsTracker.track(PRODUCT_VARIATION_LOADED)
-                    continuationFetchVariation?.resume(true)
+                    continuationFetchVariation.continueWith(true)
                 }
             } else {
                 WooLog.w(PRODUCTS, "continuationFetchVariation is no longer active")
@@ -135,16 +131,17 @@ class VariationDetailRepository @Inject constructor(
             if (event.isError) {
                 AnalyticsTracker.track(
                     PRODUCT_VARIATION_UPDATE_ERROR, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                )
+                )
                 lastUpdateVariationErrorType = event.error?.type
-                continuationUpdateVariation?.resume(false)
+                continuationUpdateVariation.continueWith(false)
             } else {
                 AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_SUCCESS)
-                continuationUpdateVariation?.resume(true)
+                continuationUpdateVariation.continueWith(true)
             }
-            continuationUpdateVariation = null
         }
     }
 }

@@ -48,4 +48,6 @@ sealed class OrderNavigationTarget : Event() {
     object ViewPrintShippingLabelInfo : OrderNavigationTarget()
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
     data class StartShippingLabelCreationFlow(val orderIdentifier: String) : OrderNavigationTarget()
+    object StartCardReaderConnectFlow : OrderNavigationTarget()
+    data class StartCardReaderPaymentFlow(val orderIdentifier: String) : OrderNavigationTarget()
 }
