@@ -70,6 +70,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSl
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
@@ -208,7 +209,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         get() = viewState.productDraft?.attributes ?: emptyList()
 
     val isProductPublished: Boolean
-        get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+        get() = viewState.productDraft?.status == PUBLISH
 
     /**
      * Validates if the product exists at the Store or if it's currently defined only inside the app
@@ -224,7 +225,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
      */
-    private val isAddFlowEntryPoint: Boolean
+    val isAddFlowEntryPoint: Boolean
         get() = navArgs.isAddProduct
 
     /**
@@ -238,16 +239,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
      */
-    val isAddFlow: Boolean
-        get() = isAddFlowEntryPoint and
-            ((viewState.productDraft?.status == DRAFT) or isProductStoredAtSite.not())
+    val isProductUnderCreation: Boolean
+        get() = isAddFlowEntryPoint and isProductStoredAtSite.not()
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
      * trash menu. Always returns false when we're in the add flow.
      */
     val isTrashEnabled: Boolean
-        get() = !isAddFlow && navArgs.isTrashEnabled
+        get() = !isProductUnderCreation && navArgs.isTrashEnabled
 
     init {
         start()
@@ -533,7 +533,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
             // button in the discard dialog
             @StringRes val neutralBtnId: Int?
-            val neutralAction = if (isAddFlow) {
+            val neutralAction = if (isProductUnderCreation) {
                 neutralBtnId = string.product_detail_save_as_draft
                 DialogInterface.OnClickListener { _, _ ->
                     updateProductDraft(productStatus = DRAFT)
@@ -572,7 +572,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
-        when (isAddFlow) {
+        when (isProductUnderCreation) {
             true -> startPublishProduct()
             else -> startUpdateProduct()
         }
@@ -586,7 +586,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         startPublishProduct()
     }
 
-    fun storeSilentlyWhenVariableProduct() = launch {
+    fun storeSilentlyWhenNewVariableProduct() = launch {
         viewState.productDraft
             ?.takeIf {
                 isProductStoredAtSite.not() and
@@ -594,7 +594,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                     (it.status == DRAFT)
             }
             ?.takeIf { addProduct(it) }
-            ?.let { AnalyticsTracker.track(ADD_PRODUCT_SUCCESS) }
+            ?.let {
+                AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+            }
             ?: AnalyticsTracker.track(ADD_PRODUCT_FAILED)
     }
 
@@ -607,6 +609,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun startPublishProduct(exitWhenDone: Boolean = false) {
+        updateProductDraft(productStatus = PUBLISH)
+
         viewState.productDraft?.let {
             trackPublishing(it)
 
@@ -1526,7 +1530,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            when (isAddFlow) {
+            when (isProductUnderCreation) {
                 true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
                 else -> loadRemoteProduct(event.id)
             }
