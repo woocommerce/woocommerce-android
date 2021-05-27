@@ -24,10 +24,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import com.woocommerce.android.cardreader.receipts.ReceiptData
-import com.woocommerce.android.cardreader.receipts.ReceiptLineItem
 import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import com.woocommerce.android.cardreader.receipts.ReceiptStaticTexts
-import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
@@ -39,6 +37,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.receipts.ReceiptLineItemMapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -65,7 +64,8 @@ class CardReaderPaymentViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
-    private val orderStore: WCOrderStore
+    private val orderStore: WCOrderStore,
+    private val receiptLineItemMapper: ReceiptLineItemMapper
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
@@ -205,33 +205,10 @@ class CardReaderPaymentViewModel @Inject constructor(
             summarySectionTitle = "Summary",
             aid = "AID"
         ),
-        purchasedProducts = createReceiptLineItems(order),
+        purchasedProducts = receiptLineItemMapper.createReceiptLineItems(order),
         storeName = selectedSite.get().displayName,
         receiptPaymentInfo = receiptPaymentInfo
     )
-
-    // TODO cardreader move to a util method or a repository
-    private fun createReceiptLineItems(order: WCOrderModel): List<ReceiptLineItem> {
-        val products = order.getLineItemList().map {
-            // todo cardreader do we need to manually add tax
-            val total = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
-            ReceiptLineItem(title = it.name.orEmpty(), quantity = it.quantity ?: 1f, itemsTotalAmount = total)
-        }
-        // todo cardreader it seems that fee and shipping lines do not appear on the receipt
-        val fees = order.getFeeLineList()
-            .filterNot { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO != BigDecimal.ZERO }
-            .map {
-                val total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-                ReceiptLineItem(title = it.name.orEmpty(), quantity = 1f, itemsTotalAmount = total)
-            }
-        val shipping = order.getShippingLineList()
-            .filterNot { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO != BigDecimal.ZERO }
-            .map {
-            val total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            ReceiptLineItem(title = it.methodTitle.orEmpty(), quantity = 1f, itemsTotalAmount = total)
-        }
-        return products + fees + shipping
-    }
 
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
 
