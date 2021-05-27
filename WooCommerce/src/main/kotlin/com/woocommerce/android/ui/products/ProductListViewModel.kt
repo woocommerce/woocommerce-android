@@ -187,7 +187,8 @@ class ProductListViewModel @AssistedInject constructor(
         _productList.value = products
 
         viewState = viewState.copy(
-            isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,            /* if there are no products, hide Add Product button and use the empty view's button instead. */
+            isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
+            /* if there are no products, hide Add Product button and use the empty view's button instead. */
             isAddProductButtonVisible = products.isNotEmpty(),
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
