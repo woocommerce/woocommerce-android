@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +46,9 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
                     event.htmlReceipt,
                     event.documentName
                 )
+                is SendReceipt -> {
+                    // TODO cardreader implement
+                }
                 else -> event.isHandled = false
             }
         })
