@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
@@ -39,6 +40,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.receipts.ReceiptLineItemMapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -65,7 +67,8 @@ class CardReaderPaymentViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore,
-    private val receiptLineItemMapper: ReceiptLineItemMapper
+    private val receiptLineItemMapper: ReceiptLineItemMapper,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
@@ -194,16 +197,23 @@ class CardReaderPaymentViewModel @Inject constructor(
 
     // TODO cardreader move to a util method
     private fun buildReceiptDataModel(order: WCOrderModel, receiptPaymentInfo: ReceiptPaymentInfo) = ReceiptData(
-        // todo cardreader replace with resources from strings.xml
         staticTexts = ReceiptStaticTexts(
-            applicationName = "Application name",
-            receiptFromFormat = "Receipt from %s",
-            receiptTitle = "Receipt",
-            amountPaidSectionTitle = "Amount paid",
-            datePaidSectionTitle = "Date paid",
-            paymentMethodSectionTitle = "Payment method",
-            summarySectionTitle = "Summary",
-            aid = "AID"
+            applicationName = resourceProvider
+                .getString(string.card_reader_payment_print_receipt_application_name_title),
+            receiptFromFormat = resourceProvider
+                .getString(string.card_reader_payment_print_receipt_from_title),
+            receiptTitle = resourceProvider
+                .getString(string.card_reader_payment_print_receipt_receipt_title),
+            amountPaidSectionTitle = resourceProvider
+                .getString(string.card_reader_payment_print_receipt_amount_paid_title),
+            datePaidSectionTitle = resourceProvider
+                .getString(string.card_reader_payment_print_receipt_date_paid_title),
+            paymentMethodSectionTitle = resourceProvider
+                .getString(string.card_reader_payment_print_receipt_payment_method_title),
+            summarySectionTitle = resourceProvider
+                .getString(string.card_reader_payment_print_receipt_summary_title),
+            aid = resourceProvider
+                .getString(string.card_reader_payment_print_receipt_aid_title)
         ),
         purchasedProducts = receiptLineItemMapper.createReceiptLineItems(order),
         storeName = selectedSite.get().displayName,
