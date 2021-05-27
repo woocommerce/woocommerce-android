@@ -8,9 +8,10 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/major_150"
+        android:adjustViewBounds="true"
         android:importantForAccessibility="no"
         tools:src="@drawable/img_prologue_analytics" />
 
