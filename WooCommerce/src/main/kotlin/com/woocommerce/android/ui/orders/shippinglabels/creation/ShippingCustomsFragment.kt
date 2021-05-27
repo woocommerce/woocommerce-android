@@ -15,10 +15,13 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs), BackPressListener {
@@ -27,6 +30,7 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
         const val EDIT_CUSTOMS_RESULT = "edit_customs_result"
     }
 
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: ShippingCustomsViewModel by viewModels()
     private lateinit var doneMenuItem: MenuItem
 
@@ -96,6 +100,7 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
             when (event) {
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_CUSTOMS_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_CUSTOMS_CLOSED)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 else -> event.isHandled = false
             }
         })
