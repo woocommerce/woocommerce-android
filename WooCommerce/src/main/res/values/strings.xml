@@ -47,7 +47,7 @@
     <string name="cancel">Cancel</string>
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
-    <string name="learn_more">Learn More</string>
+    <string name="learn_more">Learn more</string>
     <string name="try_it_now">Try it now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -505,6 +505,29 @@
     <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
     <string name="shipping_label_selected_rates_description">%s rates selected</string>
     <string name="shipping_label_selected_rates_total_description">%s total</string>
+    <string name="shipping_label_customs_return_to_sender">Return to sender if package is unabled to be delivered</string>
+    <string name="shipping_label_customs_contents_type_hint">Contents type</string>
+    <string name="shipping_label_customs_restriction_type_hint">Restriction type</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Contents details</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Restriction details</string>
+    <string name="shipping_label_customs_itn_hint" translatable="false">ITN</string>
+    <string name="shipping_label_customs_package_content">Package content</string>
+    <string name="shipping_label_customs_item_description_hint">Description</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS Tariff number (Optional)</string>
+    <string name="shipping_label_customs_origin_country_hint">Origin country</string>
+    <string name="shipping_label_customs_origin_country_explanation">Country where the product was manufactured or assembled</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Merchandise</string>
+    <string name="shipping_label_customs_contents_type_documents">Documents</string>
+    <string name="shipping_label_customs_contents_type_gifts">Gifts</string>
+    <string name="shipping_label_customs_contents_type_sample">Sample</string>
+    <string name="shipping_label_customs_contents_type_other">Other</string>
+    <string name="shipping_label_customs_restriction_type_none">None</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Quarantine</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Sanitary / Phytosanitary inspection</string>
+    <string name="shipping_label_customs_restriction_type_other">Other</string>
+    <string name="shipping_label_customs_line_item">Custom Line %1$d</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s about Internal Transaction Number</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s about HS Tariff number</string>
     <!--
             Refunds
         -->
