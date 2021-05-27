@@ -1,59 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_surface">
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/img_slanted_rectangle"/>
 
     <ImageView
         android:id="@+id/image_prologue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="@dimen/image_major_64"
+        android:layout_marginBottom="@dimen/image_major_72"
         android:importantForAccessibility="no"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/img_woo_logo"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/text_prologue"
-        style="@style/TextAppearance.Woo.Headline6"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/major_175"
-        android:layout_marginStart="@dimen/major_175"
-        android:layout_marginTop="@dimen/major_175"
-        android:gravity="center"
-        android:text="@string/login_prologue_banner"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue"/>
+        app:srcCompat="@drawable/img_woo_logo" />
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:id="@+id/image_prologue_bg"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="@dimen/major_175"
+        android:layout_marginTop="@dimen/major_350"
+        android:adjustViewBounds="true"
         android:importantForAccessibility="no"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/img_bubbles"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
+        app:srcCompat="@drawable/img_prologue_bg" />
+
+    <com.woocommerce.android.ui.login.LoginPrologueViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/viewPagerIndicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
+        tools:background="@color/blue_dark" />
+
+    <com.woocommerce.android.ui.login.LoginPrologueViewPagerIndicator
+        android:id="@+id/viewPagerIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/major_150"
+        app:layout_constraintBottom_toTopOf="@+id/button_login_store"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_store"
@@ -62,12 +59,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
-        android:layout_marginBottom="@dimen/minor_100"
         android:text="@string/login_store_address"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@+id/button_login_wpcom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintBottom_toTopOf="@id/button_login_wpcom" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_wpcom"
@@ -79,8 +73,6 @@
         android:layout_marginBottom="@dimen/major_150"
         android:text="@string/login_wpcom"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,7 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.AttrRes
+import androidx.annotation.StringRes
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ViewMaterialOutlinedSpinnerBinding
@@ -51,6 +52,10 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
 
     fun setText(selectedText: String) {
         binding.spinnerEditText.setText(selectedText)
+    }
+
+    fun setText(@StringRes selectedTextRes: Int) {
+        binding.spinnerEditText.setText(selectedTextRes)
     }
 
     fun setHtmlText(selectedText: String) {

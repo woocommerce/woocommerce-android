@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.model.external.TerminalException
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
@@ -35,7 +36,7 @@ class SoftwareUpdateManagerTest {
         updateManager = SoftwareUpdateManager(checkUpdatesAction, installSoftwareUpdatesAction)
 
         whenever(checkUpdatesAction.checkUpdates())
-            .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock<ReaderSoftwareUpdate>()))
+            .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock()))
         whenever(installSoftwareUpdatesAction.installUpdate(any()))
             .thenAnswer {
                 flow<InstallSoftwareUpdateStatus> {}
@@ -60,17 +61,21 @@ class SoftwareUpdateManagerTest {
 
     @Test
     fun `when check for updates fails, then CheckForUpdatesFailed emitted`() = runBlockingTest {
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.Failed(mock()))
+        val message = "error"
+        val terminalException: TerminalException = mock {
+            on { errorMessage }.thenReturn(message)
+        }
+        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.Failed(terminalException))
 
         val result = updateManager.updateSoftware().toList().last()
 
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.CheckForUpdatesFailed)
+        assertThat(result).isEqualTo(SoftwareUpdateStatus.Failed(message))
     }
 
     @Test
     fun `when udpate available, then installation is started`() = runBlockingTest {
         whenever(checkUpdatesAction.checkUpdates())
-            .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock<ReaderSoftwareUpdate>()))
+            .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock()))
 
         updateManager.updateSoftware().toList().last()
 
@@ -117,5 +122,55 @@ class SoftwareUpdateManagerTest {
         val result = updateManager.updateSoftware().toList().last()
 
         assertThat(result).isEqualTo(SoftwareUpdateStatus.Failed("dummy message"))
+    }
+
+    @Test
+    fun `when software update check starts then initializing emitted`() = runBlockingTest {
+        // GIVEN
+        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.UpToDate)
+
+        // WHEN
+        val status = updateManager.softwareUpdateStatus().toList().first()
+
+        // THEN
+        assertThat(status).isEqualTo(SoftwareUpdateAvailability.Initializing)
+    }
+
+    @Test
+    fun `when software update check returns up to date then uptodate emitted`() = runBlockingTest {
+        // GIVEN
+        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.UpToDate)
+
+        // WHEN
+        val status = updateManager.softwareUpdateStatus().toList().last()
+
+        // THEN
+        assertThat(status).isEqualTo(SoftwareUpdateAvailability.UpToDate)
+    }
+
+    @Test
+    fun `when software update check returns update available then updateavailable emitted`() = runBlockingTest {
+        // GIVEN
+        val updateData: ReaderSoftwareUpdate = mock()
+        val updateStatus = CheckSoftwareUpdates.UpdateAvailable(updateData)
+        whenever(checkUpdatesAction.checkUpdates()).thenReturn(updateStatus)
+
+        // WHEN
+        val status = updateManager.softwareUpdateStatus().toList().last()
+
+        // THEN
+        assertThat(status).isInstanceOf(SoftwareUpdateAvailability.UpdateAvailable::class.java)
+    }
+
+    @Test
+    fun `when software update check returns failed then check failed emitted`() = runBlockingTest {
+        // GIVEN
+        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.Failed(mock()))
+
+        // WHEN
+        val status = updateManager.softwareUpdateStatus().toList().last()
+
+        // THEN
+        assertThat(status).isEqualTo(SoftwareUpdateAvailability.CheckForUpdatesFailed)
     }
 }

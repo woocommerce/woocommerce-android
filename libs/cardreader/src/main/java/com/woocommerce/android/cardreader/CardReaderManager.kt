@@ -19,5 +19,6 @@ interface CardReaderManager {
     suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus>
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
 
+    suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability>
     suspend fun updateSoftware(): Flow<SoftwareUpdateStatus>
 }
