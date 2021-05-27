@@ -28,7 +28,8 @@ internal class ProcessPaymentAction(private val terminal: TerminalWrapper, priva
                 }
 
                 override fun onFailure(exception: TerminalException) {
-                    logWrapper.d("CardReader", "Processing payment failed")
+                    logWrapper.e("CardReader", "Processing payment failed. " +
+                        "Message: ${exception.errorMessage}, DeclineCode: ${exception.apiError?.declineCode}")
                     this@callbackFlow.sendBlocking(Failure(exception))
                     this@callbackFlow.close()
                 }

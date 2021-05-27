@@ -5,7 +5,9 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.store.WCProductStore
 
-val CASH_PAYMENTS = listOf("cod", "bacs", "cheque")
+internal const val CASH_ON_DELIVERY_PAYMENT_TYPE = "cod"
+
+val CASH_PAYMENTS = listOf(CASH_ON_DELIVERY_PAYMENT_TYPE, "bacs", "cheque")
 
 /**
  * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product

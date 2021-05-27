@@ -212,6 +212,11 @@
             app:destination="@id/cardReaderPaymentDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_cardReaderConnectDialog"
+            app:destination="@id/cardReaderConnectDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -283,7 +288,14 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_shippingCustomsFragment"
+            app:destination="@id/shippingCustomsFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/shippingLabelAddressSuggestionFragment"
@@ -342,7 +354,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/shippingPackageSelectorFragment"
@@ -357,7 +369,7 @@
         android:id="@+id/editShippingLabelPaymentFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment"
         android:label="EditShippingLabelPaymentFragment"
-        tools:layout="@layout/fragment_edit_shipping_label_payment"/>
+        tools:layout="@layout/fragment_edit_shipping_label_payment" />
     <fragment
         android:id="@+id/shippingCarrierRatesFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment"
@@ -387,4 +399,13 @@
             android:name="orderIdentifier"
             app:argType="string" />
     </dialog>
+    <dialog
+        android:id="@+id/cardReaderConnectDialog"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
+        android:label="CardReaderConnectDialog"></dialog>
+    <fragment
+        android:id="@+id/shippingCustomsFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment"
+        android:label="ShippingCustomsFragment"
+        tools:layout="@layout/fragment_shipping_customs" />
 </navigation>

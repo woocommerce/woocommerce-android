@@ -47,7 +47,7 @@
     <string name="cancel">Cancel</string>
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
-    <string name="learn_more">Learn More</string>
+    <string name="learn_more">Learn more</string>
     <string name="try_it_now">Try it now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -153,8 +153,13 @@
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login_wpcom">Continue with WordPress.com</string>
     <string name="login_store_address">Enter your store address</string>
-    <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
+
+    <string name="login_prologue_label_analytics">Track sales and high perfoming products</string>
+    <string name="login_prologue_label_orders">Manage your store orders on the go</string>
+    <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
+    <string name="login_prologue_label_reviews">Monitor and approve your product reviews</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
@@ -195,6 +200,10 @@
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
     <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
+    <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
+    <string name="user_role_access_error_link">Learn more about roles and permissions</string>
+    <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
+    <string name="user_access_verifying">Verifying role…</string>
     <!--
         My Store View
     -->
@@ -488,12 +497,37 @@
     <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
     <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
-    <string name="shipping_label_rate_included_options_tracking">%s tracking</string>
-    <string name="shipping_label_rate_included_options_insurance">Insurance (up to %s)</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s tracking</string>
+    <string name="shipping_label_rate_included_options_tracking">tracking</string>
+    <string name="shipping_label_rate_insurance_up_to">up to %s</string>
+    <string name="shipping_label_rate_included_options_insurance">Insurance (%s)</string>
     <string name="shipping_label_rate_included_options_free_pickup">Eligible for free pickup</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
     <string name="shipping_label_selected_rates_description">%s rates selected</string>
     <string name="shipping_label_selected_rates_total_description">%s total</string>
+    <string name="shipping_label_customs_return_to_sender">Return to sender if package is unabled to be delivered</string>
+    <string name="shipping_label_customs_contents_type_hint">Contents type</string>
+    <string name="shipping_label_customs_restriction_type_hint">Restriction type</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Contents details</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Restriction details</string>
+    <string name="shipping_label_customs_itn_hint" translatable="false">ITN</string>
+    <string name="shipping_label_customs_package_content">Package content</string>
+    <string name="shipping_label_customs_item_description_hint">Description</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS Tariff number (Optional)</string>
+    <string name="shipping_label_customs_origin_country_hint">Origin country</string>
+    <string name="shipping_label_customs_origin_country_explanation">Country where the product was manufactured or assembled</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Merchandise</string>
+    <string name="shipping_label_customs_contents_type_documents">Documents</string>
+    <string name="shipping_label_customs_contents_type_gifts">Gifts</string>
+    <string name="shipping_label_customs_contents_type_sample">Sample</string>
+    <string name="shipping_label_customs_contents_type_other">Other</string>
+    <string name="shipping_label_customs_restriction_type_none">None</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Quarantine</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Sanitary / Phytosanitary inspection</string>
+    <string name="shipping_label_customs_restriction_type_other">Other</string>
+    <string name="shipping_label_customs_line_item">Custom Line %1$d</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s about Internal Transaction Number</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s about HS Tariff number</string>
     <!--
             Refunds
         -->
@@ -605,6 +639,10 @@
     <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
+    <string name="card_reader_payment_collect_payment_loading_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Connecting to reader</string>
+
     <string name="card_reader_collect_payment">Collect payment</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
@@ -615,6 +653,9 @@
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
+    <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
+    <string name="card_reader_payment_failed_card_declined_state">Card declined. Please retry with a different card.</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
@@ -630,11 +671,30 @@
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">Connecting to reader failed</string>
+    <string name="card_reader_connect_scanning_failed_hint">We couldn\'t find any readers.</string>
+    <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_hint">Missing required location permission</string>
     <string name="card_reader_connect_location_provider_disabled_hint">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth is disabled</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Open settings</string>
+
+    <!--
+        Card Reader Detail
+    -->
+    <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Connect card reader</string>
+
+    <string name="card_reader_detail_connected_header">CONNECTED READER</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% battery</string>
+    <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
+    <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
+    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed. Please try again later</string>
 
     <!--
         Notifications

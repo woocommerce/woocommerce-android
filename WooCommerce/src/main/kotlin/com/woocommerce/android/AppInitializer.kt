@@ -16,6 +16,7 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
@@ -61,6 +62,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var zendeskHelper: ZendeskHelper
     @Inject lateinit var notificationHandler: NotificationHandler
+    @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -138,6 +140,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
+
+            // Update the user info for the currently logged in user
+            userEligibilityFetcher.fetchUserEligibility()
         }
     }
 

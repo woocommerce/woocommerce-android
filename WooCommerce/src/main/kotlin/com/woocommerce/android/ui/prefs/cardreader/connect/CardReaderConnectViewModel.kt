@@ -25,14 +25,16 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.LocationDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -70,6 +72,11 @@ class CardReaderConnectViewModel @Inject constructor(
     val viewStateData: LiveData<ViewState> = viewState
 
     init {
+        startFlow()
+    }
+
+    private fun startFlow() {
+        viewState.value = ScanningState(::onCancelClicked)
         triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
@@ -128,7 +135,6 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
-        // TODO cardreader check location permissions
         launch {
             startScanning()
         }
@@ -169,23 +175,22 @@ class CardReaderConnectViewModel @Inject constructor(
                 // noop
             }
             is Failed -> {
-                // TODO cardreader Replace with failed state
-                appLogWrapper.e(T.MAIN, "Scanning failed.")
-                triggerEvent(Exit)
+                appLogWrapper.e(T.MAIN, "Scanning failed: ${discoveryEvent.msg}")
+                viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
             }
         }
     }
 
     private fun onReadersFound(discoveryEvent: ReadersFound) {
         if (viewState.value is ConnectingState) return
-        val availableReaders = discoveryEvent.list.filter { it.getId() != null }
+        val availableReaders = discoveryEvent.list.filter { it.id != null }
         if (availableReaders.isNotEmpty()) {
             // TODO cardreader add support for showing multiple readers
             val reader = availableReaders[0]
             viewState.value = ReaderFoundState(
                 onPrimaryActionClicked = { onConnectToReaderClicked(reader) },
                 onSecondaryActionClicked = ::onCancelClicked,
-                readerId = reader.getId().orEmpty()
+                readerId = reader.id.orEmpty()
             )
         } else {
             viewState.value = ScanningState(::onCancelClicked)
@@ -199,9 +204,8 @@ class CardReaderConnectViewModel @Inject constructor(
             if (success) {
                 onReaderConnected()
             } else {
-                // TODO cardreader Replace with failed state
                 appLogWrapper.e(T.MAIN, "Connecting to reader failed.")
-                triggerEvent(Exit)
+                viewState.value = ConnectingFailedState({ onConnectToReaderClicked(cardReader) }, ::onCancelClicked)
             }
         }
     }
@@ -220,12 +224,16 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCancelClicked() {
         appLogWrapper.e(T.MAIN, "Connection flow interrupted by the user.")
-        triggerEvent(Exit)
+        exitFlow(connected = false)
     }
 
     private fun onReaderConnected() {
         appLogWrapper.e(T.MAIN, "Connecting to reader succeeded.")
-        triggerEvent(Exit)
+        exitFlow(connected = true)
+    }
+
+    private fun exitFlow(connected: Boolean) {
+        triggerEvent(ExitWithResult(connected))
     }
 
     fun onScreenResumed() {
@@ -296,13 +304,34 @@ class CardReaderConnectViewModel @Inject constructor(
             secondaryActionLabel = R.string.cancel
         )
 
-        // TODO cardreader add error state
+        data class ScanningFailedState(
+            override val onPrimaryActionClicked: () -> Unit,
+            override val onSecondaryActionClicked: () -> Unit
+        ) : ViewState(
+            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
+            illustration = R.drawable.img_products_error,
+            hintLabel = R.string.card_reader_connect_scanning_failed_hint,
+            primaryActionLabel = R.string.retry,
+            secondaryActionLabel = R.string.cancel
+        )
+
+        data class ConnectingFailedState(
+            override val onPrimaryActionClicked: () -> Unit,
+            override val onSecondaryActionClicked: () -> Unit
+        ) : ViewState(
+            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
+            illustration = R.drawable.img_products_error,
+            hintLabel = R.string.card_reader_connect_connecting_failed_hint,
+            primaryActionLabel = R.string.retry,
+            secondaryActionLabel = R.string.cancel
+        )
+
         data class MissingPermissionsError(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
-            illustration = R.drawable.img_card_reader_scanning,
+            illustration = R.drawable.img_products_error,
             hintLabel = R.string.card_reader_connect_missing_permissions_hint,
             primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
             secondaryActionLabel = R.string.cancel
@@ -313,7 +342,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
-            illustration = R.drawable.img_card_reader_scanning,
+            illustration = R.drawable.img_products_error,
             hintLabel = R.string.card_reader_connect_location_provider_disabled_hint,
             primaryActionLabel = R.string.card_reader_connect_open_location_settings,
             secondaryActionLabel = R.string.cancel
@@ -324,9 +353,9 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
-            illustration = R.drawable.img_card_reader_scanning,
+            illustration = R.drawable.img_products_error,
             hintLabel = R.string.card_reader_connect_bluetooth_disabled_hint,
-            primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
+            primaryActionLabel = R.string.card_reader_connect_open_bluetooth_settings,
             secondaryActionLabel = R.string.cancel
         )
     }
