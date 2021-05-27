@@ -4,12 +4,16 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.text.Html
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import com.woocommerce.android.widgets.WooClickableSpan
 
 typealias OnLinkClicked = (ClickableSpan) -> Unit
 
@@ -60,5 +64,26 @@ private fun addLinkListener(strBuilder: SpannableStringBuilder, span: ClickableS
 fun TextView.setDrawableColor(@ColorRes colorRes: Int) {
     compoundDrawables.filterNotNull().forEach {
         it.colorFilter = PorterDuffColorFilter(ContextCompat.getColor(context, colorRes), PorterDuff.Mode.SRC_IN)
+    }
+}
+
+/**
+ * Makes any text range inside a TextView clickable with a special color and a URL redirection
+ */
+fun TextView.setClickableText(
+    content: String,
+    clickableContent: String,
+    clickAction: WooClickableSpan
+) {
+    SpannableString(content).apply {
+        setSpan(
+            clickAction,
+            indexOf(clickableContent),
+            indexOf(clickableContent) + clickableContent.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+    }.let {
+        setText(it, TextView.BufferType.SPANNABLE)
+        movementMethod = LinkMovementMethod.getInstance()
     }
 }

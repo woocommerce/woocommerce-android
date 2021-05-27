@@ -13,7 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SURVEY_SCREEN
 import com.woocommerce.android.databinding.FragmentFeedbackCompletedBinding
-import com.woocommerce.android.extensions.configureStringClick
+import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin.FEEDBACK_SURVEY
 import com.woocommerce.android.ui.feedback.SurveyType.MAIN
@@ -37,12 +37,11 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment(R.layout.fragme
 
         val binding = FragmentFeedbackCompletedBinding.bind(view)
         val contactUsText = getString(R.string.feedback_completed_contact_us)
-        getString(R.string.feedback_completed_description, contactUsText)
-            .configureStringClick(
-                clickableContent = contactUsText,
-                clickAction = WooClickableSpan { activity?.startHelpActivity(FEEDBACK_SURVEY) },
-                textField = binding.completionHelpGuide
-            )
+        binding.completionHelpGuide.setClickableText(
+            content = getString(R.string.feedback_completed_description, contactUsText),
+            clickableContent = contactUsText,
+            clickAction = WooClickableSpan { activity?.startHelpActivity(FEEDBACK_SURVEY) }
+        )
         binding.btnBackToStore.setOnClickListener { activity?.onBackPressed() }
     }
 
