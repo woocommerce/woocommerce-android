@@ -2,6 +2,8 @@
 
 6.8
 -----
+- [*] Updated empty state illustrations. [https://github.com/woocommerce/woocommerce-android/pull/3678]
+- [*] Various design tweaks on empty state screen [https://github.com/woocommerce/woocommerce-android/pull/3879]
 
 
 6.7
@@ -36,7 +38,6 @@
 
 6.2
 -----
-* Updated empty state illustrations. [https://github.com/woocommerce/woocommerce-android/pull/3678]
 - [*] Fixed a possible crash during the login
 
 
