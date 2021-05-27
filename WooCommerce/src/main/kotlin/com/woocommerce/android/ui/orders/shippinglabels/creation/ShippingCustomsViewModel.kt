@@ -8,19 +8,22 @@ import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.CustomsLine
 import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Location
-import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.RestrictionType
-import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.LineValidationState
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCDataStore
@@ -43,7 +46,9 @@ private val USPS_ITN_REQUIRED_DESTINATIONS = arrayOf("IR", "SY", "KP", "CU", "SD
 @HiltViewModel
 class ShippingCustomsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    shippingLabelRepository: ShippingLabelRepository,
+    private val selectedSide: SelectedSite,
+    private val productDetailRepository: ProductDetailRepository,
+    private val variationDetailRepository: VariationDetailRepository,
     parameterRepository: ParameterRepository,
     private val dataStore: WCDataStore,
     private val resourceProvider: ResourceProvider
@@ -68,52 +73,71 @@ class ShippingCustomsViewModel @Inject constructor(
         get() = dataStore.getCountries().map { it.toAppModel() }
 
     init {
-        // TODO fake data
-        val fakePackages = listOf(
+        loadData()
+    }
+
+    private fun loadData() {
+        launch {
+            viewState = viewState.copy(isProgressViewShown = true)
+            if (!loadCountriesIfNeeded()) return@launch
+            val packagesUiStates = args.customsPackages.toList().ifEmpty {
+                createDefaultCustomPackages()
+            }.map { CustomsPackageUiState(it, it.validate()) }
+            viewState = viewState.copy(
+                isProgressViewShown = false,
+                customsPackages = packagesUiStates
+            )
+        }
+    }
+
+    private fun createDefaultCustomPackages(): List<CustomsPackage> {
+        fun ShippingLabelPackage.Item.toOrderItem() = args.order.items.first { it.uniqueId == productId }
+
+        return args.shippingPackages.map { labelPackage ->
             CustomsPackage(
-                id = "default_package",
-                box = ShippingPackage(
-                    id = "small_package",
-                    title = "Small Box",
-                    dimensions = PackageDimensions(10f, 10f, 2f),
-                    boxWeight = 0f,
-                    category = "USPS",
-                    isLetter = false
-                ),
-                returnToSender = true,
+                id = labelPackage.packageId,
+                box = labelPackage.selectedPackage!!,
                 contentsType = ContentsType.Merchandise,
                 restrictionType = RestrictionType.None,
+                returnToSender = true,
                 itn = "",
-                lines = listOf(
+                lines = labelPackage.items.map { item ->
+                    val orderItem = item.toOrderItem()
+                    val attributes = orderItem.attributesList.ifEmpty { null }?.let { " $it" } ?: ""
+                    val defaultDescription = orderItem.name.substringBefore("-").trim() + attributes
+                    val value = orderItem.price.divide(BigDecimal(orderItem.quantity))
+                    // As we already retrieve missing products at the packaging step,
+                    // we can just get them from the cache here
+                    val weight = if (orderItem.isVariation) {
+                        variationDetailRepository.getVariation(orderItem.productId, orderItem.variationId)?.weight
+                    } else {
+                        productDetailRepository.getProduct(orderItem.productId)?.weight
+                    }
+
                     CustomsLine(
-                        itemId = 0L,
-                        itemDescription = "Water bottle",
+                        itemId = orderItem.itemId,
+                        itemDescription = defaultDescription,
+                        quantity = orderItem.quantity.toDouble(),
+                        value = value,
+                        weight = weight,
                         hsTariffNumber = "",
-                        quantity = 5.0,
-                        weight = 1.5f,
-                        value = BigDecimal.valueOf(15),
-                        originCountry = Location("US", "United States")
-                    ),
-                    CustomsLine(
-                        itemId = 1L,
-                        itemDescription = "Water bottle 2",
-                        hsTariffNumber = "",
-                        quantity = 2.0,
-                        weight = 1.5f,
-                        value = BigDecimal.valueOf(15),
-                        originCountry = Location("US", "United States")
+                        originCountry = countries.first { it.code == "US" }
                     )
-                )
+                }
             )
-        )
-        viewState = ViewState(
-            customsPackages = fakePackages.map {
-                CustomsPackageUiState(
-                    data = it,
-                    validationState = it.validate()
-                )
+        }
+    }
+
+    private suspend fun loadCountriesIfNeeded(): Boolean {
+        if (countries.isEmpty()) {
+            val result = dataStore.fetchCountriesAndStates(selectedSide.get())
+            if (result.isError) {
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+                triggerEvent(Exit)
+                return false
             }
-        )
+        }
+        return true
     }
 
     fun onDoneButtonClicked() {
