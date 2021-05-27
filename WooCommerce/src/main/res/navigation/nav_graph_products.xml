@@ -253,11 +253,9 @@
             app:destination="@id/attributeListFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
-            app:launchSingleTop="true"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"
-            app:popUpTo="@id/addAttributeFragment"
-            app:popUpToInclusive="true">
+            app:popUpTo="@id/addAttributeFragment">
             <argument
                 android:name="isVariationCreation"
                 android:defaultValue="false"
