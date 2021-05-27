@@ -91,7 +91,9 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     private fun displayShipmentTrackings() {
-        val trackingAvailable = appPrefs.isTrackingExtensionAvailable() && !hasVirtualProductsOnly()
+        val isShippingLabelAvailable = repository.hasShippingLabels(orderIdSet.remoteOrderId)
+        val trackingAvailable = appPrefs.isTrackingExtensionAvailable() &&
+            !hasVirtualProductsOnly() && !isShippingLabelAvailable
         viewState = viewState.copy(isShipmentTrackingAvailable = trackingAvailable)
         if (trackingAvailable) {
             _shipmentTrackings.value = repository.getOrderShipmentTrackings(orderIdSet.id)

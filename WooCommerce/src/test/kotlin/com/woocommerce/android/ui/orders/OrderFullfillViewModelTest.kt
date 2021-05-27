@@ -184,6 +184,20 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `Do not display shipment tracking when shipping labels are available`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(true).whenever(repository).hasShippingLabels(any())
+
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
+            viewModel.start()
+            assertThat(orderData?.isShipmentTrackingAvailable).isFalse()
+        }
+
+    @Test
     fun `Update order status when network connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(order).whenever(repository).getOrder(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
