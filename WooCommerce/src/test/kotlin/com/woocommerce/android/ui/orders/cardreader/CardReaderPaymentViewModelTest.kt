@@ -164,7 +164,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment completed, then ui updated to payment successful state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-                flow { emit(PaymentCompleted) }
+                flow { emit(PaymentCompleted(mock())) }
             }
 
             viewModel.start()
@@ -420,7 +420,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment succeeds, then correct labels, illustration and buttons are shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
-                flow { emit(PaymentCompleted) }
+                flow { emit(PaymentCompleted(mock())) }
             }
 
             viewModel.start()

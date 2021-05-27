@@ -34,13 +34,15 @@ class ReceiptCreatorTest {
                 ReceiptLineItem(title = "T-shirt", quantity = 3, itemsTotalAmount = 30f),
                 ReceiptLineItem(title = "Hoodie", quantity = 1, itemsTotalAmount = 15f)
             ),
-            chargedAmount = 45f,
-            currency = "USD",
-            receiptDate = "19.5.2021",
             storeName = "The Best Woo store",
-            applicationPreferredName = "WooCommerce for Android",
-            dedicatedFileName = "abcdef",
-            cardInfo = CardInfo("1234", VISA)
+            receiptPaymentInfo = ReceiptPaymentInfo(
+                chargedAmount = 45f,
+                currency = "USD",
+                receiptDate = 0, // "19.5.2021", // todo card reader use date formatter
+                applicationPreferredName = "WooCommerce for Android",
+                dedicatedFileName = "abcdef",
+                cardInfo = CardInfo("1234", VISA)
+            )
         )
 
         val result = creator.createHtmlReceipt(receiptData)

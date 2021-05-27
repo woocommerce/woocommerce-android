@@ -59,7 +59,6 @@ Language: zh_CN
     <string name="shipping_label_rate_included_options_signature_required_free">适用于免费签收要求</string>
     <string name="shipping_label_rate_included_options_free_pickup">适用于免费自提</string>
     <string name="shipping_label_rate_included_options_insurance">保险（最多 %s）</string>
-    <string name="shipping_label_rate_included_options_tracking">%s 追踪</string>
     <string name="shipping_label_rate_included_options">包含 %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">必需由成年人签收 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">必需签收 (%s)</string>

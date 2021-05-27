@@ -5,8 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus.CONNECTED
+import com.woocommerce.android.cardreader.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.CheckForUpdatesFailed
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.Initializing
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.UpToDate
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.UpdateAvailable
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -14,6 +19,7 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -21,41 +27,70 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val viewState = MutableLiveData<ViewState>()
+    private val viewState = MutableLiveData<ViewState>(Loading)
     val viewStateData: LiveData<ViewState> = viewState
 
     init {
         launch {
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
-                    CONNECTED -> viewState.value = ConnectedState(
-                        enforceReaderUpdate = UiStringRes(
-                            R.string.card_reader_detail_connected_enforced_update_software
-                        ),
-                        // todo cardreader make reader name be part of the connected status
-                        readerName = UiStringText("HC: CHB204909005931"),
-                        // todo cardreader make reader's battery level be part of the connected status
-                        readerBattery = UiStringRes(
-                            R.string.card_reader_detail_connected_battery_percentage,
-                            listOf(UiStringText("999"))
-                        ),
-                        primaryButtonState = null,
-                        secondaryButtonState = ButtonState(
-                            onActionClicked = ::onDisconnectClicked,
-                            text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
-                        )
-                    )
-                    else -> viewState.value = NotConnectedState(
-                        onPrimaryActionClicked = ::onConnectBtnClicked
-                    )
-                }.exhaustive
-            }
+                    is Connected -> checkForUpdates()
+                    else -> viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
+                }
+            }.exhaustive
+        }
+    }
+
+    private suspend fun checkForUpdates() {
+        cardReaderManager.softwareUpdateAvailability().collect { updateStatus ->
+            val readerStatus = cardReaderManager.readerStatus.value
+            if (readerStatus !is Connected) return@collect
+            when (updateStatus) {
+                Initializing -> viewState.value = Loading
+                UpToDate -> showConnectedState(readerStatus)
+                is UpdateAvailable -> showConnectedState(readerStatus, updateAvailable = true)
+                CheckForUpdatesFailed -> showConnectedState(readerStatus).also {
+                    triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
+                }
+            }.exhaustive
+        }
+    }
+
+    private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
+        viewState.value = if (updateAvailable) {
+            ConnectedState(
+                enforceReaderUpdate = UiStringRes(
+                    R.string.card_reader_detail_connected_enforced_update_software
+                ),
+                readerName = readerStatus.cardReader.getReadersName(),
+                readerBattery = readerStatus.cardReader.getReadersBatteryLevel(),
+                primaryButtonState = ButtonState(
+                    onActionClicked = ::onUpdateReaderClicked,
+                    text = UiStringRes(R.string.card_reader_detail_connected_update_software)
+                ),
+                secondaryButtonState = ButtonState(
+                    onActionClicked = ::onDisconnectClicked,
+                    text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
+                )
+            )
+        } else {
+            ConnectedState(
+                enforceReaderUpdate = null,
+                readerName = readerStatus.cardReader.getReadersName(),
+                readerBattery = readerStatus.cardReader.getReadersBatteryLevel(),
+                primaryButtonState = ButtonState(
+                    onActionClicked = ::onDisconnectClicked,
+                    text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
+                ),
+                secondaryButtonState = null
+            )
         }
     }
 
@@ -69,6 +104,23 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun onDisconnectClicked() {
         // TODO cardreader implement disconnect functionality
+    }
+
+    private fun CardReader.getReadersName(): UiString {
+        return with(id) {
+            if (isNullOrEmpty())
+                UiStringRes(R.string.card_reader_detail_connected_reader_unknown)
+            else UiStringText(this)
+        }
+    }
+
+    private fun CardReader.getReadersBatteryLevel(): UiString? {
+        return currentBatteryLevel?.let {
+            UiStringRes(
+                R.string.card_reader_detail_connected_battery_percentage,
+                listOf(UiStringText(it.roundToInt().toString()))
+            )
+        }
     }
 
     sealed class NavigationTarget : Event() {
@@ -87,9 +139,9 @@ class CardReaderDetailViewModel @Inject constructor(
         }
 
         data class ConnectedState(
-            val enforceReaderUpdate: UiString,
+            val enforceReaderUpdate: UiString?,
             val readerName: UiString,
-            val readerBattery: UiString,
+            val readerBattery: UiString?,
             val primaryButtonState: ButtonState?,
             val secondaryButtonState: ButtonState?
         ) : ViewState() {
@@ -98,5 +150,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 val text: UiString
             )
         }
+
+        object Loading : ViewState()
     }
 }

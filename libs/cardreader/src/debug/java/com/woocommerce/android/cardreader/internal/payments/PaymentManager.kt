@@ -5,9 +5,11 @@ import com.stripe.stripeterminal.model.external.PaymentIntentStatus
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
@@ -24,6 +26,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
@@ -31,7 +34,7 @@ import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 
-private const val USD_TO_CENTS_DECIMAL_PLACES = 2
+internal const val USD_TO_CENTS_DECIMAL_PLACES = 2
 private const val USD_CURRENCY = "usd"
 
 internal class PaymentManager(
@@ -40,7 +43,8 @@ internal class PaymentManager(
     private val createPaymentAction: CreatePaymentAction,
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction,
-    private val errorMapper: PaymentErrorMapper
+    private val errorMapper: PaymentErrorMapper,
+    private val receiptPaymentInfoMapper: ReceiptPaymentInfoMapper
 ) {
     suspend fun acceptPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
         if (!isSupportedCurrency(currency)) {
@@ -88,7 +92,14 @@ internal class PaymentManager(
         }
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
-            capturePayment(orderId, cardReaderStore, paymentIntent)
+            val paymentInfo = try {
+                receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(paymentIntent)
+            } catch (e: IllegalArgumentException) {
+                // todo cardreader cancel the payment intent
+                emit(PaymentFailed(GENERIC_ERROR, null, e.message ?: "Unexpected error"))
+                return@flow
+            }
+            capturePayment(paymentInfo, orderId, cardReaderStore, paymentIntent)
         }
     }
 
@@ -138,13 +149,14 @@ internal class PaymentManager(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
+        receiptPaymentInfo: ReceiptPaymentInfo,
         orderId: Long,
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
-            is CapturePaymentResponse.Successful -> emit(PaymentCompleted)
+            is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptPaymentInfo))
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }
