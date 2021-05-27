@@ -30,6 +30,11 @@ fun WCUserModel.toAppModel(): User {
         lastName = this.lastName,
         username = this.username,
         email = this.email,
-        roles = this.getUserRoles().map { it.value }.toList()
+        roles = this.roles
+            .trim() // remove extra spaces between commas
+            .removePrefix("[") // remove the String prefix
+            .removeSuffix("]") // remove the String suffix
+            .split(",")
+            .toList()
     )
 }

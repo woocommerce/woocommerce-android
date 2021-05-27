@@ -24,14 +24,16 @@ class UserEligibilityFetcher @Inject constructor(
 
     fun fetchUserEligibility() {
         launch(Dispatchers.Default) {
-            fetchUserInfo()?.let {
-                appPrefs.setIsUserEligible(it.isUserEligible())
-                appPrefs.setUserEmail(it.email)
-            }
+            fetchUserInfo()?.let { updateUserInfo(it) }
         }
     }
 
     suspend fun fetchUserInfo(): WCUserModel? = userStore.fetchUserRole(selectedSite.get()).model
 
     fun getUserByEmail(email: String) = userStore.getUserByEmail(selectedSite.get(), email)
+
+    fun updateUserInfo(user: WCUserModel) {
+        appPrefs.setIsUserEligible(user.isUserEligible())
+        appPrefs.setUserEmail(user.email)
+    }
 }

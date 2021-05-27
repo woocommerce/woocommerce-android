@@ -88,9 +88,7 @@ class SitePickerPresenter @Inject constructor(
             view?.hideProgressDialog()
 
             userModel?.let {
-                val isUserEligible = it.isUserEligible()
-                appPrefs.setIsUserEligible(isUserEligible)
-
+                userEligibilityFetcher.updateUserInfo(it)
                 withContext(Dispatchers.Main) {
                     view?.userVerificationCompleted()
                 }

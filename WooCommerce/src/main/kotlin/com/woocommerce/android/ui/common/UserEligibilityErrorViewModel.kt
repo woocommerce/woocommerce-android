@@ -66,7 +66,7 @@ class UserEligibilityErrorViewModel @Inject constructor(
             val userModel = userEligibilityFetcher.fetchUserInfo()
             userModel?.let {
                 val isUserEligible = it.isUserEligible()
-                appPrefs.setIsUserEligible(isUserEligible)
+                userEligibilityFetcher.updateUserInfo(it)
 
                 if (isUserEligible) {
                     triggerEvent(Exit)
