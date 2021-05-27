@@ -631,6 +631,20 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * during a product creation flow flagged by [isAddFlowEntryPoint],
+     * we may have to POST the product before hand in order to operate
+     * some remotes properties of the Product.
+     * (e.g. Variable Product when editing the Attributes and Variations)
+     *
+     * To avoid user confusion around the product creation flow, when a product is posted before hand,
+     * the `PUBLISH` menu button will execute a update instead of repost the same product to the site
+     * so we also should handle the Snackbar text prompt to follow this rule
+     */
+    private fun pickProductUpdateSuccessText() =
+        if (isAddFlowEntryPoint) string.product_detail_publish_product_success
+        else string.product_detail_update_product_success
+
     private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean) =
         if (productWasAdded) {
             if (isDraftProduct()) {
@@ -1413,12 +1427,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                     val password = viewState.draftPassword
                     if (productRepository.updateProductPassword(product.remoteId, password)) {
                         viewState = viewState.copy(storedPassword = password)
-                        triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                        triggerEvent(ShowSnackbar(pickProductUpdateSuccessText()))
                     } else {
                         triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
                     }
                 } else {
-                    triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                    triggerEvent(ShowSnackbar(pickProductUpdateSuccessText()))
                 }
                 viewState = viewState.copy(
                     productDraft = null,
