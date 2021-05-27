@@ -17,13 +17,13 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -40,13 +40,32 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     private val dataStore: WCDataStore,
     private val site: SelectedSite
 ) : DaggerScopedViewModel(savedState, dispatchers) {
+    companion object {
+        val ACCEPTED_USPS_ORIGIN_COUNTRIES = arrayOf(
+            "US", // United States
+            "PR", // Puerto Rico
+            "VI", // Virgin Islands
+            "GU", // Guam
+            "AS", // American Samoa
+            "UM", // United States Minor Outlying Islands
+            "MH", // Marshall Islands
+            "FM", // Micronesia
+            "MP", // Northern Mariana Islands
+        )
+    }
+
     private val arguments: EditShippingLabelAddressFragmentArgs by savedState.navArgs()
 
     val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState(arguments.address))
     private var viewState by viewStateData
 
     private val countries: List<WCLocationModel>
-        get() = dataStore.getCountries()
+        get() {
+            val fullCountriesList = dataStore.getCountries()
+            return if (arguments.addressType == ORIGIN) {
+                fullCountriesList.filter { ACCEPTED_USPS_ORIGIN_COUNTRIES.contains(it.code) }
+            } else fullCountriesList
+        }
 
     private val states: List<WCLocationModel>
         get() = viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
