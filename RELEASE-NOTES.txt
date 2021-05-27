@@ -2,6 +2,7 @@
 
 6.8
 -----
+- [*] New descriptive error screen displayed for users without admin or shop manager access to the store. [https://github.com/woocommerce/woocommerce-android/pull/4074]
 - [**] Fixed bug that caused a jumbled screen the very first time the product list is viewed. [https://github.com/woocommerce/woocommerce-android/pull/4090]
 
 
