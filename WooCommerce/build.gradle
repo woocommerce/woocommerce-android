@@ -41,9 +41,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "6.7-rc-1"
+            versionName "6.7-rc-2"
         }
-        versionCode 218
+        versionCode 219
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -243,7 +243,7 @@ dependencies {
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
-    androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
+    androidTestImplementation('com.github.tomakehurst:wiremock:2.27.2') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
         exclude group: 'asm', module: 'asm'

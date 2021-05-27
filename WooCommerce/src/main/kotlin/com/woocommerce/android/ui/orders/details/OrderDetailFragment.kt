@@ -72,9 +72,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var dateUtils: DateUtils
-
-    // TODO cardreader change this to non-nullable
-    @set:Inject var cardReaderManager: CardReaderManager? = null
+    @Inject lateinit var cardReaderManager: CardReaderManager
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -134,7 +132,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.order?.takeIfNotEqualTo(old?.order) { showOrderDetail(it) }
+            new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
+                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader)
+            }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
                 showMarkOrderCompleteButton(it)
@@ -225,7 +225,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
     }
 
-    private fun showOrderDetail(order: Order) {
+    private fun showOrderDetail(order: Order, isPaymentCollectableWithCardReader: Boolean) {
         binding.orderDetailOrderStatus.updateOrder(order)
         binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
         binding.orderDetailCustomerInfo.updateCustomerInfo(
@@ -234,11 +234,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
+            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
-                    cardReaderManager?.let {
+                    cardReaderManager.let {
                         viewModel.onAcceptCardPresentPaymentClicked(it)
                     }
                 }
