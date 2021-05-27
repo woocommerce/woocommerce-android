@@ -220,6 +220,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> openCustomsForm(
                             sideEffect.order,
+                            sideEffect.originCountryCode,
                             sideEffect.destinationCountryCode,
                             sideEffect.shippingPackages,
                             sideEffect.customsPackages
@@ -306,6 +307,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private fun openCustomsForm(
         order: Order,
+        originCountryCode: String,
         destinationCountryCode: String,
         shippingPackages: List<ShippingLabelPackage>,
         customsPackages: List<CustomsPackage>
@@ -313,6 +315,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         triggerEvent(
             ShowCustomsForm(
                 order = order,
+                originCountryCode = originCountryCode,
                 destinationCountryCode = destinationCountryCode,
                 shippingPackages = shippingPackages,
                 customsPacakges = customsPackages

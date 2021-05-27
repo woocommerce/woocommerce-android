@@ -422,6 +422,9 @@
             android:name="order"
             app:argType="com.woocommerce.android.model.Order" />
         <argument
+            android:name="originCountryCode"
+            app:argType="string" />
+        <argument
             android:name="destinationCountryCode"
             app:argType="string" />
         <argument

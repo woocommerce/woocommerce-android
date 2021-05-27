@@ -121,7 +121,7 @@ class ShippingCustomsViewModel @Inject constructor(
                         value = value,
                         weight = weight,
                         hsTariffNumber = "",
-                        originCountry = countries.first { it.code == "US" }
+                        originCountry = countries.first { it.code == args.originCountryCode }
                     )
                 }
             )
