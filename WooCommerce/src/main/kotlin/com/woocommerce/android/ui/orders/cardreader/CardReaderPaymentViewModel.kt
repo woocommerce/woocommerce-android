@@ -55,7 +55,7 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 @HiltViewModel
 class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    cardReaderManager: CardReaderManager?,
+    private val cardReaderManager: CardReaderManager,
     private val receiptCreator: ReceiptCreator,
     private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
