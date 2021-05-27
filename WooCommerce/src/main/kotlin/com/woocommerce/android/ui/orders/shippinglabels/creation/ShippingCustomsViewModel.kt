@@ -296,7 +296,8 @@ class ShippingCustomsViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val customsPackages: List<CustomsPackageUiState> = emptyList()
+        val customsPackages: List<CustomsPackageUiState> = emptyList(),
+        val isProgressViewShown: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val canSubmitForm: Boolean

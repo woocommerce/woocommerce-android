@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -71,10 +72,10 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
             }
         }
 
-        setupObservers()
+        setupObservers(binding)
     }
 
-    private fun setupObservers() {
+    private fun setupObservers(binding: FragmentShippingCustomsBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
             new.customsPackages.takeIfNotEqualTo(old?.customsPackages) { customsPackages ->
                 customsAdapter.customsPackages = customsPackages
@@ -83,6 +84,10 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
                 if (::doneMenuItem.isInitialized) {
                     doneMenuItem.isVisible = canSubmitForm
                 }
+            }
+            new.isProgressViewShown.takeIfNotEqualTo(old?.isProgressViewShown) { show ->
+                binding.progressView.isVisible = show
+                binding.packagesList.isVisible = !show
             }
         })
         viewModel.event.observe(viewLifecycleOwner, { event ->
