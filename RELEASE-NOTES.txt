@@ -2,7 +2,7 @@
 
 6.8
 -----
-
+* [**] Due to popular demand, the Order fulfill is displayed once again when clicking on the Mark order complete button. [https://github.com/woocommerce/woocommerce-android/pull/4086]
 
 6.7
 -----
