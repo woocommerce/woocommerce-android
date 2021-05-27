@@ -173,7 +173,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.CustomsDeclarationStarted> {
                 transitionTo(
                     State.CustomsDeclaration(data),
-                    SideEffect.ShowCustomsForm(data.stepsState.shippingAddressStep.data.country, emptyList()))
+                    SideEffect.ShowCustomsForm(
+                        order = data.order,
+                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
+                        shippingPackages = data.stepsState.packagingStep.data,
+                        customsPackages = data.stepsState.customsStep.data
+                    )
+                )
             }
             on<Event.ShippingCarrierSelectionStarted> {
                 transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
@@ -202,7 +208,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.EditCustomsRequested> {
                 transitionTo(
                     State.CustomsDeclaration(data),
-                    SideEffect.ShowCustomsForm(data.stepsState.shippingAddressStep.data.country, emptyList())
+                    SideEffect.ShowCustomsForm(
+                        order = data.order,
+                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
+                        shippingPackages = data.stepsState.packagingStep.data,
+                        customsPackages = data.stepsState.customsStep.data
+                    )
                 )
             }
             on<Event.EditShippingCarrierRequested> {
@@ -726,9 +737,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
         ) : SideEffect()
 
         data class ShowCustomsForm(
+            val order: Order,
             val destinationCountryCode: String,
+            val shippingPackages: List<ShippingLabelPackage>,
             val customsPackages: List<CustomsPackage>
         ) : SideEffect()
+
         data class ShowCarrierOptions(val data: StateMachineData) : SideEffect()
 
         object ShowPaymentOptions : SideEffect()
