@@ -191,7 +191,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         }
 
         return ShippingLabelPackage.Item(
-            productId = productId,
+            productId = uniqueId,
             name = name,
             attributesList = attributesList,
             weight = weight
