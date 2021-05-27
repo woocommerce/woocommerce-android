@@ -133,7 +133,7 @@ class CardReaderDetailViewModel @Inject constructor(
         return currentBatteryLevel?.let {
             UiStringRes(
                 R.string.card_reader_detail_connected_battery_percentage,
-                listOf(UiStringText(it.roundToInt().toString()))
+                listOf(UiStringText((it * 100).roundToInt().toString()))
             )
         }
     }
