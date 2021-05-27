@@ -354,7 +354,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
 
         updateMenuItem?.let {
             it.title = if (viewModel.isAddFlowEntryPoint) getString(publishTitleId) else getString(updateTitleId)
-            it.isVisible = viewModel.hasChanges()
+            it.isVisible = viewModel.hasChanges() or viewModel.isProductUnderCreation
         }
     }
 
