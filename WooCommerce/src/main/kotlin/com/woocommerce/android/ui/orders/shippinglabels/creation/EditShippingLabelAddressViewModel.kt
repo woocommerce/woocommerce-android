@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.PhoneInvalid
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
@@ -108,7 +109,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         if (viewState.areAllRequiredFieldsValid) {
             launch {
                 viewState = viewState.copy(address = address, isValidationProgressDialogVisible = true)
-                val result = addressValidator.validateAddress(address, arguments.addressType)
+                val result = addressValidator.validateAddress(address, arguments.addressType, arguments.isInternational)
                 clearErrors()
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
@@ -156,6 +157,12 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
             is NameMissing -> {
                 viewState = viewState.copy(
                     nameError = R.string.shipping_label_error_required_field
+                )
+                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
+            }
+            is PhoneInvalid -> {
+                viewState = viewState.copy(
+                    phoneError = validatePhone(address)
                 )
                 triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
             }

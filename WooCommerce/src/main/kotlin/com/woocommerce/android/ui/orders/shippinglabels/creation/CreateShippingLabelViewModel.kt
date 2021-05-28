@@ -177,7 +177,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
                             progressDialogMessage = string.shipping_label_edit_address_progress_message
                         ) {
-                            validateAddress(transition.state.data.stepsState.originAddressStep.data, ORIGIN)
+                            validateAddress(
+                                address = transition.state.data.stepsState.originAddressStep.data,
+                                type = ORIGIN,
+                                isInternationalShipment = transition.state.data.isInternationalShipment
+                            )
                         }
                     }
                     is State.ShippingAddressValidation -> {
@@ -185,7 +189,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
                             progressDialogMessage = string.shipping_label_edit_address_progress_message
                         ) {
-                            validateAddress(transition.state.data.stepsState.shippingAddressStep.data, DESTINATION)
+                            validateAddress(
+                                address = transition.state.data.stepsState.shippingAddressStep.data,
+                                type = DESTINATION,
+                                isInternationalShipment = transition.state.data.isInternationalShipment
+                            )
                         }
                     }
                     is State.PurchaseLabels -> {
@@ -429,13 +437,13 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         )
     }
 
-    private suspend fun validateAddress(address: Address, type: AddressType): Event {
-        return when (val result = addressValidator.validateAddress(address, type)) {
+    private suspend fun validateAddress(address: Address, type: AddressType, isInternationalShipment: Boolean): Event {
+        return when (val result = addressValidator.validateAddress(address, type, isInternationalShipment)) {
             ValidationResult.Valid -> AddressValidated(address)
             is ValidationResult.SuggestedChanges -> AddressChangeSuggested(result.suggested)
             is ValidationResult.NotFound,
             is ValidationResult.Invalid,
-            is ValidationResult.NameMissing -> AddressInvalid(address, result)
+            is ValidationResult.NameMissing, ValidationResult.PhoneInvalid -> AddressInvalid(address, result)
             is ValidationResult.Error -> AddressValidationFailed
         }
     }
