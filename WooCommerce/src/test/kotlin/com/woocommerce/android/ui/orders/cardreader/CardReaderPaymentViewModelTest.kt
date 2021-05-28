@@ -42,7 +42,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyString
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -85,8 +84,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         val mockedOrder = mock<WCOrderModel>()
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
+        whenever(mockedOrder.billingEmail).thenReturn("test@test.test")
         whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
-        whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+        whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
         whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
@@ -126,7 +126,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when initializing payment, then ui updated to initializing payment state `() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(InitializingPayment) }
             }
 
@@ -138,7 +138,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when collecting payment, then ui updated to collecting payment state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(CollectingPayment) }
             }
 
@@ -150,7 +150,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when processing payment, then ui updated to processing payment state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(ProcessingPayment) }
             }
 
@@ -162,7 +162,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when capturing payment, then ui updated to capturing payment state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(CapturingPayment) }
             }
 
@@ -174,7 +174,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when payment completed, then ui updated to payment successful state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentCompleted(mock())) }
             }
 
@@ -186,7 +186,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when payment fails, then ui updated to failed state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(paymentFailedWithEmptyDataForRetry) }
             }
 
@@ -198,7 +198,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given user clicks on retry, when payment fails and retryData are null, then flow restarted from scratch`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(paymentFailedWithEmptyDataForRetry) }
             }
             viewModel.start()
@@ -206,13 +206,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).collectPayment(any(), any(), anyString())
+            verify(cardReaderManager).collectPayment(any(), any(), any(), any())
         }
 
     @Test
     fun `given user clicks on retry, when payment fails, then retryCollectPayment invoked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(paymentFailedWithValidDataForRetry) }
             }
             viewModel.start()
@@ -227,7 +227,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given user clicks on retry, when payment fails, then flow retried with provided PaymentData`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val paymentData = mock<PaymentData>()
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentFailed(GENERIC_ERROR, paymentData, "dummy msg")) }
             }
             viewModel.start()
@@ -259,7 +259,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when collecting payment, then progress and buttons are hidden`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(CollectingPayment) }
             }
 
@@ -274,7 +274,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when collecting payment, then correct labels and illustration is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(CollectingPayment) }
             }
 
@@ -295,7 +295,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when processing payment, then progress and buttons are hidden`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(ProcessingPayment) }
             }
 
@@ -310,7 +310,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when processing payment, then correct labels and illustration is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(ProcessingPayment) }
             }
 
@@ -331,7 +331,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when capturing payment, then progress and buttons are hidden`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(CapturingPayment) }
             }
 
@@ -346,7 +346,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when capturing payment, then correct labels and illustration is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(CapturingPayment) }
             }
 
@@ -367,7 +367,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when payment fails, then progress and secondary button are hidden`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(paymentFailedWithEmptyDataForRetry) }
             }
 
@@ -381,7 +381,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when payment fails, then correct labels, illustration and button are shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(paymentFailedWithEmptyDataForRetry) }
             }
 
@@ -402,7 +402,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when payment fails with no network error, then correct paymentStateLabel is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentFailed(NO_NETWORK, null, "")) }
             }
 
@@ -416,7 +416,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when payment fails with payment declined error, then correct paymentStateLabel is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentFailed(PAYMENT_DECLINED, null, "")) }
             }
 
@@ -430,7 +430,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when payment succeeds, then correct labels, illustration and buttons are shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentCompleted(mock())) }
             }
 
@@ -453,26 +453,23 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given payment flow already started, when start() is invoked, then flow is not restarted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(
-                cardReaderManager.collectPayment(
-                    any(),
-                    any(),
-                    anyString()
-                )
-            ).thenAnswer { flow<CardPaymentStatus> {} }
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
+                flow<CardPaymentStatus> {}
+            }
 
             viewModel.start()
             viewModel.start()
             viewModel.start()
             viewModel.start()
 
-            verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyOrNull(), anyString())
+            verify(cardReaderManager, times(1))
+                .collectPayment(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
         }
 
     @Test
     fun `when user clicks on print receipt button, then PrintReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentCompleted(mock())) }
             }
             viewModel.start()
@@ -485,7 +482,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on send receipt button, then SendReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentCompleted(mock())) }
             }
             viewModel.start()
