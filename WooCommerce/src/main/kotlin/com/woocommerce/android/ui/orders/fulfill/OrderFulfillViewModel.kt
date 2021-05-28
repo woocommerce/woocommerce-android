@@ -13,8 +13,10 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -36,7 +38,7 @@ class OrderFulfillViewModel @Inject constructor(
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val repository: OrderFulfillRepository
+    private val repository: OrderDetailRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         const val KEY_ORDER_FULFILL_RESULT = "key_order_fulfill_result"
@@ -78,6 +80,11 @@ class OrderFulfillViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        repository.onCleanup()
+    }
+
     private fun displayOrderDetails(order: Order) {
         viewState = viewState.copy(
             order = order,
@@ -86,12 +93,12 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     private fun displayOrderProducts(order: Order) {
-        val products = repository.getNonRefundedProducts(orderIdSet.remoteOrderId, order.items)
+        val products = repository.getOrderRefunds(orderIdSet.remoteOrderId).getNonRefundedProducts(order.items)
         _productList.value = products
     }
 
     private fun displayShipmentTrackings() {
-        val isShippingLabelAvailable = repository.hasShippingLabels(orderIdSet.remoteOrderId)
+        val isShippingLabelAvailable = repository.getOrderShippingLabels(orderIdSet.remoteOrderId).isNotEmpty()
         val trackingAvailable = appPrefs.isTrackingExtensionAvailable() &&
             !hasVirtualProductsOnly() && !isShippingLabelAvailable
         viewState = viewState.copy(isShipmentTrackingAvailable = trackingAvailable)

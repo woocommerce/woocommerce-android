@@ -13,10 +13,11 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragmentArgs
-import com.woocommerce.android.ui.orders.fulfill.OrderFulfillRepository
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -49,7 +50,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
     }
     private val selectedSite: SelectedSite = mock()
-    private val repository: OrderFulfillRepository = mock()
+    private val repository: OrderDetailRepository = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
     }
@@ -58,6 +59,10 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(5, ORDER_IDENTIFIER)
+    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(5,
+        ORDER_IDENTIFIER
+    )
+    private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderFulfillViewModel
 
     private val orderWithParameters = ViewState(
@@ -96,7 +101,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         doReturn(nonRefundedOrder).whenever(repository).getOrder(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-        doReturn(nonRefundedOrder.items).whenever(repository).getNonRefundedProducts(any(), any())
+        doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
         var orderData: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> orderData = new }
@@ -171,6 +176,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
 
             // product list should not be empty when products are not refunded
             val products = ArrayList<Order.Item>()
@@ -188,7 +194,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-            doReturn(true).whenever(repository).hasShippingLabels(any())
+            doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
 
             var orderData: ViewState? = null
             viewModel.viewStateData.observeForever { _, new -> orderData = new }
