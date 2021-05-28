@@ -336,6 +336,7 @@
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
+    <string name="order_fulfill_completed">&#127881; Order completed!</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
@@ -361,6 +362,11 @@
     <string name="shipping_label_refund_success">Refund request was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
     <string name="shipping_label_refund_expired">Labels older than 30 days cannot be refunded</string>
+    <!--
+        Fulfill order
+    -->
+    <string name="order_fulfill_title">Review order</string>
+    <string name="order_fulfill_email_info">If you’ve enabled this setting, the customer will receive a confirmation email once the order is completed</string>
 
     <!--
         Print shipping labels
