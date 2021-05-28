@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-12 14:54:03+0000
+Translation-Revision-Date: 2021-05-26 16:54:59+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">Een uniek digitaal product</string>
-    <string name="product_add_type_virtual">Eenvoudig virtueel product</string>
-    <string name="product_add_type_simple">Eenvoudig fysiek product</string>
+    <string name="product_type_external_title">Extern product</string>
+    <string name="product_type_grouped_title">Gegroepeerd product</string>
+    <string name="product_type_variable_title">Variabel product</string>
+    <string name="product_type_virtual_desc">Een unieke digitaal product zoals services, downloadbare boeken, muziek of video\'s</string>
+    <string name="product_type_simple_desc">Een uniek fysiek product dat je wellicht naar de klant moet verzenden</string>
+    <string name="product_type_simple_title">Eenvoudig fysiek product</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Instellingen openen</string>
+    <string name="card_reader_connect_open_location_settings">Instellingen openen</string>
+    <string name="card_reader_connect_open_permission_settings">Instellingen openen</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth is uitgeschakeld</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Locatie is uitgeschakeld</string>
+    <string name="card_reader_connect_missing_permissions_hint">Ontbrekende vereiste locatietoestemming</string>
+    <string name="card_reader_connect_connecting_failed_hint">We kunnen geen verbinding maken met de lezer.</string>
+    <string name="card_reader_connect_scanning_failed_hint">We hebben geen lezers kunnen vinden.</string>
+    <string name="card_reader_connect_failed_header">Verbinding maken met lezer mislukt</string>
+    <string name="card_reader_connect_connecting_header">Er wordt verbinding gemaakt met lezer</string>
+    <string name="card_reader_connect_to_reader">Verbinding maken met lezer</string>
+    <string name="card_reader_connect_reader_found_header">Wil je verbinding maken met lezer %s?</string>
+    <string name="card_reader_connect_scanning_hint">Druk de aan-/uitknop van je lezer in tot je een blauw knipperend lampje ziet</string>
+    <string name="card_reader_connect_scanning_header">Er wordt gescand op lezers</string>
+    <string name="shipping_label_items_count_placeholder">Aantal artikelen</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">Nieuw verzendlabel aanmaken</string>
+    <string name="product_type_virtual_title">Eenvoudig virtueel product</string>
     <string name="variation_confirm_delete">Wil je deze variatie verwijderen?</string>
     <string name="variation_create_dialog_title">Variatie wordt aangemaakt</string>
     <string name="product_delete_dialog_title">Product verwijderen</string>
@@ -307,11 +327,6 @@ Language: nl
     <string name="product_publish_dialog_title">Product wordt gepubliceerd</string>
     <string name="product_add_tool_bar_menu_button_done">PUBLICEREN</string>
     <string name="product_add_tool_bar_title">Nieuw product</string>
-    <string name="product_add_type_variable_desc">Een product met variaties zoals kleur of maat</string>
-    <string name="product_add_type_simple_desc">Een uniek artikel om te verkopen</string>
-    <string name="product_add_type_external">Extern product</string>
-    <string name="product_add_type_grouped">Gegroepeerd product</string>
-    <string name="product_add_type_variable">Variabel product</string>
     <string name="product_images_image_limit_warning">Er kan slechts één foto worden weergegeven per productvariatie</string>
     <string name="product_replace_photo">Foto vervangen</string>
     <string name="product_add_photo">Foto toevoegen</string>
@@ -322,7 +337,7 @@ Language: nl
     <string name="login_pick_store">Selecteer een winkel om mee te verbinden</string>
     <string name="login_store_address">Voer het adres van je winkel in</string>
     <string name="login_wpcom">Doorgaan met WordPress.com</string>
-    <string name="product_type_variation_desc">Een product met variaties zoals kleur of maat</string>
+    <string name="product_type_variable_desc">Een product met variaties zoals kleur of maat</string>
     <string name="product_selection_count_single">%d product geselecteerd</string>
     <string name="product_selection_count">%d producten geselecteerd</string>
     <string name="grouped_product_empty">Producten toevoegen aan de groep</string>
@@ -341,8 +356,6 @@ Language: nl
     <string name="product_type_confirm_dialog_title">Weet je zeker dat je het producttype wilt wijzigen?</string>
     <string name="product_type_external_desc">Koppel een product aan een externe website</string>
     <string name="product_type_grouped_desc">Een verzameling gerelateerde producten</string>
-    <string name="product_type_virtual_desc">Een service of digitale download</string>
-    <string name="product_type_physical_desc">Een artikel dat je naar de klant verzendt</string>
     <string name="product_type_list_header">Selecteer een producttype</string>
     <string name="send_feedback">Feedback verzenden</string>
     <string name="variation_detail_price_warning_title">Sommige variaties hebben geen prijzen</string>

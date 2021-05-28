@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-12 12:54:50+0000
+Translation-Revision-Date: 2021-05-27 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">Ein eindeutiges, digitales Produkt</string>
-    <string name="product_add_type_virtual">Einfaches virtuelles Produkt</string>
-    <string name="product_add_type_simple">Einfaches physisches Produkt</string>
+    <string name="product_type_external_title">Externes Produkt</string>
+    <string name="product_type_grouped_title">Gruppiertes Produkt</string>
+    <string name="product_type_variable_title">Variables Produkt</string>
+    <string name="product_type_virtual_desc">Ein einzigartiges digitales Produkt wie eine Dienstleistung oder herunterladbare Bücher, Musik oder Videos</string>
+    <string name="product_type_simple_desc">Ein einzigartiges physisches Produkt, das du möglicherweise an den Kunden senden musst</string>
+    <string name="product_type_simple_title">Einfaches physisches Produkt</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Einstellungen öffnen</string>
+    <string name="card_reader_connect_open_location_settings">Einstellungen öffnen</string>
+    <string name="card_reader_connect_open_permission_settings">Einstellungen öffnen</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth ist deaktiviert</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Standort ist deaktiviert</string>
+    <string name="card_reader_connect_missing_permissions_hint">Erforderliche Standortrechte fehlen</string>
+    <string name="card_reader_connect_connecting_failed_hint">Es konnte keine Verbindung zum Reader hergestellt werden.</string>
+    <string name="card_reader_connect_scanning_failed_hint">Es konnten keine Reader gefunden werden.</string>
+    <string name="card_reader_connect_failed_header">Verbindung zum Reader fehlgeschlagen</string>
+    <string name="card_reader_connect_connecting_header">Verbindung zum Reader wird hergestellt</string>
+    <string name="card_reader_connect_to_reader">Mit Reader verbinden</string>
+    <string name="card_reader_connect_reader_found_header">Möchtest du Reader %s verbinden?</string>
+    <string name="card_reader_connect_scanning_hint">Klicke auf den Einschaltknopf deines Readers, bis ein blaues Licht aufleuchtet.</string>
+    <string name="card_reader_connect_scanning_header">Suche nach Readern</string>
+    <string name="shipping_label_items_count_placeholder">Artikelanzahl</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">Neues Versandetikett erstellen</string>
+    <string name="product_type_virtual_title">Einfaches virtuelles Produkt</string>
     <string name="variation_confirm_delete">Möchtest du diese Variante wirklich löschen?</string>
     <string name="variation_create_dialog_title">Variante erstellen</string>
     <string name="product_delete_dialog_title">Produkt wird gelöscht</string>
@@ -307,11 +327,6 @@ Language: de
     <string name="product_publish_dialog_title">Produkt wird veröffentlicht</string>
     <string name="product_add_tool_bar_menu_button_done">VERÖFFENTLICHEN</string>
     <string name="product_add_tool_bar_title">Neues Produkt</string>
-    <string name="product_add_type_variable_desc">Ein Produkt mit Varianten wie Farbe oder Größe</string>
-    <string name="product_add_type_simple_desc">Ein einzelner Artikel zum Verkaufen</string>
-    <string name="product_add_type_external">Externes Produkt</string>
-    <string name="product_add_type_grouped">Gruppiertes Produkt</string>
-    <string name="product_add_type_variable">Variables Produkt</string>
     <string name="product_images_image_limit_warning">Für eine Produktvariante kann immer nur ein Foto angezeigt werden</string>
     <string name="product_replace_photo">Foto ersetzen</string>
     <string name="product_add_photo">Foto hinzufügen</string>
@@ -322,7 +337,7 @@ Language: de
     <string name="login_pick_store">Shop zum Verbinden auswählen</string>
     <string name="login_store_address">Shop -Adresse eingeben</string>
     <string name="login_wpcom">Weiter mit WordPress.com</string>
-    <string name="product_type_variation_desc">Ein Produkt mit Varianten wie Farbe oder Größe</string>
+    <string name="product_type_variable_desc">Ein Produkt mit Varianten wie Farbe oder Größe</string>
     <string name="product_selection_count_single">%d Produkt ausgewählt</string>
     <string name="product_selection_count">%d Produkte ausgewählt</string>
     <string name="grouped_product_empty">Füge Produkte zur Gruppe hinzu</string>
@@ -341,8 +356,6 @@ Language: de
     <string name="product_type_confirm_dialog_title">Möchtest du den Produkttyp wirklich ändern?</string>
     <string name="product_type_external_desc">Ein Produkt mit einer externen Website verknüpfen</string>
     <string name="product_type_grouped_desc">Eine Sammlung verwandter Produkte</string>
-    <string name="product_type_virtual_desc">Ein Service oder einer digitaler Download</string>
-    <string name="product_type_physical_desc">Ein Artikel, den du an den Kunden sendest</string>
     <string name="product_type_list_header">Wähle einen Produkttyp aus</string>
     <string name="send_feedback">Feedback senden</string>
     <string name="variation_detail_price_warning_title">Einige Varianten weisen keine Preise auf</string>
