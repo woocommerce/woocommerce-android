@@ -36,6 +36,7 @@ internal class CreatePaymentActionTest {
         whenever(intentParametersBuilder.setAmount(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setCurrency(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
+        whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
     }
 
@@ -45,7 +46,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        val result = action.createPaymentIntent(0, "", "").first()
+        val result = action.createPaymentIntent("", 0, "", "").first()
 
         assertThat(result).isExactlyInstanceOf(CreatePaymentStatus.Success::class.java)
     }
@@ -56,7 +57,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        val result = action.createPaymentIntent(0, "", "").first()
+        val result = action.createPaymentIntent("", 0, "", "").first()
 
         assertThat(result).isExactlyInstanceOf(CreatePaymentStatus.Failure::class.java)
     }
@@ -68,7 +69,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
         }
 
-        val result = action.createPaymentIntent(0, "", "").first()
+        val result = action.createPaymentIntent("", 0, "", "").first()
 
         assertThat((result as CreatePaymentStatus.Success).paymentIntent).isEqualTo(updatedPaymentIntent)
     }
@@ -79,7 +80,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        val result = action.createPaymentIntent(0, "", "").toList()
+        val result = action.createPaymentIntent("", 0, "", "").toList()
 
         assertThat(result.size).isEqualTo(1)
     }
@@ -90,7 +91,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        val result = action.createPaymentIntent(0, "", "").toList()
+        val result = action.createPaymentIntent("", 0, "", "").toList()
 
         assertThat(result.size).isEqualTo(1)
     }
@@ -102,7 +103,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        action.createPaymentIntent(0, "", expectedEmail).toList()
+        action.createPaymentIntent("", 0, "", expectedEmail).toList()
 
         verify(intentParametersBuilder).setReceiptEmail(expectedEmail)
     }
@@ -113,7 +114,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        action.createPaymentIntent(0, "", null).toList()
+        action.createPaymentIntent("", 0, "", null).toList()
 
         verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }
@@ -124,7 +125,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        action.createPaymentIntent(0, "", "").toList()
+        action.createPaymentIntent("", 0, "", "").toList()
 
         verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }

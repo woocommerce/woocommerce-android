@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.cardreader
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
@@ -51,6 +52,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 
 private const val DUMMY_TOTAL = "10.12"
+private const val DUMMY_ORDER_ID = 123
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -92,6 +94,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
         whenever(mockedOrder.billingEmail).thenReturn("test@test.test")
+        whenever(mockedOrder.id).thenReturn(DUMMY_ORDER_ID)
         whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
         whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
@@ -131,6 +134,24 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.viewStateData.value).isInstanceOf(LoadingDataState::class.java)
     }
+
+    @Test
+    fun `when flow started, then correct payment description is propagated to CardReaderManager`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val siteName = "testName"
+            val expectedResult = "hooray"
+            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
+                name = siteName
+            })
+            whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_ID, siteName))
+                .thenReturn(expectedResult)
+            val stringCaptor = argumentCaptor<String>()
+
+            viewModel.start()
+
+            verify(cardReaderManager).collectPayment(stringCaptor.capture(), any(), any(), any(), any())
+            assertThat(stringCaptor.firstValue).isEqualTo(expectedResult)
+        }
 
     @Test
     fun `when initializing payment, then ui updated to initializing payment state `() =
