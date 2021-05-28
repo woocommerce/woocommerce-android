@@ -81,6 +81,11 @@ data class Address(
             state.isNotEmpty() || city.isNotEmpty()
     }
 
+    /**
+     * Checks whether the entered phone number contains 10 digits exactly.
+     * As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
+     * and that's similar to what the web client does.
+     */
     fun phoneHas10Digits() = phone.replace(Regex("[^\\d]"), "").length == 10
 
     fun toShippingLabelModel(): ShippingLabelAddress {
