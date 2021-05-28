@@ -234,6 +234,7 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
                             event.destinationAddress,
                             event.shippingLabelPackages.toTypedArray(),
                             event.order,
+                            event.customsPackages?.toTypedArray(),
                             event.selectedRates.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
@@ -261,7 +262,7 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
                             originCountryCode = event.originCountryCode,
                             destinationCountryCode = event.destinationCountryCode,
                             shippingPackages = event.shippingPackages.toTypedArray(),
-                            customsPackages = event.customsPacakges.toTypedArray()
+                            customsPackages = event.customsPackages.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
                 }

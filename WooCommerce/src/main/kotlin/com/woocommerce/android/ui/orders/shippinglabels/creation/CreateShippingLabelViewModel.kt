@@ -292,6 +292,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 data.stepsState.originAddressStep.data,
                 data.stepsState.shippingAddressStep.data,
                 data.stepsState.packagingStep.data,
+                data.stepsState.customsStep.data,
                 data.stepsState.carrierStep.data
             )
         )
@@ -319,7 +320,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 originCountryCode = originCountryCode,
                 destinationCountryCode = destinationCountryCode,
                 shippingPackages = shippingPackages,
-                customsPacakges = customsPackages
+                customsPackages = customsPackages
             )
         )
     }
@@ -448,7 +449,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 origin = data.stepsState.originAddressStep.data,
                 destination = data.stepsState.shippingAddressStep.data,
                 packages = data.stepsState.packagingStep.data,
-                rates = data.stepsState.carrierStep.data
+                rates = data.stepsState.carrierStep.data,
+                customsPackages = data.stepsState.customsStep.data
             )
         } / 1000.0
 

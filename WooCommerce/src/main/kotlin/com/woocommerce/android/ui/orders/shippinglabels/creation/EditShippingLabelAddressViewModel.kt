@@ -50,7 +50,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
             "UM", // United States Minor Outlying Islands
             "MH", // Marshall Islands
             "FM", // Micronesia
-            "MP", // Northern Mariana Islands
+            "MP"  // Northern Mariana Islands
         )
     }
 

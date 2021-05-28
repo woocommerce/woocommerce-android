@@ -116,9 +116,9 @@ class ShippingCustomsViewModel @Inject constructor(
                     }
 
                     CustomsLine(
-                        itemId = orderItem.itemId,
+                        productId = orderItem.uniqueId,
                         itemDescription = defaultDescription,
-                        quantity = orderItem.quantity.toDouble(),
+                        quantity = orderItem.quantity.toFloat(),
                         value = value,
                         weight = weight,
                         hsTariffNumber = "",

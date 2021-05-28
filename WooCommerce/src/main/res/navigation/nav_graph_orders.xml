@@ -397,6 +397,10 @@
             android:name="order"
             app:argType="com.woocommerce.android.model.Order" />
         <argument
+            android:name="customsPackages"
+            app:nullable="true"
+            app:argType="com.woocommerce.android.model.CustomsPackage[]" />
+        <argument
             android:name="selectedRates"
             app:argType="com.woocommerce.android.model.ShippingRate[]" />
     </fragment>

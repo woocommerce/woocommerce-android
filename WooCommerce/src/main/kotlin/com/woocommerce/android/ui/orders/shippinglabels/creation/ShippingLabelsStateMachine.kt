@@ -178,7 +178,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         originCountryCode = data.stepsState.originAddressStep.data.country,
                         destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
                         shippingPackages = data.stepsState.packagingStep.data,
-                        customsPackages = data.stepsState.customsStep.data
+                        customsPackages = data.stepsState.customsStep.data ?: emptyList()
                     )
                 )
             }
@@ -214,7 +214,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         originCountryCode = data.stepsState.originAddressStep.data.country,
                         destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
                         shippingPackages = data.stepsState.packagingStep.data,
-                        customsPackages = data.stepsState.customsStep.data
+                        customsPackages = data.stepsState.customsStep.data ?: emptyList()
                     )
                 )
             }
@@ -492,8 +492,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class CustomsStep(
             override val status: StepStatus,
             override val isVisible: Boolean,
-            override val data: List<CustomsPackage>
-        ) : Step<List<CustomsPackage>>()
+            override val data: List<CustomsPackage>?
+        ) : Step<List<CustomsPackage>?>()
 
         @Parcelize
         data class CarrierStep(
@@ -563,7 +563,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     }
                 }
                 is CustomsStep -> copy(
-                    customsStep = customsStep.copy(status = DONE),
+                    customsStep = customsStep.copy(status = DONE, data = newData as List<CustomsPackage>),
                     carrierStep = carrierStep.copy(status = READY)
                 )
                 is CarrierStep -> {

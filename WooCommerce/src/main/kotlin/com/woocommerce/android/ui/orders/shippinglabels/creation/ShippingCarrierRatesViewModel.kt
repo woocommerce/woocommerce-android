@@ -92,7 +92,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             arguments.order,
             arguments.originAddress,
             arguments.destinationAddress,
-            arguments.packages.toList()
+            arguments.packages.toList(),
+            arguments.customsPackages?.toList()
         )
 
         if (carrierRatesResult.isError) {

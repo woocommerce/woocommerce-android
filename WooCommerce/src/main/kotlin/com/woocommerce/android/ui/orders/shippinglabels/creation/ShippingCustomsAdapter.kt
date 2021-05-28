@@ -285,7 +285,7 @@ class ShippingCustomsLineAdapter(
         override fun getNewListSize(): Int = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].first.itemId == newList[newItemPosition].first.itemId
+            return oldList[oldItemPosition].first.productId == newList[newItemPosition].first.productId
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
