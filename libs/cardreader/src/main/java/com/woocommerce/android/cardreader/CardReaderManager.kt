@@ -17,6 +17,7 @@ interface CardReaderManager {
 
     // TODO cardreader Stripe accepts only Int, is that ok?
     suspend fun collectPayment(
+        paymentDescription: String,
         orderId: Long,
         amount: BigDecimal,
         currency: String,

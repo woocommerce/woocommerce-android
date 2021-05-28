@@ -661,6 +661,8 @@
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
 
+    <string name="card_reader_payment_description">Online payment for order %s for %s</string>
+
     <string name="card_reader_receipt_application_name_title">Application name</string>
     <string name="card_reader_receipt_from_title">Receipt from %s</string>
     <string name="card_reader_receipt_title">Receipt</string>
