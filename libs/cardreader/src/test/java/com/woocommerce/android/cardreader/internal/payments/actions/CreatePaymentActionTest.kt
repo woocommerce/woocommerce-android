@@ -2,6 +2,8 @@ package com.woocommerce.android.cardreader.internal.payments.actions
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.model.external.PaymentIntent
@@ -33,6 +35,7 @@ internal class CreatePaymentActionTest {
         whenever(paymentIntentParametersFactory.createBuilder()).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setAmount(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setCurrency(any())).thenReturn(intentParametersBuilder)
+        whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
     }
 
@@ -42,7 +45,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        val result = action.createPaymentIntent(0, "").first()
+        val result = action.createPaymentIntent(0, "", "").first()
 
         assertThat(result).isExactlyInstanceOf(CreatePaymentStatus.Success::class.java)
     }
@@ -53,7 +56,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        val result = action.createPaymentIntent(0, "").first()
+        val result = action.createPaymentIntent(0, "", "").first()
 
         assertThat(result).isExactlyInstanceOf(CreatePaymentStatus.Failure::class.java)
     }
@@ -65,7 +68,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
         }
 
-        val result = action.createPaymentIntent(0, "").first()
+        val result = action.createPaymentIntent(0, "", "").first()
 
         assertThat((result as CreatePaymentStatus.Success).paymentIntent).isEqualTo(updatedPaymentIntent)
     }
@@ -76,7 +79,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        val result = action.createPaymentIntent(0, "").toList()
+        val result = action.createPaymentIntent(0, "", "").toList()
 
         assertThat(result.size).isEqualTo(1)
     }
@@ -87,8 +90,42 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        val result = action.createPaymentIntent(0, "").toList()
+        val result = action.createPaymentIntent(0, "", "").toList()
 
         assertThat(result.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when customer email not empty, then PaymentIntent setReceiptEmail invoked`() = runBlockingTest {
+        val expectedEmail = "test@test.cz"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
+        }
+
+        action.createPaymentIntent(0, "", expectedEmail).toList()
+
+        verify(intentParametersBuilder).setReceiptEmail(expectedEmail)
+    }
+
+    @Test
+    fun `when customer email is null, then PaymentIntent setReceiptEmail not invoked`() = runBlockingTest {
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
+        }
+
+        action.createPaymentIntent(0, "", null).toList()
+
+        verify(intentParametersBuilder, never()).setReceiptEmail(any())
+    }
+
+    @Test
+    fun `when customer email is empty, then PaymentIntent setReceiptEmail not invoked`() = runBlockingTest {
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
+        }
+
+        action.createPaymentIntent(0, "", "").toList()
+
+        verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }
 }
