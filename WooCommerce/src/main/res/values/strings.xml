@@ -366,7 +366,7 @@
         Fulfill order
     -->
     <string name="order_fulfill_title">Review order</string>
-    <string name="order_fulfill_email_info">The customer will receive an email once order is completed</string>
+    <string name="order_fulfill_email_info">The customer will receive a confirmation email once order is completed</string>
 
     <!--
         Print shipping labels
