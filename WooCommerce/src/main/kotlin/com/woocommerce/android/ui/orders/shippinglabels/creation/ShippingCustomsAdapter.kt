@@ -194,7 +194,7 @@ class ShippingCustomsLineAdapter(
     var parentItemPosition: Int = -1
 
     override fun getItemId(position: Int): Long {
-        return customsLines[position].first.itemId
+        return customsLines[position].first.productId
     }
 
     override fun getItemCount(): Int = customsLines.size

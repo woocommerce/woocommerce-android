@@ -81,6 +81,8 @@ data class Address(
             state.isNotEmpty() || city.isNotEmpty()
     }
 
+    fun phoneHas10Digits() = phone.replace(Regex("[^\\d]"), "").length == 10
+
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
             company = company,

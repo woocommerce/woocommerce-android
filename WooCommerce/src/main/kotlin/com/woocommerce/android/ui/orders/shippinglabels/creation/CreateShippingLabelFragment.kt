@@ -199,9 +199,10 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
                 is ShowAddressEditor -> {
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToEditShippingLabelAddressFragment(
-                            event.address,
-                            event.type,
-                            event.validationResult
+                            address = event.address,
+                            addressType = event.type,
+                            validationResult = event.validationResult,
+                            isInternational = event.isInternational
                         )
                     findNavController().navigateSafely(action)
                 }

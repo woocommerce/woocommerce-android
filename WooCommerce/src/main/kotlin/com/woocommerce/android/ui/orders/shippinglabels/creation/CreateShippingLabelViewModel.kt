@@ -208,7 +208,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             ShowAddressEditor(
                                 sideEffect.address,
                                 sideEffect.type,
-                                sideEffect.validationResult
+                                sideEffect.validationResult,
+                                sideEffect.isInternational
                             )
                         )
                         is SideEffect.ShowAddressSuggestion -> triggerEvent(

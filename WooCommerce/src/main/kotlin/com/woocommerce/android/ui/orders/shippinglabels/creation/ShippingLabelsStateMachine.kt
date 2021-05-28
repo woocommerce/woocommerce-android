@@ -32,6 +32,7 @@ import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -191,13 +192,21 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.EditOriginAddressRequested> {
                 transitionTo(
                     State.OriginAddressEditing(data),
-                    SideEffect.OpenAddressEditor(data.stepsState.originAddressStep.data, ORIGIN)
+                    SideEffect.OpenAddressEditor(
+                        address = data.stepsState.originAddressStep.data,
+                        type = ORIGIN,
+                        isInternational = data.isInternationalShipment
+                    )
                 )
             }
             on<Event.EditShippingAddressRequested> {
                 transitionTo(
                     State.ShippingAddressEditing(data),
-                    SideEffect.OpenAddressEditor(data.stepsState.shippingAddressStep.data, DESTINATION)
+                    SideEffect.OpenAddressEditor(
+                        address = data.stepsState.shippingAddressStep.data,
+                        type = DESTINATION,
+                        isInternational = data.isInternationalShipment
+                    )
                 )
             }
             on<Event.EditPackagingRequested> {
@@ -250,9 +259,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.OriginAddressEditing(data),
                     SideEffect.OpenAddressEditor(
-                        data.stepsState.originAddressStep.data,
-                        ORIGIN,
-                        event.validationResult
+                        address = data.stepsState.originAddressStep.data,
+                        type = ORIGIN,
+                        validationResult = event.validationResult,
+                        isInternational = data.isInternationalShipment
                     )
                 )
             }
@@ -269,7 +279,14 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.originAddressStep))
             }
             on<Event.EditAddressRequested> { event ->
-                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(event.address, ORIGIN))
+                transitionTo(
+                    State.OriginAddressEditing(data),
+                    SideEffect.OpenAddressEditor(
+                        address = event.address,
+                        type = ORIGIN,
+                        isInternational = data.isInternationalShipment
+                    )
+                )
             }
             on<Event.SuggestedAddressDiscarded> {
                 transitionTo(State.WaitingForInput(data))
@@ -309,9 +326,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.ShippingAddressEditing(data),
                     SideEffect.OpenAddressEditor(
-                        data.stepsState.shippingAddressStep.data,
-                        DESTINATION,
-                        event.validationResult
+                        address = data.stepsState.shippingAddressStep.data,
+                        type = DESTINATION,
+                        validationResult = event.validationResult,
+                        isInternational = data.isInternationalShipment
                     )
                 )
             }
@@ -330,7 +348,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.EditAddressRequested> { event ->
                 transitionTo(
                     State.ShippingAddressEditing(data),
-                    SideEffect.OpenAddressEditor(event.address, DESTINATION)
+                    SideEffect.OpenAddressEditor(
+                        address = event.address,
+                        type = DESTINATION,
+                        isInternational = data.isInternationalShipment
+                    )
                 )
             }
             on<Event.SuggestedAddressDiscarded> {
@@ -463,7 +485,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
     data class StateMachineData(
         val order: Order,
         val stepsState: StepsState
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isInternationalShipment
+            get() = stepsState.originAddressStep.data.country != stepsState.shippingAddressStep.data.country
+    }
 
     /**
      * The main shipping label creation steps
@@ -744,7 +770,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class OpenAddressEditor(
             val address: Address,
             val type: AddressType,
-            val validationResult: ValidationResult? = null
+            val validationResult: ValidationResult? = null,
+            val isInternational: Boolean
         ) : SideEffect()
 
         data class ShowPackageOptions(

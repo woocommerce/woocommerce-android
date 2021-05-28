@@ -164,16 +164,19 @@ class EditShippingLabelAddressFragment
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
             }
-            new.addressError?.takeIfNotEqualTo(old?.addressError) {
+            new.addressError.takeIfNotEqualTo(old?.addressError) {
                 showErrorOrClear(binding.address1Layout, it)
             }
-            new.nameError?.takeIfNotEqualTo(old?.nameError) {
+            new.phoneError.takeIfNotEqualTo(old?.phoneError) {
+                showErrorOrClear(binding.phoneLayout, it)
+            }
+            new.nameError.takeIfNotEqualTo(old?.nameError) {
                 showErrorOrClear(binding.nameLayout, it)
             }
-            new.cityError?.takeIfNotEqualTo(old?.cityError) {
+            new.cityError.takeIfNotEqualTo(old?.cityError) {
                 showErrorOrClear(binding.cityLayout, it)
             }
-            new.zipError?.takeIfNotEqualTo(old?.zipError) {
+            new.zipError.takeIfNotEqualTo(old?.zipError) {
                 showErrorOrClear(binding.zipLayout, it)
             }
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
@@ -264,8 +267,8 @@ class EditShippingLabelAddressFragment
         })
     }
 
-    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int) {
-        if (message == 0) {
+    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int?) {
+        if (message == null || message == 0) {
             inputLayout.error = null
         } else {
             inputLayout.error = resources.getString(message)
