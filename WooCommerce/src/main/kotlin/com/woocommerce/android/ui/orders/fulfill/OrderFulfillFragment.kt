@@ -49,9 +49,6 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var dateUtils: DateUtils
 
-    private var _binding: FragmentOrderFulfillBinding? = null
-    private val binding get() = _binding!!
-
     private var undoSnackbar: Snackbar? = null
     private var screenTitle = ""
         set(value) {
@@ -71,18 +68,13 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
 
     override fun getFragmentTitle() = screenTitle
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentOrderFulfillBinding.bind(view)
+        val binding = FragmentOrderFulfillBinding.bind(view)
 
         setHasOptionsMenu(true)
-        setupObservers(viewModel)
+        setupObservers(binding)
         setupResultHandlers(viewModel)
     }
 
@@ -99,21 +91,21 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
         return false
     }
 
-    private fun setupObservers(viewModel: OrderFulfillViewModel) {
+    private fun setupObservers(binding: FragmentOrderFulfillBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) {
-                showOrderDetail(it)
+                showOrderDetail(it, binding)
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
-                showAddShipmentTracking(it)
+                showAddShipmentTracking(it, binding)
             }
         }
         viewModel.productList.observe(viewLifecycleOwner, Observer {
-            showOrderProducts(it, viewModel.order.currency)
+            showOrderProducts(it, viewModel.order.currency, binding)
         })
         viewModel.shipmentTrackings.observe(viewLifecycleOwner, Observer {
-            showShipmentTrackings(it)
+            showShipmentTrackings(it, binding)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -133,7 +125,7 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
         }
     }
 
-    private fun showOrderDetail(order: Order) {
+    private fun showOrderDetail(order: Order, binding: FragmentOrderFulfillBinding) {
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly()
@@ -143,7 +135,11 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
         }
     }
 
-    private fun showOrderProducts(products: List<Order.Item>, currency: String) {
+    private fun showOrderProducts(
+        products: List<Order.Item>,
+        currency: String,
+        binding: FragmentOrderFulfillBinding
+    ) {
         products.whenNotNullNorEmpty {
             with(binding.orderDetailProductList) {
                 showProductListMenuButton(false)
@@ -159,7 +155,10 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
         }.otherwise { binding.orderDetailProductList.hide() }
     }
 
-    private fun showAddShipmentTracking(show: Boolean) {
+    private fun showAddShipmentTracking(
+        show: Boolean,
+        binding: FragmentOrderFulfillBinding
+    ) {
         with(binding.orderDetailShipmentList) {
             isVisible = show
             showAddTrackingButton(show) { viewModel.onAddShipmentTrackingClicked() }
@@ -167,7 +166,8 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
     }
 
     private fun showShipmentTrackings(
-        shipmentTrackings: List<OrderShipmentTracking>
+        shipmentTrackings: List<OrderShipmentTracking>,
+        binding: FragmentOrderFulfillBinding
     ) {
         binding.orderDetailShipmentList.updateShipmentTrackingList(
             shipmentTrackings = shipmentTrackings,
