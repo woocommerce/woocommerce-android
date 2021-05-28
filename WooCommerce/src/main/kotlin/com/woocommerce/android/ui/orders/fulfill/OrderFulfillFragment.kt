@@ -31,6 +31,7 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -114,6 +115,7 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> navigateBackWithResult(event.key!!, event.data)
                 is OrderNavigationTarget -> navigator.navigate(this, event)
+                is ShowUndoSnackbar -> displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 else -> event.isHandled = false
             }
         })
@@ -171,7 +173,23 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
     ) {
         binding.orderDetailShipmentList.updateShipmentTrackingList(
             shipmentTrackings = shipmentTrackings,
-            dateUtils = dateUtils
-        )
+            dateUtils = dateUtils,
+            onDeleteShipmentTrackingClicked = {
+                viewModel.onDeleteShipmentTrackingClicked(it)
+            })
+    }
+
+    private fun displayUndoSnackbar(
+        message: String,
+        actionListener: View.OnClickListener,
+        dismissCallback: Snackbar.Callback
+    ) {
+        undoSnackbar = uiMessageResolver.getUndoSnack(
+            message = message,
+            actionListener = actionListener
+        ).also {
+            it.addCallback(dismissCallback)
+            it.show()
+        }
     }
 }

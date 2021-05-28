@@ -21,7 +21,7 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
 
     fun updateShipmentTrackingList(
         shipmentTrackings: List<OrderShipmentTracking>,
-        onDeleteShipmentTrackingClicked: ((trackingNumber: String) -> Unit)? = null,
+        onDeleteShipmentTrackingClicked: ((trackingNumber: String) -> Unit),
         dateUtils: DateUtils
     ) {
         val shipmentTrackingAdapter =

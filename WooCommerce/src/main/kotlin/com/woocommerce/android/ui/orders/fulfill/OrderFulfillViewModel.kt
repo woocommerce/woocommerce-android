@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.Callback
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -21,10 +23,12 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
@@ -58,6 +62,11 @@ class OrderFulfillViewModel @Inject constructor(
 
     private val _shipmentTrackings = MutableLiveData<List<OrderShipmentTracking>>()
     val shipmentTrackings: LiveData<List<OrderShipmentTracking>> = _shipmentTrackings
+
+    // Keep track of the deleted shipment tracking number in case
+    // the request to server fails, we need to display an error message
+    // and add the deleted tracking number back to the list
+    private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
     final var order: Order
         get() = requireNotNull(viewState.order)
@@ -142,6 +151,58 @@ class OrderFulfillViewModel @Inject constructor(
         )
         viewState = viewState.copy(shouldRefreshShipmentTracking = true)
         _shipmentTrackings.value = repository.getOrderShipmentTrackings(orderIdSet.id)
+    }
+
+    fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
+        if (networkStatus.isConnected()) {
+            repository.getOrderShipmentTrackingByTrackingNumber(
+                orderIdSet.id, trackingNumber
+            )?.let { deletedShipmentTracking ->
+                deletedOrderShipmentTrackingSet.add(trackingNumber)
+
+                val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
+                shipmentTrackings.remove(deletedShipmentTracking)
+                _shipmentTrackings.value = shipmentTrackings
+
+                triggerEvent(ShowUndoSnackbar(
+                    message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
+                    undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                    dismissAction = object : Callback() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            if (event != DISMISS_EVENT_ACTION) {
+                                // delete the shipment only if user has not clicked on the undo snackbar
+                                deleteOrderShipmentTracking(deletedShipmentTracking)
+                            }
+                        }
+                    }
+                ))
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+    }
+
+    private fun onDeleteShipmentTrackingReverted(shipmentTracking: OrderShipmentTracking) {
+        deletedOrderShipmentTrackingSet.remove(shipmentTracking.trackingNumber)
+        val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
+        shipmentTrackings.add(shipmentTracking)
+        _shipmentTrackings.value = shipmentTrackings
+    }
+
+    private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
+        launch {
+            val deletedShipment = repository.deleteOrderShipmentTracking(
+                orderIdSet.id, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
+            )
+            if (deletedShipment) {
+                viewState = viewState.copy(shouldRefreshShipmentTracking = true)
+                triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
+            } else {
+                onDeleteShipmentTrackingReverted(shipmentTracking)
+                triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_error))
+            }
+        }
     }
 
     fun onBackButtonClicked() {

@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShipmentTrac
 import com.woocommerce.android.util.DateUtils
 
 class OrderDetailShipmentTrackingListAdapter(
-    private val onDeleteShipmentTrackingClicked: ((trackingNumber: String) -> Unit)? = null,
+    private val onDeleteShipmentTrackingClicked: ((trackingNumber: String) -> Unit),
     private val dateUtils: DateUtils
 ) : RecyclerView.Adapter<OrderDetailShipmentTrackingViewHolder>() {
     var shipmentTrackingList: List<OrderShipmentTracking> = ArrayList()
@@ -45,7 +45,7 @@ class OrderDetailShipmentTrackingListAdapter(
 
     class OrderDetailShipmentTrackingViewHolder(
         private val viewBinding: OrderDetailShipmentTrackingListItemBinding,
-        private val onDeleteShipmentTrackingClicked: ((trackingNumber: String) -> Unit)? = null,
+        private val onDeleteShipmentTrackingClicked: ((trackingNumber: String) -> Unit),
         private val dateUtils: DateUtils
     ) : RecyclerView.ViewHolder(
         viewBinding.root
