@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-12 22:54:14+0000
+Translation-Revision-Date: 2021-05-27 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">منتج رقمي فريد</string>
-    <string name="product_add_type_virtual">منتج افتراضي بسيط</string>
-    <string name="product_add_type_simple">منتج مادي بسيط</string>
+    <string name="product_type_external_title">منتج خارجي</string>
+    <string name="product_type_grouped_title">منتج مجمع</string>
+    <string name="product_type_variable_title">منتج متعدد الأنواع</string>
+    <string name="product_type_virtual_desc">منتج رقمي فريد، مثل الخدمات، أو الكتب أو الموسيقى أو مقاطع الفيديو القابلة للتنزيل</string>
+    <string name="product_type_simple_desc">منتج مادي فريد قد تضطر إلى شحنه إلى العميل</string>
+    <string name="product_type_simple_title">منتج مادي بسيط</string>
+    <string name="card_reader_connect_open_bluetooth_settings">فتح الإعدادات</string>
+    <string name="card_reader_connect_open_location_settings">فتح الإعدادات</string>
+    <string name="card_reader_connect_open_permission_settings">فتح الإعدادات</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">تم تعطيل البلوتوث</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">تم تعطيل الموقع</string>
+    <string name="card_reader_connect_missing_permissions_hint">صلاحية الموقع المطلوب مفقودة</string>
+    <string name="card_reader_connect_connecting_failed_hint">تعذر علينا الربط بالقارئ.</string>
+    <string name="card_reader_connect_scanning_failed_hint">تعذر علينا العثور على أي قارئ.</string>
+    <string name="card_reader_connect_failed_header">فشل الربط بالقارئ</string>
+    <string name="card_reader_connect_connecting_header">الربط بالقارئ</string>
+    <string name="card_reader_connect_to_reader">الربط بالقارئ</string>
+    <string name="card_reader_connect_reader_found_header">هل ترغب في ربط القارئ %s؟</string>
+    <string name="card_reader_connect_scanning_hint">اضغط على زر الطاقة الخاص بالقارئ لديك حتى ترى ضوءًا أزرق وامضًا</string>
+    <string name="card_reader_connect_scanning_header">الفحص بحثًا عن أجهزة القراءة</string>
+    <string name="shipping_label_items_count_placeholder">عدد العناصر</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">إنشاء ملصق شحن جديد</string>
+    <string name="product_type_virtual_title">منتج افتراضي بسيط</string>
     <string name="variation_confirm_delete">هل ترغب في حذف هذه المجموعة المتنوعة؟</string>
     <string name="variation_create_dialog_title">إنشاء مجموعة متنوعة</string>
     <string name="product_delete_dialog_title">حذف منتج</string>
@@ -306,11 +326,6 @@ Language: ar
     <string name="product_publish_dialog_title">نشر المنتج</string>
     <string name="product_add_tool_bar_menu_button_done">نشر</string>
     <string name="product_add_tool_bar_title">منتج جديد</string>
-    <string name="product_add_type_variable_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
-    <string name="product_add_type_simple_desc">عنصر فريد للبيع</string>
-    <string name="product_add_type_external">منتج خارجي</string>
-    <string name="product_add_type_grouped">منتج مجمع</string>
-    <string name="product_add_type_variable">منتج متعدد الأنواع</string>
     <string name="product_images_image_limit_warning">لا يمكن عرض سوى صورة واحدة فقط لكل تباين من تباينات المنتج</string>
     <string name="product_replace_photo">استبدال صورة</string>
     <string name="product_add_photo">إضافة صورة</string>
@@ -321,7 +336,7 @@ Language: ar
     <string name="login_pick_store">تحديد متجر للاتصال به</string>
     <string name="login_store_address">إدخال عنوان متجرك</string>
     <string name="login_wpcom">المتابعة باستخدام وردبرس.كوم</string>
-    <string name="product_type_variation_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
+    <string name="product_type_variable_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
     <string name="product_selection_count_single">%d تم تحديد المنتج</string>
     <string name="product_selection_count">%d تم تحديد المنتجات</string>
     <string name="grouped_product_empty">إضافة المنتجات إلى المجموعة</string>
@@ -340,8 +355,6 @@ Language: ar
     <string name="product_type_confirm_dialog_title">هل تريد بالتأكيد تغيير نوع المنتج؟</string>
     <string name="product_type_external_desc">ربط أحد المنتجات بموقع خارجي على الويب</string>
     <string name="product_type_grouped_desc">مجموعة متنوعة من المنتجات ذات الصلة</string>
-    <string name="product_type_virtual_desc">تنزيل خدمة أم تنزيل رقمي</string>
-    <string name="product_type_physical_desc">نصر تشحنه إلى العميل</string>
     <string name="product_type_list_header">تحديد نوع المنتج</string>
     <string name="send_feedback">إرسال ملاحظات</string>
     <string name="variation_detail_price_warning_title">لا تتضمن بعض التباينات أي أسعار</string>
