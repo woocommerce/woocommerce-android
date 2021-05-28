@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".ui.common.UserEligibilityErrorFragment">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_displayname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:textAppearance="@style/TextAppearance.Woo.Headline6"
+                android:textColor="@color/color_on_surface_high"
+                app:layout_constraintBottom_toTopOf="@+id/text_user_roles"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="droidtester2018" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_user_roles"
+                style="@style/Woo.TextView.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/imageView2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.55"
+                tools:text="\@droidtester2018" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/img_user_access_error"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.45"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_error_message"
+                style="@style/Woo.TextView.Body2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_150"
+                android:layout_marginEnd="@dimen/major_150"
+                android:layout_marginTop="@dimen/major_300"
+                app:layout_goneMarginTop="@dimen/minor_00"
+                android:text="@string/user_role_access_error_msg"
+                android:textAlignment="center"
+                android:textColor="@color/color_on_surface_medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView2"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_secondary_action"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_200"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_marginEnd="@dimen/major_200"
+                android:text="@string/user_role_access_error_link"
+                android:textAllCaps="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_error_message"
+                app:layout_constraintVertical_bias="0.0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <include
+        android:id="@+id/epilogue_button_bar"
+        layout="@layout/view_login_epilogue_button_bar" />
+
+</LinearLayout>

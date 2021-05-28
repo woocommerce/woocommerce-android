@@ -107,6 +107,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             }
         }
 
+        object Logout : Event()
         object Exit : Event()
 
         data class ExitWithResult<out T>(val data: T, val key: String? = null) : Event()
