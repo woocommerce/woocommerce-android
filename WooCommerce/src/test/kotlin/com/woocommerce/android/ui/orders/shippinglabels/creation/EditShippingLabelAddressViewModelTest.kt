@@ -165,7 +165,8 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows a snackbar on validation error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(addressValidator.validateAddress(any(), any(), any())).thenReturn(ValidationResult.Error(GENERIC_ERROR))
+        whenever(addressValidator.validateAddress(any(), any(), any()))
+            .thenReturn(ValidationResult.Error(GENERIC_ERROR))
 
         var event: Event? = null
         viewModel.event.observeForever { event = it }

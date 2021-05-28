@@ -98,7 +98,7 @@ class ShippingLabelAddressValidator @Inject constructor(
         object NameMissing : ValidationResult()
 
         @Parcelize
-        object PhoneInvalid: ValidationResult()
+        object PhoneInvalid : ValidationResult()
 
         @Parcelize
         data class SuggestedChanges(val suggested: Address) : ValidationResult()
