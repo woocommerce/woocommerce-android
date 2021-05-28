@@ -136,7 +136,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     originAddressStep = OriginAddressStep(READY, event.originAddress),
                     shippingAddressStep = ShippingAddressStep(NOT_READY, event.shippingAddress),
                     packagingStep = PackagingStep(NOT_READY, emptyList()),
-                    customsStep = CustomsStep(NOT_READY, isVisible = isInternational, data = emptyList()),
+                    customsStep = CustomsStep(NOT_READY, isVisible = isInternational, data = null),
                     carrierStep = CarrierStep(NOT_READY, emptyList()),
                     paymentsStep = PaymentsStep(NOT_READY, event.currentPaymentMethod)
                 )
@@ -582,32 +582,41 @@ class ShippingLabelsStateMachine @Inject constructor() {
         private fun <T> editStep(currentStep: Step<T>, newData: T): StepsState {
             if (currentStep.data == newData) return this
             return when (currentStep) {
-                is OriginAddressStep -> copy(
-                    originAddressStep = originAddressStep.copy(data = newData as Address),
-                    carrierStep = invalidateCarrierStepIfNeeded(),
-                    customsStep = customsStep.copy(
-                        isVisible = (newData as Address).country != shippingAddressStep.data.country
-                    )
-                )
-                is ShippingAddressStep -> copy(
-                    shippingAddressStep = shippingAddressStep.copy(data = newData as Address),
-                    carrierStep = invalidateCarrierStepIfNeeded(),
-                    customsStep = customsStep.copy(
-                        isVisible = (newData as Address).country != originAddressStep.data.country
-                    )
-                )
-                is PackagingStep -> copy(
-                    packagingStep = packagingStep.copy(data = newData as List<ShippingLabelPackage>),
-                    carrierStep = invalidateCarrierStepIfNeeded()
-                )
+                is OriginAddressStep -> copy(originAddressStep = originAddressStep.copy(data = newData as Address))
+                    .invalidateCustomsStepIfNeeded()
+                    .invalidateCarrierStepIfNeeded()
+                is ShippingAddressStep ->
+                    copy(shippingAddressStep = shippingAddressStep.copy(data = newData as Address))
+                        .invalidateCustomsStepIfNeeded()
+                        .invalidateCarrierStepIfNeeded()
+                is PackagingStep ->
+                    copy(packagingStep = packagingStep.copy(data = newData as List<ShippingLabelPackage>))
+                        .invalidateCustomsStepIfNeeded()
+                        .invalidateCarrierStepIfNeeded()
                 is CustomsStep -> copy(customsStep = customsStep.copy(data = newData as List<CustomsPackage>))
+                    .invalidateCarrierStepIfNeeded()
                 is CarrierStep -> copy(carrierStep = carrierStep.copy(data = newData as List<ShippingRate>))
                 is PaymentsStep -> copy(paymentsStep = paymentsStep.copy(data = newData as PaymentMethod))
             }
         }
 
-        private fun invalidateCarrierStepIfNeeded(): CarrierStep {
-            return if (carrierStep.status == DONE) carrierStep.copy(status = READY) else carrierStep
+        private fun invalidateCarrierStepIfNeeded(): StepsState {
+            val carrierStep = if (carrierStep.status == DONE || carrierStep.status == READY) {
+                val newStatus = if (customsStep.isVisible && customsStep.status != DONE) NOT_READY else READY
+                carrierStep.copy(status = newStatus, data = emptyList())
+            } else {
+                val isReady = if (customsStep.isVisible) customsStep.status == DONE else packagingStep.status == DONE
+                carrierStep.copy(status = if (isReady) READY else NOT_READY)
+            }
+            return copy(carrierStep = carrierStep)
+        }
+
+        private fun invalidateCustomsStepIfNeeded(): StepsState {
+            val isInternational = originAddressStep.data.country != shippingAddressStep.data.country
+            val customsStep = if (customsStep.status == DONE) {
+                customsStep.copy(status = READY, isVisible = isInternational, data = null)
+            } else customsStep.copy(isVisible = isInternational)
+            return copy(customsStep = customsStep)
         }
     }
 
