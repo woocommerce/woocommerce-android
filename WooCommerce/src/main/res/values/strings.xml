@@ -517,9 +517,13 @@
     <string name="shipping_label_customs_contents_type_other_hint">Contents details</string>
     <string name="shipping_label_customs_restriction_type_other_hint">Restriction details</string>
     <string name="shipping_label_customs_itn_hint" translatable="false">ITN</string>
+    <string name="shipping_label_customs_itn_invalid_format">Invalid format</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">ITN is required for shipping items valued over $2,500 per tariff number</string>
+    <string name="shipping_label_customs_itn_required_country">ITN is required for shipments to %1$s.</string>
     <string name="shipping_label_customs_package_content">Package content</string>
     <string name="shipping_label_customs_item_description_hint">Description</string>
     <string name="shipping_label_customs_hs_tariff_hint">HS Tariff number (Optional)</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">The tariff number must be 6 digits long</string>
     <string name="shipping_label_customs_origin_country_hint">Origin country</string>
     <string name="shipping_label_customs_origin_country_explanation">Country where the product was manufactured or assembled</string>
     <string name="shipping_label_customs_contents_type_merchandise">Merchandise</string>
@@ -534,6 +538,13 @@
     <string name="shipping_label_customs_line_item">Custom Line %1$d</string>
     <string name="shipping_label_customs_learn_more_itn">%1$s about Internal Transaction Number</string>
     <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s about HS Tariff number</string>
+    <string name="shipping_label_customs_value_hint">Value (%1$s per unit)</string>
+    <string name="shipping_label_customs_weight_hint">Weight (%1$s per unit)</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Please describe what kind of goods this package contains.</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Please describe what kind of restrictions this package must have.</string>
+    <string name="shipping_label_customs_required_field">This field is required</string>
+    <string name="shipping_label_customs_weight_zero_error">Weight must be greater than zero</string>
+    <string name="shipping_label_customs_value_zero_error">Declared value must be greater than zero</string>
     <!--
             Refunds
         -->

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabel
@@ -171,7 +172,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.CustomsDeclarationStarted> {
-                transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
+                transitionTo(
+                    State.CustomsDeclaration(data),
+                    SideEffect.ShowCustomsForm(data.stepsState.shippingAddressStep.data.country, emptyList()))
             }
             on<Event.ShippingCarrierSelectionStarted> {
                 transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
@@ -198,7 +201,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.EditCustomsRequested> {
-                transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
+                transitionTo(
+                    State.CustomsDeclaration(data),
+                    SideEffect.ShowCustomsForm(data.stepsState.shippingAddressStep.data.country, emptyList())
+                )
             }
             on<Event.EditShippingCarrierRequested> {
                 transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
@@ -708,7 +714,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
             val shippingPackages: List<ShippingLabelPackage>
         ) : SideEffect()
 
-        object ShowCustomsForm : SideEffect()
+        data class ShowCustomsForm(
+            val destinationCountryCode: String,
+            val customsPackages: List<CustomsPackage>
+        ) : SideEffect()
         data class ShowCarrierOptions(val data: StateMachineData) : SideEffect()
 
         object ShowPaymentOptions : SideEffect()
