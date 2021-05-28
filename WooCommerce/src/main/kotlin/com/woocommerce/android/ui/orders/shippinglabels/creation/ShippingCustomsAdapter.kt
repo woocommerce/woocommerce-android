@@ -60,7 +60,7 @@ class ShippingCustomsAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return position.toLong()
+        return customsPackages[position].data.id.hashCode().toLong()
     }
 
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
@@ -194,7 +194,7 @@ class ShippingCustomsLineAdapter(
     var parentItemPosition: Int = -1
 
     override fun getItemId(position: Int): Long {
-        return position.toLong()
+        return customsLines[position].first.itemId
     }
 
     override fun getItemCount(): Int = customsLines.size
