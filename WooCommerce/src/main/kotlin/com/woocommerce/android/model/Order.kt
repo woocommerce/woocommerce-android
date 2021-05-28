@@ -138,6 +138,8 @@ data class Order(
         )
     }
 
+    fun getProductIds() = items.map { it.productId }
+
     sealed class Status(val value: String) : Parcelable {
         companion object {
             fun fromValue(value: String): Status {

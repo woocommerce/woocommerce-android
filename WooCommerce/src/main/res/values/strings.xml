@@ -47,7 +47,7 @@
     <string name="cancel">Cancel</string>
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
-    <string name="learn_more">Learn More</string>
+    <string name="learn_more">Learn more</string>
     <string name="try_it_now">Try it now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -200,6 +200,10 @@
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
     <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
+    <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
+    <string name="user_role_access_error_link">Learn more about roles and permissions</string>
+    <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
+    <string name="user_access_verifying">Verifying role…</string>
     <!--
         My Store View
     -->
@@ -332,6 +336,7 @@
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
+    <string name="order_fulfill_completed">&#127881; Order completed!</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
@@ -357,6 +362,11 @@
     <string name="shipping_label_refund_success">Refund request was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
     <string name="shipping_label_refund_expired">Labels older than 30 days cannot be refunded</string>
+    <!--
+        Fulfill order
+    -->
+    <string name="order_fulfill_title">Review order</string>
+    <string name="order_fulfill_email_info">If you’ve enabled this setting, the customer will receive a confirmation email once the order is completed</string>
 
     <!--
         Print shipping labels
@@ -700,6 +710,8 @@
     <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
     <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
     <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
+    <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
+    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed. Please try again later</string>
 
     <!--
         Notifications
