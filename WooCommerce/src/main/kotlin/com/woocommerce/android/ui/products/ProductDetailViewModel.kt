@@ -586,7 +586,20 @@ class ProductDetailViewModel @AssistedInject constructor(
         startPublishProduct()
     }
 
-    fun storeSilentlyWhenNewVariableProduct() = launch {
+    /**
+     * When creating a new Variable Product, if we're about to do changes
+     * at the Attributes and Variations section, we need the Product to be
+     * represented at the Site too since attributes/variations operations
+     * requires operations with a product remote ID.
+     *
+     * To be able to achieve that, this method silently pushes the new product
+     * to the site without the user noticing given that:
+     *
+     * 1. it doesn't have a valid remote ID yet
+     * 2. is of Variable type
+     * 3. is a Draft
+     */
+    fun saveAsDraftIfNewVariableProduct() = launch {
         viewState.productDraft
             ?.takeIf {
                 isProductStoredAtSite.not() and
