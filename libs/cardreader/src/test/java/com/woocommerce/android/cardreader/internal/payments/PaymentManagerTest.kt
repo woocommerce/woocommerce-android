@@ -121,14 +121,26 @@ class PaymentManagerTest {
     // BEGIN - Arguments validation and conversion
     @Test
     fun `when currency not USD, then error emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, NONE_USD_CURRENCY, DUMMY_EMAIL).single()
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            NONE_USD_CURRENCY,
+            DUMMY_EMAIL
+        ).single()
 
         assertThat(result).isInstanceOf(PaymentFailed::class.java)
     }
 
     @Test
     fun `when currency is USD, then flow initiated`() = runBlockingTest {
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            USD_CURRENCY,
+            DUMMY_EMAIL
+        )
             .takeUntil(InitializingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(InitializingPayment::class.java)
@@ -138,7 +150,8 @@ class PaymentManagerTest {
     fun `when payment flow started, then dollar amount converted to cents`() = runBlockingTest {
         val captor = argumentCaptor<Int>()
 
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1), USD_CURRENCY, DUMMY_EMAIL).toList()
+        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1), USD_CURRENCY, DUMMY_EMAIL)
+            .toList()
 
         verify(createPaymentAction).createPaymentIntent(anyString(), captor.capture(), anyString(), anyString())
         assertThat(captor.firstValue).isEqualTo(100)
@@ -148,7 +161,8 @@ class PaymentManagerTest {
     fun `when amount $1 ¢005, then it gets rounded down to ¢100`() = runBlockingTest {
         val captor = argumentCaptor<Int>()
 
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.005), USD_CURRENCY, DUMMY_EMAIL).toList()
+        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.005), USD_CURRENCY, DUMMY_EMAIL)
+            .toList()
 
         verify(createPaymentAction).createPaymentIntent(anyString(), captor.capture(), anyString(), anyString())
         assertThat(captor.firstValue).isEqualTo(100)
@@ -158,7 +172,8 @@ class PaymentManagerTest {
     fun `when amount $1 ¢006, then it gets rounded up to ¢101`() = runBlockingTest {
         val captor = argumentCaptor<Int>()
 
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.006), USD_CURRENCY, DUMMY_EMAIL).toList()
+        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.006), USD_CURRENCY, DUMMY_EMAIL)
+            .toList()
 
         verify(createPaymentAction).createPaymentIntent(anyString(), captor.capture(), anyString(), anyString())
         assertThat(captor.firstValue).isEqualTo(101)
@@ -168,7 +183,8 @@ class PaymentManagerTest {
     fun `when amount $1 ¢99, then it gets converted to ¢199`() = runBlockingTest {
         val captor = argumentCaptor<Int>()
 
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.99), USD_CURRENCY, DUMMY_EMAIL).toList()
+        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.99), USD_CURRENCY, DUMMY_EMAIL)
+            .toList()
 
         verify(createPaymentAction).createPaymentIntent(anyString(), captor.capture(), anyString(), anyString())
         assertThat(captor.firstValue).isEqualTo(199)
@@ -178,7 +194,13 @@ class PaymentManagerTest {
     fun `given Terminal not initialized, when flow started, then error emitted`() = runBlockingTest {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).single()
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            USD_CURRENCY,
+            DUMMY_EMAIL
+        ).single()
 
         assertThat(result).isInstanceOf(PaymentFailed::class.java)
     }
@@ -187,7 +209,13 @@ class PaymentManagerTest {
     // BEGIN - Creating Payment intent
     @Test
     fun `when creating payment intent starts, then InitializingPayment is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            USD_CURRENCY,
+            DUMMY_EMAIL
+        )
             .takeUntil(InitializingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(InitializingPayment::class.java)
@@ -198,7 +226,8 @@ class PaymentManagerTest {
         whenever(createPaymentAction.createPaymentIntent(anyString(), anyInt(), anyString(), anyString()))
             .thenReturn(flow { emit(CreatePaymentStatus.Failure(mock())) })
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
     }
@@ -208,7 +237,8 @@ class PaymentManagerTest {
         whenever(createPaymentAction.createPaymentIntent(anyString(), anyInt(), anyString(), anyString()))
             .thenReturn(flow { emit(CreatePaymentStatus.Failure(mock())) })
 
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
     }
@@ -220,7 +250,9 @@ class PaymentManagerTest {
                 .thenReturn(flow { emit(CreatePaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
             val result = withTimeoutOrNull(TIMEOUT) {
-                manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+                manager
+                    .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+                    .toList()
             }
 
             assertThat(result).isNotNull // verify the flow did not timeout
@@ -231,7 +263,13 @@ class PaymentManagerTest {
     // BEGIN - Collecting Payment
     @Test
     fun `when collecting payment starts, then CollectingPayment is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            USD_CURRENCY,
+            DUMMY_EMAIL
+        )
             .takeUntil(CollectingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(CollectingPayment::class.java)
@@ -242,7 +280,8 @@ class PaymentManagerTest {
         whenever(collectPaymentAction.collectPayment(anyOrNull()))
             .thenReturn(flow { emit(CollectPaymentStatus.ReaderInputRequested(mock())) })
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat(result.last()).isInstanceOf(WaitingForInput::class.java)
     }
@@ -252,7 +291,8 @@ class PaymentManagerTest {
         whenever(collectPaymentAction.collectPayment(anyOrNull()))
             .thenReturn(flow { emit(CollectPaymentStatus.DisplayMessageRequested(mock())) })
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat(result.last()).isInstanceOf(ShowAdditionalInfo::class.java)
     }
@@ -262,7 +302,8 @@ class PaymentManagerTest {
         whenever(collectPaymentAction.collectPayment(anyOrNull()))
             .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
     }
@@ -272,7 +313,8 @@ class PaymentManagerTest {
         whenever(collectPaymentAction.collectPayment(anyOrNull()))
             .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
 
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
     }
@@ -284,7 +326,9 @@ class PaymentManagerTest {
                 .thenReturn(flow { emit(CollectPaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
             val result = withTimeoutOrNull(TIMEOUT) {
-                manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+                manager
+                    .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+                    .toList()
             }
 
             assertThat(result).isNotNull // verify the flow did not timeout
@@ -295,7 +339,13 @@ class PaymentManagerTest {
     // BEGIN - Processing Payment
     @Test
     fun `when processing payment starts, then ProcessingPayment is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            USD_CURRENCY,
+            DUMMY_EMAIL
+        )
             .takeUntil(ProcessingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(ProcessingPayment::class.java)
@@ -306,7 +356,8 @@ class PaymentManagerTest {
         whenever(processPaymentAction.processPayment(anyOrNull()))
             .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
     }
@@ -316,7 +367,8 @@ class PaymentManagerTest {
         whenever(processPaymentAction.processPayment(anyOrNull()))
             .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
 
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
     }
@@ -328,7 +380,9 @@ class PaymentManagerTest {
                 .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
             val result = withTimeoutOrNull(TIMEOUT) {
-                manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+                manager
+                    .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+                    .toList()
             }
 
             assertThat(result).isNotNull // verify the flow did not timeout
@@ -341,7 +395,8 @@ class PaymentManagerTest {
     fun `when mapping ReceiptPaymentInfo fails, then PaymentFailed emitted`() = runBlockingTest {
         whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalArgumentException(""))
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
     }
@@ -350,14 +405,21 @@ class PaymentManagerTest {
     fun `when mapping ReceiptPaymentInfo fails, then PaymentData for retry are empty`() = runBlockingTest {
         whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalArgumentException(""))
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat((result.last() as PaymentFailed).paymentDataForRetry).isNull()
     }
 
     @Test
     fun `when capturing payment starts, then CapturingPayment is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            USD_CURRENCY,
+            DUMMY_EMAIL
+        )
             .takeUntil(CapturingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(CapturingPayment::class.java)
@@ -365,7 +427,13 @@ class PaymentManagerTest {
 
     @Test
     fun `when capturing payment succeeds, then PaymentCompleted is emitted`() = runBlockingTest {
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            USD_CURRENCY,
+            DUMMY_EMAIL
+        )
             .takeUntil(PaymentCompleted::class).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentCompleted::class.java)
@@ -376,7 +444,8 @@ class PaymentManagerTest {
         val mockedReceiptData = mock<ReceiptPaymentInfo>()
         whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenReturn(mockedReceiptData)
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat((result.last() as PaymentCompleted).receiptPaymentInfo).isEqualTo(mockedReceiptData)
     }
@@ -386,7 +455,13 @@ class PaymentManagerTest {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.PaymentAlreadyCaptured)
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL)
+        val result = manager.acceptPayment(
+            DUMMY_PAYMENT_DESCRIPTION,
+            DUMMY_ORDER_ID,
+            DUMMY_AMOUNT,
+            USD_CURRENCY,
+            DUMMY_EMAIL
+        )
             .takeUntil(PaymentCompleted::class).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentCompleted::class.java)
@@ -397,7 +472,8 @@ class PaymentManagerTest {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Error.GenericError)
 
-        val result = manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        val result = manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
     }
@@ -407,7 +483,8 @@ class PaymentManagerTest {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Error.GenericError)
 
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
+        manager
+            .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
         verify(paymentErrorMapper).mapCapturePaymentError(anyOrNull(), anyOrNull())
     }
