@@ -45,7 +45,11 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
             packagingStep = PackagingStep(NOT_READY, emptyList()),
-            customsStep = CustomsStep(NOT_READY),
+            customsStep = CustomsStep(
+                NOT_READY,
+                isVisible = originAddress.country != shippingAddress.country,
+                data = null
+            ),
             carrierStep = CarrierStep(NOT_READY, emptyList()),
             paymentsStep = PaymentsStep(NOT_READY, null)
         )

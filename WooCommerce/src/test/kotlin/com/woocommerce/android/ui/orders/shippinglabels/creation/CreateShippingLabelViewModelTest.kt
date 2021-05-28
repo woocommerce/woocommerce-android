@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -82,7 +83,11 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
             packagingStep = PackagingStep(NOT_READY, emptyList()),
-            customsStep = CustomsStep(NOT_READY, isVisible = true),
+            customsStep = CustomsStep(
+                NOT_READY,
+                isVisible = originAddress.country != shippingAddress.country,
+                data = null
+            ),
             carrierStep = CarrierStep(NOT_READY, emptyList()),
             paymentsStep = PaymentsStep(NOT_READY, null)
         )
@@ -97,7 +102,11 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 READY,
                 listOf(CreateShippingLabelTestUtils.generateShippingLabelPackage())
             ),
-            customsStep = CustomsStep(NOT_READY, isVisible = false),
+            customsStep = CustomsStep(
+                NOT_READY,
+                isVisible = originAddress.country != shippingAddress.country,
+                data = null
+            ),
             carrierStep = CarrierStep(READY, listOf(CreateShippingLabelTestUtils.generateRate())),
             paymentsStep = PaymentsStep(READY, CreateShippingLabelTestUtils.generatePaymentMethod())
         )
@@ -145,6 +154,10 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isContinueButtonVisible = false,
         isEditButtonVisible = false,
         isHighlighted = false
+    )
+
+    private val otherInvisible = StepUiState(
+        isVisible = false
     )
 
     private val otherCurrent = StepUiState(
@@ -211,7 +224,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddressStep = originAddressCurrent,
             shippingAddressStep = shippingAddressNotDone,
             packagingDetailsStep = otherNotDone,
-            customsStep = otherNotDone,
+            customsStep = otherInvisible,
             carrierStep = otherNotDone,
             paymentStep = otherNotDone
         )
@@ -230,7 +243,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddressStep = originAddressDone,
             shippingAddressStep = shippingAddressCurrent,
             packagingDetailsStep = otherNotDone,
-            customsStep = otherNotDone,
+            customsStep = otherInvisible,
             carrierStep = otherNotDone,
             paymentStep = otherNotDone
         )
@@ -254,7 +267,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddressStep = originAddressDone,
             shippingAddressStep = shippingAddressDone,
             packagingDetailsStep = otherCurrent,
-            customsStep = otherNotDone,
+            customsStep = otherInvisible,
             carrierStep = otherNotDone,
             paymentStep = otherNotDone
         )
@@ -284,7 +297,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
         stateFlow.value = Transition(State.OriginAddressValidation(data), null)
 
-        verify(addressValidator).validateAddress(originAddress, ORIGIN)
+        verify(addressValidator).validateAddress(originAddress, ORIGIN, isInternationalShipment = false)
     }
 
     @Test
@@ -294,7 +307,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 remoteOrderId = order.remoteOrderId, shippingLabelId = 1
             )
         )
-        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any()))
+        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = false)
@@ -328,7 +341,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 remoteOrderId = order.remoteOrderId, shippingLabelId = 1
             )
         )
-        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any()))
+        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
         whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
             .thenReturn(true)
@@ -349,7 +362,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                     remoteOrderId = order.remoteOrderId, shippingLabelId = 1
                 )
             )
-            whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any()))
+            whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))
             whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
                 .thenReturn(false)

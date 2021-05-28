@@ -80,8 +80,7 @@
             app:nullable="true" />
         <argument
             android:name="isInternational"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            app:argType="boolean" />
         <action
             android:id="@+id/action_editShippingLabelAddressFragment_to_itemSelectorDialog"
             app:destination="@id/itemSelectorDialog"
