@@ -225,10 +225,7 @@ class ShippingCustomsViewModel @Inject constructor(
 
                 when {
                     classesAbove2500usd.isNotEmpty() -> {
-                        resourceProvider.getString(
-                            R.string.shipping_label_customs_itn_required_items_over_2500,
-                            classesAbove2500usd[0].first
-                        )
+                        resourceProvider.getString(R.string.shipping_label_customs_itn_required_items_over_2500)
                     }
                     USPS_ITN_REQUIRED_DESTINATIONS.contains(args.destinationCountryCode) -> {
                         val destinationCountryName = countries.firstOrNull { it.code == args.destinationCountryCode }

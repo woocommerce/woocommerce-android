@@ -508,7 +508,7 @@
     <string name="shipping_label_customs_restriction_type_other_hint">Restriction details</string>
     <string name="shipping_label_customs_itn_hint" translatable="false">ITN</string>
     <string name="shipping_label_customs_itn_invalid_format">Invalid format</string>
-    <string name="shipping_label_customs_itn_required_items_over_2500">International Transaction Number is required for shipping items valued over $2,500 per tariff number. Products with tariff number %1$s add up to more than $2,500.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">International Transaction Number is required for shipping items valued over $2,500 per tariff number.</string>
     <string name="shipping_label_customs_itn_required_country">International Transaction Number is required for shipments to %1$s.</string>
     <string name="shipping_label_customs_package_content">Package content</string>
     <string name="shipping_label_customs_item_description_hint">Description</string>
