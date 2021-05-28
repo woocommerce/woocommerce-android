@@ -27,8 +27,17 @@ import org.wordpress.android.fluxc.store.WCDataStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
+/**
+ * For information regarding the format of the ITN, check the Appendix A of
+ * [Export Compliance Customs Data Requirements](https://postalpro.usps.com/node/3973)
+ */
 private val ITN_REGEX = Regex("""^(?:(?:AES X\d{14})|(?:NOEEI 30\.\d{1,2}(?:\([a-z]\)(?:\(\d\))?)?))${'$'}""")
+
+/**
+ * HS tariff number has to be 6 digits number.
+ */
 private val HS_TARIFF_NUMBER_REGEX = Regex("""^\d{6}$""")
+
 private val USPS_ITN_REQUIRED_DESTINATIONS = arrayOf("IR", "SY", "KP", "CU", "SD")
 
 @HiltViewModel
