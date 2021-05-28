@@ -158,13 +158,13 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
                 viewState = viewState.copy(
                     nameError = R.string.shipping_label_error_required_field
                 )
-                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
+                triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
             }
             is PhoneInvalid -> {
                 viewState = viewState.copy(
                     phoneError = validatePhone(address)
                 )
-                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
+                triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
             }
         }
     }
@@ -218,7 +218,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         if (viewState.areAllRequiredFieldsValid) {
             triggerEvent(ExitWithResult(viewState.address))
         } else {
-            triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
+            triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
         }
     }
 

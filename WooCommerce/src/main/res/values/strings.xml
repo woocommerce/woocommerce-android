@@ -455,6 +455,9 @@
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
     <string name="shipping_label_address_suggestion_entered_address">Entered address</string>
     <string name="shipping_label_address_suggestion_suggested_address">Suggested address</string>
+    <string name="shipping_label_address_phone_required">A phone number is required because this shipment requires a customs form</string>
+    <string name="shipping_label_address_phone_invalid">Customs forms require a 10-digit phone number</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Certain required fields are blank.</string>
     <string name="shipping_label_package_details_items_section_title">Items to fulfill</string>
     <string name="shipping_label_package_details_move_item">Move</string>
     <string name="shipping_label_package_details_section_title">Package details</string>
@@ -472,7 +475,6 @@
     <string name="shipping_label_packages_loading_message">Please wait…</string>
     <string name="shipping_label_package_selector_title">Selected Package</string>
     <string name="shipping_label_package_details_weight_error">Invalid weight</string>
-    <string name="shipping_label_missing_data_snackbar_message">Certain required fields are blank.</string>
     <string name="shipping_label_package_details_fetch_products_error">Can\'t fetch products</string>
     <string name="shipping_label_packages_custom_section_title">Custom packages</string>
     <string name="shipping_label_single_package_total_weight">Total package weight: %1$s %2$s</string>
@@ -1721,6 +1723,4 @@
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
     <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
-    <string name="shipping_label_address_phone_required">A phone number is required because this shipment requires a customs form</string>
-    <string name="shipping_label_address_phone_invalid">Customs forms require a 10-digit phone number</string>
 </resources>
