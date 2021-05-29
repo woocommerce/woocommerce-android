@@ -2,6 +2,7 @@ buildscript {
     ext.kotlinVersion = '1.4.32'
     ext.navigationVersion = '2.3.5'
     ext.hiltVersion = '2.35.1'
+    ext.wordPressLoginVersion = '58-bd338e6eadb0eadf640f2320c791ca58f86c0cda'
 
     repositories {
         google()
