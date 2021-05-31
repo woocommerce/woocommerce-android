@@ -7,17 +7,20 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +43,11 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 is CardReaderConnectScreen ->
                     findNavController()
                         .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderConnectFragment)
+                is CardReaderUpdateScreen ->
+                    findNavController().navigateSafely(
+                        CardReaderDetailFragmentDirections
+                            .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(event.startedByUser)
+                    )
                 is ShowSnackbar -> {
                     Snackbar.make(
                         binding.root,
@@ -64,7 +72,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         primaryActionBtn.setOnClickListener { state.primaryButtonState?.onActionClicked?.invoke() }
                         UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState?.text)
                         secondaryActionBtn.setOnClickListener { state.secondaryButtonState?.onActionClicked?.invoke() }
-                        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(color.woo_red_50)
+                        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(R.color.update_needed_icon_color)
                     }
                 }
                 is NotConnectedState -> {
@@ -81,6 +89,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 }
             }.exhaustive
         })
+
+        handleResult<UpdateResult>(CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT) {
+            viewModel.onUpdateReaderResult(it)
+        }
     }
 
     private fun makeStateVisible(binding: FragmentCardReaderDetailBinding, state: ViewState) {
