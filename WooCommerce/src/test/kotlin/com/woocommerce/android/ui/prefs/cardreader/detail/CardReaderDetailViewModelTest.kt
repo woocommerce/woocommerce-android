@@ -72,7 +72,25 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             verifyConnectedState(
                 viewModel,
                 UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2"))),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+        }
+
+    @Test
+    fun `when view model init with connected state and battery should emit correct values of connected state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState(batteryLevel = 0.325f)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("33"))),
                 updateAvailable = false
             )
         }
@@ -162,7 +180,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             verifyConnectedState(
                 viewModel,
                 UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2"))),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
                 updateAvailable = true
             )
         }
@@ -180,7 +198,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             verifyConnectedState(
                 viewModel,
                 UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("2"))),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
                 updateAvailable = false
             )
             assertThat(viewModel.event.value)
@@ -277,7 +295,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     private fun initConnectedState(
         readersName: String? = READER_NAME,
-        batteryLevel: Float? = 1.6F,
+        batteryLevel: Float? = 0.65F,
         updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.UpToDate
     ) = coroutinesTestRule.testDispatcher.runBlockingTest {
         val reader: CardReader = mock {
