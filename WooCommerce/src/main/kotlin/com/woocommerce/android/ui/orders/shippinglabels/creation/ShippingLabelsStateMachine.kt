@@ -543,6 +543,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
         val carrierStep: CarrierStep,
         val paymentsStep: PaymentsStep
     ) : Parcelable {
+        @IgnoredOnParcel
+        val isInternational
+            get() = originAddressStep.data.country != shippingAddressStep.data.country
         @Suppress("UNCHECKED_CAST")
         fun <T> updateStep(currentStep: Step<T>, newData: T): StepsState {
             return if (currentStep.status == DONE) {
@@ -561,16 +564,20 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         isVisible = (newData as Address).country != shippingAddressStep.data.country
                     )
                 )
-                is ShippingAddressStep -> copy(
-                    shippingAddressStep = shippingAddressStep.copy(
-                        status = DONE,
-                        data = newData as Address
-                    ),
-                    packagingStep = packagingStep.copy(status = READY),
-                    customsStep = customsStep.copy(
-                        isVisible = (newData as Address).country != originAddressStep.data.country
-                    )
-                )
+                is ShippingAddressStep -> {
+                    val shipmentChangedToInternational = !isInternational &&
+                        (newData as Address).country != shippingAddressStep.data.country
+                    copy(
+                        shippingAddressStep = shippingAddressStep.copy(
+                            status = DONE,
+                            data = newData as Address
+                        ),
+                        packagingStep = packagingStep.copy(status = READY),
+                        customsStep = customsStep.copy(
+                            isVisible = (newData as Address).country != originAddressStep.data.country
+                        )
+                    ).invalidateOriginAddressIfNeeded(shipmentChangedToInternational)
+                }
                 is PackagingStep -> {
                     val newPackagingStep = packagingStep.copy(
                         status = DONE,
@@ -611,10 +618,14 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 is OriginAddressStep -> copy(originAddressStep = originAddressStep.copy(data = newData as Address))
                     .invalidateCustomsStepIfNeeded()
                     .invalidateCarrierStepIfNeeded()
-                is ShippingAddressStep ->
+                is ShippingAddressStep -> {
+                    val shipmentChangedToInternational = !isInternational &&
+                        (newData as Address).country != shippingAddressStep.data.country
                     copy(shippingAddressStep = shippingAddressStep.copy(data = newData as Address))
+                        .invalidateOriginAddressIfNeeded(shipmentChangedToInternational)
                         .invalidateCustomsStepIfNeeded()
                         .invalidateCarrierStepIfNeeded()
+                }
                 is PackagingStep ->
                     copy(packagingStep = packagingStep.copy(data = newData as List<ShippingLabelPackage>))
                         .invalidateCustomsStepIfNeeded()
@@ -624,6 +635,15 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 is CarrierStep -> copy(carrierStep = carrierStep.copy(data = newData as List<ShippingRate>))
                 is PaymentsStep -> copy(paymentsStep = paymentsStep.copy(data = newData as PaymentMethod))
             }
+        }
+
+        /**
+         * When a shipment becomes international, we need to check whether the origin address had a valid phone number
+         * or not, otherwise we need to invalidate it
+         */
+        private fun invalidateOriginAddressIfNeeded(shipmentChangedToInternational: Boolean): StepsState {
+            if (!shipmentChangedToInternational || originAddressStep.data.phoneHas10Digits()) return this
+            return copy(originAddressStep = originAddressStep.copy(status = READY))
         }
 
         private fun invalidateCarrierStepIfNeeded(): StepsState {
@@ -638,7 +658,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
 
         private fun invalidateCustomsStepIfNeeded(): StepsState {
-            val isInternational = originAddressStep.data.country != shippingAddressStep.data.country
             val customsStep = if (customsStep.status == DONE) {
                 customsStep.copy(status = READY, isVisible = isInternational, data = null)
             } else customsStep.copy(isVisible = isInternational)
