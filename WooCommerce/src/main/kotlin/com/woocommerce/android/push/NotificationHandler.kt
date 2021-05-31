@@ -44,6 +44,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.P
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
@@ -58,6 +59,7 @@ import kotlin.random.Random
 @Singleton
 class NotificationHandler @Inject constructor(
     private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
+    private val wcOrderStore: WCOrderStore,
     private val siteStore: SiteStore,
     private val dispatcher: Dispatcher
 ) {

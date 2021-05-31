@@ -50,6 +50,7 @@ import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
@@ -70,7 +71,7 @@ class OrderListViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val fetcher: OrderFetcher,
+    private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore
 ) : DaggerScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
