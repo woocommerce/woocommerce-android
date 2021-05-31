@@ -70,7 +70,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
         viewState.value = if (updateAvailable) {
-            triggerEvent(CardReaderUpdateScreen(startedByUser = true))
+            triggerEvent(CardReaderUpdateScreen(startedByUser = false))
             ConnectedState(
                 enforceReaderUpdate = UiStringRes(
                     R.string.card_reader_detail_connected_enforced_update_software
@@ -105,7 +105,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onUpdateReaderClicked() {
-        triggerEvent(CardReaderUpdateScreen(startedByUser = false))
+        triggerEvent(CardReaderUpdateScreen(startedByUser = true))
     }
 
     private fun onDisconnectClicked() {

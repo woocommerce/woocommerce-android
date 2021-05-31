@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.prefs.cardreader.update
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Initializing
@@ -53,13 +53,13 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     @Test
     fun `on view model init with skip update false should emit explanation state`() {
         // GIVEN
-        val skipUpdate = false
+        val startedByUser = false
 
         // WHEN
-        val viewModel = createViewModel(skipUpdate)
+        val viewModel = createViewModel(startedByUser)
 
         // THEN
-        verifyExplanationState(viewModel, skipUpdate)
+        verifyExplanationState(viewModel, startedByUser)
     }
 
     @Test
@@ -163,22 +163,22 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(UpdateResult.SKIPPED)
         }
 
-    private fun verifyExplanationState(viewModel: CardReaderUpdateViewModel, skipUpdate: Boolean) {
+    private fun verifyExplanationState(viewModel: CardReaderUpdateViewModel, startedByUser: Boolean) {
         val state = viewModel.viewStateData.value as ExplanationState
-        assertThat(state.title).isEqualTo(UiStringRes(string.card_reader_software_update_title))
-        assertThat(state.description).isEqualTo(UiStringRes(string.card_reader_software_update_description))
-        assertThat(state.primaryButton!!.text).isEqualTo(UiStringRes(string.card_reader_software_update_update))
+        assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_title))
+        assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
+        assertThat(state.primaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_update))
         assertThat(state.showProgress).isFalse()
-        if (skipUpdate) {
-            assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(string.card_reader_software_update_skip))
+        if (startedByUser) {
+            assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_cancel))
         } else {
-            assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(string.card_reader_software_update_cancel))
+            assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_skip))
         }
     }
 
     private fun verifyUpdatingState(viewModel: CardReaderUpdateViewModel) {
         val state = viewModel.viewStateData.value as UpdatingState
-        assertThat(state.title).isEqualTo(UiStringRes(string.card_reader_software_update_in_progress_title))
+        assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_in_progress_title))
         assertThat(state.description).isNull()
         assertThat(state.showProgress).isTrue()
         assertThat(state.primaryButton).isNull()
@@ -186,9 +186,9 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel(
-        skipUpdate: Boolean = false
+        startedByUser: Boolean = false
     ) = CardReaderUpdateViewModel(
         cardReaderManager,
-        CardReaderUpdateDialogFragmentArgs(skipUpdate).initSavedStateHandle()
+        CardReaderUpdateDialogFragmentArgs(startedByUser).initSavedStateHandle()
     )
 }

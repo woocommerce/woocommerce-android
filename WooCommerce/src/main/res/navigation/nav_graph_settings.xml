@@ -61,7 +61,7 @@
         android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
         android:label="CardReaderUpdateDialogFragment" >
         <argument
-            android:name="skipUpdate"
+            android:name="startedByUser"
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>

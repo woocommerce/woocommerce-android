@@ -46,8 +46,8 @@ class CardReaderUpdateViewModel @Inject constructor(
             secondaryButton = ButtonState(
                 onActionClicked = { finishFlow(SKIPPED) },
                 text = UiStringRes(
-                    if (navArgs.skipUpdate) R.string.card_reader_software_update_skip
-                    else R.string.card_reader_software_update_cancel
+                    if (navArgs.startedByUser) R.string.card_reader_software_update_cancel
+                    else R.string.card_reader_software_update_skip
                 )
             )
         )
