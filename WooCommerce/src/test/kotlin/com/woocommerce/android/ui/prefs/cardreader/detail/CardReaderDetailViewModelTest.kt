@@ -196,7 +196,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = createViewModel()
 
-            assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(startedByUser = true))
+            assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(startedByUser = false))
         }
 
     @Test
