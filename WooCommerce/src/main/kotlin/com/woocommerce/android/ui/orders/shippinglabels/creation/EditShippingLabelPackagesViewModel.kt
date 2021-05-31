@@ -92,7 +92,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
         viewState = viewState.copy(showSkeletonView = false)
         val items = order.getShippableItems().map { it.toShippingItem() }
-        val totalWeight = items.sumByFloat { it.weight } + (lastUsedPackage?.boxWeight ?: 0f)
+        val totalWeight = items.sumByFloat { it.weight * it.quantity } + (lastUsedPackage?.boxWeight ?: 0f)
         return listOf(
             ShippingLabelPackage(
                 packageId = "package1",
