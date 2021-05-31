@@ -1,4 +1,0 @@
-6.6:
-Tijdens het bijwerken van een product kun je nu variaties, eigenschappen en eigenschapopties maken, verwijderen en bijwerken. Je kunt ook vanaf het scherm productgegevens een virtueel product maken en bijwerken.
-Je kunt nu een verzendregel terugstorten binnen een bestelling.
-We hebben ook een probleem verholpen dat zich voordeed wanneer de reguliere en verkoopprijs van een product werden bijgewerkt.

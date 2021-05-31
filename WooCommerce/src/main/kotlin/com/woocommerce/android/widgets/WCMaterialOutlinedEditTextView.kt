@@ -79,6 +79,18 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
 
     fun getText() = binding.editText.text.toString()
 
+    /**
+     * Updates the text only if the current content is different from the supplied one.
+     * Helpful when this view is inside a RecyclerView to avoid resetting the cursor position and recursive listener
+     * events.
+     */
+    fun setTextIfDifferent(newText: String) {
+        if (getText() != newText) {
+            setText(newText)
+            binding.editText.setSelection(newText.length)
+        }
+    }
+
     fun setSelection(start: Int, stop: Int) {
         binding.editText.setSelection(start, stop)
     }

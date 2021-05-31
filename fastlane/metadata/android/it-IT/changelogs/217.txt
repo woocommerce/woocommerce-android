@@ -1,4 +1,0 @@
-6.6:
-Quando viene modificato un prodotto, ora puoi creare, eliminare e aggiornare le varianti, gli attributi e le opzioni degli attributi. Puoi anche creare e modificare un prodotto virtuale dalla schermata dei dettagli del prodotto.
-Ora è possibile rimborsare una riga della spedizione all'interno di un ordine.
-Abbiamo anche corretto un problema che si verificava durante la modifica dei prezzi normali e di vendita di un prodotto.

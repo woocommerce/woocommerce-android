@@ -1,7 +1,12 @@
 package com.woocommerce.android.ui.sitepicker
 
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -23,7 +28,9 @@ class SitePickerPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val appPrefs: AppPrefs,
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
 
@@ -73,6 +80,20 @@ class SitePickerPresenter @Inject constructor(
     override fun fetchUpdatedSiteFromAPI(site: SiteModel) {
         view?.showSkeleton(true)
         dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(site))
+    }
+
+    override fun fetchUserRoleFromAPI(site: SiteModel) {
+        coroutineScope.launch {
+            val userModel = userEligibilityFetcher.fetchUserInfo()
+            view?.hideProgressDialog()
+
+            userModel?.let {
+                userEligibilityFetcher.updateUserInfo(it)
+                withContext(Dispatchers.Main) {
+                    view?.userVerificationCompleted()
+                }
+            }
+        }
     }
 
     override fun loadSites() {

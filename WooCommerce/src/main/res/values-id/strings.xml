@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-04-28 11:54:03+0000
+Translation-Revision-Date: 2021-05-28 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_type_external_title">Produk eksternal</string>
+    <string name="product_type_grouped_title">Produk yang dikelompokkan</string>
+    <string name="product_type_variable_title">Produk variabel</string>
+    <string name="product_type_virtual_desc">Produk digital unik, seperti layanan atau buku, musik, dan video yang dapat diunduh</string>
+    <string name="product_type_simple_desc">Produk fisik unik yang mungkin perlu dikirimkan kepada pelanggan</string>
+    <string name="product_type_simple_title">Produk fisik sederhana</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Buka pengaturan</string>
+    <string name="card_reader_connect_open_location_settings">Buka pengaturan</string>
+    <string name="card_reader_connect_open_permission_settings">Buka pengaturan</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth dinonaktifkan</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Lokasi dinonaktifkan</string>
+    <string name="card_reader_connect_missing_permissions_hint">Izin lokasi wajib yang belum disetujui</string>
+    <string name="card_reader_connect_connecting_failed_hint">Tidak dapat menyambungkan ke pembaca.</string>
+    <string name="card_reader_connect_scanning_failed_hint">Tidak dapat menemukan pembaca.</string>
+    <string name="card_reader_connect_failed_header">Sambungan ke pembaca gagal</string>
+    <string name="card_reader_connect_connecting_header">Menyambungkan ke pembaca</string>
+    <string name="card_reader_connect_to_reader">Sambungkan ke pembaca</string>
+    <string name="card_reader_connect_reader_found_header">Anda ingin menyambungkan pembaca %s?</string>
+    <string name="card_reader_connect_scanning_hint">Tekan tombol daya pembaca sampai lampu biru berkedip</string>
+    <string name="card_reader_connect_scanning_header">Memindai pembaca</string>
+    <string name="shipping_label_items_count_placeholder">Jumlah item</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">Buat label pengiriman baru</string>
+    <string name="product_type_virtual_title">Produk virtual sederhana</string>
+    <string name="variation_confirm_delete">Apakah Anda ingin menghapus Variasi ini?</string>
+    <string name="variation_create_dialog_title">Membuat variasi</string>
+    <string name="product_delete_dialog_title">Menghapus produk</string>
+    <string name="card_reader_payment_send_receipt">Kirimkan tanda terima</string>
+    <string name="card_reader_payment_print_receipt">Cetak tanda terima</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Pembayaran gagal. Harap coba lagi.</string>
+    <string name="card_reader_payment_capturing_payment_state">Mengambil pembayaran</string>
+    <string name="card_reader_payment_processing_payment_state">Memproses pembayaran</string>
+    <string name="card_reader_payment_collect_payment_state">Pembaca sudah siap</string>
+    <string name="card_reader_payment_payment_failed_header">Pembayaran gagal</string>
+    <string name="card_reader_payment_completed_payment_header">Pembayaran berhasil</string>
+    <string name="card_reader_collect_payment">Terima pembayaran</string>
+    <string name="card_reader_tap_or_insert">Ketuk atau masukkan untuk membayar</string>
+    <string name="shipping_label_preview_pdf_app_missing">TIdak dapat mempratinjau label pengiriman. Instal aplikasi penampil PDF, lalu coba lagi.</string>
+    <string name="login_not_wordpress_site_v2">Kami tidak dapat mendeteksi situs WordPress di alamat yang Anda masukkan. Pastikan WordPress terinstal dan Anda menggunakan versi terbaru yang tersedia.</string>
+    <string name="multiple_shipping">sejumlah baris pengiriman</string>
     <string name="shipping_label_create_purchase_fulfill_error">Tidak dapat menandai pesanan telah selesai</string>
     <string name="shipping_label_create_purchase_error">Terjadi error saat membeli label</string>
     <string name="shipping_label_create_purchase_progress_message">Harap tunggu…</string>
@@ -40,7 +79,6 @@ Language: id
     <string name="shipping_label_rate_included_options_signature_required_free">Memenuhi syarat untuk diproses tanpa tanda tangan</string>
     <string name="shipping_label_rate_included_options_free_pickup">Memenuhi syarat untuk penjemputan gratis</string>
     <string name="shipping_label_rate_included_options_insurance">Asuransi (hingga %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">%s pelacakan</string>
     <string name="shipping_label_rate_included_options">Sertakan %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Tanda tangan orang dewasa wajib diisi (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Tanda tangan wajib diisi (%s)</string>
@@ -288,11 +326,6 @@ Language: id
     <string name="product_publish_dialog_title">Memublikasikan produk</string>
     <string name="product_add_tool_bar_menu_button_done">PUBLIKASIKAN</string>
     <string name="product_add_tool_bar_title">Produk Baru</string>
-    <string name="product_add_type_variable_desc">Produk dengan variasi seperti warna atau ukuran</string>
-    <string name="product_add_type_simple_desc">Item khusus yang akan dijual</string>
-    <string name="product_add_type_external">Produk eksternal</string>
-    <string name="product_add_type_grouped">Produk dikelompokkan</string>
-    <string name="product_add_type_variable">Produk variabel</string>
     <string name="product_images_image_limit_warning">Hanya satu foto per variasi produk dapat ditampilkan</string>
     <string name="product_replace_photo">Ganti foto</string>
     <string name="product_add_photo">Tambahkan foto</string>
@@ -303,7 +336,7 @@ Language: id
     <string name="login_pick_store">Pilih toko untuk menghubungkan</string>
     <string name="login_store_address">Masukkan alamat toko Anda</string>
     <string name="login_wpcom">Lanjutkan dengan WordPress.com</string>
-    <string name="product_type_variation_desc">Produk dengan variasi seperti warna atau ukuran</string>
+    <string name="product_type_variable_desc">Produk dengan variasi seperti warna atau ukuran</string>
     <string name="product_selection_count_single">%d produk dipilih</string>
     <string name="product_selection_count">%d produk dipilih</string>
     <string name="grouped_product_empty">Tambahkan produk ke grup</string>
@@ -322,8 +355,6 @@ Language: id
     <string name="product_type_confirm_dialog_title">Apakah Anda yakin ingin mengubah jenis produk?</string>
     <string name="product_type_external_desc">Tautkan produk ke situs web eksternal</string>
     <string name="product_type_grouped_desc">Kumpulan produk terkait</string>
-    <string name="product_type_virtual_desc">Layanan atau unduhan digital</string>
-    <string name="product_type_physical_desc">Item yang Anda kirim kepada pelanggan</string>
     <string name="product_type_list_header">Pilih jenis produk</string>
     <string name="send_feedback">Kirim masukan</string>
     <string name="variation_detail_price_warning_title">Beberapa variasi tidak memiliki harga</string>

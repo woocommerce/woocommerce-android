@@ -25,7 +25,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateItemDiffUtil.ChangePayload.SELECTED_OPTION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateListAdapter.RateViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateListViewHolder
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.DHL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.FEDEX
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UNKNOWN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
 import com.woocommerce.android.util.DateUtils
@@ -137,6 +139,8 @@ class ShippingCarrierRatesAdapter(
                             FEDEX -> R.drawable.fedex_logo
                             USPS -> R.drawable.usps_logo
                             UPS -> R.drawable.ups_logo
+                            DHL -> R.drawable.dhl_logo
+                            UNKNOWN -> 0
                         }
                     )
 
@@ -168,7 +172,8 @@ class ShippingCarrierRatesAdapter(
                     if (rateItem.isTrackingAvailable) {
                         options.add(
                             binding.root.resources.getString(
-                                string.shipping_label_rate_included_options_tracking, rateItem.carrier.title
+                                if (rateItem.carrier == USPS) string.shipping_label_rate_included_options_usps_tracking
+                                else string.shipping_label_rate_included_options_tracking
                             )
                         )
                     }
@@ -352,10 +357,12 @@ class ShippingCarrierRatesAdapter(
         @IgnoredOnParcel
         val isAdultSignatureAvailable = options.keys.contains(ADULT_SIGNATURE)
 
-        enum class ShippingCarrier(val title: String) {
-            FEDEX("Fedex"),
-            USPS("USPS"),
-            UPS("UPS")
+        enum class ShippingCarrier {
+            FEDEX,
+            USPS,
+            UPS,
+            DHL,
+            UNKNOWN
         }
     }
 }

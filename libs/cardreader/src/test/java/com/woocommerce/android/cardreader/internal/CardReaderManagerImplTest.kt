@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.TerminalLifecycleObserver
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +30,7 @@ class CardReaderManagerImplTest {
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
     private val connectionManager: ConnectionManager = mock()
+    private val softwareUpdateManager: SoftwareUpdateManager = mock()
 
     @Before
     fun setUp() {
@@ -38,7 +40,7 @@ class CardReaderManagerImplTest {
             logWrapper,
             mock(),
             connectionManager,
-            mock()
+            softwareUpdateManager
         )
         whenever(terminalWrapper.getLifecycleObserver()).thenReturn(lifecycleObserver)
     }
@@ -103,4 +105,11 @@ class CardReaderManagerImplTest {
 
             cardReaderManager.connectToReader(mock())
         }
+
+    @Test
+    fun `software update status calls software update manager`() = runBlockingTest {
+        cardReaderManager.softwareUpdateAvailability()
+
+        verify(softwareUpdateManager).softwareUpdateStatus()
+    }
 }

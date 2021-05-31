@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -49,7 +50,8 @@ class MainPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite,
-    private val productImageMap: ProductImageMap
+    private val productImageMap: ProductImageMap,
+    private val appPrefs: AppPrefs
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -107,6 +109,8 @@ class MainPresenter @Inject constructor(
         mainView?.showProgressDialog(R.string.loading_stores)
         dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
     }
+
+    override fun isUserEligible() = appPrefs.isUserEligible()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

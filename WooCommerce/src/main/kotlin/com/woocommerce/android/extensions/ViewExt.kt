@@ -8,8 +8,15 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.LinearLayout.LayoutParams
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.Group
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.transition.ChangeBounds
+import androidx.transition.Transition
+import androidx.transition.TransitionListenerAdapter
+import androidx.transition.TransitionManager
 
 fun View.show() {
     this.visibility = View.VISIBLE
@@ -71,6 +78,43 @@ fun View.collapse() {
 
         a.duration = 300
         this.startAnimation(a)
+    }
+}
+
+fun Group.expand() {
+    if (this.isVisible) return
+    val animationDuration = 300L
+    val parent = parent as ViewGroup
+    val transition = ChangeBounds()
+        .setDuration(animationDuration)
+        .addTarget(parent)
+    TransitionManager.beginDelayedTransition(parent, transition)
+    isVisible = true
+}
+
+fun Group.collapse() {
+    if (!this.isVisible) return
+    val animationDuration = 300L
+    val parent = parent as ConstraintLayout
+    val views = referencedIds.map { parent.getViewById(it) }
+    val originalHeights = views.map { it.layoutParams.height }
+    val transition = ChangeBounds()
+        .setDuration(animationDuration)
+
+    transition.addListener(object : TransitionListenerAdapter() {
+        override fun onTransitionEnd(transition: Transition) {
+            super.onTransitionEnd(transition)
+            isVisible = false
+            views.forEachIndexed { index, view ->
+                view.updateLayoutParams { height = originalHeights[index] }
+            }
+        }
+    })
+
+    TransitionManager.beginDelayedTransition(parent, transition)
+    views.forEach {
+        it.updateLayoutParams { height = 0 }
+        visibility = View.INVISIBLE
     }
 }
 

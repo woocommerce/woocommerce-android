@@ -28,7 +28,7 @@ internal class ConnectionManager(
     private val logWrapper: LogWrapper,
     private val discoverReadersAction: DiscoverReadersAction
 ) : TerminalListener {
-    val readerStatus: MutableStateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NOT_CONNECTED)
+    val readerStatus: MutableStateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NotConnected)
 
     fun discoverReaders(isSimulated: Boolean) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->
@@ -63,16 +63,16 @@ internal class ConnectionManager(
     }
 
     override fun onUnexpectedReaderDisconnect(reader: Reader) {
-        readerStatus.value = CardReaderStatus.NOT_CONNECTED
+        readerStatus.value = CardReaderStatus.NotConnected
         logWrapper.d("CardReader", "onUnexpectedReaderDisconnect")
     }
 
     override fun onConnectionStatusChange(status: ConnectionStatus) {
         super.onConnectionStatusChange(status)
         readerStatus.value = when (status) {
-            NOT_CONNECTED -> CardReaderStatus.NOT_CONNECTED
-            CONNECTING -> CardReaderStatus.CONNECTING
-            CONNECTED -> CardReaderStatus.CONNECTED
+            NOT_CONNECTED -> CardReaderStatus.NotConnected
+            CONNECTING -> CardReaderStatus.Connecting
+            CONNECTED -> CardReaderStatus.Connected(terminal.getConnectedReader()!!)
         }
         logWrapper.d("CardReader", "onConnectionStatusChange: ${status.name}")
     }

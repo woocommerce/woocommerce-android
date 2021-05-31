@@ -183,14 +183,14 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onReadersFound(discoveryEvent: ReadersFound) {
         if (viewState.value is ConnectingState) return
-        val availableReaders = discoveryEvent.list.filter { it.getId() != null }
+        val availableReaders = discoveryEvent.list.filter { it.id != null }
         if (availableReaders.isNotEmpty()) {
             // TODO cardreader add support for showing multiple readers
             val reader = availableReaders[0]
             viewState.value = ReaderFoundState(
                 onPrimaryActionClicked = { onConnectToReaderClicked(reader) },
                 onSecondaryActionClicked = ::onCancelClicked,
-                readerId = reader.getId().orEmpty()
+                readerId = reader.id.orEmpty()
             )
         } else {
             viewState.value = ScanningState(::onCancelClicked)

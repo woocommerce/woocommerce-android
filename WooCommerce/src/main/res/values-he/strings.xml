@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-12 16:54:52+0000
+Translation-Revision-Date: 2021-05-26 14:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">מוצר דיגיטלי ייחודי</string>
-    <string name="product_add_type_virtual">מוצר דיגיטלי פשוט</string>
-    <string name="product_add_type_simple">מוצר פיזי פשוט</string>
+    <string name="product_type_external_title">מוצר חיצוני</string>
+    <string name="product_type_grouped_title">קבוצת מוצרים</string>
+    <string name="product_type_variable_title">מוצר עם סוגים</string>
+    <string name="product_type_virtual_desc">מוצר דיגיטלי ייחודי כגון שירותים, ספרים שניתנים להורדה, מוזיקה או סרטונים</string>
+    <string name="product_type_simple_desc">מוצר פיזי ייחודי שצריך לשלוח ללקוח</string>
+    <string name="product_type_simple_title">מוצר פיזי פשוט</string>
+    <string name="card_reader_connect_open_bluetooth_settings">לפתוח את ההגדרות</string>
+    <string name="card_reader_connect_open_location_settings">לפתוח את ההגדרות</string>
+    <string name="card_reader_connect_open_permission_settings">לפתוח את ההגדרות</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth מושבת</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">המיקום מושבת</string>
+    <string name="card_reader_connect_missing_permissions_hint">חסרה הרשאה שנדרשת למיקום</string>
+    <string name="card_reader_connect_connecting_failed_hint">לא הצלחנו להתחבר אל Reader.</string>
+    <string name="card_reader_connect_scanning_failed_hint">לא הצלחנו למצוא פריטים של Reader.</string>
+    <string name="card_reader_connect_failed_header">החיבור אל Reader נכשל</string>
+    <string name="card_reader_connect_connecting_header">מתחבר אל Reader</string>
+    <string name="card_reader_connect_to_reader">יש להתחבר אל Reader</string>
+    <string name="card_reader_connect_reader_found_header">האם ברצונך לחבר את Reader %s?</string>
+    <string name="card_reader_connect_scanning_hint">יש ללחוץ על כפתור ההפעלה ב-Reader עד שיופיע אור כחול מהבהב</string>
+    <string name="card_reader_connect_scanning_header">סורק פריטים של Reader</string>
+    <string name="shipping_label_items_count_placeholder">מספר הפריטים</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">ליצור תווית משלוח חדשה</string>
+    <string name="product_type_virtual_title">מוצר דיגיטלי פשוט</string>
     <string name="variation_confirm_delete">האם ברצונך למחוק את הסוג הזה?</string>
     <string name="variation_create_dialog_title">יוצר סוג</string>
     <string name="product_delete_dialog_title">מוחק מוצר</string>
@@ -59,7 +79,6 @@ Language: he_IL
     <string name="shipping_label_rate_included_options_signature_required_free">זכאי לדרישת חתימה בחינם</string>
     <string name="shipping_label_rate_included_options_free_pickup">זכאי לאיסוף בחינם</string>
     <string name="shipping_label_rate_included_options_insurance">ביטוח (עד %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">מבצע מעקב של %s</string>
     <string name="shipping_label_rate_included_options">כולל %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">נדרשת חתימה של אדם מבוגר (%s)</string>
     <string name="shipping_label_rate_option_signature_required">נדרשת חתימה (%s)</string>
@@ -307,11 +326,6 @@ Language: he_IL
     <string name="product_publish_dialog_title">מפרסם את המוצר שלך…</string>
     <string name="product_add_tool_bar_menu_button_done">פרסום</string>
     <string name="product_add_tool_bar_title">מוצר חדש</string>
-    <string name="product_add_type_variable_desc">מוצר עם סוגים כגון צבע או מידה</string>
-    <string name="product_add_type_simple_desc">פריט ייחודי למכירה</string>
-    <string name="product_add_type_external">מוצר חיצוני</string>
-    <string name="product_add_type_grouped">קבוצת מוצרים</string>
-    <string name="product_add_type_variable">מוצר עם וריאציות</string>
     <string name="product_images_image_limit_warning">ניתן להציג רק תמונה אחת לכל סוג מוצר</string>
     <string name="product_replace_photo">להחליף את התמונה</string>
     <string name="product_add_photo">להוסיף תמונה</string>
@@ -322,7 +336,7 @@ Language: he_IL
     <string name="login_pick_store">יש לבחור חנות שאליה ברצונך להתחבר</string>
     <string name="login_store_address">יש להזין את כתובת החנות</string>
     <string name="login_wpcom">להמשיך עם WordPress.com</string>
-    <string name="product_type_variation_desc">מוצר עם סוגים כגון צבע או מידה</string>
+    <string name="product_type_variable_desc">מוצר עם סוגים כגון צבע או מידה</string>
     <string name="product_selection_count_single">%d המוצר נבחר</string>
     <string name="product_selection_count">%d מוצרים נבחרו</string>
     <string name="grouped_product_empty">להוסיף מוצרים לקבוצה</string>
@@ -341,8 +355,6 @@ Language: he_IL
     <string name="product_type_confirm_dialog_title">האם ברצונך לשנות את סוג המוצר?</string>
     <string name="product_type_external_desc">לקשר מוצר לאתר חיצוני</string>
     <string name="product_type_grouped_desc">אוסף של מוצרים קשורים</string>
-    <string name="product_type_virtual_desc">שירות דיגיטלי או הורדה של מוצר דיגיטלי</string>
-    <string name="product_type_physical_desc">פריט ששולחים ללקוח</string>
     <string name="product_type_list_header">יש לבחור את סוג המוצר</string>
     <string name="send_feedback">לשלוח משוב</string>
     <string name="variation_detail_price_warning_title">בחלק מהסוגים לא צוין מחיר</string>

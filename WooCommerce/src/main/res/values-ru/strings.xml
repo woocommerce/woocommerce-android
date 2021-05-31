@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-12 14:54:03+0000
+Translation-Revision-Date: 2021-05-26 14:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">Уникальный цифровой продукт</string>
-    <string name="product_add_type_virtual">Простой виртуальный продукт</string>
-    <string name="product_add_type_simple">Простой физический продукт</string>
+    <string name="product_type_external_title">Внешний товар</string>
+    <string name="product_type_grouped_title">Сгруппированный товар</string>
+    <string name="product_type_variable_title">Вариативный товар</string>
+    <string name="product_type_virtual_desc">Уникальный цифровой товар, например услуги, загружаемые книги, музыка или видео.</string>
+    <string name="product_type_simple_desc">Уникальный физический товар, который, возможно, потребуется отправить клиенту.</string>
+    <string name="product_type_simple_title">Простой физический товар</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Открыть настройки</string>
+    <string name="card_reader_connect_open_location_settings">Открыть настройки</string>
+    <string name="card_reader_connect_open_permission_settings">Открыть настройки</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth отключен</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Определение местоположения отключено</string>
+    <string name="card_reader_connect_missing_permissions_hint">Отсутствует необходимое разрешение на определение местоположения</string>
+    <string name="card_reader_connect_connecting_failed_hint">Не удалось подключиться к устройству чтения.</string>
+    <string name="card_reader_connect_scanning_failed_hint">Не удалось найти устройство чтения.</string>
+    <string name="card_reader_connect_failed_header">Не удалось подключиться к устройству чтения.</string>
+    <string name="card_reader_connect_connecting_header">Подключение к устройству чтения</string>
+    <string name="card_reader_connect_to_reader">Подключиться к устройству чтения</string>
+    <string name="card_reader_connect_reader_found_header">Подключить устройство чтения %s?</string>
+    <string name="card_reader_connect_scanning_hint">Нажмите кнопку включения устройства чтения и удерживайте её до появления мигающего синего сигнала.</string>
+    <string name="card_reader_connect_scanning_header">Поиск устройств чтения</string>
+    <string name="shipping_label_items_count_placeholder">Количество позиций</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">Создать новую транспортную этикетку</string>
+    <string name="product_type_virtual_title">Простой виртуальный продукт</string>
     <string name="variation_confirm_delete">Хотите удалить этот вариант?</string>
     <string name="variation_create_dialog_title">Создание варианта</string>
     <string name="product_delete_dialog_title">Удаление продукта</string>
@@ -59,7 +79,6 @@ Language: ru
     <string name="shipping_label_rate_included_options_signature_required_free">Подходит для бесплатной подписи</string>
     <string name="shipping_label_rate_included_options_free_pickup">Подходит для бесплатного самовывоза</string>
     <string name="shipping_label_rate_included_options_insurance">Страхование (до %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">Отслеживание %s</string>
     <string name="shipping_label_rate_included_options">Включает %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Требуется подпись совершеннолетнего лица (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Требуется подпись (%s)</string>
@@ -307,11 +326,6 @@ Language: ru
     <string name="product_publish_dialog_title">Публикация товара</string>
     <string name="product_add_tool_bar_menu_button_done">ОПУБЛИКОВАТЬ</string>
     <string name="product_add_tool_bar_title">Новый товар</string>
-    <string name="product_add_type_variable_desc">Товар с вариантами исполнения, например по цвету или размеру</string>
-    <string name="product_add_type_simple_desc">Уникальная позиция для продажи</string>
-    <string name="product_add_type_external">Внешний товар</string>
-    <string name="product_add_type_grouped">Сгруппированный товар</string>
-    <string name="product_add_type_variable">Вариативный товар</string>
     <string name="product_images_image_limit_warning">Для каждого варианта товара можно добавить только одну фотографию</string>
     <string name="product_replace_photo">Заменить фотографию</string>
     <string name="product_add_photo">Добавить фотографию</string>
@@ -322,7 +336,7 @@ Language: ru
     <string name="login_pick_store">Выберите магазин для подключения</string>
     <string name="login_store_address">Введите адрес магазина</string>
     <string name="login_wpcom">Продолжить с WordPress.com</string>
-    <string name="product_type_variation_desc">Товар с вариантами исполнения, например по цвету или размеру</string>
+    <string name="product_type_variable_desc">Товар с вариантами исполнения, например по цвету или размеру</string>
     <string name="product_selection_count_single">%d товар выбран</string>
     <string name="product_selection_count">%d тов. выбрано</string>
     <string name="grouped_product_empty">Добавление товаров в группу</string>
@@ -341,8 +355,6 @@ Language: ru
     <string name="product_type_confirm_dialog_title">Вы уверены, что хотите изменить тип товара?</string>
     <string name="product_type_external_desc">Связать товар с внешним веб-сайтом</string>
     <string name="product_type_grouped_desc">Коллекция сопутствующих товаров</string>
-    <string name="product_type_virtual_desc">Услуга или цифровой продукт</string>
-    <string name="product_type_physical_desc">Позиция, отгружаемая заказчику</string>
     <string name="product_type_list_header">Выбрать тип товара</string>
     <string name="send_feedback">Отправить отзыв</string>
     <string name="variation_detail_price_warning_title">У некоторых вариантов нет цен</string>

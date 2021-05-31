@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-14 10:54:04+0000
+Translation-Revision-Date: 2021-05-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">独自のデジタル製品</string>
-    <string name="product_add_type_virtual">シンプルな仮装製品</string>
-    <string name="product_add_type_simple">シンプルな物理的製品</string>
+    <string name="product_type_external_title">外部商品</string>
+    <string name="product_type_grouped_title">グループ化された商品</string>
+    <string name="product_type_variable_title">バリエーションのある商品</string>
+    <string name="product_type_virtual_desc">サービス、ダウンロードできる書籍、音楽、動画などの独自のデジタル製品</string>
+    <string name="product_type_simple_desc">顧客に配送する必要がある可能性のある独自の物理的製品</string>
+    <string name="product_type_simple_title">シンプルな物理的製品</string>
+    <string name="card_reader_connect_open_bluetooth_settings">設定を開く</string>
+    <string name="card_reader_connect_open_location_settings">設定を開く</string>
+    <string name="card_reader_connect_open_permission_settings">設定を開く</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth が無効になっています</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">位置情報が無効になっています</string>
+    <string name="card_reader_connect_missing_permissions_hint">必要な位置情報の許可がありません</string>
+    <string name="card_reader_connect_connecting_failed_hint">Reader に接続できませんでした。</string>
+    <string name="card_reader_connect_scanning_failed_hint">Reader が見つかりませんでした。</string>
+    <string name="card_reader_connect_failed_header">Reader に接続できませんでした</string>
+    <string name="card_reader_connect_connecting_header">Reader に接続しています</string>
+    <string name="card_reader_connect_to_reader">Reader に接続する</string>
+    <string name="card_reader_connect_reader_found_header">Reader に接続しますか %s?</string>
+    <string name="card_reader_connect_scanning_hint">青いライトが点滅するまで、Reader の電源ボタンを押します</string>
+    <string name="card_reader_connect_scanning_header">Reader をスキャンしています</string>
+    <string name="shipping_label_items_count_placeholder">項目数</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">新しい配送ラベルを作成</string>
+    <string name="product_type_virtual_title">シンプルな仮装製品</string>
     <string name="variation_confirm_delete">このバリエーションを削除しますか ?</string>
     <string name="variation_create_dialog_title">バリエーションを生成しています</string>
     <string name="product_delete_dialog_title">製品を削除しています</string>
@@ -59,7 +79,6 @@ Language: ja_JP
     <string name="shipping_label_rate_included_options_signature_required_free">無料の署名要件を利用可能</string>
     <string name="shipping_label_rate_included_options_free_pickup">無料の受け取りを利用可能</string>
     <string name="shipping_label_rate_included_options_insurance">保険 (最大%s)</string>
-    <string name="shipping_label_rate_included_options_tracking">%s追跡</string>
     <string name="shipping_label_rate_included_options">含む %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">成年の署名が必要 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">署名が必要 (%s)</string>
@@ -307,11 +326,6 @@ Language: ja_JP
     <string name="product_publish_dialog_title">商品を公開しています</string>
     <string name="product_add_tool_bar_menu_button_done">公開</string>
     <string name="product_add_tool_bar_title">新商品</string>
-    <string name="product_add_type_variable_desc">色やサイズのバリエーションがある商品</string>
-    <string name="product_add_type_simple_desc">ユニークな商品の販売</string>
-    <string name="product_add_type_external">外部商品</string>
-    <string name="product_add_type_grouped">グループ化された商品</string>
-    <string name="product_add_type_variable">バリエーションのある商品</string>
     <string name="product_images_image_limit_warning">商品1種類につき、表示できる写真は1点のみです</string>
     <string name="product_replace_photo">写真を置換</string>
     <string name="product_add_photo">写真を追加</string>
@@ -322,7 +336,7 @@ Language: ja_JP
     <string name="login_pick_store">連携するストアを選択</string>
     <string name="login_store_address">ストアの住所を入力</string>
     <string name="login_wpcom">WordPress.com で続ける</string>
-    <string name="product_type_variation_desc">色やサイズのバリエーションがある商品</string>
+    <string name="product_type_variable_desc">色やサイズのバリエーションがある商品</string>
     <string name="product_selection_count_single">%d 選択済みの商品</string>
     <string name="product_selection_count">%d 選択済みの商品</string>
     <string name="grouped_product_empty">商品をグループに追加</string>
@@ -341,8 +355,6 @@ Language: ja_JP
     <string name="product_type_confirm_dialog_title">商品タイプを変更してもよろしいですか ?</string>
     <string name="product_type_external_desc">商品を外部サイトにリンク</string>
     <string name="product_type_grouped_desc">関連商品のコレクション</string>
-    <string name="product_type_virtual_desc">サービスまたはデジタルダウンロード</string>
-    <string name="product_type_physical_desc">顧客に配送する商品</string>
     <string name="product_type_list_header">商品タイプを選択</string>
     <string name="send_feedback">意見を送る</string>
     <string name="variation_detail_price_warning_title">一部のバリエーションに価格情報がありません</string>
