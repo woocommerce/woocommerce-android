@@ -31,12 +31,15 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
+    private val appLogWrapper: AppLogWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(Loading)
@@ -115,7 +118,10 @@ class CardReaderDetailViewModel @Inject constructor(
     private fun onDisconnectClicked() {
         launch {
             val disconnectionResult = cardReaderManager.disconnectReader()
-            if (!disconnectionResult) showNotConnectedState()
+            if (!disconnectionResult) {
+                appLogWrapper.e(T.MAIN, "Disconnection from reader has failed")
+                showNotConnectedState()
+            }
         }
     }
 
