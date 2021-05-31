@@ -31,6 +31,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachineTest : BaseUnitTest() {
@@ -128,7 +129,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
                     1f
                 ),
                 weight = 10.0f,
-                items = listOf(Item(10L, "item", "attributes", 10f))
+                items = listOf(Item(10L, "item", "attributes", 1f, 10f, BigDecimal.valueOf(20)))
             )
         )
 
