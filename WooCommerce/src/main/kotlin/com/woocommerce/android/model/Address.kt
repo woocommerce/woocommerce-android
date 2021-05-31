@@ -82,11 +82,12 @@ data class Address(
     }
 
     /**
-     * Checks whether the entered phone number contains 10 digits exactly.
+     * Checks whether the entered phone number contains 10 digits exactly after stripping an optional 1 as the area code.
      * As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
      * and that's similar to what the web client does.
+     * Source: https://github.com/Automattic/woocommerce-services/issues/1351
      */
-    fun phoneHas10Digits() = phone.replace(Regex("[^\\d]"), "").length == 10
+    fun phoneHas10Digits() = phone.replace(Regex("^1|[^\\d]"), "").length == 10
 
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
