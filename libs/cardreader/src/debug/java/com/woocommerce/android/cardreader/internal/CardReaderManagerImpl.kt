@@ -81,6 +81,12 @@ internal class CardReaderManagerImpl(
         return connectionManager.connectToReader(cardReader)
     }
 
+    override suspend fun disconnectReader(): Boolean {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (terminal.getConnectedReader() == null) return false
+        return connectionManager.disconnectReader()
+    }
+
     override suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
         paymentManager.acceptPayment(orderId, amount, currency)
 
