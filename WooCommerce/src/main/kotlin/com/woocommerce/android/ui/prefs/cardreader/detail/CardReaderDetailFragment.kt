@@ -80,7 +80,11 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
                         UiHelpers.setImageOrHide(cardReaderDetailIllustration, state.illustration)
                         UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailFirstHintNumberLabel, state.firstHintNumber)
                         UiHelpers.setTextOrHide(cardReaderDetailSecondHintLabel, state.secondHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailSecondHintNumberLabel, state.secondHintNumber)
+                        UiHelpers.setTextOrHide(cardReaderDetailThirdHintLabel, state.thirdHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailThirdHintNumberLabel, state.thirdHintNumber)
                         UiHelpers.setTextOrHide(cardReaderDetailConnectBtn, state.connectBtnLabel)
                         cardReaderDetailConnectBtn.setOnClickListener { state.onPrimaryActionClicked.invoke() }
                     }
