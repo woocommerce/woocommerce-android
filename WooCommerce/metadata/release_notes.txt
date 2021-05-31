@@ -1,3 +1,2 @@
-When editing a product, you can now create, delete, and update variations, attributes, and attribute options. You can also create and edit a virtual product from the product detail screen.
-It is now possible to refund a shipping line inside an order.
-We also fixed an issue that occurred when editing a product’s regular and sale prices.
+We have heard that orders may get fulfilled in multiple shipments. With this update, you can now print more than one label for an order. We also fixed a few other small things to make your experience better.
+

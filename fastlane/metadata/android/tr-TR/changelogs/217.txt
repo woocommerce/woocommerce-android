@@ -1,4 +1,0 @@
-6.6:
-Bir ürünü düzenlerken artık ürün varyasyonlarını, ürün özelliklerini ve ürün özelliği seçeneklerini oluşturabilir, silebilir ve güncelleyebilirsiniz. Ayrıca ürün detay ekranından sanal bir ürün oluşturabilir ve düzenleyebilirsiniz
-Artık bir siparişin gönderim satırından iade yapmak mümkün.
-Bir ürünün normal ve indirimli fiyatlarını düzenlerken oluşan bir sorunu da düzelttik.

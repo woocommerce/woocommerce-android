@@ -8,14 +8,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductImagesList
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -23,9 +21,6 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class ProductImagesViewModelTest : BaseUnitTest() {
-    @get:Rule
-    val coroutinesTestRule = CoroutineTestRule()
-
     lateinit var viewModel: ProductImagesViewModel
 
     @Mock

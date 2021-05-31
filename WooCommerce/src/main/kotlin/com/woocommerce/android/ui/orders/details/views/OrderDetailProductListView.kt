@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -30,7 +31,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
         orderItems: List<Order.Item>,
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
-        productClickListener: OrderProductActionListener
+        productClickListener: OrderProductActionListener,
+        onProductMenuItemClicked: () -> Unit
     ) {
         binding.productListLblProduct.text = StringUtils.getQuantityString(
             context = context,
@@ -63,6 +65,17 @@ class OrderDetailProductListView @JvmOverloads constructor(
             // https://github.com/woocommerce/woocommerce-android/issues/2074
             isMotionEventSplittingEnabled = false
         }
+
+        val popupMenu = PopupMenu(context, binding.productListBtnMenu)
+        popupMenu.menu.add(0, 0, 0, R.string.orderdetail_products_recreate_shipping_label_menu)
+        popupMenu.menu.findItem(0).setOnMenuItemClickListener {
+            onProductMenuItemClicked()
+            true
+        }
+
+        binding.productListBtnMenu.setOnClickListener {
+            popupMenu.show()
+        }
     }
 
     fun notifyProductChanged(remoteProductId: Long) {
@@ -89,5 +102,9 @@ class OrderDetailProductListView @JvmOverloads constructor(
 
         binding.productListShippingLabelsNotice.isVisible = isVisible
         binding.productListShippingLabelsNotice.setOnClickListener { onShippingLabelNoticeTapped() }
+    }
+
+    fun showProductListMenuButton(isVisible: Boolean) {
+        binding.productListBtnMenu.isVisible = isVisible
     }
 }

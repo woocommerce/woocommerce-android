@@ -33,7 +33,8 @@ object WooLog {
         NOTIFICATIONS,
         LOGIN,
         REVIEWS,
-        MEDIA
+        MEDIA,
+        CARD_READER
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

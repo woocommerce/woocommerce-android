@@ -20,7 +20,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
@@ -61,7 +61,7 @@ import com.woocommerce.android.widgets.WCEmptyView
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label) {
+class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_shipping_label) {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver

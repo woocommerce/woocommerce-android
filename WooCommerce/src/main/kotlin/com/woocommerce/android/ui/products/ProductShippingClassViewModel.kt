@@ -7,11 +7,11 @@ import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -25,7 +25,7 @@ class ProductShippingClassViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductShippingClassRepository,
     private val resourceProvider: ResourceProvider
-) : ScopedViewModel(savedState, dispatchers) {
+) : DaggerScopedViewModel(savedState, dispatchers) {
     private val noShippingClass = ShippingClass(
         name = resourceProvider.getString(R.string.product_no_shipping_class),
         slug = "",
@@ -34,7 +34,7 @@ class ProductShippingClassViewModel @AssistedInject constructor(
     private var shippingClassLoadJob: Job? = null
 
     // view state for the shipping class screen
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    final val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
     private var viewState by viewStateData
 
     /**

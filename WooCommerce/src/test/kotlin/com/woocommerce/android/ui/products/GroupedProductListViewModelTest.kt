@@ -10,17 +10,17 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListViewState
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class GroupedProductListViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -41,8 +41,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         )
     )
 
-    private val coroutineDispatchers = CoroutineDispatchers(
-        Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val productList = ProductTestUtils.generateProductList()
     private val groupedProductIds = GROUPED_PRODUCT_IDS.toList()
 
@@ -59,7 +57,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         viewModel = spy(
             GroupedProductListViewModel(
                 savedState,
-                coroutineDispatchers,
+                coroutinesTestRule.testDispatchers,
                 networkStatus,
                 productRepository
             )
@@ -67,7 +65,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the grouped product list view correctly`() = test {
+    fun `Displays the grouped product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(productList).whenever(productRepository).fetchProductList(groupedProductIds)
 
         createViewModel()

@@ -4,6 +4,7 @@ import android.os.Parcelable
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.Callback
 import com.woocommerce.android.AppPrefs
@@ -12,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -25,7 +25,6 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.getNonRefundedProducts
-import com.woocommerce.android.model.getNonRefundedShippingLabelProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
@@ -39,16 +38,13 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippin
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -60,16 +56,17 @@ import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.sumBy
+import javax.inject.Inject
 
 @OpenClassOnDebug
-class OrderDetailViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class OrderDetailViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository
-) : ScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         // The required version to support shipping label creation
         const val SUPPORTED_WCS_VERSION = "1.25.11"
@@ -427,17 +424,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     private fun loadOrderProducts(
-        refunds: ListInfo<Refund>,
-        shippingLabels: ListInfo<ShippingLabel>
+        refunds: ListInfo<Refund>
     ): ListInfo<Order.Item> {
-        val products = if (shippingLabels.isVisible) {
-            // If there are some products not associated with any shipping labels (when shipping labels
-            // are refunded, for instance), the products card should be displayed with those products
-            shippingLabels.list.getNonRefundedShippingLabelProducts()
-        } else {
-            refunds.list.getNonRefundedProducts(order.items)
-        }
-
+        val products = refunds.list.getNonRefundedProducts(order.items)
         return ListInfo(isVisible = products.isNotEmpty(), list = products)
     }
 
@@ -501,7 +490,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         val shippingLabels = loadOrderShippingLabels()
         val shipmentTracking = loadShipmentTracking(shippingLabels)
         val orderRefunds = loadOrderRefunds()
-        val orderProducts = loadOrderProducts(orderRefunds, shippingLabels)
+        val orderProducts = loadOrderProducts(orderRefunds)
 
         if (shippingLabels.isVisible) {
             _shippingLabels.value = shippingLabels.list
@@ -519,9 +508,12 @@ class OrderDetailViewModel @AssistedInject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
+        val isOrderEligibleForSLCreation = isShippingPluginReady &&
+            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
+
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = isShippingPluginReady &&
-                orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId),
+            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,
+            isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible
@@ -545,7 +537,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         val refreshedProductId: Long? = null,
         val isCreateShippingLabelButtonVisible: Boolean? = null,
         val isProductListVisible: Boolean? = null,
-        val areShippingLabelsVisible: Boolean? = null
+        val areShippingLabelsVisible: Boolean? = null,
+        val isProductListMenuVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
@@ -558,7 +551,4 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<OrderDetailViewModel>
 }

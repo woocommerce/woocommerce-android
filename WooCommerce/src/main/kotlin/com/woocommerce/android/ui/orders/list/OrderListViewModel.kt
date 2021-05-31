@@ -27,11 +27,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -75,7 +75,7 @@ class OrderListViewModel @AssistedInject constructor(
     private val fetcher: OrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore
-) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
+) : DaggerScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -89,7 +89,7 @@ class OrderListViewModel @AssistedInject constructor(
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
     }
 
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    final val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState())
     internal var viewState by viewStateLiveData
 
     protected val _pagedListData = MediatorLiveData<PagedOrdersList>()

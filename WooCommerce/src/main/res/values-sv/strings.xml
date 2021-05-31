@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-12 12:54:51+0000
+Translation-Revision-Date: 2021-05-25 22:54:44+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">En unik digital produkt</string>
-    <string name="product_add_type_virtual">Enkel virtuell produkt</string>
-    <string name="product_add_type_simple">Enkel fysisk produkt</string>
+    <string name="product_type_external_title">Extern produkt</string>
+    <string name="product_type_grouped_title">Grupperad produkt</string>
+    <string name="product_type_variable_title">Variabel produkt</string>
+    <string name="product_type_virtual_desc">En unik digital produkt som tjänster, nedladdningsbara böcker, musik eller videor</string>
+    <string name="product_type_simple_desc">En unik fysisk produkt som du kan behöva frakta till kunden</string>
+    <string name="product_type_simple_title">Enkel fysisk produkt</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Öppna inställningar</string>
+    <string name="card_reader_connect_open_location_settings">Öppna inställningar</string>
+    <string name="card_reader_connect_open_permission_settings">Öppna inställningar</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth är inaktiverat</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Plats är inaktiverat</string>
+    <string name="card_reader_connect_missing_permissions_hint">Saknar nödvändig platsbehörighet</string>
+    <string name="card_reader_connect_connecting_failed_hint">Det gick inte att ansluta till läsaren.</string>
+    <string name="card_reader_connect_scanning_failed_hint">Det gick inte att hitta några läsare.</string>
+    <string name="card_reader_connect_failed_header">Misslyckades med att ansluta till läsaren</string>
+    <string name="card_reader_connect_connecting_header">Ansluter till läsaren</string>
+    <string name="card_reader_connect_to_reader">Anslut läsaren</string>
+    <string name="card_reader_connect_reader_found_header">Vill du ansluta läsaren %s?</string>
+    <string name="card_reader_connect_scanning_hint">Tryck på knappen på din läsare tills du ser ett blinkande blått ljus</string>
+    <string name="card_reader_connect_scanning_header">Söker efter läsare</string>
+    <string name="shipping_label_items_count_placeholder">Antal artiklar</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">Skapa ny leveransetikett</string>
+    <string name="product_type_virtual_title">Enkel virtuell produkt</string>
     <string name="variation_confirm_delete">Vill du ta bort denna variant?</string>
     <string name="variation_create_dialog_title">Skapar variation</string>
     <string name="product_delete_dialog_title">Tar bort produkt</string>
@@ -307,11 +327,6 @@ Language: sv_SE
     <string name="product_publish_dialog_title">Publicerar produkt</string>
     <string name="product_add_tool_bar_menu_button_done">PUBLICERA</string>
     <string name="product_add_tool_bar_title">Ny produkt</string>
-    <string name="product_add_type_variable_desc">En produkt med variationer som färg eller storlek</string>
-    <string name="product_add_type_simple_desc">En unik artikel att sälja</string>
-    <string name="product_add_type_external">Extern produkt</string>
-    <string name="product_add_type_grouped">Grupperad produkt</string>
-    <string name="product_add_type_variable">Variabel produkt</string>
     <string name="product_images_image_limit_warning">Endast ett foto kan visas per produktvariant</string>
     <string name="product_replace_photo">Byt ut foto</string>
     <string name="product_add_photo">Lägg till foto</string>
@@ -322,7 +337,7 @@ Language: sv_SE
     <string name="login_pick_store">Välj butik att ansluta</string>
     <string name="login_store_address">Ange din butiks adress</string>
     <string name="login_wpcom">Fortsätt med WordPress.com</string>
-    <string name="product_type_variation_desc">En produkt med variationer som färg eller storlek</string>
+    <string name="product_type_variable_desc">En produkt med variationer som färg eller storlek</string>
     <string name="product_selection_count_single">%d produkt vald</string>
     <string name="product_selection_count">%d produkter valda</string>
     <string name="grouped_product_empty">Lägg till produkter till gruppen</string>
@@ -341,8 +356,6 @@ Language: sv_SE
     <string name="product_type_confirm_dialog_title">Är du säker på att du vill ändra produkttypen?</string>
     <string name="product_type_external_desc">Länk till en produkt på en extern webbplats</string>
     <string name="product_type_grouped_desc">En samling relaterade produkter</string>
-    <string name="product_type_virtual_desc">En tjänst eller digital nedladdning</string>
-    <string name="product_type_physical_desc">En artikel som du levererar till kunden</string>
     <string name="product_type_list_header">Välj en produkttyp</string>
     <string name="send_feedback">Skicka feedback</string>
     <string name="variation_detail_price_warning_title">Vissa variationer har inga priser</string>

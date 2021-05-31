@@ -5,10 +5,13 @@ import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import okhttp3.Interceptor
 import javax.inject.Named
 
+@InstallIn(SingletonComponent::class)
 @Module
 class InterceptorModule {
     @Provides @IntoSet @Named("network-interceptors")

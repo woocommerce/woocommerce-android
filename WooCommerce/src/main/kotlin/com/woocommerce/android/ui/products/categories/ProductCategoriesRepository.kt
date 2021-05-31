@@ -3,27 +3,26 @@ package com.woocommerce.android.ui.products.categories
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toProductCategory
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
-import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_CATEGORIES
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT_CATEGORY
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_CATEGORIES
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductCategoryChanged
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.TERM_EXISTS
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 
 @OpenClassOnDebug
 class ProductCategoriesRepository @Inject constructor(
@@ -35,8 +34,8 @@ class ProductCategoriesRepository @Inject constructor(
         private const val PRODUCT_CATEGORIES_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_CATEGORY_PAGE_SIZE
     }
 
-    private var loadContinuation: Continuation<Boolean>? = null
-    private var addProductCategoryContinuation: Continuation<RequestResult>? = null
+    private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
+    private var addProductCategoryContinuation = ContinuationWrapper<RequestResult>(WooLog.T.PRODUCTS)
     private var offset = 0
 
     var canLoadMoreProductCategories = true
@@ -54,19 +53,14 @@ class ProductCategoriesRepository @Inject constructor(
      * and returns the full list of product categories from the database
      */
     suspend fun fetchProductCategories(loadMore: Boolean = false): List<ProductCategory> {
-        try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                offset = if (loadMore) offset + PRODUCT_CATEGORIES_PAGE_SIZE else 0
-                loadContinuation = it
-                val payload = WCProductStore.FetchProductCategoriesPayload(
-                    selectedSite.get(),
-                    pageSize = PRODUCT_CATEGORIES_PAGE_SIZE,
-                    offset = offset
-                )
-                dispatcher.dispatch(WCProductActionBuilder.newFetchProductCategoriesAction(payload))
-            }
-        } catch (e: CancellationException) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching product categories", e)
+        loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            offset = if (loadMore) offset + PRODUCT_CATEGORIES_PAGE_SIZE else 0
+            val payload = WCProductStore.FetchProductCategoriesPayload(
+                selectedSite.get(),
+                pageSize = PRODUCT_CATEGORIES_PAGE_SIZE,
+                offset = offset
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newFetchProductCategoriesAction(payload))
         }
 
         return getProductCategoriesList()
@@ -93,23 +87,18 @@ class ProductCategoriesRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun addProductCategory(categoryName: String, parentId: Long): RequestResult {
-        return try {
-            suspendCoroutineWithTimeout<RequestResult>(AppConstants.REQUEST_TIMEOUT) {
-                addProductCategoryContinuation = it
+        val result = addProductCategoryContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            val productCategoryModel = WCProductCategoryModel().apply {
+                name = categoryName
+                parent = parentId
+            }
+            val payload = WCProductStore.AddProductCategoryPayload(selectedSite.get(), productCategoryModel)
+            dispatcher.dispatch(WCProductActionBuilder.newAddProductCategoryAction(payload))
+        }
 
-                val productCategoryModel = WCProductCategoryModel().apply {
-                    name = categoryName
-                    parent = parentId
-                }
-                val payload = WCProductStore.AddProductCategoryPayload(selectedSite.get(), productCategoryModel)
-                dispatcher.dispatch(WCProductActionBuilder.newAddProductCategoryAction(payload))
-            } ?: RequestResult.NO_ACTION_NEEDED // request timed out
-        } catch (e: CancellationException) {
-            WooLog.e(
-                WooLog.T.PRODUCTS,
-                "CancellationException while adding product category: $categoryName", e
-            )
-            RequestResult.NO_ACTION_NEEDED
+        return when (result) {
+            is Cancellation -> RequestResult.NO_ACTION_NEEDED
+            is Success -> result.value
         }
     }
 
@@ -119,7 +108,7 @@ class ProductCategoriesRepository @Inject constructor(
         when (event.causeOfChange) {
             FETCH_PRODUCT_CATEGORIES -> {
                 if (event.isError) {
-                    loadContinuation?.resume(false)
+                    loadContinuation.continueWith(false)
                     AnalyticsTracker.track(
                         Stat.PRODUCT_CATEGORIES_LOAD_FAILED,
                         this.javaClass.simpleName,
@@ -129,16 +118,15 @@ class ProductCategoriesRepository @Inject constructor(
                 } else {
                     canLoadMoreProductCategories = event.canLoadMore
                     AnalyticsTracker.track(Stat.PRODUCT_CATEGORIES_LOADED)
-                    loadContinuation?.resume(true)
+                    loadContinuation.continueWith(true)
                 }
-                loadContinuation = null
             }
             ADDED_PRODUCT_CATEGORY -> {
                 if (event.isError) {
                     val requestResultType = if (event.error.type == TERM_EXISTS) {
                         RequestResult.API_ERROR
                     } else RequestResult.ERROR
-                    addProductCategoryContinuation?.resume(requestResultType)
+                    addProductCategoryContinuation.continueWith(requestResultType)
                     AnalyticsTracker.track(
                         Stat.PARENT_CATEGORIES_LOAD_FAILED,
                         this.javaClass.simpleName,
@@ -147,11 +135,11 @@ class ProductCategoriesRepository @Inject constructor(
                     )
                 } else {
                     AnalyticsTracker.track(Stat.PARENT_CATEGORIES_LOADED)
-                    addProductCategoryContinuation?.resume(RequestResult.SUCCESS)
+                    addProductCategoryContinuation.continueWith(RequestResult.SUCCESS)
                 }
-                addProductCategoryContinuation = null
             }
-            else -> { }
+            else -> {
+            }
         }
     }
 }
