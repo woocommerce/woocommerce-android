@@ -426,9 +426,6 @@
         android:label="ShippingCustomsFragment"
         tools:layout="@layout/fragment_shipping_customs">
         <argument
-            android:name="order"
-            app:argType="com.woocommerce.android.model.Order" />
-        <argument
             android:name="originCountryCode"
             app:argType="string" />
         <argument

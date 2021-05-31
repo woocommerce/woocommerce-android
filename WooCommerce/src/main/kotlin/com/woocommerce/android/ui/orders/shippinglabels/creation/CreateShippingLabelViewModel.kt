@@ -27,7 +27,6 @@ import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -229,7 +228,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         )
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> openCustomsForm(
-                            sideEffect.order,
                             sideEffect.originCountryCode,
                             sideEffect.destinationCountryCode,
                             sideEffect.shippingPackages,
@@ -317,7 +315,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     private fun openCustomsForm(
-        order: Order,
         originCountryCode: String,
         destinationCountryCode: String,
         shippingPackages: List<ShippingLabelPackage>,
@@ -325,7 +322,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     ) {
         triggerEvent(
             ShowCustomsForm(
-                order = order,
                 originCountryCode = originCountryCode,
                 destinationCountryCode = destinationCountryCode,
                 shippingPackages = shippingPackages,

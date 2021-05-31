@@ -9,13 +9,10 @@ import com.woocommerce.android.model.CustomsLine
 import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.RestrictionType
-import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.LineValidationState
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -48,8 +45,6 @@ private val USPS_ITN_REQUIRED_DESTINATIONS = arrayOf("IR", "SY", "KP", "CU", "SD
 class ShippingCustomsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSide: SelectedSite,
-    private val productDetailRepository: ProductDetailRepository,
-    private val variationDetailRepository: VariationDetailRepository,
     parameterRepository: ParameterRepository,
     private val dataStore: WCDataStore,
     private val resourceProvider: ResourceProvider
@@ -92,8 +87,6 @@ class ShippingCustomsViewModel @Inject constructor(
     }
 
     private fun createDefaultCustomPackages(): List<CustomsPackage> {
-        fun ShippingLabelPackage.Item.toOrderItem() = args.order.items.first { it.uniqueId == productId }
-
         return args.shippingPackages.map { labelPackage ->
             CustomsPackage(
                 id = labelPackage.packageId,
@@ -103,24 +96,14 @@ class ShippingCustomsViewModel @Inject constructor(
                 returnToSender = true,
                 itn = "",
                 lines = labelPackage.items.map { item ->
-                    val orderItem = item.toOrderItem()
-                    val attributes = orderItem.attributesList.ifEmpty { null }?.let { " $it" } ?: ""
-                    val defaultDescription = orderItem.name.substringBefore("-").trim() + attributes
-                    val value = orderItem.price.divide(BigDecimal(orderItem.quantity))
-                    // As we already retrieve missing products at the packaging step,
-                    // we can just get them from the cache here
-                    val weight = if (orderItem.isVariation) {
-                        variationDetailRepository.getVariation(orderItem.productId, orderItem.variationId)?.weight
-                    } else {
-                        productDetailRepository.getProduct(orderItem.productId)?.weight
-                    }
-
+                    val attributes = item.attributesList.ifEmpty { null }?.let { " $it" } ?: ""
+                    val defaultDescription = item.name.substringBefore("-").trim() + attributes
                     CustomsLine(
-                        productId = orderItem.uniqueId,
+                        productId = item.productId,
                         itemDescription = defaultDescription,
-                        quantity = orderItem.quantity.toFloat(),
-                        value = value,
-                        weight = weight,
+                        quantity = item.quantity,
+                        value = item.value,
+                        weight = item.weight,
                         hsTariffNumber = "",
                         originCountry = countries.first { it.code == args.originCountryCode }
                     )

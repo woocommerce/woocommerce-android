@@ -259,7 +259,6 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
                 is ShowCustomsForm -> {
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToShippingCustomsFragment(
-                            order = event.order,
                             originCountryCode = event.originCountryCode,
                             destinationCountryCode = event.destinationCountryCode,
                             shippingPackages = event.shippingPackages.toTypedArray(),

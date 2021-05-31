@@ -175,7 +175,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.CustomsDeclaration(data),
                     SideEffect.ShowCustomsForm(
-                        order = data.order,
                         originCountryCode = data.stepsState.originAddressStep.data.country,
                         destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
                         shippingPackages = data.stepsState.packagingStep.data,
@@ -219,7 +218,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.CustomsDeclaration(data),
                     SideEffect.ShowCustomsForm(
-                        order = data.order,
                         originCountryCode = data.stepsState.originAddressStep.data.country,
                         destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
                         shippingPackages = data.stepsState.packagingStep.data,
@@ -798,7 +796,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
         ) : SideEffect()
 
         data class ShowCustomsForm(
-            val order: Order,
             val originCountryCode: String,
             val destinationCountryCode: String,
             val shippingPackages: List<ShippingLabelPackage>,

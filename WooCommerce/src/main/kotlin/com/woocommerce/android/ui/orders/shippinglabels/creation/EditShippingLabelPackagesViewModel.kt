@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
+import java.math.BigDecimal
 
 class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -194,6 +195,9 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
             productId = uniqueId,
             name = name,
             attributesList = attributesList,
+            // TODO remove the conversion when the order quantity starts supporting decimal values
+            quantity = quantity.toFloat(),
+            value = price.divide(BigDecimal(quantity)),
             weight = weight
         )
     }

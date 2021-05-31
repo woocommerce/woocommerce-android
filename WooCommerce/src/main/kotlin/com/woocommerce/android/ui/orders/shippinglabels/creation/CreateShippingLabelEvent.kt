@@ -54,7 +54,6 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     ) : CreateShippingLabelEvent()
 
     data class ShowCustomsForm(
-        val order: Order,
         val originCountryCode: String,
         val destinationCountryCode: String,
         val shippingPackages: List<ShippingLabelPackage>,
