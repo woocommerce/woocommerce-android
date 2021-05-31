@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -180,6 +181,8 @@ class CardReaderPaymentViewModel @Inject constructor(
         return loadOrderFromDB()?.let { order ->
             val receiptData = receiptDataMapper.mapToReceiptData(order, receiptPaymentInfo)
             receiptCreator.createHtmlReceipt(receiptData)
+        } ?: null.also {
+            logger.e(AppLog.T.MAIN, "Order not found when building receipt. This is not expected.")
         }
     }
 
