@@ -46,7 +46,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 is CardReaderUpdateScreen ->
                     findNavController().navigateSafely(
                         CardReaderDetailFragmentDirections
-                            .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(event.skipUpdate)
+                            .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(event.startedByUser)
                     )
                 is ShowSnackbar -> {
                     Snackbar.make(
@@ -91,7 +91,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         })
 
         handleResult<UpdateResult>(CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT) {
-            viewModel.onUpdateResult(it)
+            viewModel.onUpdateReaderResult(it)
         }
     }
 

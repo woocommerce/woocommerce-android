@@ -70,7 +70,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
         viewState.value = if (updateAvailable) {
-            triggerEvent(CardReaderUpdateScreen(skipUpdate = true))
+            triggerEvent(CardReaderUpdateScreen(startedByUser = true))
             ConnectedState(
                 enforceReaderUpdate = UiStringRes(
                     R.string.card_reader_detail_connected_enforced_update_software
@@ -105,14 +105,14 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onUpdateReaderClicked() {
-        triggerEvent(CardReaderUpdateScreen(skipUpdate = false))
+        triggerEvent(CardReaderUpdateScreen(startedByUser = false))
     }
 
     private fun onDisconnectClicked() {
         // TODO cardreader implement disconnect functionality
     }
 
-    fun onUpdateResult(updateResult: UpdateResult) {
+    fun onUpdateReaderResult(updateResult: UpdateResult) {
         when (updateResult) {
             SUCCESS -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
             FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
@@ -140,7 +140,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
-        data class CardReaderUpdateScreen(val skipUpdate: Boolean) : NavigationTarget()
+        data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
     }
 
     sealed class ViewState {

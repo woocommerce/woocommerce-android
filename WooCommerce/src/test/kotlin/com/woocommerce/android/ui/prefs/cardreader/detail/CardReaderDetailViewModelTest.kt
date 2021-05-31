@@ -196,7 +196,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = createViewModel()
 
-            assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(skipUpdate = true))
+            assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(startedByUser = true))
         }
 
     @Test
@@ -205,7 +205,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUpdateResult(UpdateResult.SUCCESS)
+        viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
 
         // THEN
         assertThat(viewModel.event.value)
@@ -218,7 +218,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUpdateResult(UpdateResult.FAILED)
+        viewModel.onUpdateReaderResult(UpdateResult.FAILED)
 
         // THEN
         assertThat(viewModel.event.value)
@@ -231,7 +231,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUpdateResult(UpdateResult.SKIPPED)
+        viewModel.onUpdateReaderResult(UpdateResult.SKIPPED)
 
         // THEN
         assertThat(viewModel.event.value).isNull()
