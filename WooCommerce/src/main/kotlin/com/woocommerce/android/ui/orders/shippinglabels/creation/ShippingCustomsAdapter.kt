@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustoms
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
@@ -217,6 +218,8 @@ class ShippingCustomsLineAdapter(
                 if (binding.expandIcon.rotation == 0f) {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
+                    // TODO update the expand() function an on animation ended callback
+                    binding.detailsLayout.postDelayed({ focusOnFirstInvalidField() }, 300)
                 } else {
                     binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
@@ -254,6 +257,16 @@ class ShippingCustomsLineAdapter(
                 onSelected = { listener.onOriginCountryChanged(parentItemPosition, adapterPosition, it) },
                 mapper = { it.name }
             )
+        }
+
+        private fun focusOnFirstInvalidField() {
+            binding.detailsLayout.children.filterIsInstance(WCMaterialOutlinedEditTextView::class.java)
+                .forEach {
+                    if (!it.error.isNullOrEmpty()) {
+                        it.requestFocus()
+                        return
+                    }
+                }
         }
 
         fun bind(uiState: CustomsLineUiState) {
