@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -55,8 +56,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
-                else ->
-                    event.isHandled = false
+                else -> event.isHandled = false
             }
         })
 
@@ -72,7 +72,13 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         primaryActionBtn.setOnClickListener { state.primaryButtonState?.onActionClicked?.invoke() }
                         UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState?.text)
                         secondaryActionBtn.setOnClickListener { state.secondaryButtonState?.onActionClicked?.invoke() }
-                        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(R.color.update_needed_icon_color)
+                        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(
+                            R.color.warning_banner_foreground_color
+                        )
+                        with(cardReaderDetailLearnMoreTv.root) {
+                            movementMethod = LinkMovementMethod.getInstance()
+                            UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                        }
                     }
                 }
                 is NotConnectedState -> {
@@ -87,6 +93,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         UiHelpers.setTextOrHide(cardReaderDetailThirdHintNumberLabel, state.thirdHintNumber)
                         UiHelpers.setTextOrHide(cardReaderDetailConnectBtn, state.connectBtnLabel)
                         cardReaderDetailConnectBtn.setOnClickListener { state.onPrimaryActionClicked.invoke() }
+                        with(cardReaderDetailLearnMoreTv.root) {
+                            movementMethod = LinkMovementMethod.getInstance()
+                            UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                        }
                     }
                 }
                 Loading -> {

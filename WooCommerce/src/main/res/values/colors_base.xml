@@ -160,7 +160,5 @@
     <!--
         Payment reader
     -->
-    <color name="update_needed_background_color">@color/woo_red_5</color>
-    <color name="update_needed_icon_color">@color/woo_red_30</color>
     <color name="disconnected_state_number_background_color">@color/woo_gray_0</color>
 </resources>

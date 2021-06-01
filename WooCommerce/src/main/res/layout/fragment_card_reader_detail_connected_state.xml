@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
     android:orientation="vertical"
-    android:paddingVertical="@dimen/major_100">
+    android:paddingBottom="@dimen/major_100">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/enforced_update_tv"
@@ -14,16 +14,22 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
-        android:background="@color/update_needed_background_color"
+        android:background="@color/warning_banner_background_color"
         android:drawableStart="@drawable/ic_info_outline_24dp"
         android:drawablePadding="@dimen/major_100"
         android:padding="@dimen/major_100"
         android:text="@string/card_reader_detail_connected_enforced_update_software"
         android:textColor="@color/color_on_surface_high" />
 
+    <View
+        android:background="@color/warning_banner_foreground_color"
+        android:id="@+id/enforced_update_divider"
+        style="@style/Woo.Divider" />
+
     <com.google.android.material.textview.MaterialTextView
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
+        android:letterSpacing="0.15"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
         android:layout_marginBottom="@dimen/minor_100"
@@ -63,4 +69,13 @@
         android:layout_marginHorizontal="@dimen/major_100"
         android:layout_marginTop="@dimen/minor_100"
         tools:text="@string/card_reader_detail_connected_disconnect_reader" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <include
+        android:id="@+id/card_reader_detail_learn_more_tv"
+        layout="@layout/fragment_card_reader_detail_learn_more" />
 </LinearLayout>

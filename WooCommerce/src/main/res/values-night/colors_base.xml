@@ -108,7 +108,5 @@
     <!--
         Payment reader
     -->
-    <color name="update_needed_background_color">@color/woo_orange_70</color>
-    <color name="update_needed_icon_color">@color/woo_orange_30</color>
     <color name="disconnected_state_number_background_color">@color/woo_black_900</color>
 </resources>
