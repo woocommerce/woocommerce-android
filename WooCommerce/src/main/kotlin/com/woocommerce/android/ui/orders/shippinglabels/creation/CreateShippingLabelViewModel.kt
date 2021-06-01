@@ -346,7 +346,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 is OriginAddressStep -> data.toString()
                 is ShippingAddressStep -> data.toString()
                 is PackagingStep -> stepDescription
-                is CustomsStep -> null
+                is CustomsStep -> stepDescription
                 is CarrierStep -> stepDescription
                 is PaymentsStep -> stepDescription
             }
@@ -568,6 +568,12 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 resourceProvider.getString(string.shipping_label_create_carrier_description)
             }
         }
+
+    private val CustomsStep.stepDescription: String
+        get() = resourceProvider.getString(
+            if (status == DONE) string.shipping_label_create_customs_done
+            else string.shipping_label_create_customs_description
+        )
 
     fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
 
