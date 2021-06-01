@@ -273,6 +273,8 @@ class ShippingCustomsLineAdapter(
             binding.valueEditText.error = validationState.valueErrorMessage
 
             binding.countrySpinner.setText(customsLine.originCountry.name)
+
+            binding.errorView.isVisible = !validationState.isValid
         }
     }
 
