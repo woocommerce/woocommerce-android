@@ -213,7 +213,7 @@ class ShippingCustomsLineAdapter(
             get() = binding.root.context
 
         init {
-            binding.expandIcon.setOnClickListener {
+            binding.titleLayout.setOnClickListener {
                 if (binding.expandIcon.rotation == 0f) {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
