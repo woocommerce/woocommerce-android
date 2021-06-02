@@ -576,6 +576,19 @@ class OrderDetailViewModel @Inject constructor(
         viewState = viewState.copy(refreshedProductId = event.remoteProductId)
     }
 
+    fun onCardReaderPaymentCompleted() {
+        reloadOrderDetails()
+    }
+
+    private fun reloadOrderDetails() {
+        launch {
+            orderDetailRepository.getOrder(navArgs.orderId)?.let {
+                order = it
+            }
+            displayOrderDetails()
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val orderInfo: OrderInfo? = null,
