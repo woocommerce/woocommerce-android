@@ -56,6 +56,13 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
+            android:id="@+id/action_productDetailFragment_to_attributeListFragment"
+            app:destination="@id/attributeListFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+        <action
             android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
             app:destination="@id/productTypesBottomSheetFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
@@ -132,13 +139,6 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
-            android:id="@+id/action_variationListFragment_to_attributeListFragment"
-            app:destination="@id/attributeListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
         <action
             android:id="@+id/action_variationListFragment_to_addAttributeFragment"
             app:destination="@id/addAttributeFragment"

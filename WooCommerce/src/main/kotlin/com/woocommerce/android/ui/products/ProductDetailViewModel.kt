@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_FAILE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_PUBLISH_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_PRODUCT_DELETED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
@@ -1922,7 +1923,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     object RefreshMenu : Event()
-
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.
