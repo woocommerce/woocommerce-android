@@ -53,6 +53,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private var isConfirmRemoveDialogShowing = false
     private var renamedAttributeName: String? = null
+    private var moveNextMenuItem: MenuItem? = null
 
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
@@ -173,7 +174,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
          * we only want to show the Next menu item if we're under the creation of
          * the first variation for a Variable Product
          */
-        menu.findItem(R.id.menu_next)?.isVisible = navArgs.isVariationCreation
+        moveNextMenuItem = menu.findItem(R.id.menu_next)
 
         /** we don't want to show the Remove menu item if this is new attribute
          * or if we're under the First variation creation flow
@@ -367,6 +368,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun checkViews() {
         binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
         binding.textExistingOption.isVisible = !globalTermsAdapter.isEmpty()
+        moveNextMenuItem?.isVisible = viewModel.hasAttributeChanges() && navArgs.isVariationCreation
     }
 
     /**
