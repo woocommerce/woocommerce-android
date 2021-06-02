@@ -123,7 +123,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

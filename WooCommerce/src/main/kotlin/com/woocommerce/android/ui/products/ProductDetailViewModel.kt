@@ -2027,7 +2027,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class AttributeListViewState(
-        val isCreatingVariationDialogShown: Boolean? = null,
+        val isCreatingVariationDialogShown: Boolean? = null
     ) : Parcelable
 
     @AssistedFactory
