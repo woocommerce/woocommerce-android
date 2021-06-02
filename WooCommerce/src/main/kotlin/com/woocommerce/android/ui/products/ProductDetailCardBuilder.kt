@@ -505,8 +505,10 @@ class ProductDetailCardBuilder(
     private fun Product.variations(): ProductProperty {
         return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
             val content =
-                if (numVariations > 1) resources.getString(string.product_variation_multiple_count, numVariations.toString())
-                else resources.getString(string.product_variation_single_count)
+                if (numVariations > 1)
+                    resources.getString(string.product_variation_multiple_count, numVariations.toString())
+                else
+                    resources.getString(string.product_variation_single_count)
 
             ComplexProperty(
                 string.product_variations,
