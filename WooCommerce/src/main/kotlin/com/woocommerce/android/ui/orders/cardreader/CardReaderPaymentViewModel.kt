@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.cardreader
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -63,7 +64,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     val viewStateData: LiveData<ViewState> = viewState
 
     private var paymentFlowJob: Job? = null
-    private var fetchOrderJob: Job? = null
+    @VisibleForTesting var fetchOrderJob: Job? = null
 
     fun start() {
         // TODO cardreader Check if the payment was already processed and cancel this flow
@@ -140,9 +141,13 @@ class CardReaderPaymentViewModel @Inject constructor(
 
     private fun onPaymentCompleted(amountLabel: String) {
         viewState.postValue(PaymentSuccessfulState(amountLabel))
+        reFetchOrder()
+    }
+
+    @VisibleForTesting
+    fun reFetchOrder() {
         fetchOrderJob = launch {
             orderRepository.fetchOrder(arguments.orderIdentifier)
-            delay(5000)
             if (viewState.value == FetchingOrderState) {
                 triggerEvent(Exit)
             }
