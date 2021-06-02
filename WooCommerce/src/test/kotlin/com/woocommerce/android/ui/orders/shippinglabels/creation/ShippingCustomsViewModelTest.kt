@@ -283,7 +283,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
             .customsPackages[0]
             .validationState
             .linesValidationState[0]
-        assertThat(validationState.weightErrorMessage).isEqualTo(R.string.shipping_label_customs_weight_zero_error.toString())
+        assertThat(validationState.weightErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_weight_zero_error.toString())
     }
 
     @Test
