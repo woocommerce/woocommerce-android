@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.base.BaseView
 interface AppSettingsContract {
     interface Presenter : BasePresenter<View> {
         fun logout()
+        fun cleanPaymentsData()
         fun userIsLoggedIn(): Boolean
         fun getAccountDisplayName(): String
     }

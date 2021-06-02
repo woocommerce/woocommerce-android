@@ -101,4 +101,9 @@ internal class CardReaderManagerImpl(
         softwareUpdateManager.softwareUpdateStatus()
 
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
+
+    override suspend fun clearCachedCredentials() {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        terminal.clearCachedCredentials()
+    }
 }

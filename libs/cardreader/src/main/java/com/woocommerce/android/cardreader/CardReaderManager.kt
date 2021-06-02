@@ -22,4 +22,5 @@ interface CardReaderManager {
 
     suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability>
     suspend fun updateSoftware(): Flow<SoftwareUpdateStatus>
+    suspend fun clearCachedCredentials()
 }
