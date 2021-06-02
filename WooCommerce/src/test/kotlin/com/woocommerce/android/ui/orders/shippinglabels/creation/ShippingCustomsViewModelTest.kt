@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyVararg
+import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ContentsType
@@ -48,8 +48,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
         on { getCountries() } doReturn countries
     }
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(any()) } doReturn "text"
-        on { getString(any(), anyVararg()) } doReturn "test"
+        on { getString(any()) } doAnswer { it.arguments[0].toString() }
+        on { getString(any(), anyVararg()) } doAnswer { it.arguments[0].toString() }
     }
 
     private val order = OrderTestUtils.generateTestOrder()
@@ -108,7 +108,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `contents description invalid`() = testBlocking {
+    fun `show error when contents description is missing`() = testBlocking {
         val customsPackage = CreateShippingLabelTestUtils.generateCustomsPackage()
         setup(
             ShippingCustomsFragmentArgs(
@@ -122,11 +122,12 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
         viewModel.onContentsTypeChanged(0, ContentsType.Other)
 
         val validationState = viewModel.viewStateData.liveData.value!!.customsPackages[0].validationState
-        assertThat(validationState.contentsDescriptionErrorMessage).isNotEmpty()
+        assertThat(validationState.contentsDescriptionErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_contents_type_description_missing.toString())
     }
 
     @Test
-    fun `contents description valid`() = testBlocking {
+    fun `hide error when a valid contents description is typed`() = testBlocking {
         val customsPackage = CreateShippingLabelTestUtils.generateCustomsPackage()
         setup(
             ShippingCustomsFragmentArgs(
@@ -145,17 +146,18 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `restriction description invalid`() = testBlocking {
+    fun `show error when restriction description is missing`() = testBlocking {
         setup()
 
         viewModel.onRestrictionTypeChanged(0, RestrictionType.Other)
 
         val validationState = viewModel.viewStateData.liveData.value!!.customsPackages[0].validationState
-        assertThat(validationState.restrictionDescriptionErrorMessage).isNotEmpty()
+        assertThat(validationState.restrictionDescriptionErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_restriction_type_description_missing.toString())
     }
 
     @Test
-    fun `restriction description valid`() = testBlocking {
+    fun `hide error when a valid restriction description is typed`() = testBlocking {
         setup()
 
         viewModel.onRestrictionTypeChanged(0, RestrictionType.Other)
@@ -166,7 +168,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `itn optional`() = testBlocking {
+    fun `hide error when no ITN is enterd`() = testBlocking {
         setup()
 
         val validationState = viewModel.viewStateData.liveData.value!!.customsPackages[0].validationState
@@ -174,44 +176,41 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `itn required due to destination country`() = testBlocking {
+    fun `show error when ITN is missing and country requires it`() = testBlocking {
         val destinationCountry = countries.first { it.code == "SY" }
         val navArgs = defaultNavArgs.copy(destinationCountryCode = destinationCountry.code)
         setup(navArgs)
 
         val validationState = viewModel.viewStateData.liveData.value!!.customsPackages[0].validationState
-        verify(resourceProvider).getString(
-            R.string.shipping_label_customs_itn_required_country,
-            destinationCountry.name
-        )
-        assertThat(validationState.itnErrorMessage).isNotEmpty
+        assertThat(validationState.itnErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_itn_required_country.toString())
     }
 
     @Test
-    fun `itn required due to value per hs tariff number`() = testBlocking {
+    fun `show error when ITN is missing and value per hs tariff is more than 2500`() = testBlocking {
         setup()
 
         viewModel.onHsTariffNumberChanged(0, 0, "123456")
         viewModel.onItemValueChanged(0, 0, "2501")
 
         val validationState = viewModel.viewStateData.liveData.value!!.customsPackages[0].validationState
-        verify(resourceProvider).getString(R.string.shipping_label_customs_itn_required_items_over_2500)
-        assertThat(validationState.itnErrorMessage).isNotEmpty
+        assertThat(validationState.itnErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_itn_required_items_over_2500.toString())
     }
 
     @Test
-    fun `itn invalid format`() {
+    fun `show error when ITN format is invalid`() {
         setup()
 
         viewModel.onItnChanged(0, "invalid ITN")
 
         val validationState = viewModel.viewStateData.liveData.value!!.customsPackages[0].validationState
-        verify(resourceProvider).getString(R.string.shipping_label_customs_itn_invalid_format)
-        assertThat(validationState.itnErrorMessage).isNotEmpty
+        assertThat(validationState.itnErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_itn_invalid_format.toString())
     }
 
     @Test
-    fun `itn valid`() {
+    fun `hide error when ITN format is valid`() {
         setup()
 
         viewModel.onItnChanged(0, "AES X20160406131357")
@@ -221,7 +220,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `hs tariff number optional`() {
+    fun `hide error when hs tariff is missing`() {
         setup()
 
         viewModel.onHsTariffNumberChanged(0, 0, "")
@@ -234,7 +233,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `hs tariff number invalid format`() {
+    fun `show error when hs tariff format is invalid`() {
         setup()
 
         viewModel.onHsTariffNumberChanged(0, 0, "123")
@@ -243,11 +242,12 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
             .customsPackages[0]
             .validationState
             .linesValidationState[0]
-        assertThat(validationState.hsTariffErrorMessage).isNotEmpty
+        assertThat(validationState.hsTariffErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_hs_tariff_invalid_format.toString())
     }
 
     @Test
-    fun `hs tariff number valid`() {
+    fun `hide error when hs tariff has the right format`() {
         setup()
 
         viewModel.onHsTariffNumberChanged(0, 0, "123456")
@@ -260,7 +260,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `weight required`() {
+    fun `show error when weight is empty`() {
         setup()
 
         viewModel.onWeightChanged(0, 0, "")
@@ -269,12 +269,12 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
             .customsPackages[0]
             .validationState
             .linesValidationState[0]
-        assertThat(validationState.weightErrorMessage).isNotEmpty
-        verify(resourceProvider).getString(R.string.shipping_label_customs_required_field)
+        assertThat(validationState.weightErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_required_field.toString())
     }
 
     @Test
-    fun `weight invalid`() {
+    fun `show error when weight is invalid`() {
         setup()
 
         viewModel.onWeightChanged(0, 0, "0")
@@ -283,12 +283,11 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
             .customsPackages[0]
             .validationState
             .linesValidationState[0]
-        assertThat(validationState.weightErrorMessage).isNotEmpty
-        verify(resourceProvider).getString(R.string.shipping_label_customs_weight_zero_error)
+        assertThat(validationState.weightErrorMessage).isEqualTo(R.string.shipping_label_customs_weight_zero_error.toString())
     }
 
     @Test
-    fun `item value required`() {
+    fun `show error when item's value is empty`() {
         setup()
 
         viewModel.onItemValueChanged(0, 0, "")
@@ -297,12 +296,12 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
             .customsPackages[0]
             .validationState
             .linesValidationState[0]
-        assertThat(validationState.valueErrorMessage).isNotEmpty
-        verify(resourceProvider).getString(R.string.shipping_label_customs_required_field)
+        assertThat(validationState.valueErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_required_field.toString())
     }
 
     @Test
-    fun `item value invalid`() {
+    fun `show error when item's value is invalid`() {
         setup()
 
         viewModel.onItemValueChanged(0, 0, "0")
@@ -311,8 +310,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
             .customsPackages[0]
             .validationState
             .linesValidationState[0]
-        assertThat(validationState.valueErrorMessage).isNotEmpty
-        verify(resourceProvider).getString(R.string.shipping_label_customs_value_zero_error)
+        assertThat(validationState.valueErrorMessage)
+            .isEqualTo(R.string.shipping_label_customs_value_zero_error.toString())
     }
 
     @Test
