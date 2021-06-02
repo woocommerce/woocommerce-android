@@ -18,7 +18,7 @@ abstract class BaseUnitTest {
     @Rule @JvmField
     val coroutinesTestRule = CoroutineTestRule()
 
-    protected fun test(block: suspend TestCoroutineScope.() -> Unit) =
+    protected fun testBlocking(block: suspend TestCoroutineScope.() -> Unit) =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             block()
         }

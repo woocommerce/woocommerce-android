@@ -72,7 +72,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `create default customs package from shipping package`() = test {
+    fun `create default customs package from shipping package`() = testBlocking {
         val shippingPackage = CreateShippingLabelTestUtils.generateShippingLabelPackage(
             items = order.items.map {
                 Item(
@@ -108,7 +108,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `contents description invalid`() = test {
+    fun `contents description invalid`() = testBlocking {
         val customsPackage = CreateShippingLabelTestUtils.generateCustomsPackage()
         setup(
             ShippingCustomsFragmentArgs(
@@ -126,7 +126,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `contents description valid`() = test {
+    fun `contents description valid`() = testBlocking {
         val customsPackage = CreateShippingLabelTestUtils.generateCustomsPackage()
         setup(
             ShippingCustomsFragmentArgs(
@@ -145,7 +145,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `restriction description invalid`() = test {
+    fun `restriction description invalid`() = testBlocking {
         setup()
 
         viewModel.onRestrictionTypeChanged(0, RestrictionType.Other)
@@ -155,7 +155,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `restriction description valid`() = test {
+    fun `restriction description valid`() = testBlocking {
         setup()
 
         viewModel.onRestrictionTypeChanged(0, RestrictionType.Other)
@@ -166,7 +166,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `itn optional`() = test {
+    fun `itn optional`() = testBlocking {
         setup()
 
         val validationState = viewModel.viewStateData.liveData.value!!.customsPackages[0].validationState
@@ -174,7 +174,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `itn required due to destination country`() = test {
+    fun `itn required due to destination country`() = testBlocking {
         val destinationCountry = countries.first { it.code == "SY" }
         val navArgs = defaultNavArgs.copy(destinationCountryCode = destinationCountry.code)
         setup(navArgs)
@@ -188,7 +188,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `itn required due to value per hs tariff number`() = test {
+    fun `itn required due to value per hs tariff number`() = testBlocking {
         setup()
 
         viewModel.onHsTariffNumberChanged(0, 0, "123456")
