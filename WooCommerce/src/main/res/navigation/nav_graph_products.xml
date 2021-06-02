@@ -187,6 +187,15 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_attributeListFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/nav_graph_products"/>
     </fragment>
     <fragment
         android:id="@+id/addAttributeFragment"
