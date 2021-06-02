@@ -24,6 +24,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.receipts.ReceiptCreator
+import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
