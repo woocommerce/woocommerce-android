@@ -10,14 +10,18 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
+import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_payment) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
+    @Inject lateinit var printHtmlHelper: PrintHtmlHelper
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog!!.setCanceledOnTouchOutside(false)
@@ -46,6 +50,19 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     }
 
     private fun initObservers(binding: FragmentCardReaderPaymentBinding) {
+        viewModel.event.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is PrintReceipt -> printHtmlHelper.printReceipt(
+                    requireActivity(),
+                    event.htmlReceipt,
+                    event.documentName
+                )
+                is SendReceipt -> {
+                    // TODO cardreader implement
+                }
+                else -> event.isHandled = false
+            }
+        })
         viewModel.viewStateData.observe(viewLifecycleOwner, { viewState ->
             UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
             UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)

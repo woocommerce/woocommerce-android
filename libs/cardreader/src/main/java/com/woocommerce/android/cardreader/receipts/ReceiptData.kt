@@ -1,5 +1,7 @@
 package com.woocommerce.android.cardreader.receipts
 
+import java.math.BigDecimal
+
 data class ReceiptData(
     val staticTexts: ReceiptStaticTexts,
     val purchasedProducts: List<ReceiptLineItem>,
@@ -23,8 +25,8 @@ data class CardInfo(
 
 data class ReceiptLineItem(
     val title: String,
-    val quantity: Int,
-    val itemsTotalAmount: Float
+    val quantity: Float,
+    val itemsTotalAmount: BigDecimal
 )
 
 data class ReceiptStaticTexts(
