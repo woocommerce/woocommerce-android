@@ -143,6 +143,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.variations(),
+                product.variationAttributes(),
                 product.productReviews(),
                 product.inventory(VARIABLE),
                 product.shipping(),
@@ -501,16 +502,14 @@ class ProductDetailCardBuilder(
     // show product variations only if product type is variable and if there are variations for the product
     private fun Product.variations(): ProductProperty {
         return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
-            val properties = mutableMapOf<String, String>()
-            for (attribute in this.variationEnabledAttributes) {
-                properties[attribute.name] = attribute.terms.size.toString()
-            }
+            val content =
+                if (numVariations > 1) resources.getString(string.product_variation_multiple_count, numVariations.toString())
+                else resources.getString(string.product_variation_single_count)
 
-            PropertyGroup(
+            ComplexProperty(
                 string.product_variations,
-                properties,
-                drawable.ic_gridicons_types,
-                propertyFormat = string.product_variation_options
+                content,
+                drawable.ic_gridicons_types
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductVariations(this.remoteId),
@@ -538,6 +537,26 @@ class ProductDetailCardBuilder(
                 )
             }
         )
+
+    private fun Product.variationAttributes() =
+        takeIf { this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty() }?.let {
+            val properties = mutableMapOf<String, String>()
+            for (attribute in this.variationEnabledAttributes) {
+                properties[attribute.name] = attribute.terms.size.toString()
+            }
+
+            PropertyGroup(
+                string.variable_product_attributes,
+                properties,
+                drawable.ic_gridicons_customize,
+                propertyFormat = string.product_variation_options
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductVariations(this.remoteId),
+                    PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                )
+            }
+        }
 
     private fun Product.categories(): ProductProperty? {
         return if (hasCategories) {

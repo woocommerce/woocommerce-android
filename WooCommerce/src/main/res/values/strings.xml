@@ -62,6 +62,8 @@
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
+    <string name="product_variation_multiple_count">%1$s variations</string>
+    <string name="product_variation_single_count">1 variation</string>
     <string name="product_variations_edit_attr">Edit attributes</string>
     <string name="product_variation_attributes">Attributes</string>
     <string name="product_add_attribute">Add attribute</string>
@@ -774,6 +776,7 @@
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_price_empty">Add price</string>
+    <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
