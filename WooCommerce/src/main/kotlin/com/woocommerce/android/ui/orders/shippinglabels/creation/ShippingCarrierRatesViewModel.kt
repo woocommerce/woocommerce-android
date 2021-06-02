@@ -92,9 +92,13 @@ class ShippingCarrierRatesViewModel @Inject constructor(
         } else {
             updateRates(generateRateModels(carrierRatesResult.model!!))
 
-            var banner: String? = null
-            if (arguments.order.shippingTotal > BigDecimal.ZERO && arguments.order.shippingLines.isNotEmpty()) {
-                banner = resourceProvider.getString(
+            val banner = when {
+                arguments.order.shippingLines.isEmpty() -> null
+                arguments.order.shippingTotal == BigDecimal.ZERO -> resourceProvider.getString(
+                    R.string.shipping_label_shipping_carrier_shipping_method_banner_message,
+                    arguments.order.shippingLines.first().methodTitle
+                )
+                else -> resourceProvider.getString(
                     R.string.shipping_label_shipping_carrier_flat_fee_banner_message,
                     arguments.order.shippingLines.first().methodTitle,
                     arguments.order.shippingTotal.format()
