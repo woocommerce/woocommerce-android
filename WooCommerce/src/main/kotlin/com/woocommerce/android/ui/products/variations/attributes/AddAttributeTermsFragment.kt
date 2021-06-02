@@ -201,6 +201,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 true
             }
             R.id.menu_next -> {
+                viewModel.saveAttributeChanges()
                 AddAttributeTermsFragmentDirections.actionAddAttributeTermsFragmentToAttributeListFragment(
                     isVariationCreation = navArgs.isVariationCreation
                 ).run { findNavController().navigateSafely(this) }

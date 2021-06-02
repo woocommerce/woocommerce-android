@@ -81,6 +81,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ATTRIBUTE_LIST -> {
+                viewModel.saveAttributeChanges()
                 AttributeListFragmentDirections
                     .actionAttributeListFragmentToVariationListFragment(
                         remoteProductId = viewModel.getRemoteProductId(),

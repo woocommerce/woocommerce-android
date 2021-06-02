@@ -87,6 +87,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ADD_ATTRIBUTES -> {
+                viewModel.saveAttributeChanges()
                 AddAttributeFragmentDirections
                     .actionAddAttributeFragmentToAttributeListFragment(isVariationCreation = true)
                     .run { findNavController().navigateSafely(this) }
