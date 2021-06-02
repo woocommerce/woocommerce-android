@@ -2,9 +2,6 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -36,7 +33,6 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Companion.KEY_VARIATION_DETAILS_RESULT
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
-import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -54,7 +50,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
         const val TAG: String = "VariationListFragment"
         const val KEY_VARIATION_LIST_RESULT = "key_variation_list_result"
         private const val LIST_STATE_KEY = "list_state"
-        private const val ID_EDIT_ATTRIBUTES = 1
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -108,30 +103,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
     override fun onSaveInstanceState(outState: Bundle) {
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
-        val mnuEditAttr = menu.add(Menu.NONE, ID_EDIT_ATTRIBUTES, Menu.NONE, R.string.product_variations_edit_attr)
-        mnuEditAttr.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-        mnuEditAttr.isVisible = false
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
-        menu.findItem(ID_EDIT_ATTRIBUTES)?.isVisible = !viewModel.isEmpty
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            ID_EDIT_ATTRIBUTES -> {
-                viewModel.onAddEditAttributesClick()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -196,7 +167,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowVariationDetail -> openVariationDetail(event.variation)
-                is ShowAttributeList -> openAttributeList()
                 is ShowAddAttributeView -> openAddAttributeView()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
@@ -220,12 +190,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
             variation.remoteProductId,
             variation.remoteVariationId
         )
-        findNavController().navigateSafely(action)
-    }
-
-    private fun openAttributeList() {
-        val action = VariationListFragmentDirections
-            .actionVariationListFragmentToAttributeListFragment()
         findNavController().navigateSafely(action)
     }
 

@@ -102,11 +102,6 @@ class VariationListViewModel @AssistedInject constructor(
         triggerEvent(ShowVariationDetail(variation))
     }
 
-    fun onAddEditAttributesClick() {
-        trackWithProductId(PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED)
-        triggerEvent(ShowAttributeList)
-    }
-
     fun onCreateEmptyVariationClick() {
         trackWithProductId(Stat.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation(openVariationDetails = true)
@@ -261,7 +256,6 @@ class VariationListViewModel @AssistedInject constructor(
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
     object ShowAddAttributeView : Event()
-    object ShowAttributeList : Event()
 
     @AssistedFactory
     interface Factory : ViewModelAssistedFactory<VariationListViewModel>
