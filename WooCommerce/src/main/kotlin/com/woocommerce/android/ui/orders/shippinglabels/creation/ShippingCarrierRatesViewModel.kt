@@ -94,7 +94,7 @@ class ShippingCarrierRatesViewModel @Inject constructor(
 
             val banner = when {
                 arguments.order.shippingLines.isEmpty() -> null
-                arguments.order.shippingTotal == BigDecimal.ZERO -> resourceProvider.getString(
+                arguments.order.shippingTotal.isEqualTo(BigDecimal.ZERO) -> resourceProvider.getString(
                     R.string.shipping_label_shipping_carrier_shipping_method_banner_message,
                     arguments.order.shippingLines.first().methodTitle
                 )
