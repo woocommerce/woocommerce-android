@@ -77,13 +77,10 @@ class VariationListViewModel @AssistedInject constructor(
     val isEmpty
         get() = _variationList.value?.isEmpty() ?: true
 
-    fun start(remoteProductId: Long, createNewVariation: Boolean = false) {
+    fun start(remoteProductId: Long) {
         productRepository.getProduct(remoteProductId)?.let {
             viewState = viewState.copy(parentProduct = it)
-            when (createNewVariation) {
-                true -> handleVariationCreation(openVariationDetails = false)
-                else -> handleVariationLoading(remoteProductId)
-            }
+            handleVariationLoading(remoteProductId)
         }
     }
 
@@ -103,7 +100,7 @@ class VariationListViewModel @AssistedInject constructor(
 
     fun onCreateEmptyVariationClick() {
         trackWithProductId(Stat.PRODUCT_VARIATION_ADD_MORE_TAPPED)
-        handleVariationCreation(openVariationDetails = true)
+        handleVariationCreation()
     }
 
     fun onCreateFirstVariationRequested() {
@@ -136,7 +133,7 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     private fun handleVariationCreation(
-        openVariationDetails: Boolean
+        openVariationDetails: Boolean = true
     ) = launch {
         viewState = viewState.copy(
             isProgressDialogShown = true,

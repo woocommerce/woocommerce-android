@@ -66,14 +66,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
 
-    /**
-     * this property will be true only for the first call,
-     * making sure the variation creation flow is only on Fragment initial setup
-     */
-    private var isVariationCreationFlow = true
-        get() = (navArgs.isVariationCreation && field == true)
-            .also { if (it) field = false }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -140,7 +132,7 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
     private fun initializeViewModel() {
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
-        viewModel.start(navArgs.remoteProductId, isVariationCreationFlow)
+        viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: VariationListViewModel) {
