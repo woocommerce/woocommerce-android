@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 class VariationListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val variationListRepository: VariationListRepository,
+    private val variationRepository: VariationRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
@@ -93,7 +93,7 @@ class VariationListViewModel @AssistedInject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        variationListRepository.onCleanup()
+        variationRepository.onCleanup()
     }
 
     fun onItemClick(variation: ProductVariation) {
@@ -151,7 +151,7 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     private suspend fun Product.createVariation() =
-            variationListRepository.createEmptyVariation(this)
+            variationRepository.createEmptyVariation(this)
                 ?.copy(remoteProductId = remoteId)
                 ?.apply { syncProductToVariations(remoteId) }
 
@@ -166,7 +166,7 @@ class VariationListViewModel @AssistedInject constructor(
         loadMore: Boolean = false,
         withSkeletonView: Boolean = true
     ) {
-        if (loadMore && !variationListRepository.canLoadMoreProductVariations) {
+        if (loadMore && !variationRepository.canLoadMoreProductVariations) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more product variations")
             return
         }
@@ -183,7 +183,7 @@ class VariationListViewModel @AssistedInject constructor(
             if (!loadMore) {
                 // if this is the initial load, first get the product variations from the db and if there are any show
                 // them immediately, otherwise make sure the skeleton shows
-                val variationsInDb = variationListRepository.getProductVariationList(remoteProductId)
+                val variationsInDb = variationRepository.getProductVariationList(remoteProductId)
                 if (variationsInDb.isNullOrEmpty()) {
                     viewState = viewState.copy(isSkeletonShown = withSkeletonView)
                 } else {
@@ -197,7 +197,7 @@ class VariationListViewModel @AssistedInject constructor(
 
     private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            val fetchedVariations = variationListRepository.fetchProductVariations(remoteProductId, loadMore)
+            val fetchedVariations = variationRepository.fetchProductVariations(remoteProductId, loadMore)
             if (fetchedVariations.isNullOrEmpty()) {
                 if (!loadMore) {
                     _variationList.value = emptyList()
@@ -217,7 +217,7 @@ class VariationListViewModel @AssistedInject constructor(
     }
 
     private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
-        val currencyCode = variationListRepository.getCurrencyCode()
+        val currencyCode = variationRepository.getCurrencyCode()
         variations.map { variation ->
             if (variation.isSaleInEffect) {
                 variation.priceWithCurrency = currencyCode?.let {
