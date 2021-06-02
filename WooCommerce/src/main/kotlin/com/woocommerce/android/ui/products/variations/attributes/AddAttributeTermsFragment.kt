@@ -368,7 +368,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun checkViews() {
         binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
         binding.textExistingOption.isVisible = !globalTermsAdapter.isEmpty()
-        moveNextMenuItem?.isVisible = viewModel.hasAttributeChanges() && navArgs.isVariationCreation
+        moveNextMenuItem?.isVisible = !assignedTermsAdapter.isEmpty() && navArgs.isVariationCreation
     }
 
     /**
