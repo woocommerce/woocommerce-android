@@ -15,6 +15,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -112,4 +113,44 @@ class CardReaderManagerImplTest {
 
         verify(softwareUpdateManager).softwareUpdateStatus()
     }
+
+    @Test
+    fun `given terminal not initialized when disconnect from reader, then exception is thrown`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(false)
+
+        assertThatIllegalStateException().isThrownBy {
+            runBlockingTest {
+                cardReaderManager.disconnectReader()
+            }
+        }
+    }
+
+    @Test
+    fun `given terminal initialized and no connected reader when disconnect from reader then return false`() =
+        runBlockingTest {
+            whenever(terminalWrapper.isInitialized()).thenReturn(true)
+            whenever(terminalWrapper.getConnectedReader()).thenReturn(null)
+
+            assertThat(cardReaderManager.disconnectReader()).isFalse()
+        }
+
+    @Test
+    fun `given terminal initialized and connected reader and success when disconnect from reader then return true`() =
+        runBlockingTest {
+            whenever(terminalWrapper.isInitialized()).thenReturn(true)
+            whenever(terminalWrapper.getConnectedReader()).thenReturn(mock())
+            whenever(connectionManager.disconnectReader()).thenReturn(true)
+
+            assertThat(cardReaderManager.disconnectReader()).isTrue()
+        }
+
+    @Test
+    fun `given terminal initialized and connected reader and fail when disconnect from reader then return false`() =
+        runBlockingTest {
+            whenever(terminalWrapper.isInitialized()).thenReturn(true)
+            whenever(terminalWrapper.getConnectedReader()).thenReturn(mock())
+            whenever(connectionManager.disconnectReader()).thenReturn(false)
+
+            assertThat(cardReaderManager.disconnectReader()).isFalse()
+        }
 }

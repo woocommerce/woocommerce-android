@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderCo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
@@ -276,6 +277,10 @@ class OrderDetailViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
         )
+        refreshShipmentTracking()
+    }
+
+    fun refreshShipmentTracking() {
         _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
     }
 
@@ -394,6 +399,9 @@ class OrderDetailViewModel @Inject constructor(
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
                     order = order.copy(status = Status.fromValue(newStatus))
+                    if (newStatus == CoreOrderStatus.COMPLETED.value) {
+                        triggerEvent(ShowSnackbar(string.order_fulfill_completed))
+                    }
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -421,7 +429,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onMarkOrderCompleteButtonTapped() {
         AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-        onOrderStatusChanged(CoreOrderStatus.COMPLETED.value)
+        triggerEvent(ViewOrderFulfillInfo(order.identifier))
     }
 
     private fun updateOrderState() {
@@ -561,8 +569,6 @@ class OrderDetailViewModel @Inject constructor(
                 !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
         }
     }
-
-    private fun Order.getProductIds() = items.map { it.productId }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

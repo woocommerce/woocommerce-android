@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal.connection
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.ReaderCallback
 import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
 import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
@@ -130,6 +131,28 @@ class ConnectionManagerTest {
         }
 
         val result = connectionManager.connectToReader(CardReaderImpl(mock()))
+
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `when disconnect succeeds, then true is returned`() = runBlockingTest {
+        whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
+            (it.arguments[0] as Callback).onSuccess()
+        }
+
+        val result = connectionManager.disconnectReader()
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `when disconnect fails, then false is returned`() = runBlockingTest {
+        whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
+            (it.arguments[0] as Callback).onFailure(mock())
+        }
+
+        val result = connectionManager.disconnectReader()
 
         assertThat(result).isFalse()
     }

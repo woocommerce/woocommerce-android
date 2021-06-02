@@ -44,6 +44,9 @@ internal class TerminalWrapper {
     fun connectToReader(reader: Reader, callback: ReaderCallback) =
         Terminal.getInstance().connectReader(reader, callback)
 
+    fun disconnectReader(callback: Callback) =
+        Terminal.getInstance().disconnectReader(callback)
+
     fun createPaymentIntent(params: PaymentIntentParameters, callback: PaymentIntentCallback) =
         Terminal.getInstance().createPaymentIntent(params, callback)
 

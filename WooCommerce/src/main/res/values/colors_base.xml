@@ -156,4 +156,10 @@
     -->
     <color name="skeleton_color">@color/woo_black_90_alpha_012</color>
     <color name="skeleton_color_inverse">@color/color_surface</color>
+
+    <!--
+        Payment reader
+    -->
+    <color name="update_needed_background_color">@color/woo_red_5</color>
+    <color name="update_needed_icon_color">@color/woo_red_30</color>
 </resources>

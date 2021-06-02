@@ -17,21 +17,29 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SKIPPED
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
+    private val appLogWrapper: AppLogWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(Loading)
@@ -42,10 +50,14 @@ class CardReaderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> checkForUpdates()
-                    else -> viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
+                    else -> showNotConnectedState()
                 }
             }.exhaustive
         }
+    }
+
+    private fun showNotConnectedState() {
+        viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     }
 
     private suspend fun checkForUpdates() {
@@ -65,6 +77,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
         viewState.value = if (updateAvailable) {
+            triggerEvent(CardReaderUpdateScreen(startedByUser = false))
             ConnectedState(
                 enforceReaderUpdate = UiStringRes(
                     R.string.card_reader_detail_connected_enforced_update_software
@@ -99,11 +112,26 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onUpdateReaderClicked() {
-        // TODO cardreader implement update functionality
+        triggerEvent(CardReaderUpdateScreen(startedByUser = true))
     }
 
     private fun onDisconnectClicked() {
-        // TODO cardreader implement disconnect functionality
+        launch {
+            val disconnectionResult = cardReaderManager.disconnectReader()
+            if (!disconnectionResult) {
+                appLogWrapper.e(T.MAIN, "Disconnection from reader has failed")
+                showNotConnectedState()
+            }
+        }
+    }
+
+    fun onUpdateReaderResult(updateResult: UpdateResult) {
+        when (updateResult) {
+            SUCCESS -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+            FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
+            SKIPPED -> {
+            }
+        }.exhaustive
     }
 
     private fun CardReader.getReadersName(): UiString {
@@ -118,13 +146,14 @@ class CardReaderDetailViewModel @Inject constructor(
         return currentBatteryLevel?.let {
             UiStringRes(
                 R.string.card_reader_detail_connected_battery_percentage,
-                listOf(UiStringText(it.roundToInt().toString()))
+                listOf(UiStringText((it * 100).roundToInt().toString()))
             )
         }
     }
 
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
+        data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
     }
 
     sealed class ViewState {

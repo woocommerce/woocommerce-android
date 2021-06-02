@@ -12,18 +12,22 @@ data class CustomsPackage(
     val box: ShippingPackage,
     val returnToSender: Boolean,
     val contentsType: ContentsType,
+    val contentsDescription: String? = null,
     val restrictionType: RestrictionType,
+    val restrictionDescription: String? = null,
     val itn: String,
     val lines: List<CustomsLine>
 ) : Parcelable
 
 @Parcelize
 data class CustomsLine(
+    val itemId: Long,
     val itemDescription: String,
     val hsTariffNumber: String,
-    val weight: Float,
-    val value: BigDecimal,
-    val originCountry: String
+    val quantity: Double,
+    val weight: Float?,
+    val value: BigDecimal?,
+    val originCountry: Location
 ) : Parcelable
 
 enum class ContentsType(@StringRes val title: Int) {
