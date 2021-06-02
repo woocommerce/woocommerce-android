@@ -35,6 +35,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     private var layoutManager: LayoutManager? = null
     private val skeletonView = SkeletonView()
+    private var moveNextMenuItem: MenuItem? = null
 
     private val navArgs: AddAttributeFragmentArgs by navArgs()
 
@@ -76,9 +77,9 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         super.onCreateOptionsMenu(menu, inflater)
 
         if (navArgs.isVariationCreation) {
-            menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.next).apply {
+            moveNextMenuItem = menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.next).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                isVisible = true
+                isVisible = false
             }
         }
     }
@@ -145,6 +146,8 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
      * passed global attributes and the existing draft local attributes
      */
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
+        moveNextMenuItem?.isVisible = navArgs.isVariationCreation and viewModel.productDraftAttributes.isNotEmpty()
+
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
             adapter = AttributeListAdapter { attributeId, attributeName ->
