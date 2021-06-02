@@ -77,6 +77,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -117,6 +118,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val productTagsRepository: ProductTagsRepository,
     private val mediaFilesRepository: MediaFilesRepository,
+    private val variationRepository: VariationRepository,
     private val prefs: AppPrefs
 ) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
@@ -176,6 +178,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     final val globalAttributeViewStateData = LiveDataDelegateWithArgs(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
+
+    final val attributeListViewStateData = LiveDataDelegateWithArgs(savedState, AttributeListViewState())
+    private var attributeListViewState by attributeListViewStateData
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
     val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
@@ -328,6 +333,21 @@ class ProductDetailViewModel @AssistedInject constructor(
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
         updateProductBeforeEnteringFragment()
+    }
+
+    fun onAttributeListDoneButtonClicked() {
+        saveAttributeChanges()
+        attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+        launch {
+            viewState.productDraft?.let { draft ->
+                variationRepository.createEmptyVariation(draft)
+                    ?.let { updateProductDraft(numVariation = draft.numVariations + 1) }
+                    ?.let { triggerEvent(ExitProductAttributeList(variationCreated = true)) }
+                    ?: triggerEvent(ExitProductAttributeList())
+            }.also {
+                attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
+            }
+        }
     }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
@@ -1907,7 +1927,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
-        class ExitProductAttributeList(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+        class ExitProductAttributeList(
+            shouldShowDiscardDialog: Boolean = true,
+            val variationCreated: Boolean = false
+        ) : ProductExitEvent(
             shouldShowDiscardDialog
         )
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
@@ -2000,6 +2023,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class GlobalAttributesTermsViewState(
         val isSkeletonShown: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class AttributeListViewState(
+        val isCreatingVariationDialogShown: Boolean? = null,
     ) : Parcelable
 
     @AssistedFactory
