@@ -17,10 +17,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.CustomProgressDialog
 
 class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
     companion object {
@@ -30,6 +32,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     }
 
     private var layoutManager: LayoutManager? = null
+    private var progressDialog: CustomProgressDialog? = null
 
     private val navArgs: AttributeListFragmentArgs by navArgs()
 
@@ -44,16 +47,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
         setupObservers()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductAttributeList())
-        return false
     }
 
     override fun onResume() {
@@ -81,12 +74,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ATTRIBUTE_LIST -> {
-                viewModel.saveAttributeChanges()
-                AttributeListFragmentDirections
-                    .actionAttributeListFragmentToVariationListFragment(
-                        remoteProductId = viewModel.getRemoteProductId(),
-                        isVariationCreation = true
-                    ).run { findNavController().navigateSafely(this) }
+                viewModel.onAttributeListDoneButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -115,7 +103,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ExitProductAttributeList -> findNavController().navigateUp()
+                is ExitProductAttributeList -> onExitProductAttributeList(event.variationCreated)
                 else -> event.isHandled = false
             }
         })
@@ -124,10 +112,36 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
             showAttributes(it)
         })
 
+        viewModel.attributeListViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isCreatingVariationDialogShown?.takeIfNotEqualTo(old?.isCreatingVariationDialogShown) {
+                showProgressDialog(it)
+            }
+        }
+
         viewModel.loadProductDraftAttributes()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked(ExitProductAttributeList())
+        return false
+    }
+
+    private fun onExitProductAttributeList(variationCreated: Boolean) {
+        if (variationCreated) {
+            AttributeListFragmentDirections.actionAttributeListFragmentToProductDetailFragment()
+                .apply { findNavController().navigateSafely(this) }
+        } else {
+            findNavController().navigateUp()
+        }
+    }
 
     private fun showAttributes(attributes: List<ProductAttribute>) {
         val adapter: AttributeListAdapter
@@ -141,5 +155,23 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         }
 
         adapter.setAttributeList(attributes)
+    }
+
+    private fun showProgressDialog(show: Boolean) {
+        if (show) {
+            hideProgressDialog()
+            progressDialog = CustomProgressDialog.show(
+                getString(R.string.variation_create_dialog_title),
+                getString(R.string.product_update_dialog_message)
+            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+            progressDialog?.isCancelable = false
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 }
