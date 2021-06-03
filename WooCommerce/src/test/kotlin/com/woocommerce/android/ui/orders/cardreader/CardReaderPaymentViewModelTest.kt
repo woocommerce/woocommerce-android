@@ -37,6 +37,7 @@ import com.woocommerce.android.util.receipts.ReceiptDataMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -560,5 +561,15 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.reFetchOrder()
 
             assertThat(viewModel.event.value).isNotEqualTo(Exit)
+        }
+
+    @Test
+    fun `when re-fetching order fails, then SnackBar shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(any())).thenReturn(null)
+
+            viewModel.reFetchOrder()
+
+            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
         }
 }

@@ -10,11 +10,13 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -22,6 +24,7 @@ import javax.inject.Inject
 class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_payment) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog!!.setCanceledOnTouchOutside(false)
@@ -60,6 +63,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
                 is SendReceipt -> {
                     // TODO cardreader implement
                 }
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 else -> event.isHandled = false
             }
         })

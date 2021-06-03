@@ -166,6 +166,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     fun reFetchOrder() {
         fetchOrderJob = launch {
             orderRepository.fetchOrder(arguments.orderIdentifier)
+                ?: triggerEvent(Event.ShowSnackbar(R.string.card_reader_fetching_order_failed))
             if (viewState.value == FetchingOrderState) {
                 triggerEvent(Exit)
             }

@@ -692,6 +692,8 @@
     <string name="card_reader_receipt_summary_title">Summary</string>
     <string name="card_reader_receipt_aid_title">AID</string>
 
+    <string name="card_reader_fetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+
     <!--
             Card Reader Connection
         -->
