@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.content.ActivityNotFoundException
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,6 +24,11 @@ class PrintShippingLabelCustomsFormFragment : BaseFragment(R.layout.fragment_pri
     private var progressDialog: CustomProgressDialog? = null
 
     override fun getFragmentTitle(): String = getString(R.string.shipping_label_print_customs_form_screen_title)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.storageDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

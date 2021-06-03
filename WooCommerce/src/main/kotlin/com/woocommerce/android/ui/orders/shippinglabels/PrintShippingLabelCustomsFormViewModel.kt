@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.parcelize.Parcelize
 import java.io.File
+import java.io.InterruptedIOException
 import java.net.URL
 import javax.inject.Inject
 
@@ -35,6 +36,7 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     lateinit var storageDirectory: File
 
     fun onPrintButtonClicked() {
+        printJob?.cancel()
         printJob = launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             val file = downloadFile(navArgs.url)
@@ -57,18 +59,25 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun downloadFile(url: String): File? = runInterruptible(dispatchers.io) {
-        try {
-            val file = FileUtils.createTempPDFFile(storageDirectory) ?: return@runInterruptible null
+    private suspend fun downloadFile(url: String): File? {
+        val file = FileUtils.createTempPDFFile(storageDirectory) ?: return null
+        return try {
             if (file.exists()) file.delete()
-            URL(url).openConnection().inputStream.use { inputStream ->
-                file.outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream)
+            runInterruptible(dispatchers.io) {
+                URL(url).openConnection().inputStream.use { inputStream ->
+                    file.outputStream().use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
                 }
+                file
             }
-            file
+        } catch (e: InterruptedIOException) {
+            WooLog.d(T.ORDERS, "Downloading commercial invoice cancelled")
+            file.delete()
+            null
         } catch (e: Exception) {
             WooLog.e(T.ORDERS, "Downloading commercial invoice failed", e)
+            file.delete()
             null
         }
     }
