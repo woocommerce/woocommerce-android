@@ -1,6 +1,9 @@
 package com.woocommerce.android.media
 
+import android.content.Context
+import android.content.Intent
 import android.util.Base64
+import androidx.core.content.FileProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.UTILS
 import java.io.File
@@ -11,20 +14,31 @@ import java.util.Locale
 
 object FileUtils {
     /**
-     * Creates a temp file with the given [fileExtension]
+     * Creates a temp PDF file
      */
-    fun createTempFile(
-        storageDir: File,
-        fileExtension: String = "pdf"
+    fun createTempPDFFile(
+        storageDir: File
     ): File? {
         return try {
             val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val imageFileName = "PDF_" + timeStamp + "_"
-            File.createTempFile(imageFileName, ".$fileExtension", storageDir)
+            val fileName = "PDF_" + timeStamp + "_"
+            File.createTempFile(fileName, ".pdf", storageDir)
         } catch (e: Exception) {
             WooLog.e(UTILS, "Unable to create a temp file", e)
             null
         }
+    }
+
+    fun Context.previewPDFFile(file: File) {
+        val pdfUri = FileProvider.getUriForFile(
+            this, "${packageName}.provider", file
+        )
+
+        val sendIntent = Intent(Intent.ACTION_VIEW)
+        sendIntent.setDataAndType(pdfUri, "application/pdf")
+        sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(sendIntent)
     }
 
     /**

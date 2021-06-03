@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -16,6 +14,7 @@ import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.media.FileUtils.previewPDFFile
 import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -141,18 +140,8 @@ class PrintShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_print_sh
     }
 
     private fun openShippingLabelPreview(file: File) {
-        val context = requireContext()
-        val pdfUri = FileProvider.getUriForFile(
-            context, "${context.packageName}.provider", file
-        )
-
         try {
-            val sendIntent = Intent(Intent.ACTION_VIEW)
-            sendIntent.setDataAndType(pdfUri, "application/pdf")
-            sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            startActivity(sendIntent)
-
+            requireContext().previewPDFFile(file)
             viewModel.onPreviewLabelCompleted()
         } catch (exception: ActivityNotFoundException) {
             displayError(R.string.shipping_label_preview_pdf_app_missing)
