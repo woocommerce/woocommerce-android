@@ -59,11 +59,9 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
-    private val receiptCreator: ReceiptCreator,
     private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore,
-    private val receiptDataMapper: ReceiptDataMapper,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
@@ -154,8 +152,8 @@ class CardReaderPaymentViewModel @Inject constructor(
                 PaymentSuccessfulState(
                     amountLabel,
                     // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-                    { onPrintReceiptClicked(paymentStatus.receiptPaymentInfo) },
-                    { onSendReceiptClicked(paymentStatus.receiptPaymentInfo) }
+                    { onPrintReceiptClicked(paymentStatus.) },
+                    { onSendReceiptClicked(paymentStatus.) }
                 )
             )
             ShowAdditionalInfo -> {
@@ -176,26 +174,15 @@ class CardReaderPaymentViewModel @Inject constructor(
         viewState.postValue(FailedPaymentState(error.type, amountLabel, onRetryClicked))
     }
 
-    private fun onPrintReceiptClicked(receiptPaymentInfo: ReceiptPaymentInfo) {
+    private fun onPrintReceiptClicked() {
         launch {
-            buildHtmlReceipt(receiptPaymentInfo)?.let { htmlReceipt ->
-                triggerEvent(PrintReceipt(htmlReceipt, "receipt-${receiptPaymentInfo.dedicatedFileName}"))
-            }
+            triggerEvent(PrintReceipt(, "receipt-${ ... }"))
         }
     }
 
-    private fun onSendReceiptClicked(receiptPaymentInfo: ReceiptPaymentInfo) {
+    private fun onSendReceiptClicked() {
         launch {
-            buildHtmlReceipt(receiptPaymentInfo)?.let { htmlReceipt ->
-                triggerEvent(SendReceipt(htmlReceipt))
-            }
-        }
-    }
-
-    private suspend fun buildHtmlReceipt(receiptPaymentInfo: ReceiptPaymentInfo): String? {
-        return loadOrderFromDB()?.let { order ->
-            val receiptData = receiptDataMapper.mapToReceiptData(order, receiptPaymentInfo)
-            receiptCreator.createHtmlReceipt(receiptData)
+            triggerEvent(SendReceipt(...))
         }
     }
 

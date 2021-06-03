@@ -43,8 +43,7 @@ internal class PaymentManager(
     private val createPaymentAction: CreatePaymentAction,
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction,
-    private val errorMapper: PaymentErrorMapper,
-    private val receiptPaymentInfoMapper: ReceiptPaymentInfoMapper
+    private val errorMapper: PaymentErrorMapper
 ) {
     suspend fun acceptPayment(
         paymentDescription: String,
@@ -103,14 +102,7 @@ internal class PaymentManager(
         }
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
-            val paymentInfo = try {
-                receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(paymentIntent)
-            } catch (e: IllegalArgumentException) {
-                // todo cardreader cancel the payment intent
-                emit(PaymentFailed(GENERIC_ERROR, null, e.message ?: "Unexpected error"))
-                return@flow
-            }
-            capturePayment(paymentInfo, orderId, cardReaderStore, paymentIntent)
+            capturePayment(orderId, cardReaderStore, paymentIntent)
         }
     }
 
@@ -162,14 +154,13 @@ internal class PaymentManager(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
-        receiptPaymentInfo: ReceiptPaymentInfo,
         orderId: Long,
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
-            is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptPaymentInfo))
+            is CapturePaymentResponse.Successful -> emit(PaymentCompleted())
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }

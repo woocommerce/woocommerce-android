@@ -66,8 +66,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val loggerWrapper: AppLogWrapper = mock()
     private val orderStore: WCOrderStore = mock()
     private val cardReaderManager: CardReaderManager = mock()
-    private val receiptCreator: ReceiptCreator = mock()
-    private val receiptDataMapper: ReceiptDataMapper = mock()
     private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
 
@@ -83,8 +81,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderManager = cardReaderManager,
             logger = loggerWrapper,
             orderStore = orderStore,
-            receiptCreator = receiptCreator,
-            receiptDataMapper = receiptDataMapper,
             dispatchers = coroutinesTestRule.testDispatchers,
             resourceProvider = resourceProvider,
             selectedSite = selectedSite
