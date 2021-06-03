@@ -2,7 +2,7 @@
 
 6.9
 -----
-
+- [*] Products: Attributes are now accessible directly from the Product Details view
 
 6.8
 -----
