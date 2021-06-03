@@ -26,7 +26,6 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
@@ -102,7 +101,18 @@ internal class PaymentManager(
         }
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
-            capturePayment(orderId, cardReaderStore, paymentIntent)
+            retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
+                capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
+            }
+        }
+    }
+
+    private suspend fun FlowCollector<CardPaymentStatus>.retrieveReceiptUrl(
+        paymentIntent: PaymentIntent
+    ): String? {
+        return paymentIntent.getCharges().takeIf { it.isNotEmpty() }?.get(0)?.receiptUrl ?: run {
+            emit(PaymentFailed(GENERIC_ERROR, null, "ReceiptUrl not available"))
+            null
         }
     }
 
@@ -154,13 +164,14 @@ internal class PaymentManager(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
+        receiptUrl: String,
         orderId: Long,
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
-            is CapturePaymentResponse.Successful -> emit(PaymentCompleted())
+            is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }

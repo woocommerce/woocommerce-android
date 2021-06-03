@@ -23,7 +23,6 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
@@ -34,7 +33,6 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
-import com.woocommerce.android.util.receipts.ReceiptDataMapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
