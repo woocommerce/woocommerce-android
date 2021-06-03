@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -283,11 +284,23 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recycler.layoutManager = layoutManager
 
-        if (enableDragAndDrop) {
-            recycler.adapter = AttributeTermsListAdapter(enableDragAndDrop = true, enableDeleting = enableDeleting)
-            itemTouchHelper.attachToRecyclerView(recycler)
-        } else {
-            recycler.adapter = AttributeTermsListAdapter(enableDragAndDrop = false, enableDeleting = enableDeleting)
+        with(TypedValue()) {
+            context?.theme?.resolveAttribute(android.R.attr.itemBackground, this, true)
+
+            if (enableDragAndDrop) {
+                recycler.adapter = AttributeTermsListAdapter(
+                    enableDragAndDrop = true,
+                    enableDeleting = enableDeleting,
+                    defaultItemBackground = this
+                )
+                itemTouchHelper.attachToRecyclerView(recycler)
+            } else {
+                recycler.adapter = AttributeTermsListAdapter(
+                    enableDragAndDrop = false,
+                    enableDeleting = enableDeleting,
+                    defaultItemBackground = this
+                )
+            }
         }
 
         recycler.addItemDecoration(
