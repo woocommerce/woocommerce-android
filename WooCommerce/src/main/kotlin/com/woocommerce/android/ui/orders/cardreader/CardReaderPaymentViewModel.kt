@@ -140,6 +140,7 @@ class CardReaderPaymentViewModel @Inject constructor(
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
+            // TODO cardreader store receipt data into a persistent storage
             is PaymentCompleted -> onPaymentCompleted(paymentStatus, amountLabel)
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
