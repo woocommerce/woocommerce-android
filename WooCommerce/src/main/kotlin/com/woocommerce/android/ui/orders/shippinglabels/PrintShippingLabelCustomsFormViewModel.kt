@@ -29,8 +29,8 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     private var printJob: Job? = null
     private val navArgs: PrintShippingLabelCustomsFormFragmentArgs by savedState.navArgs()
 
-    private val viewStateData = LiveDataDelegate(savedState, ViewState())
-    var viewState by viewStateData
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateData
 
     lateinit var storageDirectory: File
 

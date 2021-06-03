@@ -1,15 +1,20 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
+import android.content.ActivityNotFoundException
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintLabelCustomsFormBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.media.FileUtils.previewPDFFile
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class PrintShippingLabelCustomsFormFragment : BaseFragment(R.layout.fragment_print_label_customs_form) {
@@ -27,11 +32,29 @@ class PrintShippingLabelCustomsFormFragment : BaseFragment(R.layout.fragment_pri
     }
 
     private fun setupObservers() {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                showProgressDialog(it)
+            }
+        }
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().navigateUp()
+                is PrintCustomsForm -> printFile(event.file)
                 else -> event.isHandled = false
             }
+        }
+    }
+
+    /**
+     * This just opens the default PDF reader of the device
+     */
+    private fun printFile(file: File) {
+        try {
+            requireContext().previewPDFFile(file)
+        } catch (exception: ActivityNotFoundException) {
+            // TODO
         }
     }
 
