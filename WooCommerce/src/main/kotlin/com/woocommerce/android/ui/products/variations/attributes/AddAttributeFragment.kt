@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -186,6 +187,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                 allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
             }
         )
+        binding.attributeSelectionHint.isVisible = globalDraftAttributes.isNotEmpty()
     }
 
     private fun showSkeleton(show: Boolean) {
