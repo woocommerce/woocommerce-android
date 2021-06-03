@@ -547,6 +547,9 @@
     <string name="shipping_label_customs_required_field">This field is required</string>
     <string name="shipping_label_customs_weight_zero_error">Weight must be greater than zero</string>
     <string name="shipping_label_customs_value_zero_error">Declared value must be greater than zero</string>
+    <string name="shipping_label_customs_form">Customs form</string>
+    <string name="shipping_label_print_customs_explanation">A customs form must be printed and included on this international shipment</string>
+    <string name="shipping_label_print_customs_form">Print customs form</string>
     <!--
             Refunds
         -->
