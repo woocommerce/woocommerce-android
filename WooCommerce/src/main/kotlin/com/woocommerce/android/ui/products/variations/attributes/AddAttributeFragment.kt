@@ -187,7 +187,8 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                 allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
             }
         )
-        binding.attributeSelectionHint.isVisible = globalDraftAttributes.isNotEmpty()
+        binding.attributeSelectionHint.isVisible =
+            globalDraftAttributes.isNotEmpty() or localDraftAttributes.isNotEmpty()
     }
 
     private fun showSkeleton(show: Boolean) {
