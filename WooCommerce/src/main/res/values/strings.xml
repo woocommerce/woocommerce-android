@@ -550,6 +550,7 @@
     <string name="shipping_label_customs_form">Customs form</string>
     <string name="shipping_label_print_customs_explanation">A customs form must be printed and included on this international shipment</string>
     <string name="shipping_label_print_customs_form">Print customs form</string>
+    <string name="shipping_label_print_customs_form_screen_title">Print customs invoice</string>
     <!--
             Refunds
         -->
