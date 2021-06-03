@@ -96,9 +96,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
         binding.attributeList.layoutManager = layoutManager
         binding.attributeList.itemAnimator = null
-        binding.attributeList.addItemDecoration(AlignedDividerDecoration(
-            requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
-        ))
 
         binding.addAttributeButton.setOnClickListener {
             if (navArgs.isVariationCreation) {

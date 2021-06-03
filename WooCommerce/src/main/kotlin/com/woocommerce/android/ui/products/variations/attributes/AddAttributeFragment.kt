@@ -108,9 +108,6 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
         binding.attributeList.layoutManager = layoutManager
         binding.attributeList.itemAnimator = null
-        binding.attributeList.addItemDecoration(AlignedDividerDecoration(
-            requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
-        ))
 
         binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
             val attributeName = binding.attributeEditText.text?.toString() ?: ""
