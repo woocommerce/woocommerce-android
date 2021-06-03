@@ -22,6 +22,7 @@ class CustomProgressDialog : DialogFragment() {
             val fragment = CustomProgressDialog()
             fragment.progressTitle = title
             fragment.progressMessage = message
+            fragment.onDismissListener = onDismissListener
             return fragment
         }
     }
