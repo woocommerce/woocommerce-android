@@ -12,11 +12,11 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -92,7 +92,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         shippingLabelPreview: String
     ) {
         launch(dispatchers.io) {
-            val tempFile = FileUtils.createTempFile(storageDir)
+            val tempFile = FileUtils.createTempPDFFile(storageDir)
             if (tempFile != null) {
                 FileUtils.writeToTempFile(tempFile, shippingLabelPreview)?.let {
                     withContext(dispatchers.main) { viewState = viewState.copy(tempFile = it) }

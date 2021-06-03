@@ -2,6 +2,7 @@ package com.woocommerce.android.widgets
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
@@ -17,7 +18,7 @@ class CustomProgressDialog : DialogFragment() {
     companion object {
         const val TAG: String = "CustomProgressDialog"
 
-        fun show(title: String, message: String): CustomProgressDialog {
+        fun show(title: String, message: String, onDismissListener: (() -> Unit)? = null): CustomProgressDialog {
             val fragment = CustomProgressDialog()
             fragment.progressTitle = title
             fragment.progressMessage = message
@@ -27,6 +28,7 @@ class CustomProgressDialog : DialogFragment() {
 
     private var progressTitle: String? = null
     private var progressMessage: String? = null
+    private var onDismissListener: (() -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogView = View.inflate(activity, R.layout.view_progress_dialog, null)
@@ -38,5 +40,10 @@ class CustomProgressDialog : DialogFragment() {
                 .setView(dialogView)
                 .setCancelable(false)
                 .create()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        onDismissListener?.invoke()
     }
 }
