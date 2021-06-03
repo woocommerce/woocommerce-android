@@ -22,8 +22,6 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.receipts.ReceiptCreator
-import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
@@ -35,7 +33,6 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.receipts.ReceiptDataMapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -152,8 +149,8 @@ class CardReaderPaymentViewModel @Inject constructor(
                 PaymentSuccessfulState(
                     amountLabel,
                     // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-                    { onPrintReceiptClicked(paymentStatus.) },
-                    { onSendReceiptClicked(paymentStatus.) }
+                    { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
+                    { onSendReceiptClicked(paymentStatus.receiptUrl) }
                 )
             )
             ShowAdditionalInfo -> {
@@ -174,15 +171,16 @@ class CardReaderPaymentViewModel @Inject constructor(
         viewState.postValue(FailedPaymentState(error.type, amountLabel, onRetryClicked))
     }
 
-    private fun onPrintReceiptClicked() {
+    private fun onPrintReceiptClicked(receiptUrl: String, documentName: String) {
         launch {
-            triggerEvent(PrintReceipt(, "receipt-${ ... }"))
+            // TODO cardreader show a progress dialog as url loading might take some time
+            triggerEvent(PrintReceipt(receiptUrl, documentName))
         }
     }
 
-    private fun onSendReceiptClicked() {
+    private fun onSendReceiptClicked(receiptUrl: String) {
         launch {
-            triggerEvent(SendReceipt(...))
+            triggerEvent(SendReceipt(receiptUrl))
         }
     }
 
@@ -199,8 +197,8 @@ class CardReaderPaymentViewModel @Inject constructor(
         )
 
     sealed class CardReaderPaymentEvent : Event() {
-        data class PrintReceipt(val htmlReceipt: String, val documentName: String) : CardReaderPaymentEvent()
-        data class SendReceipt(val htmlReceipt: String) : CardReaderPaymentEvent()
+        data class PrintReceipt(val receiptUrl: String, val documentName: String) : CardReaderPaymentEvent()
+        data class SendReceipt(val receiptUrl: String) : CardReaderPaymentEvent()
     }
 
     sealed class ViewState(

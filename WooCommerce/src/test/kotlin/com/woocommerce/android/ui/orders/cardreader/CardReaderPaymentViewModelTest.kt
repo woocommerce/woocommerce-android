@@ -96,8 +96,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
-        whenever(receiptDataMapper.mapToReceiptData(any(), any())).thenReturn(mock())
-        whenever(receiptCreator.createHtmlReceipt(any())).thenReturn("test receipt")
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
         whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
     }
@@ -199,7 +197,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment completed, then ui updated to payment successful state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
-                flow { emit(PaymentCompleted(mock())) }
+                flow { emit(PaymentCompleted("")) }
             }
 
             viewModel.start()
@@ -455,7 +453,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment succeeds, then correct labels, illustration and buttons are shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
-                flow { emit(PaymentCompleted(mock())) }
+                flow { emit(PaymentCompleted("")) }
             }
 
             viewModel.start()
@@ -494,7 +492,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when user clicks on print receipt button, then PrintReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
-                flow { emit(PaymentCompleted(mock())) }
+                flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
@@ -507,7 +505,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when user clicks on send receipt button, then SendReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
-                flow { emit(PaymentCompleted(mock())) }
+                flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 

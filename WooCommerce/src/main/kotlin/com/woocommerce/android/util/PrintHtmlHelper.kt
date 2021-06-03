@@ -14,7 +14,7 @@ class PrintHtmlHelper @Inject constructor() {
     // Hold an instance of the WebView object so it isn't garbage collected before the print job is created
     private var webViewInstance: WebView? = null
 
-    fun printReceipt(activity: Activity, htmlReceipt: String, documentName: String) {
+    fun printReceipt(activity: Activity, receiptUrl: String, documentName: String) {
         webViewInstance?.let {
             WooLog.e(
                 T.UTILS,
@@ -32,7 +32,7 @@ class PrintHtmlHelper @Inject constructor() {
             }
         }
 
-        webView.loadDataWithBaseURL(null, htmlReceipt, "text/HTML", "UTF-8", null)
+        webView.loadUrl(receiptUrl)
         webViewInstance = webView
     }
 

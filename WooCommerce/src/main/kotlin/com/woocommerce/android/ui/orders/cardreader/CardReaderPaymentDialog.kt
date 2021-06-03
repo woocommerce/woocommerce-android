@@ -43,7 +43,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
             when (event) {
                 is PrintReceipt -> printHtmlHelper.printReceipt(
                     requireActivity(),
-                    event.htmlReceipt,
+                    event.receiptUrl,
                     event.documentName
                 )
                 is SendReceipt -> {
