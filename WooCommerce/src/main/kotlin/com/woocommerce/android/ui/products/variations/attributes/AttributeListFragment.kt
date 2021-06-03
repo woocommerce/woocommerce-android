@@ -33,11 +33,15 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
     private var layoutManager: LayoutManager? = null
     private var progressDialog: CustomProgressDialog? = null
+    private var doneMenuItem: MenuItem? = null
 
     private val navArgs: AttributeListFragmentArgs by navArgs()
 
     private var _binding: FragmentAttributeListBinding? = null
     private val binding get() = _binding!!
+
+    private val isGeneratingVariation
+        get() = navArgs.isVariationCreation and viewModel.productDraftAttributes.isNotEmpty()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,6 +55,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
     override fun onResume() {
         super.onResume()
+        doneMenuItem?.isVisible = isGeneratingVariation
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -64,9 +69,9 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         super.onCreateOptionsMenu(menu, inflater)
 
         if (navArgs.isVariationCreation) {
-            menu.add(Menu.FIRST, ID_ATTRIBUTE_LIST, Menu.FIRST, R.string.done).apply {
+            doneMenuItem = menu.add(Menu.FIRST, ID_ATTRIBUTE_LIST, Menu.FIRST, R.string.done).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                isVisible = true
+                isVisible = isGeneratingVariation
             }
         }
     }
