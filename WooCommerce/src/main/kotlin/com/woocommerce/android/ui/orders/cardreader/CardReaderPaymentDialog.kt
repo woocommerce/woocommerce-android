@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.orders.cardreader
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.util.PrintHtmlHelper
@@ -46,9 +50,8 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
                     event.receiptUrl,
                     event.documentName
                 )
-                is SendReceipt -> {
-                    // TODO cardreader implement
-                }
+                is SendReceipt -> composeEmail(event.address, event.subject, event.content)
+
                 else -> event.isHandled = false
             }
         })
@@ -68,5 +71,19 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
                 viewState.onSecondaryActionClicked?.invoke()
             }
         })
+    }
+
+    private fun composeEmail(billingEmail: String, subject: UiString, content: UiString) {
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:") // only email apps should handle this
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(billingEmail))
+            putExtra(Intent.EXTRA_SUBJECT, UiHelpers.getTextOfUiString(requireContext(), subject))
+            putExtra(Intent.EXTRA_TEXT, UiHelpers.getTextOfUiString(requireContext(), content))
+        }
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            viewModel.onEmailActivityNotFound()
+        }
     }
 }

@@ -662,16 +662,9 @@
     <string name="card_reader_payment_send_receipt">Send receipt</string>
 
     <string name="card_reader_payment_description">Online payment for order %s for %s</string>
-
-    <string name="card_reader_receipt_application_name_title">Application name</string>
-    <string name="card_reader_receipt_from_title">Receipt from %s</string>
-    <string name="card_reader_receipt_title">Receipt</string>
-    <string name="card_reader_receipt_amount_paid_title">Amount paid</string>
-    <string name="card_reader_receipt_date_paid_title">Date paid</string>
-    <string name="card_reader_receipt_payment_method_title">Payment method</string>
-    <string name="card_reader_receipt_summary_title">Summary</string>
-    <string name="card_reader_receipt_aid_title">AID</string>
-
+`    <string name="card_reader_payment_receipt_email_subject">Receipt</string>
+    <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! You can find the receipt for your payment at the following link: %s</string>
+    <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
     <!--
             Card Reader Connection
         -->
