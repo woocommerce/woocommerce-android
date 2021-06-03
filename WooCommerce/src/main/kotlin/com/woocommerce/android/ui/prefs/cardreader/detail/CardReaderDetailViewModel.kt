@@ -162,9 +162,14 @@ class CardReaderDetailViewModel @Inject constructor(
         ) : ViewState() {
             val headerLabel = UiStringRes(R.string.card_reader_detail_not_connected_header)
             @DrawableRes val illustration = R.drawable.img_card_reader_not_connected
+            val firstHintNumber = UiStringText("1")
+            val secondHintNumber = UiStringText("2")
+            val thirdHintNumber = UiStringText("3")
             val firstHintLabel = UiStringRes(R.string.card_reader_detail_not_connected_first_hint_label)
             val secondHintLabel = UiStringRes(R.string.card_reader_detail_not_connected_second_hint_label)
+            val thirdHintLabel = UiStringRes(R.string.card_reader_detail_not_connected_third_hint_label)
             val connectBtnLabel = UiStringRes(R.string.card_reader_details_not_connected_connect_button_label)
+            val learnMoreLabel = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true)
         }
 
         data class ConnectedState(
@@ -174,6 +179,7 @@ class CardReaderDetailViewModel @Inject constructor(
             val primaryButtonState: ButtonState?,
             val secondaryButtonState: ButtonState?
         ) : ViewState() {
+            val learnMoreLabel = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true)
             data class ButtonState(
                 val onActionClicked: (() -> Unit),
                 val text: UiString
