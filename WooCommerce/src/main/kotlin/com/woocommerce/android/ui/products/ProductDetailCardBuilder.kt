@@ -504,8 +504,6 @@ class ProductDetailCardBuilder(
     // show product variations only if product type is variable and if there are variations for the product
     private fun Product.variations(): ProductProperty {
         return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
-
-
             val content = StringUtils.getQuantityString(
                 resourceProvider = resources,
                 quantity = numVariations,
