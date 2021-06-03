@@ -10,7 +10,6 @@ import com.woocommerce.android.cardreader.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
-import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
