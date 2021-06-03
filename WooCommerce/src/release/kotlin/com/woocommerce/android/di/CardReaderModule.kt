@@ -27,10 +27,6 @@ import javax.inject.Singleton
 class CardReaderModule {
     @Provides
     @Singleton
-    fun provideReceiptCreator(): ReceiptCreator = ReceiptCreator()
-
-    @Provides
-    @Singleton
     fun provideCardReaderManager(): CardReaderManager = object : CardReaderManager {
         override val isInitialized: Boolean = false
         override val readerStatus: StateFlow<CardReaderStatus> = MutableStateFlow(NotConnected)
