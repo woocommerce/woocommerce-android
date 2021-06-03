@@ -101,7 +101,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         ))
 
         binding.addAttributeButton.setOnClickListener {
-            if(navArgs.isVariationCreation) {
+            if (navArgs.isVariationCreation) {
                 findNavController().navigateUp()
             } else {
                 viewModel.onAddAttributeButtonClick()
