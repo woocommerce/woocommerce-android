@@ -91,7 +91,9 @@ class ReceiptCreator {
         val builder = StringBuilder()
         builder.append("<table>")
         receiptData.purchasedProducts.forEach { item ->
-            builder.append("<tr><td>${item.title} &#215; ${item.quantity}</td>")
+            builder.append(
+                "<tr><td>${item.title} &#215; ${formatFloat(item.quantity)}</td>"
+            )
                 .append("<td>${"%.2f".format(item.itemsTotalAmount)} ")
                 .append("${receiptData.receiptPaymentInfo.currency}</td></tr>")
         }
@@ -130,6 +132,14 @@ class ReceiptCreator {
         val storeName = receiptData.storeName ?: return receiptData.staticTexts.receiptTitle
         return String.format(receiptData.staticTexts.receiptFromFormat, storeName)
     }
+
+    /**
+     * Shows decimal places only when the number is not an integer
+     */
+    private fun formatFloat(number: Float): String =
+        if (number.isInteger()) number.toInt().toString() else "%.2f".format(number)
+
+    private fun Float.isInteger() = rem(1f) == 0f
 
     private companion object {
         private const val MARGIN: Int = 16
