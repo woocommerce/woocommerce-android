@@ -1,65 +1,48 @@
 package com.woocommerce.android.media
 
-import android.content.Context
-import android.content.Intent
-import android.util.Base64
-import androidx.core.content.FileProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.UTILS
 import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-object FileUtils {
+class FileUtils @Inject constructor() {
     /**
-     * Creates a temp PDF file
+     * Creates a temp file with the filename having the format: "{[prefix]}_{yyyyMMdd_HHmmss}.{[fileExtension]}"
+     * in the specified [storageDir]
      */
-    fun createTempPDFFile(
-        storageDir: File
+    fun createTempTimeStampedFile(
+        storageDir: File,
+        prefix: String,
+        fileExtension: String
     ): File? {
         return try {
             val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "PDF_" + timeStamp + "_"
-            File.createTempFile(fileName, ".pdf", storageDir)
+            val fileName = "${prefix}_${timeStamp}"
+            File.createTempFile(fileName, ".$fileExtension", storageDir)
         } catch (e: Exception) {
             WooLog.e(UTILS, "Unable to create a temp file", e)
             null
         }
     }
 
-    fun Context.previewPDFFile(file: File) {
-        val pdfUri = FileProvider.getUriForFile(
-            this, "${packageName}.provider", file
-        )
-
-        val sendIntent = Intent(Intent.ACTION_VIEW)
-        sendIntent.setDataAndType(pdfUri, "application/pdf")
-        sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(sendIntent)
-    }
-
     /**
-     * writes the incoming [stringToWrite] into the [tempFile]
+     * Writes content to the file.
+     * If the file already exists, its content will be overwritten
      */
-    fun writeToTempFile(
-        tempFile: File,
-        stringToWrite: String
+    fun writeContentToFile(
+        file: File,
+        content: ByteArray
     ): File? {
         return try {
-            if (tempFile.exists()) tempFile.delete()
-
-            val out = FileOutputStream(tempFile)
-            val pdfAsBytes = Base64.decode(stringToWrite, 0)
-            out.write(pdfAsBytes)
-            out.flush()
-            out.close()
-
-            tempFile
+            file.outputStream().use {
+                it.write(content)
+            }
+            file
         } catch (e: Exception) {
-            WooLog.e(UTILS, "Unable to write to temp file", e)
+            WooLog.e(UTILS, "Unable to write to file $file", e)
             null
         }
     }
