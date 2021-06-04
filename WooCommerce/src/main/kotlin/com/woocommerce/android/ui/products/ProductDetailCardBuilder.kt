@@ -536,8 +536,15 @@ class ProductDetailCardBuilder(
                     Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
                     mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
                 )
+
+                val target = if (variationEnabledAttributes.isNotEmpty()) {
+                    ViewProductVariations(this.remoteId)
+                } else {
+                    AddProductAttribute(isVariationCreation = true)
+                }
+
                 viewModel.onEditProductCardClicked(
-                    AddProductAttribute(isVariationCreation = true),
+                    target,
                     PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
                 )
             }
