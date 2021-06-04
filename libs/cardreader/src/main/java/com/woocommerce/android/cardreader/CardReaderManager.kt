@@ -17,7 +17,13 @@ interface CardReaderManager {
     suspend fun disconnectReader(): Boolean
 
     // TODO cardreader Stripe accepts only Int, is that ok?
-    suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus>
+    suspend fun collectPayment(
+        orderId: Long,
+        amount: BigDecimal,
+        currency: String,
+        customerEmail: String?
+    ): Flow<CardPaymentStatus>
+
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
 
     suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability>

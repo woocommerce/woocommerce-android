@@ -45,7 +45,8 @@ class CardReaderModule {
         override suspend fun collectPayment(
             orderId: Long,
             amount: BigDecimal,
-            currency: String
+            currency: String,
+            customerEmail: String?
         ): Flow<CardPaymentStatus> = flow {}
 
         override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =

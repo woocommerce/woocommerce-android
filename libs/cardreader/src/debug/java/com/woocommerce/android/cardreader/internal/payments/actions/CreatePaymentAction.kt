@@ -24,9 +24,9 @@ internal class CreatePaymentAction(
         data class Failure(val exception: TerminalException) : CreatePaymentStatus()
     }
 
-    fun createPaymentIntent(amount: Int, currency: String): Flow<CreatePaymentStatus> {
+    fun createPaymentIntent(amount: Int, currency: String, customerEmail: String?): Flow<CreatePaymentStatus> {
         return callbackFlow {
-            terminal.createPaymentIntent(createParams(amount, currency), object : PaymentIntentCallback {
+            terminal.createPaymentIntent(createParams(amount, currency, customerEmail), object : PaymentIntentCallback {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
                     logWrapper.d("CardReader", "Creating payment intent succeeded")
                     this@callbackFlow.sendBlocking(Success(paymentIntent))
@@ -43,10 +43,11 @@ internal class CreatePaymentAction(
         }
     }
 
-    private fun createParams(amount: Int, currency: String): PaymentIntentParameters {
-        return paymentIntentParametersFactory.createBuilder()
+    private fun createParams(amount: Int, currency: String, email: String?): PaymentIntentParameters {
+        val builder = paymentIntentParametersFactory.createBuilder()
             .setAmount(amount)
             .setCurrency(currency)
-            .build()
+            email?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
+        return builder.build()
     }
 }

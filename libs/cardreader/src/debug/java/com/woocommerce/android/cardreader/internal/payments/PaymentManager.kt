@@ -46,7 +46,12 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper,
     private val receiptPaymentInfoMapper: ReceiptPaymentInfoMapper
 ) {
-    suspend fun acceptPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
+    suspend fun acceptPayment(
+        orderId: Long,
+        amount: BigDecimal,
+        currency: String,
+        customerEmail: String?
+    ): Flow<CardPaymentStatus> = flow {
         if (!isSupportedCurrency(currency)) {
             emit(errorMapper.mapError(errorMessage = "Unsupported currency: $currency"))
             return@flow
@@ -61,7 +66,7 @@ internal class PaymentManager(
             emit(errorMapper.mapError(errorMessage = "Reader not connected"))
             return@flow
         }
-        val paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency)
+        val paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency, customerEmail)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
@@ -105,11 +110,12 @@ internal class PaymentManager(
 
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(
         amount: Int,
-        currency: String
+        currency: String,
+        customerEmail: String?
     ): PaymentIntent? {
         var paymentIntent: PaymentIntent? = null
         emit(InitializingPayment)
-        createPaymentAction.createPaymentIntent(amount, currency).collect {
+        createPaymentAction.createPaymentIntent(amount, currency, customerEmail).collect {
             when (it) {
                 is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent

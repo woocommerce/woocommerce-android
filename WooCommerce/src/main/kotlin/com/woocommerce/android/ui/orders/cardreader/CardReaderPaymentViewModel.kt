@@ -92,7 +92,14 @@ class CardReaderPaymentViewModel @Inject constructor(
                 loadOrderFromDB()?.let { order ->
                     order.total.toBigDecimalOrNull()?.let { amount ->
                         // TODO cardreader don't hardcode currency symbol ($)
-                        collectPaymentFlow(cardReaderManager, order.remoteOrderId, amount, order.currency, "$$amount")
+                        collectPaymentFlow(
+                            cardReaderManager,
+                            order.remoteOrderId,
+                            amount,
+                            order.currency,
+                            order.billingEmail,
+                            "$$amount"
+                        )
                     } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
@@ -123,11 +130,13 @@ class CardReaderPaymentViewModel @Inject constructor(
         orderId: Long,
         amount: BigDecimal,
         currency: String,
+        billingEmail: String,
         amountLabel: String
     ) {
-        cardReaderManager.collectPayment(orderId, amount, currency).collect { paymentStatus ->
-            onPaymentStatusChanged(orderId, paymentStatus, amountLabel)
-        }
+        cardReaderManager.collectPayment(orderId, amount, currency, billingEmail.ifEmpty { null })
+            .collect { paymentStatus ->
+                onPaymentStatusChanged(orderId, paymentStatus, amountLabel)
+            }
     }
 
     private fun onPaymentStatusChanged(
