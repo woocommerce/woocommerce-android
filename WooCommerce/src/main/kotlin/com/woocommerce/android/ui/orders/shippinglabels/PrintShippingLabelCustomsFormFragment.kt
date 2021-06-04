@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.orders.shippinglabels
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintLabelCustomsFormBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
@@ -29,6 +31,7 @@ class PrintShippingLabelCustomsFormFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
+    private val navArgs: PrintShippingLabelCustomsFormFragmentArgs by navArgs()
 
     override fun getFragmentTitle(): String = getString(R.string.shipping_label_print_customs_form_screen_title)
 
@@ -71,6 +74,7 @@ class PrintShippingLabelCustomsFormFragment :
     }
 
     private fun setupView(binding: FragmentPrintLabelCustomsFormBinding) {
+        binding.saveForLaterButton.isVisible = !navArgs.isReprint
         binding.printButton.setOnClickListener {
             viewModel.onPrintButtonClicked()
         }
