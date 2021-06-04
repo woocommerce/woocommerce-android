@@ -188,6 +188,8 @@ class ProductListViewModel @AssistedInject constructor(
 
         viewState = viewState.copy(
             isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
+            /* if there are no products, hide Add Product button and use the empty view's button instead. */
+            isAddProductButtonVisible = products.isNotEmpty(),
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }
@@ -264,14 +266,31 @@ class ProductListViewModel @AssistedInject constructor(
      * Resets the view state following a refresh
      */
     private fun resetViewState() {
+        // Conditionals for showing / hiding the Add Product FAB:
+        // If there are no products:
+        // - in default view, hide the Add Product FAB, because the empty view has its own add button.
+        // - in search/filter result view, show the Add Product FAB, because the empty view doesn't have add button.
+        //
+        // If there is at least one product in default or search/filter result view, show the Add Product FAB.
+        val shouldShowAddProductButton =
+            if (_productList.value?.isEmpty() == true) {
+                when {
+                    viewState.query != null -> true
+                    productFilterOptions.isNotEmpty() -> true
+                    else -> false
+                }
+            } else {
+                true
+            }
+
         viewState = viewState.copy(
             isSkeletonShown = false,
             isLoading = false,
             isLoadingMore = false,
             isRefreshing = false,
-            isAddProductButtonVisible = true,
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            isAddProductButtonVisible = shouldShowAddProductButton,
             displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
         )
     }

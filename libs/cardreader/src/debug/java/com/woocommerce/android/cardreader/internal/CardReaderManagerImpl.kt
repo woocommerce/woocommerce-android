@@ -81,6 +81,12 @@ internal class CardReaderManagerImpl(
         return connectionManager.connectToReader(cardReader)
     }
 
+    override suspend fun disconnectReader(): Boolean {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (terminal.getConnectedReader() == null) return false
+        return connectionManager.disconnectReader()
+    }
+
     override suspend fun collectPayment(
         paymentDescription: String,
         orderId: Long,
@@ -101,4 +107,9 @@ internal class CardReaderManagerImpl(
         softwareUpdateManager.softwareUpdateStatus()
 
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
+
+    override suspend fun clearCachedCredentials() {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        terminal.clearCachedCredentials()
+    }
 }

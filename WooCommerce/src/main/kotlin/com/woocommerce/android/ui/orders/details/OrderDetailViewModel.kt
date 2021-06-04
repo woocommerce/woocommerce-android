@@ -41,9 +41,12 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderCo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -276,6 +279,10 @@ class OrderDetailViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
         )
+        refreshShipmentTracking()
+    }
+
+    fun refreshShipmentTracking() {
         _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
     }
 
@@ -394,6 +401,9 @@ class OrderDetailViewModel @Inject constructor(
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
                     order = order.copy(status = Status.fromValue(newStatus))
+                    if (newStatus == CoreOrderStatus.COMPLETED.value) {
+                        triggerEvent(ShowSnackbar(string.order_fulfill_completed))
+                    }
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -421,7 +431,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onMarkOrderCompleteButtonTapped() {
         AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-        onOrderStatusChanged(CoreOrderStatus.COMPLETED.value)
+        triggerEvent(ViewOrderFulfillInfo(order.identifier))
     }
 
     private fun updateOrderState() {
@@ -562,12 +572,23 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun Order.getProductIds() = items.map { it.productId }
-
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductImageChanged(event: OnProductImageChanged) {
         viewState = viewState.copy(refreshedProductId = event.remoteProductId)
+    }
+
+    fun onCardReaderPaymentCompleted() {
+        reloadOrderDetails()
+    }
+
+    private fun reloadOrderDetails() {
+        launch {
+            orderDetailRepository.getOrder(navArgs.orderId)?.let {
+                order = it
+            } ?: WooLog.w(T.ORDERS, "Order ${navArgs.orderId} not found in the database.")
+            displayOrderDetails()
+        }
     }
 
     @Parcelize

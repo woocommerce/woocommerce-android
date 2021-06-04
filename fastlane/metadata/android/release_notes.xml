@@ -1,102 +1,85 @@
 <ar>
-6.6:
-- يمكنك الآن عند تحرير منتج ما إنشاء أنواع متنوعة، وسمات، وخيارات السمات وحذفها وتحديثها. يمكنك كذلك إنشاء منتج افتراضي وتحريره من شاشة تفاصيل المنتج.
-أصبح من الممكن الآن استرداد أموال خط الشحن داخل طلب ما.
-أصلحنا كذلك مشكلة كانت تحدث عند تحرير أسعار المنتج العادية وأسعار الخصومات.
+6.7:
+لقد سمعنا أنه قد تتم تلبية الطلبات في شحنات متعددة. يمكنك الآن بفضل هذا التحديث طباعة أكثر من تسمية واحدة لطلب ما. أصلحنا كذلك بعض الأمور الصغيرة الأخرى لجعل تجربتك أفضل.
+
 </ar>
 <de-DE>
-6.6:
-Du kannst beim Bearbeiten eines Produktes jetzt Variationen, Attribute und Attributsoptionen erstellen, löschen und aktualisieren. Außerdem hast du die Möglichkeit, ein virtuelles Produkt in der Produktdetailansicht zu erstellen und zu bearbeiten.
-Du kannst den Versand jetzt innerhalb einer Bestellung rückerstatten.
-Zudem haben wir einen Fehler behoben, der beim Bearbeiten der herkömmlichen Preise und Angebotspreise von Produkten auftrat.
+6.7:
+Wir haben gehört, dass Bestellungen möglicherweise aus mehreren Lieferungen bestehen. Mit diesem Update kannst du jetzt mehr als ein Etikett pro Bestellung drucken. Wir haben auch noch andere kleine Fehler behoben, um deine Erfahrung zu verbessern.
+
 </de-DE>
 <es-ES>
-6.6:
-Ahora, al editar un producto, puedes crear, eliminar y actualizar variaciones, atributos y opciones de atributos. También puedes crear y editar un producto virtual desde su pantalla de detalles.
-Ahora es posible reembolsar una partida de un pedido.
-También hemos corregido un problema que sucedía al editar los precios de venta y normal de un producto.
+6.7:
+Hemos oído que algunos pedidos necesitan varios envíos para completarse. Con esta actualización, podrás imprimir más de una etiqueta por pedido. También hemos solucionado algunos otros detalles para mejorar la experiencia.
+
 </es-ES>
 <fr-FR>
-6.6 :
-Lorsque vous modifiez un produit, vous pouvez désormais créer, supprimer et mettre à jour des variantes, des attributs et des options d’attribut. Vous pouvez également créer et modifier un produit virtuel à partir de l’écran Détails sur le produit.
-Il est désormais possible de rembourser une ligne de livraison dans une commande.
-Nous avons également résolu un problème survenant lors de l’édition des prix de ventes et standard du produit.
+6.7 :
+Nous avons entendu dire que les commandes peuvent être exécutées en plusieurs envois. Avec cette mise à jour, vous pouvez désormais imprimer plusieurs étiquettes pour une commande. Nous avons également corrigé quelques autres petites choses pour améliorer votre expérience.
+
 </fr-FR>
 <iw-IL>
-6.6:
-כאשר עורכים מוצר, אפשר ליצור, למחוק ולעדכן את הסוגים, המאפיינים ואת אפשרויות המאפיינים של המוצר. אפשר גם ליצור ולערוך מוצרים וירטואליים מהמסך של פרטי המוצר.
-כעת אפשר להנפיק החזר כספי עבור שורת משלוח בתוך הזמנה.
-תיקנו גם בעיה שהתרחשה כאשר עורכים את המחירים הרגילים ואת מחירי המבצע של המוצר.
+6.7:
+הבנו שאפשר להשלים הזמנות במספר משלוחים שונים. בעדכון הזה, אפשר כעת להדפיס מעל תווית אחת לכל הזמנה. תיקנו גם כמה דברים קטנים כדי לשפר את חוויית השימוש.
+
 </iw-IL>
 <id>
-6.6:
-Ketika menyunting produk, sekarang Anda bisa membuat, menghapus, dan memperbarui variasi, atribut, dan opsi atribut. Anda juga bisa membuat dan menyunting produk virtual dari layar detail produk.
-Sekarang dimungkinkan untuk mengembalikan dana baris pengiriman di dalam sebuah pemesanan.
-Kami juga memperbaiki masalah yang terjadi saat menyunting harga normal dan harga diskon produk.
+6.7:
+Kami menyadari bahwa pesanan bisa dipenuhi dengan beberapa pengiriman. Dengan pembaruan ini, Anda kini dapat mencetak lebih dari satu label untuk satu pesanan. Kami juga memperbaiki beberapa hal kecil lainnya agar Anda mendapatkan pengalaman yang lebih baik.
+
 </id>
 <it-IT>
-6.6:
-Quando viene modificato un prodotto, ora puoi creare, eliminare e aggiornare le varianti, gli attributi e le opzioni degli attributi. Puoi anche creare e modificare un prodotto virtuale dalla schermata dei dettagli del prodotto.
-Ora è possibile rimborsare una riga della spedizione all'interno di un ordine.
-Abbiamo anche corretto un problema che si verificava durante la modifica dei prezzi normali e di vendita di un prodotto.
+6.7:
+Abbiamo saputo che gli ordini potrebbero essere evasi in più spedizioni. Con questo aggiornamento, ora puoi stampare più di un'etichetta per un ordine. Abbiamo anche corretto qualche altro piccolo dettaglio per rendere migliore la tua esperienza.
+
 </it-IT>
 <ja-JP>
-6.6:
-製品情報を編集するとき、バリエーション、属性、属性の選択肢の作成、削除、更新ができるようになりました。 また、製品の詳細画面から仮想製品を作成、編集することもできます。
-注文内の配送ラインの返金が可能になりました。
-製品の標準価格およびセール価格を編集するときに発生する問題も修正されました。
+6.7:
+注文が複数回の配送により履行される場合があると聞いています。 今回のアップデートにより、1件の注文に対して複数のラベルを印刷できるようになりました。 また、より快適にご利用いただくために、いくつかの細かい点も修正しました。
+
 </ja-JP>
 <ko-KR>
-6.6:
-제품을 편집할 때 이제는 변형, 속성, 속성 옵션을 생성, 삭제, 업데이트할 수 있습니다. 제품 상세 정보 페이지에서 가상 제품을 생성하고 편집할 수도 있습니다.
-이제는 주문 내부 배송 라인 환불이 가능합니다.
-제품의 정상 가격과 할인 가격을 편집할 때 발생하던 문제도 해결했습니다.
+6.7:
+주문이 여러 건의 배송으로 처리될 수 있다는 이야기를 들었습니다. 이 업데이트를 통해 이제 주문에 대한 레이블을 1개 이상 인쇄할 수 있습니다. 환경이 더 좋아지도록 몇 가지 소소한 문제도 해결했습니다.
+
 </ko-KR>
 <nl-NL>
-6.6:
-Tijdens het bijwerken van een product kun je nu variaties, eigenschappen en eigenschapopties maken, verwijderen en bijwerken. Je kunt ook vanaf het scherm productgegevens een virtueel product maken en bijwerken.
-Je kunt nu een verzendregel terugstorten binnen een bestelling.
-We hebben ook een probleem verholpen dat zich voordeed wanneer de reguliere en verkoopprijs van een product werden bijgewerkt.
+6.7:
+We hebben vernomen dat bestellingen voltooid kunnen worden in meerdere verzendingen. Met deze update kun je nu meer dan één label afdrukken voor een bestelling. We hebben tevens een paar andere kleine problemen opgelost om je ervaring te verbeteren.
+
 </nl-NL>
 <pt-BR>
-6.6:
-Ao editar um produto, agora você pode criar, excluir e atualizar variações, atributos e opções de atributo. Você também pode criar e editar um produto virtual na tela de detalhes do produto.
-Agora é possível reembolsar uma linha de remessa no pedido.
-Além disso, corrigimos um problema que ocorria ao editar o preço promocional ou normal de um produto.
+6.7:
+Soubemos que os pedidos podem ser enviados em várias remessas. Com esta atualização, agora você pode imprimir mais de uma etiqueta por pedido. Também corrigimos outros detalhes para melhorar sua experiência
+
 </pt-BR>
 <ru-RU>
-6.6
-При изменении товара теперь можно создавать, удалять и обновлять варианты, атрибуты и опции атрибутов. На экране сведений о продукте также можно создать виртуальный товар и внести в него изменения.
-В настоящее время можно вернуть средства по строке доставки внутри заказа.
-Мы также устранили проблему, которая происходила при изменении обычной и распродажной цены продукта.
+6.7
+Мы слышали о том, что заказы могут выполняться несколькими отгрузками. Теперь для каждого заказа можно напечатать несколько этикеток. Мы также исправили несколько других мелких проблем, чтобы вам было удобнее работать.
+
 </ru-RU>
 <sv-SE>
-6.6:
-När du redigerar en produkt kan du nu skapa, ta bort och uppdatera variationer, attribut och attributalternativ. Du kan också skapa och redigera en virtuell produkt från produktinformationsskärmen.
-Det är nu möjligt att återbetala en fraktrad i en beställning.
-Vi har även åtgärdat ett problem som uppstod vid redigering av det ordinarie priset och reapriset för en produkt.
+6,7:
+Vi har hört att beställningar kan uppfyllas i flera olika leveranser. Med den här uppdateringen kan du skriva ut mer än en etikett för en beställning. Vi har även åtgärdat andra små saker för att göra din upplevelse bättre.
+
 </sv-SE>
 <tr-TR>
-6.6:
-Bir ürünü düzenlerken artık ürün varyasyonlarını, ürün özelliklerini ve ürün özelliği seçeneklerini oluşturabilir, silebilir ve güncelleyebilirsiniz. Ayrıca ürün detay ekranından sanal bir ürün oluşturabilir ve düzenleyebilirsiniz
-Artık bir siparişin gönderim satırından iade yapmak mümkün.
-Bir ürünün normal ve indirimli fiyatlarını düzenlerken oluşan bir sorunu da düzelttik.
+6.7:
+Siparişlerin birden fazla gönderimle yapılabildiğini duyduk. Bu güncelleme ile, artık bir sipariş için birden fazla etiket yazdırabilirsiniz. Ayrıca deneyiminizi daha iyi hale getirmek için birkaç küçük düzeltme daha yaptık.
+
 </tr-TR>
 <zh-CN>
-6.6：
-编辑产品时，您现在可以创建、删除和更新变体、属性和属性选项。 您还可以从产品详情屏幕创建和编辑虚拟产品。
-现在，您可以在订单内退还货运公司费用。
-我们还修复了在编辑产品常规价格和促销价格时出现的问题。
+6.7：
+我们听说订单可能会分多批完成。 此次更新后，您现在可以为一份订单打印多个标签。 我们还修复了一些其他小问题，为您提供更好的体验。
+
 </zh-CN>
 <zh-TW>
-6.6：
-現在編輯產品時，可以建立、刪除和更新款式、屬性和屬性選項。 你也可以從產品詳細資料畫面建立和編輯虛擬產品。
-現在可以針對訂單中的某個出貨細項退款。
-我們也解決了編輯產品的原價和售價時發生的問題。
+6.7：
+使用者反映訂單可能需分批運送。 在此更新版本中，你現在可以為一份訂單列印多個標籤。 我們也修正了其他小問題，期望改善你的使用體驗。
+
 </zh-TW>
 <en-US>
-6.6:
-When editing a product, you can now create, delete, and update variations, attributes, and attribute options. You can also create and edit a virtual product from the product detail screen.
-It is now possible to refund a shipping line inside an order.
-We also fixed an issue that occurred when editing a product’s regular and sale prices.
+6.7:
+We have heard that orders may get fulfilled in multiple shipments. With this update, you can now print more than one label for an order. We also fixed a few other small things to make your experience better.
+
 </en-US>

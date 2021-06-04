@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingCustomsBinding
@@ -24,13 +25,23 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
     }
 
     private val viewModel: ShippingCustomsViewModel by viewModels()
+    private lateinit var doneMenuItem: MenuItem
 
-    private val customsAdapter: ShippingCustomsAdapter by lazy { ShippingCustomsAdapter() }
+    private val customsAdapter: ShippingCustomsAdapter by lazy {
+        ShippingCustomsAdapter(
+            weightUnit = viewModel.weightUnit,
+            currencyUnit = viewModel.currencyUnit,
+            countries = viewModel.countries.toTypedArray(),
+            listener = viewModel
+        )
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
         inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSubmitForm ?: false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -54,15 +65,24 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
         binding.packagesList.apply {
             this.adapter = customsAdapter
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            itemAnimator = DefaultItemAnimator().apply {
+                // Disable change animations to avoid duplicating viewholders
+                supportsChangeAnimations = false
+            }
         }
 
-        setupObservers(binding)
+        setupObservers()
     }
 
-    private fun setupObservers(binding: FragmentShippingCustomsBinding) {
+    private fun setupObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
             new.customsPackages.takeIfNotEqualTo(old?.customsPackages) { customsPackages ->
                 customsAdapter.customsPackages = customsPackages
+            }
+            new.canSubmitForm.takeIfNotEqualTo(old?.canSubmitForm) { canSubmitForm ->
+                if (::doneMenuItem.isInitialized) {
+                    doneMenuItem.isVisible = canSubmitForm
+                }
             }
         })
         viewModel.event.observe(viewLifecycleOwner, { event ->

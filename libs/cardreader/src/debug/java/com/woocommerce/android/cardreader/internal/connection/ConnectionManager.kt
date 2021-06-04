@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.ReaderCallback
 import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.model.external.ConnectionStatus
@@ -60,6 +61,18 @@ internal class ConnectionManager(
                 }
             })
         }
+    }
+
+    suspend fun disconnectReader() = suspendCoroutine<Boolean> { continuation ->
+        terminal.disconnectReader(object : Callback {
+            override fun onFailure(e: TerminalException) {
+                continuation.resume(false)
+            }
+
+            override fun onSuccess() {
+                continuation.resume(true)
+            }
+        })
     }
 
     override fun onUnexpectedReaderDisconnect(reader: Reader) {

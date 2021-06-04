@@ -35,6 +35,7 @@ class CardReaderModule {
         override fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> = flow {}
 
         override suspend fun connectToReader(cardReader: CardReader): Boolean = false
+        override suspend fun disconnectReader(): Boolean = false
 
         override suspend fun collectPayment(
             paymentDescription: String,
@@ -50,5 +51,7 @@ class CardReaderModule {
         override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = flow {}
 
         override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> = flow {}
+
+        override suspend fun clearCachedCredentials() {}
     }
 }

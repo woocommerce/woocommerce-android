@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.cardreader
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -31,14 +32,17 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.C
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FetchingOrderState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,6 +54,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -63,6 +68,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore,
+    private val orderRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
@@ -74,8 +80,9 @@ class CardReaderPaymentViewModel @Inject constructor(
     val viewStateData: LiveData<ViewState> = viewState
 
     private var paymentFlowJob: Job? = null
+    @VisibleForTesting var fetchOrderJob: Job? = null
 
-    final fun start() {
+    fun start() {
         // TODO cardreader Check if the payment was already processed and cancel this flow
         // TODO cardreader Make sure a reader is connected
         if (paymentFlowJob == null) {
@@ -91,7 +98,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                         // TODO cardreader don't hardcode currency symbol ($)
                         collectPaymentFlow(
                             cardReaderManager,
-                            getPaymentDescription(order),
+                            order.getPaymentDescription(),
                             order.remoteOrderId,
                             amount,
                             order.currency,
@@ -150,14 +157,7 @@ class CardReaderPaymentViewModel @Inject constructor(
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             // TODO cardreader store receipt data into a persistent storage
-            is PaymentCompleted -> viewState.postValue(
-                PaymentSuccessfulState(
-                    amountLabel,
-                    // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-                    { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
-                    { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
-                )
-            )
+            is PaymentCompleted -> onPaymentCompleted(paymentStatus, amountLabel)
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
             }
@@ -165,6 +165,27 @@ class CardReaderPaymentViewModel @Inject constructor(
                 // TODO cardreader prompt the user to tap/insert a card
             }
             is PaymentFailed -> emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
+        }
+    }
+
+    private fun onPaymentCompleted(paymentStatus: PaymentCompleted, amountLabel: String) {
+        viewState.postValue(PaymentSuccessfulState(
+            amountLabel,
+            // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
+            { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
+            { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
+        ))
+        reFetchOrder()
+    }
+
+    @VisibleForTesting
+    fun reFetchOrder() {
+        fetchOrderJob = launch {
+            orderRepository.fetchOrder(arguments.orderIdentifier)
+                ?: triggerEvent(Event.ShowSnackbar(R.string.card_reader_fetching_order_failed))
+            if (viewState.value == FetchingOrderState) {
+                triggerEvent(Exit)
+            }
         }
     }
 
@@ -201,21 +222,29 @@ class CardReaderPaymentViewModel @Inject constructor(
     }
 
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
+    override fun onCleared() {
+        super.onCleared()
+        orderRepository.onCleanup()
+    }
 
     private suspend fun loadOrderFromDB() =
         withContext(dispatchers.io) { orderStore.getOrderByIdentifier(arguments.orderIdentifier) }
 
-    private fun getPaymentDescription(order: WCOrderModel): String =
-        resourceProvider.getString(
-            R.string.card_reader_payment_description,
-            order.id,
-            selectedSite.get().name.orEmpty()
-        )
+    private fun WCOrderModel.getPaymentDescription(): String =
+        resourceProvider.getString(R.string.card_reader_payment_description, this.id, selectedSite.get().name.orEmpty())
 
     sealed class CardReaderPaymentEvent : Event() {
         data class PrintReceipt(val receiptUrl: String, val documentName: String) : CardReaderPaymentEvent()
         data class SendReceipt(val content: UiString, val subject: UiString, val address: String) :
             CardReaderPaymentEvent()
+    }
+
+    fun onBackPressed() {
+        return if (fetchOrderJob?.isActive == true) {
+            viewState.value = FetchingOrderState
+        } else {
+            triggerEvent(Exit)
+        }
     }
 
     sealed class ViewState(
@@ -291,5 +320,12 @@ class CardReaderPaymentViewModel @Inject constructor(
                 primaryActionLabel = R.string.card_reader_payment_print_receipt,
                 secondaryActionLabel = R.string.card_reader_payment_send_receipt
             )
+
+        object FetchingOrderState : ViewState(
+            headerLabel = R.string.card_reader_payment_fetch_order_loading_header,
+            hintLabel = R.string.card_reader_payment_fetch_order_loading_hint,
+            paymentStateLabel = R.string.card_reader_payment_fetch_order_loading_payment_state,
+            isProgressVisible = true
+        )
     }
 }
