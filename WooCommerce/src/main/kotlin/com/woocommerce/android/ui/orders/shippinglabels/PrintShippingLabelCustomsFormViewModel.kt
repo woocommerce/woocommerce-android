@@ -3,9 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.media.FileUtils
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -15,17 +13,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import kotlinx.parcelize.Parcelize
 import java.io.File
-import java.io.InterruptedIOException
-import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
 class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val dispatchers: CoroutineDispatchers
+    private val fileDownloader: FileDownloader
 ) : ScopedViewModel(savedStateHandle) {
     private var printJob: Job? = null
     private val navArgs: PrintShippingLabelCustomsFormFragmentArgs by savedState.navArgs()
@@ -39,7 +34,7 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
         printJob?.cancel()
         printJob = launch {
             viewState = viewState.copy(isProgressDialogShown = true)
-            val file = downloadFile(navArgs.url)
+            val file = downloadInvoice()
             viewState = viewState.copy(isProgressDialogShown = false)
             if (!isActive) return@launch
             if (file == null) {
@@ -58,26 +53,11 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
         printJob?.cancel()
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun downloadFile(url: String): File? {
+    private suspend fun downloadInvoice(): File? {
         val file = FileUtils.createTempPDFFile(storageDirectory) ?: return null
-        return try {
-            if (file.exists()) file.delete()
-            runInterruptible(dispatchers.io) {
-                URL(url).openConnection().inputStream.use { inputStream ->
-                    file.outputStream().use { outputStream ->
-                        inputStream.copyTo(outputStream)
-                    }
-                }
-                file
-            }
-        } catch (e: InterruptedIOException) {
-            WooLog.d(T.ORDERS, "Downloading commercial invoice cancelled")
-            file.delete()
-            null
-        } catch (e: Exception) {
-            WooLog.e(T.ORDERS, "Downloading commercial invoice failed", e)
-            file.delete()
+        return if (fileDownloader.downloadFile(navArgs.url, file)) {
+            file
+        } else {
             null
         }
     }
