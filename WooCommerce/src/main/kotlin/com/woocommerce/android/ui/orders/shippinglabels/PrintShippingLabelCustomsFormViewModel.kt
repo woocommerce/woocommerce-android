@@ -54,7 +54,7 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     }
 
     fun onBackButtonClicked() {
-        if (navArgs.isReprint) {
+        if (!navArgs.isReprint) {
             triggerEvent(ExitWithResult(Unit))
         } else {
             triggerEvent(Exit)
