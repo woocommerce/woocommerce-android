@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.model.ProductAttribute
 
-abstract class AttributeBaseAdapter<T: RecyclerView.ViewHolder> : RecyclerView.Adapter<T>() {
+abstract class AttributeBaseAdapter<T : RecyclerView.ViewHolder> : RecyclerView.Adapter<T>() {
     var attributeList = listOf<ProductAttribute>()
 
     init {
