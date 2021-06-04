@@ -4,7 +4,6 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
-import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CapturePaymentResponseMapper
 import dagger.Module
@@ -17,10 +16,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class CardReaderModule {
-    @Provides
-    @Singleton
-    fun provideReceiptCreator(): ReceiptCreator = ReceiptCreator()
-
     @Provides
     @Singleton
     fun provideCardReaderManager(

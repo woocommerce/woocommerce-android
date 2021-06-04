@@ -10,7 +10,6 @@ import com.woocommerce.android.cardreader.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
-import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,10 +24,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class CardReaderModule {
-    @Provides
-    @Singleton
-    fun provideReceiptCreator(): ReceiptCreator = ReceiptCreator()
-
     @Provides
     @Singleton
     fun provideCardReaderManager(): CardReaderManager = object : CardReaderManager {

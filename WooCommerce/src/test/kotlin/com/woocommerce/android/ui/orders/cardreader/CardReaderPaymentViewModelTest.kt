@@ -23,7 +23,6 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
@@ -35,7 +34,6 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
-import com.woocommerce.android.util.receipts.ReceiptDataMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -72,8 +70,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
-    private val receiptCreator: ReceiptCreator = mock()
-    private val receiptDataMapper: ReceiptDataMapper = mock()
     private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
 
@@ -90,8 +86,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             logger = loggerWrapper,
             orderStore = orderStore,
             orderRepository = orderRepository,
-            receiptCreator = receiptCreator,
-            receiptDataMapper = receiptDataMapper,
             dispatchers = coroutinesTestRule.testDispatchers,
             resourceProvider = resourceProvider,
             selectedSite = selectedSite
@@ -109,8 +103,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
-        whenever(receiptDataMapper.mapToReceiptData(any(), any())).thenReturn(mock())
-        whenever(receiptCreator.createHtmlReceipt(any())).thenReturn("test receipt")
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
         whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
     }
@@ -212,7 +204,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment completed, then ui updated to payment successful state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
-                flow { emit(PaymentCompleted(mock())) }
+                flow { emit(PaymentCompleted("")) }
             }
 
             viewModel.start()
@@ -468,7 +460,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment succeeds, then correct labels, illustration and buttons are shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
-                flow { emit(PaymentCompleted(mock())) }
+                flow { emit(PaymentCompleted("")) }
             }
 
             viewModel.start()
@@ -507,7 +499,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when user clicks on print receipt button, then PrintReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
-                flow { emit(PaymentCompleted(mock())) }
+                flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
@@ -520,7 +512,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when user clicks on send receipt button, then SendReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
-                flow { emit(PaymentCompleted(mock())) }
+                flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 

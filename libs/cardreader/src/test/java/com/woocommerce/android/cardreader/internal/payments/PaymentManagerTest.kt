@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.stripe.stripeterminal.model.external.Charge
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
@@ -32,7 +33,6 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -73,7 +73,6 @@ class PaymentManagerTest {
     private val collectPaymentAction: CollectPaymentAction = mock()
     private val processPaymentAction: ProcessPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
-    private val receiptPaymentInfoMapper: ReceiptPaymentInfoMapper = mock()
 
     private val expectedSequence = listOf(
         InitializingPayment::class,
@@ -91,8 +90,7 @@ class PaymentManagerTest {
             createPaymentAction,
             collectPaymentAction,
             processPaymentAction,
-            paymentErrorMapper,
-            receiptPaymentInfoMapper
+            paymentErrorMapper
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(createPaymentAction.createPaymentIntent(anyString(), anyInt(), anyString(), anyString()))
@@ -114,8 +112,6 @@ class PaymentManagerTest {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<String>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
-        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(anyOrNull()))
-            .thenReturn(mock())
     }
 
     // BEGIN - Arguments validation and conversion
@@ -392,8 +388,11 @@ class PaymentManagerTest {
     // END - Processing Payment
     // BEGIN - Capturing Payment
     @Test
-    fun `when mapping ReceiptPaymentInfo fails, then PaymentFailed emitted`() = runBlockingTest {
-        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalArgumentException(""))
+    fun `when receiptUrl is empty, then PaymentFailed emitted`() = runBlockingTest {
+        whenever(processPaymentAction.processPayment(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentStatus.Success(
+                createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
+            )) })
 
         val result = manager
             .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
@@ -402,8 +401,11 @@ class PaymentManagerTest {
     }
 
     @Test
-    fun `when mapping ReceiptPaymentInfo fails, then PaymentData for retry are empty`() = runBlockingTest {
-        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenThrow(IllegalArgumentException(""))
+    fun `when receiptUrl is empty, then PaymentData for retry are empty`() = runBlockingTest {
+        whenever(processPaymentAction.processPayment(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentStatus.Success(
+                createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
+            )) })
 
         val result = manager
             .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
@@ -440,14 +442,17 @@ class PaymentManagerTest {
     }
 
     @Test
-    fun `when capturing payment succeeds, then PaymentCompleted event contains receipt data`() = runBlockingTest {
-        val mockedReceiptData = mock<ReceiptPaymentInfo>()
-        whenever(receiptPaymentInfoMapper.mapPaymentIntentToPaymentInfo(any())).thenReturn(mockedReceiptData)
+    fun `when capturing payment succeeds, then PaymentCompleted event contains receipt url`() = runBlockingTest {
+        val expectedReceiptUrl = "abcd"
+        whenever(processPaymentAction.processPayment(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentStatus.Success(
+                createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = expectedReceiptUrl)
+            )) })
 
         val result = manager
             .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
 
-        assertThat((result.last() as PaymentCompleted).receiptPaymentInfo).isEqualTo(mockedReceiptData)
+        assertThat((result.last() as PaymentCompleted).receiptUrl).isEqualTo(expectedReceiptUrl)
     }
 
     @Test
@@ -520,9 +525,7 @@ class PaymentManagerTest {
     @Test
     fun `given PaymentStatus REQUIRES_CAPTURE, when retrying payment, then flow resumes on capturePayment`() =
         runBlockingTest {
-            val paymentIntent = mock<PaymentIntent>().also {
-                whenever(it.status).thenReturn(REQUIRES_CAPTURE)
-            }
+            val paymentIntent = createPaymentIntent(REQUIRES_CAPTURE)
             val paymentData = PaymentDataImpl(paymentIntent)
 
             val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).first()
@@ -531,10 +534,13 @@ class PaymentManagerTest {
         }
     // END - Retry
 
-    private fun createPaymentIntent(status: PaymentIntentStatus): PaymentIntent =
+    private fun createPaymentIntent(status: PaymentIntentStatus, receiptUrl: String? = "test url"): PaymentIntent =
         mock<PaymentIntent>().also {
             whenever(it.status).thenReturn(status)
             whenever(it.id).thenReturn("dummyId")
+            val charge = mock<Charge>()
+            whenever(charge.receiptUrl).thenReturn(receiptUrl)
+            whenever(it.getCharges()).thenReturn(listOf(charge))
         }
 
     private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =

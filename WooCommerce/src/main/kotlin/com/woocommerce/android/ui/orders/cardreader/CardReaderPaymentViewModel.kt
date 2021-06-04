@@ -23,8 +23,9 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.receipts.ReceiptCreator
-import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
@@ -38,10 +39,10 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.receipts.ReceiptDataMapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,7 +54,6 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -64,12 +64,10 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
-    private val receiptCreator: ReceiptCreator,
     private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore,
     private val orderRepository: OrderDetailRepository,
-    private val receiptDataMapper: ReceiptDataMapper,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
@@ -121,12 +119,12 @@ class CardReaderPaymentViewModel @Inject constructor(
         }
     }
 
-    fun retry(orderId: Long, paymentData: PaymentData, amountLabel: String) {
+    fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
             delay(ARTIFICIAL_RETRY_DELAY)
             cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
-                onPaymentStatusChanged(orderId, paymentStatus, amountLabel)
+                onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
             }
         }
     }
@@ -142,12 +140,13 @@ class CardReaderPaymentViewModel @Inject constructor(
     ) {
         cardReaderManager.collectPayment(paymentDescription, orderId, amount, currency, billingEmail.ifEmpty { null })
             .collect { paymentStatus ->
-                onPaymentStatusChanged(orderId, paymentStatus, amountLabel)
+                onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
             }
     }
 
     private fun onPaymentStatusChanged(
         orderId: Long,
+        billingEmail: String,
         paymentStatus: CardPaymentStatus,
         amountLabel: String
     ) {
@@ -157,23 +156,28 @@ class CardReaderPaymentViewModel @Inject constructor(
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             // TODO cardreader store receipt data into a persistent storage
-            is PaymentCompleted -> onPaymentCompleted(paymentStatus, amountLabel)
+            is PaymentCompleted -> onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
             }
             WaitingForInput -> {
                 // TODO cardreader prompt the user to tap/insert a card
             }
-            is PaymentFailed -> emitFailedPaymentState(orderId, paymentStatus, amountLabel)
+            is PaymentFailed -> emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
         }
     }
 
-    private fun onPaymentCompleted(paymentStatus: PaymentCompleted, amountLabel: String) {
+    private fun onPaymentCompleted(
+        paymentStatus: PaymentCompleted,
+        billingEmail: String,
+        orderId: Long,
+        amountLabel: String
+    ) {
         viewState.postValue(PaymentSuccessfulState(
             amountLabel,
             // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-            { onPrintReceiptClicked(paymentStatus.receiptPaymentInfo) },
-            { onSendReceiptClicked(paymentStatus.receiptPaymentInfo) }
+            { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
+            { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
         ))
         reFetchOrder()
     }
@@ -189,37 +193,39 @@ class CardReaderPaymentViewModel @Inject constructor(
         }
     }
 
-    private fun emitFailedPaymentState(orderId: Long, error: PaymentFailed, amountLabel: String) {
+    private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
         WooLog.e(WooLog.T.ORDERS, error.errorMessage)
         val onRetryClicked = error.paymentDataForRetry?.let {
-            { retry(orderId, it, amountLabel) }
+            { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow() }
         viewState.postValue(FailedPaymentState(error.type, amountLabel, onRetryClicked))
     }
 
-    private fun onPrintReceiptClicked(receiptPaymentInfo: ReceiptPaymentInfo) {
+    private fun onPrintReceiptClicked(receiptUrl: String, documentName: String) {
         launch {
-            buildHtmlReceipt(receiptPaymentInfo)?.let { htmlReceipt ->
-                triggerEvent(PrintReceipt(htmlReceipt, "receipt-${receiptPaymentInfo.dedicatedFileName}"))
-            }
+            // TODO cardreader show a progress dialog as url loading might take some time
+            triggerEvent(PrintReceipt(receiptUrl, documentName))
         }
     }
 
-    private fun onSendReceiptClicked(receiptPaymentInfo: ReceiptPaymentInfo) {
+    private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
         launch {
-            buildHtmlReceipt(receiptPaymentInfo)?.let { htmlReceipt ->
-                triggerEvent(SendReceipt(htmlReceipt))
-            }
+            triggerEvent(SendReceipt(
+                content = UiStringRes(
+                    R.string.card_reader_payment_receipt_email_content,
+                    listOf(UiStringText(receiptUrl))
+                ),
+                subject = UiStringRes(
+                    R.string.card_reader_payment_receipt_email_subject,
+                    listOf(UiStringText(selectedSite.get().name.orEmpty()))
+                ),
+                address = billingEmail
+            ))
         }
     }
 
-    private suspend fun buildHtmlReceipt(receiptPaymentInfo: ReceiptPaymentInfo): String? {
-        return loadOrderFromDB()?.let { order ->
-            val receiptData = receiptDataMapper.mapToReceiptData(order, receiptPaymentInfo)
-            receiptCreator.createHtmlReceipt(receiptData)
-        } ?: null.also {
-            logger.e(AppLog.T.MAIN, "Order not found when building receipt. This is not expected.")
-        }
+    fun onEmailActivityNotFound() {
+        triggerEvent(ShowSnackbar(R.string.card_reader_payment_email_client_not_found))
     }
 
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
@@ -235,8 +241,9 @@ class CardReaderPaymentViewModel @Inject constructor(
         resourceProvider.getString(R.string.card_reader_payment_description, this.id, selectedSite.get().name.orEmpty())
 
     sealed class CardReaderPaymentEvent : Event() {
-        data class PrintReceipt(val htmlReceipt: String, val documentName: String) : CardReaderPaymentEvent()
-        data class SendReceipt(val htmlReceipt: String) : CardReaderPaymentEvent()
+        data class PrintReceipt(val receiptUrl: String, val documentName: String) : CardReaderPaymentEvent()
+        data class SendReceipt(val content: UiString, val subject: UiString, val address: String) :
+            CardReaderPaymentEvent()
     }
 
     fun onBackPressed() {
