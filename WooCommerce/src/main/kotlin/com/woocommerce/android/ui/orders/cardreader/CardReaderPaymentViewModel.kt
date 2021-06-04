@@ -215,7 +215,10 @@ class CardReaderPaymentViewModel @Inject constructor(
                     R.string.card_reader_payment_receipt_email_content,
                     listOf(UiStringText(receiptUrl))
                 ),
-                subject = UiStringRes(R.string.card_reader_payment_receipt_email_subject),
+                subject = UiStringRes(
+                    R.string.card_reader_payment_receipt_email_subject,
+                    listOf(UiStringText(selectedSite.get().name.orEmpty()))
+                ),
                 address = billingEmail
             ))
         }
