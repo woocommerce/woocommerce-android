@@ -149,14 +149,14 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         moveNextMenuItem?.isVisible = navArgs.isVariationCreation and viewModel.productDraftAttributes.isNotEmpty()
 
-        val adapter: AttributeListAdapter
+        val adapter: AddAttributeAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter { attributeId, attributeName ->
+            adapter = AddAttributeAdapter { attributeId, attributeName ->
                 viewModel.onAttributeListItemClick(attributeId, attributeName, navArgs.isVariationCreation)
             }
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as AttributeListAdapter
+            adapter = binding.attributeList.adapter as AddAttributeAdapter
         }
 
         val allDraftAttributes = viewModel.productDraftAttributes
@@ -170,7 +170,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             }?.terms ?: emptyList()
         }
 
-        adapter.setAttributeList(
+        adapter.refreshAttributeList(
             ArrayList<ProductAttribute>().also { allAttributes ->
                 // add the list of global attributes along with any terms each global attribute has in the product draft
                 allAttributes.addAll(
