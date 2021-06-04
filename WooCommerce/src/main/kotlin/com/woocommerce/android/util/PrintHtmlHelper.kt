@@ -37,7 +37,7 @@ class PrintHtmlHelper @Inject constructor() {
     }
 
     private fun enqueuePrintJob(activity: Activity, webView: WebView, documentName: String) {
-        (activity.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.print(
+        (activity.getSystemService(Context.PRINT_SERVICE) as PrintManager).print(
             documentName,
             webView.createPrintDocumentAdapter(documentName),
             PrintAttributes.Builder().build()

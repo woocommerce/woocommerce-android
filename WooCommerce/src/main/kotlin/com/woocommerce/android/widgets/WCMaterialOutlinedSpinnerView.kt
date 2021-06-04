@@ -9,8 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
+import androidx.appcompat.view.ContextThemeWrapper
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.R.style
 import com.woocommerce.android.databinding.ViewMaterialOutlinedSpinnerBinding
 import com.woocommerce.android.extensions.setHtmlText
 
@@ -63,6 +66,23 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
     }
 
     fun getText() = binding.spinnerEditText.text.toString()
+
+    fun <T> setup(
+        values: Array<T>,
+        onSelected: (T) -> Unit,
+        mapper: (T) -> String = { it.toString() }
+    ) {
+        val textValues = values.map(mapper).toTypedArray()
+        setClickListener {
+            MaterialAlertDialogBuilder(ContextThemeWrapper(context, style.Theme_Woo_DayNight))
+                .setTitle(hint)
+                .setSingleChoiceItems(textValues, textValues.indexOf(getText())) { dialog, which ->
+                    dialog.dismiss()
+                    onSelected(values[which])
+                }
+                .show()
+        }
+    }
 
     override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()

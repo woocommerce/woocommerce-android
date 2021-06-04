@@ -47,7 +47,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         gmtOffset = 0f
     )
     private val parameterRepository: ParameterRepository = mock {
-        on(it.getParameters(any(), any())).thenReturn(siteParams)
+        on(it.getParameters(any(), any<SavedStateWithArgs>())).thenReturn(siteParams)
     }
 
     private val pricingData = PricingData(

@@ -29,13 +29,18 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.C
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FetchingOrderState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.util.receipts.ReceiptDataMapper
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -61,6 +66,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val loggerWrapper: AppLogWrapper = mock()
     private val orderStore: WCOrderStore = mock()
     private val cardReaderManager: CardReaderManager = mock()
+    private val orderRepository: OrderDetailRepository = mock()
     private val receiptCreator: ReceiptCreator = mock()
     private val receiptDataMapper: ReceiptDataMapper = mock()
 
@@ -76,6 +82,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderManager = cardReaderManager,
             logger = loggerWrapper,
             orderStore = orderStore,
+            orderRepository = orderRepository,
             receiptCreator = receiptCreator,
             receiptDataMapper = receiptDataMapper,
             dispatchers = coroutinesTestRule.testDispatchers
@@ -490,5 +497,76 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
+        }
+
+    @Test
+    fun `given user presses back button, when re-fetching order, then FetchingOrderState shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val job = mock<Job>()
+            whenever(job.isActive).thenReturn(true)
+            viewModel.fetchOrderJob = job
+
+            viewModel.onBackPressed()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FetchingOrderState::class.java)
+        }
+
+    @Test
+    fun `given user presses back button, when re-fetching order, then screen not dismissed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val job = mock<Job>()
+            whenever(job.isActive).thenReturn(true)
+            viewModel.fetchOrderJob = job
+
+            viewModel.onBackPressed()
+
+            assertThat(viewModel.event.value).isNotEqualTo(Exit)
+        }
+
+    @Test
+    fun `given user presses back button, when not re-fetching order, then screen dismissed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val job = mock<Job>()
+            whenever(job.isActive).thenReturn(false)
+            viewModel.fetchOrderJob = job
+
+            viewModel.onBackPressed()
+
+            assertThat(viewModel.event.value).isEqualTo(Exit)
+        }
+
+    @Test
+    fun `given FetchingOrderState shown, when re-fetching order completes, then screen auto-dismissed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val job = mock<Job>()
+            whenever(job.isActive).thenReturn(true)
+            viewModel.fetchOrderJob = job
+            viewModel.onBackPressed() // show FetchingOrderState screen
+
+            viewModel.reFetchOrder()
+
+            assertThat(viewModel.event.value).isEqualTo(Exit)
+        }
+
+    @Test
+    fun `given FetchingOrderState not shown, when re-fetching order completes, then screen not auto-dismissed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val job = mock<Job>()
+            whenever(job.isActive).thenReturn(true)
+            viewModel.fetchOrderJob = job
+
+            viewModel.reFetchOrder()
+
+            assertThat(viewModel.event.value).isNotEqualTo(Exit)
+        }
+
+    @Test
+    fun `when re-fetching order fails, then SnackBar shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(any())).thenReturn(null)
+
+            viewModel.reFetchOrder()
+
+            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
         }
 }
