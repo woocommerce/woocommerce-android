@@ -21,10 +21,21 @@ apply plugin: 'io.sentry.android.gradle'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 repositories {
+    maven {
+        url 'https://a8c-libs.s3.amazonaws.com/android'
+        content {
+            includeGroup "org.wordpress"
+        }
+    }
+    maven {
+        url 'https://zendesk.jfrog.io/zendesk/repo'
+        content {
+            includeGroup "com.zendesk"
+            includeGroup "com.zendesk.belvedere2"
+        }
+    }
     mavenCentral()
     maven { url "https://jitpack.io" }
-    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
-    maven { url 'https://a8c-libs.s3.amazonaws.com/android' }
 }
 
 allOpen {
