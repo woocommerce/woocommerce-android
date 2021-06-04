@@ -140,6 +140,7 @@ class PrintShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_print_sh
 
     private fun openShippingLabelPreview(file: File) {
         ActivityUtils.previewPDFFile(requireActivity(), file)
+        viewModel.onPreviewLabelCompleted()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
