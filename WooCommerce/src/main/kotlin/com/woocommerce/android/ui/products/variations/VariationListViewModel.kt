@@ -105,7 +105,11 @@ class VariationListViewModel @AssistedInject constructor(
 
     fun onCreateFirstVariationRequested() {
         trackWithProductId(Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
-        triggerEvent(ShowAddAttributeView)
+        viewState.parentProduct
+            ?.variationEnabledAttributes
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { handleVariationCreation(openVariationDetails = false) }
+            ?: triggerEvent(ShowAddAttributeView)
     }
 
     fun onVariationDeleted(productID: Long, variationID: Long) = launch {
