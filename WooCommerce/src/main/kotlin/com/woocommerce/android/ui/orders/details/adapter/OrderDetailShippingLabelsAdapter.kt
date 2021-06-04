@@ -34,6 +34,7 @@ class OrderDetailShippingLabelsAdapter(
     interface OnShippingLabelClickListener {
         fun onRefundRequested(shippingLabel: ShippingLabel)
         fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel)
+        fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel)
     }
 
     var shippingLabels: List<ShippingLabel> = ArrayList()
@@ -245,6 +246,14 @@ class OrderDetailShippingLabelsAdapter(
                 listener.onRefundRequested(shippingLabel)
                 true
             }
+            popup.menu.findItem(R.id.menu_print_customs_form).apply {
+                isVisible = shippingLabel.hasCommercialInvoice
+                setOnMenuItemClickListener {
+                    listener.onPrintCustomsFormClicked(shippingLabel)
+                    true
+                }
+            }
+
             popup.show()
         }
     }

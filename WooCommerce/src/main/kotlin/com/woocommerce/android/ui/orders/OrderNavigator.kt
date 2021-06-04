@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrack
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
+import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
 import javax.inject.Inject
@@ -117,8 +118,13 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewPrintCustomsForm -> {
-                val action = PrintShippingLabelFragmentDirections
-                    .actionPrintShippingLabelFragmentToPrintShippingLabelCustomsFormFragment(target.invoiceUrl)
+                val action = if (fragment is PrintShippingLabelFragment){
+                    PrintShippingLabelFragmentDirections
+                        .actionPrintShippingLabelFragmentToPrintShippingLabelCustomsFormFragment(target.invoiceUrl)
+                } else {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToPrintShippingLabelCustomsFormFragment(target.invoiceUrl)
+                }
                 fragment.findNavController().navigateSafely(action)
             }
             is StartShippingLabelCreationFlow -> {
