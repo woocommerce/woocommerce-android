@@ -137,7 +137,9 @@ class ReceiptCreator {
      * Shows decimal places only when the number is not an integer
      */
     private fun formatFloat(number: Float): String =
-        if (number.rem(1f).equals(0f)) number.toInt().toString() else "%.2f".format(number)
+        if (number.isInteger()) number.toInt().toString() else "%.2f".format(number)
+
+    private fun Float.isInteger() = rem(1f) == 0f
 
     private companion object {
         private const val MARGIN: Int = 16

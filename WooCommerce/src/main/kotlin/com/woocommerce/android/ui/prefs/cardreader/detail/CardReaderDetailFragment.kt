@@ -1,23 +1,27 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +44,11 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 is CardReaderConnectScreen ->
                     findNavController()
                         .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderConnectFragment)
+                is CardReaderUpdateScreen ->
+                    findNavController().navigateSafely(
+                        CardReaderDetailFragmentDirections
+                            .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(event.startedByUser)
+                    )
                 is ShowSnackbar -> {
                     Snackbar.make(
                         binding.root,
@@ -47,8 +56,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
-                else ->
-                    event.isHandled = false
+                else -> event.isHandled = false
             }
         })
 
@@ -64,7 +72,13 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         primaryActionBtn.setOnClickListener { state.primaryButtonState?.onActionClicked?.invoke() }
                         UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState?.text)
                         secondaryActionBtn.setOnClickListener { state.secondaryButtonState?.onActionClicked?.invoke() }
-                        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(color.woo_red_50)
+                        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(
+                            R.color.warning_banner_foreground_color
+                        )
+                        with(cardReaderDetailLearnMoreTv.root) {
+                            movementMethod = LinkMovementMethod.getInstance()
+                            UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                        }
                     }
                 }
                 is NotConnectedState -> {
@@ -72,15 +86,27 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
                         UiHelpers.setImageOrHide(cardReaderDetailIllustration, state.illustration)
                         UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailFirstHintNumberLabel, state.firstHintNumber)
                         UiHelpers.setTextOrHide(cardReaderDetailSecondHintLabel, state.secondHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailSecondHintNumberLabel, state.secondHintNumber)
+                        UiHelpers.setTextOrHide(cardReaderDetailThirdHintLabel, state.thirdHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailThirdHintNumberLabel, state.thirdHintNumber)
                         UiHelpers.setTextOrHide(cardReaderDetailConnectBtn, state.connectBtnLabel)
                         cardReaderDetailConnectBtn.setOnClickListener { state.onPrimaryActionClicked.invoke() }
+                        with(cardReaderDetailLearnMoreTv.root) {
+                            movementMethod = LinkMovementMethod.getInstance()
+                            UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                        }
                     }
                 }
                 Loading -> {
                 }
             }.exhaustive
         })
+
+        handleResult<UpdateResult>(CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT) {
+            viewModel.onUpdateReaderResult(it)
+        }
     }
 
     private fun makeStateVisible(binding: FragmentCardReaderDetailBinding, state: ViewState) {

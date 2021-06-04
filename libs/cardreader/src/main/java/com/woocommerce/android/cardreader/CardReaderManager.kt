@@ -14,6 +14,7 @@ interface CardReaderManager {
     fun initialize(app: Application)
     fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
     suspend fun connectToReader(cardReader: CardReader): Boolean
+    suspend fun disconnectReader(): Boolean
 
     // TODO cardreader Stripe accepts only Int, is that ok?
     // TODO cardreader wrap payment params with a data class
