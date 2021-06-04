@@ -9,19 +9,18 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
+import com.woocommerce.android.extensions.colorizeTitle
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.CustomProgressDialog
 
 class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
@@ -76,6 +75,11 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        doneMenuItem?.colorizeTitle(context, R.color.woo_pink_50)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ATTRIBUTE_LIST -> {
@@ -96,9 +100,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
         binding.attributeList.layoutManager = layoutManager
         binding.attributeList.itemAnimator = null
-        binding.attributeList.addItemDecoration(AlignedDividerDecoration(
-            requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
-        ))
 
         binding.addAttributeButton.setOnClickListener {
             if (navArgs.isVariationCreation) {
@@ -162,7 +163,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
             adapter = binding.attributeList.adapter as AttributeListAdapter
         }
 
-        adapter.setAttributeList(attributes)
+        adapter.refreshAttributeList(attributes)
     }
 
     private fun showProgressDialog(show: Boolean) {
