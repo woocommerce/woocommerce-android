@@ -31,7 +31,7 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     fun setup() {
         whenever(fileUtils.createTempTimeStampedFile(any(), any(), any())).thenReturn(File("./test"))
         viewModel = PrintShippingLabelCustomsFormViewModel(
-            savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(url).initSavedStateHandle(),
+            savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(url, true).initSavedStateHandle(),
             fileDownloader = fileDownloader,
             fileUtils = fileUtils
         )
