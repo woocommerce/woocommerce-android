@@ -42,7 +42,7 @@ class AppSettingsPresenterTest {
 
     @Before
     fun setup() {
-        appSettingsPresenter = AppSettingsPresenter(dispatcher, accountStore, cardReaderManager)
+        appSettingsPresenter = AppSettingsPresenter(dispatcher, accountStore, cardReaderManager, mock())
         appSettingsPresenter.takeView(appSettingsContractView)
 
         actionCaptor = argumentCaptor()

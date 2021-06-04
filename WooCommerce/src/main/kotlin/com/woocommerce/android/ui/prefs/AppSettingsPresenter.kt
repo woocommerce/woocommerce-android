@@ -10,13 +10,16 @@ import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
+import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
 import javax.inject.Inject
 
 class AppSettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
-    private val cardReaderManager: CardReaderManager
+    private val cardReaderManager: CardReaderManager,
+    @Suppress("unused") // We keep it here to make sure that the store is subscribed to the event bus
+    private val notificationStore: NotificationStore
 ) : AppSettingsContract.Presenter {
     private var appSettingsView: AppSettingsContract.View? = null
 
