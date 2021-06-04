@@ -2,14 +2,11 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -20,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
+import com.woocommerce.android.extensions.colorizeTitle
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -176,14 +174,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
          * we only want to show the Next menu item if we're under the creation of
          * the first variation for a Variable Product
          */
-        moveNextMenuItem = menu.findItem(R.id.menu_next)?.apply {
-            context?.let { ContextCompat.getColor(it, R.color.woo_pink_30) }
-                ?.let {
-                    SpannableString(this.title).apply {
-                        setSpan(ForegroundColorSpan(it), 0, title.length, 0)
-                    }
-                }.let { this.title = it }
-        }
+        moveNextMenuItem = menu.findItem(R.id.menu_next)
+            ?.colorizeTitle(context, R.color.woo_pink_30)
 
         /** we don't want to show the Remove menu item if this is new attribute
          * or if we're under the First variation creation flow
