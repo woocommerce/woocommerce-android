@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +41,7 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = false)
             if (!isActive) return@launch
             if (file == null) {
-                // TODO triggerEvent(ShowSnackbar(R.string.))
+                triggerEvent(ShowSnackbar(R.string.shipping_label_print_customs_form_download_failed))
                 return@launch
             }
             triggerEvent(PrintCustomsForm(file))
