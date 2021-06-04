@@ -79,7 +79,7 @@ class PrintShippingLabelCustomsFormFragment : BaseFragment(R.layout.fragment_pri
             progressDialog = CustomProgressDialog.show(
                 title = getString(R.string.web_view_loading_title),
                 message = getString(R.string.web_view_loading_message),
-                onDismissListener = { viewModel.onDownloadCanceled() }
+                onCancelListener = { viewModel.onDownloadCanceled() }
             ).also {
                 it.show(parentFragmentManager, CustomProgressDialog.TAG)
             }

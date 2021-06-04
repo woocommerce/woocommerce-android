@@ -18,18 +18,18 @@ class CustomProgressDialog : DialogFragment() {
     companion object {
         const val TAG: String = "CustomProgressDialog"
 
-        fun show(title: String, message: String, onDismissListener: (() -> Unit)? = null): CustomProgressDialog {
+        fun show(title: String, message: String, onCancelListener: (() -> Unit)? = null): CustomProgressDialog {
             val fragment = CustomProgressDialog()
             fragment.progressTitle = title
             fragment.progressMessage = message
-            fragment.onDismissListener = onDismissListener
+            fragment.onCancelListener = onCancelListener
             return fragment
         }
     }
 
     private var progressTitle: String? = null
     private var progressMessage: String? = null
-    private var onDismissListener: (() -> Unit)? = null
+    private var onCancelListener: (() -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogView = View.inflate(activity, R.layout.view_progress_dialog, null)
@@ -43,8 +43,8 @@ class CustomProgressDialog : DialogFragment() {
                 .create()
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        onDismissListener?.invoke()
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        onCancelListener?.invoke()
     }
 }
