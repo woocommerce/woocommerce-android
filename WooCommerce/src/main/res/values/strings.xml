@@ -661,6 +661,10 @@
     <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Connecting to reader</string>
 
+    <string name="card_reader_payment_fetch_order_loading_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Updating the app state</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Refreshing order</string>
+
     <string name="card_reader_collect_payment">Collect payment</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
@@ -687,6 +691,8 @@
     <string name="card_reader_receipt_payment_method_title">Payment method</string>
     <string name="card_reader_receipt_summary_title">Summary</string>
     <string name="card_reader_receipt_aid_title">AID</string>
+
+    <string name="card_reader_fetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
 
     <!--
             Card Reader Connection
