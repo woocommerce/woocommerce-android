@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
-import com.woocommerce.android.extensions.colorizeTitle
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -175,7 +174,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
          * the first variation for a Variable Product
          */
         moveNextMenuItem = menu.findItem(R.id.menu_next)
-            ?.colorizeTitle(context, R.color.woo_pink_30)
 
         /** we don't want to show the Remove menu item if this is new attribute
          * or if we're under the First variation creation flow

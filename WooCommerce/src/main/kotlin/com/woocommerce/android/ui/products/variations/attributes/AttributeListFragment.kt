@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
-import com.woocommerce.android.extensions.colorizeTitle
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttribute
@@ -73,11 +72,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
                 isVisible = isGeneratingVariation
             }
         }
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        doneMenuItem?.colorizeTitle(context, R.color.woo_pink_50)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
