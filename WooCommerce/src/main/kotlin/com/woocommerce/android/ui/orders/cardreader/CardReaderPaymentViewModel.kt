@@ -40,9 +40,9 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,7 +54,6 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -157,7 +156,7 @@ class CardReaderPaymentViewModel @Inject constructor(
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             // TODO cardreader store receipt data into a persistent storage
-            is PaymentCompleted -> onPaymentCompleted(paymentStatus, amountLabel)
+            is PaymentCompleted -> onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
             }
@@ -168,7 +167,12 @@ class CardReaderPaymentViewModel @Inject constructor(
         }
     }
 
-    private fun onPaymentCompleted(paymentStatus: PaymentCompleted, amountLabel: String) {
+    private fun onPaymentCompleted(
+        paymentStatus: PaymentCompleted,
+        billingEmail: String,
+        orderId: Long,
+        amountLabel: String
+    ) {
         viewState.postValue(PaymentSuccessfulState(
             amountLabel,
             // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
