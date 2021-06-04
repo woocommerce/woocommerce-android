@@ -661,6 +661,10 @@
     <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Connecting to reader</string>
 
+    <string name="card_reader_payment_fetch_order_loading_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Updating the app state</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Refreshing order</string>
+
     <string name="card_reader_collect_payment">Collect payment</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
@@ -688,6 +692,8 @@
     <string name="card_reader_receipt_summary_title">Summary</string>
     <string name="card_reader_receipt_aid_title">AID</string>
 
+    <string name="card_reader_fetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+
     <!--
             Card Reader Connection
         -->
@@ -711,8 +717,10 @@
         Card Reader Detail
     -->
     <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+    <string name="card_reader_detail_learn_more">&lt;a href="https://woocommerce.com/payments/">Learn more&lt;/a> about accepting payments with your mobile device and ordering card readers</string>
     <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Turn mobile device bluetooth on</string>
     <string name="card_reader_details_not_connected_connect_button_label">Connect card reader</string>
 
     <string name="card_reader_detail_connected_header">CONNECTED READER</string>
@@ -1321,7 +1329,7 @@
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
-    <string name="product_type_simple_title">Simple physical productt</string>
+    <string name="product_type_simple_title">Simple physical product</string>
     <string name="product_type_simple_desc">A unique physical product that you may have to ship to the customer</string>
     <string name="product_type_virtual_title">Simple virtual product</string>
     <string name="product_type_virtual_desc">A unique digital product like services, downloadable books, music or videos</string>
