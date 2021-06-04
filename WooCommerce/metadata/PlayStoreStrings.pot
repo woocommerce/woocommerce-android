@@ -11,19 +11,19 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_068"
+msgid ""
+"6.8:\n"
+"Back by popular demand, the order fulfill screen now displays when you click the "Mark order complete" button!\n"
+"\n"
+"In addition, we fixed a bug that was breaking the product list screen and added an error message for unauthorized users who attempt to access your store.\n"
+msgstr ""
+
 msgctxt "release_note_067"
 msgid ""
 "6.7:\n"
 "We have heard that orders may get fulfilled in multiple shipments. With this update, you can now print more than one label for an order. We also fixed a few other small things to make your experience better.\n"
 "\n"
-msgstr ""
-
-msgctxt "release_note_066"
-msgid ""
-"6.6:\n"
-"When editing a product, you can now create, delete, and update variations, attributes, and attribute options. You can also create and edit a virtual product from the product detail screen.\n"
-"It is now possible to refund a shipping line inside an order.\n"
-"We also fixed an issue that occurred when editing a product’s regular and sale prices.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
