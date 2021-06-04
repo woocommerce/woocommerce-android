@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrack
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
-import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
 import javax.inject.Inject
@@ -118,12 +117,18 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewPrintCustomsForm -> {
-                val action = if (fragment is PrintShippingLabelFragment){
-                    PrintShippingLabelFragmentDirections
-                        .actionPrintShippingLabelFragmentToPrintShippingLabelCustomsFormFragment(target.invoiceUrl)
-                } else {
+                val action = if (target.isReprint){
                     OrderDetailFragmentDirections
-                        .actionOrderDetailFragmentToPrintShippingLabelCustomsFormFragment(target.invoiceUrl)
+                        .actionOrderDetailFragmentToPrintShippingLabelCustomsFormFragment(
+                            url = target.invoiceUrl,
+                            isReprint = target.isReprint
+                        )
+                } else {
+                    PrintShippingLabelFragmentDirections
+                        .actionPrintShippingLabelFragmentToPrintShippingLabelCustomsFormFragment(
+                            url = target.invoiceUrl,
+                            isReprint = target.isReprint
+                        )
                 }
                 fragment.findNavController().navigateSafely(action)
             }

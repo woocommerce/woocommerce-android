@@ -66,6 +66,7 @@
         <action
             android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelCustomsFormFragment"
             app:destination="@id/printShippingLabelCustomsFormFragment"
+            app:popUpTo="@id/orderDetailFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
@@ -79,6 +80,9 @@
         <argument
             android:name="url"
             app:argType="string" />
+        <argument
+            android:name="isReprint"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/editShippingLabelAddressFragment"

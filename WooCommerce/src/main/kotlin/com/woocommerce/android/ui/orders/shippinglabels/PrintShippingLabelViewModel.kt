@@ -116,7 +116,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         viewState = viewState.copy(tempFile = null, previewShippingLabel = null)
         label?.let {
             if (it.hasCommercialInvoice) {
-                triggerEvent(ViewPrintCustomsForm(it.commercialInvoiceUrl!!))
+                triggerEvent(ViewPrintCustomsForm(it.commercialInvoiceUrl!!, arguments.isReprint))
             }
         }
     }

@@ -8,6 +8,7 @@ import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -49,7 +50,15 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     }
 
     fun onSaveForLaterClicked() {
-        triggerEvent(Exit)
+        triggerEvent(ExitWithResult(Unit))
+    }
+
+    fun onBackButtonClicked() {
+        if (navArgs.isReprint) {
+            triggerEvent(ExitWithResult(Unit))
+        } else {
+            triggerEvent(Exit)
+        }
     }
 
     fun onDownloadCanceled() {
