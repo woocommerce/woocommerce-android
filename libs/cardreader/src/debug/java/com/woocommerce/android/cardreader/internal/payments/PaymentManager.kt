@@ -47,6 +47,7 @@ internal class PaymentManager(
     private val receiptPaymentInfoMapper: ReceiptPaymentInfoMapper
 ) {
     suspend fun acceptPayment(
+        paymentDescription: String,
         orderId: Long,
         amount: BigDecimal,
         currency: String,
@@ -66,7 +67,12 @@ internal class PaymentManager(
             emit(errorMapper.mapError(errorMessage = "Reader not connected"))
             return@flow
         }
-        val paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency, customerEmail)
+        val paymentIntent = createPaymentIntent(
+            paymentDescription,
+            amountInSmallestCurrencyUnit,
+            currency,
+            customerEmail
+        )
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
@@ -109,13 +115,14 @@ internal class PaymentManager(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(
+        paymentDescription: String,
         amount: Int,
         currency: String,
         customerEmail: String?
     ): PaymentIntent? {
         var paymentIntent: PaymentIntent? = null
         emit(InitializingPayment)
-        createPaymentAction.createPaymentIntent(amount, currency, customerEmail).collect {
+        createPaymentAction.createPaymentIntent(paymentDescription, amount, currency, customerEmail).collect {
             when (it) {
                 is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent

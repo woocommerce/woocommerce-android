@@ -25,6 +25,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import com.woocommerce.android.cardreader.receipts.ReceiptPaymentInfo
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
@@ -39,6 +40,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.receipts.ReceiptDataMapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -48,6 +50,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
@@ -66,7 +69,9 @@ class CardReaderPaymentViewModel @Inject constructor(
     private val logger: AppLogWrapper,
     private val orderStore: WCOrderStore,
     private val orderRepository: OrderDetailRepository,
-    private val receiptDataMapper: ReceiptDataMapper
+    private val receiptDataMapper: ReceiptDataMapper,
+    private val resourceProvider: ResourceProvider,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
@@ -94,6 +99,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                         // TODO cardreader don't hardcode currency symbol ($)
                         collectPaymentFlow(
                             cardReaderManager,
+                            order.getPaymentDescription(),
                             order.remoteOrderId,
                             amount,
                             order.currency,
@@ -127,13 +133,14 @@ class CardReaderPaymentViewModel @Inject constructor(
 
     private suspend fun collectPaymentFlow(
         cardReaderManager: CardReaderManager,
+        paymentDescription: String,
         orderId: Long,
         amount: BigDecimal,
         currency: String,
         billingEmail: String,
         amountLabel: String
     ) {
-        cardReaderManager.collectPayment(orderId, amount, currency, billingEmail.ifEmpty { null })
+        cardReaderManager.collectPayment(paymentDescription, orderId, amount, currency, billingEmail.ifEmpty { null })
             .collect { paymentStatus ->
                 onPaymentStatusChanged(orderId, paymentStatus, amountLabel)
             }
@@ -223,6 +230,9 @@ class CardReaderPaymentViewModel @Inject constructor(
 
     private suspend fun loadOrderFromDB() =
         withContext(dispatchers.io) { orderStore.getOrderByIdentifier(arguments.orderIdentifier) }
+
+    private fun WCOrderModel.getPaymentDescription(): String =
+        resourceProvider.getString(R.string.card_reader_payment_description, this.id, selectedSite.get().name.orEmpty())
 
     sealed class CardReaderPaymentEvent : Event() {
         data class PrintReceipt(val htmlReceipt: String, val documentName: String) : CardReaderPaymentEvent()

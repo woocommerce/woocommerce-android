@@ -43,6 +43,7 @@ class CardReaderModule {
         override suspend fun disconnectReader(): Boolean = false
 
         override suspend fun collectPayment(
+            paymentDescription: String,
             orderId: Long,
             amount: BigDecimal,
             currency: String,

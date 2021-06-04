@@ -88,12 +88,13 @@ internal class CardReaderManagerImpl(
     }
 
     override suspend fun collectPayment(
+        paymentDescription: String,
         orderId: Long,
         amount: BigDecimal,
         currency: String,
         customerEmail: String?
     ): Flow<CardPaymentStatus> =
-        paymentManager.acceptPayment(orderId, amount, currency, customerEmail)
+        paymentManager.acceptPayment(paymentDescription, orderId, amount, currency, customerEmail)
 
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
         paymentManager.retryPayment(orderId, paymentData)
