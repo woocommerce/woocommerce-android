@@ -524,9 +524,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given user presses back button, when re-fetching order, then FetchingOrderState shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(true)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = true)
 
             viewModel.onBackPressed()
 
@@ -534,11 +532,34 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given user presses back, when already showing FetchingOrderState, then snackbar shown and screen dismissed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            simulateFetchOrderJobState(inProgress = true)
+            viewModel.onBackPressed() // shows FetchingOrderState screen
+
+            viewModel.onBackPressed()
+
+            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+            coroutinesTestRule.testDispatcher.advanceUntilIdle() // skip delay
+            assertThat(viewModel.event.value).isEqualTo(Exit)
+        }
+
+    @Test
+    fun `given user presses back, when already showing FetchingOrderState, then correct snackbar message shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            simulateFetchOrderJobState(inProgress = true)
+            viewModel.onBackPressed() // shows FetchingOrderState screen
+
+            viewModel.onBackPressed()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message)
+                .isEqualTo(R.string.card_reader_fetching_order_failed)
+        }
+
+    @Test
     fun `given user presses back button, when re-fetching order, then screen not dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(true)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = true)
 
             viewModel.onBackPressed()
 
@@ -548,9 +569,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given user presses back button, when not re-fetching order, then screen dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(false)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = false)
 
             viewModel.onBackPressed()
 
@@ -560,9 +579,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given FetchingOrderState shown, when re-fetching order completes, then screen auto-dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(true)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = true)
             viewModel.onBackPressed() // show FetchingOrderState screen
 
             viewModel.reFetchOrder()
@@ -573,9 +590,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given FetchingOrderState not shown, when re-fetching order completes, then screen not auto-dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(true)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = true)
 
             viewModel.reFetchOrder()
 
@@ -591,4 +606,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
         }
+
+    private fun simulateFetchOrderJobState(inProgress: Boolean) {
+        val job = mock<Job>()
+        whenever(job.isActive).thenReturn(inProgress)
+        viewModel.fetchOrderJob = job
+    }
 }

@@ -210,17 +210,19 @@ class CardReaderPaymentViewModel @Inject constructor(
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
         launch {
-            triggerEvent(SendReceipt(
-                content = UiStringRes(
-                    R.string.card_reader_payment_receipt_email_content,
-                    listOf(UiStringText(receiptUrl))
-                ),
-                subject = UiStringRes(
-                    R.string.card_reader_payment_receipt_email_subject,
-                    listOf(UiStringText(selectedSite.get().name.orEmpty()))
-                ),
-                address = billingEmail
-            ))
+            triggerEvent(
+                SendReceipt(
+                    content = UiStringRes(
+                        R.string.card_reader_payment_receipt_email_content,
+                        listOf(UiStringText(receiptUrl))
+                    ),
+                    subject = UiStringRes(
+                        R.string.card_reader_payment_receipt_email_subject,
+                        listOf(UiStringText(selectedSite.get().name.orEmpty()))
+                    ),
+                    address = billingEmail
+                )
+            )
         }
     }
 
@@ -247,10 +249,19 @@ class CardReaderPaymentViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        return if (fetchOrderJob?.isActive == true) {
-            viewState.value = FetchingOrderState
+        if (fetchOrderJob?.isActive == true ) {
+            if (viewState.value != FetchingOrderState) {
+                viewState.value = FetchingOrderState
+            } else {
+                // show "data might be outdated" and exit the flow when the user presses back on FetchingOrder screen
+                launch {
+                    triggerEvent(ShowSnackbar(R.string.card_reader_fetching_order_failed))
+                    delay(1) // needs to be here so both events are consumed
+                    triggerEvent(Exit)
+                }
+            }
         } else {
-            triggerEvent(Exit)
+                triggerEvent(Exit)
         }
     }
 
