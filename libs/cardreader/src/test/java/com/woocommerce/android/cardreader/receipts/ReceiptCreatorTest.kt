@@ -6,6 +6,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import java.math.BigDecimal
 
 @RunWith(MockitoJUnitRunner::class)
 class ReceiptCreatorTest {
@@ -31,8 +32,8 @@ class ReceiptCreatorTest {
                 aid = "AID"
             ),
             purchasedProducts = listOf(
-                ReceiptLineItem(title = "T-shirt", quantity = 3, itemsTotalAmount = 30f),
-                ReceiptLineItem(title = "Hoodie", quantity = 1, itemsTotalAmount = 15f)
+                ReceiptLineItem(title = "T-shirt", quantity = 3f, itemsTotalAmount = BigDecimal(30)),
+                ReceiptLineItem(title = "Hoodie", quantity = 1f, itemsTotalAmount = BigDecimal(15))
             ),
             storeName = "The Best Woo store",
             receiptPaymentInfo = ReceiptPaymentInfo(

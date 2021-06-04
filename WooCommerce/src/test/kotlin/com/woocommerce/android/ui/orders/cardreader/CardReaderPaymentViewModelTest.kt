@@ -22,13 +22,17 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.receipts.ReceiptCreator
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
+import com.woocommerce.android.util.receipts.ReceiptDataMapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -58,6 +62,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val loggerWrapper: AppLogWrapper = mock()
     private val orderStore: WCOrderStore = mock()
     private val cardReaderManager: CardReaderManager = mock()
+    private val receiptCreator: ReceiptCreator = mock()
+    private val receiptDataMapper: ReceiptDataMapper = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
@@ -70,7 +76,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             savedState,
             cardReaderManager = cardReaderManager,
             logger = loggerWrapper,
-            orderStore = orderStore
+            orderStore = orderStore,
+            receiptCreator = receiptCreator,
+            receiptDataMapper = receiptDataMapper,
+            dispatchers = coroutinesTestRule.testDispatchers
         )
 
         val mockedOrder = mock<WCOrderModel>()
@@ -83,6 +92,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
+        whenever(receiptDataMapper.mapToReceiptData(any(), any())).thenReturn(mock())
+        whenever(receiptCreator.createHtmlReceipt(any())).thenReturn("test receipt")
     }
 
     @Test
@@ -456,5 +467,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             verify(cardReaderManager, times(1)).collectPayment(anyOrNull(), anyOrNull(), anyString())
+        }
+
+    @Test
+    fun `when user clicks on print receipt button, then PrintReceipt event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(PaymentCompleted(mock())) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
+        }
+
+    @Test
+    fun `when user clicks on send receipt button, then SendReceipt event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), anyString())).thenAnswer {
+                flow { emit(PaymentCompleted(mock())) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
         }
 }

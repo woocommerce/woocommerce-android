@@ -1,4 +1,0 @@
-6.6:
-Du kannst beim Bearbeiten eines Produktes jetzt Variationen, Attribute und Attributsoptionen erstellen, löschen und aktualisieren. Außerdem hast du die Möglichkeit, ein virtuelles Produkt in der Produktdetailansicht zu erstellen und zu bearbeiten.
-Du kannst den Versand jetzt innerhalb einer Bestellung rückerstatten.
-Zudem haben wir einen Fehler behoben, der beim Bearbeiten der herkömmlichen Preise und Angebotspreise von Produkten auftrat.

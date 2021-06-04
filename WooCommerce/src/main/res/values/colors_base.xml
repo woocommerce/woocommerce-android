@@ -162,4 +162,8 @@
     -->
     <color name="empty_state_bg_color">@color/woo_gray_0</color>
 
+    <!--
+        Payment reader
+    -->
+    <color name="disconnected_state_number_background_color">@color/woo_gray_0</color>
 </resources>
