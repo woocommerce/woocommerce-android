@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -35,7 +36,8 @@ class AppSettingsPresenter @Inject constructor(
         dispatcher.dispatch(NotificationActionBuilder.newUnregisterDeviceAction())
     }
 
-    override fun cleanPaymentsData() {
+    override fun clearCardReaderData() {
+        if (!FeatureFlag.CARD_READER.isEnabled()) return
         coroutineScope.launch {
             if (cardReaderManager.isInitialized) {
                 cardReaderManager.disconnectReader()

@@ -79,7 +79,7 @@ class AppSettingsPresenterTest {
             whenever(cardReaderManager.isInitialized).thenReturn(true)
 
             // WHEN
-            appSettingsPresenter.cleanPaymentsData()
+            appSettingsPresenter.clearCardReaderData()
 
             // THEN
             verify(cardReaderManager).clearCachedCredentials()
@@ -94,7 +94,7 @@ class AppSettingsPresenterTest {
             whenever(cardReaderManager.isInitialized).thenReturn(false)
 
             // WHEN
-            appSettingsPresenter.cleanPaymentsData()
+            appSettingsPresenter.clearCardReaderData()
 
             // THEN
             verify(cardReaderManager, never()).clearCachedCredentials()

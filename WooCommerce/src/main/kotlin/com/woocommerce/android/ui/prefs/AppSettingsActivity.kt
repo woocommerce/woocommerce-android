@@ -108,7 +108,7 @@ class AppSettingsActivity : AppCompatActivity(),
     // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
     @Suppress("WrongConstant")
     override fun onSiteChanged() {
-        presenter.cleanPaymentsData()
+        presenter.clearCardReaderData()
         siteChanged = true
         setResult(RESULT_CODE_SITE_CHANGED)
         NotificationHandler.removeAllNotificationsFromSystemBar(this)
@@ -166,7 +166,7 @@ class AppSettingsActivity : AppCompatActivity(),
                     AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
                             AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)))
 
-                    presenter.cleanPaymentsData()
+                    presenter.clearCardReaderData()
                     presenter.logout()
                 }
                 .setNegativeButton(R.string.back) { _, _ ->
