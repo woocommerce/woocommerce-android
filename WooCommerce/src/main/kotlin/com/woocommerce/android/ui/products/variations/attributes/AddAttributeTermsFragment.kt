@@ -2,16 +2,18 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +28,6 @@ import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
 
@@ -175,7 +176,14 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
          * we only want to show the Next menu item if we're under the creation of
          * the first variation for a Variable Product
          */
-        moveNextMenuItem = menu.findItem(R.id.menu_next)
+        moveNextMenuItem = menu.findItem(R.id.menu_next)?.apply {
+            context?.let { ContextCompat.getColor(it, R.color.woo_pink_30) }
+                ?.let {
+                    SpannableString(this.title).apply {
+                        setSpan(ForegroundColorSpan(it), 0, title.length, 0)
+                    }
+                }.let { this.title = it }
+        }
 
         /** we don't want to show the Remove menu item if this is new attribute
          * or if we're under the First variation creation flow
@@ -302,15 +310,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 )
             }
         }
-
-        recycler.addItemDecoration(
-            AlignedDividerDecoration(
-                requireContext(),
-                DividerItemDecoration.VERTICAL,
-                R.id.variationOptionName,
-                clipToMargin = false
-            )
-        )
 
         return layoutManager
     }
