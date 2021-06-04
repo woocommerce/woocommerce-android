@@ -40,7 +40,6 @@
         android:id="@+id/divider"
         style="@style/Woo.Divider"
         android:layout_width="match_parent"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"/>
+        android:layout_marginStart="@dimen/major_100"/>
 
 </LinearLayout>
