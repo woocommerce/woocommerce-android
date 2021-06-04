@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewMo
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize.LABEL
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize.LETTER
+import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -38,6 +40,8 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
 
     private val repository: ShippingLabelRepository = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val fileUtils: FileUtils = mock()
+    private val base64Decoder: Base64Decoder = mock()
 
     private val savedState: SavedStateWithArgs = SavedStateWithArgs(
             SavedStateHandle(),
@@ -53,6 +57,8 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
                 savedState,
                 repository,
                 networkStatus,
+                fileUtils,
+                base64Decoder,
                 coroutinesTestRule.testDispatchers
             )
     }

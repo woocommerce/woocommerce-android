@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShipping
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
+import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
@@ -32,6 +33,8 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     private val repository: ShippingLabelRepository,
     private val networkStatus: NetworkStatus,
+    private val fileUtils: FileUtils,
+    private val base64Decoder: Base64Decoder,
     dispatchers: CoroutineDispatchers
 ) : DaggerScopedViewModel(savedState, dispatchers) {
     private val arguments: PrintShippingLabelFragmentArgs by savedState.navArgs()
@@ -93,9 +96,14 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         shippingLabelPreview: String
     ) {
         launch(dispatchers.io) {
-            val tempFile = FileUtils.createTempPDFFile(storageDir)
+            val tempFile = fileUtils.createTempTimeStampedFile(
+                storageDir = storageDir,
+                prefix = "PDF",
+                fileExtension = "pdf"
+            )
             if (tempFile != null) {
-                FileUtils.writeToTempFile(tempFile, shippingLabelPreview)?.let {
+                val content = base64Decoder.decode(shippingLabelPreview, 0)
+                fileUtils.writeContentToFile(tempFile, content)?.let {
                     withContext(dispatchers.main) { viewState = viewState.copy(tempFile = it) }
                 } ?: handlePreviewError()
             } else {

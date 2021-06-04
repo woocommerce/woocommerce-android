@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import android.content.ActivityNotFoundException
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
@@ -14,13 +13,13 @@ import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.media.FileUtils.previewPDFFile
 import com.woocommerce.android.ui.base.BaseDaggerFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -140,12 +139,7 @@ class PrintShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_print_sh
     }
 
     private fun openShippingLabelPreview(file: File) {
-        try {
-            requireContext().previewPDFFile(file)
-            viewModel.onPreviewLabelCompleted()
-        } catch (exception: ActivityNotFoundException) {
-            displayError(R.string.shipping_label_preview_pdf_app_missing)
-        }
+        ActivityUtils.previewPDFFile(requireActivity(), file)
     }
 
     override fun onRequestAllowBackPress(): Boolean {
