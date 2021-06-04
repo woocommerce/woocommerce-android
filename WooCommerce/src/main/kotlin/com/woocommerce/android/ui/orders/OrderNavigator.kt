@@ -117,7 +117,7 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewPrintCustomsForm -> {
-                val action = if (target.isReprint){
+                val action = if (target.isReprint) {
                     OrderDetailFragmentDirections
                         .actionOrderDetailFragmentToPrintShippingLabelCustomsFormFragment(
                             url = target.invoiceUrl,

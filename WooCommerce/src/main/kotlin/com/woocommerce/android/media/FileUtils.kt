@@ -20,7 +20,7 @@ class FileUtils @Inject constructor() {
     ): File? {
         return try {
             val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "${prefix}_${timeStamp}"
+            val fileName = "${prefix}_$timeStamp"
             File.createTempFile(fileName, ".$fileExtension", storageDir)
         } catch (e: Exception) {
             WooLog.e(UTILS, "Unable to create a temp file", e)
