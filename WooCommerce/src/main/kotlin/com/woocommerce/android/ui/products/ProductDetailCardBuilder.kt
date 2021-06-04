@@ -15,7 +15,6 @@ import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
@@ -537,16 +536,7 @@ class ProductDetailCardBuilder(
                     mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
                 )
 
-                val target = if (variationEnabledAttributes.isNotEmpty()) {
-                    ViewProductVariations(this.remoteId)
-                } else {
-                    AddProductAttribute(isVariationCreation = true)
-                }
-
-                viewModel.onEditProductCardClicked(
-                    target,
-                    PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-                )
+                viewModel.onAddFirstVariationClicked()
             }
         )
 

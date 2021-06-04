@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_PR
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
@@ -68,6 +69,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -81,6 +83,7 @@ import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -90,7 +93,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -323,6 +325,18 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ViewProductImageGallery(it.remoteId, it.images, true))
         }
         updateProductBeforeEnteringFragment()
+    }
+
+    fun onAddFirstVariationClicked() {
+        val target = viewState.productDraft
+            ?.takeIf { it.variationEnabledAttributes.isNotEmpty() }
+            ?.let { ViewProductVariations(it.remoteId) }
+            ?: AddProductAttribute(isVariationCreation = true)
+
+        onEditProductCardClicked(
+            target,
+            PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+        )
     }
 
     /**
