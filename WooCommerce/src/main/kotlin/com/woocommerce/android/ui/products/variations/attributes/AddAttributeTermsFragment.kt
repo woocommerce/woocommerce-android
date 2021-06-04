@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -10,13 +11,13 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
+import com.woocommerce.android.extensions.colorizeTitle
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -25,7 +26,6 @@ import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
 
@@ -175,6 +175,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
          * the first variation for a Variable Product
          */
         moveNextMenuItem = menu.findItem(R.id.menu_next)
+            ?.colorizeTitle(context, R.color.woo_pink_30)
 
         /** we don't want to show the Remove menu item if this is new attribute
          * or if we're under the First variation creation flow
@@ -283,21 +284,24 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recycler.layoutManager = layoutManager
 
-        if (enableDragAndDrop) {
-            recycler.adapter = AttributeTermsListAdapter(enableDragAndDrop = true, enableDeleting = enableDeleting)
-            itemTouchHelper.attachToRecyclerView(recycler)
-        } else {
-            recycler.adapter = AttributeTermsListAdapter(enableDragAndDrop = false, enableDeleting = enableDeleting)
-        }
+        with(TypedValue()) {
+            context?.theme?.resolveAttribute(android.R.attr.itemBackground, this, true)
 
-        recycler.addItemDecoration(
-            AlignedDividerDecoration(
-                requireContext(),
-                DividerItemDecoration.VERTICAL,
-                R.id.variationOptionName,
-                clipToMargin = false
-            )
-        )
+            if (enableDragAndDrop) {
+                recycler.adapter = AttributeTermsListAdapter(
+                    enableDragAndDrop = true,
+                    enableDeleting = enableDeleting,
+                    defaultItemBackground = this
+                )
+                itemTouchHelper.attachToRecyclerView(recycler)
+            } else {
+                recycler.adapter = AttributeTermsListAdapter(
+                    enableDragAndDrop = false,
+                    enableDeleting = enableDeleting,
+                    defaultItemBackground = this
+                )
+            }
+        }
 
         return layoutManager
     }
