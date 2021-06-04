@@ -99,7 +99,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                         // TODO cardreader don't hardcode currency symbol ($)
                         collectPaymentFlow(
                             cardReaderManager,
-                            getPaymentDescription(order),
+                            order.getPaymentDescription(),
                             order.remoteOrderId,
                             amount,
                             order.currency,
@@ -231,12 +231,8 @@ class CardReaderPaymentViewModel @Inject constructor(
     private suspend fun loadOrderFromDB() =
         withContext(dispatchers.io) { orderStore.getOrderByIdentifier(arguments.orderIdentifier) }
 
-    private fun getPaymentDescription(order: WCOrderModel): String =
-        resourceProvider.getString(
-            R.string.card_reader_payment_description,
-            order.id,
-            selectedSite.get().name.orEmpty()
-        )
+    private fun WCOrderModel.getPaymentDescription(): String =
+        resourceProvider.getString(R.string.card_reader_payment_description, this.id, selectedSite.get().name.orEmpty())
 
     sealed class CardReaderPaymentEvent : Event() {
         data class PrintReceipt(val htmlReceipt: String, val documentName: String) : CardReaderPaymentEvent()
