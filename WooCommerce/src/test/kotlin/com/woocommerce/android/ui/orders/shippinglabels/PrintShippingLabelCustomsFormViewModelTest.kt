@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustom
 import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -77,6 +78,14 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     @Test
     fun `navigates back when save for later is clicked`() = testBlocking {
         viewModel.onSaveForLaterClicked()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(ExitWithResult(Unit))
+    }
+
+    @Test
+    fun `navigates back when back button is clicked`() = testBlocking {
+        viewModel.onBackButtonClicked()
 
         assertThat(viewModel.event.value)
             .isEqualTo(Exit)
