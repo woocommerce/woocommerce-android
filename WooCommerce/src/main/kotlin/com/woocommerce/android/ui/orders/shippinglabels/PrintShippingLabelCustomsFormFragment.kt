@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import android.content.ActivityNotFoundException
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
@@ -9,9 +8,9 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintLabelCustomsFormBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.media.FileUtils.previewPDFFile
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,11 +56,7 @@ class PrintShippingLabelCustomsFormFragment : BaseFragment(R.layout.fragment_pri
      * This just opens the default PDF reader of the device
      */
     private fun printFile(file: File) {
-        try {
-            requireContext().previewPDFFile(file)
-        } catch (exception: ActivityNotFoundException) {
-            // TODO
-        }
+        ActivityUtils.previewPDFFile(requireActivity(), file)
     }
 
     private fun setupView(binding: FragmentPrintLabelCustomsFormBinding) {

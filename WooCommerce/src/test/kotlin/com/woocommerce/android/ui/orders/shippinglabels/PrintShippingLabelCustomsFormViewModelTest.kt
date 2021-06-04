@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
 import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -19,15 +20,19 @@ import java.io.File
 class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: PrintShippingLabelCustomsFormViewModel
     private val fileDownloader: FileDownloader = mock()
+    private val fileUtils: FileUtils = mock()
+    private val storageDirectory: File = File(".")
     private val url = "test_url"
 
     @Before
     fun setup() {
+        whenever(fileUtils.createTempTimeStampedFile(any(), any(), any())).thenReturn(File("./test"))
         viewModel = PrintShippingLabelCustomsFormViewModel(
-            PrintShippingLabelCustomsFormFragmentArgs(url).initSavedStateHandle(),
-            fileDownloader
+            savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(url).initSavedStateHandle(),
+            fileDownloader = fileDownloader,
+            fileUtils = fileUtils
         )
-        viewModel.storageDirectory = File(".")
+        viewModel.storageDirectory = storageDirectory
     }
 
     @Test

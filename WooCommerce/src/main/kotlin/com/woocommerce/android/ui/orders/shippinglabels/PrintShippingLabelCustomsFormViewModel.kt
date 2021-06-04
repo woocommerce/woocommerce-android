@@ -20,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val fileUtils: FileUtils,
     private val fileDownloader: FileDownloader
 ) : ScopedViewModel(savedStateHandle) {
     private var printJob: Job? = null
@@ -54,7 +55,11 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     }
 
     private suspend fun downloadInvoice(): File? {
-        val file = FileUtils.createTempPDFFile(storageDirectory) ?: return null
+        val file = fileUtils.createTempTimeStampedFile(
+            storageDir = storageDirectory,
+            prefix = "PDF",
+            fileExtension = "pdf"
+        ) ?: return null
         return if (fileDownloader.downloadFile(navArgs.url, file)) {
             file
         } else {
