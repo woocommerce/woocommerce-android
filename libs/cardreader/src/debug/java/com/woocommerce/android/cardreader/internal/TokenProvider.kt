@@ -7,8 +7,10 @@ import com.woocommerce.android.cardreader.CardReaderStore
 import kotlinx.coroutines.runBlocking
 
 internal class TokenProvider(private val storeWrapper: CardReaderStore) : ConnectionTokenProvider {
+    /**
+     * This method is invoked from the 3rd party Stripe SDK on a bg thread
+     */
     override fun fetchConnectionToken(callback: ConnectionTokenCallback) {
-        // this method is invoked from the 3rd party Stripe SDK on a bg thread
         try {
             val token = runBlocking { storeWrapper.getConnectionToken() }
             callback.onSuccess(token)

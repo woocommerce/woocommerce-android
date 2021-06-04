@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
+import com.woocommerce.android.cardreader.CardReaderManager
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -15,6 +17,8 @@ import javax.inject.Inject
 class AppSettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
+    private val cardReaderManager: CardReaderManager,
+    @Suppress("unused") // We keep it here to make sure that the store is subscribed to the event bus
     private val notificationStore: NotificationStore
 ) : AppSettingsContract.Presenter {
     private var appSettingsView: AppSettingsContract.View? = null
@@ -32,6 +36,15 @@ class AppSettingsPresenter @Inject constructor(
     override fun logout() {
         // First unregister the device for push notifications
         dispatcher.dispatch(NotificationActionBuilder.newUnregisterDeviceAction())
+    }
+
+    override fun clearCardReaderData() {
+        coroutineScope.launch {
+            if (cardReaderManager.isInitialized) {
+                cardReaderManager.disconnectReader()
+                cardReaderManager.clearCachedCredentials()
+            }
+        }
     }
 
     override fun userIsLoggedIn(): Boolean {

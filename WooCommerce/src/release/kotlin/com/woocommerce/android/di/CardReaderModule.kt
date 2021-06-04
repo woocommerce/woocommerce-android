@@ -54,5 +54,7 @@ class CardReaderModule {
         override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = flow {}
 
         override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> = flow {}
+
+        override suspend fun clearCachedCredentials() {}
     }
 }
