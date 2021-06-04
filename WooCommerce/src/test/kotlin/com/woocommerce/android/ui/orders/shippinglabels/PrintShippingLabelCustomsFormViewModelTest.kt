@@ -4,11 +4,14 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
 import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -49,5 +52,33 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
         viewModel.onPrintButtonClicked()
 
         assertThat(viewModel.event.value).isInstanceOf(PrintCustomsForm::class.java)
+    }
+
+    @Test
+    fun `show error when the file creation fails`() = testBlocking {
+        whenever(fileUtils.createTempTimeStampedFile(any(), any(), any())).thenReturn(null)
+
+        viewModel.onPrintButtonClicked()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowSnackbar(R.string.shipping_label_print_customs_form_download_failed))
+    }
+
+    @Test
+    fun `show error when the file download fails`() = testBlocking {
+        whenever(fileDownloader.downloadFile(any(), any())).thenReturn(false)
+
+        viewModel.onPrintButtonClicked()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowSnackbar(R.string.shipping_label_print_customs_form_download_failed))
+    }
+
+    @Test
+    fun `navigates back when save for later is clicked`() = testBlocking {
+        viewModel.onSaveForLaterClicked()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(Exit)
     }
 }

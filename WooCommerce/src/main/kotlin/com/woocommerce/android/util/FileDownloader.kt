@@ -10,6 +10,11 @@ import javax.inject.Inject
 class FileDownloader @Inject constructor(
     private val dispatchers: CoroutineDispatchers
 ) {
+    /**
+     * Download the content of the specified url to the [destinationFile]
+     *
+     * @return true if the download succeeded and false otherwise
+     */
     @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun downloadFile(url: String, destinationFile: File): Boolean {
         return try {
