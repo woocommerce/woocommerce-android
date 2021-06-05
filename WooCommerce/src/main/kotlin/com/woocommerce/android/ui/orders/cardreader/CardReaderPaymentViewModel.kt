@@ -249,7 +249,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        if (fetchOrderJob?.isActive == true ) {
+        if (fetchOrderJob?.isActive == true) {
             if (viewState.value != FetchingOrderState) {
                 viewState.value = FetchingOrderState
             } else {
@@ -261,7 +261,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                 }
             }
         } else {
-                triggerEvent(Exit)
+            triggerEvent(Exit)
         }
     }
 
