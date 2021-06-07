@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
@@ -20,7 +19,6 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.ViewState
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
@@ -63,7 +61,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock()
-    private val savedStateHandle: SavedStateHandle = mock()
+    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
@@ -87,7 +85,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             )
         ).doReturn(pagedListWrapper)
         doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-        doReturn(MutableLiveData(ViewState())).whenever(savedStateHandle).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(SiteModel()).whenever(selectedSite).get()
 
