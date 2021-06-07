@@ -23,10 +23,6 @@ open class BaseDaggerFragment : BaseFragment, HasAndroidInjector {
         super.onAttach(context)
     }
 
-    override fun getFragmentTitle(): String {
-        return activity?.title?.toString() ?: ""
-    }
-
     override fun androidInjector(): AndroidInjector<Any> {
         return androidInjector
     }
