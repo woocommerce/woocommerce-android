@@ -264,10 +264,11 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
-        binding.termEditText.setOnEditorActionListener { termName ->
+        binding.termEditText.setOnEditorActionListener { _, actionId, event ->
+            val termName = binding.termEditText.text?.toString() ?: ""
             if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
                 addTerm(termName)
-                binding.termEditText.setText("")
+                binding.termEditText.text?.clear()
             }
             true
         }
