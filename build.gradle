@@ -3,6 +3,7 @@ buildscript {
     ext.navigationVersion = '2.3.5'
     ext.hiltVersion = '2.35.1'
     ext.wordPressLoginVersion = '58-bd338e6eadb0eadf640f2320c791ca58f86c0cda'
+    ext.detektVersion = '1.15.0'
 
     repositories {
         google()
@@ -15,6 +16,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion"
     }
 }
 
@@ -22,6 +24,7 @@ apply plugin: 'com.automattic.android.fetchstyle'
 
 allprojects {
     apply plugin: 'checkstyle'
+    apply plugin: 'io.gitlab.arturbosch.detekt'
 
     repositories {
         google()
@@ -66,6 +69,16 @@ subprojects {
         main = "com.github.shyiko.ktlint.Main"
         classpath = configurations.ktlint
         args "src/**/*.kt", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
+    }
+
+    detekt {
+        config = files("${project.rootDir}/config/detekt/detekt.yml")
+        baseline = file("${project.rootDir}/config/detekt/baseline.xml")
+        buildUponDefaultConfig = true
+    }
+
+    dependencies {
+        detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"
     }
 }
 
