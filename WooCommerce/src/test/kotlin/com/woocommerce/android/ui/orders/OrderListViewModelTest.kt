@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
@@ -25,7 +26,6 @@ import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
@@ -37,6 +37,8 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
@@ -53,6 +55,7 @@ import kotlin.test.assertTrue
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
@@ -60,7 +63,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock()
-    private val savedStateArgs: SavedStateWithArgs = mock()
+    private val savedStateHandle: SavedStateHandle = mock()
 
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
@@ -84,13 +87,13 @@ class OrderListViewModelTest : BaseUnitTest() {
             )
         ).doReturn(pagedListWrapper)
         doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-        doReturn(MutableLiveData(ViewState())).whenever(savedStateArgs).getLiveData<ViewState>(any(), any())
+        doReturn(MutableLiveData(ViewState())).whenever(savedStateHandle).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(SiteModel()).whenever(selectedSite).get()
 
         viewModel = OrderListViewModel(
-            savedState = savedStateArgs,
-            coroutineDispatchers = coroutinesTestRule.testDispatchers,
+            savedState = savedStateHandle,
+            dispatchers = coroutinesTestRule.testDispatchers,
             repository = repository,
             orderStore = orderStore,
             listStore = listStore,
