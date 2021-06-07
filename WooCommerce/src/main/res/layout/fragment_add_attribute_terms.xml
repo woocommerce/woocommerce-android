@@ -20,31 +20,21 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/nameLayout"
-                style="@style/Woo.TextInputLayout"
+            <!-- Option EditText -->
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/termEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minor_100"
-                android:layout_marginBottom="@dimen/major_100"
-                android:hint="@string/product_new_attribute_term_name">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/termEditText"
-                    style="@style/Woo.TextInputEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/major_100"
-                android:text="@string/product_enter_attribute_term"
-                android:textAppearance="@style/TextAppearance.Woo.Caption" />
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:paddingBottom="@dimen/major_75"
+                android:inputType="text"
+                android:hint="@string/product_new_attribute_term_name"
+                app:helperText="@string/product_enter_attribute_term"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/assignedTermList"
