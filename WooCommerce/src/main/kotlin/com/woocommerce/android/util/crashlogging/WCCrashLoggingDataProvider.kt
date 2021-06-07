@@ -16,7 +16,9 @@ class WCCrashLoggingDataProvider @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val accountStore: AccountStore,
     private val selectedSite: SelectedSite,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs,
+    private val uuidGenerator: UuidGenerator
 ) : CrashLoggingDataProvider {
     override val buildType: String = BuildConfig.BUILD_TYPE
 
@@ -43,14 +45,27 @@ class WCCrashLoggingDataProvider @Inject constructor(
     }
 
     override fun extraKnownKeys(): List<ExtraKnownKey> {
-        return emptyList()
+        return listOf(EXTRA_UUID)
     }
 
     override fun provideExtrasForEvent(
         currentExtras: Map<ExtraKnownKey, String>,
         eventLevel: EventLevel
     ): Map<ExtraKnownKey, String> {
-        return emptyMap()
+        return currentExtras + if (currentExtras[EXTRA_UUID] == null) {
+            appendEncryptedLogsUuid(eventLevel)
+        } else {
+            emptyMap()
+        }
+    }
+
+    private fun appendEncryptedLogsUuid(eventLevel: EventLevel): Map<ExtraKnownKey, String> {
+        val uuid = uuidGenerator.generateUuid()
+        enqueueSendingEncryptedLogs(
+            uuid = uuid,
+            eventLevel = eventLevel
+        )
+        return mapOf(EXTRA_UUID to uuid)
     }
 
     override fun shouldDropWrappingException(module: String, type: String, value: String): Boolean {
@@ -68,7 +83,8 @@ class WCCrashLoggingDataProvider @Inject constructor(
     }
 
     companion object {
-        private const val SITE_ID_KEY = "site_id"
-        private const val SITE_URL_KEY = "site_url"
+        const val SITE_ID_KEY = "site_id"
+        const val SITE_URL_KEY = "site_url"
+        const val EXTRA_UUID = "uuid"
     }
 }
