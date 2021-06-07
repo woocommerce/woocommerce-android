@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.ui.aztec.AztecModule
-import com.woocommerce.android.ui.orders.OrdersModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule
 import com.woocommerce.android.ui.products.ProductsModule
 import com.woocommerce.android.ui.refunds.RefundsModule
@@ -18,7 +17,6 @@ import dagger.hilt.android.components.ActivityComponent
 @InstallIn(ActivityComponent::class)
 @Module(
     includes = [
-        OrdersModule::class,
         RefundsModule::class,
         ProductsModule::class,
         ReviewsModule::class,
