@@ -14,18 +14,18 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
     @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
+    val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products)
 
     private lateinit var productDetailBottomSheetAdapter: ProductDetailBottomSheetAdapter
 
@@ -41,7 +41,7 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DialogProductDetailBottomSheetListBinding.inflate(inflater, container, false)
         return binding.root
     }

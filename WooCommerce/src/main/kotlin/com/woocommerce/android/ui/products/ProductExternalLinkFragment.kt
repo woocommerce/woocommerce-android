@@ -9,8 +9,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductExternalLinkBinding
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
+@AndroidEntryPoint
 class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_product_external_link) {
     private var _binding: FragmentProductExternalLinkBinding? = null
     private val binding get() = _binding!!

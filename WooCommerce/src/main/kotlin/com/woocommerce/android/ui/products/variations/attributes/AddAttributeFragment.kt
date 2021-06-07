@@ -24,8 +24,10 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
+@AndroidEntryPoint
 class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute) {
     companion object {
         const val TAG: String = "AddAttributeFragment"

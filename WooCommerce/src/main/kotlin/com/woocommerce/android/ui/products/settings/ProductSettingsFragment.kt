@@ -19,7 +19,9 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPu
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings) {
     private var _binding: FragmentProductSettingsBinding? = null
     private val binding get() = _binding!!
