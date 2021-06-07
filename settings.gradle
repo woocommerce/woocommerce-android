@@ -1,6 +1,5 @@
 include ':libs:cardreader'
 include ':WooCommerce'
-include ':libs:login:WordPressLoginFlow'
 
 gradle.ext.fluxCBinaryPath = "com.github.wordpress-mobile.WordPress-FluxC-Android"
 

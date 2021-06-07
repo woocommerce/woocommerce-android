@@ -182,7 +182,7 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation(project(path: ':libs:login:WordPressLoginFlow')) {
+    implementation ("org.wordpress:login:$wordPressLoginVersion") {
         exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
         exclude group: "org.wordpress", module: "utils"
     }
