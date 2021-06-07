@@ -149,7 +149,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
 
             // Update the user info for the currently logged in user
-            userEligibilityFetcher.fetchUserEligibility()
+            if (selectedSite.exists()) {
+                userEligibilityFetcher.fetchUserEligibility()
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -51,7 +52,10 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val shippingLabelPackages: List<ShippingLabelPackage>
     ) : CreateShippingLabelEvent()
 
-    object ShowCustomsForm : CreateShippingLabelEvent()
+    data class ShowCustomsForm(
+        val destinationCountryCode: String,
+        val customsPacakges: List<CustomsPackage>
+    ) : CreateShippingLabelEvent()
 
     data class ShowShippingRates(
         val order: Order,

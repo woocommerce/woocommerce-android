@@ -5,6 +5,11 @@ unless FastlaneCore::Helper.bundler?
   UI.user_error!('Please run fastlane via `bundle exec`')
 end
 
+before_all do |lane|
+  # Ensure we use the latest version of the toolkit
+  check_for_toolkit_updates unless is_ci || ENV['FASTLANE_SKIP_TOOLKIT_UPDATE_CHECK']
+end
+
 ########################################################################
 # Environment
 ########################################################################
@@ -344,13 +349,45 @@ platform :android do
   #####################################################################################
   desc "Merge libraries strings files into the main app one"
   lane :localize_libs do | options |
-    libraries_strings_path = [
-      {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id"]}
+    binary_imported_libraries = [
+      {
+        name: "Login Library",
+        import_key: "wordPressLoginVersion",
+        repository: "wordpress-mobile/WordPress-Login-Flow-Android",
+        strings_file_path: "WordPressLoginFlow/src/main/res/values/strings.xml",
+        github_release_prefix: "",
+        exclusions: ["default_web_client_id"]
+      },
     ]
 
-    if (an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: libraries_strings_path)) then
-      UI.important("Your #{main_strings_path} has changed.")
-      UI.input("Please, review the changes, commit them and press return to continue.")
+    binary_imported_libraries.each do  | lib |
+      download_path = android_download_file_by_version(
+        library_name: lib[:name],
+        import_key: lib[:import_key],
+        repository: lib[:repository],
+        file_path: lib[:strings_file_path],
+        github_release_prefix: lib[:github_release_prefix])
+
+      if download_path.nil?
+        error_message = "Can't download strings file for #{lib[:name]}.\r\n"
+        error_message += "Strings for this library won't get translated.\r\n"
+        error_message += "Do you want to continue anyway?"
+        UI.user_error! "Abort." unless UI.confirm(error_message)
+      else
+        UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
+        lib_to_merge = [ {
+          library: lib[:name], 
+          strings_path: download_path, 
+          exclusions: lib[:exclusions]
+        }]
+        an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: lib_to_merge)
+        File.delete(download_path) if File.exist?(download_path)
+      end
+    end
+
+    is_repo_clean = ("git status --porcelain").empty?
+    unless is_repo_clean then
+      commit_strings(options)
     end
   end
 
@@ -428,7 +465,6 @@ platform :android do
     Dir.chdir("..") do
       sh("mkdir -p #{build_dir} && cp -v #{output_dir}#{options[:flavor].downcase}Release/#{aab_file} #{build_dir}#{name}")
       UI.message("Bundle ready: #{name}")
-      extract_universal_apk(bundle_path:"#{build_dir}#{name}", apk_path:"#{build_dir}#{apk_name}")
     end
     "#{build_dir}#{name}"
   end
@@ -452,33 +488,6 @@ platform :android do
       f.puts(File.open(en_release_notes_path).read)
       f.puts("</en-US>")
     }
-  end
-
-  private_lane :extract_universal_apk do | options |
-    bundle_path=options[:bundle_path]
-    apk_path=options[:apk_path]
-    temp_dir = Dir.mktmpdir()
-
-    command = ""
-    if is_ci
-      command << "bundletool build-apks --bundle=\"#{bundle_path}\" \\
-        --output=\"#{temp_dir}/universal.apks\" \\
-        --mode=universal"
-    else
-      command = "source ./tools/gradle-functions.sh"
-      command << "&& bundletool build-apks --bundle=\"#{bundle_path}\" \\
-        --output=\"#{temp_dir}/universal.apks\" \\
-        --mode=universal \\
-        --ks=\"$(get_gradle_property gradle.properties storeFile)\" \\
-        --ks-pass=\"pass:$(get_gradle_property gradle.properties storePassword)\" \\
-        --ks-key-alias=\"$(get_gradle_property gradle.properties keyAlias)\" \\
-        --key-pass=\"pass:$(get_gradle_property gradle.properties keyPassword)\""
-    end
-    sh(command)
-
-    sh("unzip \"#{temp_dir}/universal.apks\" -d \"#{temp_dir}\"")
-    FileUtils.cp_r("#{temp_dir}/universal.apk", "#{apk_path}", remove_destination: true)
-    FileUtils.rm_rf("#{temp_dir}")
   end
 
   # Creates a new GitHub Release for the given version

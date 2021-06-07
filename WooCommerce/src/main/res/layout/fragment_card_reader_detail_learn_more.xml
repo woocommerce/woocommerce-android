@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.textview.MaterialTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.TextView.Caption"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawableStart="@drawable/ic_info_outline_20dp"
+    android:drawablePadding="@dimen/major_100"
+    android:text="@string/card_reader_detail_learn_more"
+    android:textColor="@color/color_on_surface_high"
+    tools:showIn="@layout/fragment_card_reader_detail_connected_state" />
