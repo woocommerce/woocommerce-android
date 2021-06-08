@@ -14,8 +14,10 @@ import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
-class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs) {
+class MyStoreDateRangeView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null
+) : LinearLayout(ctx, attrs) {
     private val binding = MyStoreDateBarBinding.inflate(LayoutInflater.from(ctx), this)
 
     private lateinit var dateUtils: DateUtils

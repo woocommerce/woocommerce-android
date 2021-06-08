@@ -91,10 +91,11 @@ class RefundSummaryFragment : BaseDaggerFragment(R.layout.fragment_refund_summar
                 binding.refundSummaryMethod.text = it
             }
             new.isMethodDescriptionVisible?.takeIfNotEqualTo(old?.isMethodDescriptionVisible) { visible ->
-                if (visible)
+                if (visible) {
                     binding.refundSummaryMethodDescription.show()
-                else
+                } else {
                     binding.refundSummaryMethodDescription.hide()
+                }
             }
         }
     }

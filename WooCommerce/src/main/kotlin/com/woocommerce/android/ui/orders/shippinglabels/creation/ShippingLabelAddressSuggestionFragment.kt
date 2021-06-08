@@ -25,8 +25,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
-class ShippingLabelAddressSuggestionFragment
-    : BaseDaggerFragment(R.layout.fragment_shipping_label_address_suggestion), BackPressListener {
+class ShippingLabelAddressSuggestionFragment : BaseDaggerFragment(
+    R.layout.fragment_shipping_label_address_suggestion
+), BackPressListener {
     companion object {
         const val SUGGESTED_ADDRESS_DISCARDED = "key_suggested_address_dialog_closed"
         const val SELECTED_ADDRESS_ACCEPTED = "key_selected_address_accepted"
