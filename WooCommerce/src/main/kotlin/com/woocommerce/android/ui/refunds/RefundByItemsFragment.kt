@@ -7,9 +7,9 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -21,22 +21,21 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.ui.refunds.RefundShippingListAdapter.OnCheckedChangeListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
-import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class RefundByItemsFragment : BaseDaggerFragment(R.layout.fragment_refund_by_items),
+@AndroidEntryPoint
+class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
     OnCheckedChangeListener {
-    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
 
@@ -49,9 +48,7 @@ class RefundByItemsFragment : BaseDaggerFragment(R.layout.fragment_refund_by_ite
     private var _shippingLinesBinding: RefundByItemsShippingBinding? = null
     private val shippingLinesBinding get() = _shippingLinesBinding!!
 
-    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) {
-        viewModelFactory.get()
-    }
+    private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
 
     override fun onResume() {
         super.onResume()
