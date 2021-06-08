@@ -1,40 +1,38 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.Date
+import javax.inject.Inject
 
-class ShippingLabelRefundViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
+@HiltViewModel
+class ShippingLabelRefundViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val repository: ShippingLabelRepository,
     private val networkStatus: NetworkStatus,
-    dispatchers: CoroutineDispatchers
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private var refundJob: Job? = null
     val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
 
     private val arguments: ShippingLabelRefundFragmentArgs by savedState.navArgs()
 
-    val shippingLabelRefundViewStateData = LiveDataDelegateWithArgs(savedState, ShippingLabelRefundViewState())
+    val shippingLabelRefundViewStateData = LiveDataDelegate(savedState, ShippingLabelRefundViewState())
     private var shippingLabelRefundViewState by shippingLabelRefundViewStateData
 
     init {
@@ -77,7 +75,4 @@ class ShippingLabelRefundViewModel @AssistedInject constructor(
             get() = shippingLabel?.isAnonymized == true ||
                 shippingLabel?.refundExpiryDate?.let { Date().after(it) } ?: false
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ShippingLabelRefundViewModel>
 }
