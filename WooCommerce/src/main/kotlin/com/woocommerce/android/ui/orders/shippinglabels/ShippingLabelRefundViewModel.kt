@@ -24,7 +24,7 @@ import javax.inject.Inject
 class ShippingLabelRefundViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: ShippingLabelRepository,
-    private val networkStatus: NetworkStatus,
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     private var refundJob: Job? = null
     val isRefundInProgress: Boolean

@@ -18,7 +18,7 @@ import dagger.hilt.android.components.ActivityComponent
         ProductsModule::class,
         ReviewsModule::class,
         SitePickerModule::class,
-        AztecModule::class,
+        AztecModule::class
     ]
 )
 interface MainActivityAggregatorModule

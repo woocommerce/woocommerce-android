@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShippingLabelAddressSuggestionViewModel @Inject constructor(
-    savedState: SavedStateHandle,
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val arguments: ShippingLabelAddressSuggestionFragmentArgs by savedState.navArgs()
 

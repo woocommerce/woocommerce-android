@@ -41,7 +41,8 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     private val repository: ShippingLabelRepository = mock()
     private val networkStatus: NetworkStatus = mock()
 
-    private val savedState = PrintShippingLabelFragmentArgs(shippingLabelId = REMOTE_SHIPPING_LABEL_ID).initSavedStateHandle()
+    private val savedState = PrintShippingLabelFragmentArgs(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
+        .initSavedStateHandle()
 
     private val printShippingLabelViewState = PrintShippingLabelViewState()
     private lateinit var viewModel: PrintShippingLabelViewModel
