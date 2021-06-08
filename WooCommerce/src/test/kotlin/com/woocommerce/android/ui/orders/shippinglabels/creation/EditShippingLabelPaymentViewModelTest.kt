@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
@@ -16,17 +15,19 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     private val shippingLabelRepository: ShippingLabelRepository = mock()
 
@@ -51,18 +52,11 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: EditShippingLabelPaymentViewModel
 
     fun setup(accountSettings: ShippingAccountSettings = shippingAccountSettings) {
-        val savedState: SavedStateWithArgs = spy(
-            SavedStateWithArgs(
-                SavedStateHandle(),
-                null
-            )
-        )
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(accountSettings))
         }
         viewModel = EditShippingLabelPaymentViewModel(
-            savedState,
-            coroutinesTestRule.testDispatchers,
+            SavedStateHandle(),
             shippingLabelRepository = shippingLabelRepository
         )
     }
