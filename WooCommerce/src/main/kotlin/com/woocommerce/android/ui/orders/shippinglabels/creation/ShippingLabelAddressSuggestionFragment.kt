@@ -14,7 +14,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
@@ -22,11 +22,12 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ShippingLabelAddressSuggestionFragment
-    : BaseDaggerFragment(R.layout.fragment_shipping_label_address_suggestion), BackPressListener {
+    : BaseFragment(R.layout.fragment_shipping_label_address_suggestion), BackPressListener {
     companion object {
         const val SUGGESTED_ADDRESS_DISCARDED = "key_suggested_address_dialog_closed"
         const val SELECTED_ADDRESS_ACCEPTED = "key_selected_address_accepted"
@@ -34,12 +35,11 @@ class ShippingLabelAddressSuggestionFragment
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
 
     private var _binding: FragmentShippingLabelAddressSuggestionBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: ShippingLabelAddressSuggestionViewModel by viewModels { viewModelFactory }
+    val viewModel: ShippingLabelAddressSuggestionViewModel by viewModels()
 
     private var screenTitle = 0
         set(value) {
