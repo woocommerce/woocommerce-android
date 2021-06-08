@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.ui.aztec.AztecModule
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule
 import com.woocommerce.android.ui.products.ProductsModule
 import com.woocommerce.android.ui.refunds.RefundsModule
 import com.woocommerce.android.ui.reviews.ReviewsModule
@@ -22,7 +21,6 @@ import dagger.hilt.android.components.ActivityComponent
         ReviewsModule::class,
         SitePickerModule::class,
         AztecModule::class,
-        ShippingLabelsModule::class
     ]
 )
 interface MainActivityAggregatorModule
