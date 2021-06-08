@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
@@ -12,27 +12,27 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-class PrintShippingLabelViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
+@HiltViewModel
+class PrintShippingLabelViewModel @Inject constructor(
+    savedState: SavedStateHandle,
+    private val dispatchers: CoroutineDispatchers,
     private val repository: ShippingLabelRepository,
-    private val networkStatus: NetworkStatus,
-    dispatchers: CoroutineDispatchers
-) : DaggerScopedViewModel(savedState, dispatchers) {
+    private val networkStatus: NetworkStatus
+) : ScopedViewModel(savedState) {
     private val arguments: PrintShippingLabelFragmentArgs by savedState.navArgs()
     private val label
         get() = repository.getShippingLabelByOrderIdAndLabelId(
@@ -40,7 +40,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
             shippingLabelId = arguments.shippingLabelId
         )
 
-    val viewStateData = LiveDataDelegateWithArgs(savedState, PrintShippingLabelViewState(
+    val viewStateData = LiveDataDelegate(savedState, PrintShippingLabelViewState(
         isLabelExpired = label?.isAnonymized == true ||
             label?.expiryDate?.let { Date().after(it) } ?: false
     ))
@@ -121,7 +121,4 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         val isLabelExpired: Boolean = false,
         val tempFile: File? = null
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<PrintShippingLabelViewModel>
 }
