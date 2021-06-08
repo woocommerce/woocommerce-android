@@ -1,37 +1,35 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import kotlinx.parcelize.Parcelize
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-class ShippingPackageSelectorViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ShippingPackageSelectorViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
     private val shippingLabelRepository: ShippingLabelRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
     }
 
     private val arguments: ShippingPackageSelectorFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     val dimensionUnit: String by lazy {
@@ -73,9 +71,6 @@ class ShippingPackageSelectorViewModel @AssistedInject constructor(
         val packagesList: List<ShippingPackage> = emptyList(),
         val isLoading: Boolean = false
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ShippingPackageSelectorViewModel>
 }
 
 @Parcelize
