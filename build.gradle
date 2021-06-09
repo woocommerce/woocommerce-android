@@ -45,30 +45,7 @@ allprojects {
 
 subprojects {
     configurations {
-        ktlint
         compile.exclude group: 'org.jetbrains' , module:'annotations-java5'
-    }
-
-    dependencies {
-        ktlint 'com.github.shyiko:ktlint:0.29.0'
-    }
-
-    task ktlint(type: JavaExec) {
-        main = "com.github.shyiko.ktlint.Main"
-        classpath = configurations.ktlint
-        args "src/**/*.kt"
-    }
-
-    task ktlintFormat(type: JavaExec) {
-        main = "com.github.shyiko.ktlint.Main"
-        classpath = configurations.ktlint
-        args "-F", "src/**/*.kt"
-    }
-
-    task ciktlint(type: JavaExec) {
-        main = "com.github.shyiko.ktlint.Main"
-        classpath = configurations.ktlint
-        args "src/**/*.kt", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
     }
 
     detekt {
