@@ -3,12 +3,9 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.AddProductDownloadFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.EditVariationAttributesFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadDetailsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadModule
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsModule
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
@@ -19,7 +16,6 @@ import dagger.android.ContributesAndroidInjector
 @Module(includes = [
     EditVariationAttributesFragmentModule::class,
     WPMediaPickerFragmentModule::class,
-    ProductDownloadDetailsFragmentModule::class,
     AddProductDownloadFragmentModule::class
 ])
 
@@ -29,13 +25,6 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [WPMediaPickerModule::class])
         abstract fun wpMediaPickerFragment(): WPMediaPickerFragment
-    }
-
-    @Module
-    internal abstract class ProductDownloadDetailsFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductDownloadDetailsModule::class])
-        abstract fun productDownloadDetailsFragment(): ProductDownloadDetailsFragment
     }
 
     @Module

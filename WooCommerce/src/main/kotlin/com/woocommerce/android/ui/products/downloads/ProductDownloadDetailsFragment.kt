@@ -6,10 +6,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.DownloadableFileAction
@@ -17,7 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_DOWNLOAD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductDownloadDetailsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
@@ -27,17 +27,17 @@ import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewM
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProductDownloadDetailsFragment :
-    BaseDaggerFragment(R.layout.fragment_product_download_details), BackPressListener {
+    BaseFragment(R.layout.fragment_product_download_details), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: ProductDownloadDetailsViewModel by viewModels { viewModelFactory }
-    private val parentViewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products)
+    private val viewModel: ProductDownloadDetailsViewModel by viewModels()
+    private val parentViewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
     private val navArgs by navArgs<ProductDownloadDetailsFragmentArgs>()
     private lateinit var doneOrUpdateMenuItem: MenuItem
 
