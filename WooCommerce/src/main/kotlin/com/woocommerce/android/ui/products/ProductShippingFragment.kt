@@ -23,12 +23,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Fragment which enables updating product shipping data.
  */
+@AndroidEntryPoint
 class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_product_shipping) {
-    private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory.get() }
+    private val viewModel: ProductShippingViewModel by viewModels()
 
     override val lastEvent: Event?
         get() = viewModel.event.value
