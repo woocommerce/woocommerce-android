@@ -21,7 +21,6 @@ import org.robolectric.RobolectricTestRunner
 class ProductImagesViewModelTest : BaseUnitTest() {
     lateinit var viewModel: ProductImagesViewModel
 
-
     private val networkStatus: NetworkStatus = mock()
 
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()

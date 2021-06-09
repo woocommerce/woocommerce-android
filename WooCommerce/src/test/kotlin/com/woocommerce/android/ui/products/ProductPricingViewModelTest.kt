@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
@@ -18,7 +19,6 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -50,7 +50,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         gmtOffset = 0f
     )
     private val parameterRepository: ParameterRepository = mock {
-        on(it.getParameters(any(), any<SavedStateWithArgs>())).thenReturn(siteParams)
+        on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
 
     private val pricingData = PricingData(
@@ -91,16 +91,15 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
         doReturn(taxClasses).whenever(productRepository).getTaxClassesForSite()
 
-        viewModel = spy(ProductPricingViewModel(
+        viewModel = ProductPricingViewModel(
                 savedState,
                 productRepository,
                 wooCommerceStore,
                 selectedSite,
                 parameterRepository
-        ))
+        )
 
         clearInvocations(
-            savedState,
             productRepository,
             wooCommerceStore,
             selectedSite
