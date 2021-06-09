@@ -28,7 +28,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class VariationListRepository @Inject constructor(
+class VariationRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val wooCommerceStore: WooCommerceStore,

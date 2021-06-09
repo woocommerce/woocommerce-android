@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_PR
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
@@ -68,6 +69,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -77,9 +79,11 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -89,7 +93,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -117,6 +120,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val productTagsRepository: ProductTagsRepository,
     private val mediaFilesRepository: MediaFilesRepository,
+    private val variationRepository: VariationRepository,
     private val prefs: AppPrefs
 ) : DaggerScopedViewModel(savedState, dispatchers) {
     companion object {
@@ -176,6 +180,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     final val globalAttributeViewStateData = LiveDataDelegateWithArgs(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
+
+    final val attributeListViewStateData = LiveDataDelegateWithArgs(savedState, AttributeListViewState())
+    private var attributeListViewState by attributeListViewStateData
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
     val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
@@ -320,6 +327,18 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductBeforeEnteringFragment()
     }
 
+    fun onAddFirstVariationClicked() {
+        val target = viewState.productDraft
+            ?.takeIf { it.variationEnabledAttributes.isNotEmpty() }
+            ?.let { ViewProductVariations(it.remoteId) }
+            ?: AddProductAttribute(isVariationCreation = true)
+
+        onEditProductCardClicked(
+            target,
+            PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+        )
+    }
+
     /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product detail screen
@@ -328,6 +347,21 @@ class ProductDetailViewModel @AssistedInject constructor(
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
         updateProductBeforeEnteringFragment()
+    }
+
+    fun onAttributeListDoneButtonClicked() {
+        saveAttributeChanges()
+        attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+        launch {
+            viewState.productDraft?.let { draft ->
+                variationRepository.createEmptyVariation(draft)
+                    ?.let { updateProductDraft(numVariation = draft.numVariations + 1) }
+                    ?.let { triggerEvent(ExitProductAttributeList(variationCreated = true)) }
+                    ?: triggerEvent(ExitProductAttributeList())
+            }.also {
+                attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
+            }
+        }
     }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
@@ -1253,9 +1287,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
-    fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
+    fun onAttributeListItemClick(attributeId: Long, attributeName: String, isVariationCreation: Boolean) {
         enableLocalAttributeForVariations(attributeId)
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false, isVariationCreation))
     }
 
     /**
@@ -1312,7 +1346,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called from the attribute list when the user enters a new attribute
      */
-    fun addLocalAttribute(attributeName: String) {
+    fun addLocalAttribute(attributeName: String, isVariationCreation: Boolean) {
         if (containsAttributeName(attributeName)) {
             triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
             return
@@ -1339,7 +1373,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductDraft(attributes = attributes)
 
         // take the user to the add attribute terms screen
-        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true))
+        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true, isVariationCreation))
     }
 
     /**
@@ -1907,7 +1941,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
-        class ExitProductAttributeList(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+        class ExitProductAttributeList(
+            shouldShowDiscardDialog: Boolean = true,
+            val variationCreated: Boolean = false
+        ) : ProductExitEvent(
             shouldShowDiscardDialog
         )
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
@@ -1922,7 +1959,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     object RefreshMenu : Event()
-
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.
@@ -2001,6 +2037,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class GlobalAttributesTermsViewState(
         val isSkeletonShown: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class AttributeListViewState(
+        val isCreatingVariationDialogShown: Boolean? = null
     ) : Parcelable
 
     @AssistedFactory

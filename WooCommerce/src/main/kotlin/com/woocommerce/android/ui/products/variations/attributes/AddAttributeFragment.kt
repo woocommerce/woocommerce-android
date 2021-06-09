@@ -35,6 +35,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     private var layoutManager: LayoutManager? = null
     private val skeletonView = SkeletonView()
+    private var moveNextMenuItem: MenuItem? = null
 
     private val navArgs: AddAttributeFragmentArgs by navArgs()
 
@@ -76,9 +77,9 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         super.onCreateOptionsMenu(menu, inflater)
 
         if (navArgs.isVariationCreation) {
-            menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.done).apply {
+            moveNextMenuItem = menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.next).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                isVisible = true
+                isVisible = false
             }
         }
     }
@@ -86,6 +87,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ADD_ATTRIBUTES -> {
+                viewModel.saveAttributeChanges()
                 AddAttributeFragmentDirections
                     .actionAddAttributeFragmentToAttributeListFragment(isVariationCreation = true)
                     .run { findNavController().navigateSafely(this) }
@@ -113,7 +115,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             val attributeName = binding.attributeEditText.text?.toString() ?: ""
             if (attributeName.isNotBlank()) {
                 binding.attributeEditText.text?.clear()
-                viewModel.addLocalAttribute(attributeName)
+                viewModel.addLocalAttribute(attributeName, navArgs.isVariationCreation)
             }
             true
         }
@@ -145,12 +147,16 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
      * passed global attributes and the existing draft local attributes
      */
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
-        val adapter: AttributeListAdapter
+        moveNextMenuItem?.isVisible = navArgs.isVariationCreation and viewModel.productDraftAttributes.isNotEmpty()
+
+        val adapter: AddAttributeAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
+            adapter = AddAttributeAdapter { attributeId, attributeName ->
+                viewModel.onAttributeListItemClick(attributeId, attributeName, navArgs.isVariationCreation)
+            }
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as AttributeListAdapter
+            adapter = binding.attributeList.adapter as AddAttributeAdapter
         }
 
         val allDraftAttributes = viewModel.productDraftAttributes
@@ -164,7 +170,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             }?.terms ?: emptyList()
         }
 
-        adapter.setAttributeList(
+        adapter.refreshAttributeList(
             ArrayList<ProductAttribute>().also { allAttributes ->
                 // add the list of global attributes along with any terms each global attribute has in the product draft
                 allAttributes.addAll(
