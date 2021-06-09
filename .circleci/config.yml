@@ -39,7 +39,7 @@ jobs:
       - copy-gradle-properties
       - run:
           name: Checkstyle & Detekt
-          command: ./gradlew --stacktrace checkstyle detekt
+          command: ./gradlew --stacktrace checkstyle detektAll
       - run:
           name: Lint
           command: ./gradlew --stacktrace lintVanillaRelease
