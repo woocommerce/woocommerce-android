@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.products.variations
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.generateVariation
@@ -16,10 +16,13 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Date
 
+@RunWith(RobolectricTestRunner::class)
 class VariationDetailViewModelTest : BaseUnitTest() {
     companion object {
         private val SALE_START_DATE = Date.from(
@@ -55,20 +58,15 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         on { getString(any()) } doAnswer { answer -> answer.arguments[0].toString() }
     }
 
-    private val savedState = SavedStateWithArgs(
-        savedState = SavedStateHandle(),
-        arguments = null,
-        defaultArgs = VariationDetailFragmentArgs(
-            TEST_VARIATION.remoteProductId,
-            TEST_VARIATION.remoteVariationId
-        )
-    )
+    private val savedState = VariationDetailFragmentArgs(
+        TEST_VARIATION.remoteProductId,
+        TEST_VARIATION.remoteVariationId
+    ).initSavedStateHandle()
 
     @Before
     fun setup() {
         sut = VariationDetailViewModel(
             savedState = savedState,
-            dispatchers = coroutinesTestRule.testDispatchers,
             variationRepository = variationRepository,
             productRepository = mock(),
             networkStatus = mock(),
