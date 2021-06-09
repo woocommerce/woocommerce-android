@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragment
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductTypesBottomSheetFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.VariationListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
 import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment
 import com.woocommerce.android.ui.products.categories.AddProductCategoryModule
@@ -39,8 +38,6 @@ import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
-import com.woocommerce.android.ui.products.variations.VariationListFragment
-import com.woocommerce.android.ui.products.variations.VariationListModule
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
@@ -49,7 +46,6 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module(includes = [
-    VariationListFragmentModule::class,
     EditVariationAttributesFragmentModule::class,
     ProductImagesFragmentModule::class,
     ProductImageViewerFragmentModule::class,
@@ -75,13 +71,6 @@ import dagger.android.ContributesAndroidInjector
 ])
 
 object ProductsModule {
-    @Module
-    internal abstract class VariationListFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector(modules = [VariationListModule::class])
-        abstract fun variationListFragment(): VariationListFragment
-    }
-
     @Module
     internal abstract class ProductInventoryFragmentModule {
         @FragmentScope

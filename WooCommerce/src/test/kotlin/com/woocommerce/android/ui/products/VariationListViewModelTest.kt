@@ -47,12 +47,11 @@ class VariationListViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         viewModel = spy(
             VariationListViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                variationListRepository,
-                productRepository,
-                networkStatus,
-                currencyFormatter
+                    savedState,
+                    variationListRepository,
+                    productRepository,
+                    networkStatus,
+                    currencyFormatter
             )
         )
     }
