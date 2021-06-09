@@ -14,15 +14,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
+class ProductDetailBottomSheetFragment : BottomSheetDialogFragment() {
     @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
 
     val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products)
@@ -88,9 +86,5 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
         productDetailBottomSheetOptions: List<ProductDetailBottomSheetUiItem>
     ) {
         productDetailBottomSheetAdapter.setProductDetailBottomSheetOptions(productDetailBottomSheetOptions)
-    }
-
-    override fun androidInjector(): AndroidInjector<Any> {
-        return childInjector
     }
 }
