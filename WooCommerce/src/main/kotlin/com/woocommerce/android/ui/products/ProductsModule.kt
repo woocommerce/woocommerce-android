@@ -5,15 +5,12 @@ import com.woocommerce.android.ui.products.ProductsModule.AddProductDownloadFrag
 import com.woocommerce.android.ui.products.ProductsModule.EditVariationAttributesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.GroupedProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadDetailsFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductReviewsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSelectionListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadModule
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsModule
-import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
-import com.woocommerce.android.ui.products.reviews.ProductReviewsModule
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
@@ -24,7 +21,6 @@ import dagger.android.ContributesAndroidInjector
 @Module(includes = [
     EditVariationAttributesFragmentModule::class,
     WPMediaPickerFragmentModule::class,
-    ProductReviewsFragmentModule::class,
     GroupedProductListFragmentModule::class,
     ProductSelectionListFragmentModule::class,
     ProductDownloadDetailsFragmentModule::class,
@@ -37,13 +33,6 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [WPMediaPickerModule::class])
         abstract fun wpMediaPickerFragment(): WPMediaPickerFragment
-    }
-
-    @Module
-    internal abstract class ProductReviewsFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductReviewsModule::class])
-        abstract fun productReviewsFragment(): ProductReviewsFragment
     }
 
     @Module
