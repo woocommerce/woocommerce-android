@@ -9,7 +9,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
@@ -50,7 +49,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VariationListViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val variationListRepository: VariationListRepository,
+    private val variationRepository: VariationRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
@@ -76,13 +75,10 @@ class VariationListViewModel @Inject constructor(
     val isEmpty
         get() = _variationList.value?.isEmpty() ?: true
 
-    fun start(remoteProductId: Long, createNewVariation: Boolean = false) {
+    fun start(remoteProductId: Long) {
         productRepository.getProduct(remoteProductId)?.let {
             viewState = viewState.copy(parentProduct = it)
-            when (createNewVariation) {
-                true -> handleVariationCreation(openVariationDetails = false)
-                else -> handleVariationLoading(remoteProductId)
-            }
+            handleVariationLoading(remoteProductId)
         }
     }
 
@@ -92,7 +88,7 @@ class VariationListViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        variationListRepository.onCleanup()
+        variationRepository.onCleanup()
     }
 
     fun onItemClick(variation: ProductVariation) {
@@ -100,19 +96,18 @@ class VariationListViewModel @Inject constructor(
         triggerEvent(ShowVariationDetail(variation))
     }
 
-    fun onAddEditAttributesClick() {
-        trackWithProductId(PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED)
-        triggerEvent(ShowAttributeList)
-    }
-
     fun onCreateEmptyVariationClick() {
         trackWithProductId(Stat.PRODUCT_VARIATION_ADD_MORE_TAPPED)
-        handleVariationCreation(openVariationDetails = true)
+        handleVariationCreation()
     }
 
     fun onCreateFirstVariationRequested() {
         trackWithProductId(Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
-        triggerEvent(ShowAddAttributeView)
+        viewState.parentProduct
+            ?.variationEnabledAttributes
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { handleVariationCreation(openVariationDetails = false) }
+            ?: triggerEvent(ShowAddAttributeView)
     }
 
     fun onVariationDeleted(productID: Long, variationID: Long) = launch {
@@ -140,7 +135,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     private fun handleVariationCreation(
-        openVariationDetails: Boolean
+        openVariationDetails: Boolean = true
     ) = launch {
         viewState = viewState.copy(
             isProgressDialogShown = true,
@@ -155,7 +150,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     private suspend fun Product.createVariation() =
-            variationListRepository.createEmptyVariation(this)
+            variationRepository.createEmptyVariation(this)
                 ?.copy(remoteProductId = remoteId)
                 ?.apply { syncProductToVariations(remoteId) }
 
@@ -170,7 +165,7 @@ class VariationListViewModel @Inject constructor(
         loadMore: Boolean = false,
         withSkeletonView: Boolean = true
     ) {
-        if (loadMore && !variationListRepository.canLoadMoreProductVariations) {
+        if (loadMore && !variationRepository.canLoadMoreProductVariations) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more product variations")
             return
         }
@@ -187,7 +182,7 @@ class VariationListViewModel @Inject constructor(
             if (!loadMore) {
                 // if this is the initial load, first get the product variations from the db and if there are any show
                 // them immediately, otherwise make sure the skeleton shows
-                val variationsInDb = variationListRepository.getProductVariationList(remoteProductId)
+                val variationsInDb = variationRepository.getProductVariationList(remoteProductId)
                 if (variationsInDb.isNullOrEmpty()) {
                     viewState = viewState.copy(isSkeletonShown = withSkeletonView)
                 } else {
@@ -201,7 +196,7 @@ class VariationListViewModel @Inject constructor(
 
     private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            val fetchedVariations = variationListRepository.fetchProductVariations(remoteProductId, loadMore)
+            val fetchedVariations = variationRepository.fetchProductVariations(remoteProductId, loadMore)
             if (fetchedVariations.isNullOrEmpty()) {
                 if (!loadMore) {
                     _variationList.value = emptyList()
@@ -221,7 +216,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
-        val currencyCode = variationListRepository.getCurrencyCode()
+        val currencyCode = variationRepository.getCurrencyCode()
         variations.map { variation ->
             if (variation.isSaleInEffect) {
                 variation.priceWithCurrency = currencyCode?.let {
@@ -259,5 +254,4 @@ class VariationListViewModel @Inject constructor(
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
     object ShowAddAttributeView : Event()
-    object ShowAttributeList : Event()
 }

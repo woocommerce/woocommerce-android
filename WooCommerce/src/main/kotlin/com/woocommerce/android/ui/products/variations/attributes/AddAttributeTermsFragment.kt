@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -10,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,13 +18,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +54,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private var isConfirmRemoveDialogShowing = false
     private var renamedAttributeName: String? = null
+    private var moveNextMenuItem: MenuItem? = null
 
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
@@ -170,11 +171,24 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        // we don't want to show the Remove menu item if this is new attribute
-        menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute
+        /**
+         * we only want to show the Next menu item if we're under the creation of
+         * the first variation for a Variable Product
+         */
+        moveNextMenuItem = menu.findItem(R.id.menu_next)
 
-        // we don't want to show the Rename menu item if this is new attribute or a global attribute
-        menu.findItem(R.id.menu_rename)?.isVisible = !navArgs.isNewAttribute && !isGlobalAttribute
+        /** we don't want to show the Remove menu item if this is new attribute
+         * or if we're under the First variation creation flow
+         */
+        menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute && !navArgs.isVariationCreation
+
+        /** we don't want to show the Rename menu item if this is new attribute or a global attribute,
+         * or if we're under the First variation creation flow
+         */
+        menu.findItem(R.id.menu_rename)?.isVisible =
+            !navArgs.isNewAttribute &&
+                !isGlobalAttribute &&
+                !navArgs.isVariationCreation
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -185,6 +199,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
             R.id.menu_rename -> {
                 viewModel.onRenameAttributeButtonClick(attributeName)
+                true
+            }
+            R.id.menu_next -> {
+                viewModel.saveAttributeChanges()
+                AddAttributeTermsFragmentDirections.actionAddAttributeTermsFragmentToAttributeListFragment(
+                    isVariationCreation = navArgs.isVariationCreation
+                ).run { findNavController().navigateSafely(this) }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -245,11 +266,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
-        binding.termEditText.setOnEditorActionListener { _, actionId, event ->
-            val termName = binding.termEditText.text?.toString() ?: ""
+        binding.termEditText.setOnEditorActionListener { termName ->
             if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
                 addTerm(termName)
-                binding.termEditText.text?.clear()
+                binding.termEditText.setText("")
             }
             true
         }
@@ -263,21 +283,24 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recycler.layoutManager = layoutManager
 
-        if (enableDragAndDrop) {
-            recycler.adapter = AttributeTermsListAdapter(enableDragAndDrop = true, enableDeleting = enableDeleting)
-            itemTouchHelper.attachToRecyclerView(recycler)
-        } else {
-            recycler.adapter = AttributeTermsListAdapter(enableDragAndDrop = false, enableDeleting = enableDeleting)
-        }
+        with(TypedValue()) {
+            context?.theme?.resolveAttribute(android.R.attr.itemBackground, this, true)
 
-        recycler.addItemDecoration(
-            AlignedDividerDecoration(
-                requireContext(),
-                DividerItemDecoration.VERTICAL,
-                R.id.variationOptionName,
-                clipToMargin = false
-            )
-        )
+            if (enableDragAndDrop) {
+                recycler.adapter = AttributeTermsListAdapter(
+                    enableDragAndDrop = true,
+                    enableDeleting = enableDeleting,
+                    defaultItemBackground = this
+                )
+                itemTouchHelper.attachToRecyclerView(recycler)
+            } else {
+                recycler.adapter = AttributeTermsListAdapter(
+                    enableDragAndDrop = false,
+                    enableDeleting = enableDeleting,
+                    defaultItemBackground = this
+                )
+            }
+        }
 
         return layoutManager
     }
@@ -349,6 +372,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun checkViews() {
         binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
         binding.textExistingOption.isVisible = !globalTermsAdapter.isEmpty()
+        moveNextMenuItem?.isVisible = !assignedTermsAdapter.isEmpty() && navArgs.isVariationCreation
     }
 
     /**

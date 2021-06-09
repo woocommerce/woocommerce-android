@@ -7,7 +7,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.CurrencyAmountDialog
-import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -15,7 +14,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class RefundAmountDialog : CurrencyAmountDialog() {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
 
     private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
 

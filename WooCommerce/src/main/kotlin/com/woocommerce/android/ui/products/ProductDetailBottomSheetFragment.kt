@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
@@ -17,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProductDetailBottomSheetFragment : BottomSheetDialogFragment() {
-    val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products)
+    val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
 
     private lateinit var productDetailBottomSheetAdapter: ProductDetailBottomSheetAdapter
 

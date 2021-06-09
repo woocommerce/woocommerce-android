@@ -11,7 +11,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.variations.VariationListRepository
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -28,7 +28,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class VariationListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
-    private val variationListRepository: VariationListRepository = mock()
+    private val variationRepository: VariationRepository = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val productRepository: ProductDetailRepository = mock()
 
@@ -47,7 +47,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel = spy(
             VariationListViewModel(
                     savedState,
-                    variationListRepository,
+                    variationRepository,
                     productRepository,
                     networkStatus,
                     currencyFormatter
@@ -57,7 +57,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product variation list view correctly`() {
-        doReturn(variations).whenever(variationListRepository).getProductVariationList(productRemoteId)
+        doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
 
         createViewModel()
 
@@ -82,8 +82,8 @@ class VariationListViewModelTest : BaseUnitTest() {
 
             viewModel.start(productRemoteId)
 
-            verify(variationListRepository, times(1)).getProductVariationList(productRemoteId)
-            verify(variationListRepository, times(0)).fetchProductVariations(productRemoteId)
+            verify(variationRepository, times(1)).getProductVariationList(productRemoteId)
+            verify(variationRepository, times(0)).fetchProductVariations(productRemoteId)
 
             assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
         }
@@ -91,7 +91,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product variations skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(emptyList<ProductVariation>())
-            .whenever(variationListRepository).getProductVariationList(productRemoteId)
+            .whenever(variationRepository).getProductVariationList(productRemoteId)
 
         createViewModel()
 
@@ -106,8 +106,8 @@ class VariationListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Display empty view on fetch product variations error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(variationListRepository.fetchProductVariations(productRemoteId)).thenReturn(null)
-        whenever(variationListRepository.getProductVariationList(productRemoteId)).thenReturn(null)
+        whenever(variationRepository.fetchProductVariations(productRemoteId)).thenReturn(null)
+        whenever(variationRepository.getProductVariationList(productRemoteId)).thenReturn(null)
 
         createViewModel()
 
@@ -118,7 +118,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         viewModel.start(productRemoteId)
 
-        verify(variationListRepository, times(1)).fetchProductVariations(productRemoteId)
+        verify(variationRepository, times(1)).fetchProductVariations(productRemoteId)
         assertThat(showEmptyView).containsExactly(true, false)
     }
 }
