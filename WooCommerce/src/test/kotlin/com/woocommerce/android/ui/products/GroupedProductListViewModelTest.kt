@@ -1,66 +1,50 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class GroupedProductListViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
         private val GROUPED_PRODUCT_IDS = longArrayOf(2, 3, 4, 5)
     }
 
-    private val networkStatus: NetworkStatus = mock()
+    private val networkStatus: NetworkStatus = mock {
+        on { isConnected() } doReturn true
+    }
     private val productRepository: GroupedProductListRepository = mock()
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            GroupedProductListFragmentArgs(
-                remoteProductId = PRODUCT_REMOTE_ID,
-                productIds = GROUPED_PRODUCT_IDS,
-                groupedProductListType = GroupedProductListType.GROUPED
-            )
-        )
-    )
+    private val savedState = GroupedProductListFragmentArgs(
+        remoteProductId = PRODUCT_REMOTE_ID,
+        productIds = GROUPED_PRODUCT_IDS,
+        groupedProductListType = GroupedProductListType.GROUPED
+    ).initSavedStateHandle()
 
     private val productList = ProductTestUtils.generateProductList()
     private val groupedProductIds = GROUPED_PRODUCT_IDS.toList()
 
     private lateinit var viewModel: GroupedProductListViewModel
 
-    @Before
-    fun setup() {
-        doReturn(MutableLiveData(GroupedProductListViewState(groupedProductIds)))
-            .whenever(savedState).getLiveData<GroupedProductListViewState>(any(), any())
-        doReturn(true).whenever(networkStatus).isConnected()
-    }
-
     private fun createViewModel() {
-        viewModel = spy(
-            GroupedProductListViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                networkStatus,
-                productRepository
-            )
+        viewModel = GroupedProductListViewModel(
+            savedState,
+            networkStatus,
+            productRepository
         )
     }
 
