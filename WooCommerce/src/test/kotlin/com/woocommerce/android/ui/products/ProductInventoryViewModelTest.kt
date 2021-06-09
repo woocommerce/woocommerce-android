@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductBackorderStatus.No
 import com.woocommerce.android.ui.products.ProductBackorderStatus.Yes
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -17,16 +17,16 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
-@InternalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ProductInventoryViewModelTest : BaseUnitTest() {
     private val productDetailRepository: ProductDetailRepository = mock()
 
@@ -67,15 +67,10 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel(requestCode: Int, initData: InventoryData = initialData): ProductInventoryViewModel {
-        val savedState = SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            ProductInventoryFragmentArgs(requestCode, initData, initData.sku!!)
-        )
+        val savedState = ProductInventoryFragmentArgs(requestCode, initData, initData.sku!!).initSavedStateHandle()
         return spy(
             ProductInventoryViewModel(
                 savedState,
-                coroutinesTestRule.testDispatchers,
                 productDetailRepository
             )
         )
