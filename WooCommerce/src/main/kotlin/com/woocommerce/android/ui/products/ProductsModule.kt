@@ -6,16 +6,11 @@ import com.woocommerce.android.ui.products.ProductsModule.AddProductDownloadFrag
 import com.woocommerce.android.ui.products.ProductsModule.EditVariationAttributesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.GroupedProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadDetailsFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductMenuOrderFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductReviewsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSelectionListFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductTypesBottomSheetFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
 import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment
 import com.woocommerce.android.ui.products.categories.AddProductCategoryModule
@@ -27,11 +22,6 @@ import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragm
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsModule
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.reviews.ProductReviewsModule
-import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
-import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
-import com.woocommerce.android.ui.products.settings.ProductSlugFragment
-import com.woocommerce.android.ui.products.settings.ProductStatusFragment
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
@@ -41,11 +31,6 @@ import dagger.android.ContributesAndroidInjector
 
 @Module(includes = [
     EditVariationAttributesFragmentModule::class,
-    ProductCatalogVisibilityFragmentModule::class,
-    ProductStatusFragmentModule::class,
-    ProductSlugFragmentModule::class,
-    ProductMenuOrderFragmentModule::class,
-    ProductVisibilityFragmentModule::class,
     WPMediaPickerFragmentModule::class,
     ProductSortingFragmentModule::class,
     AddProductCategoryFragmentModule::class,
@@ -59,41 +44,6 @@ import dagger.android.ContributesAndroidInjector
 ])
 
 object ProductsModule {
-    @Module
-    internal abstract class ProductStatusFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector()
-        abstract fun productStatusFragment(): ProductStatusFragment
-    }
-
-    @Module
-    internal abstract class ProductCatalogVisibilityFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector()
-        abstract fun productCatalogVisibilityFragment(): ProductCatalogVisibilityFragment
-    }
-
-    @Module
-    internal abstract class ProductVisibilityFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector()
-        abstract fun productVisibilityFragment(): ProductVisibilityFragment
-    }
-
-    @Module
-    internal abstract class ProductSlugFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector()
-        abstract fun productSlugFragment(): ProductSlugFragment
-    }
-
-    @Module
-    internal abstract class ProductMenuOrderFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector()
-        abstract fun productMenuOrderFragment(): ProductMenuOrderFragment
-    }
-
     @Module
     internal abstract class WPMediaPickerFragmentModule {
         @FragmentScope

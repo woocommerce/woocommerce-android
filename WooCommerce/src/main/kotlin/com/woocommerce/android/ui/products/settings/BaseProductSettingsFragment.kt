@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products.settings
 import androidx.annotation.LayoutRes
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import org.wordpress.android.util.ActivityUtils
@@ -14,7 +14,7 @@ import org.wordpress.android.util.ActivityUtils
  * communication with the shared product ViewModel. Fragments which extend this are
  * expected to be lightweight.
  */
-abstract class BaseProductSettingsFragment : BaseDaggerFragment, BackPressListener {
+abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
