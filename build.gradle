@@ -46,7 +46,7 @@ allprojects {
 subprojects {
     configurations {
         ktlint
-        compile.exclude group: 'org.jetbrains' , module:'annotations-java5'
+        compile.exclude group: 'org.jetbrains', module: 'annotations-java5'
     }
 
     dependencies {
@@ -70,16 +70,28 @@ subprojects {
         classpath = configurations.ktlint
         args "src/**/*.kt", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
     }
+}
 
-    detekt {
-        config = files("${project.rootDir}/config/detekt/detekt.yml")
-        baseline = file("${project.rootDir}/config/detekt/baseline.xml")
-        buildUponDefaultConfig = true
-    }
+tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
+    description = "Custom DETEKT build for all modules"
+    parallel = true
+    ignoreFailures = false
+    buildUponDefaultConfig = true
+    setSource(file(projectDir))
+    baseline.set(file("$rootDir/config/detekt/baseline.xml"))
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    include("**/*.kt")
+    exclude("**/resources/**", "**/build/**")
 
-    dependencies {
-        detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"
+    reports {
+        html.enabled = true
+        xml.enabled = false
+        txt.enabled = false
     }
+}
+
+dependencies {
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"
 }
 
 task clean(type: Delete) {
