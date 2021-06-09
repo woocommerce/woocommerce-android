@@ -14,28 +14,27 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class ProductImageViewerFragment : BaseDaggerFragment(R.layout.fragment_product_image_viewer),
+@AndroidEntryPoint
+class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_viewer),
     ImageViewerListener,
     BackPressListener {
-    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     companion object {
@@ -45,9 +44,7 @@ class ProductImageViewerFragment : BaseDaggerFragment(R.layout.fragment_product_
     }
 
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
-    private val viewModel: ProductImagesViewModel by navGraphViewModels(R.id.nav_graph_image_gallery) {
-        viewModelFactory.get()
-    }
+    private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null
