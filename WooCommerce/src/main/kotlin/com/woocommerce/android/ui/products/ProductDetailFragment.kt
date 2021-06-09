@@ -50,9 +50,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeT
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_detail),
     OnGalleryImageInteractionListener {
     companion object {

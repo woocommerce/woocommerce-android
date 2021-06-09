@@ -6,6 +6,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -21,8 +22,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -83,8 +82,7 @@ import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -92,10 +90,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -107,11 +104,12 @@ import java.math.BigDecimal
 import java.util.Collections
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-@OpenClassOnDebug
-class ProductDetailViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ProductDetailViewModel @Inject constructor(
+    savedState: SavedStateHandle,
+    private val dispatchers: CoroutineDispatchers,
     parameterRepository: ParameterRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
@@ -122,7 +120,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
     private val variationRepository: VariationRepository,
     private val prefs: AppPrefs
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
@@ -139,7 +137,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     // view state for the product detail screen
-    val productDetailViewStateData = LiveDataDelegateWithArgs(savedState, ProductDetailViewState()) { old, new ->
+    val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
             new.productDraft?.let {
                 updateCards(it)
@@ -149,15 +147,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     private var viewState by productDetailViewStateData
 
     // view state for the product categories screen
-    val productCategoriesViewStateData = LiveDataDelegateWithArgs(savedState, ProductCategoriesViewState())
+    val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
 
     // view state for the product tags screen
-    final val productTagsViewStateData = LiveDataDelegateWithArgs(savedState, ProductTagsViewState())
+    final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
 
     // view state for the product downloads screen
-    final val productDownloadsViewStateData = LiveDataDelegateWithArgs(savedState, ProductDownloadsViewState())
+    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
     private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
@@ -172,16 +170,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
-    final val globalAttributeTermsViewStateData = LiveDataDelegateWithArgs(savedState, GlobalAttributesTermsViewState())
+    val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
     private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
 
     private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
     val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
 
-    final val globalAttributeViewStateData = LiveDataDelegateWithArgs(savedState, GlobalAttributesViewState())
+    val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
 
-    final val attributeListViewStateData = LiveDataDelegateWithArgs(savedState, AttributeListViewState())
+    val attributeListViewStateData = LiveDataDelegate(savedState, AttributeListViewState())
     private var attributeListViewState by attributeListViewStateData
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
@@ -2043,7 +2041,4 @@ class ProductDetailViewModel @AssistedInject constructor(
     data class AttributeListViewState(
         val isCreatingVariationDialogShown: Boolean? = null
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
 }

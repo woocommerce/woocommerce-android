@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
@@ -13,6 +12,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
@@ -35,12 +35,13 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -48,6 +49,7 @@ import java.time.ZoneOffset
 import java.util.Date
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -73,13 +75,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID)
-        )
-    )
+    private val savedState: SavedStateHandle =
+        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).initSavedStateHandle()
 
     private val siteParams = SiteParameters(
         currencyCode = "USD",
@@ -90,7 +87,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         gmtOffset = 0f
     )
     private val parameterRepository: ParameterRepository = mock {
-        on(it.getParameters(any(), any<SavedStateWithArgs>())).thenReturn(siteParams)
+        on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
 
     private val prefs: AppPrefs = mock()
@@ -205,9 +202,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(ProductDetailViewState()))
-            .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
-
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(ProductDetailViewModel(
@@ -227,7 +221,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         clearInvocations(
             viewModel,
-            savedState,
             selectedSite,
             productRepository,
             networkStatus,

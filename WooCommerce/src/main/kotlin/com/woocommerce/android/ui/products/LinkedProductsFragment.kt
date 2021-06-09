@@ -17,7 +17,9 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
 import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_products) {
     private var _binding: FragmentLinkedProductsBinding? = null
     private val binding get() = _binding!!
