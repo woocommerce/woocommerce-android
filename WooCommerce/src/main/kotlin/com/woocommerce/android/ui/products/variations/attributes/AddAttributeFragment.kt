@@ -6,10 +6,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -22,7 +22,6 @@ import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import java.util.Locale
 
@@ -107,9 +106,6 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
         binding.attributeList.layoutManager = layoutManager
         binding.attributeList.itemAnimator = null
-        binding.attributeList.addItemDecoration(AlignedDividerDecoration(
-            requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
-        ))
 
         binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
             val attributeName = binding.attributeEditText.text?.toString() ?: ""
@@ -186,6 +182,8 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                 allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
             }
         )
+        binding.attributeSelectionHint.isVisible =
+            globalDraftAttributes.isNotEmpty() or localDraftAttributes.isNotEmpty()
     }
 
     private fun showSkeleton(show: Boolean) {
