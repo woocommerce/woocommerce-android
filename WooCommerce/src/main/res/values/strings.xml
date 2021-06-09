@@ -62,12 +62,15 @@
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
+    <string name="product_variation_multiple_count">%1$s variations</string>
+    <string name="product_variation_single_count">1 variation</string>
     <string name="product_variations_edit_attr">Edit attributes</string>
     <string name="product_variation_attributes">Attributes</string>
     <string name="product_add_attribute">Add attribute</string>
     <string name="product_new_attribute_name">New attribute name</string>
     <string name="product_rename_attribute">Rename attribute</string>
     <string name="product_rename_attribute_helper">Type of variation, eg. size or color</string>
+    <string name="product_create_attribute_helper">To create a variation, you\'ll need to set its attributes (ie \"Color\", \"Size\") first</string>
     <string name="product_select_attribute">Or tap to select an existing attribute</string>
     <string name="product_new_attribute_term_name">Option name</string>
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
@@ -785,6 +788,7 @@
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_price_empty">Add price</string>
+    <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
@@ -1009,7 +1013,7 @@
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
-    <string name="variation_create_dialog_title">Creating variation</string>
+    <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
 
     <!--

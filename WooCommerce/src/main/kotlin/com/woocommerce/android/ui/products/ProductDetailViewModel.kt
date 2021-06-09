@@ -21,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_PR
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -67,6 +68,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -76,6 +78,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -115,6 +118,7 @@ class ProductDetailViewModel @Inject constructor(
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val productTagsRepository: ProductTagsRepository,
     private val mediaFilesRepository: MediaFilesRepository,
+    private val variationRepository: VariationRepository,
     private val prefs: AppPrefs
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -166,14 +170,17 @@ class ProductDetailViewModel @Inject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
-    final val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
+    val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
     private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
 
     private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
     val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
 
-    final val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
+    val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
+
+    val attributeListViewStateData = LiveDataDelegate(savedState, AttributeListViewState())
+    private var attributeListViewState by attributeListViewStateData
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
     val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
@@ -318,6 +325,18 @@ class ProductDetailViewModel @Inject constructor(
         updateProductBeforeEnteringFragment()
     }
 
+    fun onAddFirstVariationClicked() {
+        val target = viewState.productDraft
+            ?.takeIf { it.variationEnabledAttributes.isNotEmpty() }
+            ?.let { ViewProductVariations(it.remoteId) }
+            ?: AddProductAttribute(isVariationCreation = true)
+
+        onEditProductCardClicked(
+            target,
+            PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+        )
+    }
+
     /**
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product detail screen
@@ -326,6 +345,21 @@ class ProductDetailViewModel @Inject constructor(
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
         updateProductBeforeEnteringFragment()
+    }
+
+    fun onAttributeListDoneButtonClicked() {
+        saveAttributeChanges()
+        attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+        launch {
+            viewState.productDraft?.let { draft ->
+                variationRepository.createEmptyVariation(draft)
+                    ?.let { updateProductDraft(numVariation = draft.numVariations + 1) }
+                    ?.let { triggerEvent(ExitProductAttributeList(variationCreated = true)) }
+                    ?: triggerEvent(ExitProductAttributeList())
+            }.also {
+                attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
+            }
+        }
     }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
@@ -1251,9 +1285,9 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
-    fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
+    fun onAttributeListItemClick(attributeId: Long, attributeName: String, isVariationCreation: Boolean) {
         enableLocalAttributeForVariations(attributeId)
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false, isVariationCreation))
     }
 
     /**
@@ -1310,7 +1344,7 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Called from the attribute list when the user enters a new attribute
      */
-    fun addLocalAttribute(attributeName: String) {
+    fun addLocalAttribute(attributeName: String, isVariationCreation: Boolean) {
         if (containsAttributeName(attributeName)) {
             triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
             return
@@ -1337,7 +1371,7 @@ class ProductDetailViewModel @Inject constructor(
         updateProductDraft(attributes = attributes)
 
         // take the user to the add attribute terms screen
-        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true))
+        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true, isVariationCreation))
     }
 
     /**
@@ -1905,7 +1939,10 @@ class ProductDetailViewModel @Inject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
-        class ExitProductAttributeList(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+        class ExitProductAttributeList(
+            shouldShowDiscardDialog: Boolean = true,
+            val variationCreated: Boolean = false
+        ) : ProductExitEvent(
             shouldShowDiscardDialog
         )
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
@@ -1920,7 +1957,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     object RefreshMenu : Event()
-
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.
@@ -1999,5 +2035,10 @@ class ProductDetailViewModel @Inject constructor(
     @Parcelize
     data class GlobalAttributesTermsViewState(
         val isSkeletonShown: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class AttributeListViewState(
+        val isCreatingVariationDialogShown: Boolean? = null
     ) : Parcelable
 }
