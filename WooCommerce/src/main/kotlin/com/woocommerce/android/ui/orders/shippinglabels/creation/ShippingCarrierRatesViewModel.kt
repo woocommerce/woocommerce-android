@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingRate
@@ -18,33 +18,31 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.PackageRateListItem
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingRatesResult.ShippingPackage
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient.ShippingRatesApiResponse.ShippingOption.Rate
 import java.math.BigDecimal
+import javax.inject.Inject
 
-class ShippingCarrierRatesViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ShippingCarrierRatesViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_RATE_OPTION = "default"
         private const val SIGNATURE_RATE_OPTION = "signature_required"
@@ -67,7 +65,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
     private val arguments: ShippingCarrierRatesFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _shippingRates = MutableLiveData<List<PackageRateListItem>>()
@@ -292,7 +290,4 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         val isEmptyViewVisible: Boolean = false,
         val isDoneButtonVisible: Boolean = false
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ShippingCarrierRatesViewModel>
 }

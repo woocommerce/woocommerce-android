@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.mock
@@ -8,6 +7,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -43,13 +43,14 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -57,6 +58,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
@@ -154,13 +156,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            CreateShippingLabelFragmentArgs(order.getIdentifier())
-        )
-    )
+    private val savedState = CreateShippingLabelFragmentArgs(order.getIdentifier()).initSavedStateHandle()
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 
@@ -172,7 +168,6 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         viewModel = spy(
             CreateShippingLabelViewModel(
                 savedState,
-                coroutinesTestRule.testDispatchers,
                 parameterRepository,
                 orderDetailRepository,
                 shippingLabelRepository,
@@ -188,7 +183,6 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
         clearInvocations(
             viewModel,
-            savedState,
             orderDetailRepository,
             stateMachine
         )

@@ -20,7 +20,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCustomsForm
@@ -56,21 +56,21 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
+import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_shipping_label) {
+@AndroidEntryPoint
+class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label) {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    val viewModel: CreateShippingLabelViewModel by viewModels { viewModelFactory }
+    val viewModel: CreateShippingLabelViewModel by viewModels()
 
     private val skeletonView: SkeletonView = SkeletonView()
 

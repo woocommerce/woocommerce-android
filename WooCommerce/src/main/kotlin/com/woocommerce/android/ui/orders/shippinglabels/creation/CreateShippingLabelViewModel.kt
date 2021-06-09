@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -22,7 +23,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_SUCCEEDED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
@@ -89,17 +89,14 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -110,11 +107,12 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
-class CreateShippingLabelViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class CreateShippingLabelViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
     private val orderDetailRepository: OrderDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
@@ -125,7 +123,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val accountStore: AccountStore,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_KEY = KEY_STATE
         private const val KEY_SHIPPING_LABELS_PARAMETERS = "key_shipping_labels_parameters"
@@ -137,7 +135,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     init {
@@ -728,7 +726,4 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     enum class FlowStep {
         ORIGIN_ADDRESS, SHIPPING_ADDRESS, PACKAGING, CUSTOMS, CARRIER, PAYMENT
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<CreateShippingLabelViewModel>
 }
