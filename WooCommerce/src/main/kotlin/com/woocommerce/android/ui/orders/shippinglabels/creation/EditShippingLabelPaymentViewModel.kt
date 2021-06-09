@@ -1,33 +1,30 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-class EditShippingLabelPaymentViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class EditShippingLabelPaymentViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val shippingLabelRepository: ShippingLabelRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
-    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
+) : ScopedViewModel(savedState) {
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     init {
@@ -123,7 +120,4 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
         val paymentMethod: PaymentMethod,
         val isSelected: Boolean
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<EditShippingLabelPaymentViewModel>
 }

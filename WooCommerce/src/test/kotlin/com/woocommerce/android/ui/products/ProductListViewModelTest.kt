@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -14,31 +14,31 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
-    private val savedState: SavedStateWithArgs = mock()
+    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(ProductSorting.DATE_ASC).whenever(productRepository).productSortingChoice
     }
@@ -46,8 +46,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         viewModel = spy(
             ProductListViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
+                savedStateHandle,
                 productRepository,
                 networkStatus
             )

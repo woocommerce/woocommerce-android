@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
-import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -38,7 +37,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@ActivityScoped
 class MyStorePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!

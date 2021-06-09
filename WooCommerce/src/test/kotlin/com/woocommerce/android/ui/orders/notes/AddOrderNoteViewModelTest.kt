@@ -3,15 +3,14 @@ package com.woocommerce.android.ui.orders.notes
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argThat
-import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.tools.NetworkStatus
@@ -22,16 +21,18 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class AddOrderNoteViewModelTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_ORDER_ID = "1-1-1"
@@ -49,24 +50,16 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: AddOrderNoteViewModel
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            AddOrderNoteFragmentArgs(orderId = REMOTE_ORDER_ID, orderNumber = "100")
-        )
-    )
+    private val savedState: SavedStateHandle =
+        AddOrderNoteFragmentArgs(orderId = REMOTE_ORDER_ID, orderNumber = "100").initSavedStateHandle()
 
-    fun initViewModel() {
+    private fun initViewModel() {
         viewModel = AddOrderNoteViewModel(
             savedState = savedState,
-            dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = repository,
             resourceProvider = resourceProvider,
             networkStatus = networkStatus
         )
-
-        clearInvocations(repository, resourceProvider, networkStatus)
     }
 
     @Test

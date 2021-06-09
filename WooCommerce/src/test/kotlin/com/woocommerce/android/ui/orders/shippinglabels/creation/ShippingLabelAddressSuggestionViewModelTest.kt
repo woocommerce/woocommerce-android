@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.clearInvocations
-import com.nhaarman.mockitokotlin2.spy
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionViewModel.ViewState
@@ -11,14 +9,16 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     private val enteredAddress = CreateShippingLabelTestUtils.generateAddress()
     private val suggestedAddress = enteredAddress.copy(company = "McDonald's")
@@ -30,21 +30,14 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
         R.string.orderdetail_shipping_label_item_shipfrom
     )
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            ShippingLabelAddressSuggestionFragmentArgs(enteredAddress, suggestedAddress, ORIGIN)
-        )
-    )
+    private val savedState = ShippingLabelAddressSuggestionFragmentArgs(enteredAddress, suggestedAddress, ORIGIN)
+        .initSavedStateHandle()
 
     private lateinit var viewModel: ShippingLabelAddressSuggestionViewModel
 
     @Before
     fun setup() {
-        viewModel = spy(ShippingLabelAddressSuggestionViewModel(savedState, coroutinesTestRule.testDispatchers))
-
-        clearInvocations(viewModel, savedState)
+        viewModel = ShippingLabelAddressSuggestionViewModel(savedState)
     }
 
     @Test

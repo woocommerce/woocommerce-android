@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductFilterOptionLis
 import com.woocommerce.android.ui.products.ProductsModule.ProductImageViewerFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductImagesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductInventoryFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.ProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductMenuOrderFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductPricingFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductReviewsFragmentModule
@@ -56,7 +55,6 @@ import dagger.android.ContributesAndroidInjector
 
 @Module(includes = [
     VariationDetailFragmentModule::class,
-    ProductListFragmentModule::class,
     ProductFilterListFragmentModule::class,
     ProductFilterOptionListFragmentModule::class,
     VariationListFragmentModule::class,
@@ -85,13 +83,6 @@ import dagger.android.ContributesAndroidInjector
 ])
 
 object ProductsModule {
-    @Module
-    abstract class ProductListFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductListModule::class])
-        abstract fun productListFragment(): ProductListFragment
-    }
-
     @Module
     abstract class ProductFilterListFragmentModule {
         @FragmentScope
