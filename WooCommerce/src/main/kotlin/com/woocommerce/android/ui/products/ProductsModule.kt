@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragment
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductTypesBottomSheetFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
-import com.woocommerce.android.ui.products.ProductsModule.VariationDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.VariationListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.WPMediaPickerFragmentModule
 import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment
@@ -40,8 +39,6 @@ import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment
-import com.woocommerce.android.ui.products.variations.VariationDetailFragment
-import com.woocommerce.android.ui.products.variations.VariationDetailModule
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListModule
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment
@@ -52,7 +49,6 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module(includes = [
-    VariationDetailFragmentModule::class,
     VariationListFragmentModule::class,
     EditVariationAttributesFragmentModule::class,
     ProductImagesFragmentModule::class,
@@ -79,13 +75,6 @@ import dagger.android.ContributesAndroidInjector
 ])
 
 object ProductsModule {
-    @Module
-    abstract class VariationDetailFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector(modules = [VariationDetailModule::class])
-        abstract fun variationDetailFragment(): VariationDetailFragment
-    }
-
     @Module
     internal abstract class VariationListFragmentModule {
         @FragmentScope
