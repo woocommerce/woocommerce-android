@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 class ProductPricingFragment
     : BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
-    private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory.get() }
+    private val viewModel: ProductPricingViewModel by viewModels()
 
     override val lastEvent: Event?
         get() = viewModel.event.value
