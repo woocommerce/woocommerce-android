@@ -260,9 +260,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             onPrintingInstructionsClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
                     viewModel.onPrintingInstructionsClicked()
-//                    cardReaderManager.let {
-//                        viewModel.onAcceptCardPresentPaymentClicked(it)
-//                    }
                 }
             }
         )
