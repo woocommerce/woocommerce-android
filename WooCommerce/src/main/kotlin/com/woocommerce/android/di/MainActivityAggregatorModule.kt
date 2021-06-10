@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.ui.aztec.AztecModule
-import com.woocommerce.android.ui.reviews.ReviewsModule
 import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,7 +13,6 @@ import dagger.hilt.android.components.ActivityComponent
 @InstallIn(ActivityComponent::class)
 @Module(
     includes = [
-        ReviewsModule::class,
         SitePickerModule::class,
         AztecModule::class
     ]
