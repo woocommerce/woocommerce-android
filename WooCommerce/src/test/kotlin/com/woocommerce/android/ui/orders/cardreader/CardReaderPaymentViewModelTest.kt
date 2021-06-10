@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -536,12 +537,15 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
             viewModel.onBackPressed() // shows FetchingOrderState screen
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
 
             viewModel.onBackPressed()
 
-            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
-            coroutinesTestRule.testDispatcher.advanceUntilIdle() // skip delay
-            assertThat(viewModel.event.value).isEqualTo(Exit)
+            assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
+            assertThat(events[1]).isEqualTo(Exit)
         }
 
     @Test
@@ -549,10 +553,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
             viewModel.onBackPressed() // shows FetchingOrderState screen
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
 
             viewModel.onBackPressed()
 
-            assertThat((viewModel.event.value as ShowSnackbar).message)
+            assertThat((events[0] as ShowSnackbar).message)
                 .isEqualTo(R.string.card_reader_fetching_order_failed)
         }
 
@@ -601,10 +609,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when re-fetching order fails, then SnackBar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(orderRepository.fetchOrder(any())).thenReturn(null)
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
 
             viewModel.reFetchOrder()
 
-            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+            assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
         }
 
     private fun simulateFetchOrderJobState(inProgress: Boolean) {
