@@ -24,7 +24,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
@@ -36,8 +36,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
@@ -45,12 +45,12 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
-class ReviewDetailFragment : BaseDaggerFragment(R.layout.fragment_review_detail) {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+@AndroidEntryPoint
+class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
 
-    private val viewModel: ReviewDetailViewModel by viewModels { viewModelFactory }
+    private val viewModel: ReviewDetailViewModel by viewModels()
 
     private var runOnStartFunc: (() -> Unit)? = null
     private var productIconSize: Int = 0
