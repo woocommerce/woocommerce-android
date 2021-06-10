@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.util.WooLog
@@ -236,7 +237,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onPrintingInstructionsClicked() {
-        TODO("Not yet implemented")
+        triggerEvent(ViewPrintingInstructions)
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
