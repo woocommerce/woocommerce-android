@@ -54,5 +54,5 @@ dependencies {
     // Temporary dependencies - used just for the first few iterations
     debugImplementation "com.squareup.okhttp3:okhttp:4.9.0"
     debugImplementation "com.squareup.retrofit2:retrofit:2.3.0"
-    debugImplementation "com.squareup.retrofit2:converter-gson:2.3.0"
+    debugImplementation "com.squareup.retrofit2:converter-gson:2.9.0"
 }
