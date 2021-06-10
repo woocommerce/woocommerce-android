@@ -144,7 +144,7 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging:21.0.0'
+    implementation 'com.google.firebase:firebase-messaging:22.0.0'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     // Support library
