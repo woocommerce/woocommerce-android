@@ -1,11 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-27 13:54:04+0000
+Translation-Revision-Date: 2021-06-09 11:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="shipping_label_rate_included_options_usps_tracking">تعقُّب %s</string>
+    <string name="card_reader_software_update_in_progress_title">تحديث برنامج قارئك</string>
+    <string name="card_reader_software_update_title">تحديث برنامج</string>
+    <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يعمل بسلاسة. هل ترغب في تحديثه الآن؟</string>
+    <string name="card_reader_detail_connected_update_failed">فشل تحديث برنامج القارئ. يرجى المحاولة مجددًا في وقت لاحق</string>
+    <string name="card_reader_detail_connected_update_success">تم تحديث برنامج القارئ</string>
+    <string name="card_reader_detail_connected_update_check_failed">فشل التحقُّق من تحديث إصدار البرنامج. يرجى المحاولة مجددًا في وقت لاحق</string>
+    <string name="card_reader_detail_connected_reader_unknown">اسم قارئ بطاقة غير معروف</string>
+    <string name="card_reader_detail_connected_disconnect_reader">فصل القارئ</string>
+    <string name="card_reader_detail_connected_enforced_update_software">يرجى تحديث برنامج القارئ الخاص بك ليستمر في قبول المدفوعات</string>
+    <string name="card_reader_detail_connected_update_software">تحديث برنامج القارئ</string>
+    <string name="card_reader_detail_connected_battery_percentage">بطارية %s%%</string>
+    <string name="card_reader_detail_connected_header">تم توصيل القارئ</string>
+    <string name="card_reader_details_not_connected_connect_button_label">توصيل قارئ البطاقة</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">تشغيل قارئ البطاقة ووضعه بجوار الجهاز المحمول</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">تأكَّد من أنه تم شحن قارئ البطاقة</string>
+    <string name="card_reader_detail_not_connected_header">توصيل قارئ البطاقة الخاص بك</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">تم رفض البطاقة</string>
+    <string name="card_reader_payment_failed_card_declined_state">تم رفض البطاقة. يرجى إعادة المحاولة باستخدام بطاقة مختلفة.</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">الربط بالقارئ</string>
+    <string name="card_reader_payment_collect_payment_loading_header">الاستعداد لجمع المدفوعات</string>
+    <string name="shipping_label_customs_value_zero_error">يجب أن تكون القيمة المعلنة أكبر من صفر</string>
+    <string name="shipping_label_customs_weight_zero_error">يجب أن يكون الوزن أكبر من صفر</string>
+    <string name="shipping_label_customs_required_field">هذا الحقل مطلوب</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">يرجى وصف نوع القيود التي يجب أن تمتلكها هذه الحزمة.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">يرجى وصف نوع البضائع التي تحتوي على هذه الحزمة.</string>
+    <string name="shipping_label_customs_weight_hint">الوزن (⁦%1$s⁩ لكل وحدة)</string>
+    <string name="shipping_label_customs_value_hint">القيمة (⁦%1$s⁩ لكل وحدة)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">⁦%1$s⁩ حول رقم تعريفة النظام المنسق</string>
+    <string name="shipping_label_customs_learn_more_itn">⁦%1$s⁩ حول رقم المعاملة الداخلي</string>
+    <string name="shipping_label_customs_line_item">سطر مخصص ⁦%1$d⁩</string>
+    <string name="shipping_label_customs_restriction_type_other">أخرى</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">التفتيش الصحي/تفتيش الصحة النباتية</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">قائمة الانتظار</string>
+    <string name="shipping_label_customs_restriction_type_none">بدون</string>
+    <string name="shipping_label_customs_contents_type_other">أخرى</string>
+    <string name="shipping_label_customs_contents_type_sample">نموذج</string>
+    <string name="shipping_label_customs_contents_type_gifts">هدايا</string>
+    <string name="shipping_label_customs_contents_type_documents">المستندات</string>
+    <string name="shipping_label_customs_contents_type_merchandise">البضائع</string>
+    <string name="shipping_label_customs_origin_country_explanation">البلد الذي تم تصنيع المنتج فيه أو تجميعه</string>
+    <string name="shipping_label_customs_origin_country_hint">بلد المنشأ</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">يجب أن يبلغ طول رقم التعريفة 6 أرقام</string>
+    <string name="shipping_label_customs_hs_tariff_hint">رقم تعريفة النظام المنسق (اختياري)</string>
+    <string name="shipping_label_customs_item_description_hint">الوصف</string>
+    <string name="shipping_label_customs_package_content">محتوى الحزمة</string>
+    <string name="shipping_label_customs_itn_required_country">يلزم رقم المعاملة الداخلي للشحنات إلى ⁦%1$s⁩.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">يلزم رقم المعاملة الداخلي لشحن العناصر التي تزيد قيمتها على 2500 دولار لكل رقم تعريفة</string>
+    <string name="shipping_label_customs_itn_invalid_format">تنسيق غير صالح</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">تفاصيل التقييد</string>
+    <string name="shipping_label_customs_contents_type_other_hint">تفاصيل المحتويات</string>
+    <string name="shipping_label_customs_restriction_type_hint">نوع القيود</string>
+    <string name="shipping_label_customs_contents_type_hint">نوع المحتويات</string>
+    <string name="shipping_label_customs_return_to_sender">الرجوع إلى المرسل إذا تعذر توصيل الحزمة</string>
+    <string name="shipping_label_rate_insurance_up_to">ما يصل إلى %s</string>
+    <string name="order_fulfill_email_info">إذا قمت بتمكين هذا الإعداد، فسيتلقى العميل بريدًا إلكترونيًا للتأكيد بمجرد اكتمال الطلب</string>
+    <string name="order_fulfill_title">مراجعة الطلب</string>
+    <string name="order_fulfill_completed">🎉 تم اكتمال الطلب!</string>
+    <string name="user_access_verifying">جارٍ التحقُّق من الرتبة…</string>
+    <string name="user_role_access_error_retry">ليست لديك رتبة العضو الصحيحة</string>
+    <string name="user_role_access_error_link">معرفة المزيد حول الرُتب والصلاحيات</string>
+    <string name="user_role_access_error_msg">يدعم هذا التطبيق رُتب أعضاء المسؤول ومدير المتجر فقط. يرجى الاتصال بمالك مخزنك لترقية رتبتك.</string>
+    <string name="login_prologue_label_reviews">مراقبة مراجعات منتجك والموافقة عليها</string>
+    <string name="login_prologue_label_products">تحرير منتجات جديدة وإضافتها من أي مكان</string>
+    <string name="login_prologue_label_orders">إدارة طلبات مخزنك في أثناء التنقل</string>
+    <string name="login_prologue_label_analytics">تعقُّب المبيعات والمنتجات عالية الأداء</string>
+    <string name="skip">تخطي</string>
     <string name="product_type_external_title">منتج خارجي</string>
     <string name="product_type_grouped_title">منتج مجمع</string>
     <string name="product_type_variable_title">منتج متعدد الأنواع</string>
@@ -78,7 +145,8 @@ Language: ar
     <string name="shipping_label_selected_rates_description">تم تحديد %s من الأسعار </string>
     <string name="shipping_label_rate_included_options_signature_required_free">مؤهل لمتطلبات التوقيع المجاني</string>
     <string name="shipping_label_rate_included_options_free_pickup">مؤهل للاقتناء المجاني</string>
-    <string name="shipping_label_rate_included_options_insurance">التأمين (يصل إلى %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">التأمين (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">التعقُّب</string>
     <string name="shipping_label_rate_included_options">يتضمن %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">يلزم توقيع شخص بالغ (%s)</string>
     <string name="shipping_label_rate_option_signature_required">يلزم التوقيع (%s)</string>
@@ -1320,7 +1388,6 @@ Language: ar
     <string name="login_avatar_content_description">صورة ملفك الشخصي</string>
     <string name="login_connected_store">المتجر الذي تم الاتصال به</string>
     <string name="login_configure_link">اقرأ %sتعليمات التكوين%s.</string>
-    <string name="login_prologue_banner">قم بإدارة الطلبات، وتعقب المبيعات، وراقب نشاط المتجر من خلال تنبيهات في الوقت الحقيقي.</string>
     <string name="login_jetpack_required">يتطلب هذا التطبيق اتصال Jetpack بمتجرك.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Enter the address of the WooCommerce store you\'d like to connect.</string>

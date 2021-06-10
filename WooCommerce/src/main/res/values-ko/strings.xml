@@ -78,7 +78,6 @@ Language: ko_KR
     <string name="shipping_label_selected_rates_description">%s개 요금 선택됨</string>
     <string name="shipping_label_rate_included_options_signature_required_free">무료 서명 요건에 적합</string>
     <string name="shipping_label_rate_included_options_free_pickup">무료 수령에 적합</string>
-    <string name="shipping_label_rate_included_options_insurance">보험(최대 %s)</string>
     <string name="shipping_label_rate_included_options">포함 %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">성인 서명 필수(%s)</string>
     <string name="shipping_label_rate_option_signature_required">서명 필수(%s)</string>
@@ -1320,7 +1319,6 @@ Language: ko_KR
     <string name="login_avatar_content_description">프로필 사진</string>
     <string name="login_connected_store">연결된 스토어</string>
     <string name="login_configure_link">%s구성 지침%s을 읽어보세요.</string>
-    <string name="login_prologue_banner">실시간 알림을 통해 주문을 관리하고, 판매를 추적하고, 스토어 활동을 모니터링하세요.</string>
     <string name="login_jetpack_required">이 앱에서 회원님의 스토어에 연결하려면 젯팩이 있어야 합니다.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">연결하려는 WooCommerce 스토어의 주소를 입력합니다.</string>
