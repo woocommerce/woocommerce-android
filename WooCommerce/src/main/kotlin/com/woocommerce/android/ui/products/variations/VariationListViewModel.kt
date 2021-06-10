@@ -3,34 +3,32 @@ package com.woocommerce.android.ui.products.variations
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import kotlinx.parcelize.Parcelize
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
 /**
  * [Product] and [ProductVariation] are two models fetched in separate endpoints,
@@ -48,14 +46,14 @@ import kotlinx.coroutines.launch
  * With that said, when we update the Variation list, we should also update the
  * [ViewState.parentProduct] so the correct information is returned [onExit]
  */
-class VariationListViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class VariationListViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val variationRepository: VariationRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private var remoteProductId = 0L
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
@@ -69,7 +67,7 @@ class VariationListViewModel @AssistedInject constructor(
         }
     }
 
-    val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
     private var loadingJob: Job? = null
@@ -256,7 +254,4 @@ class VariationListViewModel @AssistedInject constructor(
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
     object ShowAddAttributeView : Event()
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<VariationListViewModel>
 }

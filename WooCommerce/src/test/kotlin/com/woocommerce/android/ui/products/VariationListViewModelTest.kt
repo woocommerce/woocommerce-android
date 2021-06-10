@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.MutableLiveData
-import com.nhaarman.mockitokotlin2.any
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -14,18 +13,19 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
-import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class VariationListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val variationRepository: VariationRepository = mock()
@@ -35,11 +35,10 @@ class VariationListViewModelTest : BaseUnitTest() {
     private val productRemoteId = 1L
     private lateinit var viewModel: VariationListViewModel
     private val variations = ProductTestUtils.generateProductVariationList(productRemoteId)
-    private val savedState: SavedStateWithArgs = mock()
+    private val savedState = SavedStateHandle()
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
         whenever(productRepository.getProduct(productRemoteId)).thenReturn(mock())
     }
@@ -47,12 +46,11 @@ class VariationListViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         viewModel = spy(
             VariationListViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                variationRepository,
-                productRepository,
-                networkStatus,
-                currencyFormatter
+                    savedState,
+                    variationRepository,
+                    productRepository,
+                    networkStatus,
+                    currencyFormatter
             )
         )
     }

@@ -2,37 +2,36 @@ package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.di.ViewModelAssistedFactory
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.pairMap
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-class EditVariationAttributesViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class EditVariationAttributesViewModel @Inject constructor(
+    savedState: SavedStateHandle,
+    private val dispatchers: CoroutineDispatchers,
     private val productRepository: ProductDetailRepository,
     private val variationRepository: VariationDetailRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private val _editableVariationAttributeList =
         MutableLiveData<List<VariationAttributeSelectionGroup>>()
 
     val editableVariationAttributeList = _editableVariationAttributeList
 
-    val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
     private val selectedVariation
@@ -126,7 +125,4 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         val editableVariationID: Long = 0L,
         val updatedAttributeSelection: List<VariationAttributeSelectionGroup> = emptyList()
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<EditVariationAttributesViewModel>
 }

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,19 +11,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.databinding.DialogProductListSortingBinding
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class ProductSortingFragment : BottomSheetDialogFragment(), HasAndroidInjector {
+@AndroidEntryPoint
+class ProductSortingFragment : BottomSheetDialogFragment() {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
-    @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: ProductSortingViewModel by viewModels { viewModelFactory }
+    private val viewModel: ProductSortingViewModel by viewModels()
 
     private var _binding: DialogProductListSortingBinding? = null
     private val binding get() = _binding!!
@@ -32,11 +26,6 @@ class ProductSortingFragment : BottomSheetDialogFragment(), HasAndroidInjector {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = DialogProductListSortingBinding.inflate(inflater)
         return binding.root
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        AndroidSupportInjection.inject(this)
-        return super.onCreateDialog(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,9 +60,5 @@ class ProductSortingFragment : BottomSheetDialogFragment(), HasAndroidInjector {
                 )
         binding.sortingOptionsList.adapter = adapter
         binding.sortingOptionsList.layoutManager = LinearLayoutManager(activity)
-    }
-
-    override fun androidInjector(): AndroidInjector<Any> {
-        return childInjector
     }
 }

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,22 +16,17 @@ import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.Prod
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
+@AndroidEntryPoint
+class ProductTypesBottomSheetFragment : BottomSheetDialogFragment() {
     companion object {
         const val KEY_PRODUCT_TYPE_RESULT = "key_product_type_result"
     }
 
     @Inject internal lateinit var navigator: ProductNavigator
-    @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    val viewModel: ProductTypesBottomSheetViewModel by viewModels { viewModelFactory }
+    val viewModel: ProductTypesBottomSheetViewModel by viewModels()
 
     private lateinit var productTypesBottomSheetAdapter: ProductTypesBottomSheetAdapter
 
@@ -40,10 +34,6 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
 
     private var _binding: DialogProductDetailBottomSheetListBinding? = null
     private val binding get() = _binding!!
-
-    override fun androidInjector(): AndroidInjector<Any> {
-        return childInjector
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogProductDetailBottomSheetListBinding.inflate(inflater)
@@ -53,11 +43,6 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        AndroidSupportInjection.inject(this)
-        return super.onCreateDialog(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
