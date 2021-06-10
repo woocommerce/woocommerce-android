@@ -49,7 +49,6 @@ subprojects {
     }
 }
 
-
 tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
     description = "Custom DETEKT build for all modules"
     parallel = true
