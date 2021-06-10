@@ -4,6 +4,7 @@
 -----
 - [*] Updated empty state illustrations. [https://github.com/woocommerce/woocommerce-android/pull/3678]
 - [*] Various design tweaks on empty state screen [https://github.com/woocommerce/woocommerce-android/pull/3879]
+- [*] Removed trash option from product status in Product Settings [https://github.com/woocommerce/woocommerce-android/pull/4148]
 
 
 6.8
