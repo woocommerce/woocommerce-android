@@ -178,13 +178,19 @@ class ShippingLabelRepository @Inject constructor(
                 products = labelPackage.items.map { it.productId }
             )
         }
+        // Retrieve account settings, normally they should be cached at this point, and the response would be
+        // instantaneous
+        // We fallback to true as it's the default value in the plugin
+        val emailReceipts = getAccountSettings().model?.isEmailReceiptEnabled ?: true
+
         return shippingLabelStore.purchaseShippingLabels(
             site = selectedSite.get(),
             orderId = orderId,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
             packagesData = packagesData,
-            customsData = null
+            customsData = null,
+            emailReceipts = emailReceipts
         ).let { result ->
             when {
                 result.isError -> WooResult(result.error)
