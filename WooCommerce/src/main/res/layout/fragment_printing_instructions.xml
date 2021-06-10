@@ -45,7 +45,7 @@
             android:layout_marginEnd="@dimen/major_100"
             android:text="@string/print_shipping_label_info_step_1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/printInstructionsLabelInfo_stepCount1"
+            app:layout_constraintStart_toEndOf="@+id/printingInstructionsLabelInfo_stepCount1"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <com.google.android.material.button.MaterialButton
