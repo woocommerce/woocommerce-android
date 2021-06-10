@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.Prod
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,7 +26,6 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     @Inject internal lateinit var navigator: ProductNavigator
-    @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
     val viewModel: ProductTypesBottomSheetViewModel by viewModels()
 
     private lateinit var productTypesBottomSheetAdapter: ProductTypesBottomSheetAdapter

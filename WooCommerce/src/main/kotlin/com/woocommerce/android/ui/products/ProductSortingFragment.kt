@@ -11,14 +11,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.databinding.DialogProductListSortingBinding
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductSortingFragment : BottomSheetDialogFragment() {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
 
     private val viewModel: ProductSortingViewModel by viewModels()
 
