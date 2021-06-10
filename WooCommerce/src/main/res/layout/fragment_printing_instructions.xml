@@ -30,7 +30,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="1"
+            android:text="@string/print_receipt_label_info_step_count_1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView"
             app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
@@ -43,7 +43,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_1"
+            android:text="@string/print_receipt_label_info_step_1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/printingInstructionsLabelInfo_stepCount1"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
@@ -56,7 +56,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_count_2"
+            android:text="@string/print_receipt_label_info_step_count_2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/printingInstructionsLabelInfo_step1"
             app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
@@ -69,7 +69,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_2"
+            android:text="@string/print_receipt_label_info_step_2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/printingInstructionsLabelInfo_stepCount1"
             app:layout_constraintTop_toBottomOf="@+id/printingInstructionsLabelInfo_step1" />
@@ -82,7 +82,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_count_3"
+            android:text="@string/print_receipt_label_info_step_count_3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step2"
             app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
@@ -95,7 +95,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_3"
+            android:text="@string/print_receipt_label_info_step_3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/printInstructionsLabelInfo_stepCount3"
             app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step2" />
@@ -108,7 +108,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_count_4"
+            android:text="@string/print_receipt_label_info_step_count_4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step3"
             app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
@@ -121,7 +121,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_4"
+            android:text="@string/print_receipt_label_info_step_4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/printInstructionsLabelInfo_stepCount4"
             app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step3" />
@@ -134,7 +134,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_count_5"
+            android:text="@string/print_receipt_label_info_step_count_5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step4"
             app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
@@ -147,10 +147,62 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/print_shipping_label_info_step_5"
+            android:text="@string/print_receipt_label_info_step_5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/printInstructionsLabelInfo_stepCount5"
             app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step4" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/printInstructionsLabelInfo_stepCount6"
+            style="@style/Woo.Button.Colored.Circle"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_receipt_label_info_step_count_6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step5"
+            app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/printInstructionsLabelInfo_step6"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_receipt_label_info_step_6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printInstructionsLabelInfo_stepCount6"
+            app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step5" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/printInstructionsLabelInfo_stepCount7"
+            style="@style/Woo.Button.Colored.Circle"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_receipt_label_info_step_count_7"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step6"
+            app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/printInstructionsLabelInfo_step7"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_receipt_label_info_step_7"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printInstructionsLabelInfo_stepCount7"
+            app:layout_constraintTop_toBottomOf="@+id/printInstructionsLabelInfo_step6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

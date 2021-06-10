@@ -391,6 +391,20 @@
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
+    <string name="print_receipt_label_info_step_count_1" translatable="false">1</string>
+    <string name="print_receipt_label_info_step_count_2" translatable="false">2</string>
+    <string name="print_receipt_label_info_step_count_3" translatable="false">3</string>
+    <string name="print_receipt_label_info_step_count_4" translatable="false">4</string>
+    <string name="print_receipt_label_info_step_count_5" translatable="false">5</string>
+    <string name="print_receipt_label_info_step_count_6" translatable="false">6</string>
+    <string name="print_receipt_label_info_step_count_7" translatable="false">7</string>
+    <string name="print_receipt_label_info_step_1">Make sure the Print Service Plugin for yor printer is installed.</string>
+    <string name="print_receipt_label_info_step_2">Enable bluetooth or Wifi connection on your printer.</string>
+    <string name="print_receipt_label_info_step_3">When selecting "Print receipt" after accepting payment, replace "Save as PDF" with "All printers", and search for new printer.</string>
+    <string name="print_receipt_label_info_step_4">Pair and connect the printer to your mobile when prompted.</string>
+    <string name="print_receipt_label_info_step_5">Adjust paper size as needed, and select "Print" when ready to print the receipt.</string>
+    <string name="print_receipt_label_info_step_6">If printing is not available, you can always save your receipt as PDF and send it by email to print it from another device.</string>
+    <string name="print_receipt_label_info_step_7">If you are experiencing issues printing from your device, contact customer support for your printer.</string>
     <string name="print_shipping_label_info_title">Print with your device</string>
     <string name="print_shipping_label_format_options_title">Label format options</string>
     <string name="print_shipping_label_info_step_count_1" translatable="false">1</string>
