@@ -10,7 +10,4 @@ import dagger.hilt.components.SingletonComponent
 abstract class FCMServiceModule {
     @ContributesAndroidInjector
     internal abstract fun fcmRegistrationIntentService(): FCMRegistrationIntentService
-
-    @ContributesAndroidInjector
-    internal abstract fun fcmMessageService(): FCMMessageService
 }
