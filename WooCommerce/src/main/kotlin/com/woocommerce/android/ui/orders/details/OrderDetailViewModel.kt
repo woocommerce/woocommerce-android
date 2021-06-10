@@ -235,6 +235,10 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun onPrintingInstructionsClicked() {
+        TODO("Not yet implemented")
+    }
+
     fun onConnectToReaderResultReceived(connected: Boolean) {
         // TODO cardreader add tests for this functionality
         launch {

@@ -256,6 +256,14 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                         viewModel.onAcceptCardPresentPaymentClicked(it)
                     }
                 }
+            },
+            onPrintingInstructionsClickListener = {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
+                    viewModel.onPrintingInstructionsClicked()
+//                    cardReaderManager.let {
+//                        viewModel.onAcceptCardPresentPaymentClicked(it)
+//                    }
+                }
             }
         )
     }
