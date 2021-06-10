@@ -1,32 +1,29 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductSelectionListViewModel.ProductSelectionListViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ProductSelectionListViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 10L
@@ -35,38 +32,24 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     private val productList = ProductTestUtils.generateProductList()
     private val excludedProductIds = listOf(PRODUCT_REMOTE_ID)
 
-    private val networkStatus: NetworkStatus = mock()
+    private val networkStatus: NetworkStatus = mock {
+        on { isConnected() } doReturn true
+    }
     private val productRepository: ProductListRepository = mock()
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            ProductSelectionListFragmentArgs(
-                remoteProductId = PRODUCT_REMOTE_ID,
-                groupedProductListType = GroupedProductListType.GROUPED,
-                excludedProductIds = excludedProductIds.toLongArray()
-            )
-        )
-    )
+    private val savedState = ProductSelectionListFragmentArgs(
+        remoteProductId = PRODUCT_REMOTE_ID,
+        groupedProductListType = GroupedProductListType.GROUPED,
+        excludedProductIds = excludedProductIds.toLongArray()
+    ).initSavedStateHandle()
 
     private lateinit var viewModel: ProductSelectionListViewModel
 
     private fun createViewModel() {
-        viewModel = spy(
-            ProductSelectionListViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                networkStatus,
-                productRepository
-            )
+        viewModel = ProductSelectionListViewModel(
+            savedState,
+            networkStatus,
+            productRepository
         )
-    }
-
-    @Before
-    fun setup() {
-        doReturn(MutableLiveData(ProductSelectionListViewState()))
-            .whenever(savedState).getLiveData<ProductSelectionListViewState>(any(), any())
-        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     @Test

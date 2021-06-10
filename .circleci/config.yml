@@ -143,15 +143,6 @@ jobs:
           name: Copy Secrets
           command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
       - update-gradle-memory
-      - run:
-          name: Install other tools
-          command: |
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-            eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-            brew install openjdk@11
-            brew install bundletool
-            echo "export PATH='/home/linuxbrew/.linuxbrew/Cellar/bundletool/1.2.0/bin:$PATH'" >> $BASH_ENV
-            rm WooCommerce/release.jks
       - android/restore-gradle-cache
       - run:
           name: Build APK

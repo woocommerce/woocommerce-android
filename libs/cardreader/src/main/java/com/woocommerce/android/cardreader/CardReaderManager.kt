@@ -14,10 +14,21 @@ interface CardReaderManager {
     fun initialize(app: Application)
     fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
     suspend fun connectToReader(cardReader: CardReader): Boolean
+    suspend fun disconnectReader(): Boolean
 
     // TODO cardreader Stripe accepts only Int, is that ok?
-    suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus>
+    // TODO cardreader wrap payment params with a data class
+    suspend fun collectPayment(
+        paymentDescription: String,
+        orderId: Long,
+        amount: BigDecimal,
+        currency: String,
+        customerEmail: String?
+    ): Flow<CardPaymentStatus>
+
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
 
+    suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability>
     suspend fun updateSoftware(): Flow<SoftwareUpdateStatus>
+    suspend fun clearCachedCredentials()
 }

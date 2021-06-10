@@ -5,6 +5,7 @@ import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
@@ -14,9 +15,9 @@ import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
@@ -143,6 +144,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.variations(),
+                product.variationAttributes(),
                 product.productReviews(),
                 product.inventory(VARIABLE),
                 product.shipping(),
@@ -501,16 +503,17 @@ class ProductDetailCardBuilder(
     // show product variations only if product type is variable and if there are variations for the product
     private fun Product.variations(): ProductProperty {
         return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
-            val properties = mutableMapOf<String, String>()
-            for (attribute in this.variationEnabledAttributes) {
-                properties[attribute.name] = attribute.terms.size.toString()
-            }
+            val content = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = numVariations,
+                default = string.product_variation_multiple_count,
+                one = string.product_variation_single_count
+            )
 
-            PropertyGroup(
+            ComplexProperty(
                 string.product_variations,
-                properties,
-                drawable.ic_gridicons_types,
-                propertyFormat = string.product_variation_options
+                content,
+                drawable.ic_gridicons_types
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductVariations(this.remoteId),
@@ -533,12 +536,29 @@ class ProductDetailCardBuilder(
                     mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
                 )
                 viewModel.saveAsDraftIfNewVariableProduct()
-                viewModel.onEditProductCardClicked(
-                    AddProductAttribute(isVariationCreation = true),
-                    PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-                )
+                viewModel.onAddFirstVariationClicked()
             }
         )
+
+    private fun Product.variationAttributes() =
+        takeIf { this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty() }?.let {
+            val properties = mutableMapOf<String, String>()
+            for (attribute in this.variationEnabledAttributes) {
+                properties[attribute.name] = attribute.terms.size.toString()
+            }
+
+            PropertyGroup(
+                string.variable_product_attributes,
+                properties,
+                drawable.ic_gridicons_customize,
+                propertyFormat = string.product_variation_options
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductAttributes,
+                    PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
+                )
+            }
+        }
 
     private fun Product.categories(): ProductProperty? {
         return if (hasCategories) {

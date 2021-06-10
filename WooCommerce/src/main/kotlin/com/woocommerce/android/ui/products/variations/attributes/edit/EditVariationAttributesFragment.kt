@@ -13,26 +13,24 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.databinding.FragmentEditVariationAttributesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EditVariationAttributesFragment :
-    BaseDaggerFragment(R.layout.fragment_edit_variation_attributes), BackPressListener {
+    BaseFragment(R.layout.fragment_edit_variation_attributes), BackPressListener {
     companion object {
         const val TAG: String = "EditVariationAttributesFragment"
         const val KEY_VARIATION_ATTRIBUTES_RESULT = "key_variation_attributes_result"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    private val viewModel: EditVariationAttributesViewModel by viewModels { viewModelFactory }
+    private val viewModel: EditVariationAttributesViewModel by viewModels()
 
     private val navArgs: EditVariationAttributesFragmentArgs by navArgs()
 

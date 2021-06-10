@@ -20,7 +20,6 @@
     </issue>
 
     <issue id="IconDuplicates" severity="error">
-        <ignore path="**/WordPressLoginFlow/**" />
         <ignore path="**/login_notification_icon.png" />
     </issue>
 </lint>

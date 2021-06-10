@@ -7,7 +7,7 @@ sealed class CardPaymentStatus {
     object ShowAdditionalInfo : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
     object CapturingPayment : CardPaymentStatus()
-    object PaymentCompleted : CardPaymentStatus()
+    data class PaymentCompleted(val receiptUrl: String) : CardPaymentStatus()
 
     data class PaymentFailed(
         val type: CardPaymentStatusErrorType,

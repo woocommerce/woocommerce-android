@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,9 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductAddDownloadableFileBinding
@@ -28,36 +27,24 @@ import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.Lazy
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 private const val CHOOSE_FILE_REQUEST_CODE = 1
 private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
 
-class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
-    @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
+@AndroidEntryPoint
+class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment() {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
-    private val viewModel: AddProductDownloadViewModel by viewModels { viewModelFactory.get() }
-    private val parentViewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) {
-        viewModelFactory.get()
-    }
+    private val viewModel: AddProductDownloadViewModel by viewModels()
+    private val parentViewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
+
     private var capturedPhotoUri: Uri? = null
 
     private var _binding: DialogProductAddDownloadableFileBinding? = null
     private val binding get() = _binding!!
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         savedInstanceState?.let { bundle ->
@@ -133,6 +120,4 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
         val chooser = Intent.createChooser(intent, null)
         startActivityForResult(chooser, CHOOSE_FILE_REQUEST_CODE)
     }
-
-    override fun androidInjector(): AndroidInjector<Any> = childInjector
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/major_100"
+        android:paddingVertical="@dimen/major_200">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_reader_detail_connect_header_label"
+            style="@style/Woo.TextView.Headline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Connect your card reader" />
+
+        <ImageView
+            android:id="@+id/card_reader_detail_illustration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_200"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_reader_detail_connect_header_label"
+            tools:src="@drawable/img_card_reader_not_connected" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_reader_detail_first_hint_number_label"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="@dimen/major_200"
+            android:layout_height="@dimen/major_200"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="@dimen/major_200"
+            android:background="@drawable/reader_disconnected_state_number_background_oval"
+            android:gravity="center"
+            android:textColor="@color/color_on_surface"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_reader_detail_illustration"
+            tools:text="1" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_reader_detail_first_hint_label"
+            style="@style/Woo.TextView.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_150"
+            android:textColor="@color/color_on_surface"
+            app:layout_constraintBottom_toBottomOf="@id/card_reader_detail_first_hint_number_label"
+            app:layout_constraintStart_toEndOf="@id/card_reader_detail_first_hint_number_label"
+            app:layout_constraintTop_toTopOf="@id/card_reader_detail_first_hint_number_label"
+            tools:text="Make sure card reader is charged" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_reader_detail_second_hint_number_label"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="@dimen/major_200"
+            android:layout_height="@dimen/major_200"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="@dimen/major_200"
+            android:background="@drawable/reader_disconnected_state_number_background_oval"
+            android:gravity="center"
+            android:textColor="@color/color_on_surface"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_reader_detail_first_hint_number_label"
+            tools:text="2" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_reader_detail_second_hint_label"
+            style="@style/Woo.TextView.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_125"
+            android:textColor="@color/color_on_surface"
+            app:layout_constraintBottom_toBottomOf="@id/card_reader_detail_second_hint_number_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/card_reader_detail_second_hint_number_label"
+            app:layout_constraintTop_toTopOf="@id/card_reader_detail_second_hint_number_label"
+            tools:text="Turn card reader on and place it next to mobile device" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_reader_detail_third_hint_number_label"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="@dimen/major_200"
+            android:layout_height="@dimen/major_200"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="@dimen/major_200"
+            android:background="@drawable/reader_disconnected_state_number_background_oval"
+            android:gravity="center"
+            android:textColor="@color/color_on_surface"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_reader_detail_second_hint_number_label"
+            tools:text="3" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_reader_detail_third_hint_label"
+            style="@style/Woo.TextView.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_125"
+            android:textColor="@color/color_on_surface"
+            app:layout_constraintBottom_toBottomOf="@id/card_reader_detail_third_hint_number_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/card_reader_detail_third_hint_number_label"
+            app:layout_constraintTop_toTopOf="@id/card_reader_detail_third_hint_number_label"
+            tools:text="Turn mobile device bluetooth on" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/card_reader_detail_connect_btn"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_200"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_reader_detail_third_hint_label"
+            tools:text="Connect card reader" />
+
+        <include
+            android:id="@+id/card_reader_detail_learn_more_tv"
+            layout="@layout/fragment_card_reader_detail_learn_more"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

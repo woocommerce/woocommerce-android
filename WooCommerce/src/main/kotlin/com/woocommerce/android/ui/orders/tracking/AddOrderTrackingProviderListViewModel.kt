@@ -1,38 +1,36 @@
 package com.woocommerce.android.ui.orders.tracking
 
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import javax.inject.Inject
 
-class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class AddOrderTrackingProviderListViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val shipmentProvidersRepository: OrderShipmentProvidersRepository,
     private val orderDetailRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private val navArgs: AddOrderTrackingProviderListFragmentArgs by savedState.navArgs()
 
-    val trackingProviderListViewStateData = LiveDataDelegateWithArgs(
+    val trackingProviderListViewStateData = LiveDataDelegate(
         savedState = savedState,
         initialValue = ViewState()
     )
@@ -121,7 +119,4 @@ class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
         val providersList: List<OrderShipmentProvider> = emptyList(),
         val query: String = ""
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<AddOrderTrackingProviderListViewModel>
 }

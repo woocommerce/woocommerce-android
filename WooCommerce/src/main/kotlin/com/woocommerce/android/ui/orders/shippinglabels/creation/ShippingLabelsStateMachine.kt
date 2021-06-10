@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabel
@@ -26,12 +27,14 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 /*
@@ -169,7 +172,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.CustomsDeclarationStarted> {
-                transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
+                transitionTo(
+                    State.CustomsDeclaration(data),
+                    SideEffect.ShowCustomsForm(data.stepsState.shippingAddressStep.data.country, emptyList()))
             }
             on<Event.ShippingCarrierSelectionStarted> {
                 transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
@@ -196,7 +201,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.EditCustomsRequested> {
-                transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
+                transitionTo(
+                    State.CustomsDeclaration(data),
+                    SideEffect.ShowCustomsForm(data.stepsState.shippingAddressStep.data.country, emptyList())
+                )
             }
             on<Event.EditShippingCarrierRequested> {
                 transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
@@ -468,7 +476,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         @Parcelize
         data class CustomsStep(
             override val status: StepStatus,
-            override val isVisible: Boolean = false,
+            override val isVisible: Boolean = FeatureFlag.SHIPPING_LABELS_M4.isEnabled() && !PackageUtils.isTesting(),
             override val data: Unit = Unit
         ) : Step<Unit>()
 
@@ -706,7 +714,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
             val shippingPackages: List<ShippingLabelPackage>
         ) : SideEffect()
 
-        object ShowCustomsForm : SideEffect()
+        data class ShowCustomsForm(
+            val destinationCountryCode: String,
+            val customsPackages: List<CustomsPackage>
+        ) : SideEffect()
         data class ShowCarrierOptions(val data: StateMachineData) : SideEffect()
 
         object ShowPaymentOptions : SideEffect()

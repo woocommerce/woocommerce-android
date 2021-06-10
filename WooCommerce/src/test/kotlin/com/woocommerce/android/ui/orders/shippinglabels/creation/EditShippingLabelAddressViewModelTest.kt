@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
@@ -23,17 +22,19 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCDataStore
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     private val addressValidator = mock<ShippingLabelAddressValidator>()
     private val resourceProvider = mock<ResourceProvider>()
@@ -86,13 +87,8 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     )
 
     private val savedState
-        get() = spy(
-            SavedStateWithArgs(
-                SavedStateHandle(),
-                null,
-                EditShippingLabelAddressFragmentArgs(address, ORIGIN, validationResult)
-            )
-        )
+        get() = EditShippingLabelAddressFragmentArgs(address, ORIGIN, validationResult)
+            .initSavedStateHandle()
 
     private lateinit var viewModel: EditShippingLabelAddressViewModel
 
@@ -109,7 +105,6 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         viewModel = EditShippingLabelAddressViewModel(
             savedState,
-            coroutinesTestRule.testDispatchers,
             addressValidator,
             resourceProvider,
             dataStore,
@@ -206,13 +201,13 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     @Test
     fun `Dial phone number event triggered on contact customer tapped`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-        var event: Event? = null
-        viewModel.event.observeForever { event = it }
+            var event: Event? = null
+            viewModel.event.observeForever { event = it }
 
-        viewModel.onContactCustomerTapped()
+            viewModel.onContactCustomerTapped()
 
-        assertThat(event).isEqualTo(DialPhoneNumber(address.phone))
-    }
+            assertThat(event).isEqualTo(DialPhoneNumber(address.phone))
+        }
 
     @Test
     fun `Open map event triggered on contact customer tapped`() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -303,12 +298,14 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onCountrySelected("SK")
 
-        assertThat(viewState).isEqualTo(initialViewState.copy(
-            address.copy(country = "SK"),
-            selectedCountryName = "Slovakia",
-            selectedStateName = "",
-            isStateFieldSpinner = false
-        ))
+        assertThat(viewState).isEqualTo(
+            initialViewState.copy(
+                address.copy(country = "SK"),
+                selectedCountryName = "Slovakia",
+                selectedStateName = "",
+                isStateFieldSpinner = false
+            )
+        )
     }
 
     @Test
@@ -318,10 +315,12 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onStateSelected("NY")
 
-        assertThat(viewState).isEqualTo(initialViewState.copy(
-            address.copy(state = "NY"),
-            selectedCountryName = "USA",
-            selectedStateName = "New York"
-        ))
+        assertThat(viewState).isEqualTo(
+            initialViewState.copy(
+                address.copy(state = "NY"),
+                selectedCountryName = "USA",
+                selectedStateName = "New York"
+            )
+        )
     }
 }

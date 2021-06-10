@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.ReaderCallback
 import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.model.external.ConnectionStatus
@@ -28,7 +29,7 @@ internal class ConnectionManager(
     private val logWrapper: LogWrapper,
     private val discoverReadersAction: DiscoverReadersAction
 ) : TerminalListener {
-    val readerStatus: MutableStateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NOT_CONNECTED)
+    val readerStatus: MutableStateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NotConnected)
 
     fun discoverReaders(isSimulated: Boolean) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->
@@ -62,17 +63,29 @@ internal class ConnectionManager(
         }
     }
 
+    suspend fun disconnectReader() = suspendCoroutine<Boolean> { continuation ->
+        terminal.disconnectReader(object : Callback {
+            override fun onFailure(e: TerminalException) {
+                continuation.resume(false)
+            }
+
+            override fun onSuccess() {
+                continuation.resume(true)
+            }
+        })
+    }
+
     override fun onUnexpectedReaderDisconnect(reader: Reader) {
-        readerStatus.value = CardReaderStatus.NOT_CONNECTED
+        readerStatus.value = CardReaderStatus.NotConnected
         logWrapper.d("CardReader", "onUnexpectedReaderDisconnect")
     }
 
     override fun onConnectionStatusChange(status: ConnectionStatus) {
         super.onConnectionStatusChange(status)
         readerStatus.value = when (status) {
-            NOT_CONNECTED -> CardReaderStatus.NOT_CONNECTED
-            CONNECTING -> CardReaderStatus.CONNECTING
-            CONNECTED -> CardReaderStatus.CONNECTED
+            NOT_CONNECTED -> CardReaderStatus.NotConnected
+            CONNECTING -> CardReaderStatus.Connecting
+            CONNECTED -> CardReaderStatus.Connected(terminal.getConnectedReader()!!)
         }
         logWrapper.d("CardReader", "onConnectionStatusChange: ${status.name}")
     }

@@ -2,32 +2,31 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SHIPPING_LABEL_ADDRESS_SUGGESTIONS_EDIT_SELECTED_ADDRESS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SHIPPING_LABEL_ADDRESS_SUGGESTIONS_USE_SELECTED_ADDRESS_BUTTON_TAPPED
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers
-) : DaggerScopedViewModel(savedState, dispatchers) {
+@HiltViewModel
+class ShippingLabelAddressSuggestionViewModel @Inject constructor(
+    savedState: SavedStateHandle
+) : ScopedViewModel(savedState) {
     private val arguments: ShippingLabelAddressSuggestionFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(
+    val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
             enteredAddress = arguments.enteredAddress,
@@ -95,9 +94,7 @@ class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
         val selectedAddress: Address? = null,
         @StringRes val title: Int? = null
     ) : Parcelable {
+        @IgnoredOnParcel
         val areButtonsEnabled: Boolean = selectedAddress != null
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ShippingLabelAddressSuggestionViewModel>
 }

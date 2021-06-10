@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -80,8 +81,20 @@ internal class CardReaderManagerImpl(
         return connectionManager.connectToReader(cardReader)
     }
 
-    override suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
-        paymentManager.acceptPayment(orderId, amount, currency)
+    override suspend fun disconnectReader(): Boolean {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (terminal.getConnectedReader() == null) return false
+        return connectionManager.disconnectReader()
+    }
+
+    override suspend fun collectPayment(
+        paymentDescription: String,
+        orderId: Long,
+        amount: BigDecimal,
+        currency: String,
+        customerEmail: String?
+    ): Flow<CardPaymentStatus> =
+        paymentManager.acceptPayment(paymentDescription, orderId, amount, currency, customerEmail)
 
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
         paymentManager.retryPayment(orderId, paymentData)
@@ -90,5 +103,13 @@ internal class CardReaderManagerImpl(
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
     }
 
+    override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> =
+        softwareUpdateManager.softwareUpdateStatus()
+
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
+
+    override suspend fun clearCachedCredentials() {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        terminal.clearCachedCredentials()
+    }
 }

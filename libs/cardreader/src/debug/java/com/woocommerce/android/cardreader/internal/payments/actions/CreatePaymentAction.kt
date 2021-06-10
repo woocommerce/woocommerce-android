@@ -24,29 +24,43 @@ internal class CreatePaymentAction(
         data class Failure(val exception: TerminalException) : CreatePaymentStatus()
     }
 
-    fun createPaymentIntent(amount: Int, currency: String): Flow<CreatePaymentStatus> {
+    fun createPaymentIntent(
+        paymentDescription: String,
+        amount: Int,
+        currency: String,
+        customerEmail: String?
+    ): Flow<CreatePaymentStatus> {
         return callbackFlow {
-            terminal.createPaymentIntent(createParams(amount, currency), object : PaymentIntentCallback {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
-                    logWrapper.d("CardReader", "Creating payment intent succeeded")
-                    this@callbackFlow.sendBlocking(Success(paymentIntent))
-                    this@callbackFlow.close()
-                }
+            terminal.createPaymentIntent(
+                createParams(paymentDescription, amount, currency, customerEmail),
+                object : PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                        logWrapper.d("CardReader", "Creating payment intent succeeded")
+                        this@callbackFlow.sendBlocking(Success(paymentIntent))
+                        this@callbackFlow.close()
+                    }
 
-                override fun onFailure(e: TerminalException) {
-                    logWrapper.d("CardReader", "Creating payment intent failed")
-                    this@callbackFlow.sendBlocking(Failure(e))
-                    this@callbackFlow.close()
-                }
-            })
+                    override fun onFailure(e: TerminalException) {
+                        logWrapper.d("CardReader", "Creating payment intent failed")
+                        this@callbackFlow.sendBlocking(Failure(e))
+                        this@callbackFlow.close()
+                    }
+                })
             awaitClose()
         }
     }
 
-    private fun createParams(amount: Int, currency: String): PaymentIntentParameters {
-        return paymentIntentParametersFactory.createBuilder()
+    private fun createParams(
+        paymentDescription: String,
+        amount: Int,
+        currency: String,
+        email: String?
+    ): PaymentIntentParameters {
+        val builder = paymentIntentParametersFactory.createBuilder()
+            .setDescription(paymentDescription)
             .setAmount(amount)
             .setCurrency(currency)
-            .build()
+        email?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
+        return builder.build()
     }
 }

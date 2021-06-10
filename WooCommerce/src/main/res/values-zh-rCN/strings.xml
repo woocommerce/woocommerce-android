@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-12 10:54:05+0000
+Translation-Revision-Date: 2021-05-26 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">一款独特的数字产品</string>
-    <string name="product_add_type_virtual">简单的虚拟产品</string>
-    <string name="product_add_type_simple">简单的实体产品</string>
+    <string name="product_type_external_title">外部产品</string>
+    <string name="product_type_grouped_title">成组产品</string>
+    <string name="product_type_variable_title">可变产品</string>
+    <string name="product_type_virtual_desc">独特的数字产品，例如服务、可下载的书籍、音乐或视频</string>
+    <string name="product_type_simple_desc">您需要配送给客户的独特实体产品</string>
+    <string name="product_type_simple_title">简单的实体产品</string>
+    <string name="card_reader_connect_open_bluetooth_settings">打开设置</string>
+    <string name="card_reader_connect_open_location_settings">打开设置</string>
+    <string name="card_reader_connect_open_permission_settings">打开设置</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">蓝牙已禁用</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">位置已禁用</string>
+    <string name="card_reader_connect_missing_permissions_hint">缺少所需的位置权限</string>
+    <string name="card_reader_connect_connecting_failed_hint">我们无法连接到阅读器。</string>
+    <string name="card_reader_connect_scanning_failed_hint">我们找不到任何阅读器。</string>
+    <string name="card_reader_connect_failed_header">连接阅读器失败</string>
+    <string name="card_reader_connect_connecting_header">正在连接阅读器</string>
+    <string name="card_reader_connect_to_reader">连接阅读器</string>
+    <string name="card_reader_connect_reader_found_header">是否要连接阅读器 %s？</string>
+    <string name="card_reader_connect_scanning_hint">按下阅读器的电源按钮，直到看到闪烁蓝光</string>
+    <string name="card_reader_connect_scanning_header">正在查找阅读器</string>
+    <string name="shipping_label_items_count_placeholder">项目计数</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">创建新的配送标签</string>
+    <string name="product_type_virtual_title">简单的虚拟产品</string>
     <string name="variation_confirm_delete">是否要删除此变体？</string>
     <string name="variation_create_dialog_title">正在创建变体</string>
     <string name="product_delete_dialog_title">正在删除产品</string>
@@ -59,7 +79,6 @@ Language: zh_CN
     <string name="shipping_label_rate_included_options_signature_required_free">适用于免费签收要求</string>
     <string name="shipping_label_rate_included_options_free_pickup">适用于免费自提</string>
     <string name="shipping_label_rate_included_options_insurance">保险（最多 %s）</string>
-    <string name="shipping_label_rate_included_options_tracking">%s 追踪</string>
     <string name="shipping_label_rate_included_options">包含 %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">必需由成年人签收 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">必需签收 (%s)</string>
@@ -307,11 +326,6 @@ Language: zh_CN
     <string name="product_publish_dialog_title">正在发布产品</string>
     <string name="product_add_tool_bar_menu_button_done">发布</string>
     <string name="product_add_tool_bar_title">新产品</string>
-    <string name="product_add_type_variable_desc">包含颜色或尺寸等参数的变体</string>
-    <string name="product_add_type_simple_desc">要销售的独特商品</string>
-    <string name="product_add_type_external">外部产品</string>
-    <string name="product_add_type_grouped">分组产品</string>
-    <string name="product_add_type_variable">可变产品</string>
     <string name="product_images_image_limit_warning">每个产品变体只能显示一张照片</string>
     <string name="product_replace_photo">替换照片</string>
     <string name="product_add_photo">添加照片</string>
@@ -322,7 +336,7 @@ Language: zh_CN
     <string name="login_pick_store">选择要连接的商店</string>
     <string name="login_store_address">输入您的商店地址</string>
     <string name="login_wpcom">继续使用 WordPress.com</string>
-    <string name="product_type_variation_desc">包含颜色或尺寸等参数的变体</string>
+    <string name="product_type_variable_desc">包含颜色或尺寸等参数的变体</string>
     <string name="product_selection_count_single">%d 个产品已选择</string>
     <string name="product_selection_count">%d 个产品已选择</string>
     <string name="grouped_product_empty">将产品添加到组</string>
@@ -341,8 +355,6 @@ Language: zh_CN
     <string name="product_type_confirm_dialog_title">是否确定要更改产品类型？</string>
     <string name="product_type_external_desc">将产品链接到外部网站</string>
     <string name="product_type_grouped_desc">相关产品集合</string>
-    <string name="product_type_virtual_desc">服务或数字下载</string>
-    <string name="product_type_physical_desc">您配送给客户的商品</string>
     <string name="product_type_list_header">选择产品类型</string>
     <string name="send_feedback">发送反馈</string>
     <string name="variation_detail_price_warning_title">某些变体没有价格</string>

@@ -1,4 +1,0 @@
-6.6:
-Ketika menyunting produk, sekarang Anda bisa membuat, menghapus, dan memperbarui variasi, atribut, dan opsi atribut. Anda juga bisa membuat dan menyunting produk virtual dari layar detail produk.
-Sekarang dimungkinkan untuk mengembalikan dana baris pengiriman di dalam sebuah pemesanan.
-Kami juga memperbaiki masalah yang terjadi saat menyunting harga normal dan harga diskon produk.

@@ -5,9 +5,11 @@ import com.stripe.stripeterminal.model.external.PaymentIntentStatus
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
@@ -31,7 +33,7 @@ import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 
-private const val USD_TO_CENTS_DECIMAL_PLACES = 2
+internal const val USD_TO_CENTS_DECIMAL_PLACES = 2
 private const val USD_CURRENCY = "usd"
 
 internal class PaymentManager(
@@ -42,7 +44,13 @@ internal class PaymentManager(
     private val processPaymentAction: ProcessPaymentAction,
     private val errorMapper: PaymentErrorMapper
 ) {
-    suspend fun acceptPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> = flow {
+    suspend fun acceptPayment(
+        paymentDescription: String,
+        orderId: Long,
+        amount: BigDecimal,
+        currency: String,
+        customerEmail: String?
+    ): Flow<CardPaymentStatus> = flow {
         if (!isSupportedCurrency(currency)) {
             emit(errorMapper.mapError(errorMessage = "Unsupported currency: $currency"))
             return@flow
@@ -57,7 +65,12 @@ internal class PaymentManager(
             emit(errorMapper.mapError(errorMessage = "Reader not connected"))
             return@flow
         }
-        val paymentIntent = createPaymentIntent(amountInSmallestCurrencyUnit, currency)
+        val paymentIntent = createPaymentIntent(
+            paymentDescription,
+            amountInSmallestCurrencyUnit,
+            currency,
+            customerEmail
+        )
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
@@ -88,17 +101,30 @@ internal class PaymentManager(
         }
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
-            capturePayment(orderId, cardReaderStore, paymentIntent)
+            retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
+                capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
+            }
+        }
+    }
+
+    private suspend fun FlowCollector<CardPaymentStatus>.retrieveReceiptUrl(
+        paymentIntent: PaymentIntent
+    ): String? {
+        return paymentIntent.getCharges().takeIf { it.isNotEmpty() }?.get(0)?.receiptUrl ?: run {
+            emit(PaymentFailed(GENERIC_ERROR, null, "ReceiptUrl not available"))
+            null
         }
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(
+        paymentDescription: String,
         amount: Int,
-        currency: String
+        currency: String,
+        customerEmail: String?
     ): PaymentIntent? {
         var paymentIntent: PaymentIntent? = null
         emit(InitializingPayment)
-        createPaymentAction.createPaymentIntent(amount, currency).collect {
+        createPaymentAction.createPaymentIntent(paymentDescription, amount, currency, customerEmail).collect {
             when (it) {
                 is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent
@@ -138,13 +164,14 @@ internal class PaymentManager(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
+        receiptUrl: String,
         orderId: Long,
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
-            is CapturePaymentResponse.Successful -> emit(PaymentCompleted)
+            is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }

@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-13 09:54:04+0000
+Translation-Revision-Date: 2021-05-27 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">獨特的數位產品</string>
-    <string name="product_add_type_virtual">簡單的虛擬產品</string>
-    <string name="product_add_type_simple">簡單的實體產品</string>
+    <string name="product_type_external_title">外部商品</string>
+    <string name="product_type_grouped_title">組合商品</string>
+    <string name="product_type_variable_title">可變商品</string>
+    <string name="product_type_virtual_desc">獨特的數位產品，例如各式服務、可下載的書籍、音樂或影片</string>
+    <string name="product_type_simple_desc">需要運送給顧客的獨特實體產品</string>
+    <string name="product_type_simple_title">簡單的實體產品</string>
+    <string name="card_reader_connect_open_bluetooth_settings">開啟設定</string>
+    <string name="card_reader_connect_open_location_settings">開啟設定</string>
+    <string name="card_reader_connect_open_permission_settings">開啟設定</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">已停用藍牙</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">已停用位置</string>
+    <string name="card_reader_connect_missing_permissions_hint">缺少所需的位置權限</string>
+    <string name="card_reader_connect_connecting_failed_hint">無法連線至閱讀器。</string>
+    <string name="card_reader_connect_scanning_failed_hint">找不到任何閱讀器。</string>
+    <string name="card_reader_connect_failed_header">連線至閱讀器失敗</string>
+    <string name="card_reader_connect_connecting_header">正在連線至閱讀器</string>
+    <string name="card_reader_connect_to_reader">連線至閱讀器</string>
+    <string name="card_reader_connect_reader_found_header">你要連線至閱讀器 %s 嗎？</string>
+    <string name="card_reader_connect_scanning_hint">按住閱讀器的電源按鈕，直到藍燈閃爍為止</string>
+    <string name="card_reader_connect_scanning_header">掃瞄閱讀器</string>
+    <string name="shipping_label_items_count_placeholder">商品數量</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">建立新的運送標籤</string>
+    <string name="product_type_virtual_title">簡單的虛擬產品</string>
     <string name="variation_confirm_delete">你要刪除此「款式」嗎？</string>
     <string name="variation_create_dialog_title">建立款式</string>
     <string name="product_delete_dialog_title">刪除產品</string>
@@ -59,7 +79,6 @@ Language: zh_TW
     <string name="shipping_label_rate_included_options_signature_required_free">符合免費要求簽名資格</string>
     <string name="shipping_label_rate_included_options_free_pickup">符合免費取貨資格</string>
     <string name="shipping_label_rate_included_options_insurance">保險 (最高 %s)</string>
-    <string name="shipping_label_rate_included_options_tracking">%s 追蹤中</string>
     <string name="shipping_label_rate_included_options">包含 %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">需成人簽名 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">需簽名 (%s)</string>
@@ -307,11 +326,6 @@ Language: zh_TW
     <string name="product_publish_dialog_title">正在上架商品</string>
     <string name="product_add_tool_bar_menu_button_done">上架</string>
     <string name="product_add_tool_bar_title">新商品</string>
-    <string name="product_add_type_variable_desc">具有多種版本 (顏色或尺寸) 的商品</string>
-    <string name="product_add_type_simple_desc">獨特的銷售商品</string>
-    <string name="product_add_type_external">外部商品</string>
-    <string name="product_add_type_grouped">組合商品</string>
-    <string name="product_add_type_variable">變化商品</string>
     <string name="product_images_image_limit_warning">每個商品子項只能顯示一張相片</string>
     <string name="product_replace_photo">替換相片</string>
     <string name="product_add_photo">新增相片</string>
@@ -322,7 +336,7 @@ Language: zh_TW
     <string name="login_pick_store">選取要連結的商店</string>
     <string name="login_store_address">請輸入商店地址</string>
     <string name="login_wpcom">繼續使用 WordPress.com</string>
-    <string name="product_type_variation_desc">設有變化版本 (顏色或尺寸) 的商品</string>
+    <string name="product_type_variable_desc">設有變化版本 (顏色或尺寸) 的商品</string>
     <string name="product_selection_count_single">已選取　%d 件商品</string>
     <string name="product_selection_count">已選取　%d 件商品</string>
     <string name="grouped_product_empty">新增商品至群組</string>
@@ -341,8 +355,6 @@ Language: zh_TW
     <string name="product_type_confirm_dialog_title">你確定要變更商品類型？</string>
     <string name="product_type_external_desc">將商品連結至外部網站</string>
     <string name="product_type_grouped_desc">相關商品系列</string>
-    <string name="product_type_virtual_desc">服務或數位下載</string>
-    <string name="product_type_physical_desc">寄送給顧客的商品</string>
     <string name="product_type_list_header">請選取商品類型</string>
     <string name="send_feedback">傳送意見回饋</string>
     <string name="variation_detail_price_warning_title">部分商品變化項目沒有標示價格。</string>
