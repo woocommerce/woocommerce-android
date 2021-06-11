@@ -27,6 +27,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
+import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import org.greenrobot.eventbus.Subscribe
@@ -72,6 +73,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs
+    @Inject lateinit var cardPresentEligibleFeatureChecker: CardPresentEligibleFeatureChecker
 
     private var connectionReceiverRegistered = false
 
@@ -87,6 +89,15 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
             }
+            return true
+        }
+    }
+
+    private val checkIfPaymentsEligible: RateLimitedTask = object : RateLimitedTask(
+        CardPresentEligibleFeatureChecker.CACHE_VALIDITY_TIME_S
+    ) {
+        override fun run(): Boolean {
+            cardPresentEligibleFeatureChecker.doCheck()
             return true
         }
     }
@@ -137,6 +148,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
+            checkIfPaymentsEligible.runIfNotLimited()
         }
     }
 
@@ -171,8 +183,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         return when (connectionResult) {
             ConnectionResult.SUCCESS -> true
             else -> {
-                WooLog.w(T.NOTIFS, "Google Play Services unavailable, connection result: " +
-                    googleApiAvailability.getErrorString(connectionResult))
+                WooLog.w(
+                    T.NOTIFS, "Google Play Services unavailable, connection result: " +
+                    googleApiAvailability.getErrorString(connectionResult)
+                )
                 return false
             }
         }
