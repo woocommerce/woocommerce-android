@@ -78,6 +78,9 @@
             android:name="validationResult"
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$ValidationResult"
             app:nullable="true" />
+        <argument
+            android:name="isInternational"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_editShippingLabelAddressFragment_to_itemSelectorDialog"
             app:destination="@id/itemSelectorDialog"
@@ -397,6 +400,10 @@
             android:name="order"
             app:argType="com.woocommerce.android.model.Order" />
         <argument
+            android:name="customsPackages"
+            app:nullable="true"
+            app:argType="com.woocommerce.android.model.CustomsPackage[]" />
+        <argument
             android:name="selectedRates"
             app:argType="com.woocommerce.android.model.ShippingRate[]" />
     </fragment>
@@ -419,8 +426,14 @@
         android:label="ShippingCustomsFragment"
         tools:layout="@layout/fragment_shipping_customs">
         <argument
+            android:name="originCountryCode"
+            app:argType="string" />
+        <argument
             android:name="destinationCountryCode"
             app:argType="string" />
+        <argument
+            android:name="shippingPackages"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
         <argument
             android:name="customsPackages"
             app:argType="com.woocommerce.android.model.CustomsPackage[]" />

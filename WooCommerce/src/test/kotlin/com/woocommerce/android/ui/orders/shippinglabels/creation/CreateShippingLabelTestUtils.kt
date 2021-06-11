@@ -42,7 +42,7 @@ object CreateShippingLabelTestUtils {
             id,
             selectedPackage ?: generatePackage(),
             weight,
-            listOf(Item(0L, "product", "", 10f))
+            listOf(Item(0L, "product", "", 2f, 10f, BigDecimal.valueOf(10L)))
         )
     }
 

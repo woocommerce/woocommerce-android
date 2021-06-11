@@ -89,7 +89,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
         viewState = viewState.copy(showSkeletonView = false)
         val items = order.getShippableItems().map { it.toShippingItem() }
-        val totalWeight = items.sumByFloat { it.weight } + (lastUsedPackage?.boxWeight ?: 0f)
+        val totalWeight = items.sumByFloat { it.weight * it.quantity } + (lastUsedPackage?.boxWeight ?: 0f)
         return listOf(
             ShippingLabelPackage(
                 packageId = "package1",
@@ -108,6 +108,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
             return true
         }
+
         suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
             if (!fetchProductIfNeeded(productId)) return false
             if (variationDetailRepository.getVariation(productId, variationId) == null) {
@@ -188,9 +189,12 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         }
 
         return ShippingLabelPackage.Item(
-            productId = productId,
+            productId = uniqueId,
             name = name,
             attributesList = attributesList,
+            // TODO remove the conversion when the order quantity starts supporting decimal values
+            quantity = quantity.toFloat(),
+            value = price,
             weight = weight
         )
     }

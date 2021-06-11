@@ -62,6 +62,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.CustomsFormFilledOut
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditCustomsCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
@@ -173,7 +174,11 @@ class CreateShippingLabelViewModel @Inject constructor(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
                             progressDialogMessage = string.shipping_label_edit_address_progress_message
                         ) {
-                            validateAddress(transition.state.data.stepsState.originAddressStep.data, ORIGIN)
+                            validateAddress(
+                                address = transition.state.data.stepsState.originAddressStep.data,
+                                type = ORIGIN,
+                                isInternationalShipment = transition.state.data.isInternationalShipment
+                            )
                         }
                     }
                     is State.ShippingAddressValidation -> {
@@ -181,7 +186,11 @@ class CreateShippingLabelViewModel @Inject constructor(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
                             progressDialogMessage = string.shipping_label_edit_address_progress_message
                         ) {
-                            validateAddress(transition.state.data.stepsState.shippingAddressStep.data, DESTINATION)
+                            validateAddress(
+                                address = transition.state.data.stepsState.shippingAddressStep.data,
+                                type = DESTINATION,
+                                isInternationalShipment = transition.state.data.isInternationalShipment
+                            )
                         }
                     }
                     is State.PurchaseLabels -> {
@@ -204,7 +213,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                             ShowAddressEditor(
                                 sideEffect.address,
                                 sideEffect.type,
-                                sideEffect.validationResult
+                                sideEffect.validationResult,
+                                sideEffect.isInternational
                             )
                         )
                         is SideEffect.ShowAddressSuggestion -> triggerEvent(
@@ -216,7 +226,9 @@ class CreateShippingLabelViewModel @Inject constructor(
                         )
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> openCustomsForm(
+                            sideEffect.originCountryCode,
                             sideEffect.destinationCountryCode,
+                            sideEffect.shippingPackages,
                             sideEffect.customsPackages
                         )
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
@@ -285,6 +297,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 data.stepsState.originAddressStep.data,
                 data.stepsState.shippingAddressStep.data,
                 data.stepsState.packagingStep.data,
+                data.stepsState.customsStep.data,
                 data.stepsState.carrierStep.data
             )
         )
@@ -299,8 +312,20 @@ class CreateShippingLabelViewModel @Inject constructor(
         )
     }
 
-    private fun openCustomsForm(destinationCountryCode: String, customsPackages: List<CustomsPackage>) {
-        triggerEvent(ShowCustomsForm(destinationCountryCode, customsPackages))
+    private fun openCustomsForm(
+        originCountryCode: String,
+        destinationCountryCode: String,
+        shippingPackages: List<ShippingLabelPackage>,
+        customsPackages: List<CustomsPackage>
+    ) {
+        triggerEvent(
+            ShowCustomsForm(
+                originCountryCode = originCountryCode,
+                destinationCountryCode = destinationCountryCode,
+                shippingPackages = shippingPackages,
+                customsPackages = customsPackages
+            )
+        )
     }
 
     private fun openPaymentDetails() {
@@ -319,7 +344,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 is OriginAddressStep -> data.toString()
                 is ShippingAddressStep -> data.toString()
                 is PackagingStep -> stepDescription
-                is CustomsStep -> null
+                is CustomsStep -> stepDescription
                 is CarrierStep -> stepDescription
                 is PaymentsStep -> stepDescription
             }
@@ -406,13 +431,13 @@ class CreateShippingLabelViewModel @Inject constructor(
         )
     }
 
-    private suspend fun validateAddress(address: Address, type: AddressType): Event {
-        return when (val result = addressValidator.validateAddress(address, type)) {
+    private suspend fun validateAddress(address: Address, type: AddressType, isInternationalShipment: Boolean): Event {
+        return when (val result = addressValidator.validateAddress(address, type, isInternationalShipment)) {
             ValidationResult.Valid -> AddressValidated(address)
             is ValidationResult.SuggestedChanges -> AddressChangeSuggested(result.suggested)
             is ValidationResult.NotFound,
             is ValidationResult.Invalid,
-            is ValidationResult.NameMissing -> AddressInvalid(address, result)
+            is ValidationResult.NameMissing, ValidationResult.PhoneInvalid -> AddressInvalid(address, result)
             is ValidationResult.Error -> AddressValidationFailed
         }
     }
@@ -427,7 +452,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                 origin = data.stepsState.originAddressStep.data,
                 destination = data.stepsState.shippingAddressStep.data,
                 packages = data.stepsState.packagingStep.data,
-                rates = data.stepsState.carrierStep.data
+                rates = data.stepsState.carrierStep.data,
+                customsPackages = data.stepsState.customsStep.data
             )
         } / 1000.0
 
@@ -541,6 +567,12 @@ class CreateShippingLabelViewModel @Inject constructor(
             }
         }
 
+    private val CustomsStep.stepDescription: String
+        get() = resourceProvider.getString(
+            if (status == DONE) string.shipping_label_create_customs_done
+            else string.shipping_label_create_customs_description
+        )
+
     fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
 
     fun onAddressEditConfirmed(address: Address) {
@@ -598,8 +630,12 @@ class CreateShippingLabelViewModel @Inject constructor(
         stateMachine.handleEvent(ShippingCarrierSelectionCanceled)
     }
 
-    fun onCustomsFilledOut() {
-        stateMachine.handleEvent(CustomsFormFilledOut)
+    fun onCustomsFilledOut(customsPackages: List<CustomsPackage>) {
+        stateMachine.handleEvent(CustomsFormFilledOut(customsPackages))
+    }
+
+    fun onCustomsEditCanceled() {
+        stateMachine.handleEvent(EditCustomsCanceled)
     }
 
     fun onWooDiscountInfoClicked() {
