@@ -254,10 +254,8 @@ class CardReaderPaymentViewModel @Inject constructor(
                 viewState.value = FetchingOrderState
             } else {
                 // show "data might be outdated" and exit the flow when the user presses back on FetchingOrder screen
-                launch {
-                    triggerEvent(ShowSnackbar(R.string.card_reader_fetching_order_failed))
-                    triggerEvent(Exit)
-                }
+                triggerEvent(ShowSnackbar(R.string.card_reader_fetching_order_failed))
+                triggerEvent(Exit)
             }
         } else {
             triggerEvent(Exit)
