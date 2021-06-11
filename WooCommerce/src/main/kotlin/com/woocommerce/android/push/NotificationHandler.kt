@@ -409,6 +409,7 @@ class NotificationHandler @Inject constructor(
 
             // check for existing channel first
             manager.getNotificationChannel(channelId)?.let {
+                WooLog.i(T.NOTIFS, "Check notification sound settings before app provided sound ${it.sound}")
                 return
             }
 
@@ -422,6 +423,7 @@ class NotificationHandler @Inject constructor(
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .build()
                 channel.setSound(getChaChingUri(context), attributes)
+                WooLog.i(T.NOTIFS, "Check notification sound on new order, after setting app provided sound ${channel.sound}")
             }
 
             manager.createNotificationChannel(channel)
