@@ -1,10 +1,10 @@
 package com.woocommerce.android.tools
 
 import android.content.Context
+import dagger.Reusable
 import org.wordpress.android.util.NetworkUtils
-import javax.inject.Singleton
 
-@Singleton
-class NetworkStatus(private var context: Context) {
+@Reusable
+class NetworkStatus(private val context: Context) {
     fun isConnected() = NetworkUtils.isNetworkAvailable(context)
 }

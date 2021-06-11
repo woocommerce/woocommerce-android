@@ -5,40 +5,37 @@ import android.os.Parcelable
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-class AddProductCategoryViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class AddProductCategoryViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     // view state for the add category screen
-    val addProductCategoryViewStateData = LiveDataDelegateWithArgs(savedState, AddProductCategoryViewState())
+    val addProductCategoryViewStateData = LiveDataDelegate(savedState, AddProductCategoryViewState())
     private var addProductCategoryViewState by addProductCategoryViewStateData
 
     // view state for the parent category list screen
-    val parentCategoryListViewStateData = LiveDataDelegateWithArgs(savedState, ParentCategoryListViewState())
+    val parentCategoryListViewStateData = LiveDataDelegate(savedState, ParentCategoryListViewState())
     private var parentCategoryListViewState by parentCategoryListViewStateData
 
     private val _parentCategories = MutableLiveData<List<ProductCategoryItemUiModel>>()
@@ -236,7 +233,4 @@ class AddProductCategoryViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<AddProductCategoryViewModel>
 }

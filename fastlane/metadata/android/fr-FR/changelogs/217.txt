@@ -1,4 +1,0 @@
-6.6 :
-Lorsque vous modifiez un produit, vous pouvez désormais créer, supprimer et mettre à jour des variantes, des attributs et des options d’attribut. Vous pouvez également créer et modifier un produit virtuel à partir de l’écran Détails sur le produit.
-Il est désormais possible de rembourser une ligne de livraison dans une commande.
-Nous avons également résolu un problème survenant lors de l’édition des prix de ventes et standard du produit.

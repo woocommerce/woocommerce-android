@@ -11,22 +11,22 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingPackagesSelectorBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class ShippingPackageSelectorFragment : BaseDaggerFragment(R.layout.fragment_shipping_packages_selector) {
+@AndroidEntryPoint
+class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_packages_selector) {
     companion object {
         const val SELECTED_PACKAGE_RESULT = "selected-package"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    val viewModel: ShippingPackageSelectorViewModel by viewModels { viewModelFactory }
+    val viewModel: ShippingPackageSelectorViewModel by viewModels()
 
     private val packagesAdapter by lazy {
         ShippingPackagesAdapter(

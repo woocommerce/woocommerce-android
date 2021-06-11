@@ -1,8 +1,8 @@
 include ':libs:cardreader'
 include ':WooCommerce'
-include ':libs:login:WordPressLoginFlow'
 
 gradle.ext.fluxCBinaryPath = "com.github.wordpress-mobile.WordPress-FluxC-Android"
+gradle.ext.loginFlowBinaryPath = "org.wordpress:login"
 
 def localBuilds = new File('local-builds.gradle')
 if (localBuilds.exists()) {
@@ -25,6 +25,15 @@ if (localBuilds.exists()) {
                 substitute module("$gradle.ext.fluxCBinaryPath:fluxc") with project(':fluxc')
                 substitute module("$gradle.ext.fluxCBinaryPath:woocommerce") with project(':plugins:woocommerce')
 
+            }
+        }
+    }
+
+    if (ext.has("localLoginFlowPath")) {
+        includeBuild(ext.localLoginFlowPath) {
+            dependencySubstitution {
+                println "Substituting login-flow with the local build"
+                substitute module("$gradle.ext.loginFlowBinaryPath") with project(':WordPressLoginFlow')
             }
         }
     }

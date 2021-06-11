@@ -30,17 +30,17 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.UnreadItemDecoration
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
     ReviewListAdapter.OnReviewClickListener {
@@ -51,13 +51,12 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
         fun newInstance() = ReviewListFragment()
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var reviewsAdapter: ReviewListAdapter
 
-    private val viewModel: ReviewListViewModel by viewModels { viewModelFactory }
+    private val viewModel: ReviewListViewModel by viewModels()
 
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
@@ -148,11 +147,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
             }
             else -> return super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
     }
 
     override fun onResume() {

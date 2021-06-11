@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface"
+    android:keepScreenOn="true"
+    android:minWidth="@dimen/floating_dialog_min_width"
+    android:paddingHorizontal="@dimen/major_150"
+    android:paddingVertical="@dimen/major_100">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/update_reader_title_tv"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="0dp"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/card_reader_software_update_title" />
+
+    <ProgressBar
+        android:id="@+id/update_reader_pb"
+        android:layout_width="@dimen/progress_bar_mid"
+        android:layout_height="@dimen/progress_bar_mid"
+        android:layout_marginStart="@dimen/major_75"
+        android:layout_marginTop="@dimen/major_250"
+        android:layout_marginBottom="@dimen/major_150"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/update_reader_title_tv" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/update_reader_progress_description_tv"
+        style="@style/Woo.TextView.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_200"
+        android:layout_marginEnd="@dimen/major_100"
+        android:text="@string/card_reader_software_update_progress_description"
+        android:textColor="@color/color_on_surface_medium"
+        app:layout_constraintBottom_toBottomOf="@id/update_reader_pb"
+        app:layout_constraintStart_toEndOf="@id/update_reader_pb"
+        app:layout_constraintTop_toTopOf="@id/update_reader_pb" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/update_reader_progress_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="update_reader_progress_description_tv, update_reader_pb" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/update_reader_description_tv"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
+        android:textColor="@color/color_on_surface_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/update_reader_title_tv"
+        tools:text="@string/card_reader_software_update_description" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/update_reader_primary_action_btn"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/update_reader_description_tv"
+        tools:text="Update" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/update_reader_secondary_action_btn"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/update_reader_primary_action_btn"
+        app:layout_constraintTop_toTopOf="@id/update_reader_primary_action_btn"
+        tools:text="Skip" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

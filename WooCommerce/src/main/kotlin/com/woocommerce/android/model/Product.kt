@@ -103,7 +103,6 @@ data class Product(
             sku == product.sku &&
             slug == product.slug &&
             type == product.type &&
-            numVariations == product.numVariations &&
             name.fastStripHtml() == product.name.fastStripHtml() &&
             description == product.description &&
             shortDescription == product.shortDescription &&
@@ -513,9 +512,7 @@ fun WCProductModel.toAppModel(): Product {
                 DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
             )
         },
-        attributes = this.getAttributeList().map {
-            it.toAppModel()
-        },
+        attributes = this.getAttributeList().map { it.toAppModel() },
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
         isSoldIndividually = this.soldIndividually,

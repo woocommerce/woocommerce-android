@@ -14,27 +14,27 @@ import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBindi
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class EditShippingLabelPaymentFragment
-    : BaseDaggerFragment(R.layout.fragment_edit_shipping_label_payment), BackPressListener {
+    : BaseFragment(R.layout.fragment_edit_shipping_label_payment), BackPressListener {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: EditShippingLabelPaymentViewModel by viewModels { viewModelFactory }
+    private val viewModel: EditShippingLabelPaymentViewModel by viewModels()
 
     private val paymentMethodsAdapter by lazy { ShippingLabelPaymentMethodsAdapter(viewModel::onPaymentMethodSelected) }
 

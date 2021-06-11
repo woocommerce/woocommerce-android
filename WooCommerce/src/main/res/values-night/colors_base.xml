@@ -45,7 +45,7 @@
     <color name="image_border_color">@color/woo_white_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_white_alpha_012</color>
     <color name="color_scrim_background">@color/woo_black_90_alpha_038</color>
-    <color name="color_default_image_background">@color/woo_gray_80</color>
+    <color name="color_default_image_background">@color/woo_gray_40</color>
 
     <!--
         Elevation colors
@@ -104,4 +104,14 @@
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_white_alpha_012</color>
+
+    <!--
+    Empty state view
+    -->
+    <color name="empty_state_bg_color">@color/woo_black_90</color>
+  
+    <!--
+        Payment reader
+    -->
+    <color name="disconnected_state_number_background_color">@color/woo_black_900</color>
 </resources>

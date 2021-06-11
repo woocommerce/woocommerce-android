@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.annotation.SuppressLint
 import android.os.Handler
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
 class AttributeTermsListAdapter(
     private val enableDragAndDrop: Boolean,
     private val enableDeleting: Boolean,
+    private val defaultItemBackground: TypedValue,
     private val dragHelper: ItemTouchHelper? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
     interface OnTermListener {
@@ -25,7 +27,6 @@ class AttributeTermsListAdapter(
         fun onTermDelete(termName: String)
         fun onTermMoved(fromTermName: String, toTermName: String)
     }
-
     private lateinit var onTermListener: OnTermListener
 
     var termNames: ArrayList<String> = ArrayList()
@@ -147,6 +148,7 @@ class AttributeTermsListAdapter(
             }
 
             if (enableDeleting) {
+                viewBinding.termContainer.setBackgroundResource(defaultItemBackground.resourceId)
                 viewBinding.termDelete.setOnClickListener {
                     termNames.getOrNull(adapterPosition)?.let {
                         removeTerm(it)

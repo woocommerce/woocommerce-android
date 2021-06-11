@@ -16,11 +16,14 @@
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:layout_marginEnd="@dimen/margin_extra_large"
+            android:layout_margin="@dimen/margin_extra_large"
             android:text="@string/product_add_attribute"
             android:textAllCaps="true" />
+
+        <View
+            android:id="@+id/divider"
+            style="@style/Woo.Divider"
+            android:layout_width="match_parent"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/attributeList"

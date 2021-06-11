@@ -1,32 +1,30 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-class ProductShippingViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ProductShippingViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
     private val productRepository: ProductDetailRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
     private val navArgs: ProductShippingFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(
+    val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
             shippingData = navArgs.shippingData,
@@ -99,7 +97,4 @@ class ProductShippingViewModel @AssistedInject constructor(
         val shippingClassSlug: String? = null,
         val shippingClassId: Long? = null
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ProductShippingViewModel>
 }

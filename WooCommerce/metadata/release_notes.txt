@@ -1,2 +1,3 @@
-We have heard that orders may get fulfilled in multiple shipments. With this update, you can now print more than one label for an order. We also fixed a few other small things to make your experience better.
+Back by popular demand, the order fulfill screen now displays when you click the "Mark order complete" button!
 
+In addition, we fixed a bug that was breaking the product list screen and added an error message for unauthorized users who attempt to access your store. 

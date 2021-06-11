@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -17,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
@@ -27,15 +27,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -57,15 +54,17 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
+import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
 @OpenClassOnDebug
 @Suppress("LeakingThis")
-class OrderListViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    coroutineDispatchers: CoroutineDispatchers,
+@HiltViewModel
+class OrderListViewModel @Inject constructor(
+    savedState: SavedStateHandle,
+    private val dispatchers: CoroutineDispatchers,
     protected val repository: OrderListRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
@@ -75,7 +74,7 @@ class OrderListViewModel @AssistedInject constructor(
     private val fetcher: OrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore
-) : DaggerScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
+) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -89,7 +88,7 @@ class OrderListViewModel @AssistedInject constructor(
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
     }
 
-    final val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState())
+    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
 
     protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
@@ -111,8 +110,8 @@ class OrderListViewModel @AssistedInject constructor(
         ThrottleLiveData<EmptyViewType?>(
                 offset = EMPTY_VIEW_THROTTLE,
                 coroutineScope = this,
-                mainDispatcher = coroutineDispatchers.main,
-                backgroundDispatcher = coroutineDispatchers.computation)
+                mainDispatcher = dispatchers.main,
+                backgroundDispatcher = dispatchers.computation)
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
@@ -474,7 +473,4 @@ class OrderListViewModel @AssistedInject constructor(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<OrderListViewModel>
 }

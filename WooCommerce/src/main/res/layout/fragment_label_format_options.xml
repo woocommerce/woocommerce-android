@@ -97,6 +97,7 @@
                 android:layout_marginTop="@dimen/major_100"
                 android:layout_marginStart="@dimen/major_200"
                 android:layout_marginEnd="@dimen/major_200"
+                android:layout_marginBottom="@dimen/major_100"
                 android:importantForAccessibility="no"
                 android:src="@drawable/img_label_option_label" />
 

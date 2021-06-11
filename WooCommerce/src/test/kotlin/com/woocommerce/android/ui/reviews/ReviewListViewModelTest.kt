@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -16,38 +16,36 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
-import com.woocommerce.android.ui.reviews.ReviewListViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ReviewListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val reviewListRepository: ReviewListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
-    private val savedState: SavedStateWithArgs = mock()
+    private val savedState: SavedStateHandle = SavedStateHandle()
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
     private lateinit var viewModel: ReviewListViewModel
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(ViewState())).whenever(savedState).getLiveData<ViewState>(any(), any())
-
         viewModel = spy(
             ReviewListViewModel(
                 savedState,
-                coroutinesTestRule.testDispatchers,
                 networkStatus,
                 dispatcher,
                 selectedSite,

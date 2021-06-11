@@ -1,10 +1,11 @@
 buildscript {
     repositories {
+        google()
         jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath 'com.google.gms:google-services:3.2.0'
+        classpath 'com.google.gms:google-services:4.3.8'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.51'
         classpath 'io.sentry:sentry-android-gradle-plugin:1.7.28'
     }
@@ -21,10 +22,21 @@ apply plugin: 'io.sentry.android.gradle'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 repositories {
+    maven {
+        url 'https://a8c-libs.s3.amazonaws.com/android'
+        content {
+            includeGroup "org.wordpress"
+        }
+    }
+    maven {
+        url 'https://zendesk.jfrog.io/zendesk/repo'
+        content {
+            includeGroup "com.zendesk"
+            includeGroup "com.zendesk.belvedere2"
+        }
+    }
     mavenCentral()
     maven { url "https://jitpack.io" }
-    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
-    maven { url 'https://a8c-libs.s3.amazonaws.com/android' }
 }
 
 allOpen {
@@ -41,9 +53,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "6.7-rc-2"
+            versionName "6.8-rc-2"
         }
-        versionCode 219
+        versionCode 222
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -130,8 +142,8 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging:17.0.0'
-    implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation 'com.google.firebase:firebase-messaging:21.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
@@ -155,7 +167,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.0.0'
+    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.0.1'
     constraints {
         implementation('com.fasterxml.jackson.core:jackson-core:2.10.2') {
             because 'previous version from tracks conflicts with WireMock for UI tests'
@@ -171,7 +183,7 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation(project(path: ':libs:login:WordPressLoginFlow')) {
+    implementation ("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
         exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
         exclude group: "org.wordpress", module: "utils"
     }
@@ -195,8 +207,9 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
     // Dagger
-    implementation "com.google.dagger:hilt-android:$hiltVersion"
-    kapt "com.google.dagger:hilt-compiler:$hiltVersion"
+    implementation "com.google.dagger:hilt-android:$daggerVersion"
+    implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
+    kapt "com.google.dagger:hilt-compiler:$daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
 
@@ -238,8 +251,8 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
-    androidTestImplementation "com.google.dagger:hilt-android-testing:$hiltVersion"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hiltVersion"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$daggerVersion"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$daggerVersion"
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
