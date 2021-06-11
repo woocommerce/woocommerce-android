@@ -108,6 +108,7 @@ class ReviewDetailViewModel @AssistedInject constructor(
                         }
                     }
                     ERROR -> triggerEvent(ShowSnackbar(R.string.wc_load_review_error))
+                    else -> triggerEvent(ShowSnackbar(R.string.wc_load_review_error))
                 }
             }
         } else {
