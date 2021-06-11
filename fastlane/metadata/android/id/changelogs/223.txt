@@ -1,0 +1,4 @@
+6.8:
+Karena banyaknya permintaan, kini saat Anda mengklik tombol "Tandai pesanan selesai", layar penuhi pesanan akan muncul!
+
+Selain itu, kami telah memperbaiki bug yang mengganggu layar daftar produk dan menambahkan pesan error bagi pengguna tanpa izin yang mencoba mengakses toko Anda.

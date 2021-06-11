@@ -1,3 +1,0 @@
-6,7:
-Vi har hört att beställningar kan uppfyllas i flera olika leveranser. Med den här uppdateringen kan du skriva ut mer än en etikett för en beställning. Vi har även åtgärdat andra små saker för att göra din upplevelse bättre.
-
