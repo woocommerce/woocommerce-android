@@ -409,7 +409,8 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
                 R.id.printShippingLabelInfoFragment,
-                R.id.shippingLabelFormatOptionsFragment -> {
+                R.id.shippingLabelFormatOptionsFragment,
+                R.id.printingInstructionsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
