@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-09 15:54:05+0000
+Translation-Revision-Date: 2021-06-10 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
@@ -19,7 +19,7 @@ Language: it
     <string name="card_reader_detail_connected_update_software">Aggiorna il software del lettore</string>
     <string name="card_reader_detail_connected_battery_percentage">Batteria %s%%</string>
     <string name="card_reader_detail_connected_header">LETTORE CONNESSO</string>
-    <string name="card_reader_details_not_connected_connect_button_label">Connetti lettore di carte</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Connetti il lettore di carte</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Accendi il lettore di carte e posizionalo accanto al dispositivo mobile</string>
     <string name="card_reader_detail_not_connected_first_hint_label">Assicurati che il lettore di carte sia carico</string>
     <string name="card_reader_detail_not_connected_header">Connetti il tuo lettore di carte</string>
@@ -29,7 +29,7 @@ Language: it
     <string name="card_reader_payment_collect_payment_loading_header">Preparazione alla ricezione del pagamento</string>
     <string name="shipping_label_customs_value_zero_error">Il valore dichiarato deve essere maggiore di zero</string>
     <string name="shipping_label_customs_weight_zero_error">Il peso deve essere maggiore di zero</string>
-    <string name="shipping_label_customs_required_field">Questo campo è obbligatorio</string>
+    <string name="shipping_label_customs_required_field">Questo campo è richiesto</string>
     <string name="shipping_label_customs_restriction_type_description_missing">Descrivi che tipo di restrizioni deve avere questo pacchetto.</string>
     <string name="shipping_label_customs_contents_type_description_missing">Descrivi che tipo di beni contiene questo pacchetto.</string>
     <string name="shipping_label_customs_weight_hint">Peso (%1$s per unità)</string>
@@ -53,7 +53,7 @@ Language: it
     <string name="shipping_label_customs_item_description_hint">Descrizione</string>
     <string name="shipping_label_customs_package_content">Contenuto del pacchetto</string>
     <string name="shipping_label_customs_itn_required_country">Il numero di transizione interno è richiesto per la spedizione a %1$s.</string>
-    <string name="shipping_label_customs_itn_required_items_over_2500">Il numero di transizione interno per gli articoli della spedizione valutati più di $ 2.500 per numero di tariffa</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">Il numero di transizione interno è richiesto per gli articoli della spedizione valutati più di $ 2.500 per numero di tariffa</string>
     <string name="shipping_label_customs_itn_invalid_format">Formato non valido</string>
     <string name="shipping_label_customs_restriction_type_other_hint">Dettagli sulla restrizione</string>
     <string name="shipping_label_customs_contents_type_other_hint">Dettagli sui contenuti</string>

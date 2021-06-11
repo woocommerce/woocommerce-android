@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-09 17:54:04+0000
+Translation-Revision-Date: 2021-06-10 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
@@ -19,10 +19,10 @@ Language: fr
     <string name="card_reader_detail_connected_update_software">Mettre à jour le logiciel du lecteur</string>
     <string name="card_reader_detail_connected_battery_percentage">%s%% de batterie</string>
     <string name="card_reader_detail_connected_header">LECTEUR CONNECTÉ</string>
-    <string name="card_reader_details_not_connected_connect_button_label">Connecter le lecteur de carte</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Connectez le lecteur de carte</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Allumez le lecteur de carte et placez-le à côté de l’appareil mobile</string>
-    <string name="card_reader_detail_not_connected_first_hint_label">Vérifier que le lecteur de carte est chargé</string>
-    <string name="card_reader_detail_not_connected_header">Connecter votre lecteur de carte</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Vérifiez que le lecteur de carte est chargé</string>
+    <string name="card_reader_detail_not_connected_header">Connectez votre lecteur de carte</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Carte refusée</string>
     <string name="card_reader_payment_failed_card_declined_state">Carte refusée. Réessayez avec une autre carte.</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Connexion au lecteur</string>
