@@ -15,13 +15,14 @@ import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
-import dagger.android.AndroidInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import java.util.ArrayList
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class HelpActivity : AppCompatActivity() {
     @Inject lateinit var accountStore: AccountStore
     @Inject lateinit var siteStore: SiteStore
@@ -40,7 +41,6 @@ class HelpActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         binding = ActivityHelpBinding.inflate(layoutInflater)

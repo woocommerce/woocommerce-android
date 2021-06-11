@@ -8,7 +8,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.ShippingRate.Option
 import com.woocommerce.android.model.ShippingRate.Option.ADULT_SIGNATURE
@@ -53,15 +52,6 @@ class ShippingCarrierRatesViewModel @Inject constructor(
         private const val CARRIER_DHL_EXPRESS_KEY = "dhlexpress"
         private const val CARRIER_DHL_ECOMMERCE_KEY = "dhlecommerce"
         private const val CARRIER_DHL_ECOMMERCE_ASIA_KEY = "dhlecommerceasia"
-        private const val FLAT_RATE_KEY = "flat_rate"
-        private const val FREE_SHIPPING_KEY = "free_shipping"
-        private const val LOCAL_PICKUP_KEY = "local_pickup"
-        private const val SHIPPING_METHOD_USPS_TITLE = "USPS"
-        private const val SHIPPING_METHOD_DHL_TITLE = "DHL Express"
-        private const val SHIPPING_METHOD_FEDEX_TITLE = "Fedex"
-        private const val SHIPPING_METHOD_USPS_KEY = "wc_services_usps"
-        private const val SHIPPING_METHOD_DHL_KEY = "wc_services_dhlexpress"
-        private const val SHIPPING_METHOD_FEDEX_KEY = "wc_services_fedex"
     }
     private val arguments: ShippingCarrierRatesFragmentArgs by savedState.navArgs()
 
@@ -102,12 +92,16 @@ class ShippingCarrierRatesViewModel @Inject constructor(
         } else {
             updateRates(generateRateModels(carrierRatesResult.model!!))
 
-            var banner: String? = null
-            if (arguments.order.shippingTotal > BigDecimal.ZERO) {
-                banner = resourceProvider.getString(
+            val banner = when {
+                arguments.order.shippingLines.isEmpty() -> null
+                arguments.order.shippingTotal.isEqualTo(BigDecimal.ZERO) -> resourceProvider.getString(
+                    R.string.shipping_label_shipping_carrier_shipping_method_banner_message,
+                    arguments.order.shippingLines.first().methodTitle
+                )
+                else -> resourceProvider.getString(
                     R.string.shipping_label_shipping_carrier_flat_fee_banner_message,
-                    arguments.order.shippingTotal.format(),
-                    getShippingMethods(arguments.order).joinToString()
+                    arguments.order.shippingLines.first().methodTitle,
+                    arguments.order.shippingTotal.format()
                 )
             }
             viewState = viewState.copy(isEmptyViewVisible = false, bannerMessage = banner)
@@ -215,20 +209,6 @@ class ShippingCarrierRatesViewModel @Inject constructor(
                 itemCount = arguments.packages[i].items.size,
                 rateOptions = shippingRates
             )
-        }
-    }
-
-    private fun getShippingMethods(order: Order): List<String> {
-        return order.shippingMethods.map {
-            when (it.id) {
-                FLAT_RATE_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_flat_rate)
-                FREE_SHIPPING_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_free_shipping)
-                LOCAL_PICKUP_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_local_pickup)
-                SHIPPING_METHOD_USPS_KEY -> SHIPPING_METHOD_USPS_TITLE
-                SHIPPING_METHOD_FEDEX_KEY -> SHIPPING_METHOD_FEDEX_TITLE
-                SHIPPING_METHOD_DHL_KEY -> SHIPPING_METHOD_DHL_TITLE
-                else -> resourceProvider.getString(R.string.other)
-            }
         }
     }
 

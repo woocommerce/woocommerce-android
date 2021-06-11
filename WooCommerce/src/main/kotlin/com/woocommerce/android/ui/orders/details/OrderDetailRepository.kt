@@ -37,6 +37,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
@@ -133,7 +134,7 @@ class OrderDetailRepository @Inject constructor(
         } else VALUE_API_SUCCESS
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
 
-        return result.model?.map { it.toAppModel() } ?: emptyList()
+        return result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }?.map { it.toAppModel() } ?: emptyList()
     }
 
     suspend fun updateOrderStatus(
@@ -267,7 +268,9 @@ class OrderDetailRepository @Inject constructor(
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), localOrderId).map { it.toAppModel() }
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
-        .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId).map { it.toAppModel() }
+        .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
+        .filter { it.status == LabelItem.STATUS_PURCHASED }
+        .map { it.toAppModel() }
 
     fun getWooServicesPluginInfo(): WooPlugin {
         val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
