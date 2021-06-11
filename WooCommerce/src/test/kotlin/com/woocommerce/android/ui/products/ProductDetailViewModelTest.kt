@@ -474,7 +474,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Do not enable trashing a product when in add product flow`() {
         viewModel.start()
-        doReturn(true).whenever(viewModel).isAddFlow
+        doReturn(true).whenever(viewModel).isProductUnderCreation
         assertThat(viewModel.isTrashEnabled).isFalse()
     }
 

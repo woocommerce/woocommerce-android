@@ -16,6 +16,7 @@
 
 6.7
 -----
+- [***] Products: It's now possible to create a Variable Product from the Product section
 - [*] It's now possible to purchase more shipping labels on orders that already has one. [https://github.com/woocommerce/woocommerce-android/pull/3961]
 
 
