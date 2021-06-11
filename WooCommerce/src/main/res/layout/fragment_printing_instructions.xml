@@ -14,7 +14,7 @@
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginTop="@dimen/major_100"
             android:importantForAccessibility="no"
             android:src="@drawable/img_print_with_phone"
             app:layout_constraintEnd_toEndOf="parent"
