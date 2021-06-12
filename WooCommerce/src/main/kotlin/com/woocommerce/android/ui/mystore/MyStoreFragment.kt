@@ -285,7 +285,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         }
     }
 
-    override fun getFragmentTitle(): String {
+    override fun getFragmentTitle() = getString(R.string.my_store)
+
+    override fun getFragmentSubtitle(): String {
         selectedSite.getIfExists()?.let { site ->
             if (!site.displayName.isNullOrBlank()) {
                 return site.displayName
@@ -293,7 +295,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
                 return site.name
             }
         }
-        return getString(R.string.my_store)
+        return ""
     }
 
     override fun scrollToTop() {

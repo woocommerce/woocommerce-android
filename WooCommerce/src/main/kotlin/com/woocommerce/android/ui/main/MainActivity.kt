@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -26,6 +27,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -36,7 +38,9 @@ import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
@@ -71,6 +75,7 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class MainActivity : AppUpgradeActivity(),
@@ -460,6 +465,28 @@ class MainActivity : AppUpgradeActivity(),
 
     fun expandToolbar(expand: Boolean, animate: Boolean) {
         binding.appBarLayout.setExpanded(expand, animate)
+    }
+
+    fun setSubtitle(subtitle: CharSequence) {
+        val subtitleView = binding.collapsingToolbar.findViewById<TextView>(R.id.toolbar_subtitle)
+        if (subtitle.isBlank()) {
+            subtitleView.hide()
+        } else {
+            setFadingSubtitleOnCollapsingToolbar(subtitleView, subtitle)
+        }
+    }
+
+    private fun setFadingSubtitleOnCollapsingToolbar(subtitleView: TextView, subtitle: CharSequence) {
+        binding.collapsingToolbar.expandedTitleMarginBottom =
+            resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle)
+        subtitleView.text = subtitle
+        subtitleView.show()
+        subtitleView.visibility = View.VISIBLE
+        binding.appBarLayout.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+                subtitleView.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()) * 1.2f)))
+            }
+        )
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
