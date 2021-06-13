@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
@@ -16,10 +17,14 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
+import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.hideSlideUp
 import com.woocommerce.android.extensions.setClickableText
+import com.woocommerce.android.extensions.showSlideDown
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -31,6 +36,10 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.widgets.AppBarStateChangeListener
+import com.woocommerce.android.widgets.AppBarStateChangeListener.State.COLLAPSED
+import com.woocommerce.android.widgets.AppBarStateChangeListener.State.EXPANDED
+import com.woocommerce.android.widgets.AppBarStateChangeListener.State.IDLE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
@@ -110,8 +119,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        _tabLayout = TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
-        addTabLayoutToAppBar()
+        initTabLayout()
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -177,6 +185,13 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         refreshMyStoreStats(forced = this.isRefreshPending)
     }
 
+    private fun initTabLayout() {
+        _tabLayout = TabLayout(requireContext(), null, attr.scrollableTabStyle)
+        addTabLayoutToAppBar()
+        appBarCollapsedListener()
+        tabLayout.hide()
+    }
+
     override fun onResume() {
         super.onResume()
         handleFeedbackRequestCardState()
@@ -194,6 +209,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         _tabLayout = null
+        appBarLayout?.removeOnOffsetChangedListener(offsetChangeListener)
         presenter.dropView()
         super.onDestroyView()
         _binding = null
@@ -448,6 +464,21 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             appBar.removeView(tabLayout)
             appBar.elevation = 0f
         }
+    }
+
+    private val offsetChangeListener =
+        object : AppBarStateChangeListener() {
+            override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
+                when (state) {
+                    EXPANDED -> if (tabLayout.isVisible) tabLayout.hideSlideUp()
+                    COLLAPSED -> if (!isEmptyViewVisible) tabLayout.showSlideDown()
+                    IDLE -> Unit
+                }
+            }
+        }
+
+    private fun appBarCollapsedListener() {
+        appBarLayout?.addOnOffsetChangedListener(offsetChangeListener)
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
