@@ -10,7 +10,9 @@ import com.woocommerce.android.databinding.FragmentProductDownloadsSettingsBindi
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_product_downloads_settings) {
     private var _binding: FragmentProductDownloadsSettingsBinding? = null
     private val binding get() = _binding!!

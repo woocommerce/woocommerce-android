@@ -2,41 +2,39 @@ package com.woocommerce.android.ui.orders.tracking
 
 import android.content.DialogInterface
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
-class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class AddOrderShipmentTrackingViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val orderDetailRepository: OrderDetailRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private val navArgs: AddOrderShipmentTrackingFragmentArgs by savedState.navArgs()
 
-    val addOrderShipmentTrackingViewStateData = LiveDataDelegateWithArgs(
+    val addOrderShipmentTrackingViewStateData = LiveDataDelegate(
         savedState = savedState,
         initialValue = ViewState(
             isSelectedProviderCustom = navArgs.isCustomProvider,
@@ -174,7 +172,4 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
     ) : Parcelable
 
     data class SaveTrackingPrefsEvent(val carrier: Carrier) : MultiLiveEvent.Event()
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<AddOrderShipmentTrackingViewModel>
 }

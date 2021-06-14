@@ -13,7 +13,7 @@ import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
@@ -22,20 +22,20 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSe
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import javax.inject.Inject
 
-class PrintShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_print_shipping_label), BackPressListener {
+@AndroidEntryPoint
+class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping_label), BackPressListener {
     companion object {
         const val KEY_LABEL_PURCHASED = "key-label-purchased"
     }
     @Inject lateinit var navigator: OrderNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    private val viewModel: PrintShippingLabelViewModel by viewModels { viewModelFactory }
+    private val viewModel: PrintShippingLabelViewModel by viewModels()
     private val navArgs: PrintShippingLabelFragmentArgs by navArgs()
 
     private var progressDialog: CustomProgressDialog? = null

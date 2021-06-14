@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-12 10:54:05+0000
+Translation-Revision-Date: 2021-05-28 13:54:50+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
-    <string name="product_add_type_virtual_desc">Eşsiz bir dijital ürün</string>
-    <string name="product_add_type_virtual">Basit sanal ürün</string>
-    <string name="product_add_type_simple">Basit fiziksel ürün</string>
+    <string name="product_type_external_title">Harici ürün</string>
+    <string name="product_type_grouped_title">Gruplandırılmış ürün</string>
+    <string name="product_type_variable_title">Varyasyonlu ürün</string>
+    <string name="product_type_virtual_desc">Hizmetler, indirilebilir kitaplar, müzik veya videolar gibi benzersiz bir dijital ürün</string>
+    <string name="product_type_simple_desc">Müşteriye göndermeniz gerekebilecek benzersiz bir fiziksel ürün</string>
+    <string name="product_type_simple_title">Basit fiziksel ürün</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Ayarları aç</string>
+    <string name="card_reader_connect_open_location_settings">Ayarları aç</string>
+    <string name="card_reader_connect_open_permission_settings">Ayarları aç</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth devre dışı</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Konum devre dışı</string>
+    <string name="card_reader_connect_missing_permissions_hint">Gerekli konum izni eksik</string>
+    <string name="card_reader_connect_connecting_failed_hint">Okuyucuya bağlanılamadı.</string>
+    <string name="card_reader_connect_scanning_failed_hint">Herhangi bir okuyucu bulunamadı.</string>
+    <string name="card_reader_connect_failed_header">Okuyucuya bağlanılamadı</string>
+    <string name="card_reader_connect_connecting_header">Okuyucuya bağlanılıyor</string>
+    <string name="card_reader_connect_to_reader">Okuyucuya bağlan</string>
+    <string name="card_reader_connect_reader_found_header">%s okuyucusunu bağlamak istiyor musunuz?</string>
+    <string name="card_reader_connect_scanning_hint">Yanıp sönen mavi bir ışık görene kadar okuyucunuzun güç düğmesine basın</string>
+    <string name="card_reader_connect_scanning_header">Okuyucular taranıyor</string>
+    <string name="shipping_label_items_count_placeholder">Öğe sayısı</string>
+    <string name="orderdetail_products_recreate_shipping_label_menu">Yeni gönderim etiketi oluştur</string>
+    <string name="product_type_virtual_title">Basit sanal ürün</string>
     <string name="variation_confirm_delete">Bu Varyasyonu silmek istiyor musunuz?</string>
     <string name="variation_create_dialog_title">Varyasyon oluşturuluyor</string>
     <string name="product_delete_dialog_title">Ürün siliniyor</string>
@@ -306,11 +326,6 @@ Language: tr
     <string name="product_publish_dialog_title">Ürün yayınlanıyor</string>
     <string name="product_add_tool_bar_menu_button_done">YAYINLA</string>
     <string name="product_add_tool_bar_title">Yeni Ürün</string>
-    <string name="product_add_type_variable_desc">Renk veya beden gibi çeşitleri olan bir ürün</string>
-    <string name="product_add_type_simple_desc">Satılacak benzersiz bir ürün</string>
-    <string name="product_add_type_external">Harici ürün</string>
-    <string name="product_add_type_grouped">Gruplandırılmış ürün</string>
-    <string name="product_add_type_variable">Varyasyonlu ürün</string>
     <string name="product_images_image_limit_warning">Her ürün çeşidi için yalnızca bir fotoğraf görüntülenebilir</string>
     <string name="product_replace_photo">Fotoğrafı değiştir</string>
     <string name="product_add_photo">Fotoğraf ekle</string>
@@ -321,7 +336,7 @@ Language: tr
     <string name="login_pick_store">Bağlanmak için mağaza seçin</string>
     <string name="login_store_address">Mağaza adresinizi girin</string>
     <string name="login_wpcom">WordPress.com ile devam et</string>
-    <string name="product_type_variation_desc">Renk veya beden gibi çeşitleri olan bir ürün</string>
+    <string name="product_type_variable_desc">Renk veya beden gibi çeşitleri olan bir ürün</string>
     <string name="product_selection_count_single">%d seçilen ürünler</string>
     <string name="product_selection_count">%d seçilen ürünler</string>
     <string name="grouped_product_empty">Gruba ürün ekle</string>
@@ -340,8 +355,6 @@ Language: tr
     <string name="product_type_confirm_dialog_title">Ürün türünü değiştirmek istediğinizden emin misiniz?</string>
     <string name="product_type_external_desc">Bir ürünü harici bir web sitesine bağlayın</string>
     <string name="product_type_grouped_desc">İlgili ürünlerden oluşan bir koleksiyon</string>
-    <string name="product_type_virtual_desc">Bir hizmet veya dijital indirme</string>
-    <string name="product_type_physical_desc">Müşteriye gönderdiğiniz bir ürün</string>
     <string name="product_type_list_header">Bir ürün türü seç</string>
     <string name="send_feedback">Geri bildirim gönder</string>
     <string name="variation_detail_price_warning_title">Bazı varyasyonların fiyatı yok</string>

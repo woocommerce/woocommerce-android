@@ -25,6 +25,7 @@ sealed class ProductNavigationTarget : Event() {
         val sku: String,
         val productType: ProductType
     ) : ProductNavigationTarget()
+    object ViewProductAttributes : ProductNavigationTarget()
     data class ViewProductPricing(val pricingData: PricingData) : ProductNavigationTarget()
     data class ViewProductShipping(val shippingData: ShippingData) : ProductNavigationTarget()
     data class ViewProductExternalLink(val remoteId: Long) : ProductNavigationTarget()
@@ -82,7 +83,8 @@ sealed class ProductNavigationTarget : Event() {
     data class AddProductAttributeTerms(
         val attributeId: Long,
         val attributeName: String,
-        val isNewAttribute: Boolean
+        val isNewAttribute: Boolean,
+        val isVariationCreation: Boolean
     ) : ProductNavigationTarget()
     data class RenameProductAttribute(
         val attributeName: String

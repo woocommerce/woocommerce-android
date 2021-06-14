@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
@@ -20,11 +20,12 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSe
 import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
@@ -33,6 +34,7 @@ import java.util.Date
 import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class PrintShippingLabelViewModelTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_SHIPPING_LABEL_ID = 1L
@@ -43,24 +45,21 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     private val fileUtils: FileUtils = mock()
     private val base64Decoder: Base64Decoder = mock()
 
-    private val savedState: SavedStateWithArgs = SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            PrintShippingLabelFragmentArgs(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
-        )
+    private val savedState = PrintShippingLabelFragmentArgs(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
+        .initSavedStateHandle()
 
     private val printShippingLabelViewState = PrintShippingLabelViewState()
     private lateinit var viewModel: PrintShippingLabelViewModel
 
     private fun initViewModel() {
         viewModel = PrintShippingLabelViewModel(
-                savedState,
-                repository,
-                networkStatus,
-                fileUtils,
-                base64Decoder,
-                coroutinesTestRule.testDispatchers
-            )
+            savedState,
+            coroutinesTestRule.testDispatchers,
+            repository,
+            networkStatus,
+            fileUtils,
+            base64Decoder
+        )
     }
 
     @Test

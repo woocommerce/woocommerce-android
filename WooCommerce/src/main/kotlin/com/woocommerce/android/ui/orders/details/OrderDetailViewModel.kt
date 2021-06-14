@@ -44,8 +44,11 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippin
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -232,6 +235,10 @@ class OrderDetailViewModel @Inject constructor(
         } else {
             triggerEvent(StartCardReaderConnectFlow)
         }
+    }
+
+    fun onPrintingInstructionsClicked() {
+        triggerEvent(ViewPrintingInstructions)
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
@@ -581,6 +588,19 @@ class OrderDetailViewModel @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductImageChanged(event: OnProductImageChanged) {
         viewState = viewState.copy(refreshedProductId = event.remoteProductId)
+    }
+
+    fun onCardReaderPaymentCompleted() {
+        reloadOrderDetails()
+    }
+
+    private fun reloadOrderDetails() {
+        launch {
+            orderDetailRepository.getOrder(navArgs.orderId)?.let {
+                order = it
+            } ?: WooLog.w(T.ORDERS, "Order ${navArgs.orderId} not found in the database.")
+            displayOrderDetails()
+        }
     }
 
     @Parcelize

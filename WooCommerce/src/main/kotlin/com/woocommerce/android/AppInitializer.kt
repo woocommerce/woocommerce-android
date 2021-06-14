@@ -25,6 +25,8 @@ import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
+import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import org.greenrobot.eventbus.Subscribe
@@ -63,6 +65,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var zendeskHelper: ZendeskHelper
     @Inject lateinit var notificationHandler: NotificationHandler
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
+    @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
+    @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -113,6 +117,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             application, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
             BuildConfig.ZENDESK_OAUTH_CLIENT_ID
         )
+
+        observeEncryptedLogsUploadResults()
+        uploadEncryptedLogs()
     }
 
     override fun onAppComesFromBackground() {
@@ -142,7 +149,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
 
             // Update the user info for the currently logged in user
-            userEligibilityFetcher.fetchUserEligibility()
+            if (selectedSite.exists()) {
+                userEligibilityFetcher.fetchUserEligibility()
+            }
         }
     }
 

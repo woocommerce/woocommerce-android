@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -32,27 +32,27 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import java.util.Calendar
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
+@AndroidEntryPoint
 class AddOrderShipmentTrackingFragment :
-    BaseDaggerFragment(R.layout.fragment_add_shipment_tracking), BackPressListener {
+    BaseFragment(R.layout.fragment_add_shipment_tracking), BackPressListener {
     companion object {
         const val KEY_ADD_SHIPMENT_TRACKING_RESULT = "key_add_shipment_tracking_result"
     }
 
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var navigator: OrderNavigator
     @Inject lateinit var dateUtils: DateUtils
 
-    private val viewModel: AddOrderShipmentTrackingViewModel by viewModels { viewModelFactory }
+    private val viewModel: AddOrderShipmentTrackingViewModel by viewModels()
 
     private var isSelectedProviderCustom = false
     private var dateShippedPickerDialog: DatePickerDialog? = null

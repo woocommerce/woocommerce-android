@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -15,39 +15,36 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
-import java.math.BigDecimal
+import javax.inject.Inject
 
-class EditShippingLabelPackagesViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class EditShippingLabelPackagesViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val variationDetailRepository: VariationDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
     }
 
     private val arguments: EditShippingLabelPackagesFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     val weightUnit: String by lazy {
@@ -197,7 +194,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
             attributesList = attributesList,
             // TODO remove the conversion when the order quantity starts supporting decimal values
             quantity = quantity.toFloat(),
-            value = price.divide(BigDecimal(quantity)),
+            value = price,
             weight = weight
         )
     }
@@ -216,7 +213,4 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     }
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<EditShippingLabelPackagesViewModel>
 }

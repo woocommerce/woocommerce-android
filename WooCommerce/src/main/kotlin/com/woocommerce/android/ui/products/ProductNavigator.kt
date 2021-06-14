@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -80,6 +81,12 @@ class ProductNavigator @Inject constructor() {
                             target.remoteId
                         )
                 fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductAttributes -> {
+                ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToAttributeListFragment()
+                    .apply { fragment.findNavController().navigateSafely(this) }
             }
 
             is ViewProductDescriptionEditor -> {
@@ -308,7 +315,8 @@ class ProductNavigator @Inject constructor() {
                 val action = NavGraphProductsDirections.actionGlobalAddVariationAttributeTermsFragment(
                     target.attributeId,
                     target.attributeName,
-                    target.isNewAttribute
+                    target.isNewAttribute,
+                    target.isVariationCreation
                 )
                 fragment.findNavController().navigate(action)
             }

@@ -3,34 +3,32 @@ package com.woocommerce.android.ui.wpmediapicker
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-class WPMediaPickerViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class WPMediaPickerViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val mediaPickerRepository: WPMediaPickerRepository,
     private val networkStatus: NetworkStatus
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private val navArgs: WPMediaPickerFragmentArgs by savedState.navArgs()
 
     private val _mediaList = MutableLiveData<List<Product.Image>>()
     val mediaList: LiveData<List<Product.Image>> = _mediaList
 
-    val viewStateLiveData = LiveDataDelegateWithArgs(
+    val viewStateLiveData = LiveDataDelegate(
         savedState,
         ViewState(isMultiSelectionAllowed = navArgs.allowMultiple)
     )
@@ -106,7 +104,4 @@ class WPMediaPickerViewModel @AssistedInject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val isMultiSelectionAllowed: Boolean? = null
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<WPMediaPickerViewModel>
 }

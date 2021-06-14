@@ -20,10 +20,12 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_product_inventory),
     ProductItemSelectorDialogListener {
-    private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory.get() }
+    private val viewModel: ProductInventoryViewModel by viewModels()
 
     override val lastEvent: Event?
         get() = viewModel.event.value

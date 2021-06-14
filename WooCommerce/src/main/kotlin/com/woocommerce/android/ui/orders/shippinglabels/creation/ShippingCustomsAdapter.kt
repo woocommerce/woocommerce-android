@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustoms
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
@@ -213,10 +214,12 @@ class ShippingCustomsLineAdapter(
             get() = binding.root.context
 
         init {
-            binding.expandIcon.setOnClickListener {
+            binding.titleLayout.setOnClickListener {
                 if (binding.expandIcon.rotation == 0f) {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
+                    // TODO update the expand() function an on animation ended callback
+                    binding.detailsLayout.postDelayed({ focusOnFirstInvalidField() }, 300)
                 } else {
                     binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
@@ -256,6 +259,16 @@ class ShippingCustomsLineAdapter(
             )
         }
 
+        private fun focusOnFirstInvalidField() {
+            binding.detailsLayout.children.filterIsInstance(WCMaterialOutlinedEditTextView::class.java)
+                .forEach {
+                    if (!it.error.isNullOrEmpty()) {
+                        it.requestFocus()
+                        return
+                    }
+                }
+        }
+
         fun bind(uiState: CustomsLineUiState) {
             val (customsLine, validationState) = uiState
             binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
@@ -273,6 +286,8 @@ class ShippingCustomsLineAdapter(
             binding.valueEditText.error = validationState.valueErrorMessage
 
             binding.countrySpinner.setText(customsLine.originCountry.name)
+
+            binding.errorView.isVisible = !validationState.isValid
         }
     }
 

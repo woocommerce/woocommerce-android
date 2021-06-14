@@ -1,14 +1,22 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+6.9
+-----
+- [*] Products: Attributes are now accessible directly from the Product Details view
+- [*] Updated empty state illustrations. [https://github.com/woocommerce/woocommerce-android/pull/3678]
+- [*] Various design tweaks on empty state screen [https://github.com/woocommerce/woocommerce-android/pull/3879]
+- [*] Removed trash option from product status in Product Settings [https://github.com/woocommerce/woocommerce-android/pull/4148]
+- [*] Fixed an issue where the app would crash when loading refunds [https://github.com/woocommerce/woocommerce-android/pull/4166]
+
 6.8
 -----
 * [**] Due to popular demand, the Order fulfill is displayed once again when clicking on the Mark order complete button. [https://github.com/woocommerce/woocommerce-android/pull/4086]
 - [*] New descriptive error screen displayed for users without admin or shop manager access to the store. [https://github.com/woocommerce/woocommerce-android/pull/4074]
 - [**] Fixed bug that caused a jumbled screen the very first time the product list is viewed. [https://github.com/woocommerce/woocommerce-android/pull/4090]
 
-
 6.7
 -----
+- [***] Products: It's now possible to create a Variable Product from the Product section
 - [*] It's now possible to purchase more shipping labels on orders that already has one. [https://github.com/woocommerce/woocommerce-android/pull/3961]
 
 

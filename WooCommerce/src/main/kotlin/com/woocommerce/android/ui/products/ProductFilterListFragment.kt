@@ -5,9 +5,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -17,29 +17,25 @@ import com.woocommerce.android.databinding.FragmentProductFilterListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import dagger.Lazy
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-class ProductFilterListFragment : BaseDaggerFragment(R.layout.fragment_product_filter_list),
+@AndroidEntryPoint
+class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_list),
     OnProductFilterClickListener,
     BackPressListener {
     companion object {
         const val TAG = "ProductFilterListFragment"
     }
 
-    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
-    private val viewModel: ProductFilterListViewModel by navGraphViewModels(
-            R.id.nav_graph_product_filters
-    ) { viewModelFactory.get() }
+    private val viewModel: ProductFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_product_filters)
 
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
 

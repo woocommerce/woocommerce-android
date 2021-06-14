@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
@@ -17,31 +17,29 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.PhoneInvalid
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
+import javax.inject.Inject
 
-class EditShippingLabelAddressViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class EditShippingLabelAddressViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val addressValidator: ShippingLabelAddressValidator,
     private val resourceProvider: ResourceProvider,
     private val dataStore: WCDataStore,
     private val site: SelectedSite
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         val ACCEPTED_USPS_ORIGIN_COUNTRIES = arrayOf(
             "US", // United States
@@ -58,7 +56,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
 
     private val arguments: EditShippingLabelAddressFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState(arguments.address))
+    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
     private var viewState by viewStateData
 
     private val countries: List<WCLocationModel>
@@ -310,7 +308,4 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
             get() = nameError == null && addressError == null && phoneError == null &&
                 cityError == null && zipError == null
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<EditShippingLabelAddressViewModel>
 }
