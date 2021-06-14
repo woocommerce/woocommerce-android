@@ -470,12 +470,24 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         object : AppBarStateChangeListener() {
             override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
                 when (state) {
-                    EXPANDED -> if (tabLayout.isVisible) tabLayout.hideSlideUp()
-                    COLLAPSED -> if (!isEmptyViewVisible) tabLayout.showSlideDown()
+                    EXPANDED -> hideTabs()
+                    COLLAPSED -> showTabs()
                     IDLE -> Unit
                 }
             }
         }
+
+    private fun showTabs() {
+        if (!tabLayout.isVisible && !isEmptyViewVisible) {
+            tabLayout.showSlideDown()
+        }
+    }
+
+    private fun hideTabs() {
+        if (tabLayout.isVisible || isEmptyViewVisible) {
+            tabLayout.hideSlideUp()
+        }
+    }
 
     private fun appBarCollapsedListener() {
         appBarLayout?.addOnOffsetChangedListener(offsetChangeListener)

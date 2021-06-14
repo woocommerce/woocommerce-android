@@ -13,6 +13,7 @@ abstract class AppBarStateChangeListener : OnOffsetChangedListener {
     }
 
     private var mCurrentState = IDLE
+
     override fun onOffsetChanged(appBarLayout: AppBarLayout, i: Int) {
         mCurrentState = when {
             i == 0 -> onExpanded(appBarLayout)
