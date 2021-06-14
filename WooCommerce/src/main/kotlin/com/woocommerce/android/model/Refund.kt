@@ -34,7 +34,7 @@ data class Refund(
         val totalTax: BigDecimal = BigDecimal.ZERO,
         val sku: String = "",
         val price: BigDecimal = BigDecimal.ZERO,
-        val refundId: Long = 0
+        val orderItemId: Long = 0
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
@@ -127,7 +127,7 @@ fun List<Refund>.getMaxRefundQuantities(
     products: List<Order.Item>
 ): Map<Long, Int> {
     val map = mutableMapOf<Long, Int>()
-    val groupedRefunds = this.flatMap { it.items }.groupBy { it.refundId }
+    val groupedRefunds = this.flatMap { it.items }.groupBy { it.orderItemId }
     products.map { item ->
         map[item.itemId] = item.quantity - (groupedRefunds[item.itemId]?.sumBy { it.quantity } ?: 0)
     }
