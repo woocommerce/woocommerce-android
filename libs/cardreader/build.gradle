@@ -50,9 +50,4 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
-
-    // Temporary dependencies - used just for the first few iterations
-    debugImplementation "com.squareup.okhttp3:okhttp:4.9.0"
-    debugImplementation "com.squareup.retrofit2:retrofit:2.3.0"
-    debugImplementation "com.squareup.retrofit2:converter-gson:2.3.0"
 }
