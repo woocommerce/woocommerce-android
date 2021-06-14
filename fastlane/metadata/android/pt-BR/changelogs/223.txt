@@ -1,0 +1,4 @@
+6.8:
+De volta graças ao grande sucesso que teve, a tela de finalização de pedidos agora é exibida quando você clica no botão "Marcar pedido como concluído".
+
+Além disso, corrigimos um bug que causava erro na tela de lista de produtos e exibia uma mensagem de erro para usuários não autorizados que tentavam acessar sua loja.

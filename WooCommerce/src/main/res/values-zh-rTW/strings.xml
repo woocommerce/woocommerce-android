@@ -1,11 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-27 09:54:04+0000
+Translation-Revision-Date: 2021-06-08 11:54:44+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s 追蹤中</string>
+    <string name="card_reader_software_update_in_progress_title">正在更新讀卡機軟體</string>
+    <string name="card_reader_software_update_title">軟體更新</string>
+    <string name="card_reader_software_update_description">你的讀卡機軟體需要更新才能正常執行功能。 是否要立即更新？</string>
+    <string name="card_reader_detail_connected_update_failed">讀卡機軟體更新失敗。 請稍後再試一次</string>
+    <string name="card_reader_detail_connected_update_success">已更新讀卡機軟體。</string>
+    <string name="card_reader_detail_connected_update_check_failed">軟體版本更新檢查失敗。 請稍後再試一次</string>
+    <string name="card_reader_detail_connected_reader_unknown">未知的讀卡機名稱</string>
+    <string name="card_reader_detail_connected_disconnect_reader">中斷連結讀卡機</string>
+    <string name="card_reader_detail_connected_enforced_update_software">請更新你的讀卡機軟體以接受付款</string>
+    <string name="card_reader_detail_connected_update_software">更新讀卡機軟體</string>
+    <string name="card_reader_detail_connected_battery_percentage">電池電量：%s%%</string>
+    <string name="card_reader_detail_connected_header">連接的讀卡機</string>
+    <string name="card_reader_details_not_connected_connect_button_label">連接讀卡機</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">開啟讀卡機並將其放在行動裝置旁</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">請確認讀卡機已充電</string>
+    <string name="card_reader_detail_not_connected_header">連接讀卡機</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">卡片遭到拒絕</string>
+    <string name="card_reader_payment_failed_card_declined_state">卡片遭到拒絕。 請改用其他卡片。</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">正在連線至讀卡機</string>
+    <string name="card_reader_payment_collect_payment_loading_header">正在準備收取款項</string>
+    <string name="shipping_label_customs_value_zero_error">申報價格必須大於零</string>
+    <string name="shipping_label_customs_weight_zero_error">重量必須大於零</string>
+    <string name="shipping_label_customs_required_field">此欄位為必填</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">請說明此包裹必須設置哪種限制。</string>
+    <string name="shipping_label_customs_contents_type_description_missing">請說明此包裹包含哪種商品。</string>
+    <string name="shipping_label_customs_weight_hint">重量 (每單位 %1$s)</string>
+    <string name="shipping_label_customs_value_hint">價格 (每單位 %1$s)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s 關於 HS 關稅號碼</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s 關於內部交易號碼</string>
+    <string name="shipping_label_customs_line_item">自訂行 %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">其他</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">衛生/植物檢疫檢查</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">檢疫</string>
+    <string name="shipping_label_customs_restriction_type_none">無</string>
+    <string name="shipping_label_customs_contents_type_other">其他</string>
+    <string name="shipping_label_customs_contents_type_sample">樣本</string>
+    <string name="shipping_label_customs_contents_type_gifts">禮物</string>
+    <string name="shipping_label_customs_contents_type_documents">文件</string>
+    <string name="shipping_label_customs_contents_type_merchandise">商品</string>
+    <string name="shipping_label_customs_origin_country_explanation">產品製造或組裝的國家/地區</string>
+    <string name="shipping_label_customs_origin_country_hint">原產國家/地區</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">關稅號碼長度必須為 6 位數</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS 關稅號碼 (選填)</string>
+    <string name="shipping_label_customs_item_description_hint">說明</string>
+    <string name="shipping_label_customs_package_content">包裹內容</string>
+    <string name="shipping_label_customs_itn_required_country">將貨件送至 %1$s 時，ITN 為必填欄位。</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">貨運物品每個關稅號碼的價值高於 $2,500 時，ITN 為必填欄位</string>
+    <string name="shipping_label_customs_itn_invalid_format">無效的格式</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">限制詳細資料</string>
+    <string name="shipping_label_customs_contents_type_other_hint">內容詳細資料</string>
+    <string name="shipping_label_customs_restriction_type_hint">限制類型</string>
+    <string name="shipping_label_customs_contents_type_hint">內容類型</string>
+    <string name="shipping_label_customs_return_to_sender">包裹無法送達時退回給寄件者</string>
+    <string name="shipping_label_rate_insurance_up_to">最多 %s</string>
+    <string name="order_fulfill_email_info">若啟用此設定，客戶會在訂單完成時收到確認電子郵件</string>
+    <string name="order_fulfill_title">檢閱訂單</string>
+    <string name="order_fulfill_completed">已完成 🎉 訂單</string>
+    <string name="user_access_verifying">正在驗證角色…</string>
+    <string name="user_role_access_error_retry">你沒有正確的使用者角色</string>
+    <string name="user_role_access_error_link">瞭解更多有關角色和權限的資訊</string>
+    <string name="user_role_access_error_msg">此應用程式只支援「管理員」和「商店經理」使用者角色。 請聯絡商店擁有者以升級你的角色。</string>
+    <string name="login_prologue_label_reviews">監控和核准你的產品評論</string>
+    <string name="login_prologue_label_products">從任何地方編輯和新增新產品</string>
+    <string name="login_prologue_label_orders">隨時管理你的商店訂單</string>
+    <string name="login_prologue_label_analytics">追蹤銷售額和高銷售額商品</string>
+    <string name="skip">略過</string>
     <string name="product_type_external_title">外部商品</string>
     <string name="product_type_grouped_title">組合商品</string>
     <string name="product_type_variable_title">可變商品</string>
@@ -78,7 +145,8 @@ Language: zh_TW
     <string name="shipping_label_selected_rates_description">已選取 %s 個費率</string>
     <string name="shipping_label_rate_included_options_signature_required_free">符合免費要求簽名資格</string>
     <string name="shipping_label_rate_included_options_free_pickup">符合免費取貨資格</string>
-    <string name="shipping_label_rate_included_options_insurance">保險 (最高 %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">保險 (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">追蹤中</string>
     <string name="shipping_label_rate_included_options">包含 %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">需成人簽名 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">需簽名 (%s)</string>
@@ -1320,7 +1388,6 @@ Language: zh_TW
     <string name="login_avatar_content_description">你的個人檔案照片</string>
     <string name="login_connected_store">連結的商店</string>
     <string name="login_configure_link">閱讀%s設定說明%s。</string>
-    <string name="login_prologue_banner">透過即時警示管理訂單、追蹤銷售狀況，並監控商店活動。</string>
     <string name="login_jetpack_required">此應用程式需要 Jetpack 才能連結至你的商店。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">請輸入要連結的 WooCommerce 商店位址。</string>

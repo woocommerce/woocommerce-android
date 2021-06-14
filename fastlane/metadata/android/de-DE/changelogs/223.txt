@@ -1,0 +1,4 @@
+6.8:
+Auf großen Wunsch hin wird die Bestellabschluss-Ansicht nun angezeigt, nachdem du auf den Button „Bestellung als abgeschlossen markieren“ geklickt hast.
+
+Außerdem haben wir einen Fehler behoben, bei dem die Produktlistenansicht fehlerhaft dargestellt und unberechtigten Benutzern, die auf deinen Store zugreifen wollten, eine Fehlermeldung angezeigt wurde.
