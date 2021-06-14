@@ -31,7 +31,8 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         isPaymentCollectableWithCardReader: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         onIssueRefundClickListener: (view: View) -> Unit,
-        onCollectCardPresentPaymentClickListener: (view: View) -> Unit
+        onCollectCardPresentPaymentClickListener: (view: View) -> Unit,
+        onPrintingInstructionsClickListener: (view: View) -> Unit
     ) {
         binding.paymentInfoProductsTotal.text = formatCurrencyForDisplay(order.productsTotal)
         binding.paymentInfoShippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
@@ -108,6 +109,15 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             )
         } else {
             binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.GONE
+        }
+
+        // TODO Cardreader update logic.
+        if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
+            binding.paymentInfoPrintingInstructions.setOnClickListener(
+                onPrintingInstructionsClickListener
+            )
+        } else {
+            binding.paymentInfoPrintingInstructions.visibility = View.GONE
         }
     }
 
