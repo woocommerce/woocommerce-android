@@ -243,6 +243,13 @@ class OrderDetailRepository @Inject constructor(
         } else 0
     }
 
+    fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+                .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
+        } else false
+    }
+
     fun getOrderRefunds(remoteOrderId: Long) = refundStore
         .getAllRefunds(selectedSite.get(), remoteOrderId)
         .map { it.toAppModel() }
@@ -403,5 +410,9 @@ class OrderDetailRepository @Inject constructor(
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
             EventBus.getDefault().post(OnProductImageChanged(event.remoteProductId))
         }
+    }
+
+    companion object {
+        const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"
     }
 }

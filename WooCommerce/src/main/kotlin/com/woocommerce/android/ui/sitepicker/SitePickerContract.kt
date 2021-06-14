@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.sitepicker
 
+import androidx.annotation.StringRes
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.SiteModel
@@ -8,6 +9,7 @@ interface SitePickerContract {
     interface Presenter : BasePresenter<View> {
         fun loadAndFetchSites()
         fun fetchSitesFromAPI()
+        fun fetchUserRoleFromAPI(site: SiteModel)
         fun fetchUpdatedSiteFromAPI(site: SiteModel)
         fun loadSites()
         fun getWooCommerceSites(): List<SiteModel>
@@ -35,5 +37,8 @@ interface SitePickerContract {
         fun siteVerificationFailed(site: SiteModel)
         fun siteVerificationError(site: SiteModel)
         fun showSkeleton(show: Boolean)
+        fun userVerificationCompleted()
+        fun showProgressDialog(@StringRes title: Int)
+        fun hideProgressDialog()
     }
 }

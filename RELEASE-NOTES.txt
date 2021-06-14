@@ -1,7 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+6.9
+-----
+
+
 6.8
 -----
+* [**] Due to popular demand, the Order fulfill is displayed once again when clicking on the Mark order complete button. [https://github.com/woocommerce/woocommerce-android/pull/4086]
+- [*] New descriptive error screen displayed for users without admin or shop manager access to the store. [https://github.com/woocommerce/woocommerce-android/pull/4074]
+- [**] Fixed bug that caused a jumbled screen the very first time the product list is viewed. [https://github.com/woocommerce/woocommerce-android/pull/4090]
 
 
 6.7

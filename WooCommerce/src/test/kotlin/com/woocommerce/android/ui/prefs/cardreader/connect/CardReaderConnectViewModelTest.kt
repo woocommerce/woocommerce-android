@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
-import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,8 +51,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
     private val cardReaderManager: CardReaderManager = mock()
-    private val locationUtils: LocationUtils = mock()
-    private val reader = mock<CardReader>().also { whenever(it.getId()).thenReturn("dummy id") }
+    private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("dummy id") }
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -294,7 +292,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given reader id is null, when reader found, then reader is ignored`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(reader.getId()).thenReturn(null)
+            whenever(reader.id).thenReturn(null)
 
             init(scanState = READER_FOUND)
 
@@ -330,7 +328,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(true))
         }
 
     @Test
@@ -363,7 +361,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ScanningState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
@@ -373,7 +371,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
@@ -385,7 +383,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             (viewModel.viewStateData.value as ConnectingState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
             resumeDispatcher()
         }
 
@@ -406,7 +404,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ConnectingFailedState).onSecondaryActionClicked()
 
-            assertThat(viewModel.event.value).isInstanceOf(Event.Exit::class.java)
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
@@ -444,7 +442,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(
                     UiStringRes(
                         R.string.card_reader_connect_reader_found_header,
-                        listOf(UiStringText("<b>${reader.getId()}</b>")),
+                        listOf(UiStringText("<b>${reader.id}</b>")),
                         true
                     )
                 )

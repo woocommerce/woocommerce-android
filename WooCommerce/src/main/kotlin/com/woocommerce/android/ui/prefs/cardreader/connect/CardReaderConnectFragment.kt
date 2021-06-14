@@ -6,15 +6,17 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.WooCommerce
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
@@ -27,7 +29,7 @@ import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,6 +38,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     @Inject lateinit var locationUtils: LocationUtils
+    @Inject lateinit var cardReaderManager: CardReaderManager
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.let {
@@ -53,6 +56,11 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
         (viewModel.event.value as? OpenLocationSettings)?.let {
             it.onLocationSettingsClosed.invoke()
         }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        dialog!!.setCanceledOnTouchOutside(false)
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -89,13 +97,14 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                     requestEnableBluetoothLauncher.launch(enableBtIntent)
                 }
                 is InitializeCardReaderManager -> {
-                    // TODO cardreader Inject CardReaderManager into the fragment
-                    (requireActivity().application as? WooCommerce)?.cardReaderManager?.let {
+                    cardReaderManager.let {
                         it.initialize(requireActivity().application)
                         event.onCardManagerInitialized(it)
-                    } ?: throw IllegalStateException("CardReaderManager is null.")
+                    }
                 }
-                is Exit -> findNavController().navigateUp()
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(KEY_CONNECT_TO_READER_RESULT, event.data as Boolean)
+                }
                 else -> event.isHandled = false
             }
         }
@@ -126,5 +135,9 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     override fun onResume() {
         super.onResume()
         viewModel.onScreenResumed()
+    }
+
+    companion object {
+        const val KEY_CONNECT_TO_READER_RESULT = "key_connect_to_reader_result"
     }
 }

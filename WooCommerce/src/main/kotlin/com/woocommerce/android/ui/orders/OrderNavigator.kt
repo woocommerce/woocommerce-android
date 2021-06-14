@@ -11,9 +11,11 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
@@ -52,6 +54,11 @@ class OrderNavigator @Inject constructor() {
                     .actionOrderDetailFragmentToAddOrderNoteFragment(target.orderIdentifier, target.orderNumber)
                 fragment.findNavController().navigateSafely(action)
             }
+            is ViewOrderFulfillInfo -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToOrderFulfillFragment(target.orderIdentifier)
+                fragment.findNavController().navigateSafely(action)
+            }
             is RefundShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
@@ -61,7 +68,7 @@ class OrderNavigator @Inject constructor() {
             }
             is AddOrderShipmentTracking -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToAddOrderShipmentTrackingFragment(
+                    .actionGlobalAddOrderShipmentTrackingFragment(
                         target.orderIdentifier, target.orderTrackingProvider, target.isCustomProvider
                     )
                 fragment.findNavController().navigateSafely(action)
@@ -111,6 +118,11 @@ class OrderNavigator @Inject constructor() {
             is StartShippingLabelCreationFlow -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderIdentifier)
+                fragment.findNavController().navigateSafely(action)
+            }
+            is StartCardReaderConnectFlow -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToCardReaderConnectDialog()
                 fragment.findNavController().navigateSafely(action)
             }
             is StartCardReaderPaymentFlow -> {

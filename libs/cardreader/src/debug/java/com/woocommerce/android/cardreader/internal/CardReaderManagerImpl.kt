@@ -4,12 +4,14 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
+import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -61,9 +63,7 @@ internal class CardReaderManagerImpl(
                 }
             })
 
-            // TODO cardreader: Set LogLevel depending on build flavor.
-            // Choose the level of messages that should be logged to your console
-            val logLevel = LogLevel.VERBOSE
+            val logLevel = if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.ERROR
 
             initStripeTerminal(logLevel)
         } else {
@@ -81,6 +81,12 @@ internal class CardReaderManagerImpl(
         return connectionManager.connectToReader(cardReader)
     }
 
+    override suspend fun disconnectReader(): Boolean {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (terminal.getConnectedReader() == null) return false
+        return connectionManager.disconnectReader()
+    }
+
     override suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
         paymentManager.acceptPayment(orderId, amount, currency)
 
@@ -90,6 +96,9 @@ internal class CardReaderManagerImpl(
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
     }
+
+    override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> =
+        softwareUpdateManager.softwareUpdateStatus()
 
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
 }

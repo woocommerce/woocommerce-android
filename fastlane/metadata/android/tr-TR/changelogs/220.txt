@@ -1,3 +1,0 @@
-6.7:
-Siparişlerin birden fazla gönderimle yapılabildiğini duyduk. Bu güncelleme ile, artık bir sipariş için birden fazla etiket yazdırabilirsiniz. Ayrıca deneyiminizi daha iyi hale getirmek için birkaç küçük düzeltme daha yaptık.
-

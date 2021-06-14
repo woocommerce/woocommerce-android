@@ -104,4 +104,10 @@
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_white_alpha_012</color>
+
+    <!--
+        Payment reader
+    -->
+    <color name="update_needed_background_color">@color/woo_orange_70</color>
+    <color name="update_needed_icon_color">@color/woo_orange_30</color>
 </resources>

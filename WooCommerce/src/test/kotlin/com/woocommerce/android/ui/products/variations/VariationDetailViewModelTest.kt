@@ -45,7 +45,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         gmtOffset = 0f
     )
     private val parameterRepository: ParameterRepository = mock {
-        on { getParameters(any(), any()) } doReturn (siteParams)
+        on { getParameters(any(), any<SavedStateWithArgs>()) } doReturn (siteParams)
     }
     private val variationRepository: VariationDetailRepository = mock {
         on { getVariation(any(), any()) } doReturn (TEST_VARIATION)

@@ -1,3 +1,0 @@
-6.7:
-We hebben vernomen dat bestellingen voltooid kunnen worden in meerdere verzendingen. Met deze update kun je nu meer dan één label afdrukken voor een bestelling. We hebben tevens een paar andere kleine problemen opgelost om je ervaring te verbeteren.
-

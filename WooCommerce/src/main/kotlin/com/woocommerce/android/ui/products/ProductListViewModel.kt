@@ -179,7 +179,7 @@ class ProductListViewModel @AssistedInject constructor(
         refreshProducts()
     }
 
-    final fun reloadProductsFromDb(excludeProductId: Long? = null) {
+    fun reloadProductsFromDb(excludeProductId: Long? = null) {
         val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
             ArrayList<Long>().also { it.add(id) }
         }
@@ -187,7 +187,7 @@ class ProductListViewModel @AssistedInject constructor(
         _productList.value = products
 
         viewState = viewState.copy(
-            isEmptyViewVisible = products.isEmpty(),
+            isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }

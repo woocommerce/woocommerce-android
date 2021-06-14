@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.widgets.WCElevatedConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/start_guideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/major_100" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/end_guideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/major_100" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/package_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:textColor="@color/color_on_surface_high"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Package 1" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/package_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_50"
+        android:textAppearance="@style/TextAppearance.Woo.Body1"
+        app:layout_constraintBaseline_toBaselineOf="@id/package_id"
+        app:layout_constraintStart_toEndOf="@id/package_id"
+        tools:text="- Small Package" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="@dimen/image_minor_50"
+        android:layout_height="@dimen/image_minor_50"
+        android:src="@drawable/ic_arrow_down"
+        android:tint="@color/color_on_surface_high"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/package_id"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintTop_toTopOf="@id/package_id"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/divider_1"
+        style="@style/Woo.Divider"
+        android:layout_marginTop="@dimen/major_75"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/package_name" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/return_checkbox"
+        style="@style/Woo.CheckBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
+        android:text="@string/shipping_label_customs_return_to_sender"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/divider_1" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+        android:id="@+id/contents_type_spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:hint="@string/shipping_label_customs_contents_type_hint"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/return_checkbox" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/contents_type_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:hint="@string/shipping_label_customs_contents_type_other_hint"
+        android:inputType="text"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/contents_type_spinner" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+        android:id="@+id/restriction_type_spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:hint="@string/shipping_label_customs_restriction_type_hint"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/contents_type_description" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/restriction_type_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:hint="@string/shipping_label_customs_restriction_type_other_hint"
+        android:inputType="text"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/restriction_type_spinner" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/itn_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:hint="@string/shipping_label_customs_itn_hint"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/restriction_type_description" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/itn_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/itn_edit_text"
+        tools:text="Learn more about Internal Transaction Number" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/content_section_title"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/major_300"
+        android:layout_marginTop="@dimen/major_100"
+        android:background="@color/default_window_background"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        android:text="@string/shipping_label_customs_package_content"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textColor="@color/color_on_surface_disabled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/itn_description" />
+
+    <View
+        android:id="@+id/divider_2"
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/content_section_title" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/items_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/divider_2"
+        tools:itemCount="1"
+        tools:listitem="@layout/shipping_customs_line_list_item" />
+
+</com.woocommerce.android.widgets.WCElevatedConstraintLayout>

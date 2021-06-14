@@ -4,15 +4,15 @@
 
     <!-- Android O notification channels, these show in the Android app settings -->
     <string name="notification_channel_general_title">General</string>
-    <string name="notification_channel_general_id" translatable="false" content_override="true">wooandroid_notification_channel_general_id</string>
+    <string name="notification_channel_general_id" content_override="true" translatable="false">wooandroid_notification_channel_general_id</string>
     <string name="notification_channel_order_title">New order alerts</string>
-    <string name="notification_channel_order_id" translatable="false" content_override="true">wooandroid_notification_channel_order_id</string>
+    <string name="notification_channel_order_id" content_override="true" translatable="false">wooandroid_notification_channel_order_id</string>
     <string name="notification_channel_review_title">Product review alerts</string>
-    <string name="notification_channel_review_id" translatable="false" content_override="true">wooandroid_notification_channel_review_id</string>
+    <string name="notification_channel_review_id" content_override="true" translatable="false">wooandroid_notification_channel_review_id</string>
     <string name="notification_order_ringtone_title" translatable="false">WooCommerce Cha-ching</string>
 
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
-    <string name="login_notification_channel_id" translatable="false" content_override="true">@string/notification_channel_general_id</string>
+    <string name="login_notification_channel_id" content_override="true" translatable="false">@string/notification_channel_general_id</string>
     <!--
         General Strings
     -->
@@ -47,7 +47,7 @@
     <string name="cancel">Cancel</string>
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
-    <string name="learn_more">Learn More</string>
+    <string name="learn_more">Learn more</string>
     <string name="try_it_now">Try it now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -102,6 +102,7 @@
     <string name="type">Type</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
+    <string name="skip">Skip</string>
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
     <string name="more_options">More options</string>
@@ -153,8 +154,13 @@
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login_wpcom">Continue with WordPress.com</string>
     <string name="login_store_address">Enter your store address</string>
-    <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
+
+    <string name="login_prologue_label_analytics">Track sales and high perfoming products</string>
+    <string name="login_prologue_label_orders">Manage your store orders on the go</string>
+    <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
+    <string name="login_prologue_label_reviews">Monitor and approve your product reviews</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
@@ -195,6 +201,10 @@
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
     <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
+    <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
+    <string name="user_role_access_error_link">Learn more about roles and permissions</string>
+    <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
+    <string name="user_access_verifying">Verifying role…</string>
     <!--
         My Store View
     -->
@@ -327,6 +337,7 @@
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
+    <string name="order_fulfill_completed">🎉 Order completed!</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
@@ -352,6 +363,11 @@
     <string name="shipping_label_refund_success">Refund request was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
     <string name="shipping_label_refund_expired">Labels older than 30 days cannot be refunded</string>
+    <!--
+        Fulfill order
+    -->
+    <string name="order_fulfill_title">Review order</string>
+    <string name="order_fulfill_email_info">If you’ve enabled this setting, the customer will receive a confirmation email once the order is completed</string>
 
     <!--
         Print shipping labels
@@ -488,12 +504,48 @@
     <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
     <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
-    <string name="shipping_label_rate_included_options_tracking">%s tracking</string>
-    <string name="shipping_label_rate_included_options_insurance">Insurance (up to %s)</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s tracking</string>
+    <string name="shipping_label_rate_included_options_tracking">tracking</string>
+    <string name="shipping_label_rate_insurance_up_to">up to %s</string>
+    <string name="shipping_label_rate_included_options_insurance">Insurance (%s)</string>
     <string name="shipping_label_rate_included_options_free_pickup">Eligible for free pickup</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
     <string name="shipping_label_selected_rates_description">%s rates selected</string>
     <string name="shipping_label_selected_rates_total_description">%s total</string>
+    <string name="shipping_label_customs_return_to_sender">Return to sender if package is unabled to be delivered</string>
+    <string name="shipping_label_customs_contents_type_hint">Contents type</string>
+    <string name="shipping_label_customs_restriction_type_hint">Restriction type</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Contents details</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Restriction details</string>
+    <string name="shipping_label_customs_itn_hint" translatable="false">ITN</string>
+    <string name="shipping_label_customs_itn_invalid_format">Invalid format</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">ITN is required for shipping items valued over $2,500 per tariff number</string>
+    <string name="shipping_label_customs_itn_required_country">ITN is required for shipments to %1$s.</string>
+    <string name="shipping_label_customs_package_content">Package content</string>
+    <string name="shipping_label_customs_item_description_hint">Description</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS Tariff number (Optional)</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">The tariff number must be 6 digits long</string>
+    <string name="shipping_label_customs_origin_country_hint">Origin country</string>
+    <string name="shipping_label_customs_origin_country_explanation">Country where the product was manufactured or assembled</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Merchandise</string>
+    <string name="shipping_label_customs_contents_type_documents">Documents</string>
+    <string name="shipping_label_customs_contents_type_gifts">Gifts</string>
+    <string name="shipping_label_customs_contents_type_sample">Sample</string>
+    <string name="shipping_label_customs_contents_type_other">Other</string>
+    <string name="shipping_label_customs_restriction_type_none">None</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Quarantine</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Sanitary / Phytosanitary inspection</string>
+    <string name="shipping_label_customs_restriction_type_other">Other</string>
+    <string name="shipping_label_customs_line_item">Custom Line %1$d</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s about Internal Transaction Number</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s about HS Tariff number</string>
+    <string name="shipping_label_customs_value_hint">Value (%1$s per unit)</string>
+    <string name="shipping_label_customs_weight_hint">Weight (%1$s per unit)</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Please describe what kind of goods this package contains.</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Please describe what kind of restrictions this package must have.</string>
+    <string name="shipping_label_customs_required_field">This field is required</string>
+    <string name="shipping_label_customs_weight_zero_error">Weight must be greater than zero</string>
+    <string name="shipping_label_customs_value_zero_error">Declared value must be greater than zero</string>
     <!--
             Refunds
         -->
@@ -605,6 +657,10 @@
     <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
+    <string name="card_reader_payment_collect_payment_loading_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Connecting to reader</string>
+
     <string name="card_reader_collect_payment">Collect payment</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
@@ -615,6 +671,9 @@
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
+    <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
+    <string name="card_reader_payment_failed_card_declined_state">Card declined. Please retry with a different card.</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
@@ -638,6 +697,35 @@
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Open settings</string>
+
+    <!--
+        Card Reader Detail
+    -->
+    <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Connect card reader</string>
+
+    <string name="card_reader_detail_connected_header">CONNECTED READER</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% battery</string>
+    <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
+    <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
+    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed. Please try again later</string>
+    <string name="card_reader_detail_connected_update_success">Reader\’s software updated</string>
+    <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed. Please try again later</string>
+
+    <!--
+        Card Reader Software update
+    -->
+    <string name="card_reader_software_update_update" translatable="false">@string/update</string>
+    <string name="card_reader_software_update_skip" translatable="false">@string/skip</string>
+    <string name="card_reader_software_update_cancel" translatable="false">@string/cancel</string>
+    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly. Do you want to update it now?</string>
+    <string name="card_reader_software_update_title">Software update</string>
+    <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
+    <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
 
     <!--
         Notifications
@@ -1224,7 +1312,7 @@
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
-    <string name="product_type_simple_title">Simple physical productt</string>
+    <string name="product_type_simple_title">Simple physical product</string>
     <string name="product_type_simple_desc">A unique physical product that you may have to ship to the customer</string>
     <string name="product_type_virtual_title">Simple virtual product</string>
     <string name="product_type_virtual_desc">A unique digital product like services, downloadable books, music or videos</string>
@@ -1600,8 +1688,6 @@
     <string name="signup_confirmation_title">Signup confirmation</string>
 
     <string name="login_site_address">Site address</string>
-
-
 
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
