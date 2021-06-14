@@ -33,7 +33,8 @@ data class Refund(
         val total: BigDecimal = BigDecimal.ZERO,
         val totalTax: BigDecimal = BigDecimal.ZERO,
         val sku: String = "",
-        val price: BigDecimal = BigDecimal.ZERO
+        val price: BigDecimal = BigDecimal.ZERO,
+        val refundId: Long = 0
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
@@ -83,51 +84,20 @@ fun WCRefundItem.toAppModel(): Refund.Item {
             -(total ?: BigDecimal.ZERO).roundError(), // WCRefundItem.total is NEGATIVE
             -totalTax.roundError(), // WCRefundItem.totalTax is NEGATIVE
             sku ?: "",
-            price?.roundError() ?: BigDecimal.ZERO
+            price?.roundError() ?: BigDecimal.ZERO,
+        metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1
     )
 }
 
 fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
     return Refund.ShippingLine(
-        itemId = getRefundedShippingLineId(),
+        itemId = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
         methodId = methodId ?: "",
         methodTitle = methodTitle ?: "",
         totalTax = -totalTax.roundError(),      // WCRefundShippineLine.totalTax is NEGATIVE
         total = (total).roundError()            // WCREfundShippingLine.total is NEGATIVE
     )
 }
-
-/**
- * In a "WCRefundShippingLine" object, the id of the refunded shipping line is buried in "metaData" property like so:
- *
- * -------------------------------------------
- *
- * meta_data: [
- *     0: {
- *         display_key: "_refunded_item_id"
- *         display_value: "72"
- *         id: 591                         <-- Not what we want. This is the metadata id.
- *         key: "_refunded_item_id"
- *         value: "72"                     <-- This is the specific shipping line id that we want.
- *         }
- *    ]
- *
- * -------------------------------------------
- *
- * This method extracts that `value` property and returns it, or returns -1 if it can't find it.
- */
-fun WCRefundShippingLine.getRefundedShippingLineId(): Long {
-    if (this.metaData != null) {
-        val resultJson = this.metaData!!.get(0).asJsonObject
-        if (resultJson.has("value") && resultJson.get("value").isJsonPrimitive) {
-            return resultJson.get("value").asLong
-        }
-    }
-    return -1
-}
-
-fun List<Refund>.hasNonRefundedProducts(products: List<Order.Item>) =
-    getMaxRefundQuantities(products).values.any { it > 0 }
 
 fun List<Refund>.getNonRefundedProducts(
     products: List<Order.Item>
@@ -157,7 +127,7 @@ fun List<Refund>.getMaxRefundQuantities(
     products: List<Order.Item>
 ): Map<Long, Int> {
     val map = mutableMapOf<Long, Int>()
-    val groupedRefunds = this.flatMap { it.items }.groupBy { it.id }
+    val groupedRefunds = this.flatMap { it.items }.groupBy { it.refundId }
     products.map { item ->
         map[item.itemId] = item.quantity - (groupedRefunds[item.itemId]?.sumBy { it.quantity } ?: 0)
     }
