@@ -37,7 +37,8 @@ class PrintShippingLabelCustomsFormFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.storageDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!
+        viewModel.storageDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            ?: requireContext().filesDir
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
