@@ -484,7 +484,7 @@ class MainActivity : AppUpgradeActivity(),
         subtitleView.visibility = View.VISIBLE
         binding.appBarLayout.addOnOffsetChangedListener(
             AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
-                subtitleView.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()) * 1.2f)))
+                subtitleView.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
             }
         )
     }
@@ -607,7 +607,7 @@ class MainActivity : AppUpgradeActivity(),
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
-        val host = uri?.host?.let { it } ?: ""
+        val host = uri?.host ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
