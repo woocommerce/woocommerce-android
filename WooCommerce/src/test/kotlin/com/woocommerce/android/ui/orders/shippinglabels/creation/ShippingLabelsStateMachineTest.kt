@@ -135,6 +135,10 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
 
         stateMachine.start(order.toString())
         stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
+        stateMachine.handleEvent(Event.OriginAddressValidationStarted)
+        stateMachine.handleEvent(Event.AddressValidated(originAddress))
+        stateMachine.handleEvent(Event.ShippingAddressValidationStarted)
+        stateMachine.handleEvent(Event.AddressValidated(shippingAddress))
         stateMachine.handleEvent(Event.PackageSelectionStarted)
 
         assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.ShowPackageOptions(emptyList()))
@@ -142,6 +146,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
         stateMachine.handleEvent(Event.PackagesSelected(packagesList))
 
         val newStepsState = data.stepsState.copy(
+            originAddressStep = data.stepsState.originAddressStep.copy(status = DONE),
+            shippingAddressStep = data.stepsState.shippingAddressStep.copy(status = DONE),
             packagingStep = data.stepsState.packagingStep.copy(status = DONE, data = packagesList),
             carrierStep = data.stepsState.carrierStep.copy(status = READY)
         )
