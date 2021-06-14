@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products.variations
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
@@ -223,7 +223,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     }
 
     private fun handleEmptyViewChanges(isEmptyViewVisible: Boolean) {
-        binding.variationInfoContainer.visibility = if (isEmptyViewVisible) GONE else VISIBLE
+        binding.variationInfoContainer.visibility = if (isEmptyViewVisible) INVISIBLE else VISIBLE
         binding.firstVariationView.updateVisibility(
             shouldBeVisible = isEmptyViewVisible,
             showButton = true
