@@ -1,11 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-26 16:54:59+0000
+Translation-Revision-Date: 2021-06-10 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s volgen</string>
+    <string name="card_reader_software_update_in_progress_title">De software van je lezer wordt bijgewerkt</string>
+    <string name="card_reader_software_update_title">Software-update</string>
+    <string name="card_reader_software_update_description">De software van je kaartlezer moet bijgewerkt worden om alles soepel te laten verlopen. Wil je nu bijwerken?</string>
+    <string name="card_reader_detail_connected_update_failed">De software-update van lezer is mislukt. Probeer later opnieuw</string>
+    <string name="card_reader_detail_connected_update_success">De software van de lezer is bijgewerkt</string>
+    <string name="card_reader_detail_connected_update_check_failed">De softwareversie-update is mislukt. Probeer later opnieuw</string>
+    <string name="card_reader_detail_connected_reader_unknown">NAAM KAARTLEZER ONBEKEND</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Lezer loskoppelen</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Werk de software van je lezer bij zodat je betalingen kunt blijven aannemen</string>
+    <string name="card_reader_detail_connected_update_software">De lezersoftware bijwerken</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% batterij</string>
+    <string name="card_reader_detail_connected_header">VERBONDEN LEZER</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Kaartlezer koppelen</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Zet de kaartlezer aan en plaats deze naast het mobiele apparaat</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Zorg ervoor dat de kaartlezer opgeladen is</string>
+    <string name="card_reader_detail_not_connected_header">Je kaartlezer koppelen</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kaart geweigerd</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kaart geweigerd. Probeer het opnieuw met een andere kaart.</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Er wordt verbinding gemaakt met lezer</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Aan het voorbereiden om betaling te innen</string>
+    <string name="shipping_label_customs_value_zero_error">De aangegeven waarde moet hoger zijn dan nul</string>
+    <string name="shipping_label_customs_weight_zero_error">Gewicht moet hoger zijn dan nul</string>
+    <string name="shipping_label_customs_required_field">Dit veld is verplicht</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Omschrijf welk soort beperkingen dit pakket moet hebben.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Omschrijf welk soort goederen dit pakket bevat.</string>
+    <string name="shipping_label_customs_weight_hint">Gewicht (%1$s per eenheid)</string>
+    <string name="shipping_label_customs_value_hint">Waarde (%1$s per eenheid)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s over HS Tariff-nummer</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s Over intern transactienummer</string>
+    <string name="shipping_label_customs_line_item">Aangepaste regel %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">Andere</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Sanitaire/fytosanitaire inspectie</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Quarantaine</string>
+    <string name="shipping_label_customs_restriction_type_none">Geen</string>
+    <string name="shipping_label_customs_contents_type_other">Andere</string>
+    <string name="shipping_label_customs_contents_type_sample">Monster</string>
+    <string name="shipping_label_customs_contents_type_gifts">Geschenken</string>
+    <string name="shipping_label_customs_contents_type_documents">Documenten</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Merchandise</string>
+    <string name="shipping_label_customs_origin_country_explanation">Land waarin het product is geproduceerd of samengesteld</string>
+    <string name="shipping_label_customs_origin_country_hint">Land van herkomst</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">De tariefcode moet uit 6 tekens bestaan</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS Tariff-nummer (optioneel)</string>
+    <string name="shipping_label_customs_item_description_hint">Beschrijving</string>
+    <string name="shipping_label_customs_package_content">Inhoud van het pakket</string>
+    <string name="shipping_label_customs_itn_required_country">ITN is vereist voor zendingen naar %1$s.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">ITN is vereist voor verzending van artikelen die meer dan $ 2500 waard zijn per tariefcode.</string>
+    <string name="shipping_label_customs_itn_invalid_format">Ongeldige indeling</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Registratiegegevens</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Inhoudsgegevens</string>
+    <string name="shipping_label_customs_restriction_type_hint">Soort beperking</string>
+    <string name="shipping_label_customs_contents_type_hint">Soort inhoud:</string>
+    <string name="shipping_label_customs_return_to_sender">Terugsturen naar afzender als het pakket niet kan worden geleverd</string>
+    <string name="shipping_label_rate_insurance_up_to">tot %s</string>
+    <string name="order_fulfill_email_info">Als je deze instelling hebt ingesteld, ontvangt de klant een bevestigingsmail zodra de bestelling is voltooid.</string>
+    <string name="order_fulfill_title">Bestelling bekijken</string>
+    <string name="order_fulfill_completed">🎉 Bestelling voltooid!</string>
+    <string name="user_access_verifying">Rol wordt geverifieerd …</string>
+    <string name="user_role_access_error_retry">Je hebt niet de juiste gebruikersrol</string>
+    <string name="user_role_access_error_link">Meer informatie over rollen en machtigingen</string>
+    <string name="user_role_access_error_msg">Deze app ondersteunt alleen de gebruikersrollen Beheerder en Winkelmanager. Neem contact op met je winkeleigenaar voor het upgraden van je rol.</string>
+    <string name="login_prologue_label_reviews">Volg en keur je productbeoordelingen goed</string>
+    <string name="login_prologue_label_products">Bewerk en voeg nieuwe producten toe ongeacht waar je bent</string>
+    <string name="login_prologue_label_orders">Beheer je winkelbestellingen onderweg</string>
+    <string name="login_prologue_label_analytics">Volg verkoopcijfers en goedpresterende producten</string>
+    <string name="skip">Overslaan</string>
     <string name="product_type_external_title">Extern product</string>
     <string name="product_type_grouped_title">Gegroepeerd product</string>
     <string name="product_type_variable_title">Variabel product</string>
@@ -78,7 +145,8 @@ Language: nl
     <string name="shipping_label_selected_rates_description">%s tarieven geselecteerd</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Geschikt voor gratis handtekeningvereiste</string>
     <string name="shipping_label_rate_included_options_free_pickup">Geschikt voor gratis afhalen</string>
-    <string name="shipping_label_rate_included_options_insurance">Verzekering (tot %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">Verzekering (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">volgen</string>
     <string name="shipping_label_rate_included_options">Inclusief %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Handtekening volwassene vereist (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Handtekening vereist (%s)</string>
@@ -1320,7 +1388,6 @@ Language: nl
     <string name="login_avatar_content_description">Je profielfoto</string>
     <string name="login_connected_store">Gekoppelde winkel</string>
     <string name="login_configure_link">Lees de %sconfiguratie-instructies%s.</string>
-    <string name="login_prologue_banner">Beheer bestellingen, houd de verkoop bij en bewaak de winkelactiviteit met waarschuwingen in real time.</string>
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Voer het adres van de WooCommerce-winkel die je wilt koppelen in.</string>

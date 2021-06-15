@@ -71,6 +71,8 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -212,34 +214,45 @@ class ProductDetailViewModel @Inject constructor(
         get() = viewState.productDraft?.attributes ?: emptyList()
 
     val isProductPublished: Boolean
-        get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+        get() = viewState.productDraft?.status == PUBLISH
 
     /**
-     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
-     * */
-    private val isAddFlowEntryPoint: Boolean
-        get() = navArgs.isAddProduct
-
-    /**
-     * Validates if the view model was started for the **add** flow AND there is an already valid product id
-     * value to check.
-     *
-     * [isAddFlowEntryPoint] can be TRUE/FALSE
+     * Validates if the product exists at the Store or if it's currently defined only inside the app
      *
      * [viewState.productDraft.remoteId]
      * .can be [NULL] - no product draft available yet
      * .can be [DEFAULT_ADD_NEW_PRODUCT_ID] - navArgs.remoteProductId is set to default
      * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
-     * */
-    val isAddFlow: Boolean
-        get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
+     */
+    private val isProductStoredAtSite
+        get() = viewState.productDraft?.remoteId != DEFAULT_ADD_NEW_PRODUCT_ID
+
+    /**
+     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
+     */
+    val isAddFlowEntryPoint: Boolean
+        get() = navArgs.isAddProduct
+
+    /**
+     * Validates if the current product can be changed to DRAFT status.
+     */
+    val canBeStoredAsDraft
+        get() = isAddFlowEntryPoint and
+            isProductStoredAtSite.not() and
+            (viewState.productDraft?.status != DRAFT)
+
+    /**
+     * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
+     */
+    val isProductUnderCreation: Boolean
+        get() = isAddFlowEntryPoint and isProductStoredAtSite.not()
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
      * trash menu. Always returns false when we're in the add flow.
      */
     val isTrashEnabled: Boolean
-        get() = !isAddFlow && navArgs.isTrashEnabled
+        get() = !isProductUnderCreation && navArgs.isTrashEnabled
 
     init {
         start()
@@ -552,7 +565,7 @@ class ProductDetailViewModel @Inject constructor(
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
             // button in the discard dialog
             @StringRes val neutralBtnId: Int?
-            val neutralAction = if (isAddFlow) {
+            val neutralAction = if (isProductUnderCreation) {
                 neutralBtnId = string.product_detail_save_as_draft
                 DialogInterface.OnClickListener { _, _ ->
                     updateProductDraft(productStatus = DRAFT)
@@ -591,7 +604,7 @@ class ProductDetailViewModel @Inject constructor(
      * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
-        when (isAddFlow) {
+        when (isProductUnderCreation) {
             true -> startPublishProduct()
             else -> startUpdateProduct()
         }
@@ -605,8 +618,36 @@ class ProductDetailViewModel @Inject constructor(
         startPublishProduct()
     }
 
+    /**
+     * When creating a new Variable Product, if we're about to do changes
+     * at the Attributes and Variations section, we need the Product to be
+     * represented at the Site too since attributes/variations operations
+     * requires operations with a product remote ID.
+     *
+     * To be able to achieve that, this method silently pushes the new product
+     * to the site without the user noticing given that:
+     *
+     * 1. it doesn't have a valid remote ID yet
+     * 2. is of Variable type
+     * 3. is a Draft
+     */
+    fun saveAsDraftIfNewVariableProduct() = launch {
+        viewState.productDraft
+            ?.takeIf {
+                isProductStoredAtSite.not() and
+                    (it.type == VARIABLE.value) and
+                    (it.status == DRAFT)
+            }
+            ?.takeIf { addProduct(it) }
+            ?.let {
+                AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+            }
+            ?: AnalyticsTracker.track(ADD_PRODUCT_FAILED)
+    }
+
     private fun startUpdateProduct() {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+        if (isAddFlowEntryPoint) updateProductDraft(productStatus = PUBLISH)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
@@ -614,15 +655,18 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun startPublishProduct(exitWhenDone: Boolean = false) {
+        updateProductDraft(productStatus = PUBLISH)
+
         viewState.productDraft?.let {
             trackPublishing(it)
 
             viewState = viewState.copy(isProgressDialogShown = true)
+
             launch {
                 val isSuccess = addProduct(it)
+                triggerEvent(ShowSnackbar(pickAddProductRequestSnackbarText(isSuccess)))
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
-
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
                     }
@@ -632,6 +676,35 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * during a product creation flow flagged by [isAddFlowEntryPoint],
+     * we may have to POST the product before hand in order to operate
+     * some remotes properties of the Product.
+     * (e.g. Variable Product when editing the Attributes and Variations)
+     *
+     * To avoid user confusion around the product creation flow, when a product is posted before hand,
+     * the `PUBLISH` menu button will execute a update instead of repost the same product to the site
+     * so we also should handle the Snackbar text prompt to follow this rule
+     */
+    private fun pickProductUpdateSuccessText() =
+        if (isAddFlowEntryPoint) string.product_detail_publish_product_success
+        else string.product_detail_update_product_success
+
+    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean) =
+        if (productWasAdded) {
+            if (isDraftProduct()) {
+                string.product_detail_publish_product_draft_success
+            } else {
+                string.product_detail_publish_product_success
+            }
+        } else {
+            if (isDraftProduct()) {
+                string.product_detail_publish_product_draft_error
+            } else {
+                string.product_detail_publish_product_error
+            }
+        }
 
     private fun trackPublishing(it: Product) {
         val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
@@ -1400,12 +1473,12 @@ class ProductDetailViewModel @Inject constructor(
                     val password = viewState.draftPassword
                     if (productRepository.updateProductPassword(product.remoteId, password)) {
                         viewState = viewState.copy(storedPassword = password)
-                        triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                        triggerEvent(ShowSnackbar(pickProductUpdateSuccessText()))
                     } else {
                         triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
                     }
                 } else {
-                    triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                    triggerEvent(ShowSnackbar(pickProductUpdateSuccessText()))
                 }
                 viewState = viewState.copy(
                     productDraft = null,
@@ -1434,22 +1507,9 @@ class ProductDetailViewModel @Inject constructor(
     private suspend fun addProduct(product: Product): Boolean {
         var isSuccess = false
         if (checkConnection()) {
-            @StringRes val successId = if (isDraftProduct()) {
-                string.product_detail_publish_product_draft_success
-            } else {
-                string.product_detail_publish_product_success
-            }
-
-            @StringRes val failId = if (isDraftProduct()) {
-                string.product_detail_publish_product_draft_error
-            } else {
-                string.product_detail_publish_product_error
-            }
-
             val result = productRepository.addProduct(product)
             isSuccess = result.first
             if (isSuccess) {
-                triggerEvent(ShowSnackbar(successId))
                 viewState = viewState.copy(
                     productDraft = null,
                     productBeforeEnteringFragment = getProduct().storedProduct,
@@ -1458,8 +1518,6 @@ class ProductDetailViewModel @Inject constructor(
                 val newProductRemoteId = result.second
                 loadRemoteProduct(newProductRemoteId)
                 triggerEvent(RefreshMenu)
-            } else {
-                triggerEvent(ShowSnackbar(failId))
             }
         }
         viewState = viewState.copy(isProgressDialogShown = false)
@@ -1532,7 +1590,7 @@ class ProductDetailViewModel @Inject constructor(
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            when (isAddFlow) {
+            when (isProductUnderCreation) {
                 true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
                 else -> loadRemoteProduct(event.id)
             }

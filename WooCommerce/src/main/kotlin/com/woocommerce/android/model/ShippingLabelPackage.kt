@@ -2,6 +2,7 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 @Parcelize
 data class ShippingLabelPackage(
@@ -15,6 +16,8 @@ data class ShippingLabelPackage(
         val productId: Long,
         val name: String,
         val attributesList: String,
-        val weight: Float
+        val quantity: Float,
+        val weight: Float,
+        val value: BigDecimal
     ) : Parcelable
 }

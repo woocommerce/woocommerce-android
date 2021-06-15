@@ -93,7 +93,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private val _refundItems = MutableLiveData<List<ProductRefundListItem>>()
-    final val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems
+    val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems
 
     private val _refundShippingLines = MutableLiveData<List<ShippingRefundListItem>>()
     val refundShippingLines: LiveData<List<ShippingRefundListItem>> = _refundShippingLines
@@ -114,7 +114,7 @@ class IssueRefundViewModel @Inject constructor(
             updateRefundTotal(new.enteredAmount)
         }
     )
-    final val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
+    val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData
     private var refundByAmountState by refundByAmountStateLiveData
@@ -140,7 +140,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private var refundJob: Job? = null
-    final val isRefundInProgress: Boolean
+    val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
 
     init {
@@ -236,8 +236,8 @@ class IssueRefundViewModel @Inject constructor(
         }
 
         val items = order.items.map {
-            val maxQuantity = maxQuantities[it.uniqueId] ?: 0
-            val selectedQuantity = min(selectedQuantities[it.uniqueId] ?: 0, maxQuantity)
+            val maxQuantity = maxQuantities[it.itemId] ?: 0
+            val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity)
             ProductRefundListItem(it, maxQuantity, selectedQuantity)
         }
         updateRefundItems(items)
@@ -460,7 +460,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onRefundQuantityTapped(uniqueId: Long) {
-        _refundItems.value?.firstOrNull { it.orderItem.uniqueId == uniqueId }?.let {
+        _refundItems.value?.firstOrNull { it.orderItem.itemId == uniqueId }?.let {
             triggerEvent(ShowNumberPicker(it))
         }
 
@@ -527,7 +527,7 @@ class IssueRefundViewModel @Inject constructor(
     private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<ProductRefundListItem> {
         val newItems = mutableListOf<ProductRefundListItem>()
         _refundItems.value?.forEach {
-            if (it.orderItem.uniqueId == uniqueId) {
+            if (it.orderItem.itemId == uniqueId) {
                 newItems.add(
                         it.copy(
                                 quantity = newQuantity,
@@ -544,11 +544,11 @@ class IssueRefundViewModel @Inject constructor(
     fun onSelectButtonTapped() {
         if (areAllItemsSelected) {
             _refundItems.value?.forEach {
-                onRefundQuantityChanged(it.orderItem.uniqueId, 0)
+                onRefundQuantityChanged(it.orderItem.itemId, 0)
             }
         } else {
             _refundItems.value?.forEach {
-                onRefundQuantityChanged(it.orderItem.uniqueId, it.maxQuantity)
+                onRefundQuantityChanged(it.orderItem.itemId, it.maxQuantity)
             }
         }
 

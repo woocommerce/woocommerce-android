@@ -273,9 +273,11 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
 
         // show status badge for unpublished products
         product.status?.let { status ->
-            if (status != ProductStatus.PUBLISH) {
+            if (status != ProductStatus.PUBLISH && viewModel.isAddFlowEntryPoint.not()) {
                 binding.frameStatusBadge.show()
                 binding.textStatusBadge.text = status.toLocalizedString(requireActivity())
+            } else {
+                binding.frameStatusBadge.hide()
             }
         }
 
@@ -290,7 +292,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
     }
 
     private fun updateProductNameFromDetails(product: Product): String {
-        return if (viewModel.isAddFlow && product.name.isEmpty()) {
+        return if (viewModel.isProductUnderCreation && product.name.isEmpty()) {
             getString(R.string.product_add_tool_bar_title)
         } else product.name.fastStripHtml()
     }
@@ -326,7 +328,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
         // TODO: remove the null checks once the root cause is identified is fixed
         if (menu.findItem(R.id.menu_view_product) == null) {
             val message = """menu.findItem(R.id.menu_view_product) is null
-                |User is ${if (viewModel.isAddFlow) "creating a product" else "modifying a product"}
+                |User is ${if (viewModel.isProductUnderCreation) "creating a product" else "modifying a product"}
                 |menu elements:
                 |${menu.printItems()}
             """.trimMargin()
@@ -334,8 +336,11 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
         }
 
         // visibility of these menu items depends on whether we're in the add product flow
-        menu.findItem(R.id.menu_view_product)?.isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
-        menu.findItem(R.id.menu_share)?.isVisible = !viewModel.isAddFlow
+        menu.findItem(R.id.menu_view_product)?.isVisible =
+            viewModel.isProductPublished &&
+                !viewModel.isProductUnderCreation
+
+        menu.findItem(R.id.menu_share)?.isVisible = !viewModel.isProductUnderCreation
         menu.findItem(R.id.menu_product_settings)?.isVisible = true
 
         // change the font color of the trash menu item to red, and only show it if it should be enabled
@@ -347,11 +352,11 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
             this.isVisible = viewModel.isTrashEnabled
         }
 
-        menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.isAddFlow && viewModel.hasChanges()
+        menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.canBeStoredAsDraft && viewModel.hasChanges()
 
         updateMenuItem?.let {
-            it.title = if (viewModel.isAddFlow) getString(publishTitleId) else getString(updateTitleId)
-            it.isVisible = viewModel.hasChanges()
+            it.title = if (viewModel.isAddFlowEntryPoint) getString(publishTitleId) else getString(updateTitleId)
+            it.isVisible = viewModel.hasChanges() or viewModel.isProductUnderCreation
         }
     }
 
@@ -420,7 +425,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
     private fun getSubmitDetailProgressDialog(): CustomProgressDialog {
         val title: Int
         val message: Int
-        when (viewModel.isAddFlow) {
+        when (viewModel.isProductUnderCreation) {
             true -> {
                 title = if (viewModel.isDraftProduct()) {
                     R.string.product_publish_draft_dialog_title

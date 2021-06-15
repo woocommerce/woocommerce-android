@@ -7,6 +7,7 @@
 - [*] Various design tweaks on empty state screen [https://github.com/woocommerce/woocommerce-android/pull/3879]
 - [*] Removed trash option from product status in Product Settings [https://github.com/woocommerce/woocommerce-android/pull/4148]
 - [*] Fixed an issue where the app would crash when loading refunds [https://github.com/woocommerce/woocommerce-android/pull/4166]
+- [*] Fixed a rare bug that would display incorrect order quantities for variable products [https://github.com/woocommerce/woocommerce-android/pull/4193]
 
 6.8
 -----
@@ -16,6 +17,7 @@
 
 6.7
 -----
+- [***] Products: It's now possible to create a Variable Product from the Product section
 - [*] It's now possible to purchase more shipping labels on orders that already has one. [https://github.com/woocommerce/woocommerce-android/pull/3961]
 
 

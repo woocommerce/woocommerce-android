@@ -1,3 +1,0 @@
-6.7:
-Soubemos que os pedidos podem ser enviados em várias remessas. Com esta atualização, agora você pode imprimir mais de uma etiqueta por pedido. Também corrigimos outros detalhes para melhorar sua experiência
-

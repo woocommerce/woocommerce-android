@@ -78,7 +78,6 @@ Language: tr
     <string name="shipping_label_selected_rates_description">%s ücret seçildi</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Ücretsiz imza şartına uygun</string>
     <string name="shipping_label_rate_included_options_free_pickup">Ücretsiz teslim almaya uygun</string>
-    <string name="shipping_label_rate_included_options_insurance">Sigorta (en fazla %s)</string>
     <string name="shipping_label_rate_included_options">Dahiller %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Yetişkin imzası gerekli (%s)</string>
     <string name="shipping_label_rate_option_signature_required">İmza gerekli (%s)</string>
@@ -1320,7 +1319,6 @@ Language: tr
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>
     <string name="login_connected_store">Bağlı mağaza</string>
     <string name="login_configure_link">%sYapılandırma talimatlarını%s okuyun.</string>
-    <string name="login_prologue_banner">Siparişleri yönetin, satışları takip edin, gerçek zamanlı uyarılarla mağaza etkinliğini izleyin.</string>
     <string name="login_jetpack_required">Bu uygulama Jetpack\'in mağazanıza bağlanmasını gerektiriyor.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Bağlanmak istediğiniz WooCommerce mağazasının adresini girin.</string>

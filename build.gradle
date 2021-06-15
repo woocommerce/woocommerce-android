@@ -2,7 +2,7 @@ buildscript {
     ext.kotlinVersion = '1.4.32'
     ext.navigationVersion = '2.3.5'
     ext.daggerVersion = '2.35.1'
-    ext.wordPressLoginVersion = '58-bd338e6eadb0eadf640f2320c791ca58f86c0cda'
+    ext.wordPressLoginVersion = '0.0.2'
 
     repositories {
         google()
@@ -91,7 +91,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '9075105f3eac93341b670bd795b49b9c0bd9cad8'
+    fluxCVersion = '9ce563feb91904567a66acd9255486282f1ef8dd'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.3.0'

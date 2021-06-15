@@ -1,0 +1,4 @@
+6.8 :
+Suite à une demande récurrente, l’écran d’exécution de commande s’affiche désormais lorsque vous cliquez sur le bouton « Marquer la commande comme terminée » !
+
+De plus, nous avons résolu un bogue qui bloquait l’écran de la liste de produits et ajouté un message d’erreur pour les utilisateurs non autorisés qui tentent d’accéder à votre boutique.
