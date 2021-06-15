@@ -1,70 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
-    android:gravity="center"
-    android:minWidth="@dimen/floating_dialog_min_width"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/margin_extra_medium_large"
-    android:paddingBottom="@dimen/margin_extra_medium_large">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/header_label"
-        style="@style/Woo.Card.Body.High"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
-        android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
-        android:gravity="center"
-        tools:text="Collect payment" />
-
-    <ImageView
-        android:id="@+id/illustration"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
-        android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
-        android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
-        android:layout_marginBottom="@dimen/margin_extra_extra_medium_large"
-        android:contentDescription="@null"
-        tools:srcCompat="@drawable/img_card_reader_scanning" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/hint_label"
-        style="@style/Woo.Card.Body.High"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
-        android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
-        android:layout_marginBottom="@dimen/margin_extra_medium_large"
+        android:background="?attr/colorSurface"
         android:gravity="center"
-        tools:text="Please wait" />
+        android:minWidth="@dimen/floating_dialog_min_width"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/margin_extra_medium_large"
+        android:paddingBottom="@dimen/margin_extra_medium_large">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/primary_action_btn"
-        style="@style/Woo.Button.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
-        android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
-        tools:text="Connect" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/header_label"
+            style="@style/Woo.Card.Body.High"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
+            android:gravity="center"
+            tools:text="Collect payment" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/multiple_card_readers_found_rv"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/margin_extra_large"
-        android:layout_height="@dimen/card_reader_multiple_readers_found_rv_height"
-        tools:listitem="@layout/card_reader_connect_reader_item" />
+        <ImageView
+            android:id="@+id/illustration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginBottom="@dimen/margin_extra_extra_medium_large"
+            android:contentDescription="@null"
+            tools:srcCompat="@drawable/img_card_reader_scanning" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/secondary_action_btn"
-        style="@style/Woo.Button.Outlined"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
-        android:layout_marginTop="@dimen/margin_medium"
-        android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
-        tools:text="Cancel" />
-</LinearLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/hint_label"
+            style="@style/Woo.Card.Body.High"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginBottom="@dimen/margin_extra_medium_large"
+            android:gravity="center"
+            tools:text="Please wait" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/primary_action_btn"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
+            tools:text="Connect" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/multiple_card_readers_found_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:minHeight="@dimen/card_reader_multiple_readers_found_rv_height"
+            tools:listitem="@layout/card_reader_connect_reader_item" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/secondary_action_btn"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
+            tools:text="Cancel" />
+    </LinearLayout>
+</ScrollView>
