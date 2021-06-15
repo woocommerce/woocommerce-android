@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
@@ -16,37 +16,56 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.PhoneInvalid
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
+import javax.inject.Inject
 
-class EditShippingLabelAddressViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class EditShippingLabelAddressViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val addressValidator: ShippingLabelAddressValidator,
     private val resourceProvider: ResourceProvider,
     private val dataStore: WCDataStore,
     private val site: SelectedSite
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
+    companion object {
+        val ACCEPTED_USPS_ORIGIN_COUNTRIES = arrayOf(
+            "US", // United States
+            "PR", // Puerto Rico
+            "VI", // Virgin Islands
+            "GU", // Guam
+            "AS", // American Samoa
+            "UM", // United States Minor Outlying Islands
+            "MH", // Marshall Islands
+            "FM", // Micronesia
+            "MP"  // Northern Mariana Islands
+        )
+    }
+
     private val arguments: EditShippingLabelAddressFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState(arguments.address))
+    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
     private var viewState by viewStateData
 
     private val countries: List<WCLocationModel>
-        get() = dataStore.getCountries()
+        get() {
+            val fullCountriesList = dataStore.getCountries()
+            return if (arguments.addressType == ORIGIN) {
+                fullCountriesList.filter { ACCEPTED_USPS_ORIGIN_COUNTRIES.contains(it.code) }
+            } else fullCountriesList
+        }
 
     private val states: List<WCLocationModel>
         get() = viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
@@ -84,10 +103,11 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
 
     fun onDoneButtonClicked(address: Address) {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED)
-        if (areRequiredFieldsValid(address)) {
+        validateFields(address)
+        if (viewState.areAllRequiredFieldsValid) {
             launch {
                 viewState = viewState.copy(address = address, isValidationProgressDialogVisible = true)
-                val result = addressValidator.validateAddress(address, arguments.addressType)
+                val result = addressValidator.validateAddress(address, arguments.addressType, arguments.isInternational)
                 clearErrors()
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
@@ -136,7 +156,13 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
                 viewState = viewState.copy(
                     nameError = R.string.shipping_label_error_required_field
                 )
-                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
+                triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+            }
+            is PhoneInvalid -> {
+                viewState = viewState.copy(
+                    phoneError = validatePhone(address)
+                )
+                triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
             }
         }
     }
@@ -151,25 +177,31 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         )
     }
 
-    private fun areRequiredFieldsValid(address: Address): Boolean {
-        var allOk = true
-        fun getErrorOrClear(field: String): Int {
+    private fun validateFields(address: Address) {
+        fun getErrorOrClear(field: String): Int? {
             return if (field.isBlank()) {
-                allOk = false
                 R.string.shipping_label_error_required_field
             } else {
-                0
+                null
             }
         }
 
         viewState = viewState.copy(
             nameError = getErrorOrClear(address.firstName + address.lastName + address.company),
             addressError = getErrorOrClear(address.address1),
+            phoneError = validatePhone(address),
             cityError = getErrorOrClear(address.city),
             zipError = getErrorOrClear(address.postcode)
         )
+    }
 
-        return allOk
+    private fun validatePhone(address: Address): Int? {
+        if (arguments.addressType != ORIGIN || !arguments.isInternational) return null
+        return when {
+            address.phone.isBlank() -> R.string.shipping_label_address_phone_required
+            !address.phoneHas10Digits() -> R.string.shipping_label_address_phone_invalid
+            else -> null
+        }
     }
 
     fun updateAddress(address: Address) {
@@ -178,13 +210,13 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
 
     fun onUseAddressAsIsButtonClicked() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
-
-        viewState.address?.let { address ->
-            if (areRequiredFieldsValid(address)) {
-                triggerEvent(ExitWithResult(address))
-            } else {
-                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
-            }
+        viewState.address?.let {
+            validateFields(it)
+        }
+        if (viewState.areAllRequiredFieldsValid) {
+            triggerEvent(ExitWithResult(viewState.address))
+        } else {
+            triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
         }
     }
 
@@ -263,13 +295,17 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         val selectedStateName: String? = null,
         @StringRes val nameError: Int? = null,
         @StringRes val addressError: Int? = null,
+        @StringRes val phoneError: Int? = null,
         @StringRes val cityError: Int? = null,
         @StringRes val zipError: Int? = null,
         @StringRes val title: Int? = null
     ) : Parcelable {
+        @IgnoredOnParcel
         val isContactCustomerButtonVisible = !address?.phone.isNullOrBlank()
-    }
 
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<EditShippingLabelAddressViewModel>
+        @IgnoredOnParcel
+        val areAllRequiredFieldsValid
+            get() = nameError == null && addressError == null && phoneError == null &&
+                cityError == null && zipError == null
+    }
 }

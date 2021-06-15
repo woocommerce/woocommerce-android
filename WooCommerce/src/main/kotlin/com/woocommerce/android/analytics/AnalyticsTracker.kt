@@ -490,6 +490,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         APP_PERMISSION_GRANTED,
         APP_PERMISSION_DENIED,
 
+        // -- Encrypted logging
+        ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL,
+        ENCRYPTED_LOGGING_UPLOAD_FAILED,
+
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
         TOP_EARNER_PRODUCT_TAPPED

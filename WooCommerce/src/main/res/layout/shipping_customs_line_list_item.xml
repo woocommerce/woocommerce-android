@@ -1,73 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/start_guideline"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/major_100" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/end_guideline"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="@dimen/major_100" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/content_icon"
-        android:layout_width="@dimen/image_minor_50"
-        android:layout_height="@dimen/image_minor_50"
-        app:layout_constraintBottom_toBottomOf="@id/barrier"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_gridicons_list_checkmark" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/line_title"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/title_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_200"
-        android:textAppearance="?attr/textAppearanceSubtitle1"
-        android:textColor="@color/color_on_surface_high"
-        app:layout_constraintBottom_toBottomOf="@id/content_icon"
-        app:layout_constraintStart_toEndOf="@id/content_icon"
-        app:layout_constraintTop_toTopOf="@id/content_icon"
-        tools:text="Custom Line 1" />
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/expand_icon"
-        android:layout_width="@dimen/image_major_50"
-        android:layout_height="@dimen/image_major_50"
-        android:background="@drawable/ripple_grey_oval"
-        android:padding="@dimen/major_75"
-        android:src="@drawable/ic_arrow_down"
-        android:tint="@color/color_on_surface_high"
-        app:layout_constraintBottom_toBottomOf="@id/content_icon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/content_icon" />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/content_icon"
+            android:layout_width="@dimen/image_minor_50"
+            android:layout_height="@dimen/image_minor_50"
+            android:layout_marginStart="@dimen/major_100"
+            app:srcCompat="@drawable/ic_gridicons_list_checkmark" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="content_icon, expand_icon, line_title" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/line_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_200"
+            android:layout_weight="1"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textColor="@color/color_on_surface_high"
+            tools:text="Custom Line 1" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/error_view"
+            android:layout_width="@dimen/image_minor_50"
+            android:layout_height="@dimen/image_minor_50"
+            app:srcCompat="@drawable/mtrl_ic_error"
+            app:tint="@color/woo_red_50" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/expand_icon"
+            android:layout_width="@dimen/image_major_50"
+            android:layout_height="@dimen/image_major_50"
+            android:padding="@dimen/major_75"
+            android:src="@drawable/ic_arrow_down"
+            android:tint="@color/color_on_surface_high" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/details_layout"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
         android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/barrier"
         tools:visibility="visible">
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -75,8 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
-            android:inputType="text"
-            android:hint="@string/shipping_label_customs_item_description_hint" />
+            android:hint="@string/shipping_label_customs_item_description_hint"
+            android:inputType="text" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/hs_tariff_number_edit_text"
@@ -85,7 +72,7 @@
             android:layout_marginTop="@dimen/major_100"
             android:hint="@string/shipping_label_customs_hs_tariff_hint"
             android:inputType="number"
-            android:maxLength="6"/>
+            android:maxLength="6" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/hs_tariff_number_infos"
@@ -128,4 +115,4 @@
             android:text="@string/shipping_label_customs_origin_country_explanation"
             android:textAppearance="?attr/textAppearanceCaption" />
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

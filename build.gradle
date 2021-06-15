@@ -1,19 +1,26 @@
 buildscript {
     ext.kotlinVersion = '1.4.32'
     ext.navigationVersion = '2.3.5'
-    ext.hiltVersion = '2.35.1'
+    ext.daggerVersion = '2.35.1'
+    ext.wordPressLoginVersion = '0.0.2'
 
     repositories {
         google()
         jcenter()
+        maven {
+            url 'https://storage.googleapis.com/r8-releases/raw'
+        }
     }
     dependencies {
+        // Use updated version of r8 to fix this issue https://issuetracker.google.com/issues/178045782
+        // We should remove this after updating AGP
+        classpath 'com.android.tools:r8:2.2.64'
         classpath 'com.android.tools.build:gradle:4.0.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.automattic.android:fetchstyle:1.1'
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$daggerVersion"
     }
 }
 
@@ -85,7 +92,6 @@ task installGitHooks(type: Copy) {
 
 ext {
     fluxCVersion = '5eab2b44a4a456cd58e0b28efa998e6687341f1e'
-    daggerVersion = '2.33'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.3.0'
@@ -108,6 +114,7 @@ ext {
     jUnitVersion = '4.13.2'
     jUnitExtVersion = '1.1.2'
     robolectricVersion = '4.5.1'
+    hiltJetpackVersion = '1.0.0'
 }
 
 tasks.getByPath('WooCommerce:preBuild').dependsOn installGitHooks

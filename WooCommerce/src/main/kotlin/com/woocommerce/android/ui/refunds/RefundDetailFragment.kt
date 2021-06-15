@@ -13,18 +13,18 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class RefundDetailFragment : BaseDaggerFragment(R.layout.fragment_refund_detail) {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+@AndroidEntryPoint
+class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
 
-    private val viewModel: RefundDetailViewModel by viewModels { viewModelFactory }
+    private val viewModel: RefundDetailViewModel by viewModels()
 
     private var _binding: FragmentRefundDetailBinding? = null
     private val binding get() = _binding!!

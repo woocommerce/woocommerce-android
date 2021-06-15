@@ -3,33 +3,32 @@ package com.woocommerce.android.ui.products.categories
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductCategoriesListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class ParentCategoryListFragment : BaseDaggerFragment(R.layout.fragment_product_categories_list),
+@AndroidEntryPoint
+class ParentCategoryListFragment : BaseFragment(R.layout.fragment_product_categories_list),
     OnLoadMoreListener,
     OnProductCategoryClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    private val viewModel: AddProductCategoryViewModel
-        by navGraphViewModels(R.id.nav_graph_add_product_category) { viewModelFactory }
+    private val viewModel: AddProductCategoryViewModel by hiltNavGraphViewModels(R.id.nav_graph_add_product_category)
 
     private lateinit var parentCategoryListAdapter: ParentCategoryListAdapter
 

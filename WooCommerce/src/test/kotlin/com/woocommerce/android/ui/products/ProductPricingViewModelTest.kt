@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -18,12 +19,13 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
@@ -33,6 +35,7 @@ import java.util.Calendar
 import java.util.Date
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ProductPricingViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
@@ -47,7 +50,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         gmtOffset = 0f
     )
     private val parameterRepository: ParameterRepository = mock {
-        on(it.getParameters(any(), any<SavedStateWithArgs>())).thenReturn(siteParams)
+        on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
 
     private val pricingData = PricingData(
@@ -60,13 +63,8 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         salePrice = BigDecimal.ONE
     )
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            ProductPricingFragmentArgs(RequestCodes.PRODUCT_DETAIL_PRICING, pricingData)
-        )
-    )
+    private val savedState = ProductPricingFragmentArgs(RequestCodes.PRODUCT_DETAIL_PRICING, pricingData)
+        .initSavedStateHandle()
 
     private lateinit var viewModel: ProductPricingViewModel
 
@@ -93,17 +91,15 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
         doReturn(taxClasses).whenever(productRepository).getTaxClassesForSite()
 
-        viewModel = spy(ProductPricingViewModel(
-            savedState,
-            coroutinesTestRule.testDispatchers,
-            productRepository,
-            wooCommerceStore,
-            selectedSite,
-            parameterRepository
-        ))
+        viewModel = ProductPricingViewModel(
+                savedState,
+                productRepository,
+                wooCommerceStore,
+                selectedSite,
+                parameterRepository
+        )
 
         clearInvocations(
-            savedState,
             productRepository,
             wooCommerceStore,
             selectedSite
@@ -166,21 +162,15 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Hides the tax section for variation pricing`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val savedState: SavedStateWithArgs = spy(
-            SavedStateWithArgs(
-                SavedStateHandle(),
-                null,
-                ProductPricingFragmentArgs(RequestCodes.VARIATION_DETAIL_PRICING, pricingData)
-            )
-        )
+        val savedState = ProductPricingFragmentArgs(RequestCodes.VARIATION_DETAIL_PRICING, pricingData)
+            .initSavedStateHandle()
 
         viewModel = spy(ProductPricingViewModel(
-            savedState,
-            coroutinesTestRule.testDispatchers,
-            productRepository,
-            wooCommerceStore,
-            selectedSite,
-            parameterRepository
+                savedState,
+                productRepository,
+                wooCommerceStore,
+                selectedSite,
+                parameterRepository
         ))
 
         var state: ViewState? = null

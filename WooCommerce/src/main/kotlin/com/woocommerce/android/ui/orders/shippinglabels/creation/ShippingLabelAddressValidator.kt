@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -22,9 +23,15 @@ class ShippingLabelAddressValidator @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
 ) {
-    suspend fun validateAddress(address: Address, type: AddressType): ValidationResult {
+    suspend fun validateAddress(
+        address: Address,
+        type: AddressType,
+        isInternationalShipment: Boolean
+    ): ValidationResult {
         if (isNameMissing(address)) {
             return ValidationResult.NameMissing
+        } else if (isInternationalShipment && type == ORIGIN && !address.phoneHas10Digits()) {
+            return ValidationResult.PhoneInvalid
         } else {
             val result = withContext(Dispatchers.IO) {
                 shippingLabelStore.verifyAddress(
@@ -89,6 +96,9 @@ class ShippingLabelAddressValidator @Inject constructor(
 
         @Parcelize
         object NameMissing : ValidationResult()
+
+        @Parcelize
+        object PhoneInvalid : ValidationResult()
 
         @Parcelize
         data class SuggestedChanges(val suggested: Address) : ValidationResult()

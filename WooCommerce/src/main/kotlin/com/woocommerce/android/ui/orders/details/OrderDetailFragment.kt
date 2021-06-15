@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
@@ -224,6 +225,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 viewModel.onConnectToReaderResultReceived(connected)
             }
         }
+        handleNotice(CardReaderPaymentDialog.KEY_CARD_PAYMENT_RESULT) {
+            if (FeatureFlag.CARD_READER.isEnabled()) {
+                viewModel.onCardReaderPaymentCompleted()
+            }
+        }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
         }
@@ -249,6 +255,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     cardReaderManager.let {
                         viewModel.onAcceptCardPresentPaymentClicked(it)
                     }
+                }
+            },
+            onPrintingInstructionsClickListener = {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
+                    viewModel.onPrintingInstructionsClicked()
                 }
             }
         )
@@ -370,6 +381,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
                         override fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel) {
                             viewModel.onPrintShippingLabelClicked(shippingLabel.id)
+                        }
+
+                        override fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
+                            viewModel.onPrintCustomsFormClicked(shippingLabel)
                         }
                     }
                 )

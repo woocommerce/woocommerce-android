@@ -31,6 +31,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachineTest : BaseUnitTest() {
@@ -45,7 +46,11 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
             packagingStep = PackagingStep(NOT_READY, emptyList()),
-            customsStep = CustomsStep(NOT_READY),
+            customsStep = CustomsStep(
+                NOT_READY,
+                isVisible = originAddress.country != shippingAddress.country,
+                data = null
+            ),
             carrierStep = CarrierStep(NOT_READY, emptyList()),
             paymentsStep = PaymentsStep(NOT_READY, null)
         )
@@ -124,12 +129,16 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
                     1f
                 ),
                 weight = 10.0f,
-                items = listOf(Item(10L, "item", "attributes", 10f))
+                items = listOf(Item(10L, "item", "attributes", 1f, 10f, BigDecimal.valueOf(20)))
             )
         )
 
         stateMachine.start(order.toString())
         stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
+        stateMachine.handleEvent(Event.OriginAddressValidationStarted)
+        stateMachine.handleEvent(Event.AddressValidated(originAddress))
+        stateMachine.handleEvent(Event.ShippingAddressValidationStarted)
+        stateMachine.handleEvent(Event.AddressValidated(shippingAddress))
         stateMachine.handleEvent(Event.PackageSelectionStarted)
 
         assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.ShowPackageOptions(emptyList()))
@@ -137,6 +146,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
         stateMachine.handleEvent(Event.PackagesSelected(packagesList))
 
         val newStepsState = data.stepsState.copy(
+            originAddressStep = data.stepsState.originAddressStep.copy(status = DONE),
+            shippingAddressStep = data.stepsState.shippingAddressStep.copy(status = DONE),
             packagingStep = data.stepsState.packagingStep.copy(status = DONE, data = packagesList),
             carrierStep = data.stepsState.carrierStep.copy(status = READY)
         )

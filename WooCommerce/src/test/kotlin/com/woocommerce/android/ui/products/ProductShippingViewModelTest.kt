@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -11,14 +11,16 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ProductShippingViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
@@ -39,17 +41,12 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel(requestCode: Int): ProductShippingViewModel {
-        val savedState = SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            ProductShippingFragmentArgs(requestCode, initialData)
-        )
+        val savedState = ProductShippingFragmentArgs(requestCode, initialData).initSavedStateHandle()
         return spy(
             ProductShippingViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                parameterRepository,
-                productDetailRepository
+                    savedState,
+                    parameterRepository,
+                    productDetailRepository
             )
         )
     }

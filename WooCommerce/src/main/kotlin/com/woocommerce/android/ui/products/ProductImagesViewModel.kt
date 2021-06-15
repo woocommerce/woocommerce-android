@@ -3,13 +3,13 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -20,35 +20,33 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.swap
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import javax.inject.Inject
 
-class ProductImagesViewModel @AssistedInject constructor(
+@HiltViewModel
+class ProductImagesViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers
-) : DaggerScopedViewModel(savedState, dispatchers) {
+    savedState: SavedStateHandle
+) : ScopedViewModel(savedState) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
     private val originalImages = navArgs.images.toList()
 
     val isMultiSelectionAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
 
-    val viewStateData = LiveDataDelegateWithArgs(
+    val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
@@ -302,7 +300,4 @@ class ProductImagesViewModel @AssistedInject constructor(
         @Parcelize
         object Browsing : ProductImagesState()
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ProductImagesViewModel>
 }

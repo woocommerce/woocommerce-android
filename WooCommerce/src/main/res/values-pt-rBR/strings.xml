@@ -1,11 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-26 20:54:04+0000
+Translation-Revision-Date: 2021-06-10 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="shipping_label_rate_included_options_usps_tracking">Rastreamento de %s</string>
+    <string name="card_reader_software_update_in_progress_title">Atualizando seu software do leitor</string>
+    <string name="card_reader_software_update_title">Atualização de software</string>
+    <string name="card_reader_software_update_description">Seu software do leitor de cartão precisa ser atualizado para continuar funcionando sem problemas. Deseja atualizá-lo agora?</string>
+    <string name="card_reader_detail_connected_update_failed">Falha ao atualizar o software do leitor. Tente novamente mais tarde</string>
+    <string name="card_reader_detail_connected_update_success">Software do leitor atualizado</string>
+    <string name="card_reader_detail_connected_update_check_failed">Falha ao verificar a atualização da versão do software. Tente novamente mais tarde</string>
+    <string name="card_reader_detail_connected_reader_unknown">NOME DO LEITOR DE CARTÃO DESCONHECIDO</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Leitor desconectado</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Atualize o seu software do leitor para continuar aceitando pagamentos</string>
+    <string name="card_reader_detail_connected_update_software">Atualizar software do leitor</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% de bateria</string>
+    <string name="card_reader_detail_connected_header">LEITOR CONECTADO</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Conectar leitor de cartão</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Ative o leitor de cartão e coloque-o próximo ao dispositivo móvel</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Certifique-se de que o leitor de cartão esteja carregado</string>
+    <string name="card_reader_detail_not_connected_header">Conecte seu leitor de cartão</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Cartão recusado</string>
+    <string name="card_reader_payment_failed_card_declined_state">Cartão recusado. Tente novamente com um outro cartão.</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Conectando-se ao leitor</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Preparando para receber pagamentos</string>
+    <string name="shipping_label_customs_value_zero_error">O valor declarado deve ser maior que zero</string>
+    <string name="shipping_label_customs_weight_zero_error">O peso deve ser maior que zero</string>
+    <string name="shipping_label_customs_required_field">Este campo é obrigatório</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Descreva que tipo de restrições este pacote deve ter.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Descreva que tipo de mercadorias este pacote deve ter.</string>
+    <string name="shipping_label_customs_weight_hint">Peso (%1$s por unidade)</string>
+    <string name="shipping_label_customs_value_hint">Valor (%1$s por unidade)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s sobre o número da tarifa de HS</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s sobre o número de transação interna</string>
+    <string name="shipping_label_customs_line_item">Linha personalizada %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">Outro</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Inspeção sanitária/fitossanitária</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Quarentena</string>
+    <string name="shipping_label_customs_restriction_type_none">Nenhum</string>
+    <string name="shipping_label_customs_contents_type_other">Outro</string>
+    <string name="shipping_label_customs_contents_type_sample">Amostra</string>
+    <string name="shipping_label_customs_contents_type_gifts">Presentes</string>
+    <string name="shipping_label_customs_contents_type_documents">Documentos</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Mercadoria</string>
+    <string name="shipping_label_customs_origin_country_explanation">País onde o produto foi fabricado ou montado</string>
+    <string name="shipping_label_customs_origin_country_hint">País de origem</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">O número de tarifa deve ter seis dígitos</string>
+    <string name="shipping_label_customs_hs_tariff_hint">Número da tarifa de HS (opcional)</string>
+    <string name="shipping_label_customs_item_description_hint">Descrição</string>
+    <string name="shipping_label_customs_package_content">Conteúdo do pacote</string>
+    <string name="shipping_label_customs_itn_required_country">O ITN é obrigatório em envios para %1$s.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">O ITN é obrigatório para envios de itens com valor superior a US$ 2.500 por número de tarifa</string>
+    <string name="shipping_label_customs_itn_invalid_format">Formato inválido</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Detalhes da restrição</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Detalhes do conteúdo</string>
+    <string name="shipping_label_customs_restriction_type_hint">Tipo de restrição</string>
+    <string name="shipping_label_customs_contents_type_hint">Tipo de conteúdo</string>
+    <string name="shipping_label_customs_return_to_sender">Devolver ao remetente se não for possível entregar o pacote</string>
+    <string name="shipping_label_rate_insurance_up_to">até %s</string>
+    <string name="order_fulfill_email_info">Se você ativou esta configuração, o cliente receberá um e-mail de confirmação assim que o pedido for concluído.</string>
+    <string name="order_fulfill_title">Revisar pedido</string>
+    <string name="order_fulfill_completed">O pedido 🎉 foi concluído!</string>
+    <string name="user_access_verifying">Verificando a função…</string>
+    <string name="user_role_access_error_retry">Você não tem a função de usuário correta</string>
+    <string name="user_role_access_error_link">Saiba mais sobre funções e permissões</string>
+    <string name="user_role_access_error_msg">Este app só é compatível com as funções de usuários administrador e gerente de loja. Entre em contato com o proprietário da loja para fazer upgrade da sua função.</string>
+    <string name="login_prologue_label_reviews">Monitore e aprove avaliações dos seus produtos</string>
+    <string name="login_prologue_label_products">Edite e adicione novos produtos de onde estiver</string>
+    <string name="login_prologue_label_orders">Gerencie os pedidos da sua loja em qualquer lugar</string>
+    <string name="login_prologue_label_analytics">Rastreie vendas e produtos com alto desempenho</string>
+    <string name="skip">Pular</string>
     <string name="product_type_external_title">Produto externo</string>
     <string name="product_type_grouped_title">Grupo de produto</string>
     <string name="product_type_variable_title">Produto variável</string>
@@ -78,7 +145,8 @@ Language: pt_BR
     <string name="shipping_label_selected_rates_description">%s taxas selecionadas</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Elegível para solicitação de assinatura gratuita</string>
     <string name="shipping_label_rate_included_options_free_pickup">Elegível para retirada gratuita</string>
-    <string name="shipping_label_rate_included_options_insurance">Seguro (até %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">Seguro (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">rastreamento</string>
     <string name="shipping_label_rate_included_options">Inclui %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Exigida a assinatura de um adulto (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Assinatura obrigatória (%s)</string>
@@ -1319,7 +1387,6 @@ Language: pt_BR
     <string name="login_avatar_content_description">Sua foto de perfil</string>
     <string name="login_connected_store">Loja vinculada</string>
     <string name="login_configure_link">Leia as %sinstruções de configuração%s.</string>
-    <string name="login_prologue_banner">Gerencie pedidos, acompanhe as vendas e monitore as atividades da loja com alertas em tempo real.</string>
     <string name="login_jetpack_required">Este aplicativo requer que o Jetpack se conecte a sua loja.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Insira o endereço da loja WooCommerce que deseja vincular.</string>

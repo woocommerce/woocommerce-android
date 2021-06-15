@@ -26,7 +26,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
@@ -40,15 +40,16 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import java.util.Date
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseDaggerFragment(R.layout.fragment_variation_detail),
+@AndroidEntryPoint
+class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
     OnGalleryImageInteractionListener {
     companion object {
@@ -56,7 +57,6 @@ class VariationDetailFragment : BaseDaggerFragment(R.layout.fragment_variation_d
         const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var navigator: VariationNavigator
 
@@ -72,7 +72,7 @@ class VariationDetailFragment : BaseDaggerFragment(R.layout.fragment_variation_d
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
 
-    private val viewModel: VariationDetailViewModel by viewModels { viewModelFactory }
+    private val viewModel: VariationDetailViewModel by viewModels()
 
     private var _binding: FragmentVariationDetailBinding? = null
     private val binding get() = _binding!!

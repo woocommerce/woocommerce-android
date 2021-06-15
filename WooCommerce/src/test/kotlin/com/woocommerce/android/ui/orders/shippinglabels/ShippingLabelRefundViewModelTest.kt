@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
@@ -10,18 +9,20 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundViewModel.ShippingLabelRefundViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
@@ -32,6 +33,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_ORDER_ID = 1L
@@ -42,16 +44,13 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
 
     private val shippingLabel = OrderTestUtils.generateShippingLabel(
-            remoteOrderId = REMOTE_ORDER_ID, shippingLabelId = REMOTE_SHIPPING_LABEL_ID
+        remoteOrderId = REMOTE_ORDER_ID, shippingLabelId = REMOTE_SHIPPING_LABEL_ID
     )
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            ShippingLabelRefundFragmentArgs(orderId = REMOTE_ORDER_ID, shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
-        )
-    )
+    private val savedState = ShippingLabelRefundFragmentArgs(
+        orderId = REMOTE_ORDER_ID,
+        shippingLabelId = REMOTE_SHIPPING_LABEL_ID
+    ).initSavedStateHandle()
 
     private val shippingLabelViewStateTestData = ShippingLabelRefundViewState(shippingLabel = shippingLabel)
     private lateinit var viewModel: ShippingLabelRefundViewModel
@@ -65,13 +64,12 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
             ShippingLabelRefundViewModel(
                 savedState,
                 repository,
-                networkStatus,
-                coroutinesTestRule.testDispatchers
-            ))
+                networkStatus
+            )
+        )
 
         clearInvocations(
             viewModel,
-            savedState,
             repository,
             networkStatus
         )

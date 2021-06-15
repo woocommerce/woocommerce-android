@@ -19,9 +19,9 @@ inline fun <reified Args : NavArgs> SavedStateHandle.navArgs() = NavArgsLazy(Arg
     val bundle = Bundle()
     keys().forEach {
         val value = get<Any>(it)
-        if (value is Serializable) {
+        if (value is Serializable?) {
             bundle.putSerializable(it, value)
-        } else if (value is Parcelable) {
+        } else if (value is Parcelable?) {
             bundle.putParcelable(it, value)
         }
     }

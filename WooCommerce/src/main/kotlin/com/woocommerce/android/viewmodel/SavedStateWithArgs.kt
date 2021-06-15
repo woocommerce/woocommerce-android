@@ -2,7 +2,6 @@ package com.woocommerce.android.viewmodel
 
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavArgs
@@ -47,9 +46,4 @@ open class SavedStateWithArgs(
     operator fun <T> set(key: String, value: T) = savedState.set(key, value)
 
     fun contains(key: String): Boolean = savedState.contains(key)
-
-    @MainThread
-    inline fun <reified Args : NavArgs> navArgs() = NavArgsWithDefaultLazy(Args::class, defaultArgs) {
-        arguments ?: throw IllegalStateException("$this has null arguments")
-    }
 }

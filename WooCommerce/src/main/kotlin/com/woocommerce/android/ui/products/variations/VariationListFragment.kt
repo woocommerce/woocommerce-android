@@ -2,11 +2,8 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
@@ -29,38 +26,36 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Companion.KEY_VARIATION_DETAILS_RESULT
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
-import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_list),
+@AndroidEntryPoint
+class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     BackPressListener,
     OnLoadMoreListener {
     companion object {
         const val TAG: String = "VariationListFragment"
         const val KEY_VARIATION_LIST_RESULT = "key_variation_list_result"
         private const val LIST_STATE_KEY = "list_state"
-        private const val ID_EDIT_ATTRIBUTES = 1
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: VariationListViewModel by viewModels { viewModelFactory }
+    private val viewModel: VariationListViewModel by viewModels()
 
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
@@ -70,14 +65,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
 
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
-
-    /**
-     * this property will be true only for the first call,
-     * making sure the variation creation flow is only on Fragment initial setup
-     */
-    private var isVariationCreationFlow = true
-        get() = (navArgs.isVariationCreation && field == true)
-            .also { if (it) field = false }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -108,30 +95,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
     override fun onSaveInstanceState(outState: Bundle) {
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
-        val mnuEditAttr = menu.add(Menu.NONE, ID_EDIT_ATTRIBUTES, Menu.NONE, R.string.product_variations_edit_attr)
-        mnuEditAttr.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-        mnuEditAttr.isVisible = false
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
-        menu.findItem(ID_EDIT_ATTRIBUTES)?.isVisible = !viewModel.isEmpty
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            ID_EDIT_ATTRIBUTES -> {
-                viewModel.onAddEditAttributesClick()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -169,7 +132,7 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
     private fun initializeViewModel() {
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
-        viewModel.start(navArgs.remoteProductId, isVariationCreationFlow)
+        viewModel.start(navArgs.remoteProductId)
     }
 
     private fun setupObservers(viewModel: VariationListViewModel) {
@@ -196,7 +159,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowVariationDetail -> openVariationDetail(event.variation)
-                is ShowAttributeList -> openAttributeList()
                 is ShowAddAttributeView -> openAddAttributeView()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
@@ -220,12 +182,6 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
             variation.remoteProductId,
             variation.remoteVariationId
         )
-        findNavController().navigateSafely(action)
-    }
-
-    private fun openAttributeList() {
-        val action = VariationListFragmentDirections
-            .actionVariationListFragmentToAttributeListFragment()
         findNavController().navigateSafely(action)
     }
 
@@ -267,7 +223,7 @@ class VariationListFragment : BaseDaggerFragment(R.layout.fragment_variation_lis
     }
 
     private fun handleEmptyViewChanges(isEmptyViewVisible: Boolean) {
-        binding.variationInfoContainer.visibility = if (isEmptyViewVisible) GONE else VISIBLE
+        binding.variationInfoContainer.visibility = if (isEmptyViewVisible) INVISIBLE else VISIBLE
         binding.firstVariationView.updateVisibility(
             shouldBeVisible = isEmptyViewVisible,
             showButton = true

@@ -2,18 +2,14 @@ package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductListViewModel.OnProductSortingChanged
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
@@ -21,12 +17,13 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
+import javax.inject.Inject
 
-class ProductSortingViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ProductSortingViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val productListRepository: ProductListRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         val SORTING_OPTIONS = listOf(
             SortingListItemUIModel(R.string.product_list_sorting_newest_to_oldest, DATE_DESC),
@@ -65,7 +62,4 @@ class ProductSortingViewModel @AssistedInject constructor(
         @StringRes val stringResource: Int,
         val value: ProductSorting
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ProductSortingViewModel>
 }

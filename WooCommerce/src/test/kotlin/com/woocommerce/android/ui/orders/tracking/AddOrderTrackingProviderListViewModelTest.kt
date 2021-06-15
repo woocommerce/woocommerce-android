@@ -1,13 +1,12 @@
 package com.woocommerce.android.ui.orders.tracking
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModel.ViewState
@@ -16,13 +15,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
@@ -40,18 +41,11 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: AddOrderTrackingProviderListViewModel
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_IDENTIFIER)
-        )
-    )
+    private val savedState = AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
 
     fun setupViewModel() {
         viewModel = AddOrderTrackingProviderListViewModel(
             savedState = savedState,
-            dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
             shipmentProvidersRepository = shipmentProvidersRepository,
             resourceProvider = resourceProvider

@@ -1,12 +1,11 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.StoreOwnerDetails
@@ -22,14 +21,16 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = "1-1-1"
@@ -64,19 +65,12 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
     suspend fun setup(currentPackages: Array<ShippingLabelPackage>) {
-        val savedState: SavedStateWithArgs = spy(
-            SavedStateWithArgs(
-                SavedStateHandle(),
-                null,
-                EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages)
-            )
-        )
+        val savedState = EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages).initSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
         viewModel = EditShippingLabelPackagesViewModel(
             savedState,
-            coroutinesTestRule.testDispatchers,
             productDetailRepository = productDetailRepository,
             orderDetailRepository = orderDetailRepository,
             variationDetailRepository = variationDetailRepository,
