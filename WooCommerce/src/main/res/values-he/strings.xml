@@ -1,11 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-26 14:54:05+0000
+Translation-Revision-Date: 2021-06-10 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_label_rate_included_options_usps_tracking">מבצע מעקב של %s</string>
+    <string name="card_reader_software_update_in_progress_title">מעדכן את התוכנה של הקורא שלך</string>
+    <string name="card_reader_software_update_title">עדכון תוכנה</string>
+    <string name="card_reader_software_update_description">עליך לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח את הפעילות התקינה שלה. האם ברצונך לעדכן כעת?</string>
+    <string name="card_reader_detail_connected_update_failed">העדכון של תוכנת הקורא נכשל. יש לנסות שוב מאוחר יותר</string>
+    <string name="card_reader_detail_connected_update_success">עדכון תוכנה של הקורא</string>
+    <string name="card_reader_detail_connected_update_check_failed">נכשלה הבדיקה של עדכון הגרסה של התוכנה. יש לנסות שוב מאוחר יותר</string>
+    <string name="card_reader_detail_connected_reader_unknown">שם לא מזוהה לקורא הכרטיסים</string>
+    <string name="card_reader_detail_connected_disconnect_reader">לנתק את הקורא</string>
+    <string name="card_reader_detail_connected_enforced_update_software">עליך לעדכן את התוכנה של הקורא כדי להמשיך לקבל תשלומים</string>
+    <string name="card_reader_detail_connected_update_software">לעדכן את התוכנה של הקורא</string>
+    <string name="card_reader_detail_connected_battery_percentage">סוללה %s%%</string>
+    <string name="card_reader_detail_connected_header">קורא מחובר</string>
+    <string name="card_reader_details_not_connected_connect_button_label">לחבר קורא כרטיסים</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">יש להפעיל את קורא הכרטיסים ולמקם אותו ליד המכשיר הנייד</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">יש לוודא שקורא הכרטיסים הוטען</string>
+    <string name="card_reader_detail_not_connected_header">לחבר את קורא הכרטיסים שלך</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">הכרטיס נדחה</string>
+    <string name="card_reader_payment_failed_card_declined_state">הכרטיס נדחה. יש לנסות שוב עם כרטיס שונה.</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">מתחבר אל הקורא</string>
+    <string name="card_reader_payment_collect_payment_loading_header">מתכונן לגביית התשלום</string>
+    <string name="shipping_label_customs_value_zero_error">הסכום המוצהר חייב להיות מעל אפס (0)</string>
+    <string name="shipping_label_customs_weight_zero_error">המשקל חייב להיות מעל אפס (0)</string>
+    <string name="shipping_label_customs_required_field">זהו שדה חובה</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">עליך לתאר איזה סוג של הגבלות חייבות להיות מוחלות על החבילה הזאת.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">עליך לתאר איזה סוג של סחורות החבילה הזאת מכילה.</string>
+    <string name="shipping_label_customs_weight_hint">משקל (⁦%1$s⁩ ליחידה)</string>
+    <string name="shipping_label_customs_value_hint">ערך (⁦%1$s⁩ ליחידה)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">⁦%1$s⁩ על מספר HS Tariff</string>
+    <string name="shipping_label_customs_learn_more_itn">⁦%1$s⁩ על מספר Internal Transaction Number</string>
+    <string name="shipping_label_customs_line_item">שורה מותאמת אישית ⁦%1$d⁩</string>
+    <string name="shipping_label_customs_restriction_type_other">אחר</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">בדיקת תברואה / בדיקה פיטוסניטרית</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">בידוד</string>
+    <string name="shipping_label_customs_restriction_type_none">ללא</string>
+    <string name="shipping_label_customs_contents_type_other">אחר</string>
+    <string name="shipping_label_customs_contents_type_sample">דוגמה</string>
+    <string name="shipping_label_customs_contents_type_gifts">מתנות</string>
+    <string name="shipping_label_customs_contents_type_documents">מסמכים</string>
+    <string name="shipping_label_customs_contents_type_merchandise">סחורה רשמית</string>
+    <string name="shipping_label_customs_origin_country_explanation">המדינה שבה המוצר נוצר או הורכב</string>
+    <string name="shipping_label_customs_origin_country_hint">מדינת המקור</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">מספר התעריף חייב להיות בן שש ספרות</string>
+    <string name="shipping_label_customs_hs_tariff_hint">מספר HS Tariff (אופציונלי)</string>
+    <string name="shipping_label_customs_item_description_hint">תיאור</string>
+    <string name="shipping_label_customs_package_content">תוכן החבילה</string>
+    <string name="shipping_label_customs_itn_required_country">יש לציין ITN למשלוחים אל ⁦%1$s⁩.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">יש לציין ITN למשלוח פריטים שערכם גדול מ-2,500 $ למספר תעריף</string>
+    <string name="shipping_label_customs_itn_invalid_format">פורמט לא חוקי</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">פרטי הגבלה</string>
+    <string name="shipping_label_customs_contents_type_other_hint">פרטי תכולה</string>
+    <string name="shipping_label_customs_restriction_type_hint">סוג הגבלה</string>
+    <string name="shipping_label_customs_contents_type_hint">סוג תכולה</string>
+    <string name="shipping_label_customs_return_to_sender">להחזיר לשולח אם לא ניתן לשלוח את החבילה</string>
+    <string name="shipping_label_rate_insurance_up_to">עד %s</string>
+    <string name="order_fulfill_email_info">אם הפעלת את ההגדרה הזאת, הלקוח יקבל אישור באימייל כאשר ההזמנה הושלמה</string>
+    <string name="order_fulfill_title">לבדוק את ההזמנה</string>
+    <string name="order_fulfill_completed">ההזמנה 🎉 הושלמה!</string>
+    <string name="user_access_verifying">מאמת תפקיד…</string>
+    <string name="user_role_access_error_retry">לא הוקצה לך תפקיד המשתמש המתאים</string>
+    <string name="user_role_access_error_link">למידע נוסף על תפקידים והרשאות</string>
+    <string name="user_role_access_error_msg">האפליקציה הזאת תומכת רק בתפקידי משתמש של \'מנהל מערכת\' ו\'מנהל חנות\'. יש ליצור קשר עם בעלי החנות כדי לשדרג את התפקיד שלך.</string>
+    <string name="login_prologue_label_reviews">לעקוב אחר ביקורות על מוצרים ולאשר אותן</string>
+    <string name="login_prologue_label_products">לערוך ולהוסיף מוצרים חדשים מכל מקום</string>
+    <string name="login_prologue_label_orders">לנהל את ההזמנות בחנות שלך מכל מקום</string>
+    <string name="login_prologue_label_analytics">לעקוב אחרי מכירות מוצרים ואחרי מוצרים עם ביצועים מובילים</string>
+    <string name="skip">לדלג</string>
     <string name="product_type_external_title">מוצר חיצוני</string>
     <string name="product_type_grouped_title">קבוצת מוצרים</string>
     <string name="product_type_variable_title">מוצר עם סוגים</string>
@@ -78,7 +145,8 @@ Language: he_IL
     <string name="shipping_label_selected_rates_description">נבחרו %s תעריפים</string>
     <string name="shipping_label_rate_included_options_signature_required_free">זכאי לדרישת חתימה בחינם</string>
     <string name="shipping_label_rate_included_options_free_pickup">זכאי לאיסוף בחינם</string>
-    <string name="shipping_label_rate_included_options_insurance">ביטוח (עד %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">ביטוח (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">עוקב</string>
     <string name="shipping_label_rate_included_options">כולל %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">נדרשת חתימה של אדם מבוגר (%s)</string>
     <string name="shipping_label_rate_option_signature_required">נדרשת חתימה (%s)</string>
@@ -1320,7 +1388,6 @@ Language: he_IL
     <string name="login_avatar_content_description">תמונת הפרופיל שלך</string>
     <string name="login_connected_store">חנות מחוברת</string>
     <string name="login_configure_link">קריאת %sהוראות ההגדרה%s.</string>
-    <string name="login_prologue_banner">ניהול הזמנות, מעקב אחר מכירות ואחר פעילות החנות באמצעות התראות בזמן אמת.</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
     <string name="at_username">‎@‎%s‎</string>
     <string name="enter_site_address">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>

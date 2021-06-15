@@ -1,0 +1,4 @@
+6.8:
+A grande richiesta, la schermata di evasione dell'ordine ora viene visualizzata quando fai clic sul pulsante "Contrassegna ordine come completo".
+
+In aggiunta, abbiamo corretto un bug che interrompeva la schermata dell'elenco dei prodotti e aggiunto un messaggio di errore per utenti non autorizzati che tentano di accedere al negozio.

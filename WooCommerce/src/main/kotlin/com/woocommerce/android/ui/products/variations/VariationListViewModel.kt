@@ -58,12 +58,16 @@ class VariationListViewModel @Inject constructor(
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
     val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
+        val isEmpty = viewState.parentProduct?.variationEnabledAttributes?.isEmpty() == true
         variations.apply {
-            viewState = viewState.parentProduct
-                ?.takeIf { it.variationEnabledAttributes.isEmpty() }
-                ?.let { viewState.copy(isEmptyViewVisible = true) }
-                ?: any { it.isVisible && it.regularPrice.isNotSet() && it.salePrice.isNotSet() }
-                    .let { viewState.copy(isWarningVisible = it) }
+            viewState = viewState.copy(
+                isEmptyViewVisible = isEmpty,
+                isWarningVisible = !isEmpty && any { variation ->
+                    variation.isVisible &&
+                        variation.regularPrice.isNotSet() &&
+                        variation.salePrice.isNotSet()
+                }
+            )
         }
     }
 
