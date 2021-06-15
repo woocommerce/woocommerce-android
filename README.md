@@ -116,7 +116,9 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
 ### Setting up Checkstyle
 
-The woocommerce-android project uses [Checkstyle][checkstyle]. You can run checkstyle using `./gradlew checkstyle`. You can also view errors and warnings in realtime with the Checkstyle plugin.  When importing the project into Android Studio, Checkstyle should be set up automatically. If it is not, follow the steps below.
+The woocommerce-android project uses [Checkstyle][checkstyle]. You can run checkstyle using `./gradlew checkstyle`.
+
+Optionally, you can also view errors and warnings in realtime with the Checkstyle plugin. Follow the steps below if needed.
 
 You can install the CheckStyle-IDEA plugin in Android Studio here:
 
