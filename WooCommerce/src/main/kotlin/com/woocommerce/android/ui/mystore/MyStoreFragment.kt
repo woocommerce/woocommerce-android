@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
-import androidx.core.view.isVisible
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
@@ -21,10 +20,10 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.hideSlideUp
 import com.woocommerce.android.extensions.setClickableText
-import com.woocommerce.android.extensions.showSlideDown
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -432,13 +431,13 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
             binding.emptyStatsView.visibility = View.VISIBLE
+            tabLayout.collapse()
         } else {
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
             binding.emptyStatsView.visibility = View.GONE
         }
 
-        tabLayout.visibility = dashboardVisibility
         myStoreDateBar.visibility = dashboardVisibility
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
@@ -470,24 +469,12 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         object : AppBarStateChangeListener() {
             override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
                 when (state) {
-                    EXPANDED -> hideTabs()
-                    COLLAPSED -> showTabs()
+                    EXPANDED -> tabLayout.collapse()
+                    COLLAPSED -> if (!isEmptyViewVisible) tabLayout.expand()
                     IDLE -> Unit
                 }
             }
         }
-
-    private fun showTabs() {
-        if (!tabLayout.isVisible && !isEmptyViewVisible) {
-            tabLayout.showSlideDown()
-        }
-    }
-
-    private fun hideTabs() {
-        if (tabLayout.isVisible || isEmptyViewVisible) {
-            tabLayout.hideSlideUp()
-        }
-    }
 
     private fun appBarCollapsedListener() {
         appBarLayout?.addOnOffsetChangedListener(offsetChangeListener)
