@@ -8,7 +8,7 @@ class OrderSearchScreen : Screen {
         const val SEARCH_FIELD = R.id.search_bar
     }
 
-    constructor(): super(SEARCH_FIELD)
+    constructor() : super(SEARCH_FIELD)
 
     fun cancel(): OrderListScreen {
         pressBack()

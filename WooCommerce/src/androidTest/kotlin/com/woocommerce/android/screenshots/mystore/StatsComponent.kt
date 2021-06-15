@@ -8,7 +8,7 @@ class StatsComponent : Screen {
         const val STATS_DASHBOARD = R.id.dashboardStats_root
     }
 
-    constructor(): super(STATS_DASHBOARD)
+    constructor() : super(STATS_DASHBOARD)
 
     override fun recover() {
         super.recover()

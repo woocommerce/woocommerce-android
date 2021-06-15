@@ -437,8 +437,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
     private fun getFormattedVisitorValue(date: String) =
-            if (activeGranularity == StatsGranularity.DAYS) "" else
-                chartVisitorStats[date]?.toString() ?: "0"
+            if (activeGranularity == StatsGranularity.DAYS) "" else chartVisitorStats[date]?.toString() ?: "0"
 
     /**
      * Method to format the incoming visitor stats data

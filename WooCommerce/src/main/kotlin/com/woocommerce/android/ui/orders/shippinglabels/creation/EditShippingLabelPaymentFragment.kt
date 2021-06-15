@@ -24,8 +24,9 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import javax.inject.Inject
 
-class EditShippingLabelPaymentFragment
-    : BaseDaggerFragment(R.layout.fragment_edit_shipping_label_payment), BackPressListener {
+class EditShippingLabelPaymentFragment : BaseDaggerFragment(
+    R.layout.fragment_edit_shipping_label_payment
+), BackPressListener {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
