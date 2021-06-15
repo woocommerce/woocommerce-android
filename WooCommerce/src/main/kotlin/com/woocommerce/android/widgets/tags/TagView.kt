@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import androidx.core.content.ContextCompat
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
-import com.woocommerce.android.util.getDensityPixel
+import com.woocommerce.android.extensions.px
 
 /**
  * Custom tag view. This view displays a simple string label. The background and font colors are both styleable.
@@ -77,7 +77,7 @@ class TagView @JvmOverloads constructor(
         setTextColor(config.fgColor)
         val gd = GradientDrawable()
         gd.setColor(config.bgColor)
-        gd.cornerRadius = getDensityPixel(context, 4).toFloat()
+        gd.cornerRadius = 4.px
         gd.setStroke(2, config.borderColor)
         background = gd
     }
