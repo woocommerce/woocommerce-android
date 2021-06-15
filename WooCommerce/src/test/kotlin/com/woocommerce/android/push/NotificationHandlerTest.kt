@@ -35,7 +35,8 @@ class NotificationHandlerTest {
         sut = NotificationHandler(
             notificationStore = mock(),
             siteStore = siteStore,
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            wcOrderStore = mock()
         )
     }
 
