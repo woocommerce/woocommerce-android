@@ -382,6 +382,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                         override fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel) {
                             viewModel.onPrintShippingLabelClicked(shippingLabel.id)
                         }
+
+                        override fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
+                            viewModel.onPrintCustomsFormClicked(shippingLabel)
+                        }
                     }
                 )
             }
