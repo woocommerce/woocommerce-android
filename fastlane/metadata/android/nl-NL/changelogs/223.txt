@@ -1,0 +1,4 @@
+6.8:
+Terug op veler verzoek: het scherm Bestelling voltooien wordt nu weergegeven als je klikt op de knop 'Bestelling markeren als voltooid'.
+
+Daarnaast hebben we een bug hersteld waardoor het scherm met de productlijst niet goed werd weergegeven en we hebben een foutbericht toegevoegd voor onbevoegde gebruikers die toegang proberen te krijgen tot je winkel.

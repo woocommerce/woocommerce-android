@@ -1,3 +1,0 @@
-6.7:
-Abbiamo saputo che gli ordini potrebbero essere evasi in più spedizioni. Con questo aggiornamento, ora puoi stampare più di un'etichetta per un ordine. Abbiamo anche corretto qualche altro piccolo dettaglio per rendere migliore la tua esperienza.
-

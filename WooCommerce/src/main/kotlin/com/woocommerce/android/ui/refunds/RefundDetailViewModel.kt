@@ -61,9 +61,9 @@ class RefundDetailViewModel @Inject constructor(
     }
 
     private fun displayRefundedProducts(order: Order, refunds: List<Refund>) {
-        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
+        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.orderItemId }
         val refundedProducts = groupedRefunds.keys.mapNotNull { id ->
-            order.items.firstOrNull { it.uniqueId == id }?.let { item ->
+            order.items.firstOrNull { it.itemId == id }?.let { item ->
                 groupedRefunds[id]?.sumBy { it.quantity }?.let { quantity ->
                     ProductRefundListItem(item, quantity = quantity)
                 }
@@ -84,7 +84,7 @@ class RefundDetailViewModel @Inject constructor(
         if (refund.items.isNotEmpty()) {
             val items = refund.items.map { refundItem ->
                 ProductRefundListItem(
-                    order.items.first { it.uniqueId == refundItem.uniqueId },
+                    order.items.first { it.itemId == refundItem.orderItemId },
                     quantity = refundItem.quantity
                 )
             }
