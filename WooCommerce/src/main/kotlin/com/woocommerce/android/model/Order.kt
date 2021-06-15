@@ -55,7 +55,8 @@ data class Order(
     val shippingAddress: Address,
     val shippingMethods: List<ShippingMethod>,
     val items: List<Item>,
-    val shippingLines: List<ShippingLine>
+    val shippingLines: List<ShippingLine>,
+    val metaData: List<MetaData<String>>
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = paymentMethodTitle.isEmpty() && datePaid == null
@@ -279,7 +280,8 @@ fun WCOrderModel.toAppModel(): Order {
                     it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                     it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
                 )
-            }
+            },
+            metaData = getMetaDataList().mapNotNull { it.toAppModel() }
     )
 }
 
