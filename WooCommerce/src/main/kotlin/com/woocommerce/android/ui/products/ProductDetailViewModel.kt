@@ -613,8 +613,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the "Save as draft" button is clicked in Product detail screen
      */
     fun onSaveAsDraftButtonClicked() {
-        updateProductDraft(productStatus = DRAFT)
-        startPublishProduct()
+        startPublishProduct(productStatus = DRAFT)
     }
 
     /**
