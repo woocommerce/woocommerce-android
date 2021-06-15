@@ -568,8 +568,7 @@ class ProductDetailViewModel @Inject constructor(
             val neutralAction = if (isProductUnderCreation) {
                 neutralBtnId = string.product_detail_save_as_draft
                 DialogInterface.OnClickListener { _, _ ->
-                    updateProductDraft(productStatus = DRAFT)
-                    startPublishProduct(exitWhenDone = true)
+                    startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
                 }
             } else {
                 neutralBtnId = null
@@ -654,8 +653,8 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun startPublishProduct(exitWhenDone: Boolean = false) {
-        updateProductDraft(productStatus = PUBLISH)
+    private fun startPublishProduct(productStatus: ProductStatus = PUBLISH, exitWhenDone: Boolean = false) {
+        updateProductDraft(productStatus = productStatus)
 
         viewState.productDraft?.let {
             trackPublishing(it)
