@@ -60,7 +60,7 @@ import kotlin.random.Random
 @Singleton
 class NotificationHandler @Inject constructor(
     private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
-    private val wcOrderStore: WCOrderStore,
+    private val wcOrderStore: WCOrderStore, // Required to ensure instantiated when app started from a push
     private val siteStore: SiteStore,
     private val dispatcher: Dispatcher
 ) {
