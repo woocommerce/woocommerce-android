@@ -2,8 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="280dp"
-    android:layout_height="388dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="?attr/colorSurface"
     android:paddingStart="@dimen/margin_extra_extra_medium_large"
     android:paddingTop="@dimen/margin_extra_medium_large"
@@ -15,11 +15,13 @@
         style="@style/Woo.TextView.Subtitle2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="@dimen/text_minor_100"
+        android:layout_marginTop="0dp"
         app:layout_constraintBottom_toTopOf="@id/amount_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Collect payment" />
+        tools:text="Getting ready to collect payment" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/amount_label"
@@ -48,8 +50,8 @@
         android:id="@+id/progress_bar_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="60dp"
-        android:paddingBottom="@dimen/margin_extra_medium_large"
+        android:paddingTop="@dimen/major_275"
+        android:paddingBottom="@dimen/major_275"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/amount_label">
@@ -70,10 +72,9 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/payment_state_label"
         style="@style/Woo.TextView.Subtitle2"
-        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
+        android:layout_marginTop="@dimen/minor_100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content_group"
@@ -85,9 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small_medium"
-        android:layout_marginBottom="@dimen/margin_extra_medium_large"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/payment_state_label"
         tools:text="Tap or insert to pay" />
@@ -108,11 +107,11 @@
         style="@style/Woo.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_extra_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/primary_action_btn"
-        android:layout_marginTop="@dimen/margin_extra_large"
         tools:text="Print receipt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,7 +13,6 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.extensions.px
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
@@ -33,6 +32,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog!!.setCanceledOnTouchOutside(false)
+        setStyle(STYLE_NORMAL, R.style.Theme_Woo_Dialog_FixedSize)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -51,11 +51,6 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
 
         initObservers(binding)
         initViewModel()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        requireDialog().window!!.setLayout(280.px.toInt(), 388.px.toInt())
     }
 
     private fun initViewModel() {

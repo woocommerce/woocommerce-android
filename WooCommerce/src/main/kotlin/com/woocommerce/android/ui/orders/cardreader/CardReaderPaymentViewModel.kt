@@ -85,7 +85,7 @@ class CardReaderPaymentViewModel @Inject constructor(
         // TODO cardreader Check if the payment was already processed and cancel this flow
         // TODO cardreader Make sure a reader is connected
         if (paymentFlowJob == null) {
-            initPaymentFlow()
+//            initPaymentFlow()
         }
     }
 
@@ -186,7 +186,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     fun reFetchOrder() {
         fetchOrderJob = launch {
             orderRepository.fetchOrder(arguments.orderIdentifier)
-                ?: triggerEvent(Event.ShowSnackbar(R.string.card_reader_fetching_order_failed))
+                ?: triggerEvent(ShowSnackbar(R.string.card_reader_fetching_order_failed))
             if (viewState.value == FetchingOrderState) {
                 triggerEvent(Exit)
             }
@@ -288,7 +288,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                 CARD_READ_TIMED_OUT,
                 GENERIC_ERROR -> R.string.card_reader_payment_failed_unexpected_error_state
             },
-            primaryActionLabel = R.string.retry,
+            primaryActionLabel = R.string.card_reader_payment_failed_retry,
             // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
         )
