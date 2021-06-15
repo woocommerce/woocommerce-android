@@ -12,22 +12,28 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import android.view.animation.TranslateAnimation
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
+import com.woocommerce.android.util.WooAnimUtils.Duration.EXTRA_LONG
 import com.woocommerce.android.util.WooAnimUtils.Duration.LONG
+
+private const val REPEAT_COUNT_LOOP = -1
 
 object WooAnimUtils {
     enum class Duration {
         SHORT,
         MEDIUM,
-        LONG;
+        LONG,
+        EXTRA_LONG;
 
         fun toMillis(context: Context): Long {
             return when (this) {
                 SHORT -> context.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
                 MEDIUM -> context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
                 LONG -> context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
+                EXTRA_LONG -> context.resources.getInteger(android.R.integer.config_longAnimTime).toLong() * 2
             }
         }
     }
@@ -167,5 +173,16 @@ object WooAnimUtils {
             animation.duration = duration.toMillis(view.context)
             view.startAnimation(animation)
         }
+    }
+
+    fun rotate(view: View, duration: Duration = EXTRA_LONG) {
+        val rotationAnimation: Animation = RotateAnimation(
+            0.0f, 360.0f,
+            Animation.RELATIVE_TO_SELF, 0.5f,
+            Animation.RELATIVE_TO_SELF, 0.5f
+        )
+        rotationAnimation.repeatCount = REPEAT_COUNT_LOOP
+        rotationAnimation.duration = duration.toMillis(view.context)
+        view.startAnimation(rotationAnimation)
     }
 }

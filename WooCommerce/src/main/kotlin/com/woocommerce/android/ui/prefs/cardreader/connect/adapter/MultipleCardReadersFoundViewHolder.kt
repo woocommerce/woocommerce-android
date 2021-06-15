@@ -39,6 +39,10 @@ sealed class MultipleCardReadersFoundViewHolder(
     ) : MultipleCardReadersFoundViewHolder(parent, R.layout.card_reader_connect_scanning_item) {
         var binding: CardReaderConnectScanningItemBinding = CardReaderConnectScanningItemBinding.bind(itemView)
 
+        init {
+            WooAnimUtils.rotate(binding.cardReaderConnectProgressIndicator)
+        }
+
         override fun onBind(uiState: ListItemViewState) {
             uiState as ScanningInProgressListItem
             UiHelpers.setTextOrHide(binding.cardReaderConnectProgressLabel, uiState.label)
