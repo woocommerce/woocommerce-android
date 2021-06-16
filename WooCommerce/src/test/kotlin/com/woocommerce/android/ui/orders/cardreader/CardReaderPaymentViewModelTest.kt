@@ -53,7 +53,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.utils.AppLogWrapper
 import java.math.BigDecimal
 
 private val DUMMY_TOTAL = BigDecimal(10.72)
@@ -68,7 +67,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     private lateinit var viewModel: CardReaderPaymentViewModel
-    private val loggerWrapper: AppLogWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
     private var resourceProvider: ResourceProvider = mock()
@@ -84,7 +82,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         viewModel = CardReaderPaymentViewModel(
             savedState,
             cardReaderManager = cardReaderManager,
-            logger = loggerWrapper,
             orderRepository = orderRepository,
             resourceProvider = resourceProvider,
             selectedSite = selectedSite

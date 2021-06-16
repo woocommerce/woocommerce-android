@@ -46,8 +46,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -57,7 +55,6 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
-    private val logger: AppLogWrapper,
     private val orderRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite
