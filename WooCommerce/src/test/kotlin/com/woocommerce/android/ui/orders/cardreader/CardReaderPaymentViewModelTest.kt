@@ -233,6 +233,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             clearInvocations(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
 
             verify(cardReaderManager).collectPayment(any(), any(), any(), any(), any())
         }
