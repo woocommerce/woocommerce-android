@@ -15,8 +15,6 @@ import com.woocommerce.android.R
  *
  * @see com.woocommerce.android.ui.main.MainUIMessageResolver
  */
-// BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-@Suppress("WrongConstant")
 interface UIMessageResolver {
     /**
      * Set by the implementing class. This is the root view the snackbar should be attached to. To enable

@@ -266,10 +266,11 @@ class IssueRefundViewModel @Inject constructor(
             val isManualRefund: Boolean
 
             if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
-                paymentTitle = if (gateway.title.isNotBlank())
+                paymentTitle = if (gateway.title.isNotBlank()) {
                     resourceProvider.getString(R.string.order_refunds_method, manualRefundMethod, gateway.title)
-                else
+                } else {
                     manualRefundMethod
+                }
                 isManualRefund = true
             } else {
                 paymentTitle = if (gateway.title.isNotBlank()) gateway.title else manualRefundMethod
@@ -509,10 +510,11 @@ class IssueRefundViewModel @Inject constructor(
         val (subtotal, taxes) = newItems.calculateTotals()
         val productsRefund = min(max(subtotal + taxes, BigDecimal.ZERO), maxRefund)
 
-        val selectButtonTitle = if (areAllItemsSelected)
-                resourceProvider.getString(R.string.order_refunds_items_select_none)
-            else
-                resourceProvider.getString(R.string.order_refunds_items_select_all)
+        val selectButtonTitle = if (areAllItemsSelected) {
+            resourceProvider.getString(R.string.order_refunds_items_select_none)
+        } else {
+            resourceProvider.getString(R.string.order_refunds_items_select_all)
+        }
 
         refundByItemsState = refundByItemsState.copy(
                 productsRefund = productsRefund,

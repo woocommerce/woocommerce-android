@@ -32,8 +32,7 @@ class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
     // Overriding this method from the Chart.java: line 719
     override fun drawMarkers(canvas: Canvas?) {
         // if there is no marker view or drawing marker is disabled
-        if (mMarker == null || !isDrawMarkersEnabled || !valuesToHighlight())
-            return
+        if (mMarker == null || !isDrawMarkersEnabled || !valuesToHighlight()) return
 
         for (i in mIndicesToHighlight.indices) {
             val highlight = mIndicesToHighlight[i]
@@ -51,8 +50,7 @@ class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
 
             val pos = getMarkerPosition(highlight)
             // check bounds
-            if (!mViewPortHandler.isInBounds(pos[0], pos[1]))
-                continue
+            if (!mViewPortHandler.isInBounds(pos[0], pos[1])) continue
 
             // callbacks to update the content
             mMarker.refreshContent(e, highlight)

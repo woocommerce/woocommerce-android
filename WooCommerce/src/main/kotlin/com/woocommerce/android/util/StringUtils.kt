@@ -148,10 +148,11 @@ object StringUtils {
      */
     fun formatCountDecimal(number: Double, forInput: Boolean = false): String {
         return if (number.isInteger()) {
-            if (forInput)
+            if (forInput) {
                 number.toInt().toString()
-            else
+            } else {
                 FormatUtils.formatInt(number.toInt())
+            }
         } else {
             number.toString()
         }

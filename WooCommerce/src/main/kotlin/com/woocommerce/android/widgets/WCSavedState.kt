@@ -23,7 +23,7 @@ class WCSavedState : BaseSavedState {
      * Workaround to differentiate between this method and the one that requires API 24+ because
      * the super(source, loader) method won't work on older APIs - thus the app will crash.
      */
-    constructor(source: Parcel, loader: ClassLoader?, superState: Parcelable?): super(superState) {
+    constructor(source: Parcel, loader: ClassLoader?, superState: Parcelable?) : super(superState) {
         savedState = source.readParcelable(loader)
     }
 

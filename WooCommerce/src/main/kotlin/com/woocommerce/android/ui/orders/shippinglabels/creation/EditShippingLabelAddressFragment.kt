@@ -49,14 +49,15 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditShippingLabelAddressFragment
-    : BaseFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
+class EditShippingLabelAddressFragment : BaseFragment(R.layout.fragment_edit_shipping_label_address),
+    BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
         const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
     }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
@@ -196,8 +197,8 @@ class EditShippingLabelAddressFragment
                         )
                     } else {
                         hideProgressDialog()
+                    }
                 }
-            }
             new.isLoadingProgressDialogVisible?.takeIfNotEqualTo(old?.isLoadingProgressDialogVisible) { isVisible ->
                 if (isVisible) {
                     showProgressDialog(
