@@ -592,7 +592,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
 
         private fun updateForInternationalRequirements(): StepsState {
-            val originAddressStep = if (isInternational && !originAddressStep.data.phoneHas10Digits()) {
+            val originAddressStep = if (isInternational && !originAddressStep.data.hasValidPhoneNumber()) {
                 originAddressStep.copy(status = READY)
             } else originAddressStep
             val customsStep = customsStep.copy(

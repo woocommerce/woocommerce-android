@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -26,11 +25,11 @@ class ShippingLabelAddressValidator @Inject constructor(
     suspend fun validateAddress(
         address: Address,
         type: AddressType,
-        isInternationalShipment: Boolean
+        requiresPhoneNumber: Boolean
     ): ValidationResult {
         if (isNameMissing(address)) {
             return ValidationResult.NameMissing
-        } else if (isInternationalShipment && type == ORIGIN && !address.phoneHas10Digits()) {
+        } else if (requiresPhoneNumber && !address.hasValidPhoneNumber(type)) {
             return ValidationResult.PhoneInvalid
         } else {
             val result = withContext(Dispatchers.IO) {

@@ -5,6 +5,9 @@ import com.google.i18n.addressinput.common.AddressData
 import com.google.i18n.addressinput.common.FormOptions
 import com.google.i18n.addressinput.common.FormatInterpreter
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
@@ -87,7 +90,12 @@ data class Address(
      * and that's similar to what the web client does.
      * Source: https://github.com/Automattic/woocommerce-services/issues/1351
      */
-    fun phoneHas10Digits() = phone.replace(Regex("^1|[^\\d]"), "").length == 10
+    fun hasValidPhoneNumber(addressType: AddressType): Boolean {
+        return when(addressType){
+            ORIGIN -> phone.replace(Regex("^1|[^\\d]"), "").length == 10
+            DESTINATION -> phone.contains("\\d")
+        }
+    }
 
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
