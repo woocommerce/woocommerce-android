@@ -63,8 +63,7 @@ class AlignedDividerDecoration @JvmOverloads constructor(
     private val alignEndToEndOf: Int = 0,
     private val clipToMargin: Boolean = false,
     private val padding: Int = 0
-)
-    : RecyclerView.ItemDecoration() {
+) : RecyclerView.ItemDecoration() {
     companion object {
         const val HORIZONTAL = 0
         const val VERTICAL = 1

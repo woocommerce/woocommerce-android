@@ -397,10 +397,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private fun displayShippingLabelsWIPCard(show: Boolean, isReprintBanner: Boolean) {
         if (show && feedbackState != DISMISSED) {
             binding.orderDetailShippingLabelsWipCard.isVisible = true
-            val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner)
+            val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner) {
                 R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
-            else
+            } else {
                 R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m3_wip_message
+            }
 
             binding.orderDetailShippingLabelsWipCard.initView(
                 getString(wipCardTitleId),
@@ -412,10 +413,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun onGiveFeedbackClicked(isM1: Boolean) {
-        val context = if (isM1)
+        val context = if (isM1) {
             AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
-        else
+        } else {
             AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
+        }
 
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
@@ -429,10 +431,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun onDismissProductWIPNoticeCardClicked(isM1: Boolean) {
-        val context = if (isM1)
+        val context = if (isM1) {
             AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
-        else
+        } else {
             AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
+        }
 
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
