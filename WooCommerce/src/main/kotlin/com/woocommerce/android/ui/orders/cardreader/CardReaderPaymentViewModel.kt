@@ -80,37 +80,26 @@ class CardReaderPaymentViewModel @Inject constructor(
 
     private fun initPaymentFlow() {
         paymentFlowJob = launch {
-            try {
-                fetchOrder()?.let { order ->
-                    if (order.isOrderPaid) {
-                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled))
-                        triggerEvent(Exit)
-                        return@launch
-                    }
-                    // TODO cardreader don't hardcode currency symbol ($)
-                    collectPaymentFlow(
-                        cardReaderManager,
-                        order.getPaymentDescription(),
-                        order.remoteId,
-                        order.total,
-                        order.currency,
-                        order.billingAddress.email,
-                        "${order.total}"
-                    )
-                } ?: run {
-                    viewState.postValue(
-                        FailedPaymentState(
-                            errorType = PaymentFlowError.FETCHING_ORDER_FAILED,
-                            amountWithCurrencyLabel = null,
-                            onPrimaryActionClicked = { initPaymentFlow() }
-                        )
-                    )
+            fetchOrder()?.let { order ->
+                if (order.isOrderPaid) {
+                    triggerEvent(ShowSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled))
+                    triggerEvent(Exit)
+                    return@launch
                 }
-            } catch (e: IllegalStateException) {
-                logger.e(MAIN, e.stackTraceToString())
+                // TODO cardreader don't hardcode currency symbol ($)
+                collectPaymentFlow(
+                    cardReaderManager,
+                    order.getPaymentDescription(),
+                    order.remoteId,
+                    order.total,
+                    order.currency,
+                    order.billingAddress.email,
+                    "${order.total}"
+                )
+            } ?: run {
                 viewState.postValue(
                     FailedPaymentState(
-                        errorType = PaymentFlowError.GENERIC_ERROR,
+                        errorType = PaymentFlowError.FETCHING_ORDER_FAILED,
                         amountWithCurrencyLabel = null,
                         onPrimaryActionClicked = { initPaymentFlow() }
                     )
