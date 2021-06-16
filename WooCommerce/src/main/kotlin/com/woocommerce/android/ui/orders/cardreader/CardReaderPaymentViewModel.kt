@@ -94,7 +94,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                     order.total,
                     order.currency,
                     order.billingAddress.email,
-                    "${order.total}"
+                    "$${order.total}"
                 )
             } ?: run {
                 viewState.postValue(
