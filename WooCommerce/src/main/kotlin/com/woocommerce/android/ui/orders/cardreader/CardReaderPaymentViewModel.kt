@@ -64,7 +64,6 @@ class CardReaderPaymentViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
-    // TODO cardreader if payment succeeds we need to save the state as otherwise the payment might be collected twice
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
@@ -73,7 +72,6 @@ class CardReaderPaymentViewModel @Inject constructor(
     @VisibleForTesting var refetchOrderJob: Job? = null
 
     fun start() {
-        // TODO cardreader Check if the payment was already processed and cancel this flow
         // TODO cardreader Make sure a reader is connected
         if (paymentFlowJob == null) {
             initPaymentFlow()
@@ -84,6 +82,11 @@ class CardReaderPaymentViewModel @Inject constructor(
         paymentFlowJob = launch {
             try {
                 fetchOrder()?.let { order ->
+                    if (order.isOrderPaid) {
+                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled))
+                        triggerEvent(Exit)
+                        return@launch
+                    }
                     // TODO cardreader don't hardcode currency symbol ($)
                     collectPaymentFlow(
                         cardReaderManager,
