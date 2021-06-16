@@ -26,7 +26,9 @@ import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
-class SitePickerPresenter @Inject constructor(
+class SitePickerPresenter
+@Suppress("LongParameterList")
+@Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
