@@ -18,8 +18,11 @@ import com.woocommerce.android.R
  *
  * This class is based off of this [SO post](https://stackoverflow.com/questions/35761636/is-it-possible-to-use-vectordrawable-in-buttons-and-textviews-using-androiddraw/40250753#40250753)
  */
-class WCTextViewCompat @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0)
-    : AppCompatTextView(context, attrs, defStyle) {
+class WCTextViewCompat @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : AppCompatTextView(context, attrs, defStyle) {
     init {
         attrs?.let {
             val attributeArray = context.obtainStyledAttributes(attrs, R.styleable.WCTextViewCompat)
@@ -34,10 +37,10 @@ class WCTextViewCompat @JvmOverloads constructor(context: Context, attrs: Attrib
                 drawableTop = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableTopCompat)
             } else {
                 val drawableStartId = attributeArray
-                        .getResourceId(R.styleable.WCTextViewCompat_drawableStartCompat, -1)
+                    .getResourceId(R.styleable.WCTextViewCompat_drawableStartCompat, -1)
                 val drawableEndId = attributeArray.getResourceId(R.styleable.WCTextViewCompat_drawableEndCompat, -1)
                 val drawableBottomId = attributeArray
-                        .getResourceId(R.styleable.WCTextViewCompat_drawableBottomCompat, -1)
+                    .getResourceId(R.styleable.WCTextViewCompat_drawableBottomCompat, -1)
                 val drawableTopId = attributeArray.getResourceId(R.styleable.WCTextViewCompat_drawableTopCompat, -1)
 
                 if (drawableStartId != -1) {

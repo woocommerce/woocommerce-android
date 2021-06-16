@@ -14,8 +14,8 @@ import com.woocommerce.android.R
  * the border radius used here.
  */
 class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : AppCompatImageView(
-        ctx,
-        attrs
+    ctx,
+    attrs
 ) {
     private val borderPaint: Paint
 
@@ -46,13 +46,13 @@ class BorderedImageView @JvmOverloads constructor(ctx: Context, attrs: Attribute
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawRoundRect(
-                0f,          // left
-                0f,          // top
-                width.toFloat(),  // right
-                height.toFloat(), // bottom
-                borderRadius,
-                borderRadius,
-                borderPaint
+            0f, // left
+            0f, // top
+            width.toFloat(), // right
+            height.toFloat(), // bottom
+            borderRadius,
+            borderRadius,
+            borderPaint
         )
     }
 }

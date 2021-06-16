@@ -94,8 +94,8 @@ fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
         itemId = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
         methodId = methodId ?: "",
         methodTitle = methodTitle ?: "",
-        totalTax = -totalTax.roundError(),      // WCRefundShippineLine.totalTax is NEGATIVE
-        total = (total).roundError()            // WCREfundShippingLine.total is NEGATIVE
+        totalTax = -totalTax.roundError(), // WCRefundShippineLine.totalTax is NEGATIVE
+        total = (total).roundError() // WCREfundShippingLine.total is NEGATIVE
     )
 }
 
