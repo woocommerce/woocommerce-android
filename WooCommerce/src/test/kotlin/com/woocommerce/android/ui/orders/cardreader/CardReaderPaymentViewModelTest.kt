@@ -532,7 +532,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back, when already showing ReFetchingOrderState, then snackbar shown and screen dismissed`() =
+    fun `given user presses back, when already in ReFetchingOrderState, then snackbar shown and screen dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
             viewModel.onBackPressed() // shows ReFetchingOrderState screen
