@@ -1,12 +1,8 @@
 package com.woocommerce.android.di
 
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.login.WooLoginFragmentModule
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.ui.sitepicker.SitePickerModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.hilt.InstallIn
@@ -25,12 +21,4 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector
     abstract fun provideMagicLinkInterceptActivityInjector(): MagicLinkInterceptActivity
-
-    @ActivityScope
-    @ContributesAndroidInjector(modules = [HelpModule::class])
-    abstract fun provideHelpActivity(): HelpActivity
-
-    @ActivityScope
-    @ContributesAndroidInjector(modules = [SitePickerModule::class])
-    abstract fun provideSitePickerActivityInjector(): SitePickerActivity
 }

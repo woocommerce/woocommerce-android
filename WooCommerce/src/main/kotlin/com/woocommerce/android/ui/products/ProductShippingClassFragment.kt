@@ -15,22 +15,21 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Dialog which displays a list of product shipping classes
  */
-class ProductShippingClassFragment : BaseDaggerFragment(R.layout.fragment_product_shipping_class_list) {
+@AndroidEntryPoint
+class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_shipping_class_list) {
     companion object {
         const val TAG = "ProductShippingClassFragment"
         const val SELECTED_SHIPPING_CLASS_RESULT = "selected-shipping-class"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    private val viewModel: ProductShippingClassViewModel by viewModels { viewModelFactory }
+    private val viewModel: ProductShippingClassViewModel by viewModels()
 
     private val navArgs: ProductShippingClassFragmentArgs by navArgs()
 

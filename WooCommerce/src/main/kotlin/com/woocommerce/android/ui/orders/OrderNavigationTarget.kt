@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders
 
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 sealed class OrderNavigationTarget : Event() {
@@ -48,7 +48,9 @@ sealed class OrderNavigationTarget : Event() {
     object ViewCreateShippingLabelInfo : OrderNavigationTarget()
     object ViewPrintShippingLabelInfo : OrderNavigationTarget()
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
+    data class ViewPrintCustomsForm(val invoiceUrl: String, val isReprint: Boolean) : OrderNavigationTarget()
     data class StartShippingLabelCreationFlow(val orderIdentifier: String) : OrderNavigationTarget()
     object StartCardReaderConnectFlow : OrderNavigationTarget()
     data class StartCardReaderPaymentFlow(val orderIdentifier: String) : OrderNavigationTarget()
+    object ViewPrintingInstructions : OrderNavigationTarget()
 }

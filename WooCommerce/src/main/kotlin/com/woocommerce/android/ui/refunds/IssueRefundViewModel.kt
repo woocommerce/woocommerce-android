@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.refunds
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
@@ -14,7 +15,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFU
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUCCESS
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
@@ -46,16 +46,14 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -68,14 +66,16 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Locale
+import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.collections.sumBy
 import kotlin.math.min
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
-class IssueRefundViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class IssueRefundViewModel @Inject constructor(
+    savedState: SavedStateHandle,
+    private val dispatchers: CoroutineDispatchers,
     currencyFormatter: CurrencyFormatter,
     private val orderStore: WCOrderStore,
     private val wooStore: WooCommerceStore,
@@ -85,7 +85,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val gatewayStore: WCGatewayStore,
     private val refundStore: WCRefundStore
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val REFUND_METHOD_MANUAL = "manual"
@@ -93,7 +93,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private val _refundItems = MutableLiveData<List<ProductRefundListItem>>()
-    final val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems
+    val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems
 
     private val _refundShippingLines = MutableLiveData<List<ShippingRefundListItem>>()
     val refundShippingLines: LiveData<List<ShippingRefundListItem>> = _refundShippingLines
@@ -101,20 +101,20 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val areAllItemsSelected: Boolean
         get() = refundItems.value?.all { it.quantity == it.maxQuantity } ?: false
 
-    final val commonStateLiveData = LiveDataDelegateWithArgs(savedState, CommonViewState())
-    final val refundSummaryStateLiveData = LiveDataDelegateWithArgs(savedState, RefundSummaryViewState())
-    final val refundByItemsStateLiveData = LiveDataDelegateWithArgs(savedState, RefundByItemsViewState(),
+    val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
+    val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
+    val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(),
         onChange = { _, new ->
             updateRefundTotal(new.grandTotalRefund)
         })
-    final val refundByAmountStateLiveData = LiveDataDelegateWithArgs(
+    val refundByAmountStateLiveData = LiveDataDelegate(
         savedState,
         RefundByAmountViewState(),
         onChange = { _, new ->
             updateRefundTotal(new.enteredAmount)
         }
     )
-    final val productsRefundLiveData = LiveDataDelegateWithArgs(savedState, ProductsRefundViewState())
+    val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData
     private var refundByAmountState by refundByAmountStateLiveData
@@ -140,7 +140,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private var refundJob: Job? = null
-    final val isRefundInProgress: Boolean
+    val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
 
     init {
@@ -236,8 +236,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
 
         val items = order.items.map {
-            val maxQuantity = maxQuantities[it.uniqueId] ?: 0
-            val selectedQuantity = min(selectedQuantities[it.uniqueId] ?: 0, maxQuantity)
+            val maxQuantity = maxQuantities[it.itemId] ?: 0
+            val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity)
             ProductRefundListItem(it, maxQuantity, selectedQuantity)
         }
         updateRefundItems(items)
@@ -461,7 +461,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onRefundQuantityTapped(uniqueId: Long) {
-        _refundItems.value?.firstOrNull { it.orderItem.uniqueId == uniqueId }?.let {
+        _refundItems.value?.firstOrNull { it.orderItem.itemId == uniqueId }?.let {
             triggerEvent(ShowNumberPicker(it))
         }
 
@@ -529,7 +529,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<ProductRefundListItem> {
         val newItems = mutableListOf<ProductRefundListItem>()
         _refundItems.value?.forEach {
-            if (it.orderItem.uniqueId == uniqueId) {
+            if (it.orderItem.itemId == uniqueId) {
                 newItems.add(
                         it.copy(
                                 quantity = newQuantity,
@@ -546,11 +546,11 @@ class IssueRefundViewModel @AssistedInject constructor(
     fun onSelectButtonTapped() {
         if (areAllItemsSelected) {
             _refundItems.value?.forEach {
-                onRefundQuantityChanged(it.orderItem.uniqueId, 0)
+                onRefundQuantityChanged(it.orderItem.itemId, 0)
             }
         } else {
             _refundItems.value?.forEach {
-                onRefundQuantityChanged(it.orderItem.uniqueId, it.maxQuantity)
+                onRefundQuantityChanged(it.orderItem.itemId, it.maxQuantity)
             }
         }
 
@@ -784,7 +784,4 @@ class IssueRefundViewModel @AssistedInject constructor(
         data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<IssueRefundViewModel>
 }

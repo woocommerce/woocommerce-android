@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.mock
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
@@ -11,44 +11,33 @@ import com.woocommerce.android.ui.products.ProductTestUtils.generateProductImage
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class ProductImagesViewModelTest : BaseUnitTest() {
     lateinit var viewModel: ProductImagesViewModel
 
-    @Mock
-    lateinit var networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus = mock()
 
-    @Mock
-    lateinit var productImagesServiceWrapper: ProductImagesServiceWrapper
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
 
-    private fun savedState(productImages: List<Image>) = spy(
-            SavedStateWithArgs(
-                    SavedStateHandle(),
-                    arguments = null,
-                    defaultArgs = ProductImagesFragmentArgs(
-                            remoteId = 0,
-                            images = productImages.toTypedArray(),
-                            selectedImage = null,
-                            showChooser = false,
-                            requestCode = 123
-                    )
-            )
-    )
+    private fun savedState(productImages: List<Image>) = ProductImagesFragmentArgs(
+        remoteId = 0,
+        images = productImages.toTypedArray(),
+        selectedImage = null,
+        showChooser = false,
+        requestCode = 123
+    ).initSavedStateHandle()
 
     private fun initialize(productImages: List<Image> = generateProductImagesList()) {
         viewModel = ProductImagesViewModel(
                 networkStatus,
                 productImagesServiceWrapper,
-                savedState(productImages),
-                coroutinesTestRule.testDispatchers
+                savedState(productImages)
         ).apply {
             viewStateData.observeForever { _, _ -> }
         }

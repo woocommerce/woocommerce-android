@@ -3,12 +3,11 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.ShippingRate.Option
 import com.woocommerce.android.model.ShippingRate.Option.ADULT_SIGNATURE
@@ -18,33 +17,31 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.PackageRateListItem
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingRatesResult.ShippingPackage
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient.ShippingRatesApiResponse.ShippingOption.Rate
 import java.math.BigDecimal
+import javax.inject.Inject
 
-class ShippingCarrierRatesViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ShippingCarrierRatesViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_RATE_OPTION = "default"
         private const val SIGNATURE_RATE_OPTION = "signature_required"
@@ -55,19 +52,10 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         private const val CARRIER_DHL_EXPRESS_KEY = "dhlexpress"
         private const val CARRIER_DHL_ECOMMERCE_KEY = "dhlecommerce"
         private const val CARRIER_DHL_ECOMMERCE_ASIA_KEY = "dhlecommerceasia"
-        private const val FLAT_RATE_KEY = "flat_rate"
-        private const val FREE_SHIPPING_KEY = "free_shipping"
-        private const val LOCAL_PICKUP_KEY = "local_pickup"
-        private const val SHIPPING_METHOD_USPS_TITLE = "USPS"
-        private const val SHIPPING_METHOD_DHL_TITLE = "DHL Express"
-        private const val SHIPPING_METHOD_FEDEX_TITLE = "Fedex"
-        private const val SHIPPING_METHOD_USPS_KEY = "wc_services_usps"
-        private const val SHIPPING_METHOD_DHL_KEY = "wc_services_dhlexpress"
-        private const val SHIPPING_METHOD_FEDEX_KEY = "wc_services_fedex"
     }
     private val arguments: ShippingCarrierRatesFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _shippingRates = MutableLiveData<List<PackageRateListItem>>()
@@ -92,7 +80,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             arguments.order,
             arguments.originAddress,
             arguments.destinationAddress,
-            arguments.packages.toList()
+            arguments.packages.toList(),
+            arguments.customsPackages?.toList()
         )
 
         if (carrierRatesResult.isError) {
@@ -104,12 +93,16 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         } else {
             updateRates(generateRateModels(carrierRatesResult.model!!))
 
-            var banner: String? = null
-            if (arguments.order.shippingTotal > BigDecimal.ZERO) {
-                banner = resourceProvider.getString(
+            val banner = when {
+                arguments.order.shippingLines.isEmpty() -> null
+                arguments.order.shippingTotal.isEqualTo(BigDecimal.ZERO) -> resourceProvider.getString(
+                    R.string.shipping_label_shipping_carrier_shipping_method_banner_message,
+                    arguments.order.shippingLines.first().methodTitle
+                )
+                else -> resourceProvider.getString(
                     R.string.shipping_label_shipping_carrier_flat_fee_banner_message,
-                    arguments.order.shippingTotal.format(),
-                    getShippingMethods(arguments.order).joinToString()
+                    arguments.order.shippingLines.first().methodTitle,
+                    arguments.order.shippingTotal.format()
                 )
             }
             viewState = viewState.copy(isEmptyViewVisible = false, bannerMessage = banner)
@@ -220,20 +213,6 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         }
     }
 
-    private fun getShippingMethods(order: Order): List<String> {
-        return order.shippingMethods.map {
-            when (it.id) {
-                FLAT_RATE_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_flat_rate)
-                FREE_SHIPPING_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_free_shipping)
-                LOCAL_PICKUP_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_local_pickup)
-                SHIPPING_METHOD_USPS_KEY -> SHIPPING_METHOD_USPS_TITLE
-                SHIPPING_METHOD_FEDEX_KEY -> SHIPPING_METHOD_FEDEX_TITLE
-                SHIPPING_METHOD_DHL_KEY -> SHIPPING_METHOD_DHL_TITLE
-                else -> resourceProvider.getString(R.string.other)
-            }
-        }
-    }
-
     // TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use
     private fun BigDecimal?.format(): String {
         return when {
@@ -292,7 +271,4 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         val isEmptyViewVisible: Boolean = false,
         val isDoneButtonVisible: Boolean = false
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ShippingCarrierRatesViewModel>
 }

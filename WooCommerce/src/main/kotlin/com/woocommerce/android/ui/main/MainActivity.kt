@@ -64,9 +64,6 @@ import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -78,7 +75,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppUpgradeActivity(),
     MainContract.View,
-    HasAndroidInjector,
     MainNavigationRouter,
     MainBottomNavigationView.MainNavigationListener,
     NavController.OnDestinationChangedListener,
@@ -108,7 +104,6 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
@@ -409,7 +404,8 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
                 R.id.printShippingLabelInfoFragment,
-                R.id.shippingLabelFormatOptionsFragment -> {
+                R.id.shippingLabelFormatOptionsFragment,
+                R.id.printingInstructionsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -496,8 +492,6 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     private fun isDialogDestination(destination: NavDestination) = destination.navigatorName == DIALOG_NAVIGATOR_NAME
-
-    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

@@ -1,16 +1,15 @@
 package com.woocommerce.android.ui.orders.tracking
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argThat
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
@@ -18,15 +17,17 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
@@ -35,13 +36,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_IDENTIFIER)
-        )
-    )
+    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
 
     private lateinit var viewModel: AddOrderShipmentTrackingViewModel
 
@@ -49,7 +44,6 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     fun setup() {
         viewModel = AddOrderShipmentTrackingViewModel(
             savedState = savedState,
-            dispatchers = coroutinesTestRule.testDispatchers,
             networkStatus = networkStatus,
             orderDetailRepository = repository
         )

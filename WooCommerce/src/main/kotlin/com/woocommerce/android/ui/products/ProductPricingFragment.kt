@@ -28,13 +28,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProductPricingFragment :
     BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
-    private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory.get() }
+    private val viewModel: ProductPricingViewModel by viewModels()
 
     override val lastEvent: Event?
         get() = viewModel.event.value

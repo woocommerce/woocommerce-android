@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -14,16 +14,12 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -38,13 +34,14 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
+import javax.inject.Inject
 
-class ProductListViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ProductListViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -53,10 +50,10 @@ class ProductListViewModel @AssistedInject constructor(
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
 
-    final val viewStateLiveData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
-    private final val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
+    private val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
         val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
                 ?: mutableMapOf()
         savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
@@ -421,7 +418,4 @@ class ProductListViewModel @AssistedInject constructor(
             val productStatusFilter: String?
         ) : ProductListEvent()
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ProductListViewModel>
 }

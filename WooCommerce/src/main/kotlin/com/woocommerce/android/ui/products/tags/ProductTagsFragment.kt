@@ -26,7 +26,9 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
     OnLoadMoreListener,
     OnProductTagClickListener {

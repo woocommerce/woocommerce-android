@@ -31,7 +31,8 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         isPaymentCollectableWithCardReader: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         onIssueRefundClickListener: (view: View) -> Unit,
-        onCollectCardPresentPaymentClickListener: (view: View) -> Unit
+        onCollectCardPresentPaymentClickListener: (view: View) -> Unit,
+        onPrintingInstructionsClickListener: (view: View) -> Unit
     ) {
         binding.paymentInfoProductsTotal.text = formatCurrencyForDisplay(order.productsTotal)
         binding.paymentInfoShippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
@@ -109,6 +110,15 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         } else {
             binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.GONE
         }
+
+        // TODO Cardreader update logic.
+        if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
+            binding.paymentInfoPrintingInstructions.setOnClickListener(
+                onPrintingInstructionsClickListener
+            )
+        } else {
+            binding.paymentInfoPrintingInstructions.visibility = View.GONE
+        }
     }
 
     fun showRefunds(
@@ -125,7 +135,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         binding.paymentInfoRefundTotalSection.hide()
 
         var availableRefundQuantity = order.availableRefundQuantity
-        refunds.flatMap { it.items }.groupBy { it.uniqueId }.forEach { productRefunds ->
+        refunds.flatMap { it.items }.groupBy { it.orderItemId }.forEach { productRefunds ->
             val refundedCount = productRefunds.value.sumBy { it.quantity }
             availableRefundQuantity -= refundedCount
         }

@@ -1,3 +1,0 @@
-6.7 :
-Nous avons entendu dire que les commandes peuvent être exécutées en plusieurs envois. Avec cette mise à jour, vous pouvez désormais imprimer plusieurs étiquettes pour une commande. Nous avons également corrigé quelques autres petites choses pour améliorer votre expérience.
-

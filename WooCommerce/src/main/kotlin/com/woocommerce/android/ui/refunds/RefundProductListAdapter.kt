@@ -128,7 +128,7 @@ class RefundProductListAdapter(
 
             quantityTextView.text = item.quantity.toString()
             quantityTextView.setOnClickListener {
-                onItemClicked(item.orderItem.uniqueId)
+                onItemClicked(item.orderItem.itemId)
             }
 
             imageMap.get(item.orderItem.productId)?.let {
@@ -164,7 +164,7 @@ class RefundProductListAdapter(
         private val newList: List<ProductRefundListItem>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].orderItem.uniqueId == newList[newItemPosition].orderItem.uniqueId
+            return oldList[oldItemPosition].orderItem.itemId == newList[newItemPosition].orderItem.itemId
         }
 
         override fun getOldListSize(): Int = oldList.size
