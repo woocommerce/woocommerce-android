@@ -30,6 +30,8 @@ import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadR
 import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -97,7 +99,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         CardPresentEligibleFeatureChecker.CACHE_VALIDITY_TIME_S
     ) {
         override fun run(): Boolean {
-            cardPresentEligibleFeatureChecker.doCheck()
+            GlobalScope.launch { cardPresentEligibleFeatureChecker.doCheck() }
             return true
         }
     }

@@ -43,7 +43,6 @@ class AppSettingsActivity : AppCompatActivity(),
     @Inject lateinit var presenter: AppSettingsContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var prefs: AppPrefs
-    @Inject lateinit var cardPresentEligibleFeatureChecker: CardPresentEligibleFeatureChecker
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
@@ -60,7 +59,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
         presenter.takeView(this)
 
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -111,7 +110,6 @@ class AppSettingsActivity : AppCompatActivity(),
     // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
     @Suppress("WrongConstant")
     override fun onSiteChanged() {
-        cardPresentEligibleFeatureChecker.doCheck()
         if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
         siteChanged = true
         setResult(RESULT_CODE_SITE_CHANGED)
