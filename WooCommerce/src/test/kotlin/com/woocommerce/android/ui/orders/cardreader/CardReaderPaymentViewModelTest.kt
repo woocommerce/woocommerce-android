@@ -94,7 +94,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedOrder.billingAddress).thenReturn(address)
         whenever(address.email).thenReturn("test@test.test")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
-        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
+        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(mockedOrder)
         whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
@@ -108,7 +108,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given fetching order fails, when payment screen shown, then FailedPayment state is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
 
             viewModel.start()
 
@@ -118,7 +118,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
             coroutinesTestRule.testDispatcher.runBlockingTest {
-                whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
+                whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
 
                 viewModel.start()
 
@@ -606,7 +606,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when re-fetching order fails, then SnackBar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(any())).thenReturn(null)
+            whenever(orderRepository.fetchOrder(any(), any())).thenReturn(null)
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)

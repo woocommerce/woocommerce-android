@@ -179,7 +179,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     }
 
     private suspend fun fetchOrder(): Order? {
-        return orderRepository.fetchOrder(arguments.orderIdentifier)
+        return orderRepository.fetchOrder(arguments.orderIdentifier, useCachedOnFailure = false)
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
