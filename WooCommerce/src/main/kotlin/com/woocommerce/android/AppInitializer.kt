@@ -30,7 +30,9 @@ import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadR
 import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -81,6 +83,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     private lateinit var application: Application
 
+    private var appInForegroundScope: CoroutineScope? = null
+
     /**
      * Update WP.com and WooCommerce settings in a background task.
      */
@@ -99,7 +103,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         CardPresentEligibleFeatureChecker.CACHE_VALIDITY_TIME_S
     ) {
         override fun run(): Boolean {
-            GlobalScope.launch { cardPresentEligibleFeatureChecker.doCheck() }
+            appInForegroundScope = CoroutineScope(Dispatchers.IO).apply {
+                launch { cardPresentEligibleFeatureChecker.doCheck() }
+            }
             return true
         }
     }
@@ -176,13 +182,14 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             connectionReceiverRegistered = false
             application.unregisterReceiver(connectionReceiver)
         }
+
+        appInForegroundScope?.cancel()
     }
 
     private fun isGooglePlayServicesAvailable(context: Context): Boolean {
         val googleApiAvailability = GoogleApiAvailability.getInstance()
-        val connectionResult = googleApiAvailability.isGooglePlayServicesAvailable(context)
 
-        return when (connectionResult) {
+        return when (val connectionResult = googleApiAvailability.isGooglePlayServicesAvailable(context)) {
             ConnectionResult.SUCCESS -> true
             else -> {
                 WooLog.w(
