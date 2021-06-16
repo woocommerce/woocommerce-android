@@ -123,6 +123,17 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
+            coroutinesTestRule.testDispatcher.runBlockingTest {
+                whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
+
+                viewModel.start()
+
+                assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
+                        .isEqualTo(R.string.order_error_fetch_generic)
+            }
+
+    @Test
     fun `when payment screen shown, then loading data state is shown`() {
         viewModel.start()
 
