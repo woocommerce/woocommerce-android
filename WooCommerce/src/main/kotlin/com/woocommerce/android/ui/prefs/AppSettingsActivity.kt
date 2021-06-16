@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale

@@ -87,7 +87,7 @@ class SitePickerPresenter @Inject constructor(
 
     override fun fetchUserRoleFromAPI(site: SiteModel) {
         coroutineScope.launch {
-            val fetchUserJob = async {  userEligibilityFetcher.fetchUserInfo() }
+            val fetchUserJob = async { userEligibilityFetcher.fetchUserInfo() }
             async { cardPresentEligibleFeatureChecker.doCheck() }.await()
             val userModel = fetchUserJob.await()
             view?.hideProgressDialog()
