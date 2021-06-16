@@ -91,7 +91,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
             address = address,
             addressType = ORIGIN,
             validationResult = validationResult,
-            isInternational = false
+            requiresPhoneNumber = false
         ).initSavedStateHandle()
 
     private lateinit var viewModel: EditShippingLabelAddressViewModel
