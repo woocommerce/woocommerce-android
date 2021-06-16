@@ -32,10 +32,10 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.C
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -53,7 +53,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import java.math.BigDecimal
 
@@ -70,7 +69,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: CardReaderPaymentViewModel
     private val loggerWrapper: AppLogWrapper = mock()
-    private val orderStore: WCOrderStore = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
     private var resourceProvider: ResourceProvider = mock()
@@ -87,9 +85,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             savedState,
             cardReaderManager = cardReaderManager,
             logger = loggerWrapper,
-            orderStore = orderStore,
             orderRepository = orderRepository,
-            dispatchers = coroutinesTestRule.testDispatchers,
             resourceProvider = resourceProvider,
             selectedSite = selectedSite
         )

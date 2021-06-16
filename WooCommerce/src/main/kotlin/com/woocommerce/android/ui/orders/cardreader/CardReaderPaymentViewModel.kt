@@ -29,12 +29,11 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.C
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -47,7 +46,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T.MAIN
 import java.math.BigDecimal
@@ -59,9 +57,7 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 class CardReaderPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
-    private val dispatchers: CoroutineDispatchers,
     private val logger: AppLogWrapper,
-    private val orderStore: WCOrderStore,
     private val orderRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite
@@ -292,7 +288,7 @@ class CardReaderPaymentViewModel @Inject constructor(
 
         // TODO cardreader Update FailedPaymentState
         data class FailedPaymentState(
-            val errorType: PaymentFlowError,
+            private val errorType: PaymentFlowError,
             override val amountWithCurrencyLabel: String?,
             override val onPrimaryActionClicked: (() -> Unit)
         ) : ViewState(
