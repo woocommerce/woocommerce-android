@@ -116,12 +116,13 @@ class RefundDetailViewModel @Inject constructor(
     private fun getRefundMethod(order: Order, refund: Refund): String {
         val manualRefund = resourceProvider.getString(R.string.order_refunds_manual_refund)
         return if (order.paymentMethodTitle.isNotBlank() &&
-                (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment))
+                (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)) {
             order.paymentMethodTitle
-        else if (order.paymentMethodTitle.isNotBlank())
+        } else if (order.paymentMethodTitle.isNotBlank()) {
             "$manualRefund - ${order.paymentMethodTitle}"
-        else
+        } else {
             manualRefund
+        }
     }
 
     @Parcelize

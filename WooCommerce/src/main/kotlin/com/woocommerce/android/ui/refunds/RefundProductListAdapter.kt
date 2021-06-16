@@ -33,10 +33,11 @@ class RefundProductListAdapter(
     private var items = mutableListOf<ProductRefundListItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
-        return if (isProductDetailList)
+        return if (isProductDetailList) {
             RefundDetailViewHolder(parent, formatCurrency, imageMap)
-        else
+        } else {
             IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageMap)
+        }
     }
 
     override fun onBindViewHolder(holder: RefundViewHolder, position: Int) {
