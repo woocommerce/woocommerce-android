@@ -85,7 +85,11 @@ data class Address(
     }
 
     /**
-     * Checks whether the entered phone number contains 10 digits exactly after stripping an optional 1 as the area code.
+     * Checks whether the phone number is valid or not, depending on the [addressType], the check is:
+     * - [ORIGIN]: Checks whether the phone number contains 10 digits exactly after deleting an optional 1 as
+     *             the area code.
+     * - [DESTINATION]: Checks whether the phone has any digits.
+     *
      * As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
      * and that's similar to what the web client does.
      * Source: https://github.com/Automattic/woocommerce-services/issues/1351
