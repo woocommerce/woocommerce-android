@@ -84,18 +84,16 @@ class CardReaderPaymentViewModel @Inject constructor(
         paymentFlowJob = launch {
             try {
                 fetchOrder()?.let { order ->
-                    order.total.let { amount ->
-                        // TODO cardreader don't hardcode currency symbol ($)
-                        collectPaymentFlow(
-                            cardReaderManager,
-                            order.getPaymentDescription(),
-                            order.remoteId,
-                            amount,
-                            order.currency,
-                            order.billingAddress.email,
-                            "$$amount"
-                        )
-                    }
+                    // TODO cardreader don't hardcode currency symbol ($)
+                    collectPaymentFlow(
+                        cardReaderManager,
+                        order.getPaymentDescription(),
+                        order.remoteId,
+                        order.total,
+                        order.currency,
+                        order.billingAddress.email,
+                        "${order.total}"
+                    )
                 } ?: run {
                     viewState.postValue(
                         FailedPaymentState(
