@@ -197,7 +197,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // GIVEN
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
 
             // WHEN
@@ -213,7 +213,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // GIVEN
             doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
 
             // WHEN
