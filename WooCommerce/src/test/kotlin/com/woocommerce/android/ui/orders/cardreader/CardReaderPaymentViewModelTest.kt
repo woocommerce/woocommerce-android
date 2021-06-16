@@ -71,6 +71,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val orderRepository: OrderDetailRepository = mock()
     private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
@@ -84,7 +85,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderManager = cardReaderManager,
             orderRepository = orderRepository,
             resourceProvider = resourceProvider,
-            selectedSite = selectedSite
+            selectedSite = selectedSite,
+            paymentCollectibilityChecker = paymentCollectibilityChecker
         )
 
         val mockedOrder = mock<Order>()
@@ -103,6 +105,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
         whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
+        whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
     }
 
     @Test
@@ -131,6 +134,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         assertThat(viewModel.viewStateData.value).isInstanceOf(LoadingDataState::class.java)
+    }
+
+    @Test
+    fun `when payment not collectable, then flow terminated and snackbar shown`() {
+        whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.start()
+
+        assertThat((events[0] as ShowSnackbar).message)
+            .isEqualTo(R.string.card_reader_payment_order_paid_payment_cancelled)
+        assertThat(events[1]).isInstanceOf(Exit::class.java)
     }
 
     @Test

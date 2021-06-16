@@ -57,7 +57,8 @@ class CardReaderPaymentViewModel @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val orderRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
@@ -82,7 +83,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                 delay(ARTIFICIAL_RETRY_DELAY)
             }
             fetchOrder()?.let { order ->
-                if (order.isOrderPaid) {
+                if (!paymentCollectibilityChecker.isCollectable(order, orderRepository)) {
                     triggerEvent(ShowSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled))
                     triggerEvent(Exit)
                     return@launch
