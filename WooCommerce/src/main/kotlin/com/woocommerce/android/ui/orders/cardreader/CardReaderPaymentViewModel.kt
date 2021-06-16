@@ -23,6 +23,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -51,7 +52,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T.MAIN
@@ -92,19 +92,19 @@ class CardReaderPaymentViewModel @Inject constructor(
     private fun initPaymentFlow() {
         paymentFlowJob = launch {
             try {
-                loadOrderFromDB()?.let { order ->
-                    order.total.toBigDecimalOrNull()?.let { amount ->
+                fetchOrder()?.let { order ->
+                    order.total.let { amount ->
                         // TODO cardreader don't hardcode currency symbol ($)
                         collectPaymentFlow(
                             cardReaderManager,
                             order.getPaymentDescription(),
-                            order.remoteOrderId,
+                            order.remoteId,
                             amount,
                             order.currency,
-                            order.billingEmail,
+                            order.billingAddress.email,
                             "$$amount"
                         )
-                    } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
+                    }
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
                 logger.e(MAIN, e.stackTraceToString())
@@ -185,12 +185,15 @@ class CardReaderPaymentViewModel @Inject constructor(
     @VisibleForTesting
     fun reFetchOrder() {
         fetchOrderJob = launch {
-            orderRepository.fetchOrder(arguments.orderIdentifier)
-                ?: triggerEvent(Event.ShowSnackbar(R.string.card_reader_fetching_order_failed))
+            fetchOrder() ?: triggerEvent(Event.ShowSnackbar(R.string.card_reader_fetching_order_failed))
             if (viewState.value == FetchingOrderState) {
                 triggerEvent(Exit)
             }
         }
+    }
+
+    private suspend fun fetchOrder(): Order? {
+        return orderRepository.fetchOrder(arguments.orderIdentifier)
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
@@ -236,11 +239,12 @@ class CardReaderPaymentViewModel @Inject constructor(
         orderRepository.onCleanup()
     }
 
-    private suspend fun loadOrderFromDB() =
-        withContext(dispatchers.io) { orderStore.getOrderByIdentifier(arguments.orderIdentifier) }
-
-    private fun WCOrderModel.getPaymentDescription(): String =
-        resourceProvider.getString(R.string.card_reader_payment_description, this.id, selectedSite.get().name.orEmpty())
+    private fun Order.getPaymentDescription(): String =
+            resourceProvider.getString(
+                    R.string.card_reader_payment_description,
+                    this.number,
+                    selectedSite.get().name.orEmpty()
+            )
 
     sealed class CardReaderPaymentEvent : Event() {
         data class PrintReceipt(val receiptUrl: String, val documentName: String) : CardReaderPaymentEvent()

@@ -24,6 +24,8 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
@@ -51,12 +53,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
+import java.math.BigDecimal
 
-private const val DUMMY_TOTAL = "10.12"
-private const val DUMMY_ORDER_ID = 123
+private val DUMMY_TOTAL = BigDecimal(10.72)
+private const val DUMMY_ORDER_NUMBER = "123"
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -92,12 +94,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite
         )
 
-        val mockedOrder = mock<WCOrderModel>()
+        val mockedOrder = mock<Order>()
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
-        whenever(mockedOrder.billingEmail).thenReturn("test@test.test")
-        whenever(mockedOrder.id).thenReturn(DUMMY_ORDER_ID)
-        whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
+        val address = mock<Address>()
+        whenever(mockedOrder.billingAddress).thenReturn(address)
+        whenever(address.email).thenReturn("test@test.test")
+        whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
+        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
         whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
@@ -109,23 +113,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Order contains invalid total, when payment screen shown, then FailedPayment state is shown`() {
-        val mockedOrder = mock<WCOrderModel>()
-        whenever(mockedOrder.total).thenReturn("invalid big decimal")
-        whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
+    fun `given fetching order fails, when payment screen shown, then FailedPayment state is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
 
-        viewModel.start()
+            viewModel.start()
 
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
-
-    @Test
-    fun `given Order not found in database, when payment screen shown, then FailedPayment state is shown`() {
-        whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(null)
-
-        viewModel.start()
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
     }
 
     @Test
@@ -143,7 +137,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel().apply {
                 name = siteName
             })
-            whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_ID, siteName))
+            whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_NUMBER, siteName))
                 .thenReturn(expectedResult)
             val stringCaptor = argumentCaptor<String>()
 
