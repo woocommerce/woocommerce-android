@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.MyStoreDateBarBinding
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
@@ -19,6 +21,11 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
     private val binding = MyStoreDateBarBinding.inflate(LayoutInflater.from(ctx), this)
 
     private lateinit var dateUtils: DateUtils
+
+    init {
+        orientation = VERTICAL
+        setBackgroundColor(ContextCompat.getColor(context, R.color.date_range_view_background))
+    }
 
     fun initView(dateUtils: DateUtils) {
         clearDateRangeValues()

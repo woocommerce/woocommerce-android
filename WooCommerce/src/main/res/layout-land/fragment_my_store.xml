@@ -5,82 +5,76 @@
     android:id="@+id/dashboardStats_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.mystore.MyStoreFragment">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+        android:id="@+id/my_store_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Date bar -->
-        <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
-            android:id="@+id/my_store_date_bar"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/stats_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
 
-        <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
-            android:id="@+id/my_store_refresh_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/stats_scroll_view"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:descendantFocusability="blocksDescendants"
+                android:orientation="vertical">
 
-                <LinearLayout
+                <com.woocommerce.android.widgets.WCEmptyStatsView
+                    android:id="@+id/empty_stats_view"
+                    style="@style/Woo.Card.WithoutPadding"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <com.woocommerce.android.widgets.WCEmptyView
+                    android:id="@+id/empty_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <!-- Date bar -->
+                <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
+                    android:id="@+id/my_store_date_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <!-- Order stats -->
+                <com.woocommerce.android.ui.mystore.MyStoreStatsView
+                    android:id="@+id/my_store_stats"
+                    style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:animateLayoutChanges="true"
-                    android:descendantFocusability="blocksDescendants"
-                    android:orientation="vertical">
+                    android:orientation="vertical" />
 
-                    <com.woocommerce.android.widgets.WCEmptyStatsView
-                        android:id="@+id/empty_stats_view"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
+                <!-- Feedback Request Card -->
+                <com.woocommerce.android.ui.feedback.FeedbackRequestCard
+                    android:id="@+id/store_feedback_request_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/minor_100"
+                    android:visibility="gone" />
 
-                    <com.woocommerce.android.widgets.WCEmptyView
-                        android:id="@+id/empty_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
+                <!-- Top performer stats -->
+                <com.woocommerce.android.ui.mystore.MyStoreTopPerformersView
+                    android:id="@+id/my_store_top_performers"
+                    style="@style/Woo.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
 
-                    <!-- Order stats -->
-                    <com.woocommerce.android.ui.mystore.MyStoreStatsView
-                        android:id="@+id/my_store_stats"
-                        style="@style/Woo.Card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-                    <!-- Feedback Request Card -->
-                    <com.woocommerce.android.ui.feedback.FeedbackRequestCard
-                        android:id="@+id/store_feedback_request_card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/minor_100"
-                        android:visibility="gone" />
-
-                    <!-- Top performer stats -->
-                    <com.woocommerce.android.ui.mystore.MyStoreTopPerformersView
-                        android:id="@+id/my_store_top_performers"
-                        style="@style/Woo.Card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
-
-        </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
 
     <ScrollView
         android:id="@+id/stats_error_scroll_view"
@@ -137,5 +131,4 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
-
 </RelativeLayout>

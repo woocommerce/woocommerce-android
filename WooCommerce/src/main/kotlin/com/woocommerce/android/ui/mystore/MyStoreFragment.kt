@@ -97,7 +97,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         get() = activity as? MainNavigationRouter
 
     private val myStoreDateBar
-        get() = binding.myStoreStats.myStoreDateBar
+        get() = binding.myStoreDateBar
 
     private var isEmptyViewVisible: Boolean = false
 

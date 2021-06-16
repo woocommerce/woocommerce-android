@@ -107,9 +107,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val ordersValue
         get() = binding.root.findViewById<MaterialTextView>(R.id.orders_value)
 
-    val myStoreDateBar
-        get() = binding.myStoreDateBar
-
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: MyStoreStatsListener,
