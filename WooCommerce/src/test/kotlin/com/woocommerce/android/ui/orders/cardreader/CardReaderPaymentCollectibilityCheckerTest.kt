@@ -249,6 +249,5 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             datePaid = datePaid,
             status = paymentStatus
         )
-
     }
 }
