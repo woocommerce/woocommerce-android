@@ -93,7 +93,7 @@ data class Address(
     fun hasValidPhoneNumber(addressType: AddressType): Boolean {
         return when(addressType){
             ORIGIN -> phone.replace(Regex("^1|[^\\d]"), "").length == 10
-            DESTINATION -> phone.contains("\\d")
+            DESTINATION -> phone.contains(Regex("\\d"))
         }
     }
 

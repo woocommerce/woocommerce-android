@@ -194,7 +194,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = data.stepsState.originAddressStep.data,
                         type = ORIGIN,
-                        isInternational = data.isInternationalShipment
+                        requiresPhoneNumber = data.isInternationalShipment
                     )
                 )
             }
@@ -204,7 +204,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = data.stepsState.shippingAddressStep.data,
                         type = DESTINATION,
-                        isInternational = data.isInternationalShipment
+                        requiresPhoneNumber = data.isInternationalShipment &&
+                            data.stepsState.carrierStep.requiresDestinationPhoneNumber
                     )
                 )
             }
@@ -260,7 +261,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         address = data.stepsState.originAddressStep.data,
                         type = ORIGIN,
                         validationResult = event.validationResult,
-                        isInternational = data.isInternationalShipment
+                        requiresPhoneNumber = data.isInternationalShipment
                     )
                 )
             }
@@ -282,7 +283,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = event.address,
                         type = ORIGIN,
-                        isInternational = data.isInternationalShipment
+                        requiresPhoneNumber = data.isInternationalShipment
                     )
                 )
             }
@@ -327,7 +328,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         address = data.stepsState.shippingAddressStep.data,
                         type = DESTINATION,
                         validationResult = event.validationResult,
-                        isInternational = data.isInternationalShipment
+                        requiresPhoneNumber = data.isInternationalShipment &&
+                            data.stepsState.carrierStep.requiresDestinationPhoneNumber
                     )
                 )
             }
@@ -349,7 +351,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = event.address,
                         type = DESTINATION,
-                        isInternational = data.isInternationalShipment
+                        requiresPhoneNumber = data.isInternationalShipment &&
+                            data.stepsState.carrierStep.requiresDestinationPhoneNumber
                     )
                 )
             }
@@ -523,7 +526,14 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class CarrierStep(
             override val status: StepStatus,
             override val data: List<ShippingRate>
-        ) : Step<List<ShippingRate>>()
+        ) : Step<List<ShippingRate>>() {
+            /**
+             * Checks if one of the selected carriers requires a destination phone number
+             * if the shipment is international
+             */
+            val requiresDestinationPhoneNumber
+                get() = data.any { it.carrierId.contains("dhl", ignoreCase = true) }
+        }
 
         @Parcelize
         data class PaymentsStep(
@@ -592,15 +602,24 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
 
         private fun updateForInternationalRequirements(): StepsState {
-            val originAddressStep = if (isInternational && !originAddressStep.data.hasValidPhoneNumber()) {
+            val originAddressStep = if (isInternational && !originAddressStep.data.hasValidPhoneNumber(ORIGIN)) {
                 originAddressStep.copy(status = READY)
             } else originAddressStep
+
+            val shippingAddressStep = if (isInternational &&
+                carrierStep.requiresDestinationPhoneNumber &&
+                !shippingAddressStep.data.hasValidPhoneNumber(DESTINATION)) {
+                shippingAddressStep.copy(status = READY)
+            } else shippingAddressStep
+
             val customsStep = customsStep.copy(
                 isVisible = isInternational,
                 data = if (isInternational) customsStep.data else null
             )
+
             return copy(
                 originAddressStep = originAddressStep,
+                shippingAddressStep = shippingAddressStep,
                 customsStep = customsStep
             )
         }
@@ -777,7 +796,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             val address: Address,
             val type: AddressType,
             val validationResult: ValidationResult? = null,
-            val isInternational: Boolean
+            val requiresPhoneNumber: Boolean
         ) : SideEffect()
 
         data class ShowPackageOptions(
