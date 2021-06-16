@@ -71,12 +71,16 @@ class CardReaderPaymentViewModel @Inject constructor(
     fun start() {
         // TODO cardreader Make sure a reader is connected
         if (paymentFlowJob == null) {
-            initPaymentFlow()
+            initPaymentFlow(isRetry = false)
         }
     }
 
-    private fun initPaymentFlow() {
+    private fun initPaymentFlow(isRetry: Boolean) {
         paymentFlowJob = launch {
+            viewState.postValue((LoadingDataState))
+            if (isRetry) {
+                delay(ARTIFICIAL_RETRY_DELAY)
+            }
             fetchOrder()?.let { order ->
                 if (order.isOrderPaid) {
                     triggerEvent(ShowSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled))
@@ -98,7 +102,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                     FailedPaymentState(
                         errorType = PaymentFlowError.FETCHING_ORDER_FAILED,
                         amountWithCurrencyLabel = null,
-                        onPrimaryActionClicked = { initPaymentFlow() }
+                        onPrimaryActionClicked = { initPaymentFlow(isRetry = true) }
                     )
                 )
             }
@@ -186,7 +190,7 @@ class CardReaderPaymentViewModel @Inject constructor(
         WooLog.e(WooLog.T.ORDERS, error.errorMessage)
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
-        } ?: { initPaymentFlow() }
+        } ?: { initPaymentFlow(isRetry = true) }
         viewState.postValue(FailedPaymentState(error.type.mapToUiError(), amountLabel, onRetryClicked))
     }
 
