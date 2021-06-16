@@ -480,7 +480,6 @@ class MainActivity : AppUpgradeActivity(),
             resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle)
         subtitleView.text = subtitle
         subtitleView.show()
-        subtitleView.visibility = View.VISIBLE
         binding.appBarLayout.addOnOffsetChangedListener(
             AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
                 subtitleView.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
