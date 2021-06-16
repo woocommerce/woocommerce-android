@@ -166,9 +166,4 @@
         Payment reader
     -->
     <color name="disconnected_state_number_background_color">@color/woo_gray_0</color>
-
-    <!--
-    Date range view
-    -->
-    <color name="date_range_view_background">@color/cardview_light_background</color>
 </resources>
