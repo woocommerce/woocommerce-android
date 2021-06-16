@@ -468,11 +468,10 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     fun setSubtitle(subtitle: CharSequence) {
-        val subtitleView = binding.collapsingToolbar.findViewById<TextView>(R.id.toolbar_subtitle)
         if (subtitle.isBlank()) {
-            subtitleView.hide()
+            binding.toolbarSubtitle.hide()
         } else {
-            setFadingSubtitleOnCollapsingToolbar(subtitleView, subtitle)
+            setFadingSubtitleOnCollapsingToolbar(binding.toolbarSubtitle, subtitle)
         }
     }
 
