@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.C
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FetchingOrderState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
@@ -74,7 +74,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     val viewStateData: LiveData<ViewState> = viewState
 
     private var paymentFlowJob: Job? = null
-    @VisibleForTesting var fetchOrderJob: Job? = null
+    @VisibleForTesting var refetchOrderJob: Job? = null
 
     fun start() {
         // TODO cardreader Check if the payment was already processed and cancel this flow
@@ -187,9 +187,9 @@ class CardReaderPaymentViewModel @Inject constructor(
 
     @VisibleForTesting
     fun reFetchOrder() {
-        fetchOrderJob = launch {
-            fetchOrder() ?: triggerEvent(Event.ShowSnackbar(R.string.card_reader_fetching_order_failed))
-            if (viewState.value == FetchingOrderState) {
+        refetchOrderJob = launch {
+            fetchOrder() ?: triggerEvent(Event.ShowSnackbar(R.string.card_reader_refetching_order_failed))
+            if (viewState.value == ReFetchingOrderState) {
                 triggerEvent(Exit)
             }
         }
@@ -256,12 +256,12 @@ class CardReaderPaymentViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        if (fetchOrderJob?.isActive == true) {
-            if (viewState.value != FetchingOrderState) {
-                viewState.value = FetchingOrderState
+        if (refetchOrderJob?.isActive == true) {
+            if (viewState.value != ReFetchingOrderState) {
+                viewState.value = ReFetchingOrderState
             } else {
                 // show "data might be outdated" and exit the flow when the user presses back on FetchingOrder screen
-                triggerEvent(ShowSnackbar(R.string.card_reader_fetching_order_failed))
+                triggerEvent(ShowSnackbar(R.string.card_reader_refetching_order_failed))
                 triggerEvent(Exit)
             }
         } else {
@@ -338,7 +338,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                 secondaryActionLabel = R.string.card_reader_payment_send_receipt
             )
 
-        object FetchingOrderState : ViewState(
+        object ReFetchingOrderState : ViewState(
             headerLabel = R.string.card_reader_payment_fetch_order_loading_header,
             hintLabel = R.string.card_reader_payment_fetch_order_loading_hint,
             paymentStateLabel = R.string.card_reader_payment_fetch_order_loading_payment_state,

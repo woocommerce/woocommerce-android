@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.C
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FetchingOrderState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
@@ -517,20 +517,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back button, when re-fetching order, then FetchingOrderState shown`() =
+    fun `given user presses back button, when re-fetching order, then ReFetchingOrderState shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
 
             viewModel.onBackPressed()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(FetchingOrderState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReFetchingOrderState::class.java)
         }
 
     @Test
-    fun `given user presses back, when already showing FetchingOrderState, then snackbar shown and screen dismissed`() =
+    fun `given user presses back, when already showing ReFetchingOrderState, then snackbar shown and screen dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
-            viewModel.onBackPressed() // shows FetchingOrderState screen
+            viewModel.onBackPressed() // shows ReFetchingOrderState screen
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -543,10 +543,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back, when already showing FetchingOrderState, then correct snackbar message shown`() =
+    fun `given user presses back, when already showing ReFetchingOrderState, then correct snackbar message shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
-            viewModel.onBackPressed() // shows FetchingOrderState screen
+            viewModel.onBackPressed() // shows ReFetchingOrderState screen
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -555,7 +555,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onBackPressed()
 
             assertThat((events[0] as ShowSnackbar).message)
-                .isEqualTo(R.string.card_reader_fetching_order_failed)
+                .isEqualTo(R.string.card_reader_refetching_order_failed)
         }
 
     @Test
@@ -579,10 +579,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given FetchingOrderState shown, when re-fetching order completes, then screen auto-dismissed`() =
+    fun `given ReFetchingOrderState shown, when re-fetching order completes, then screen auto-dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
-            viewModel.onBackPressed() // show FetchingOrderState screen
+            viewModel.onBackPressed() // show ReFetchingOrderState screen
 
             viewModel.reFetchOrder()
 
@@ -590,7 +590,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given FetchingOrderState not shown, when re-fetching order completes, then screen not auto-dismissed`() =
+    fun `given ReFetchingOrderState not shown, when re-fetching order completes, then screen not auto-dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
 
@@ -616,6 +616,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private fun simulateFetchOrderJobState(inProgress: Boolean) {
         val job = mock<Job>()
         whenever(job.isActive).thenReturn(inProgress)
-        viewModel.fetchOrderJob = job
+        viewModel.refetchOrderJob = job
     }
 }
