@@ -15,6 +15,7 @@
         <!-- Date bar -->
         <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
             android:id="@+id/my_store_date_bar"
+            style="@style/Woo.Card.WithoutPadding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
