@@ -91,7 +91,7 @@ data class Address(
      * Source: https://github.com/Automattic/woocommerce-services/issues/1351
      */
     fun hasValidPhoneNumber(addressType: AddressType): Boolean {
-        return when(addressType){
+        return when (addressType) {
             ORIGIN -> phone.replace(Regex("^1|[^\\d]"), "").length == 10
             DESTINATION -> phone.contains(Regex("\\d"))
         }
@@ -109,6 +109,18 @@ data class Address(
             state = state,
             country = country
         )
+    }
+
+    /**
+     * Compares this address's physical location to the other one
+     */
+    fun isSamePhysicalAddress(otherAddress: Address): Boolean {
+        return country == otherAddress.country &&
+            state == otherAddress.state &&
+            address1 == otherAddress.address1 &&
+            address2 == otherAddress.address2 &&
+            city == otherAddress.city &&
+            postcode == otherAddress.postcode
     }
 
     override fun toString(): String {

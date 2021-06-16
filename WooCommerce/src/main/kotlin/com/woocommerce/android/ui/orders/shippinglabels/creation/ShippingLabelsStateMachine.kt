@@ -568,14 +568,22 @@ class ShippingLabelsStateMachine @Inject constructor() {
         @Suppress("UNCHECKED_CAST")
         fun <T> updateStep(currentStep: Step<T>, newData: T): StepsState {
             return when (currentStep) {
-                is OriginAddressStep -> copy(
-                    originAddressStep = originAddressStep.copy(status = DONE, data = newData as Address)
-                )
-                    .invalidateCarrierStep()
-                is ShippingAddressStep -> copy(
-                    shippingAddressStep = shippingAddressStep.copy(status = DONE, data = newData as Address)
-                )
-                    .invalidateCarrierStep()
+                is OriginAddressStep -> {
+                    val newAddress = newData as Address
+                    val isSamePhysicalAddress = newAddress.isSamePhysicalAddress(originAddressStep.data)
+                    val newState = copy(
+                        originAddressStep = originAddressStep.copy(status = DONE, data = newData as Address)
+                    )
+                    if (isSamePhysicalAddress) newState else newState.invalidateCarrierStep()
+                }
+                is ShippingAddressStep -> {
+                    val newAddress = newData as Address
+                    val isSamePhysicalAddress = newAddress.isSamePhysicalAddress(shippingAddressStep.data)
+                    val newState = copy(
+                        shippingAddressStep = shippingAddressStep.copy(status = DONE, data = newData as Address)
+                    )
+                    if (isSamePhysicalAddress) newState else newState.invalidateCarrierStep()
+                }
                 is PackagingStep -> copy(
                     packagingStep = packagingStep.copy(status = DONE, data = newData as List<ShippingLabelPackage>)
                 )
