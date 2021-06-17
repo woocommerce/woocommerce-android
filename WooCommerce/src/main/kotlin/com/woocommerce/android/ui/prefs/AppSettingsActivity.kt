@@ -58,7 +58,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
         presenter.takeView(this)
 
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -106,8 +106,6 @@ class AppSettingsActivity : AppCompatActivity(),
      * User switched sites from the main settings fragment, set the result code so the calling activity
      * will know the site changed
      */
-    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-    @Suppress("WrongConstant")
     override fun onSiteChanged() {
         if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
         siteChanged = true

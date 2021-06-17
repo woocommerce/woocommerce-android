@@ -8,7 +8,7 @@ class SingleProductScreen : Screen {
         const val PRODUCT_DETAIL_CONTAINER = R.id.productDetail_root
     }
 
-    constructor(): super(PRODUCT_DETAIL_CONTAINER)
+    constructor() : super(PRODUCT_DETAIL_CONTAINER)
 
     fun goBackToProductsScreen(): ProductListScreen {
         pressBack()

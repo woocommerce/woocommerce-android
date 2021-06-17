@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import androidx.lifecycle.SavedStateHandle
+import com.nhaarman.mockitokotlin2.argThat
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -20,15 +21,19 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.LocationDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.FAILED
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.MULTIPLE_READERS_FOUND
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -51,7 +56,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
     private val cardReaderManager: CardReaderManager = mock()
-    private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("dummy id") }
+    private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
+    private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -63,7 +69,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when vm initilized, then location permissions check requested`() =
+    fun `when vm initialized, then location permissions check requested`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             assertThat(viewModel.event.value).isInstanceOf(CheckLocationPermissions::class.java)
         }
@@ -300,6 +306,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when multiple readers found, then multiple readers found state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = MULTIPLE_READERS_FOUND)
+
+            (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MultipleReadersFoundState::class.java)
+        }
+
+    @Test
     fun `when user clicks on connect to reader button, then app starts connecting to reader`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
@@ -310,7 +326,29 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when app is conneting to reader, then connecting state shown`() =
+    fun `given multiple readers found, when user clicks on connect, then app connects to the correct reader`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = MULTIPLE_READERS_FOUND)
+
+            val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
+            reader.onConnectClicked()
+
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId })
+        }
+
+    @Test
+    fun `when multiple readers found, then scanning in progress item shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = MULTIPLE_READERS_FOUND)
+
+            (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+
+            assertThat((viewModel.viewStateData.value as MultipleReadersFoundState).listItems.last())
+            .isInstanceOf(ScanningInProgressListItem::class.java)
+        }
+
+    @Test
+    fun `when app is connecting to reader, then connecting state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
 
@@ -614,11 +652,13 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                     SCANNING -> { // no-op
                     }
                     READER_FOUND -> emit(ReadersFound(listOf(reader)))
+                    MULTIPLE_READERS_FOUND -> emit(ReadersFound(listOf(reader, reader2)))
                     FAILED -> emit(Failed("dummy msg"))
                 }
             }
         }
         whenever(cardReaderManager.connectToReader(reader)).thenReturn(connectingSucceeds)
+        whenever(cardReaderManager.connectToReader(reader2)).thenReturn(connectingSucceeds)
         (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
@@ -626,6 +666,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     private enum class ScanResult {
-        SCANNING, READER_FOUND, FAILED
+        SCANNING, READER_FOUND, MULTIPLE_READERS_FOUND, FAILED
     }
 }
