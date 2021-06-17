@@ -146,11 +146,4 @@
         <item name="colorAccent">@color/color_primary</item>
         <item name="android:colorForeground">@color/woo_black_90</item>
     </style>
-
-    <style name="Theme.Woo.Dialog.FixedSize" parent="Theme.Woo.Dialog">
-        <item name="windowFixedWidthMajor">@dimen/payments_dialog_width</item>
-        <item name="windowFixedWidthMinor">@dimen/payments_dialog_width</item>
-        <item name="windowFixedHeightMajor">@dimen/payments_dialog_height</item>
-        <item name="windowFixedHeightMinor">@dimen/payments_dialog_height</item>
-    </style>
 </resources>
