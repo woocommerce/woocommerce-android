@@ -59,6 +59,7 @@
             android:layout_marginStart="@dimen/major_125"
             android:textColor="@color/color_on_surface"
             app:layout_constraintBottom_toBottomOf="@id/card_reader_detail_first_hint_number_label"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/card_reader_detail_first_hint_number_label"
             app:layout_constraintTop_toTopOf="@id/card_reader_detail_first_hint_number_label"
             tools:text="Make sure card reader is charged" />
