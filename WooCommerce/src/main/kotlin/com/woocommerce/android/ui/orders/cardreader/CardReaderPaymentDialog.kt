@@ -32,7 +32,6 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog!!.setCanceledOnTouchOutside(false)
-        setStyle(STYLE_NORMAL, R.style.Theme_Woo_Dialog_FixedSize)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -51,6 +50,16 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
 
         initObservers(binding)
         initViewModel()
+    }
+
+    override fun onResume() {
+        with(requireDialog().window!!) {
+            setLayout(
+                resources.getDimensionPixelSize(R.dimen.payments_dialog_width),
+                resources.getDimensionPixelSize(R.dimen.payments_dialog_height)
+            )
+        }
+        super.onResume()
     }
 
     private fun initViewModel() {
@@ -75,6 +84,8 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
             UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
             UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
             UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
+            (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
+                .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
             UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
             UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
             UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)

@@ -280,6 +280,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewState.illustration).describedAs("illustration").isNull()
         assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
             .isEqualTo(R.string.card_reader_payment_collect_payment_loading_payment_state)
+        assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+            .isEqualTo(R.dimen.major_275)
         assertThat(viewState.hintLabel).describedAs("hintLabel")
             .isEqualTo(R.string.card_reader_payment_collect_payment_loading_hint)
         assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
@@ -318,6 +320,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
         }
@@ -354,6 +358,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_hint)
         }
@@ -390,6 +396,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_hint)
         }
@@ -422,11 +430,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_payment_payment_failed_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$$DUMMY_TOTAL")
-            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_150)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
-            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isEqualTo(R.string.retry)
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_failed_retry)
         }
 
     @Test
@@ -473,6 +484,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo("$$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_celebration)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
                 .isEqualTo(R.string.card_reader_payment_print_receipt)

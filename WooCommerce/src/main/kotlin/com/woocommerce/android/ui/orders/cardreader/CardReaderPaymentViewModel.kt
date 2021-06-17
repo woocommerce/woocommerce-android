@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.cardreader
 
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
@@ -61,7 +62,9 @@ import javax.inject.Inject
 private const val ARTIFICIAL_RETRY_DELAY = 500L
 
 @HiltViewModel
-class CardReaderPaymentViewModel @Inject constructor(
+class CardReaderPaymentViewModel
+@Suppress("LongParameterList")
+@Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
     private val dispatchers: CoroutineDispatchers,
@@ -85,7 +88,7 @@ class CardReaderPaymentViewModel @Inject constructor(
         // TODO cardreader Check if the payment was already processed and cancel this flow
         // TODO cardreader Make sure a reader is connected
         if (paymentFlowJob == null) {
-//            initPaymentFlow()
+            initPaymentFlow()
         }
     }
 
@@ -262,10 +265,12 @@ class CardReaderPaymentViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongParameterList")
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
         @StringRes val headerLabel: Int? = null,
         @StringRes val paymentStateLabel: Int? = null,
+        @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
         @DrawableRes val illustration: Int? = null,
         // TODO cardreader add tests
         val isProgressVisible: Boolean = false,
@@ -296,9 +301,10 @@ class CardReaderPaymentViewModel @Inject constructor(
                 CARD_READ_TIMED_OUT,
                 GENERIC_ERROR -> R.string.card_reader_payment_failed_unexpected_error_state
             },
+            paymentStateLabelTopMargin = R.dimen.major_150,
             primaryActionLabel = R.string.card_reader_payment_failed_retry,
             // TODO cardreader optimize all newly added vector drawables
-            illustration = R.drawable.img_products_error
+            illustration = R.drawable.ic_products_error
         )
 
         data class CollectPaymentState(override val amountWithCurrencyLabel: String) : ViewState(

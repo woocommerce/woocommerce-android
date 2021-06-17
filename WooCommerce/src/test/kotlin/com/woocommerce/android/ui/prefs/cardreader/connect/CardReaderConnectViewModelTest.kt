@@ -543,7 +543,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_products_error)
+                .isEqualTo(R.drawable.ic_products_error)
         }
 
     @Test
@@ -568,7 +568,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_products_error)
+                .isEqualTo(R.drawable.ic_products_error)
         }
 
     @Test
@@ -592,7 +592,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_products_error)
+                .isEqualTo(R.drawable.ic_products_error)
         }
 
     @Test
@@ -616,7 +616,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_products_error)
+                .isEqualTo(R.drawable.ic_products_error)
         }
 
     @Test
@@ -642,7 +642,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
-                .isEqualTo(R.drawable.img_products_error)
+                .isEqualTo(R.drawable.ic_products_error)
         }
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
