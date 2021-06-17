@@ -20,6 +20,9 @@ import com.woocommerce.android.util.WooAnimUtils.Duration.EXTRA_LONG
 import com.woocommerce.android.util.WooAnimUtils.Duration.LONG
 
 private const val REPEAT_COUNT_LOOP = -1
+private const val DEGREES_0 = 0f
+private const val DEGREES_360 = 360f
+private const val PIVOT_CENTER = 0.5f
 
 object WooAnimUtils {
     enum class Duration {
@@ -177,9 +180,9 @@ object WooAnimUtils {
 
     fun rotate(view: View, duration: Duration = EXTRA_LONG) {
         val rotationAnimation: Animation = RotateAnimation(
-            0.0f, 360.0f,
-            Animation.RELATIVE_TO_SELF, 0.5f,
-            Animation.RELATIVE_TO_SELF, 0.5f
+            DEGREES_0, DEGREES_360,
+            Animation.RELATIVE_TO_SELF, PIVOT_CENTER,
+            Animation.RELATIVE_TO_SELF, PIVOT_CENTER
         )
         rotationAnimation.repeatCount = REPEAT_COUNT_LOOP
         rotationAnimation.duration = duration.toMillis(view.context)
