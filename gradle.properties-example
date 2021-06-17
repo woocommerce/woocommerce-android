@@ -44,3 +44,6 @@ wc.in_app_update_type = 0
 
 # Necessary for gradle 5
 kapt.incremental.apt=false
+
+# Use simulated vs hw card reader for card present payments
+useSimulatedReader = false

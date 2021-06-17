@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
@@ -159,7 +160,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private suspend fun startScanning() {
         cardReaderManager
-            .discoverReaders(isSimulated = false)
+            .discoverReaders(isSimulated = BuildConfig.USE_SIMULATED_READER)
             // TODO cardreader should we move flowOn to CardReaderModule?
             .flowOn(dispatchers.io)
             .collect { discoveryEvent ->
