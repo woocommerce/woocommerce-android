@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import java.util.Date
@@ -35,7 +36,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isFalse()
         }
 
     @Test
@@ -48,7 +49,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isTrue()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test
@@ -61,7 +62,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isTrue()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test
@@ -74,7 +75,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isTrue()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test
@@ -88,7 +89,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isTrue()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test
@@ -102,7 +103,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isFalse()
         }
 
     @Test
@@ -115,7 +116,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isTrue()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test
@@ -128,7 +129,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isFalse()
         }
 
     @Test
@@ -141,7 +142,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isTrue()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test
@@ -154,7 +155,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isTrue()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test
@@ -167,7 +168,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isTrue()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test
@@ -180,7 +181,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isFalse()
         }
 
     @Test
@@ -193,7 +194,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isFalse()
         }
 
     @Test
@@ -206,7 +207,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isFalse()
         }
 
     @Test
@@ -219,7 +220,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isFalse()
         }
 
     @Test
@@ -232,7 +233,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order, repository)
 
             // THEN
-            Assertions.assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isFalse()
         }
 
     private fun getOrder(
