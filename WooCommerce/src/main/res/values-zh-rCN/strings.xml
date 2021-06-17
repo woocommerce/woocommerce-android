@@ -1,11 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-26 11:54:03+0000
+Translation-Revision-Date: 2021-06-10 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s 追踪</string>
+    <string name="card_reader_software_update_in_progress_title">更新读卡器软件</string>
+    <string name="card_reader_software_update_title">软件更新</string>
+    <string name="card_reader_software_update_description">您的读卡器软件需要更新，然后才能顺畅运行。 是否要立即更新？</string>
+    <string name="card_reader_detail_connected_update_failed">读卡器软件更新失败。 请稍后重试</string>
+    <string name="card_reader_detail_connected_update_success">读卡器软件已更新</string>
+    <string name="card_reader_detail_connected_update_check_failed">软件版本更新检查失败。 请稍后重试</string>
+    <string name="card_reader_detail_connected_reader_unknown">未知读卡器名称</string>
+    <string name="card_reader_detail_connected_disconnect_reader">断开读卡器连接</string>
+    <string name="card_reader_detail_connected_enforced_update_software">请更新您的阅读器软件，以继续接受付款</string>
+    <string name="card_reader_detail_connected_update_software">更新读卡器软件</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% 电量</string>
+    <string name="card_reader_detail_connected_header">已连接读卡器</string>
+    <string name="card_reader_details_not_connected_connect_button_label">连接读卡器</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">打开读卡器并将其放在移动设备旁边</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">确保读卡器有电</string>
+    <string name="card_reader_detail_not_connected_header">连接您的读卡器</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">卡片被拒</string>
+    <string name="card_reader_payment_failed_card_declined_state">卡片被拒。 请使用其他卡重试。</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">正在连接阅读器</string>
+    <string name="card_reader_payment_collect_payment_loading_header">准备收款</string>
+    <string name="shipping_label_customs_value_zero_error">申报值须大于零</string>
+    <string name="shipping_label_customs_weight_zero_error">重量须大于零</string>
+    <string name="shipping_label_customs_required_field">此字段为必填字段</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">请说明此包裹必须有哪类限制。</string>
+    <string name="shipping_label_customs_contents_type_description_missing">请说明此包裹中包含的货物种类。</string>
+    <string name="shipping_label_customs_weight_hint">重量（每单位 %1$s）</string>
+    <string name="shipping_label_customs_value_hint">值（每单位 %1$s）</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s HS 关税编号</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s内部交易号</string>
+    <string name="shipping_label_customs_line_item">自定义行 %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">其他</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">卫生/植物检疫检查</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">隔离</string>
+    <string name="shipping_label_customs_restriction_type_none">无</string>
+    <string name="shipping_label_customs_contents_type_other">其他</string>
+    <string name="shipping_label_customs_contents_type_sample">样品</string>
+    <string name="shipping_label_customs_contents_type_gifts">礼品</string>
+    <string name="shipping_label_customs_contents_type_documents">文档</string>
+    <string name="shipping_label_customs_contents_type_merchandise">商品</string>
+    <string name="shipping_label_customs_origin_country_explanation">产品制造或组装国家/地区</string>
+    <string name="shipping_label_customs_origin_country_hint">原产国家/地区</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">关税号长度必须为 6 位</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS 关税编号（可选）</string>
+    <string name="shipping_label_customs_item_description_hint">描述</string>
+    <string name="shipping_label_customs_package_content">包裹内容</string>
+    <string name="shipping_label_customs_itn_required_country">发往 %1$s 的货件需要 ITN。</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">运输每个关税编号价值超过 2500 美元的物品需要 ITN</string>
+    <string name="shipping_label_customs_itn_invalid_format">格式无效</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">限制详细信息</string>
+    <string name="shipping_label_customs_contents_type_other_hint">内容详细信息</string>
+    <string name="shipping_label_customs_restriction_type_hint">限制类型</string>
+    <string name="shipping_label_customs_contents_type_hint">内容类型</string>
+    <string name="shipping_label_customs_return_to_sender">如果包裹无法送达，请退回给寄件人</string>
+    <string name="shipping_label_rate_insurance_up_to">最多 %s</string>
+    <string name="order_fulfill_email_info">如果您启用了此设置，客户将在订单完成后收到一封确认电子邮件</string>
+    <string name="order_fulfill_title">检查订单</string>
+    <string name="order_fulfill_completed">🎉 订单已完成！</string>
+    <string name="user_access_verifying">正在验证角色…</string>
+    <string name="user_role_access_error_retry">您的用户角色不正确</string>
+    <string name="user_role_access_error_link">了解更多关于角色和权限的信息</string>
+    <string name="user_role_access_error_msg">此应用程序仅支持管理员和商店经理用户角色。 请联系商店所有者，升级角色。</string>
+    <string name="login_prologue_label_reviews">监控和批准您的产品评价</string>
+    <string name="login_prologue_label_products">从任何地方编辑和添加新产品</string>
+    <string name="login_prologue_label_orders">随时随地管理您的商店订单</string>
+    <string name="login_prologue_label_analytics">跟踪销售数据和高绩效产品</string>
+    <string name="skip">跳过</string>
     <string name="product_type_external_title">外部产品</string>
     <string name="product_type_grouped_title">成组产品</string>
     <string name="product_type_variable_title">可变产品</string>
@@ -78,7 +145,8 @@ Language: zh_CN
     <string name="shipping_label_selected_rates_description">已选择 %s 收费标准</string>
     <string name="shipping_label_rate_included_options_signature_required_free">适用于免费签收要求</string>
     <string name="shipping_label_rate_included_options_free_pickup">适用于免费自提</string>
-    <string name="shipping_label_rate_included_options_insurance">保险（最多 %s）</string>
+    <string name="shipping_label_rate_included_options_insurance">保险 (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">追踪</string>
     <string name="shipping_label_rate_included_options">包含 %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">必需由成年人签收 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">必需签收 (%s)</string>
@@ -1320,7 +1388,6 @@ Language: zh_CN
     <string name="login_avatar_content_description">您的个人资料照片</string>
     <string name="login_connected_store">已关联的商店</string>
     <string name="login_configure_link">阅读%s配置说明%s。</string>
-    <string name="login_prologue_banner">通过实时提醒管理订单、跟踪销售情况，以及监控商店活动。</string>
     <string name="login_jetpack_required">这款应用程序需要安装 Jetpack 才能关联您的商店。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">输入您要关联的 WooCommerce 商店的地址。</string>

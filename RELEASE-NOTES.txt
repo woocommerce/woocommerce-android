@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+7.0
+-----
+
+
 6.9
 -----
 - [*] Products: Attributes are now accessible directly from the Product Details view
@@ -7,6 +11,7 @@
 - [*] Various design tweaks on empty state screen [https://github.com/woocommerce/woocommerce-android/pull/3879]
 - [*] Removed trash option from product status in Product Settings [https://github.com/woocommerce/woocommerce-android/pull/4148]
 - [*] Fixed an issue where the app would crash when loading refunds [https://github.com/woocommerce/woocommerce-android/pull/4166]
+- [*] Fixed a rare bug that would display incorrect order quantities for variable products [https://github.com/woocommerce/woocommerce-android/pull/4193]
 
 6.8
 -----

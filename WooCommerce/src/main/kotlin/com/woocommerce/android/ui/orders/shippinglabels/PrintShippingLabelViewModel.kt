@@ -7,10 +7,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
+import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -31,7 +33,9 @@ class PrintShippingLabelViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val repository: ShippingLabelRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val fileUtils: FileUtils,
+    private val base64Decoder: Base64Decoder
 ) : ScopedViewModel(savedState) {
     private val arguments: PrintShippingLabelFragmentArgs by savedState.navArgs()
     private val label
@@ -92,9 +96,14 @@ class PrintShippingLabelViewModel @Inject constructor(
         shippingLabelPreview: String
     ) {
         launch(dispatchers.io) {
-            val tempFile = FileUtils.createTempFile(storageDir)
+            val tempFile = fileUtils.createTempTimeStampedFile(
+                storageDir = storageDir,
+                prefix = "PDF",
+                fileExtension = "pdf"
+            )
             if (tempFile != null) {
-                FileUtils.writeToTempFile(tempFile, shippingLabelPreview)?.let {
+                val content = base64Decoder.decode(shippingLabelPreview, 0)
+                fileUtils.writeContentToFile(tempFile, content)?.let {
                     withContext(dispatchers.main) { viewState = viewState.copy(tempFile = it) }
                 } ?: handlePreviewError()
             } else {
@@ -105,6 +114,11 @@ class PrintShippingLabelViewModel @Inject constructor(
 
     fun onPreviewLabelCompleted() {
         viewState = viewState.copy(tempFile = null, previewShippingLabel = null)
+        label?.let {
+            if (it.hasCommercialInvoice) {
+                triggerEvent(ViewPrintCustomsForm(it.commercialInvoiceUrl!!, arguments.isReprint))
+            }
+        }
     }
 
     private suspend fun handlePreviewError() {

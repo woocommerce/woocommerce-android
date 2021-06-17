@@ -481,8 +481,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
 
-    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-    @Suppress("WrongConstant")
     override fun siteVerificationError(site: SiteModel) {
         hideProgressDialog()
 

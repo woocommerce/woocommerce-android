@@ -12,7 +12,7 @@ class ProductListScreen : Screen {
 
     val tabBar = TabNavComponent()
 
-    constructor(): super(LIST_VIEW)
+    constructor() : super(LIST_VIEW)
 
     fun selectProduct(index: Int): SingleProductScreen {
         selectItemAtIndexInRecyclerView(index, LIST_VIEW, LIST_ITEM)

@@ -1,0 +1,4 @@
+6.8:
+Por petición popular, ahora la pantalla de realizar pedido aparece al hacer clic en el botón de "Marcar el pedido como completado".
+
+Además, hemos corregido un error de la pantalla de la lista de productos y añadido un mensaje de error para los usuarios no autorizados que intenten acceder a tu tienda.

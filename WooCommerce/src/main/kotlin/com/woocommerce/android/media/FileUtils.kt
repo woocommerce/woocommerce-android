@@ -1,26 +1,27 @@
 package com.woocommerce.android.media
 
-import android.util.Base64
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.UTILS
 import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-object FileUtils {
+class FileUtils @Inject constructor() {
     /**
-     * Creates a temp file with the given [fileExtension]
+     * Creates a temp file with the filename having the format: "{[prefix]}_{yyyyMMdd_HHmmss}.{[fileExtension]}"
+     * in the specified [storageDir]
      */
-    fun createTempFile(
+    fun createTempTimeStampedFile(
         storageDir: File,
-        fileExtension: String = "pdf"
+        prefix: String,
+        fileExtension: String
     ): File? {
         return try {
             val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val imageFileName = "PDF_" + timeStamp + "_"
-            File.createTempFile(imageFileName, ".$fileExtension", storageDir)
+            val fileName = "${prefix}_$timeStamp"
+            File.createTempFile(fileName, ".$fileExtension", storageDir)
         } catch (e: Exception) {
             WooLog.e(UTILS, "Unable to create a temp file", e)
             null
@@ -28,24 +29,20 @@ object FileUtils {
     }
 
     /**
-     * writes the incoming [stringToWrite] into the [tempFile]
+     * Writes content to the file.
+     * If the file already exists, its content will be overwritten
      */
-    fun writeToTempFile(
-        tempFile: File,
-        stringToWrite: String
+    fun writeContentToFile(
+        file: File,
+        content: ByteArray
     ): File? {
         return try {
-            if (tempFile.exists()) tempFile.delete()
-
-            val out = FileOutputStream(tempFile)
-            val pdfAsBytes = Base64.decode(stringToWrite, 0)
-            out.write(pdfAsBytes)
-            out.flush()
-            out.close()
-
-            tempFile
+            file.outputStream().use {
+                it.write(content)
+            }
+            file
         } catch (e: Exception) {
-            WooLog.e(UTILS, "Unable to write to temp file", e)
+            WooLog.e(UTILS, "Unable to write to file $file", e)
             null
         }
     }

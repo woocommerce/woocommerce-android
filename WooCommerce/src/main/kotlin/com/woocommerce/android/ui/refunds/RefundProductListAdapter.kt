@@ -33,10 +33,11 @@ class RefundProductListAdapter(
     private var items = mutableListOf<ProductRefundListItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
-        return if (isProductDetailList)
+        return if (isProductDetailList) {
             RefundDetailViewHolder(parent, formatCurrency, imageMap)
-        else
+        } else {
             IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageMap)
+        }
     }
 
     override fun onBindViewHolder(holder: RefundViewHolder, position: Int) {
@@ -127,7 +128,7 @@ class RefundProductListAdapter(
 
             quantityTextView.text = item.quantity.toString()
             quantityTextView.setOnClickListener {
-                onItemClicked(item.orderItem.uniqueId)
+                onItemClicked(item.orderItem.itemId)
             }
 
             imageMap.get(item.orderItem.productId)?.let {
@@ -163,7 +164,7 @@ class RefundProductListAdapter(
         private val newList: List<ProductRefundListItem>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].orderItem.uniqueId == newList[newItemPosition].orderItem.uniqueId
+            return oldList[oldItemPosition].orderItem.itemId == newList[newItemPosition].orderItem.itemId
         }
 
         override fun getOldListSize(): Int = oldList.size

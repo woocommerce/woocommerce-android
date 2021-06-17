@@ -15,7 +15,7 @@ class TabNavComponent : Screen {
         const val REVIEWS_BUTTON = R.id.reviews
     }
 
-    constructor(): super(MY_STORE_BUTTON)
+    constructor() : super(MY_STORE_BUTTON)
 
     fun gotoMyStoreScreen(): MyStoreScreen {
         clickOn(MY_STORE_BUTTON)

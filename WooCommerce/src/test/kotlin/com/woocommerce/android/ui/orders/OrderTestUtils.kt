@@ -217,7 +217,8 @@ object OrderTestUtils {
                         subtotal = BigDecimal.valueOf(10.00),
                         total = BigDecimal.valueOf(10.00),
                         totalTax = BigDecimal.ZERO,
-                        price = BigDecimal.valueOf(10.00)
+                        price = BigDecimal.valueOf(10.00),
+                        orderItemId = 1L
                     )
                 ),
                 shippingLines = listOf(

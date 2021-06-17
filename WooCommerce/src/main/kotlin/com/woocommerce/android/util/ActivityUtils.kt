@@ -11,9 +11,11 @@ import android.os.Build.VERSION_CODES
 import android.view.WindowManager
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
+import java.io.File
 
 // TODO Duplicating methods from WordPress' WPActivityUtils
 object ActivityUtils {
@@ -62,6 +64,22 @@ object ActivityUtils {
                 val chooser = Intent.createChooser(intent, context.getString(R.string.error_please_choose_browser))
                 context.startActivity(chooser)
             }
+        }
+    }
+
+    fun previewPDFFile(activity: Activity, file: File) {
+        val pdfUri = FileProvider.getUriForFile(
+            activity, "${activity.packageName}.provider", file
+        )
+
+        val sendIntent = Intent(Intent.ACTION_VIEW)
+        sendIntent.setDataAndType(pdfUri, "application/pdf")
+        sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        try {
+            activity.startActivity(sendIntent)
+        } catch (exception: ActivityNotFoundException) {
+            ToastUtils.showToast(activity, R.string.shipping_label_preview_pdf_app_missing)
         }
     }
 

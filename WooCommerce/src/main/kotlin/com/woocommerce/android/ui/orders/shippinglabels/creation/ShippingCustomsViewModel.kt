@@ -181,7 +181,7 @@ class ShippingCustomsViewModel @Inject constructor(
     }
 
     override fun onItemValueChanged(packagePosition: Int, linePosition: Int, itemValue: String) {
-        val value = itemValue.trim('.').ifEmpty { null }?.toBigDecimal() ?: BigDecimal.ZERO
+        val value = itemValue.trim('.').ifEmpty { null }?.toBigDecimal()
         val newLine = viewState.customsPackages[packagePosition].data.lines[linePosition].copy(value = value)
         updateLine(packagePosition, linePosition, newLine)
     }

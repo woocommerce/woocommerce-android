@@ -61,9 +61,9 @@ class RefundDetailViewModel @Inject constructor(
     }
 
     private fun displayRefundedProducts(order: Order, refunds: List<Refund>) {
-        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
+        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.orderItemId }
         val refundedProducts = groupedRefunds.keys.mapNotNull { id ->
-            order.items.firstOrNull { it.uniqueId == id }?.let { item ->
+            order.items.firstOrNull { it.itemId == id }?.let { item ->
                 groupedRefunds[id]?.sumBy { it.quantity }?.let { quantity ->
                     ProductRefundListItem(item, quantity = quantity)
                 }
@@ -84,7 +84,7 @@ class RefundDetailViewModel @Inject constructor(
         if (refund.items.isNotEmpty()) {
             val items = refund.items.map { refundItem ->
                 ProductRefundListItem(
-                    order.items.first { it.uniqueId == refundItem.uniqueId },
+                    order.items.first { it.itemId == refundItem.orderItemId },
                     quantity = refundItem.quantity
                 )
             }
@@ -116,12 +116,13 @@ class RefundDetailViewModel @Inject constructor(
     private fun getRefundMethod(order: Order, refund: Refund): String {
         val manualRefund = resourceProvider.getString(R.string.order_refunds_manual_refund)
         return if (order.paymentMethodTitle.isNotBlank() &&
-                (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment))
+                (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)) {
             order.paymentMethodTitle
-        else if (order.paymentMethodTitle.isNotBlank())
+        } else if (order.paymentMethodTitle.isNotBlank()) {
             "$manualRefund - ${order.paymentMethodTitle}"
-        else
+        } else {
             manualRefund
+        }
     }
 
     @Parcelize

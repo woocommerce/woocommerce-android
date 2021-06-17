@@ -1,0 +1,4 @@
+6.8:
+På allmän begäran visas nu skärmen Orderhantering igen när du klickar på knappen "Markera beställning som slutförd"!
+
+Dessutom har vi korrigerat ett fel som bröt produktlisteskärmen och lagt till ett felmeddelande för obehöriga användare som försöker komma åt din butik.

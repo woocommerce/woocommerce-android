@@ -1,0 +1,4 @@
+6.8:
+Yaygın talepler doğrultusunda, sipariş karşılama ekranı artık "Siparişi tamamlandı olarak işaretle" düğmesini tıkladığınızda görüntülenecek şekilde ayarlandı.
+
+Ayrıca, ürün listesi ekranını bozan bir hata düzeltildi ve mağazanıza erişmeye çalışan yetkisiz kullanıcılar için bir hata mesajı eklendi.
