@@ -450,7 +450,7 @@ class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderInfo(
                     order = order,
                     isPaymentCollectableWithCardReader = paymentCollectibilityChecker
-                            .isCollectable(order, orderDetailRepository)
+                            .isCollectable(order)
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(

@@ -195,7 +195,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `collect button hidden if payment is not collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
+            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any(), any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -211,7 +211,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `collect button shown if payment is collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
+            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any(), any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
