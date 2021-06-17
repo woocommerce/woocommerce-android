@@ -13,6 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
@@ -25,11 +27,14 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState
+import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -67,7 +72,20 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentCardReaderConnectBinding.bind(view)
+        initMultipleReadersFoundRecyclerView(binding)
         initObservers(binding)
+    }
+
+    private fun initMultipleReadersFoundRecyclerView(binding: FragmentCardReaderConnectBinding) {
+        binding.multipleCardReadersFoundRv.layoutManager = LinearLayoutManager(requireContext())
+        binding.multipleCardReadersFoundRv.addItemDecoration(
+                AlignedDividerDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL,
+                    R.id.readers_found_reader_id
+                )
+        )
+        binding.multipleCardReadersFoundRv.adapter = MultipleCardReadersFoundAdapter()
     }
 
     private fun initObservers(binding: FragmentCardReaderConnectBinding) {
@@ -120,7 +138,18 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
             binding.secondaryActionBtn.setOnClickListener {
                 viewState.onSecondaryActionClicked?.invoke()
             }
+
+            updateMultipleReadersFoundRecyclerView(binding, viewState)
         }
+    }
+
+    private fun updateMultipleReadersFoundRecyclerView(
+        binding: FragmentCardReaderConnectBinding,
+        viewState: ViewState
+    ) {
+        (binding.multipleCardReadersFoundRv.adapter as MultipleCardReadersFoundAdapter)
+            .list = viewState.listItems ?: listOf()
+        UiHelpers.updateVisibility(binding.multipleCardReadersFoundRv, viewState.listItems != null)
     }
 
     private fun openLocationSettings() {

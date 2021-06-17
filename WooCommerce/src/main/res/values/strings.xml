@@ -726,7 +726,7 @@
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">Connecting to reader failed</string>
-    <string name="card_reader_connect_scanning_failed_hint">We couldn\'t find any readers.</string>
+    <string name="card_reader_connect_scanning_failed_hint">Want to keep looking for readers?</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_hint">Missing required location permission</string>
     <string name="card_reader_connect_location_provider_disabled_hint">Location is disabled</string>
