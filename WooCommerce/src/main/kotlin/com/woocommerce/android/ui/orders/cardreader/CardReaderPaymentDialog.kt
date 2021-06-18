@@ -52,16 +52,6 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
         initViewModel()
     }
 
-    override fun onResume() {
-        with(requireDialog().window!!) {
-            setLayout(
-                resources.getDimensionPixelSize(R.dimen.payments_dialog_width),
-                resources.getDimensionPixelSize(R.dimen.payments_dialog_height)
-            )
-        }
-        super.onResume()
-    }
-
     private fun initViewModel() {
         viewModel.start()
     }

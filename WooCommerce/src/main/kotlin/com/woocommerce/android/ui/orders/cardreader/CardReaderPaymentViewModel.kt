@@ -301,7 +301,7 @@ class CardReaderPaymentViewModel
                 CARD_READ_TIMED_OUT,
                 GENERIC_ERROR -> R.string.card_reader_payment_failed_unexpected_error_state
             },
-            paymentStateLabelTopMargin = R.dimen.major_150,
+            paymentStateLabelTopMargin = R.dimen.major_100,
             primaryActionLabel = R.string.card_reader_payment_failed_retry,
             // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error

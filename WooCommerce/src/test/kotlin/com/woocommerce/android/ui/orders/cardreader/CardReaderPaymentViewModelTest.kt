@@ -437,7 +437,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
-                .isEqualTo(R.dimen.major_150)
+                .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_retry)
