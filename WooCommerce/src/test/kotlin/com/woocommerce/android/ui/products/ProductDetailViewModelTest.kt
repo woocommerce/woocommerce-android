@@ -578,6 +578,29 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(draftTerms[1]).isEqualTo(firstTerm)
     }
 
+    /**
+     * Protection for a race condition bug in Variations.
+     *
+     * We're requiring [ProductDetailRepository.fetchProduct] to be called right after
+     * [VariationRepository.createEmptyVariation] to fix a race condition problem in the Product Details page. The
+     * bug can be reproduced inconsistently by following these steps:
+     *
+     * 1. Create a new variable product.
+     * 2. Follow the flow of adding a variation until you've generated a variation.
+     * 3. You'll be navigated back to the Product Details page. And you'll see “Variations” with 1 count.
+     * 4. Navigate to the variations list by tapping on “Variations”.
+     * 5. Navigate back. The Variations count will sometimes be zero.
+     *
+     * The reason for this is that [VariationListViewModel.onExit] dictates what the number of variations should be
+     * displayed in the Product Detail page. So if the [VariationListViewModel] does not have the recent product
+     * information, it will incorrectly update the variations count.
+     *
+     * This can be inconsistent because, sometimes, there's a random _updating_ of the underlying Product
+     * like in [ProductDetailViewModel.saveAttributeChanges], which eventually fixes the variations count.
+     *
+     * Fetching right after generating a variation ensures that we have the latest Product information
+     * (and variations count) from the API.
+     */
     @Test
     fun `When generating a variation, the latest Product should be fetched from the site`() =
             coroutinesTestRule.testDispatcher.runBlockingTest {
