@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
@@ -15,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
@@ -574,6 +576,36 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val draftTerms = draftAttribute.terms
         assertThat(draftTerms[0]).isEqualTo(secondTerm)
         assertThat(draftTerms[1]).isEqualTo(firstTerm)
+    }
+
+    @Test
+    fun `When generating a variation, the latest Product should be fetched from the site`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        // Given
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        clearInvocations(productRepository)
+
+        // Precondition
+        assertThat(productData?.productDraft?.numVariations).isZero
+
+        doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
+        doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))
+
+        // When
+        viewModel.onAttributeListDoneButtonClicked()
+
+        // Then
+        verify(variationRepository, times(1)).createEmptyVariation(eq(product))
+        // Prove that we fetched from the API.
+        verify(productRepository, times(1)).fetchProduct(eq(product.remoteId))
+
+        // The VM state should have been updated with the _fetched_ product's numVariations
+        assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
     }
 
     private val productsDraft
