@@ -334,8 +334,7 @@ class CardReaderPaymentViewModel
             override val amountWithCurrencyLabel: String,
             override val onPrimaryActionClicked: (() -> Unit),
             override val onSecondaryActionClicked: (() -> Unit)
-        ) :
-            ViewState(
+        ) : ViewState(
                 headerLabel = R.string.card_reader_payment_completed_payment_header,
                 illustration = R.drawable.ic_celebration,
                 primaryActionLabel = R.string.card_reader_payment_print_receipt,
