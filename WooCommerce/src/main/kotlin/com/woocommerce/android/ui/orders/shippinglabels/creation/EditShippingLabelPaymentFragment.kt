@@ -66,6 +66,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
         binding.emailReceiptsCheckbox.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onEmailReceiptsCheckboxChanged(isChecked)
         }
+        binding.pay
         setupObservers(binding)
     }
 

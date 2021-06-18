@@ -69,16 +69,16 @@
                 tools:ignore="RtlSymmetry"
                 tools:text="Email the label purchase receipts to username (username) at user@email.com" />
 
-            <!-- Not supported in M3 -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_payment_method_button"
                 style="@style/Woo.Button.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 android:text="@string/shipping_label_payments_add_credit_card"
-                android:visibility="gone"
                 app:icon="@drawable/ic_external"
                 app:iconGravity="textEnd"
                 app:iconPadding="@dimen/minor_100" />
