@@ -185,6 +185,16 @@
         android:name="com.woocommerce.android.ui.common.UserEligibilityErrorFragment"
         android:label="fragment_user_eligibility_error"
         tools:layout="@layout/fragment_user_eligibility_error" />
+    <fragment
+        android:id="@+id/WPComWebViewFragment"
+        android:name="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment"
+        android:label="WPComWebViewFragment"
+        tools:layout="@layout/fragment_wpcom_webview">
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
+    <action android:id="@+id/action_global_WPComWebViewFragment" app:destination="@id/WPComWebViewFragment"/>
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"
         app:destination="@id/userEligibilityErrorFragment"
