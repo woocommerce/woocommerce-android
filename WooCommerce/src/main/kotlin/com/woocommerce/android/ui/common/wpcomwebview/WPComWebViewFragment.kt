@@ -1,14 +1,18 @@
 package com.woocommerce.android.ui.common.wpcomwebview
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebChromeClient
 import android.webkit.WebView
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.util.StringUtils
 import java.io.UnsupportedEncodingException
@@ -26,16 +30,31 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     @Inject
     lateinit var accountStore: AccountStore
 
+    @Inject
+    lateinit var userAgent: UserAgent
+
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val webView = FragmentWpcomWebviewBinding.bind(view).root
-        webView.webViewClient = webViewClient
-        authenticateUser(webView)
+        val binding = FragmentWpcomWebviewBinding.bind(view)
+        with(binding.webView) {
+            this.webViewClient = this@WPComWebViewFragment.webViewClient
+            this.webChromeClient = object : WebChromeClient() {
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    binding.progressBar.isVisible = progress != 100
+                    binding.progressBar.progress = progress
+                }
+            }
+            this.settings.javaScriptEnabled = true
+            settings.setUserAgentString(userAgent.getUserAgent())
+        }
+
+        loadAuthenticatedUrl(binding.webView, navArgs.url)
     }
 
-    private fun authenticateUser(webView: WebView) {
+    private fun loadAuthenticatedUrl(webView: WebView, urlToLoad: String) {
         val postData = getAuthenticationPostData(
-            urlToLoad = navArgs.url,
+            urlToLoad = urlToLoad,
             username = accountStore.account.userName,
             token = accountStore.accessToken
         )
