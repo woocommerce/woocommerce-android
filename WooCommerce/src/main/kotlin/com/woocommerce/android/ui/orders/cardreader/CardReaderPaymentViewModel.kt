@@ -304,14 +304,14 @@ class CardReaderPaymentViewModel
             paymentStateLabelTopMargin = R.dimen.major_150,
             primaryActionLabel = R.string.card_reader_payment_failed_retry,
             // TODO cardreader optimize all newly added vector drawables
-            illustration = R.drawable.ic_products_error
+            illustration = R.drawable.img_products_error
         )
 
         data class CollectPaymentState(override val amountWithCurrencyLabel: String) : ViewState(
             hintLabel = R.string.card_reader_payment_collect_payment_hint,
             headerLabel = R.string.card_reader_payment_collect_payment_header,
             paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
-            illustration = R.drawable.ic_card_reader
+            illustration = R.drawable.img_card_reader_available
         )
 
         data class ProcessingPaymentState(override val amountWithCurrencyLabel: String) :
@@ -319,7 +319,7 @@ class CardReaderPaymentViewModel
                 hintLabel = R.string.card_reader_payment_processing_payment_hint,
                 headerLabel = R.string.card_reader_payment_processing_payment_header,
                 paymentStateLabel = R.string.card_reader_payment_processing_payment_state,
-                illustration = R.drawable.ic_card_reader
+                illustration = R.drawable.img_card_reader_available
             )
 
         data class CapturingPaymentState(override val amountWithCurrencyLabel: String) :
@@ -327,7 +327,7 @@ class CardReaderPaymentViewModel
                 hintLabel = R.string.card_reader_payment_capturing_payment_hint,
                 headerLabel = R.string.card_reader_payment_capturing_payment_header,
                 paymentStateLabel = R.string.card_reader_payment_capturing_payment_state,
-                illustration = R.drawable.ic_card_reader
+                illustration = R.drawable.img_card_reader_available
             )
 
         data class PaymentSuccessfulState(
@@ -336,7 +336,7 @@ class CardReaderPaymentViewModel
             override val onSecondaryActionClicked: (() -> Unit)
         ) : ViewState(
                 headerLabel = R.string.card_reader_payment_completed_payment_header,
-                illustration = R.drawable.ic_celebration,
+                illustration = R.drawable.img_celebration,
                 primaryActionLabel = R.string.card_reader_payment_print_receipt,
                 secondaryActionLabel = R.string.card_reader_payment_send_receipt
             )
