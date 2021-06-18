@@ -2,7 +2,7 @@
 * [Naming](#naming)
 * [Testing](#testing)
 * [Code organization](#code-organization)
----
+
 ## Naming
 * ##### Layouts
     _todo_
@@ -14,8 +14,6 @@
     _todo_
 * ##### Extension functions
     _todo_
-
----
 
 ## Testing
 ### Unit Tests
@@ -55,8 +53,6 @@
 _todo_
 #### E2E
 _todo_
-
----
 
 ## Code organization
 _todo_
