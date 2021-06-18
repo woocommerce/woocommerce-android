@@ -191,8 +191,13 @@
         android:label="WPComWebViewFragment"
         tools:layout="@layout/fragment_wpcom_webview">
         <argument
-            android:name="url"
+            android:name="urlToLoad"
             app:argType="string" />
+        <argument
+            android:name="urlToTriggerExit"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
     </fragment>
     <action android:id="@+id/action_global_WPComWebViewFragment" app:destination="@id/WPComWebViewFragment"/>
     <action
