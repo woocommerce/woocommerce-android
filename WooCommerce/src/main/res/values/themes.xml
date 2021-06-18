@@ -123,7 +123,6 @@
         <item name="colorOnBackground">@color/color_on_background</item>
         <item name="colorOnSurface">@color/color_on_surface_high</item>
         <item name="colorOnError">@color/color_on_error</item>
-
         <item name="buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
         <item name="android:buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
     </style>

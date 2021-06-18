@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.cardreader
 
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
@@ -61,7 +62,9 @@ import javax.inject.Inject
 private const val ARTIFICIAL_RETRY_DELAY = 500L
 
 @HiltViewModel
-class CardReaderPaymentViewModel @Inject constructor(
+class CardReaderPaymentViewModel
+@Suppress("LongParameterList")
+@Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
     private val dispatchers: CoroutineDispatchers,
@@ -186,7 +189,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     fun reFetchOrder() {
         fetchOrderJob = launch {
             orderRepository.fetchOrder(arguments.orderIdentifier)
-                ?: triggerEvent(Event.ShowSnackbar(R.string.card_reader_fetching_order_failed))
+                ?: triggerEvent(ShowSnackbar(R.string.card_reader_fetching_order_failed))
             if (viewState.value == FetchingOrderState) {
                 triggerEvent(Exit)
             }
@@ -262,10 +265,12 @@ class CardReaderPaymentViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongParameterList")
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
         @StringRes val headerLabel: Int? = null,
         @StringRes val paymentStateLabel: Int? = null,
+        @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
         @DrawableRes val illustration: Int? = null,
         // TODO cardreader add tests
         val isProgressVisible: Boolean = false,
@@ -296,7 +301,8 @@ class CardReaderPaymentViewModel @Inject constructor(
                 CARD_READ_TIMED_OUT,
                 GENERIC_ERROR -> R.string.card_reader_payment_failed_unexpected_error_state
             },
-            primaryActionLabel = R.string.retry,
+            paymentStateLabelTopMargin = R.dimen.major_100,
+            primaryActionLabel = R.string.card_reader_payment_failed_retry,
             // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
         )
@@ -305,7 +311,7 @@ class CardReaderPaymentViewModel @Inject constructor(
             hintLabel = R.string.card_reader_payment_collect_payment_hint,
             headerLabel = R.string.card_reader_payment_collect_payment_header,
             paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
-            illustration = R.drawable.ic_card_reader
+            illustration = R.drawable.img_card_reader_available
         )
 
         data class ProcessingPaymentState(override val amountWithCurrencyLabel: String) :
@@ -313,7 +319,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                 hintLabel = R.string.card_reader_payment_processing_payment_hint,
                 headerLabel = R.string.card_reader_payment_processing_payment_header,
                 paymentStateLabel = R.string.card_reader_payment_processing_payment_state,
-                illustration = R.drawable.ic_card_reader
+                illustration = R.drawable.img_card_reader_available
             )
 
         data class CapturingPaymentState(override val amountWithCurrencyLabel: String) :
@@ -321,17 +327,16 @@ class CardReaderPaymentViewModel @Inject constructor(
                 hintLabel = R.string.card_reader_payment_capturing_payment_hint,
                 headerLabel = R.string.card_reader_payment_capturing_payment_header,
                 paymentStateLabel = R.string.card_reader_payment_capturing_payment_state,
-                illustration = R.drawable.ic_card_reader
+                illustration = R.drawable.img_card_reader_available
             )
 
         data class PaymentSuccessfulState(
             override val amountWithCurrencyLabel: String,
             override val onPrimaryActionClicked: (() -> Unit),
             override val onSecondaryActionClicked: (() -> Unit)
-        ) :
-            ViewState(
+        ) : ViewState(
                 headerLabel = R.string.card_reader_payment_completed_payment_header,
-                illustration = R.drawable.ic_celebration,
+                illustration = R.drawable.img_celebration,
                 primaryActionLabel = R.string.card_reader_payment_print_receipt,
                 secondaryActionLabel = R.string.card_reader_payment_send_receipt
             )
