@@ -4,60 +4,59 @@
 * [Code organization](#code-organization)
 ---
 ## Naming
-todo
-### Layouts
-todo
-### Drawables
-todo
-### Dimensions
-todo
-### Text Appearances
-todo
-### Extension functions
-todo
+* ##### Layouts
+    _todo_
+* ##### Drawables
+    _todo_
+* ##### Dimensions
+    _todo_
+* ##### Text Appearances
+    _todo_
+* ##### Extension functions
+    _todo_
 
 ---
 
 ## Testing
 ### Unit Tests
-#### General approach
-todo
+* ##### General approach
+    _todo_
 
-#### Naming
-**given** something is, **when** something happens, **then** something is expected
+* ##### Naming
+    ***given*** something is, ***when*** something happens, ***then*** something is expected
 
-**Examples**
-```
-fun `when the button is clicked, then the sum label is updated`() {
-    val currentSum = sumLabel.text as Int
+    **Examples**
+    ```
+    fun `when the button is clicked, then the sum label is updated`() {
+        val currentSum = sumLabel.text as Int
 
-    // WHEN
-    presenter.onButtonClick()
+        // WHEN
+        presenter.onButtonClick()
 
-    // THEN
-    assertThat(sumLabel.text).isEqualTo("${currentSum + 1}")
-}
-```
+        // THEN
+        assertThat(sumLabel.text).isEqualTo("${currentSum + 1}")
+    }
+    ```
 
-```
-fun `given the button has 9 clicks, when the button is clicked, then the appropriate message is shown`() {
-    // GIVEN
-    repeat(9) { presenter.onButtonClick() }
+    ```
+    fun `given the button has 9 clicks, when the button is clicked, then the appropriate message is shown`() {
+        // GIVEN
+        repeat(9) { presenter.onButtonClick() }
 
-    // WHEN
-    presenter.onButtonClick()
+        // WHEN
+        presenter.onButtonClick()
 
-    // THEN
-    assertThat(messageLabel.text).isEqualTo("Wow, 10 clicks")
-}
-```
+        // THEN
+        assertThat(messageLabel.text).isEqualTo("Wow, 10 clicks")
+    }
+    ```
 
-### UI Tests
-todo
-### E2E
-todo
+#### UI Tests
+_todo_
+#### E2E
+_todo_
 
 ---
 
 ## Code organization
-todo
+_todo_
