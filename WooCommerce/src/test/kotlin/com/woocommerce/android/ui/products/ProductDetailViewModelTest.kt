@@ -579,7 +579,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When generating a variation, the latest Product should be fetched from the site`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `When generating a variation, the latest Product should be fetched from the site`() =
+            coroutinesTestRule.testDispatcher.runBlockingTest {
         // Given
         doReturn(product).whenever(productRepository).getProduct(any())
 
