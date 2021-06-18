@@ -17,7 +17,7 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val address: Address,
         val type: AddressType,
         val validationResult: ValidationResult?,
-        val isInternational: Boolean
+        val requiresPhoneNumber: Boolean
     ) : CreateShippingLabelEvent()
 
     data class ShowSuggestedAddress(

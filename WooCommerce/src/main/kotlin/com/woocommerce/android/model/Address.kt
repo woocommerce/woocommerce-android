@@ -5,6 +5,9 @@ import com.google.i18n.addressinput.common.AddressData
 import com.google.i18n.addressinput.common.FormOptions
 import com.google.i18n.addressinput.common.FormatInterpreter
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
@@ -82,12 +85,21 @@ data class Address(
     }
 
     /**
-     * Checks whether the entered phone number contains 10 digits exactly after stripping an optional 1 as the area code.
+     * Checks whether the phone number is valid or not, depending on the [addressType], the check is:
+     * - [ORIGIN]: Checks whether the phone number contains 10 digits exactly after deleting an optional 1 as
+     *             the area code.
+     * - [DESTINATION]: Checks whether the phone has any digits.
+     *
      * As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
      * and that's similar to what the web client does.
      * Source: https://github.com/Automattic/woocommerce-services/issues/1351
      */
-    fun phoneHas10Digits() = phone.replace(Regex("^1|[^\\d]"), "").length == 10
+    fun hasValidPhoneNumber(addressType: AddressType): Boolean {
+        return when (addressType) {
+            ORIGIN -> phone.replace(Regex("^1|[^\\d]"), "").length == 10
+            DESTINATION -> phone.contains(Regex("\\d"))
+        }
+    }
 
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
@@ -101,6 +113,18 @@ data class Address(
             state = state,
             country = country
         )
+    }
+
+    /**
+     * Compares this address's physical location to the other one
+     */
+    fun isSamePhysicalAddress(otherAddress: Address): Boolean {
+        return country == otherAddress.country &&
+            state == otherAddress.state &&
+            address1 == otherAddress.address1 &&
+            address2 == otherAddress.address2 &&
+            city == otherAddress.city &&
+            postcode == otherAddress.postcode
     }
 
     override fun toString(): String {
