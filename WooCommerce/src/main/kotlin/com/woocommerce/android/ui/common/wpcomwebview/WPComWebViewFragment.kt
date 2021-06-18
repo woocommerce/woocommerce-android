@@ -6,10 +6,10 @@ import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.core.view.isVisible
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +25,10 @@ private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
 
 @AndroidEntryPoint
 class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlIntercepter {
+    companion object {
+        const val WEBVIEW_RESULT = "webview-result"
+    }
+
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
 
@@ -70,7 +74,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
         println(url)
         navArgs.urlToTriggerExit?.let {
             if (url.contains(it)) {
-                findNavController().navigateUp()
+                navigateBackWithNotice(WEBVIEW_RESULT)
             }
         }
     }

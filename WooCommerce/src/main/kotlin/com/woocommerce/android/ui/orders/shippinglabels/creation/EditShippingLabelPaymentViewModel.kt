@@ -32,10 +32,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         loadPaymentMethods()
     }
 
-    private fun loadPaymentMethods() {
+    private fun loadPaymentMethods(forceRefresh: Boolean = false) {
         launch {
             viewState = viewState.copy(isLoading = true)
-            val accountSettings = shippingLabelRepository.getAccountSettings().let {
+            val accountSettings = shippingLabelRepository.getAccountSettings(forceRefresh).let {
                 if (it.isError) {
                     triggerEvent(ShowSnackbar(0))
                     triggerEvent(Exit)
@@ -44,17 +44,17 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
                 it.model!!
             }
             viewState = ViewState(
-                isLoading = false,
-                currentAccountSettings = accountSettings,
-                paymentMethods = accountSettings.paymentMethods.map {
-                    PaymentMethodUiModel(paymentMethod = it, isSelected = it.id == accountSettings.selectedPaymentId)
-                },
-                canManagePayments = accountSettings.canManagePayments,
-                // Allow editing the email receipts option if the user has either the permission to change settings
-                // or changing payment options
-                canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
-                emailReceipts = accountSettings.isEmailReceiptEnabled,
-                storeOwnerDetails = accountSettings.storeOwnerDetails
+                    isLoading = false,
+                    currentAccountSettings = accountSettings,
+                    paymentMethods = accountSettings.paymentMethods.map {
+                        PaymentMethodUiModel(paymentMethod = it, isSelected = it.id == accountSettings.selectedPaymentId)
+                    },
+                    canManagePayments = accountSettings.canManagePayments,
+                    // Allow editing the email receipts option if the user has either the permission to change settings
+                    // or changing payment options
+                    canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
+                    emailReceipts = accountSettings.isEmailReceiptEnabled,
+                    storeOwnerDetails = accountSettings.storeOwnerDetails
             )
         }
     }
@@ -81,8 +81,8 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
             viewState = viewState.copy(showSavingProgressDialog = true)
             val selectedPaymentMethod = viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
             val result = shippingLabelRepository.updatePaymentSettings(
-                selectedPaymentMethodId = selectedPaymentMethod.id,
-                emailReceipts = viewState.emailReceipts
+                    selectedPaymentMethodId = selectedPaymentMethod.id,
+                    emailReceipts = viewState.emailReceipts
             )
             viewState = viewState.copy(showSavingProgressDialog = false)
 
@@ -99,7 +99,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        println("refresh-data")
+        loadPaymentMethods(forceRefresh = true)
     }
 
     @Parcelize
@@ -118,8 +118,8 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
                 return currentAccountSettings?.let {
                     val selectedPaymentMethod = paymentMethods.find { it.isSelected }
                     (selectedPaymentMethod != null &&
-                        selectedPaymentMethod.paymentMethod.id != currentAccountSettings.selectedPaymentId) ||
-                        emailReceipts != currentAccountSettings.isEmailReceiptEnabled
+                            selectedPaymentMethod.paymentMethod.id != currentAccountSettings.selectedPaymentId) ||
+                            emailReceipts != currentAccountSettings.isEmailReceiptEnabled
                 } ?: false
             }
     }
