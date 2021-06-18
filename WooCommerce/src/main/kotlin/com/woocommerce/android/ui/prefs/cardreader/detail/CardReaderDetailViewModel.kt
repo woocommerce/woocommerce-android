@@ -136,9 +136,11 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun CardReader.getReadersName(): UiString {
         return with(id) {
-            if (isNullOrEmpty())
+            if (isNullOrEmpty()) {
                 UiStringRes(R.string.card_reader_detail_connected_reader_unknown)
-            else UiStringText(this)
+            } else {
+                UiStringText(this)
+            }
         }
     }
 

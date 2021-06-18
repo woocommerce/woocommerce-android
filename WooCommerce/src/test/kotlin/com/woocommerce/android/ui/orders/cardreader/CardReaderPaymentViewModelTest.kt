@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -279,6 +280,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewState.illustration).describedAs("illustration").isNull()
         assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
             .isEqualTo(R.string.card_reader_payment_collect_payment_loading_payment_state)
+        assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+            .isEqualTo(R.dimen.major_275)
         assertThat(viewState.hintLabel).describedAs("hintLabel")
             .isEqualTo(R.string.card_reader_payment_collect_payment_loading_hint)
         assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
@@ -314,9 +317,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_payment_collect_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$$DUMMY_TOTAL")
-            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
+            assertThat(viewState.illustration).describedAs("illustration")
+                .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
         }
@@ -350,9 +356,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_payment_processing_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$$DUMMY_TOTAL")
-            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
+            assertThat(viewState.illustration).describedAs("illustration")
+                .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_hint)
         }
@@ -386,9 +395,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$$DUMMY_TOTAL")
-            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_card_reader)
+            assertThat(viewState.illustration).describedAs("illustration")
+                .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_hint)
         }
@@ -424,8 +436,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
-            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isEqualTo(R.string.retry)
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_failed_retry)
         }
 
     @Test
@@ -470,8 +485,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_payment_completed_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$$DUMMY_TOTAL")
-            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.ic_celebration)
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_celebration)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
                 .isEqualTo(R.string.card_reader_payment_print_receipt)
@@ -524,9 +541,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given user presses back button, when re-fetching order, then FetchingOrderState shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(true)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = true)
 
             viewModel.onBackPressed()
 
@@ -534,11 +549,41 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given user presses back, when already showing FetchingOrderState, then snackbar shown and screen dismissed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            simulateFetchOrderJobState(inProgress = true)
+            viewModel.onBackPressed() // shows FetchingOrderState screen
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
+
+            viewModel.onBackPressed()
+
+            assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
+            assertThat(events[1]).isEqualTo(Exit)
+        }
+
+    @Test
+    fun `given user presses back, when already showing FetchingOrderState, then correct snackbar message shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            simulateFetchOrderJobState(inProgress = true)
+            viewModel.onBackPressed() // shows FetchingOrderState screen
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
+
+            viewModel.onBackPressed()
+
+            assertThat((events[0] as ShowSnackbar).message)
+                .isEqualTo(R.string.card_reader_fetching_order_failed)
+        }
+
+    @Test
     fun `given user presses back button, when re-fetching order, then screen not dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(true)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = true)
 
             viewModel.onBackPressed()
 
@@ -548,9 +593,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given user presses back button, when not re-fetching order, then screen dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(false)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = false)
 
             viewModel.onBackPressed()
 
@@ -560,9 +603,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given FetchingOrderState shown, when re-fetching order completes, then screen auto-dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(true)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = true)
             viewModel.onBackPressed() // show FetchingOrderState screen
 
             viewModel.reFetchOrder()
@@ -573,9 +614,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given FetchingOrderState not shown, when re-fetching order completes, then screen not auto-dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val job = mock<Job>()
-            whenever(job.isActive).thenReturn(true)
-            viewModel.fetchOrderJob = job
+            simulateFetchOrderJobState(inProgress = true)
 
             viewModel.reFetchOrder()
 
@@ -586,9 +625,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when re-fetching order fails, then SnackBar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(orderRepository.fetchOrder(any())).thenReturn(null)
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
 
             viewModel.reFetchOrder()
 
-            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+            assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
         }
+
+    private fun simulateFetchOrderJobState(inProgress: Boolean) {
+        val job = mock<Job>()
+        whenever(job.isActive).thenReturn(inProgress)
+        viewModel.fetchOrderJob = job
+    }
 }

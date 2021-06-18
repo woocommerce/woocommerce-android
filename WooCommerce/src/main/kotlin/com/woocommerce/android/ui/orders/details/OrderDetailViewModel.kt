@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
@@ -21,9 +20,6 @@ import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.model.Order.Status.OnHold
-import com.woocommerce.android.model.Order.Status.Pending
-import com.woocommerce.android.model.Order.Status.Processing
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -43,7 +39,10 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -75,7 +74,8 @@ class OrderDetailViewModel @Inject constructor(
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val orderDetailRepository: OrderDetailRepository
+    private val orderDetailRepository: OrderDetailRepository,
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
 ) : ScopedViewModel(savedState) {
     companion object {
         // The required version to support shipping label creation
@@ -235,6 +235,10 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun onPrintingInstructionsClicked() {
+        triggerEvent(ViewPrintingInstructions)
+    }
+
     fun onConnectToReaderResultReceived(connected: Boolean) {
         // TODO cardreader add tests for this functionality
         launch {
@@ -261,6 +265,12 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onPrintShippingLabelClicked(shippingLabelId: Long) {
         triggerEvent(PrintShippingLabel(remoteOrderId = order.remoteId, shippingLabelId = shippingLabelId))
+    }
+
+    fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
+        shippingLabel.commercialInvoiceUrl?.let {
+            triggerEvent(ViewPrintCustomsForm(it, isReprint = true))
+        }
     }
 
     fun onAddShipmentTrackingClicked() {
@@ -437,7 +447,11 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
-            orderInfo = OrderInfo(order, isPaymentCollectableWithCardReader()),
+            orderInfo = OrderInfo(
+                    order = order,
+                    isPaymentCollectableWithCardReader = paymentCollectibilityChecker
+                            .isCollectable(order)
+            ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
@@ -558,18 +572,6 @@ class OrderDetailViewModel @Inject constructor(
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible
         )
-    }
-
-    private fun isPaymentCollectableWithCardReader(): Boolean {
-        return with(order) {
-            currency.equals("USD", ignoreCase = true) &&
-                (listOf(Pending, Processing, OnHold)).any { it == status } &&
-                !isOrderPaid &&
-                // Empty payment method explanation:
-                // https://github.com/woocommerce/woocommerce/issues/29471
-                (paymentMethod == CASH_ON_DELIVERY_PAYMENT_TYPE || paymentMethod.isEmpty()) &&
-                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
-        }
     }
 
     @SuppressWarnings("unused")

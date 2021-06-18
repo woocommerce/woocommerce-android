@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
@@ -50,7 +51,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             "UM", // United States Minor Outlying Islands
             "MH", // Marshall Islands
             "FM", // Micronesia
-            "MP"  // Northern Mariana Islands
+            "MP" // Northern Mariana Islands
         )
     }
 
@@ -107,7 +108,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         if (viewState.areAllRequiredFieldsValid) {
             launch {
                 viewState = viewState.copy(address = address, isValidationProgressDialogVisible = true)
-                val result = addressValidator.validateAddress(address, arguments.addressType, arguments.isInternational)
+                val result = addressValidator.validateAddress(
+                    address,
+                    arguments.addressType,
+                    arguments.requiresPhoneNumber
+                )
                 clearErrors()
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
@@ -196,10 +201,14 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     private fun validatePhone(address: Address): Int? {
-        if (arguments.addressType != ORIGIN || !arguments.isInternational) return null
+        if (!arguments.requiresPhoneNumber) return null
+        val addressType = arguments.addressType
         return when {
             address.phone.isBlank() -> R.string.shipping_label_address_phone_required
-            !address.phoneHas10Digits() -> R.string.shipping_label_address_phone_invalid
+            addressType == ORIGIN && !address.hasValidPhoneNumber(addressType) ->
+                R.string.shipping_label_origin_address_phone_invalid
+            addressType == DESTINATION && !address.hasValidPhoneNumber(addressType) ->
+                R.string.shipping_label_destination_address_phone_invalid
             else -> null
         }
     }

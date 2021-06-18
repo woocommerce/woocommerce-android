@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.cardreader
 
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +12,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
@@ -74,6 +74,8 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
             UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
             UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
             UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
+            (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
+                .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
             UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
             UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
             UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)

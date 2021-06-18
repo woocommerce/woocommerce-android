@@ -34,8 +34,8 @@ import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductPricingFragment
-    : BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
+class ProductPricingFragment :
+    BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
     private val viewModel: ProductPricingViewModel by viewModels()
 
     override val lastEvent: Event?
@@ -281,10 +281,11 @@ class ProductPricingFragment
         spinnerEditText: WCMaterialOutlinedSpinnerView,
         dateSetListener: OnDateSetListener
     ): DatePickerDialog {
-        val dateString = if (spinnerEditText.getText().isNotBlank())
+        val dateString = if (spinnerEditText.getText().isNotBlank()) {
             dateUtils.formatToYYYYmmDD(spinnerEditText.getText())
-        else
+        } else {
             dateUtils.formatToYYYYmmDD(Date().formatToMMMddYYYY())
+        }
         val (year, month, day) = dateString?.split("-").orEmpty()
         val datePicker = DatePickerDialog(
                 requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()

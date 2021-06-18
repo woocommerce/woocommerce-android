@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.google.gms:google-services:4.3.8'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.51'
-        classpath 'io.sentry:sentry-android-gradle-plugin:1.7.28'
+        classpath 'io.sentry:sentry-android-gradle-plugin:2.0.0'
     }
 }
 
@@ -53,9 +53,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "6.8-rc-2"
+            versionName "6.9-rc-2"
         }
-        versionCode 222
+        versionCode 225
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -66,6 +66,8 @@ android {
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
+
+        buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
     }
 
     buildFeatures {
@@ -167,7 +169,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.0.1'
+    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
     constraints {
         implementation('com.fasterxml.jackson.core:jackson-core:2.10.2') {
             because 'previous version from tracks conflicts with WireMock for UI tests'

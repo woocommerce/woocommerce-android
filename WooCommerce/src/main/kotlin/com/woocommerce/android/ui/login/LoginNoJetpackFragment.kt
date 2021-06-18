@@ -205,8 +205,6 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         setupObservers()
     }
 
-    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-    @Suppress("WrongConstant")
     private fun setupObservers() {
         viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             showProgressDialog(it)

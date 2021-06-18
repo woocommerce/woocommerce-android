@@ -39,10 +39,11 @@ fun View.expand() {
         this.layoutParams.height = 1
         val a = object : Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-                view.layoutParams.height = if (interpolatedTime == 1f)
+                view.layoutParams.height = if (interpolatedTime == 1f) {
                     LayoutParams.WRAP_CONTENT
-                else
+                } else {
                     (targetHeight * interpolatedTime).toInt()
+                }
                 view.requestLayout()
             }
 

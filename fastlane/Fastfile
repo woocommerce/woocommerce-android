@@ -434,6 +434,17 @@ platform :android do
     get_prs_list(repository:GHHELPER_REPO, milestone:"#{options[:milestone]}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list.txt")
   end
 
+  private_lane :commit_strings do | options |
+    if (options[:auto_commit]) then
+       sh("cd .. && git add #{main_strings_path}")
+       sh("git commit -m 'Update strings for translation'")
+       sh("git push origin HEAD")
+    else
+      UI.important("Your #{main_strings_path} has changed.")
+      UI.input("Please, review the changes, commit them and press return to continue.")
+    end
+  end
+
   #####################################################################################
   # build_bundle
   # -----------------------------------------------------------------------------------
