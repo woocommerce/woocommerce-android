@@ -10,6 +10,7 @@ import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -69,6 +70,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         viewState = viewState.copy(paymentMethods = paymentMethodsModels)
     }
 
+    fun onAddPaymentMethodClicked() {
+        triggerEvent(AddPaymentMethod)
+    }
+
     fun onDoneButtonClicked() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_METHOD_DONE_BUTTON_TAPPED)
 
@@ -91,6 +96,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
 
     fun onBackButtonClicked() {
         triggerEvent(Exit)
+    }
+
+    fun refreshData() {
+        println("refresh-data")
     }
 
     @Parcelize
@@ -120,4 +129,6 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         val paymentMethod: PaymentMethod,
         val isSelected: Boolean
     ) : Parcelable
+
+    object AddPaymentMethod : MultiLiveEvent.Event()
 }
