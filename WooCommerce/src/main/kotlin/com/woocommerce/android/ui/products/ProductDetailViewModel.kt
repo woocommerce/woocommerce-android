@@ -366,7 +366,12 @@ class ProductDetailViewModel @Inject constructor(
         launch {
             viewState.productDraft?.let { draft ->
                 variationRepository.createEmptyVariation(draft)
-                    ?.let { updateProductDraft(numVariation = draft.numVariations + 1) }
+                    ?.let {
+                        val fetchedProduct = productRepository.fetchProduct(draft.remoteId)
+                        if (fetchedProduct != null) {
+                            updateProductState(productToUpdateFrom = fetchedProduct)
+                        }
+                    }
                     ?.let { triggerEvent(ExitProductAttributeList(variationCreated = true)) }
                     ?: triggerEvent(ExitProductAttributeList())
             }.also {
