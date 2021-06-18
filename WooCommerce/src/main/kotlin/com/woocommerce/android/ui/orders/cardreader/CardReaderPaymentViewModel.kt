@@ -83,7 +83,7 @@ class CardReaderPaymentViewModel @Inject constructor(
                 delay(ARTIFICIAL_RETRY_DELAY)
             }
             fetchOrder()?.let { order ->
-                if (!paymentCollectibilityChecker.isCollectable(order, orderRepository)) {
+                if (!paymentCollectibilityChecker.isCollectable(order)) {
                     triggerEvent(ShowSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled))
                     triggerEvent(Exit)
                     return@launch
