@@ -20,9 +20,6 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.expand
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -35,10 +32,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.widgets.AppBarStateChangeListener
-import com.woocommerce.android.widgets.AppBarStateChangeListener.State.COLLAPSED
-import com.woocommerce.android.widgets.AppBarStateChangeListener.State.EXPANDED
-import com.woocommerce.android.widgets.AppBarStateChangeListener.State.IDLE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
@@ -187,8 +180,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     private fun initTabLayout() {
         _tabLayout = TabLayout(requireContext(), null, attr.scrollableTabStyle)
         addTabLayoutToAppBar()
-        appBarCollapsedListener()
-        tabLayout.hide()
     }
 
     override fun onResume() {
@@ -208,7 +199,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         _tabLayout = null
-        appBarLayout?.removeOnOffsetChangedListener(offsetChangeListener)
         presenter.dropView()
         super.onDestroyView()
         _binding = null
@@ -431,13 +421,13 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
             binding.emptyStatsView.visibility = View.VISIBLE
-            tabLayout.collapse()
         } else {
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
             binding.emptyStatsView.visibility = View.GONE
         }
 
+        tabLayout.visibility = dashboardVisibility
         myStoreDateBar.visibility = dashboardVisibility
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
@@ -463,21 +453,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             appBar.removeView(tabLayout)
             appBar.elevation = 0f
         }
-    }
-
-    private val offsetChangeListener =
-        object : AppBarStateChangeListener() {
-            override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
-                when (state) {
-                    EXPANDED -> tabLayout.collapse()
-                    COLLAPSED -> if (!isEmptyViewVisible) tabLayout.expand()
-                    IDLE -> Unit
-                }
-            }
-        }
-
-    private fun appBarCollapsedListener() {
-        appBarLayout?.addOnOffsetChangedListener(offsetChangeListener)
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
