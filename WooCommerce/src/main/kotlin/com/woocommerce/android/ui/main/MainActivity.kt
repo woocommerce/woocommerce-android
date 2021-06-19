@@ -10,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -128,6 +127,12 @@ class MainActivity : AppUpgradeActivity(),
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
+
+    private val appBarOffsetListener by lazy {
+        AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+            binding.toolbarSubtitle.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
+        }
+    }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
@@ -261,6 +266,11 @@ class MainActivity : AppUpgradeActivity(),
         updateOrderBadge(false)
 
         checkConnection()
+    }
+
+    override fun onPause() {
+        binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
+        super.onPause()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -470,22 +480,25 @@ class MainActivity : AppUpgradeActivity(),
 
     fun setSubtitle(subtitle: CharSequence) {
         if (subtitle.isBlank()) {
-            binding.toolbarSubtitle.hide()
+            removeSubtitle()
         } else {
-            setFadingSubtitleOnCollapsingToolbar(binding.toolbarSubtitle, subtitle)
+            setFadingSubtitleOnCollapsingToolbar(subtitle)
         }
     }
 
-    private fun setFadingSubtitleOnCollapsingToolbar(subtitleView: TextView, subtitle: CharSequence) {
+    private fun removeSubtitle() {
+        binding.toolbarSubtitle.hide()
+        binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
+        binding.collapsingToolbar.expandedTitleMarginBottom =
+            resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin)
+    }
+
+    private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
         binding.collapsingToolbar.expandedTitleMarginBottom =
             resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle)
-        subtitleView.text = subtitle
-        subtitleView.show()
-        binding.appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
-                subtitleView.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
-            }
-        )
+        binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
+        binding.toolbarSubtitle.text = subtitle
+        binding.toolbarSubtitle.show()
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
