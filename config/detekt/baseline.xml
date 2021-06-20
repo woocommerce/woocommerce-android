@@ -76,6 +76,7 @@
     <ID>ForbiddenComment:ProductDetailRepository.kt$ProductDetailRepository$// TODO: add event to track sku availability success</ID>
     <ID>ForbiddenComment:RefundByItemsFragment.kt$RefundByItemsFragment$// TODO: Temporarily disabled, this will be used in a future release - do not remove</ID>
     <ID>ForbiddenComment:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
+    <ID>ForbiddenComment:MainActivity.kt$MainActivity$// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")</ID>
     <ID>FunctionOnlyReturningConstant:Screen.kt$Screen.Companion$fun isVisible(): Boolean</ID>
     <ID>LargeClass:OrderDetailViewModelTest.kt$OrderDetailViewModelTest : BaseUnitTest</ID>
     <ID>LargeClass:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
