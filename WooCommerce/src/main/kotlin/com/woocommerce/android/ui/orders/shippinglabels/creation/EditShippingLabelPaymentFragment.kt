@@ -26,6 +26,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,7 +34,7 @@ private const val FETCH_PAYMENT_METHOD_URL = "me/payment-methods"
 
 @AndroidEntryPoint
 class EditShippingLabelPaymentFragment : BaseFragment(
-        R.layout.fragment_edit_shipping_label_payment
+    R.layout.fragment_edit_shipping_label_payment
 ), BackPressListener {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
@@ -42,6 +43,8 @@ class EditShippingLabelPaymentFragment : BaseFragment(
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    private val skeletonView = SkeletonView()
 
     private val viewModel: EditShippingLabelPaymentViewModel by viewModels()
 
@@ -99,8 +102,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
     private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
-                binding.loadingProgress.isVisible = isLoading
-                binding.contentLayout.isVisible = !isLoading
+                showSkeleton(binding, show = isLoading)
             }
             new.canManagePayments.takeIfNotEqualTo(old?.canManagePayments) { canManagePayments ->
                 binding.editWarningBanner.isVisible = !canManagePayments
@@ -118,20 +120,20 @@ class EditShippingLabelPaymentFragment : BaseFragment(
             }
             new.storeOwnerDetails?.takeIfNotEqualTo(old?.storeOwnerDetails) { details ->
                 binding.editWarningBanner.message = getString(
-                        R.string.shipping_label_payments_cant_edit_warning,
-                        details.name,
-                        details.wpcomUserName
+                    R.string.shipping_label_payments_cant_edit_warning,
+                    details.name,
+                    details.wpcomUserName
                 )
                 binding.paymentsInfo.text = getString(
-                        R.string.shipping_label_payments_account_info,
-                        details.wpcomUserName,
-                        details.wpcomEmail
+                    R.string.shipping_label_payments_account_info,
+                    details.wpcomUserName,
+                    details.wpcomEmail
                 )
                 binding.emailReceiptsCheckbox.text = getString(
-                        R.string.shipping_label_payments_email_receipts_checkbox,
-                        details.name.ifEmpty { details.userName },
-                        details.userName,
-                        details.wpcomEmail
+                    R.string.shipping_label_payments_email_receipts_checkbox,
+                    details.name.ifEmpty { details.userName },
+                    details.userName,
+                    details.wpcomEmail
                 )
             }
             new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
@@ -152,10 +154,10 @@ class EditShippingLabelPaymentFragment : BaseFragment(
             when (event) {
                 is AddPaymentMethod -> {
                     findNavController().navigate(
-                            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                                    urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
-                                    urlToTriggerExit = FETCH_PAYMENT_METHOD_URL
-                            )
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
+                            urlToTriggerExit = FETCH_PAYMENT_METHOD_URL
+                        )
                     )
                 }
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -172,11 +174,19 @@ class EditShippingLabelPaymentFragment : BaseFragment(
         }
     }
 
+    fun showSkeleton(binding: FragmentEditShippingLabelPaymentBinding, show: Boolean) {
+        if (show) {
+            skeletonView.show(binding.contentLayout, R.layout.skeleton_shipping_label_payment_list, delayed = false)
+        } else {
+            skeletonView.hide()
+        }
+    }
+
     private fun showSavingProgressDialog() {
         hideProgressDialog()
         progressDialog = CustomProgressDialog.show(
-                title = getString(R.string.shipping_label_payments_saving_dialog_title),
-                message = getString(R.string.shipping_label_payments_saving_dialog_message)
+            title = getString(R.string.shipping_label_payments_saving_dialog_title),
+            message = getString(R.string.shipping_label_payments_saving_dialog_message)
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
     }

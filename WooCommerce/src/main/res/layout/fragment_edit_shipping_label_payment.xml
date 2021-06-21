@@ -75,9 +75,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_100"
                 android:text="@string/shipping_label_payments_add_credit_card"
                 app:icon="@drawable/ic_external"
                 app:iconGravity="textEnd"
@@ -86,10 +86,4 @@
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
     </ScrollView>
-
-    <ProgressBar
-        android:id="@+id/loading_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
 </FrameLayout>
