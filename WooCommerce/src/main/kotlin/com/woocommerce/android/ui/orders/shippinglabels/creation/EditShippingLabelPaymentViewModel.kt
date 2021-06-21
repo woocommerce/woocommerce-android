@@ -29,32 +29,39 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     private var viewState by viewStateData
 
     init {
-        loadPaymentMethods()
+        loadInitialData()
     }
 
-    private fun loadPaymentMethods(forceRefresh: Boolean = false) {
+    private fun loadInitialData() {
         launch {
-            viewState = viewState.copy(uiState = UiState.Loading)
-            viewState = shippingLabelRepository.getAccountSettings(forceRefresh)
-                .model?.let { accountSettings ->
-                    viewState.copy(
-                        uiState = UiState.Success,
-                        currentAccountSettings = accountSettings,
-                        paymentMethods = accountSettings.paymentMethods.map {
-                            PaymentMethodUiModel(
-                                paymentMethod = it,
-                                isSelected = it.id == accountSettings.selectedPaymentId
-                            )
-                        },
-                        canManagePayments = accountSettings.canManagePayments,
-                        // Allow editing the email receipts option if the user has either the permission to change settings
-                        // or changing payment options
-                        canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
-                        emailReceipts = accountSettings.isEmailReceiptEnabled,
-                        storeOwnerDetails = accountSettings.storeOwnerDetails
-                    )
-                } ?: viewState.copy(uiState = UiState.Error)
+            loadPaymentMethods(forceRefresh = false)
+            if (viewState.uiState == UiState.Success && viewState.paymentMethods.isEmpty()) {
+                triggerEvent(AddPaymentMethod)
+            }
         }
+    }
+
+    private suspend fun loadPaymentMethods(forceRefresh: Boolean) {
+        viewState = viewState.copy(uiState = UiState.Loading)
+        viewState = shippingLabelRepository.getAccountSettings(forceRefresh)
+            .model?.let { accountSettings ->
+                viewState.copy(
+                    uiState = UiState.Success,
+                    currentAccountSettings = accountSettings,
+                    paymentMethods = accountSettings.paymentMethods.map {
+                        PaymentMethodUiModel(
+                            paymentMethod = it,
+                            isSelected = it.id == accountSettings.selectedPaymentId
+                        )
+                    },
+                    canManagePayments = accountSettings.canManagePayments,
+                    // Allow editing the email receipts option if the user has either the permission to change settings
+                    // or changing payment options
+                    canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
+                    emailReceipts = accountSettings.isEmailReceiptEnabled,
+                    storeOwnerDetails = accountSettings.storeOwnerDetails
+                )
+            } ?: viewState.copy(uiState = UiState.Error)
     }
 
     fun onEmailReceiptsCheckboxChanged(isChecked: Boolean) {
@@ -98,7 +105,15 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        loadPaymentMethods(forceRefresh = true)
+        launch {
+            loadPaymentMethods(forceRefresh = false)
+        }
+    }
+
+    fun onPaymentMethodAdded() {
+        launch {
+            loadPaymentMethods(forceRefresh = true)
+        }
     }
 
     @Parcelize

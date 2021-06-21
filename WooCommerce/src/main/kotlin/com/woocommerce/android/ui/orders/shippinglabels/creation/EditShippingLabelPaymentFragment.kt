@@ -84,6 +84,9 @@ class EditShippingLabelPaymentFragment : BaseFragment(
         binding.addPaymentMethodButton.setOnClickListener {
             viewModel.onAddPaymentMethodClicked()
         }
+        binding.addFirstPaymentMethodButton.setOnClickListener {
+            viewModel.onAddPaymentMethodClicked()
+        }
         setupObservers(binding)
         setupResultHandlers()
     }
@@ -132,6 +135,12 @@ class EditShippingLabelPaymentFragment : BaseFragment(
             }
             new.paymentMethods.takeIfNotEqualTo(old?.paymentMethods) {
                 paymentMethodsAdapter.items = it
+                it.isEmpty().let { isListEmpty ->
+                    binding.paymentMethodsSectionTitle.isVisible = !isListEmpty
+                    binding.paymentMethodsList.isVisible = !isListEmpty
+                    binding.addPaymentMethodButton.isVisible = !isListEmpty
+                    binding.addFirstPaymentMethodButton.isVisible = isListEmpty
+                }
             }
             new.canEditSettings.takeIfNotEqualTo(old?.canEditSettings) { canEditSettings ->
                 binding.emailReceiptsCheckbox.isEnabled = canEditSettings
@@ -191,7 +200,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
 
     private fun setupResultHandlers() {
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
-            viewModel.refreshData()
+            viewModel.onPaymentMethodAdded()
         }
     }
 
