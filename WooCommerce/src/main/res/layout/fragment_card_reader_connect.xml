@@ -40,11 +40,11 @@
             style="@style/Woo.Card.Body.High"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/margin_extra_extra_medium_large"
-            android:paddingEnd="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
+            android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"
             android:layout_marginBottom="@dimen/margin_extra_medium_large"
             android:gravity="center"
-            tools:text="Please wait" />
+            tools:text="Want to keep looking for readers?" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/primary_action_btn"
