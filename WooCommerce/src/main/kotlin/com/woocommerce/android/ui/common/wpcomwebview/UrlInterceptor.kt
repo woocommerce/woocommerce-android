@@ -1,5 +1,5 @@
 package com.woocommerce.android.ui.common.wpcomwebview
 
-interface UrlIntercepter {
+interface UrlInterceptor {
     fun onLoadUrl(url: String)
 }

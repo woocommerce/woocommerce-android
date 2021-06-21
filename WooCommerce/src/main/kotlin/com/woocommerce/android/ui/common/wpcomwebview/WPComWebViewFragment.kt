@@ -24,7 +24,7 @@ import javax.inject.Inject
 private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
 
 @AndroidEntryPoint
-class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlIntercepter {
+class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
     }
