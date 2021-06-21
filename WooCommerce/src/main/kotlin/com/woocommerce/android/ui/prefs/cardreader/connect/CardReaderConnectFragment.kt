@@ -139,6 +139,15 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                 viewState.onSecondaryActionClicked?.invoke()
             }
 
+            with (binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
+                topMargin = resources.getDimensionPixelSize(viewState.illustrationVerticalMargin)
+                bottomMargin = resources.getDimensionPixelSize(viewState.illustrationVerticalMargin)
+            }
+
+            with (binding.hintLabel.layoutParams as ViewGroup.MarginLayoutParams) {
+                bottomMargin = resources.getDimensionPixelSize(viewState.hintBottomMargin)
+            }
+
             updateMultipleReadersFoundRecyclerView(binding, viewState)
         }
     }

@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?attr/listPreferredItemHeight"
-    android:layout_marginStart="@dimen/margin_extra_large"
-    android:layout_marginEnd="@dimen/margin_extra_large"
+    android:layout_marginHorizontal="@dimen/major_125"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 

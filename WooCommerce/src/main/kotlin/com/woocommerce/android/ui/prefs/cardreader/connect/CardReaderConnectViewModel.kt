@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -25,17 +26,17 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.LocationDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MultipleReadersFoundState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -214,7 +215,9 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun mapReaderToListItem(reader: CardReader): ListItemViewState =
         CardReaderListItem(
-            readerId = reader.id?.takeLast(SHOW_LAST_N_DIGITS_OF_CARD_READERS_ID).orEmpty(),
+//            readerId = reader.id?.takeLast(SHOW_LAST_N_DIGITS_OF_CARD_READERS_ID).orEmpty(),
+            readerId = reader.id.orEmpty(),
+            readerType = reader.type,
             onConnectClicked = {
                 onConnectToReaderClicked(reader)
             })
@@ -291,6 +294,8 @@ class CardReaderConnectViewModel @Inject constructor(
         @StringRes val hintLabel: Int? = null,
         val primaryActionLabel: Int? = null,
         val secondaryActionLabel: Int? = null,
+        @DimenRes val illustrationVerticalMargin: Int = R.dimen.major_200,
+        @DimenRes val hintBottomMargin: Int = R.dimen.major_200,
         open val listItems: List<ListItemViewState>? = null
     ) {
         open val onPrimaryActionClicked: (() -> Unit)? = null
@@ -315,7 +320,8 @@ class CardReaderConnectViewModel @Inject constructor(
             ),
             illustration = R.drawable.img_card_reader,
             primaryActionLabel = R.string.card_reader_connect_to_reader,
-            secondaryActionLabel = R.string.cancel
+            secondaryActionLabel = R.string.cancel,
+            illustrationVerticalMargin = R.dimen.major_275
         )
 
         data class MultipleReadersFoundState(
@@ -330,7 +336,9 @@ class CardReaderConnectViewModel @Inject constructor(
             headerLabel = UiStringRes(R.string.card_reader_connect_connecting_header),
             illustration = R.drawable.img_card_reader_connecting,
             hintLabel = R.string.card_reader_connect_connecting_hint,
-            secondaryActionLabel = R.string.cancel
+            secondaryActionLabel = R.string.cancel,
+            illustrationVerticalMargin = R.dimen.major_275,
+            hintBottomMargin = R.dimen.major_275
         )
 
         data class ScanningFailedState(
@@ -339,9 +347,9 @@ class CardReaderConnectViewModel @Inject constructor(
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
             illustration = R.drawable.img_products_error,
-            hintLabel = R.string.card_reader_connect_scanning_failed_hint,
-            primaryActionLabel = R.string.retry,
-            secondaryActionLabel = R.string.cancel
+            primaryActionLabel = R.string.try_again,
+            secondaryActionLabel = R.string.cancel,
+            illustrationVerticalMargin = R.dimen.major_150
         )
 
         data class ConnectingFailedState(
@@ -350,9 +358,9 @@ class CardReaderConnectViewModel @Inject constructor(
         ) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
             illustration = R.drawable.img_products_error,
-            hintLabel = R.string.card_reader_connect_connecting_failed_hint,
-            primaryActionLabel = R.string.retry,
-            secondaryActionLabel = R.string.cancel
+            primaryActionLabel = R.string.try_again,
+            secondaryActionLabel = R.string.cancel,
+            illustrationVerticalMargin = R.dimen.major_150
         )
 
         data class MissingPermissionsError(
@@ -397,6 +405,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
         data class CardReaderListItem(
             val readerId: String,
+            val readerType: String?,
             val onConnectClicked: () -> Unit
         ) : ListItemViewState() {
             val connectLabel: UiString = UiStringRes(R.string.card_reader_connect_connect_button)
