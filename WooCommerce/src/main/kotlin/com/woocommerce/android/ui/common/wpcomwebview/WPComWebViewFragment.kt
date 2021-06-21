@@ -23,6 +23,12 @@ import javax.inject.Inject
 
 private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
 
+/**
+ * This fragments allows loading specific pages from WordPress.com with the current user logged in.
+ * It accepts two parameters:
+ * urlToLoad: the initial URL to load
+ * urlToTriggerExit: optional URL or part of URL to trigger exit with notice when loaded.
+ */
 @AndroidEntryPoint
 class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor {
     companion object {
