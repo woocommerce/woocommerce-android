@@ -68,7 +68,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.hasChanges ?: false
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -166,7 +166,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
                     details.wpcomEmail
                 )
             }
-            new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
+            new.canSave.takeIfNotEqualTo(old?.canSave) {
                 if (::doneMenuItem.isInitialized) {
                     doneMenuItem.isVisible = it
                 }

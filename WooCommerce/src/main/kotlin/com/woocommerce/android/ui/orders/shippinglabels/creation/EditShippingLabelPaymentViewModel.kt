@@ -83,20 +83,26 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_METHOD_DONE_BUTTON_TAPPED)
 
         launch {
-            viewState = viewState.copy(showSavingProgressDialog = true)
             val selectedPaymentMethod =
                 viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
-            val result = shippingLabelRepository.updatePaymentSettings(
-                selectedPaymentMethodId = selectedPaymentMethod.id,
-                emailReceipts = viewState.emailReceipts
-            )
-            viewState = viewState.copy(showSavingProgressDialog = false)
 
-            if (result.isError) {
-                triggerEvent(ShowSnackbar(R.string.shipping_label_payments_saving_error))
-            } else {
-                triggerEvent(ExitWithResult(selectedPaymentMethod))
+            val requiresSaving = selectedPaymentMethod.id != viewState.currentAccountSettings?.selectedPaymentId
+                    || viewState.emailReceipts != viewState.emailReceipts
+
+            if (requiresSaving) {
+                viewState = viewState.copy(showSavingProgressDialog = true)
+                val result = shippingLabelRepository.updatePaymentSettings(
+                    selectedPaymentMethodId = selectedPaymentMethod.id,
+                    emailReceipts = viewState.emailReceipts
+                )
+                viewState = viewState.copy(showSavingProgressDialog = false)
+
+                if (result.isError) {
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_payments_saving_error))
+                    return@launch
+                }
             }
+            triggerEvent(ExitWithResult(selectedPaymentMethod))
         }
     }
 
@@ -119,7 +125,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val uiState: UiState? = null,
-        private val currentAccountSettings: ShippingAccountSettings? = null,
+        val currentAccountSettings: ShippingAccountSettings? = null,
         val canManagePayments: Boolean = false,
         val canEditSettings: Boolean = false,
         val paymentMethods: List<PaymentMethodUiModel> = emptyList(),
@@ -127,15 +133,8 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         val storeOwnerDetails: StoreOwnerDetails? = null,
         val showSavingProgressDialog: Boolean = false
     ) : Parcelable {
-        val hasChanges: Boolean
-            get() {
-                return currentAccountSettings?.let {
-                    val selectedPaymentMethod = paymentMethods.find { it.isSelected }
-                    (selectedPaymentMethod != null &&
-                            selectedPaymentMethod.paymentMethod.id != currentAccountSettings.selectedPaymentId) ||
-                            emailReceipts != currentAccountSettings.isEmailReceiptEnabled
-                } ?: false
-            }
+        val canSave: Boolean
+            get() = canEditSettings && paymentMethods.any { it.isSelected }
     }
 
     enum class UiState {
