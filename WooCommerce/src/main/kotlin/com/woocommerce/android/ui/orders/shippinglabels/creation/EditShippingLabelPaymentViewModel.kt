@@ -34,28 +34,26 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
 
     private fun loadPaymentMethods(forceRefresh: Boolean = false) {
         launch {
-            viewState = viewState.copy(isLoading = true)
-            val accountSettings = shippingLabelRepository.getAccountSettings(forceRefresh).let {
-                if (it.isError) {
-                    triggerEvent(ShowSnackbar(0))
-                    triggerEvent(Exit)
-                    return@launch
-                }
-                it.model!!
-            }
-            viewState = ViewState(
-                    isLoading = false,
-                    currentAccountSettings = accountSettings,
-                    paymentMethods = accountSettings.paymentMethods.map {
-                        PaymentMethodUiModel(paymentMethod = it, isSelected = it.id == accountSettings.selectedPaymentId)
-                    },
-                    canManagePayments = accountSettings.canManagePayments,
-                    // Allow editing the email receipts option if the user has either the permission to change settings
-                    // or changing payment options
-                    canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
-                    emailReceipts = accountSettings.isEmailReceiptEnabled,
-                    storeOwnerDetails = accountSettings.storeOwnerDetails
-            )
+            viewState = viewState.copy(uiState = UiState.Loading)
+            viewState = shippingLabelRepository.getAccountSettings(forceRefresh)
+                .model?.let { accountSettings ->
+                    viewState.copy(
+                        uiState = UiState.Success,
+                        currentAccountSettings = accountSettings,
+                        paymentMethods = accountSettings.paymentMethods.map {
+                            PaymentMethodUiModel(
+                                paymentMethod = it,
+                                isSelected = it.id == accountSettings.selectedPaymentId
+                            )
+                        },
+                        canManagePayments = accountSettings.canManagePayments,
+                        // Allow editing the email receipts option if the user has either the permission to change settings
+                        // or changing payment options
+                        canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
+                        emailReceipts = accountSettings.isEmailReceiptEnabled,
+                        storeOwnerDetails = accountSettings.storeOwnerDetails
+                    )
+                } ?: viewState.copy(uiState = UiState.Error)
         }
     }
 
@@ -79,10 +77,11 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
 
         launch {
             viewState = viewState.copy(showSavingProgressDialog = true)
-            val selectedPaymentMethod = viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
+            val selectedPaymentMethod =
+                viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
             val result = shippingLabelRepository.updatePaymentSettings(
-                    selectedPaymentMethodId = selectedPaymentMethod.id,
-                    emailReceipts = viewState.emailReceipts
+                selectedPaymentMethodId = selectedPaymentMethod.id,
+                emailReceipts = viewState.emailReceipts
             )
             viewState = viewState.copy(showSavingProgressDialog = false)
 
@@ -104,7 +103,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val isLoading: Boolean = false,
+        val uiState: UiState? = null,
         private val currentAccountSettings: ShippingAccountSettings? = null,
         val canManagePayments: Boolean = false,
         val canEditSettings: Boolean = false,
@@ -122,6 +121,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
                             emailReceipts != currentAccountSettings.isEmailReceiptEnabled
                 } ?: false
             }
+    }
+
+    enum class UiState {
+        Loading, Error, Success
     }
 
     @Parcelize

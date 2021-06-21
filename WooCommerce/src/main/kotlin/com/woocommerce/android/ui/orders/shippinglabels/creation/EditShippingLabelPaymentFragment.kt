@@ -22,11 +22,15 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState.Error
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState.Loading
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState.Success
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -101,8 +105,25 @@ class EditShippingLabelPaymentFragment : BaseFragment(
 
     private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
-                showSkeleton(binding, show = isLoading)
+            new.uiState?.takeIfNotEqualTo(old?.uiState) { uiState ->
+                when (uiState) {
+                    Loading -> {
+                        showSkeleton(binding)
+                        binding.errorView.hide()
+                    }
+                    Error -> {
+                        skeletonView.hide()
+                        binding.contentLayout.isVisible = false
+                        binding.errorView.show(
+                            type = WCEmptyView.EmptyViewType.NETWORK_ERROR,
+                            onButtonClick = { viewModel.refreshData() }
+                        )
+                    }
+                    Success -> {
+                        skeletonView.hide()
+                        binding.errorView.hide()
+                    }
+                }
             }
             new.canManagePayments.takeIfNotEqualTo(old?.canManagePayments) { canManagePayments ->
                 binding.editWarningBanner.isVisible = !canManagePayments
@@ -174,12 +195,8 @@ class EditShippingLabelPaymentFragment : BaseFragment(
         }
     }
 
-    fun showSkeleton(binding: FragmentEditShippingLabelPaymentBinding, show: Boolean) {
-        if (show) {
-            skeletonView.show(binding.contentLayout, R.layout.skeleton_shipping_label_payment_list, delayed = false)
-        } else {
-            skeletonView.hide()
-        }
+    fun showSkeleton(binding: FragmentEditShippingLabelPaymentBinding) {
+        skeletonView.show(binding.contentLayout, R.layout.skeleton_shipping_label_payment_list, delayed = false)
     }
 
     private fun showSavingProgressDialog() {

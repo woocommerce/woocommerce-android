@@ -86,4 +86,9 @@
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
     </ScrollView>
+
+    <com.woocommerce.android.widgets.WCEmptyView
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>
