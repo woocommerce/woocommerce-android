@@ -57,10 +57,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
                 }
             }
             this.settings.javaScriptEnabled = true
-            // TODO check if it's OK to use wp-android in the user agent or not
-            // Using it will make Calypso to hide WordPress.com top navigation bar, which improves the UX
-            val userAgent = userAgent.getUserAgent().replace("wc-android", "wp-android")
-            settings.setUserAgentString(userAgent)
+            settings.userAgentString = userAgent.getUserAgent()
         }
 
         loadAuthenticatedUrl(binding.webView, navArgs.urlToLoad)
