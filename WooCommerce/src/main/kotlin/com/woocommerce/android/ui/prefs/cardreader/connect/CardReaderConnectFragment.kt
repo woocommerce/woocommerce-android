@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
@@ -138,14 +137,18 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
             updateMultipleReadersFoundRecyclerView(binding, viewState)
 
             // TODO
-            UiHelpers.setImageOrHide(binding.animation, R.drawable.img_card_reader_scanning_rings)
-            with(ObjectAnimator.ofFloat(binding.animation, View.ALPHA, 1.0f, 0.0f)) {
-                duration = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-                interpolator = LinearInterpolator()
-                repeatMode = ValueAnimator.REVERSE
-                repeatCount = ValueAnimator.INFINITE
-                start()
-            }
+            startPulseAnimation(binding)
+        }
+    }
+
+    private fun startPulseAnimation(binding: FragmentCardReaderConnectBinding) {
+        UiHelpers.setImageOrHide(binding.animation, R.drawable.img_card_reader_scanning_rings)
+        with(ObjectAnimator.ofFloat(binding.animation, View.ALPHA, 1.0f, 0.0f)) {
+            duration = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+            interpolator = LinearInterpolator()
+            repeatMode = android.animation.ValueAnimator.REVERSE
+            repeatCount = android.animation.ValueAnimator.INFINITE
+            start()
         }
     }
 
