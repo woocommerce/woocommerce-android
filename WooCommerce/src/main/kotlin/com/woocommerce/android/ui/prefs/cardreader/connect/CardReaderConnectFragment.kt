@@ -40,6 +40,8 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     @Inject lateinit var locationUtils: LocationUtils
     @Inject lateinit var cardReaderManager: CardReaderManager
 
+    private lateinit var pulseAnimation: ObjectAnimator
+
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.let {
             it.onPermissionsRequestResult.invoke(isGranted)
@@ -137,7 +139,11 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
             updateMultipleReadersFoundRecyclerView(binding, viewState)
 
             // TODO
-            startPulseAnimation(binding)
+            if (::pulseAnimation.isInitialized) {
+                stopPulseAnimation()
+            } else {
+                startPulseAnimation(binding)
+            }
         }
     }
 
@@ -149,6 +155,14 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
             repeatMode = android.animation.ValueAnimator.REVERSE
             repeatCount = android.animation.ValueAnimator.INFINITE
             start()
+            pulseAnimation = this
+        }
+    }
+
+    private fun stopPulseAnimation() {
+        if (::pulseAnimation.isInitialized) {
+            pulseAnimation.cancel()
+            (pulseAnimation.target as? View)?.visibility = View.GONE
         }
     }
 
