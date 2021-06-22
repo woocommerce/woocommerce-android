@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -189,7 +188,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 // noop
             }
             is Failed -> {
-                tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED)
+                tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED, mapOf("error" to discoveryEvent.msg))
                 appLogWrapper.e(T.MAIN, "Scanning failed: ${discoveryEvent.msg}")
                 viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
             }

@@ -5,6 +5,8 @@ import com.nhaarman.mockitokotlin2.argThat
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -324,7 +326,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = FAILED)
 
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED)
+            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED), any())
         }
 
     @Test
@@ -374,7 +376,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
 
             assertThat((viewModel.viewStateData.value as MultipleReadersFoundState).listItems.last())
-            .isInstanceOf(ScanningInProgressListItem::class.java)
+                .isInstanceOf(ScanningInProgressListItem::class.java)
         }
 
     @Test
@@ -423,7 +425,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when connecting to reader succeeds, then event tracked` () =
+    fun `when connecting to reader succeeds, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = true)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -442,7 +444,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when connecting to reader fails, then event tracked` () =
+    fun `when connecting to reader fails, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = false)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
