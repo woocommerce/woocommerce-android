@@ -714,7 +714,8 @@
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! You can find the receipt for your payment at the following link: %s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
-    <string name="card_reader_fetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+    <string name="card_reader_refetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <!--
             Card Reader Connection
         -->
