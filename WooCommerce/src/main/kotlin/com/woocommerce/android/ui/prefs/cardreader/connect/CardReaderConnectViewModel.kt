@@ -235,8 +235,10 @@ class CardReaderConnectViewModel @Inject constructor(
         launch {
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
+                tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
                 onReaderConnected()
             } else {
+                tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
                 appLogWrapper.e(T.MAIN, "Connecting to reader failed.")
                 viewState.value = ConnectingFailedState({ onConnectToReaderClicked(cardReader) }, ::onCancelClicked)
             }
