@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorViewModel.ShowCreatePackageScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -56,12 +57,18 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
                 binding.loadingProgress.isVisible = isLoading
                 binding.packagesList.isVisible = !isLoading
             }
+            binding.packagesCreateNewButton.setOnClickListener {
+                viewModel.onCreateNewPackageButtonClicked()
+            }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(SELECTED_PACKAGE_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
+                is ShowCreatePackageScreen -> {
+                    // TODO: Create action and then navigate to the create package screen (not yet created)
+                }
                 else -> event.isHandled = false
             }
         }

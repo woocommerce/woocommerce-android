@@ -7,6 +7,7 @@ import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -66,11 +67,17 @@ class ShippingPackageSelectorViewModel @Inject constructor(
         )
     }
 
+    fun onCreateNewPackageButtonClicked() {
+        triggerEvent(ShowCreatePackageScreen)
+    }
+
     @Parcelize
     data class ViewState(
         val packagesList: List<ShippingPackage> = emptyList(),
         val isLoading: Boolean = false
     ) : Parcelable
+
+    object ShowCreatePackageScreen : Event()
 }
 
 @Parcelize
