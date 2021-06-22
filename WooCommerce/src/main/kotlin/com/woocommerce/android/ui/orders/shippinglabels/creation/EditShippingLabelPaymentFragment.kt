@@ -45,8 +45,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
     }
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val skeletonView = SkeletonView()
 

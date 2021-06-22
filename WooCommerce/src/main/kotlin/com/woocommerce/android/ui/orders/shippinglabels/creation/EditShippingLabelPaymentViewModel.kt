@@ -86,8 +86,8 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
             val selectedPaymentMethod =
                 viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
 
-            val requiresSaving = selectedPaymentMethod.id != viewState.currentAccountSettings?.selectedPaymentId
-                    || viewState.emailReceipts != viewState.emailReceipts
+            val requiresSaving = selectedPaymentMethod.id != viewState.currentAccountSettings?.selectedPaymentId ||
+                    viewState.emailReceipts != viewState.emailReceipts
 
             if (requiresSaving) {
                 viewState = viewState.copy(showSavingProgressDialog = true)

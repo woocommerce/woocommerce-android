@@ -38,11 +38,9 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
 
-    @Inject
-    lateinit var accountStore: AccountStore
+    @Inject lateinit var accountStore: AccountStore
 
-    @Inject
-    lateinit var userAgent: UserAgent
+    @Inject lateinit var userAgent: UserAgent
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,6 +49,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
         with(binding.webView) {
             this.webViewClient = this@WPComWebViewFragment.webViewClient
             this.webChromeClient = object : WebChromeClient() {
+                @Suppress("MagicNumber")
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                     binding.progressBar.isVisible = progress != 100
                     binding.progressBar.progress = progress
