@@ -43,7 +43,6 @@ import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayl
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
-import org.wordpress.android.util.StringUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import java.util.concurrent.ExecutionException
@@ -69,14 +68,8 @@ class NotificationHandler @Inject constructor(
         private const val MAX_INBOX_ITEMS = 5
 
         const val PUSH_ARG_USER = "user"
-        const val PUSH_ARG_TYPE = "type"
-        const val PUSH_ARG_TITLE = "title"
-        const val PUSH_ARG_MSG = "msg"
         const val PUSH_ARG_NOTE_ID = "note_id"
         const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
-
-        const val PUSH_TYPE_COMMENT = "c"
-        const val PUSH_TYPE_NEW_ORDER = "store_order"
 
         @Synchronized fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
 
@@ -227,7 +220,17 @@ class NotificationHandler @Inject constructor(
     enum class NotificationChannelType {
         OTHER,
         REVIEW,
-        NEW_ORDER,
+        NEW_ORDER;
+
+        companion object {
+            fun fromNotificationType(type: NotificationModel.Kind): NotificationChannelType {
+                return when (type) {
+                    NotificationModel.Kind.STORE_ORDER -> NEW_ORDER
+                    NotificationModel.Kind.COMMENT -> REVIEW
+                    else -> OTHER
+                }
+            }
+        }
     }
 
     @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {
@@ -250,19 +253,6 @@ class NotificationHandler @Inject constructor(
             return
         }
 
-        val noteTypeStr = StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE))
-        val noteType = when (noteTypeStr) {
-            PUSH_TYPE_NEW_ORDER -> {
-                NEW_ORDER
-            }
-            PUSH_TYPE_COMMENT -> {
-                REVIEW
-            }
-            else -> {
-                OTHER
-            }
-        }
-
         // Build notification from message data, save to the database, and send request to
         // fetch the actual notification from the api.
         val notificationModel = NotificationsUtils.buildNotificationModelFromBundle(data)?.apply {
@@ -279,12 +269,14 @@ class NotificationHandler @Inject constructor(
             return
         }
 
+        val noteType = NotificationChannelType.fromNotificationType(notificationModel.type)
+
         // don't display the notification if user chose to disable this type of notification - note
         // that we skip this for API 26+ since Oreo added per-app notification settings via channels
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
                     (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
-                WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
+                WooLog.i(T.NOTIFS, "Skipped ${noteType.name} notification")
                 return
             }
         }
