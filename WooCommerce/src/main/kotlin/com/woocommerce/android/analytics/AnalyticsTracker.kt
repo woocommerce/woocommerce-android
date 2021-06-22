@@ -504,14 +504,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
-    private val buildType: String by lazy {
-        when {
-            BuildConfig.DEBUG -> "dev"
-            BuildConfig.FLAVOR == "vanilla" && BuildConfig.VERSION_NAME.contains("rc") -> "beta"
-            BuildConfig.FLAVOR == "vanilla" -> "prod"
-            else -> "dev"
-        }
-    }
 
     private var site: SiteModel? = null
 
@@ -576,7 +568,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
-        finalProperties[BUILD_TYPE] = buildType
 
         val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
@@ -631,7 +622,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
         const val IS_DEBUG = "is_debug"
-        const val BUILD_TYPE = "build_type"
         const val KEY_ALREADY_READ = "already_read"
         const val KEY_BLOG_ID = "blog_id"
         const val KEY_CONTEXT = "context"
