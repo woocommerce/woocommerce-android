@@ -98,15 +98,13 @@ class CardReaderPaymentViewModel @Inject constructor(
                     order.billingAddress.email,
                     "$${order.total}"
                 )
-            } ?: run {
-                viewState.postValue(
+            } ?: viewState.postValue(
                     FailedPaymentState(
                         errorType = PaymentFlowError.FETCHING_ORDER_FAILED,
                         amountWithCurrencyLabel = null,
                         onPrimaryActionClicked = { initPaymentFlow(isRetry = true) }
                     )
                 )
-            }
         }
     }
 
