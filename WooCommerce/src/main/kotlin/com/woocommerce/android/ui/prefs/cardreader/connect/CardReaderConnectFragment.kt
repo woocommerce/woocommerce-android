@@ -138,11 +138,10 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
             updateMultipleReadersFoundRecyclerView(binding, viewState)
 
-            // TODO
-            if (pulseAnimation == null) {
+            if (viewState is ViewState.ScanningState || viewState is ViewState.ConnectingState) {
                 startPulseAnimation(binding)
             } else {
-                stopPulseAnimation()
+                stopPulseAnimation(binding)
             }
         }
     }
@@ -159,12 +158,10 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
         }
     }
 
-    private fun stopPulseAnimation() {
-        pulseAnimation?.let {
-            it.cancel()
-            (it.target as? View)?.visibility = View.GONE
-        }
+    private fun stopPulseAnimation(binding: FragmentCardReaderConnectBinding) {
+        pulseAnimation?.cancel()
         pulseAnimation = null
+        binding.animation.visibility = View.GONE
     }
 
     private fun updateMultipleReadersFoundRecyclerView(
