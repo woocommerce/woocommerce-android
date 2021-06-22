@@ -27,6 +27,7 @@ import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -214,7 +215,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                                 sideEffect.address,
                                 sideEffect.type,
                                 sideEffect.validationResult,
-                                sideEffect.isInternational
+                                sideEffect.requiresPhoneNumber
                             )
                         )
                         is SideEffect.ShowAddressSuggestion -> triggerEvent(
@@ -409,7 +410,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         return Event.DataLoaded(
             order = order,
             originAddress = getStoreAddress(),
-            shippingAddress = order.shippingAddress,
+            shippingAddress = getShippingAddress(order),
             currentPaymentMethod = accountSettings.paymentMethods.find { it.id == accountSettings.selectedPaymentId }
         )
     }
@@ -429,6 +430,11 @@ class CreateShippingLabelViewModel @Inject constructor(
             city = siteSettings?.city ?: "",
             postcode = siteSettings?.postalCode ?: ""
         )
+    }
+
+    private fun getShippingAddress(order: Order): Address {
+        val phoneNumber = order.metaData.firstOrNull { it.key == "_shipping_phone" }?.value.orEmpty()
+        return order.shippingAddress.copy(phone = phoneNumber)
     }
 
     private suspend fun validateAddress(address: Address, type: AddressType, isInternationalShipment: Boolean): Event {

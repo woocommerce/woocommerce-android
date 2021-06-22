@@ -66,6 +66,8 @@ android {
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
+
+        buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
     }
 
     buildFeatures {

@@ -58,7 +58,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
         presenter.takeView(this)
 
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

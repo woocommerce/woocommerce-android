@@ -291,7 +291,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
         stateFlow.value = Transition(State.OriginAddressValidation(data), null)
 
-        verify(addressValidator).validateAddress(originAddress, ORIGIN, isInternationalShipment = false)
+        verify(addressValidator).validateAddress(originAddress, ORIGIN, requiresPhoneNumber = false)
     }
 
     @Test
