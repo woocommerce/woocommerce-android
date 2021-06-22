@@ -123,6 +123,16 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when fetching order fails, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+
+            viewModel.start()
+
+            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any())
+        }
+
+    @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
             coroutinesTestRule.testDispatcher.runBlockingTest {
                 whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
