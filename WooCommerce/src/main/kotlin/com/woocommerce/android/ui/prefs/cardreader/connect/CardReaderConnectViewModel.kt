@@ -178,7 +178,13 @@ class CardReaderConnectViewModel @Inject constructor(
                     viewState.value = ScanningState(::onCancelClicked)
                 }
             }
-            is ReadersFound -> onReadersFound(discoveryEvent)
+            is ReadersFound -> {
+                tracker.track(
+                    AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED,
+                    mapOf("reader_count" to discoveryEvent.list.size)
+                )
+                onReadersFound(discoveryEvent)
+            }
             Succeeded -> {
                 // noop
             }
