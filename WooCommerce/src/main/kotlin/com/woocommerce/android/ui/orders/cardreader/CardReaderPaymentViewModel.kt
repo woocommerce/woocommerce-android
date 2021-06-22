@@ -164,7 +164,10 @@ class CardReaderPaymentViewModel
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             // TODO cardreader store receipt data into a persistent storage
-            is PaymentCompleted -> onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
+            is PaymentCompleted -> {
+                tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+                onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
+            }
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
             }
