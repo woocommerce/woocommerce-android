@@ -18,7 +18,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -56,7 +55,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: EditShippingLabelPaymentViewModel
 
     fun setup(accountSettings: WooResult<ShippingAccountSettings> = WooResult(shippingAccountSettings)) {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(shippingLabelRepository.getAccountSettings()).thenReturn(accountSettings)
         }
         viewModel = EditShippingLabelPaymentViewModel(
@@ -66,7 +65,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `display settings when screen is opened`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `display settings when screen is opened`() = testBlocking {
         setup()
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
@@ -91,7 +90,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `display done button when data is valid`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `display done button when data is valid`() = testBlocking {
         setup()
 
         viewModel.onPaymentMethodSelected(paymentMethods[1])
@@ -110,7 +109,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `can't edit payments if not store owner`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `can't edit payments if not store owner`() = testBlocking {
         val accountSettings = shippingAccountSettings.copy(canManagePayments = false)
         setup(WooResult(accountSettings))
         var viewState: ViewState? = null
@@ -120,7 +119,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `can't edit settings`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `can't edit settings`() = testBlocking {
         val accountSettings = shippingAccountSettings.copy(canManagePayments = false, canEditSettings = false)
         setup(WooResult(accountSettings))
         var viewState: ViewState? = null
@@ -130,7 +129,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `save settings success`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `save settings success`() = testBlocking {
         whenever(shippingLabelRepository.updatePaymentSettings(any(), any())).thenReturn(WooResult(Unit))
         setup()
 
@@ -146,7 +145,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `save settings failure`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `save settings failure`() = testBlocking {
         val error = WooError(API_ERROR, NETWORK_ERROR, "")
         whenever(shippingLabelRepository.updatePaymentSettings(any(), any())).thenReturn(WooResult(error = error))
         setup()
