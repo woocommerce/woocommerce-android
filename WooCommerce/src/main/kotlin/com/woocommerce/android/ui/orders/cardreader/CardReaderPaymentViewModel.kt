@@ -104,13 +104,19 @@ class CardReaderPaymentViewModel
                     order.billingAddress.email,
                     "$${order.total}"
                 )
-            } ?: viewState.postValue(
+            } ?: run {
+                tracker.track(
+                    AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+                    mapOf("error" to PaymentFlowError.FETCHING_ORDER_FAILED)
+                )
+                viewState.postValue(
                     FailedPaymentState(
                         errorType = PaymentFlowError.FETCHING_ORDER_FAILED,
                         amountWithCurrencyLabel = null,
                         onPrimaryActionClicked = { initPaymentFlow(isRetry = true) }
                     )
                 )
+            }
         }
     }
 
