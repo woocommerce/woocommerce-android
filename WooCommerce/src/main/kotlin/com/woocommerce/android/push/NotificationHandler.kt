@@ -24,6 +24,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.getMessageSnippet
+import com.woocommerce.android.extensions.getTitleSnippet
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
@@ -36,6 +38,7 @@ import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
@@ -55,7 +58,7 @@ class NotificationHandler @Inject constructor(
     private val dispatcher: Dispatcher
 ) {
     companion object {
-        private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Bundle>()
+        private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, NotificationModel>()
 
         private const val NOTIFICATION_GROUP_KEY = "notification_group_key"
         private const val PUSH_NOTIFICATION_ID = 10000
@@ -89,9 +92,9 @@ class NotificationHandler @Inject constructor(
         /**
          * Find the matching notification and send a track event for [Stat.PUSH_NOTIFICATION_TAPPED].
          */
-        @Synchronized fun bumpPushNotificationsTappedAnalytics(context: Context, noteID: String) {
+        @Synchronized fun bumpPushNotificationsTappedAnalytics(context: Context, noteID: Long) {
             ACTIVE_NOTIFICATIONS_MAP.asSequence()
-                    .firstOrNull { it.value.getString(PUSH_ARG_NOTE_ID, "") == noteID }?.let { row ->
+                    .firstOrNull { it.value.remoteNoteId == noteID }?.let { row ->
                         bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, row.value)
                         AnalyticsTracker.flush() }
         }
@@ -101,8 +104,8 @@ class NotificationHandler @Inject constructor(
          */
         @Synchronized fun bumpPushNotificationsTappedAllAnalytics(context: Context) {
             ACTIVE_NOTIFICATIONS_MAP.asIterable().forEach {
-                val noteBundle = it.value
-                bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, noteBundle)
+                val noteModel = it.value
+                bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, noteModel)
             }
             AnalyticsTracker.flush()
         }
@@ -123,12 +126,12 @@ class NotificationHandler @Inject constructor(
          * Removes only a specific type of notification from the system bar
          */
         @SuppressLint("UseSparseArrays")
-        @Synchronized private fun removeAllNotifsOfTypeFromSystemBar(context: Context, type: String) {
+        @Synchronized private fun removeAllNotifsOfTypeFromSystemBar(context: Context, type: NotificationModel.Kind) {
             val notificationManager = NotificationManagerCompat.from(context)
 
-            val keptNotifs = HashMap<Int, Bundle>()
+            val keptNotifs = HashMap<Int, NotificationModel>()
             ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { entry ->
-                if (entry.value.getString(PUSH_ARG_TYPE) == type) {
+                if (entry.value.type == type) {
                     notificationManager.cancel(entry.key)
                 } else {
                     keptNotifs[entry.key] = entry.value
@@ -141,31 +144,31 @@ class NotificationHandler @Inject constructor(
                 notificationManager.cancel(GROUP_NOTIFICATION_ID)
             }
 
-            if (type == PUSH_TYPE_COMMENT) {
+            if (type == NotificationModel.Kind.COMMENT) {
                 setHasUnseenReviewNotifs(false)
             }
         }
 
         fun removeAllReviewNotifsFromSystemBar(context: Context) {
-            removeAllNotifsOfTypeFromSystemBar(context, PUSH_TYPE_COMMENT)
+            removeAllNotifsOfTypeFromSystemBar(context, NotificationModel.Kind.COMMENT)
         }
 
         fun removeAllOrderNotifsFromSystemBar(context: Context) {
-            removeAllNotifsOfTypeFromSystemBar(context, PUSH_TYPE_NEW_ORDER)
+            removeAllNotifsOfTypeFromSystemBar(context, NotificationModel.Kind.STORE_ORDER)
         }
 
         /**
          * Removes a specific notification from the system bar.
          */
-        @Synchronized fun removeNotificationWithNoteIdFromSystemBar(context: Context, wpComNoteId: String) {
-            if (wpComNoteId.isEmpty() or !hasNotifications()) {
+        @Synchronized fun removeNotificationWithNoteIdFromSystemBar(context: Context, wpComNoteId: Long) {
+            if (!hasNotifications()) {
                 return
             }
 
             val notificationManager = NotificationManagerCompat.from(context)
 
             ACTIVE_NOTIFICATIONS_MAP.asSequence().firstOrNull {
-                it.value.getString(PUSH_ARG_NOTE_ID) == wpComNoteId
+                it.value.remoteNoteId == wpComNoteId
             }?.key?.let {
                 notificationManager.cancel(it)
                 ACTIVE_NOTIFICATIONS_MAP.remove(it)
@@ -183,24 +186,21 @@ class NotificationHandler @Inject constructor(
          *
          * Will skip tracking if user has disabled notifications from being shown at the app system settings level.
          */
-        private fun bumpPushNotificationsAnalytics(context: Context, stat: Stat, noteBundle: Bundle) {
+        private fun bumpPushNotificationsAnalytics(context: Context, stat: Stat, noteModel: NotificationModel) {
             if (!NotificationsUtils.isNotificationsEnabled(context)) return
 
-            val wpComNoteId = noteBundle.getString(PUSH_ARG_NOTE_ID, "")
-            if (wpComNoteId.isNotEmpty()) {
-                val properties = mutableMapOf<String, Any>()
-                properties["notification_note_id"] = wpComNoteId
+            val wpComNoteId = noteModel.remoteNoteId
+            val properties = mutableMapOf<String, Any>()
+            properties["notification_note_id"] = wpComNoteId
 
-                noteBundle.getString(PUSH_ARG_TYPE)?.takeUnless { it.isEmpty() }?.let { noteType ->
-                    // 'comment' types are sent in PN as type = "c"
-                    properties["notification_type"] = if (noteType == PUSH_TYPE_COMMENT) "comment" else noteType
-                }
-
-                val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-                val latestGCMToken = preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
-                properties["push_notification_token"] = latestGCMToken ?: ""
-                AnalyticsTracker.track(stat, properties)
+            noteModel.type.name.takeUnless { it.isEmpty() }?.let { noteType ->
+                properties["notification_type"] = noteType
             }
+
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val latestGCMToken = preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
+            properties["push_notification_token"] = latestGCMToken ?: ""
+            AnalyticsTracker.track(stat, properties)
         }
 
         /**
@@ -266,13 +266,18 @@ class NotificationHandler @Inject constructor(
 
         // Build notification from message data, save to the database, and send request to
         // fetch the actual notification from the api.
-        NotificationsUtils.buildNotificationModelFromBundle(data)?.let {
+        val notificationModel = NotificationsUtils.buildNotificationModelFromBundle(data)?.apply {
             // Save temporary notification to the database.
-            dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(it))
+            dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(this))
 
             // Fire off the event to fetch the actual notification from the api
             dispatcher.dispatch(NotificationActionBuilder
-                    .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
+                    .newFetchNotificationAction(FetchNotificationPayload(this.remoteNoteId)))
+        }
+
+        if (notificationModel == null) {
+            WooLog.e(T.NOTIFS, "Push notification received is not valid!")
+            return
         }
 
         // don't display the notification if user chose to disable this type of notification - note
@@ -297,10 +302,10 @@ class NotificationHandler @Inject constructor(
         val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
 
         val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId)
-        ACTIVE_NOTIFICATIONS_MAP[localPushId] = data
+        ACTIVE_NOTIFICATIONS_MAP[localPushId] = notificationModel
 
         if (NotificationsUtils.isNotificationsEnabled(context)) {
-            bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_RECEIVED, data)
+            bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_RECEIVED, notificationModel)
             AnalyticsTracker.flush()
         }
 
@@ -331,7 +336,7 @@ class NotificationHandler @Inject constructor(
         // Update notification content for the same noteId if it is already showing
         for (id in ACTIVE_NOTIFICATIONS_MAP.keys) {
             val noteBundle = ACTIVE_NOTIFICATIONS_MAP[id]
-            if (noteBundle?.getString(PUSH_ARG_NOTE_ID, "") == wpComNoteId) {
+            if (noteBundle?.remoteNoteId.toString() == wpComNoteId) {
                 return id
             }
         }
@@ -505,19 +510,19 @@ class NotificationHandler @Inject constructor(
             val inboxStyle = NotificationCompat.InboxStyle()
 
             var noteCounter = 1
-            for (pushBundle in notesMap.values) {
+            for (notificationModel in notesMap.values) {
                 // InboxStyle notification is limited to 5 lines
                 if (noteCounter > MAX_INBOX_ITEMS) break
 
                 // Skip notes with no content from the 5-line inbox
-                if (pushBundle.getString(PUSH_ARG_MSG) == null) continue
+                if (notificationModel.getMessageSnippet() == null) continue
 
                 if (noteType == REVIEW) {
-                    val pnTitle = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_TITLE))
-                    val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG))
+                    val pnTitle = notificationModel.getTitleSnippet()
+                    val pnMessage = notificationModel.getMessageSnippet()
                     inboxStyle.addLine("$pnTitle: $pnMessage")
                 } else {
-                    val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG))
+                    val pnMessage = notificationModel.getMessageSnippet()
                     inboxStyle.addLine(pnMessage)
                 }
 

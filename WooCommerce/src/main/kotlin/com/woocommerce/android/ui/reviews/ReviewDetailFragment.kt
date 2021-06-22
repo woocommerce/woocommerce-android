@@ -126,7 +126,7 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
                 is MarkNotificationAsRead -> {
                     NotificationHandler.removeNotificationWithNoteIdFromSystemBar(
                             requireContext(),
-                            event.remoteNoteId.toString()
+                            event.remoteNoteId
                     )
                 }
                 is Exit -> exitDetailView()

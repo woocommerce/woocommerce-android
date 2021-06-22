@@ -702,11 +702,11 @@ class MainActivity : AppUpgradeActivity(),
                 intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)
 
                 // Send track event for the zendesk notification id
-                val remoteNoteId = intent.getIntExtra(FIELD_REMOTE_NOTE_ID, 0)
-                NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
+                val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
+                NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId)
 
                 // Remove single notification from the system bar
-                NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
+                NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId)
 
                 // leave the Main activity showing the Dashboard tab, so when the user comes back from Help & Support,
                 // the app is in the right section
@@ -719,10 +719,10 @@ class MainActivity : AppUpgradeActivity(),
                 val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
                 if (remoteNoteId > 0) {
                     // Send track event
-                    NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
+                    NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId)
 
                     // Remove single notification from the system bar
-                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
+                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId)
 
                     showNotificationDetail(remoteNoteId)
                 } else {
