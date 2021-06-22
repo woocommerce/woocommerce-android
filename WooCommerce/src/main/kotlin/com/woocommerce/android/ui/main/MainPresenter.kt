@@ -85,7 +85,7 @@ class MainPresenter @Inject constructor(
     override fun getNotificationByRemoteNoteId(remoteNoteId: Long): NotificationModel? =
             notificationStore.getNotificationByRemoteId(remoteNoteId)
 
-    override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 0
+    override fun fetchSiteBySiteId(siteId: Long): SiteModel? = siteStore.getSiteBySiteId(siteId)
 
     override fun selectedSiteChanged(site: SiteModel) {
         productImageMap.reset()

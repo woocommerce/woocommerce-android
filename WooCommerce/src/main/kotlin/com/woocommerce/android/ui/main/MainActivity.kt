@@ -746,6 +746,11 @@ class MainActivity : AppUpgradeActivity(),
         showBottomNav()
 
         (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let { note ->
+            // fetch the current site for the note and make it the selected site
+            presenter.fetchSiteBySiteId(note.remoteSiteId)?.let {
+                selectedSite.set(it)
+            }
+
             when (note.getWooType()) {
                 NEW_ORDER -> {
                     selectedSite.getIfExists()?.let { site ->

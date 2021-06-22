@@ -12,7 +12,7 @@ interface MainContract {
         fun userIsLoggedIn(): Boolean
         fun storeMagicLinkToken(token: String)
         fun getNotificationByRemoteNoteId(remoteNoteId: Long): NotificationModel?
-        fun hasMultipleStores(): Boolean
+        fun fetchSiteBySiteId(siteId: Long): SiteModel?
         fun selectedSiteChanged(site: SiteModel)
         fun fetchUnfilledOrderCount()
         fun fetchSitesAfterDowngrade()
