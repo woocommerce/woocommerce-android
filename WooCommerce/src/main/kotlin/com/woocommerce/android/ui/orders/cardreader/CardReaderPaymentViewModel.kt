@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
@@ -72,7 +74,8 @@ class CardReaderPaymentViewModel
     private val orderStore: WCOrderStore,
     private val orderRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
@@ -110,6 +113,8 @@ class CardReaderPaymentViewModel
                     } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
+                tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+                    mapOf("error" to e.message.orEmpty()))
                 logger.e(MAIN, e.stackTraceToString())
                 viewState.postValue(
                     FailedPaymentState(
@@ -166,7 +171,13 @@ class CardReaderPaymentViewModel
             WaitingForInput -> {
                 // TODO cardreader prompt the user to tap/insert a card
             }
-            is PaymentFailed -> emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
+            is PaymentFailed -> {
+                tracker.track(
+                    AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+                    mapOf("error" to paymentStatus.type)
+                )
+                emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
+            }
         }
     }
 
