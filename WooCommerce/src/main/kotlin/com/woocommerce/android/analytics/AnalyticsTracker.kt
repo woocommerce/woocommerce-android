@@ -250,7 +250,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Card Present Payments - connection
         CARD_PRESENT_COLLECT_PAYMENT_TAPPED,
-        CARD_PRESENT_COLLECT_PAYMENT_CANCELED,
         CARD_PRESENT_COLLECT_PAYMENT_FAILED,
         CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
 
