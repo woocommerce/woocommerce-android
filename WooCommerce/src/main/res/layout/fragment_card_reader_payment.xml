@@ -7,7 +7,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
-        android:layout_height="@dimen/payments_dialog_height"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/payments_dialog_height"
         android:paddingStart="@dimen/major_150"
         android:paddingTop="@dimen/major_150"
         android:paddingEnd="@dimen/major_150"
@@ -111,7 +112,6 @@
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
