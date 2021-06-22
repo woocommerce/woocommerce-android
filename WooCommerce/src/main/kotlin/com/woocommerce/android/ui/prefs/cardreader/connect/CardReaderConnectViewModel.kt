@@ -230,6 +230,7 @@ class CardReaderConnectViewModel @Inject constructor(
             })
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
+        tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
             val success = cardReaderManager.connectToReader(cardReader)
