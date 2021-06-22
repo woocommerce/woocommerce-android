@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
@@ -291,15 +290,16 @@ class NotificationHandler @Inject constructor(
         }
 
         val title = if (noteType == NEW_ORDER) {
-            // New order notifications have title 'WordPress.com' - just show the app name instead
-            // TODO Consider revising this, perhaps use the contents of the note as the title/body of the notification
-            context.getString(R.string.app_name)
+            context.getString(R.string.notification_order_title)
         } else {
-            StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_TITLE))
-                    ?: context.getString(R.string.app_name)
+            context.getString(R.string.notification_review_title)
         }
 
-        val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
+        val message = if (noteType == NEW_ORDER) {
+            notificationModel.getMessageSnippet()
+        } else {
+            "${notificationModel.getTitleSnippet()}: ${notificationModel.getMessageSnippet()}"
+        }
 
         val localPushId = getLocalPushIdForWpComNoteId(wpComNoteId)
         ACTIVE_NOTIFICATIONS_MAP[localPushId] = notificationModel
@@ -535,6 +535,12 @@ class NotificationHandler @Inject constructor(
                 )
             }
 
+            val title = if (noteType == NEW_ORDER) {
+                context.getString(R.string.notification_order_title)
+            } else {
+                context.getString(R.string.notification_review_title)
+            }
+
             val subject = String.format(context.getString(R.string.new_notifications), notesMap.size)
             val groupBuilder = NotificationCompat.Builder(context, getChannelIdForNoteType(context, noteType))
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
@@ -544,7 +550,7 @@ class NotificationHandler @Inject constructor(
                     .setGroupSummary(true)
                     .setAutoCancel(true)
                     .setTicker(message)
-                    .setContentTitle(context.getString(R.string.app_name))
+                    .setContentTitle(title)
                     .setContentText(subject)
                     .setStyle(inboxStyle)
                     .setSound(null)
