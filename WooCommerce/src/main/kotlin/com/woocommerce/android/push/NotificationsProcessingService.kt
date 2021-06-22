@@ -5,8 +5,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import androidx.core.app.NotificationManagerCompat
-
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 
@@ -59,16 +57,7 @@ class NotificationsProcessingService : Service() {
                 // Check notification dismissed pending intent
                 if (actionType == ARG_ACTION_NOTIFICATION_DISMISS) {
                     val notificationId = intent.getIntExtra(ARG_PUSH_ID, 0)
-                    if (notificationId == NotificationHandler.GROUP_NOTIFICATION_ID) {
-                        NotificationHandler.clearNotifications()
-                    } else {
-                        NotificationHandler.removeNotification(notificationId)
-                        // Dismiss the grouped notification if a user dismisses all notifications from a wear device
-                        if (!NotificationHandler.hasNotifications()) {
-                            val notificationManager = NotificationManagerCompat.from(context)
-                            notificationManager.cancel(NotificationHandler.GROUP_NOTIFICATION_ID)
-                        }
-                    }
+                    NotificationHandler.clearGroupNotificationsFromSystemsBar(context, notificationId)
                 }
             } ?: stopSelf(taskId)
         }

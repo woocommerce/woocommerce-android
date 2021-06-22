@@ -64,7 +64,10 @@ class NotificationHandler @Inject constructor(
         // All Zendesk push notifications will show the same notification, so hopefully this will be a unique ID
         private const val ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
 
-        const val GROUP_NOTIFICATION_ID = 30000
+        private const val GROUP_NOTIFICATION_ID = 30000
+        private const val GROUP_NEW_ORDER_NOTIFICATION_ID = GROUP_NOTIFICATION_ID + 100
+        private const val GROUP_NEW_REVIEW_NOTIFICATION_ID = GROUP_NOTIFICATION_ID + 200
+
         private const val MAX_INBOX_ITEMS = 5
 
         const val PUSH_ARG_USER = "user"
@@ -73,12 +76,39 @@ class NotificationHandler @Inject constructor(
 
         @Synchronized fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
 
-        @Synchronized fun clearNotifications() {
+        @Synchronized private fun clearNotifications() {
             ACTIVE_NOTIFICATIONS_MAP.clear()
         }
 
-        @Synchronized fun removeNotification(localPushId: Int) {
+        @Synchronized private fun removeNotification(localPushId: Int) {
             ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
+        }
+
+        @Synchronized fun getGroupIdByNotificationChannel(type: NotificationChannelType): Int {
+            return when (type) {
+                NEW_ORDER -> GROUP_NEW_ORDER_NOTIFICATION_ID
+                REVIEW -> GROUP_NEW_REVIEW_NOTIFICATION_ID
+                OTHER -> GROUP_NOTIFICATION_ID
+            }
+        }
+
+        @Synchronized fun clearGroupNotificationsFromSystemsBar(context: Context, notificationId: Int) {
+            ACTIVE_NOTIFICATIONS_MAP[notificationId]?.let { notificationModel ->
+                val noteType = NotificationChannelType.fromNotificationType(notificationModel.type)
+                val groupId = getGroupIdByNotificationChannel(noteType)
+                if (notificationId == groupId) {
+                    clearNotifications()
+                } else {
+                    removeNotification(notificationId)
+                    // Dismiss the grouped notifications if a user dismisses all notifications from a wear device
+                    if (!hasNotifications()) {
+                        val notificationManager = NotificationManagerCompat.from(context)
+                        if (!hasNotifications()) {
+                            notificationManager.cancel(groupId)
+                        }
+                    }
+                }
+            }
         }
 
         /**
@@ -118,12 +148,16 @@ class NotificationHandler @Inject constructor(
          * Removes only a specific type of notification from the system bar
          */
         @SuppressLint("UseSparseArrays")
-        @Synchronized private fun removeAllNotifsOfTypeFromSystemBar(context: Context, type: NotificationModel.Kind) {
+        @Synchronized private fun removeAllNotifsOfTypeFromSystemBar(
+            context: Context,
+            channelType: NotificationChannelType
+        ) {
             val notificationManager = NotificationManagerCompat.from(context)
+            val notificationType = NotificationChannelType.fromNotificationChannelType(channelType)
 
             val keptNotifs = HashMap<Int, NotificationModel>()
             ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { entry ->
-                if (entry.value.type == type) {
+                if (entry.value.type == notificationType) {
                     notificationManager.cancel(entry.key)
                 } else {
                     keptNotifs[entry.key] = entry.value
@@ -133,20 +167,20 @@ class NotificationHandler @Inject constructor(
             ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
 
             if (!hasNotifications()) {
-                notificationManager.cancel(GROUP_NOTIFICATION_ID)
+                notificationManager.cancel(getGroupIdByNotificationChannel(channelType))
             }
 
-            if (type == NotificationModel.Kind.COMMENT) {
+            if (notificationType == NotificationModel.Kind.COMMENT) {
                 setHasUnseenReviewNotifs(false)
             }
         }
 
         fun removeAllReviewNotifsFromSystemBar(context: Context) {
-            removeAllNotifsOfTypeFromSystemBar(context, NotificationModel.Kind.COMMENT)
+            removeAllNotifsOfTypeFromSystemBar(context, REVIEW)
         }
 
         fun removeAllOrderNotifsFromSystemBar(context: Context) {
-            removeAllNotifsOfTypeFromSystemBar(context, NotificationModel.Kind.STORE_ORDER)
+            removeAllNotifsOfTypeFromSystemBar(context, NEW_ORDER)
         }
 
         /**
@@ -168,7 +202,9 @@ class NotificationHandler @Inject constructor(
 
             // If there are no notifications left, cancel the group as well and clear the unseen state
             if (!hasNotifications()) {
-                notificationManager.cancel(GROUP_NOTIFICATION_ID)
+                for (noteType in NotificationChannelType.values()) {
+                    notificationManager.cancel(getGroupIdByNotificationChannel(noteType))
+                }
                 setHasUnseenReviewNotifs(false)
             }
         }
@@ -223,11 +259,19 @@ class NotificationHandler @Inject constructor(
         NEW_ORDER;
 
         companion object {
-            fun fromNotificationType(type: NotificationModel.Kind): NotificationChannelType {
-                return when (type) {
+            fun fromNotificationType(channelType: NotificationModel.Kind): NotificationChannelType {
+                return when (channelType) {
                     NotificationModel.Kind.STORE_ORDER -> NEW_ORDER
                     NotificationModel.Kind.COMMENT -> REVIEW
                     else -> OTHER
+                }
+            }
+
+            fun fromNotificationChannelType(type: NotificationChannelType): NotificationModel.Kind {
+                return when (type) {
+                    NEW_ORDER -> NotificationModel.Kind.STORE_ORDER
+                    REVIEW -> NotificationModel.Kind.COMMENT
+                    else -> NotificationModel.Kind.UNKNOWN
                 }
             }
         }
@@ -449,6 +493,7 @@ class NotificationHandler @Inject constructor(
         message: String?
     ): NotificationCompat.Builder {
         val channelId = getChannelIdForNoteType(context, noteType)
+        val group = NOTIFICATION_GROUP_KEY + channelId
         return NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_woo_w_notification)
                 .setColor(ContextCompat.getColor(context, R.color.color_primary))
@@ -458,7 +503,7 @@ class NotificationHandler @Inject constructor(
                 .setOnlyAlertOnce(true)
                 .setAutoCancel(true)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-                .setGroup(NOTIFICATION_GROUP_KEY)
+                .setGroup(group)
     }
 
     private fun showSingleNotificationForBuilder(
@@ -534,11 +579,13 @@ class NotificationHandler @Inject constructor(
             }
 
             val subject = String.format(context.getString(R.string.new_notifications), notesMap.size)
-            val groupBuilder = NotificationCompat.Builder(context, getChannelIdForNoteType(context, noteType))
+            val channelId = getChannelIdForNoteType(context, noteType)
+            val group = NOTIFICATION_GROUP_KEY + channelId
+            val groupBuilder = NotificationCompat.Builder(context, channelId)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                     .setSmallIcon(R.drawable.ic_woo_w_notification)
                     .setColor(ContextCompat.getColor(context, R.color.color_primary))
-                    .setGroup(NOTIFICATION_GROUP_KEY)
+                    .setGroup(group)
                     .setGroupSummary(true)
                     .setAutoCancel(true)
                     .setTicker(message)
@@ -548,12 +595,16 @@ class NotificationHandler @Inject constructor(
                     .setSound(null)
                     .setVibrate(null)
 
-            showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID, noteType)
+            showWPComNotificationForBuilder(
+                    groupBuilder, context, wpComNoteId, getGroupIdByNotificationChannel(noteType), noteType
+            )
         } else {
             // Set the individual notification we've already built as the group summary
             builder.setGroupSummary(true)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-            showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID, noteType)
+            showWPComNotificationForBuilder(
+                    builder, context, wpComNoteId, getGroupIdByNotificationChannel(noteType), noteType
+            )
         }
     }
 
@@ -573,7 +624,7 @@ class NotificationHandler @Inject constructor(
             putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
             putExtra(MainActivity.FIELD_REMOTE_NOTE_ID, wpComNoteId.toLong())
             putExtra(MainActivity.FIELD_NOTIFICATION_TYPE, noteType.name)
-            if (pushId == GROUP_NOTIFICATION_ID) {
+            if (pushId == getGroupIdByNotificationChannel(noteType)) {
                 putExtra(MainActivity.FIELD_OPENED_FROM_PUSH_GROUP, true)
             }
         }
