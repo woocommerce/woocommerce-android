@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
@@ -55,6 +57,7 @@ private const val SHOW_LAST_N_DIGITS_OF_CARD_READERS_ID = 8
 class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
+    private val tracker: AnalyticsTrackerWrapper,
     private val appLogWrapper: AppLogWrapper
 ) : ScopedViewModel(savedState) {
     /**
@@ -180,6 +183,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 // noop
             }
             is Failed -> {
+                tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED)
                 appLogWrapper.e(T.MAIN, "Scanning failed: ${discoveryEvent.msg}")
                 viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
             }
