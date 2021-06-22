@@ -113,8 +113,6 @@ class CardReaderPaymentViewModel
                     } ?: throw IllegalStateException("Converting order.total to BigDecimal failed")
                 } ?: throw IllegalStateException("Null order is not expected at this point")
             } catch (e: IllegalStateException) {
-                tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
-                    mapOf("error" to e.message.orEmpty()))
                 logger.e(MAIN, e.stackTraceToString())
                 viewState.postValue(
                     FailedPaymentState(
