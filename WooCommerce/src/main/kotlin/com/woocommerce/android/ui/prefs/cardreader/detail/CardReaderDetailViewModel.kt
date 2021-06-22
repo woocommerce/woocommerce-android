@@ -120,6 +120,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onDisconnectClicked() {
+        tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         launch {
             val disconnectionResult = cardReaderManager.disconnectReader()
             if (!disconnectionResult) {
