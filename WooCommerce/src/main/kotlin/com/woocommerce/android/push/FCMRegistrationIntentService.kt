@@ -66,7 +66,7 @@ class FCMRegistrationIntentService : JobIntentService() {
 
             sharedPreferences.edit().putString(WPCOM_PUSH_DEVICE_TOKEN, fcmToken).apply()
 
-            val payload = RegisterDevicePayload(fcmToken, WOOCOMMERCE, selectedSite.get())
+            val payload = RegisterDevicePayload(fcmToken, WOOCOMMERCE, null)
             dispatcher.dispatch(NotificationActionBuilder.newRegisterDeviceAction(payload))
         }
     }
