@@ -645,6 +645,21 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.drawable.img_products_error)
         }
 
+    @Test
+    fun `when scanning for readers pulse animation shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = SCANNING)
+            assertThat(viewModel.viewStateData.value?.showPulseAnimation).isTrue()
+        }
+
+    @Test
+    fun `when connecting to reader pulse animation shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(connectingSucceeds = true)
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            assertThat(viewModel.viewStateData.value?.showPulseAnimation).isTrue()
+        }
+
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
         whenever(cardReaderManager.discoverReaders(anyBoolean())).thenAnswer {
             flow<CardReaderDiscoveryEvents> {
