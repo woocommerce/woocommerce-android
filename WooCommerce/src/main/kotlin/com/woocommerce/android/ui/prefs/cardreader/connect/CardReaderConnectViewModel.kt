@@ -189,7 +189,12 @@ class CardReaderConnectViewModel @Inject constructor(
                 // noop
             }
             is Failed -> {
-                tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED, mapOf("error" to discoveryEvent.msg))
+                tracker.track(
+                    AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED,
+                    this.javaClass.simpleName,
+                    "discovery failed",
+                    discoveryEvent.msg
+                )
                 appLogWrapper.e(T.MAIN, "Scanning failed: ${discoveryEvent.msg}")
                 viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
             }
