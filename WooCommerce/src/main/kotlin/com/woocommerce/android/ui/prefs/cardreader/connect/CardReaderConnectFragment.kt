@@ -10,7 +10,6 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
@@ -31,10 +30,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
-import com.woocommerce.android.util.LocationUtils
-import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.util.*
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
@@ -150,14 +146,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
     private fun startPulseAnimation(binding: FragmentCardReaderConnectBinding) {
         UiHelpers.setImageOrHide(binding.animation, R.drawable.img_card_reader_pulse_rings)
-        with(ObjectAnimator.ofFloat(binding.animation, View.ALPHA, 1.0f, 0.0f)) {
-            duration = resources.getInteger(android.R.integer.config_longAnimTime).toLong()
-            interpolator = LinearInterpolator()
-            repeatMode = android.animation.ValueAnimator.REVERSE
-            repeatCount = android.animation.ValueAnimator.INFINITE
-            start()
-            pulseAnimation = this
-        }
+        pulseAnimation = WooAnimUtils.pulseIndefinite(binding.animation, WooAnimUtils.Duration.LONG)
     }
 
     private fun stopPulseAnimation(binding: FragmentCardReaderConnectBinding) {
