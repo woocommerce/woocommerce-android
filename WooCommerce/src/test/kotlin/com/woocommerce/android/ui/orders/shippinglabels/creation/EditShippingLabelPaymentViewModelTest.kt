@@ -36,20 +36,20 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
     @Suppress("DEPRECATION")
     private val paymentMethods = listOf(
-        CreateShippingLabelTestUtils.generatePaymentMethod(id = 1, cardType = "visa"),
-        CreateShippingLabelTestUtils.generatePaymentMethod(id = 2, cardType = "mastercard")
+            CreateShippingLabelTestUtils.generatePaymentMethod(id = 1, cardType = "visa"),
+            CreateShippingLabelTestUtils.generatePaymentMethod(id = 2, cardType = "mastercard")
     )
 
     private val shippingAccountSettings = ShippingAccountSettings(
-        canManagePayments = true,
-        canEditSettings = true,
-        paymentMethods = paymentMethods,
-        selectedPaymentId = 1,
-        lastUsedBoxId = null,
-        storeOwnerDetails = StoreOwnerDetails(
-            "email", "username", "username", "name"
-        ),
-        isEmailReceiptEnabled = true
+            canManagePayments = true,
+            canEditSettings = true,
+            paymentMethods = paymentMethods,
+            selectedPaymentId = 1,
+            lastUsedBoxId = null,
+            storeOwnerDetails = StoreOwnerDetails(
+                    "email", "username", "username", "name"
+            ),
+            isEmailReceiptEnabled = true
     )
 
     private lateinit var viewModel: EditShippingLabelPaymentViewModel
@@ -59,8 +59,8 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
             whenever(shippingLabelRepository.getAccountSettings()).thenReturn(accountSettings)
         }
         viewModel = EditShippingLabelPaymentViewModel(
-            SavedStateHandle(),
-            shippingLabelRepository = shippingLabelRepository
+                SavedStateHandle(),
+                shippingLabelRepository = shippingLabelRepository
         )
     }
 
@@ -71,8 +71,8 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
         val paymentMethodModels = listOf(
-            PaymentMethodUiModel(paymentMethods[0], isSelected = true),
-            PaymentMethodUiModel(paymentMethods[1], isSelected = false)
+                PaymentMethodUiModel(paymentMethods[0], isSelected = true),
+                PaymentMethodUiModel(paymentMethods[1], isSelected = false)
         )
         verify(shippingLabelRepository).getAccountSettings()
         assertThat(viewState!!.uiState).isEqualTo(UiState.Success)
@@ -177,5 +177,23 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         viewModel.onPaymentMethodAdded()
 
         verify(shippingLabelRepository).getAccountSettings(true)
+    }
+
+    @Test
+    fun `show snackbar when new payment method is added`() = testBlocking {
+        val singleCardResult = shippingAccountSettings
+                .copy(paymentMethods = shippingAccountSettings.paymentMethods.subList(0, 1))
+        whenever(shippingLabelRepository.getAccountSettings(any()))
+                .thenReturn(WooResult(singleCardResult))
+                .thenReturn(WooResult(shippingAccountSettings))
+        viewModel = EditShippingLabelPaymentViewModel(
+                SavedStateHandle(),
+                shippingLabelRepository = shippingLabelRepository
+        )
+
+        viewModel.onPaymentMethodAdded()
+
+        assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.shipping_label_payment_method_added))
     }
 }

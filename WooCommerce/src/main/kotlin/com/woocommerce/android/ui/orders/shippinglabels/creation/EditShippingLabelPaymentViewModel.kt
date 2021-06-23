@@ -9,6 +9,7 @@ import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState.Success
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -118,7 +119,12 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
 
     fun onPaymentMethodAdded() {
         launch {
+            val countOfCurrentPaymentMethods = viewState.paymentMethods.size
             loadPaymentMethods(forceRefresh = true)
+            if (viewState.uiState == Success &&
+                    viewState.paymentMethods.size == countOfCurrentPaymentMethods + 1) {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_payment_method_added))
+            }
         }
     }
 
