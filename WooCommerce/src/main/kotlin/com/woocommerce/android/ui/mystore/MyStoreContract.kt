@@ -13,6 +13,7 @@ interface MyStoreContract {
         fun fetchHasOrders()
         fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean)
         fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean)
+        fun getSelectedSiteName(): String?
         suspend fun fetchTopPerformersStats(granularity: StatsGranularity, forced: Boolean)
         suspend fun loadTopPerformersStats(granularity: StatsGranularity, forced: Boolean = false)
     }
