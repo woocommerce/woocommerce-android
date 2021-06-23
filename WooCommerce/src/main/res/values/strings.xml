@@ -511,6 +511,14 @@
         <item>Service package</item>
     </string-array>
     <string name="shipping_label_create_package_title">Add new package</string>
+    <string name="shipping_label_create_custom_package_field_info">Set up the package you\'ll be using to ship your products. We\'ll save it for future orders.</string>
+    <string name="shipping_label_create_custom_package_field_type">Package type</string>
+    <string name="shipping_label_create_custom_package_field_name">Package name</string>
+    <string name="shipping_label_create_custom_package_field_length">Length %1$s</string>
+    <string name="shipping_label_create_custom_package_field_width">Width %1$s</string>
+    <string name="shipping_label_create_custom_package_field_height">Height %1$s</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Empty package weight %1$s</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_info">Weight of empty package</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
