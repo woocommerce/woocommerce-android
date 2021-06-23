@@ -47,9 +47,13 @@ object ProductImagesUtils {
 
         // optimize the image if the setting is enabled
         if (AppPrefs.getImageOptimizationEnabled()) {
-            getOptimizedImagePath(context, path)?.let {
-                path = it
-            } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image")
+            try {
+                getOptimizedImagePath(context, path)?.let {
+                    path = it
+                } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image")
+            } catch (e: Exception) {
+                WooLog.e(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image", e)
+            }
         }
 
         val file = File(path)
