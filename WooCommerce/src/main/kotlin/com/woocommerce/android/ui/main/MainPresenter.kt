@@ -38,7 +38,6 @@ import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -228,11 +227,9 @@ class MainPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationReceivedEvent) {
-        // a new order notification came in so update the unfilled order count and fetch the order list
+        // a new order notification came in so update the unfilled order count
         if (event.channel == NEW_ORDER) {
             fetchUnfilledOrderCount()
-            val payload = FetchOrdersPayload(selectedSite.get())
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersAction(payload))
         }
     }
 

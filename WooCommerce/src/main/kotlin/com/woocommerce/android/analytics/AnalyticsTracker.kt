@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.TracksClient
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
 import com.woocommerce.android.util.WooLog
@@ -571,6 +572,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
             }
         }
+        finalProperties[IS_DEBUG] = BuildConfig.DEBUG
 
         val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
@@ -624,6 +626,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
+        const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"
         const val KEY_BLOG_ID = "blog_id"
         const val KEY_CONTEXT = "context"
