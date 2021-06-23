@@ -254,6 +254,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CARD_PRESENT_COLLECT_PAYMENT_FAILED,
         CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
 
+        RECEIPT_PRINT_TAPPED,
+        RECEIPT_EMAIL_TAPPED,
+        RECEIPT_EMAIL_FAILED,
+        RECEIPT_PRINT_FAILED,
+        RECEIPT_PRINT_CANCELED,
+        RECEIPT_PRINT_SUCCESS,
+
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
         MAIN_MENU_CONTACT_SUPPORT_TAPPED,
