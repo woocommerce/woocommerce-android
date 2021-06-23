@@ -21,7 +21,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.*
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenLocationSettings
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.util.LocationUtils
