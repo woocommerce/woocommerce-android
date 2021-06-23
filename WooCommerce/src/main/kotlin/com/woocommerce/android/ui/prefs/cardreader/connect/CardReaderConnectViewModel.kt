@@ -296,7 +296,8 @@ class CardReaderConnectViewModel @Inject constructor(
         open val onPrimaryActionClicked: (() -> Unit)? = null
         open val onSecondaryActionClicked: (() -> Unit)? = null
 
-        val showPulseAnimation: Boolean
+        // signifies that the image is an animated vector drawable that needs to be started
+        val isImageAnimated: Boolean
             get() = this is ScanningState || this is ConnectingState
 
         data class ScanningState(override val onSecondaryActionClicked: (() -> Unit)) : ViewState(

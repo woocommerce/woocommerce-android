@@ -646,18 +646,18 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when scanning for readers, then pulse animation shown`() =
+    fun `when scanning for readers, then image animation shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = SCANNING)
-            assertThat(viewModel.viewStateData.value?.showPulseAnimation).isTrue()
+            assertThat(viewModel.viewStateData.value?.isImageAnimated).isTrue()
         }
 
     @Test
-    fun `when connecting to reader, then pulse animation shown`() =
+    fun `when connecting to reader, then image animation shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = true)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-            assertThat(viewModel.viewStateData.value?.showPulseAnimation).isTrue()
+            assertThat(viewModel.viewStateData.value?.isImageAnimated).isTrue()
         }
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
