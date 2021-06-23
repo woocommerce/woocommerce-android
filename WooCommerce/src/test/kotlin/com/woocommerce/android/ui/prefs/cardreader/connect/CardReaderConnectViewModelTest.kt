@@ -646,14 +646,14 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when scanning for readers pulse animation shown`() =
+    fun `when scanning for readers, then pulse animation shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = SCANNING)
             assertThat(viewModel.viewStateData.value?.showPulseAnimation).isTrue()
         }
 
     @Test
-    fun `when connecting to reader pulse animation shown`() =
+    fun `when connecting to reader, then pulse animation shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = true)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
