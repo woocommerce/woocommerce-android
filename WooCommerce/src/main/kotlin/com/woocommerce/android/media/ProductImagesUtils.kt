@@ -79,7 +79,7 @@ object ProductImagesUtils {
 
         media.fileName = filename
         media.title = filename
-        media.filePath = fetchedUri.path
+        media.filePath = path
         media.localSiteId = localSiteId
         media.fileExtension = fileExtension
         media.mimeType = mimeType
