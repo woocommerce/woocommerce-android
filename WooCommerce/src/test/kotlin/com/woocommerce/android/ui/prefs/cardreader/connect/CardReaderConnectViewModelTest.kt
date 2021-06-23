@@ -326,7 +326,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = FAILED)
 
-            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED), any(), any(), any())
+            verify(tracker).track(
+                eq(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
+            )
         }
 
     @Test
