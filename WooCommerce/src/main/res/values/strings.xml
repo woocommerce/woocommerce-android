@@ -330,9 +330,9 @@
     <string name="orderdetail_shipping_label_refund_title">%1$s label refund requested</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
-    <string name="orderdetail_shipping_label_reprint_customs_form">Print customs form</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Print customs form</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
-    <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
+    <string name="orderdetail_shipping_label_print">Print shipping label</string>
     <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Create shipping labels from your device!!</string>
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
