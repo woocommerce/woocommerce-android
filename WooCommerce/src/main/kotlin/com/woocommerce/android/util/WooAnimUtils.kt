@@ -69,21 +69,6 @@ object WooAnimUtils {
         }
     }
 
-    /**
-     * Continuously fades the target view in and out, returns the animation in case the
-     * caller wants to cancel it
-     */
-    fun pulseIndefinite(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
-        with(ObjectAnimator.ofFloat(target, View.ALPHA, 1.0f, 0.0f)) {
-            duration = animDuration.toMillis(target.context)
-            interpolator = LinearInterpolator()
-            repeatMode = android.animation.ValueAnimator.REVERSE
-            repeatCount = android.animation.ValueAnimator.INFINITE
-            start()
-            return this
-        }
-    }
-
     fun scaleIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
         val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 0f, 1f)
         val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f, 1f)
