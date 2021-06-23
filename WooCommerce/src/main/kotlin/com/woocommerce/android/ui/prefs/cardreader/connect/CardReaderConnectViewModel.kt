@@ -192,7 +192,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED,
                     this.javaClass.simpleName,
-                    "discovery failed",
+                    null,
                     discoveryEvent.msg
                 )
                 appLogWrapper.e(T.MAIN, "Scanning failed: ${discoveryEvent.msg}")
