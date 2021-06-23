@@ -50,8 +50,6 @@ import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
 
-private const val SHOW_LAST_N_DIGITS_OF_CARD_READERS_ID = 8
-
 @HiltViewModel
 class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -215,7 +213,6 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun mapReaderToListItem(reader: CardReader): ListItemViewState =
         CardReaderListItem(
-//            readerId = reader.id?.takeLast(SHOW_LAST_N_DIGITS_OF_CARD_READERS_ID).orEmpty(),
             readerId = reader.id.orEmpty(),
             readerType = reader.type,
             onConnectClicked = {
@@ -288,6 +285,7 @@ class CardReaderConnectViewModel @Inject constructor(
         data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
     }
 
+    @Suppress("LongParameterList")
     sealed class ViewState(
         val headerLabel: UiString? = null,
         @DrawableRes val illustration: Int? = null,
