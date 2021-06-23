@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
-import android.animation.ObjectAnimator
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -20,14 +20,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenLocationSettings
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.util.*
@@ -42,8 +35,6 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
     @Inject lateinit var locationUtils: LocationUtils
     @Inject lateinit var cardReaderManager: CardReaderManager
-
-    private var pulseAnimation: ObjectAnimator? = null
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
@@ -145,14 +136,11 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     }
 
     private fun startPulseAnimation(binding: FragmentCardReaderConnectBinding) {
-        UiHelpers.setImageOrHide(binding.animation, R.drawable.img_card_reader_pulse_rings)
-        pulseAnimation = WooAnimUtils.pulseIndefinite(binding.animation, WooAnimUtils.Duration.LONG)
+        (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
     }
 
     private fun stopPulseAnimation(binding: FragmentCardReaderConnectBinding) {
-        pulseAnimation?.cancel()
-        pulseAnimation = null
-        binding.animation.visibility = View.GONE
+        (binding.illustration.drawable as? AnimatedVectorDrawable)?.stop()
     }
 
     private fun updateMultipleReadersFoundRecyclerView(
