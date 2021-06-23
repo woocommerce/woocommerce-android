@@ -2,14 +2,16 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.PackageType
 
-class ShippingLabelCreatePackageViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-    var tabSize: Int = 0
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+class ShippingLabelCreatePackageViewPagerAdapter(container: Fragment, val itemsCount: Int)
+    : FragmentStateAdapter(container) {
+    override fun getItemCount(): Int = itemsCount
 
     override fun createFragment(position: Int): Fragment {
-        TODO("Not yet implemented")
+        return when(PackageType.values()[position]) {
+            PackageType.CUSTOM -> ShippingLabelCreateCustomPackageFragment()
+            PackageType.SERVICE -> ShippingLabelCreateServicePackageFragment()
+        }
     }
 }
