@@ -142,7 +142,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     }
 
     private fun startPulseAnimation(binding: FragmentCardReaderConnectBinding) {
-        UiHelpers.setImageOrHide(binding.animation, R.drawable.img_card_reader_scanning_rings)
+        UiHelpers.setImageOrHide(binding.animation, R.drawable.img_card_reader_pulse_rings)
         with(ObjectAnimator.ofFloat(binding.animation, View.ALPHA, 1.0f, 0.0f)) {
             duration = resources.getInteger(android.R.integer.config_longAnimTime).toLong()
             interpolator = LinearInterpolator()
