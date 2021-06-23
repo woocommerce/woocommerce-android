@@ -46,6 +46,7 @@ object ProductImagesUtils {
         }
 
         // optimize the image if the setting is enabled
+        @Suppress("TooGenericExceptionCaught")
         if (AppPrefs.getImageOptimizationEnabled()) {
             try {
                 getOptimizedImagePath(context, path)?.let {
