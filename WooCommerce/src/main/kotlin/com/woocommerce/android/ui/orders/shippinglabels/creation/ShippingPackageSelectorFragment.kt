@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingPackagesSelectorBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -67,7 +68,9 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
                 is ExitWithResult<*> -> navigateBackWithResult(SELECTED_PACKAGE_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
                 is ShowCreatePackageScreen -> {
-                    // TODO: Create action and then navigate to the create package screen (not yet created)
+                    val action = ShippingPackageSelectorFragmentDirections
+                        .actionShippingPackageSelectorFragmentToShippingLabelCreatePackageFragment()
+                    findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
             }

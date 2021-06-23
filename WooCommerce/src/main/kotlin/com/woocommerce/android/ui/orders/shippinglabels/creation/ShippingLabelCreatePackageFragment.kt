@@ -31,11 +31,10 @@ class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shippin
         _tabLayout = binding.createPackageTabLayout
         _viewPager = binding.createPackagePager
 
-        initializeTabs()
-
         val adapter = ShippingLabelCreatePackageViewPagerAdapter(this, PackageType.values().size)
         viewPager.adapter = adapter
 
+        initializeTabs()
         setupObservers(viewModel)
     }
 
