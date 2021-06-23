@@ -129,7 +129,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any())
+            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), any())
         }
 
     @Test
@@ -276,7 +276,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any())
+            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), any())
         }
 
     @Test

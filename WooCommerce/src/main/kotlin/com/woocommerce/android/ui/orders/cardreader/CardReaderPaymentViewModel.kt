@@ -107,7 +107,9 @@ class CardReaderPaymentViewModel
             } ?: run {
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
-                    mapOf("error" to PaymentFlowError.FETCHING_ORDER_FAILED.toString())
+                    this@CardReaderPaymentViewModel.javaClass.simpleName,
+                    null,
+                    AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED.name,
                 )
                 viewState.postValue(
                     FailedPaymentState(
@@ -170,7 +172,9 @@ class CardReaderPaymentViewModel
             is PaymentFailed -> {
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
-                    mapOf("error" to paymentStatus.type.toString())
+                    this@CardReaderPaymentViewModel.javaClass.simpleName,
+                    paymentStatus.type.toString(),
+                    paymentStatus.errorMessage
                 )
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
