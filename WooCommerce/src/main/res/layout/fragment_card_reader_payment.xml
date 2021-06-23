@@ -7,12 +7,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
-        android:layout_height="wrap_content"
-        android:minHeight="@dimen/payments_dialog_height"
+        android:layout_height="@dimen/payments_dialog_height"
         android:paddingStart="@dimen/major_150"
         android:paddingTop="@dimen/major_150"
         android:paddingEnd="@dimen/major_150"
-        android:paddingBottom="@dimen/major_150"
         tools:background="?attr/colorSurface">
 
         <com.google.android.material.textview.MaterialTextView
