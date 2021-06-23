@@ -255,6 +255,7 @@ class CardReaderPaymentViewModel
     }
 
     fun onEmailActivityNotFound() {
+        tracker.track(RECEIPT_EMAIL_FAILED)
         triggerEvent(ShowSnackbar(R.string.card_reader_payment_email_client_not_found))
     }
 

@@ -12,6 +12,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAILED
@@ -128,7 +129,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
+        }
 
     @Test
     fun `when fetching order fails, then event tracked`() =
@@ -144,14 +145,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
-            coroutinesTestRule.testDispatcher.runBlockingTest {
-                whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
 
-                viewModel.start()
+            viewModel.start()
 
-                assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
-                        .isEqualTo(R.string.order_error_fetch_generic)
-            }
+            assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
+                .isEqualTo(R.string.order_error_fetch_generic)
+        }
 
     @Test
     fun `when payment screen shown, then loading data state is shown`() {
@@ -648,6 +649,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             verify(tracker).track(RECEIPT_EMAIL_TAPPED)
+        }
+
+    @Test
+    fun `when email activity not found, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            viewModel.onEmailActivityNotFound()
+
+            verify(tracker).track(RECEIPT_EMAIL_FAILED)
         }
 
     @Test
