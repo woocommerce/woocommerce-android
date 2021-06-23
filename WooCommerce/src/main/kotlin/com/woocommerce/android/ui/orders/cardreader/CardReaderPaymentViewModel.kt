@@ -109,7 +109,7 @@ class CardReaderPaymentViewModel
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
                     this@CardReaderPaymentViewModel.javaClass.simpleName,
                     null,
-                    AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED.name,
+                    "Fetching order failed"
                 )
                 viewState.postValue(
                     FailedPaymentState(
