@@ -60,4 +60,6 @@ class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shippin
         _binding = null
         super.onDestroyView()
     }
+
+    override fun getFragmentTitle() = getString(R.string.shipping_label_create_package_title)
 }
