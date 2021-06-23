@@ -296,6 +296,9 @@ class CardReaderConnectViewModel @Inject constructor(
         open val onPrimaryActionClicked: (() -> Unit)? = null
         open val onSecondaryActionClicked: (() -> Unit)? = null
 
+        val showPulseAnimation: Boolean
+            get() = this is ScanningState || this is ConnectingState
+
         data class ScanningState(override val onSecondaryActionClicked: (() -> Unit)) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_scanning_header),
             illustration = R.drawable.img_card_reader_scanning,
@@ -306,7 +309,7 @@ class CardReaderConnectViewModel @Inject constructor(
         data class ReaderFoundState(
             override val onPrimaryActionClicked: (() -> Unit),
             override val onSecondaryActionClicked: (() -> Unit),
-            val readerId: String
+            val readerId: String,
         ) : ViewState(
             headerLabel = UiStringRes(
                 stringRes = R.string.card_reader_connect_reader_found_header,
