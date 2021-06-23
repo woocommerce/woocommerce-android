@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -26,61 +25,65 @@ class ShippingLabelAddressValidator @Inject constructor(
     suspend fun validateAddress(
         address: Address,
         type: AddressType,
-        isInternationalShipment: Boolean
+        requiresPhoneNumber: Boolean
     ): ValidationResult {
-        if (isNameMissing(address)) {
-            return ValidationResult.NameMissing
-        } else if (isInternationalShipment && type == ORIGIN && !address.phoneHas10Digits()) {
-            return ValidationResult.PhoneInvalid
-        } else {
-            val result = withContext(Dispatchers.IO) {
-                shippingLabelStore.verifyAddress(
-                    selectedSite.get(),
-                    address.toShippingLabelModel(),
-                    type.toDataType()
-                )
-            }
+        return when {
+            isNameMissing(address) -> ValidationResult.NameMissing
+            requiresPhoneNumber && !address.hasValidPhoneNumber(type) -> ValidationResult.PhoneInvalid
+            else -> verifyAddress(address, type)
+        }
+    }
 
-            return if (result.isError) {
+    private suspend fun verifyAddress(address: Address, type: AddressType): ValidationResult {
+        val result = withContext(Dispatchers.IO) {
+            shippingLabelStore.verifyAddress(
+                selectedSite.get(),
+                address.toShippingLabelModel(),
+                type.toDataType()
+            )
+        }
+
+        if (result.isError) {
+            AnalyticsTracker.track(
+                Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                mapOf("error" to result.error.type.name)
+            )
+
+            return ValidationResult.Error(result.error.type)
+        }
+        return when (result.model) {
+            null -> {
                 AnalyticsTracker.track(
                     Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
-                    mapOf("error" to result.error.type.name)
+                    mapOf("error" to "response_model_null")
                 )
 
-                ValidationResult.Error(result.error.type)
-            } else when (result.model) {
-                null -> {
-                    AnalyticsTracker.track(
-                        Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
-                        mapOf("error" to "response_model_null")
-                    )
+                ValidationResult.Error(GENERIC_ERROR)
+            }
+            is InvalidRequest -> {
+                AnalyticsTracker.track(
+                    Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                    mapOf("error" to "address_not_found")
+                )
 
-                    ValidationResult.Error(GENERIC_ERROR)
-                }
-                is InvalidRequest -> {
-                    AnalyticsTracker.track(
-                        Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
-                        mapOf("error" to "address_not_found")
-                    )
+                ValidationResult.NotFound((result.model as InvalidRequest).message)
+            }
+            is InvalidAddress -> {
+                AnalyticsTracker.track(
+                    Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                    mapOf("error" to "invalid_address")
+                )
 
-                    ValidationResult.NotFound((result.model as InvalidRequest).message)
-                }
-                is InvalidAddress -> {
-                    AnalyticsTracker.track(
-                        Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
-                        mapOf("error" to "invalid_address")
-                    )
-
-                    ValidationResult.Invalid((result.model as InvalidAddress).message)
-                }
-                is WCAddressVerificationResult.Valid -> {
-                    AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
-                    val suggestion = (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
-                    if (suggestion.toString() != address.toString()) {
-                        ValidationResult.SuggestedChanges(suggestion)
-                    } else {
-                        ValidationResult.Valid
-                    }
+                ValidationResult.Invalid((result.model as InvalidAddress).message)
+            }
+            is WCAddressVerificationResult.Valid -> {
+                AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
+                val suggestion =
+                    (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
+                if (suggestion.toString() != address.toString()) {
+                    ValidationResult.SuggestedChanges(suggestion)
+                } else {
+                    ValidationResult.Valid
                 }
             }
         }

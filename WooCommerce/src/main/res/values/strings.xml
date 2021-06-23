@@ -477,7 +477,8 @@
     <string name="shipping_label_address_suggestion_entered_address">Entered address</string>
     <string name="shipping_label_address_suggestion_suggested_address">Suggested address</string>
     <string name="shipping_label_address_phone_required">A phone number is required because this shipment requires a customs form</string>
-    <string name="shipping_label_address_phone_invalid">Customs forms require a 10-digit phone number</string>
+    <string name="shipping_label_origin_address_phone_invalid">Customs forms require a 10-digit phone number</string>
+    <string name="shipping_label_destination_address_phone_invalid">Please enter a valid phone number</string>
     <string name="shipping_label_address_data_invalid_snackbar_message">Certain required fields are blank.</string>
     <string name="shipping_label_package_details_items_section_title">Items to fulfill</string>
     <string name="shipping_label_package_details_move_item">Move</string>
@@ -701,9 +702,10 @@
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
     <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
-    <string name="card_reader_payment_failed_card_declined_state">Card declined. Please retry with a different card.</string>
+    <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
+    <string name="card_reader_payment_failed_retry">Try collecting payment again</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
@@ -712,18 +714,22 @@
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! You can find the receipt for your payment at the following link: %s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
-    <string name="card_reader_fetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+    <string name="card_reader_refetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <!--
             Card Reader Connection
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
+    <string name="card_reader_connect_scanning_progress" translatable="false">@string/card_reader_connect_scanning_header</string>
     <string name="card_reader_connect_scanning_hint">Press the power button of your reader until you see a flashing blue light</string>
     <string name="card_reader_connect_reader_found_header">Do you want to connect reader %s?</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
+    <string name="card_reader_connect_connect_button">Connect</string>
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">Connecting to reader failed</string>
-    <string name="card_reader_connect_scanning_failed_hint">We couldn\'t find any readers.</string>
+    <string name="card_reader_connect_scanning_failed_hint">Want to keep looking for readers?</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_hint">Missing required location permission</string>
     <string name="card_reader_connect_location_provider_disabled_hint">Location is disabled</string>

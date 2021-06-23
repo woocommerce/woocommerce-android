@@ -115,9 +115,12 @@ so that's the baseline as defined in `major_100`.
     <dimen name="alert_dialog_max_width">300dp</dimen>
     <dimen name="top_performer_min_height">224dp</dimen>
     <dimen name="expanded_toolbar_height">108dp</dimen>
+    <dimen name="expanded_toolbar_bottom_margin">32dp</dimen>
+    <dimen name="expanded_toolbar_bottom_margin_with_subtitle">48dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="floating_dialog_min_width">280dp</dimen>
     <dimen name="tab_indicator_size">6dp</dimen>
     <dimen name="progress_bar_mid">56dp</dimen>
-    <dimen name="progress_bar_large">100dp</dimen>
+    <dimen name="progress_bar_large">91dp</dimen>
+    <dimen name="card_reader_multiple_readers_found_rv_height">400dp</dimen>
 </resources>
