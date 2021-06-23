@@ -133,7 +133,6 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
             updateMultipleReadersFoundRecyclerView(binding, viewState)
 
-            // TODO check dark mode
             if (viewState.showPulseAnimation) {
                 startPulseAnimation(binding)
             } else {
