@@ -22,7 +22,7 @@ class AnalyticsTrackerWrapper
      * @param errorType The type of error.
      * @param errorDescription The error text or other description.
      */
-    fun track(stat: Stat, errorContext: String, errorType: String, errorDescription: String) {
+    fun track(stat: Stat, errorContext: String?, errorType: String?, errorDescription: String?) {
         AnalyticsTracker.track(stat, errorContext, errorType, errorDescription)
     }
 }

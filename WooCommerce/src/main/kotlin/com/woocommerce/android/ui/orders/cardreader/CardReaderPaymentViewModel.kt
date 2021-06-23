@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
@@ -61,7 +63,8 @@ class CardReaderPaymentViewModel
     private val orderRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
-    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
 
@@ -101,13 +104,21 @@ class CardReaderPaymentViewModel
                     order.billingAddress.email,
                     "$${order.total}"
                 )
-            } ?: viewState.postValue(
+            } ?: run {
+                tracker.track(
+                    AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+                    this@CardReaderPaymentViewModel.javaClass.simpleName,
+                    null,
+                    "Fetching order failed"
+                )
+                viewState.postValue(
                     FailedPaymentState(
                         errorType = PaymentFlowError.FETCHING_ORDER_FAILED,
                         amountWithCurrencyLabel = null,
                         onPrimaryActionClicked = { initPaymentFlow(isRetry = true) }
                     )
                 )
+            }
         }
     }
 
@@ -148,14 +159,25 @@ class CardReaderPaymentViewModel
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             // TODO cardreader store receipt data into a persistent storage
-            is PaymentCompleted -> onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
+            is PaymentCompleted -> {
+                tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+                onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
+            }
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
             }
             WaitingForInput -> {
                 // TODO cardreader prompt the user to tap/insert a card
             }
-            is PaymentFailed -> emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
+            is PaymentFailed -> {
+                tracker.track(
+                    AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+                    this@CardReaderPaymentViewModel.javaClass.simpleName,
+                    paymentStatus.type.toString(),
+                    paymentStatus.errorMessage
+                )
+                emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
+            }
         }
     }
 
