@@ -29,6 +29,16 @@
                 android:layout_height="@dimen/expanded_toolbar_height"
                 app:titleEnabled="true">
 
+                <TextView
+                    android:id="@+id/toolbar_subtitle"
+                    style="@style/Woo.TextView.Subtitle1.ToolbarSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:importantForAccessibility="yes"
+                    app:layout_collapseMode="parallax"
+                    tools:text="Subtitle shop name"
+                    tools:visibility="visible" />
+
                 <include
                     android:id="@+id/toolbar"
                     layout="@layout/view_toolbar" />

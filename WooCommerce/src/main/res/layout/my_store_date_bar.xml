@@ -14,6 +14,7 @@
         tools:text="June 30-Jul 06"/>
 
     <View
+        android:layout_gravity="bottom"
         style="@style/Woo.Divider"/>
 
 </merge>
