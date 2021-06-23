@@ -9,9 +9,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
@@ -226,6 +229,7 @@ class CardReaderPaymentViewModel
 
     private fun onPrintReceiptClicked(receiptUrl: String, documentName: String) {
         launch {
+            tracker.track(RECEIPT_PRINT_TAPPED)
             // TODO cardreader show a progress dialog as url loading might take some time
             triggerEvent(PrintReceipt(receiptUrl, documentName))
         }
@@ -233,6 +237,7 @@ class CardReaderPaymentViewModel
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
         launch {
+            tracker.track(RECEIPT_EMAIL_TAPPED)
             triggerEvent(
                 SendReceipt(
                     content = UiStringRes(
