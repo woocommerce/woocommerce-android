@@ -12,9 +12,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
@@ -589,6 +591,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when user clicks on print receipt button, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(RECEIPT_PRINT_TAPPED)
+        }
+
+    @Test
     fun `when OS accepts the print request, then print success event tracked`() {
         viewModel.onPrintResult(STARTED)
 
@@ -620,6 +635,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
+        }
+
+    @Test
+    fun `when user clicks on send receipt button, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).track(RECEIPT_EMAIL_TAPPED)
         }
 
     @Test
