@@ -1,11 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-25 22:54:44+0000
+Translation-Revision-Date: 2021-06-08 09:54:19+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s-spårning</string>
+    <string name="card_reader_software_update_in_progress_title">Uppdaterar din läsares programvara</string>
+    <string name="card_reader_software_update_title">Programvaruuppdatering</string>
+    <string name="card_reader_software_update_description">Din kortläsares programvara behöver uppdateras för att fungera korrekt. Vill du uppdatera den nu?</string>
+    <string name="card_reader_detail_connected_update_failed">Det gick inte att uppdatera läsarens programvara. Försök igen senare</string>
+    <string name="card_reader_detail_connected_update_success">Läsarens programvara har uppdaterats</string>
+    <string name="card_reader_detail_connected_update_check_failed">Sökningen efter programvaruversionsuppdateringar misslyckades. Försök igen senare</string>
+    <string name="card_reader_detail_connected_reader_unknown">OKÄNT KORTLÄSARNAMN</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Koppla från läsare</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Uppdatera din läsares programvara för att fortsätta ta emot betalningar</string>
+    <string name="card_reader_detail_connected_update_software">Uppdatera läsarens programvara</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% batteri</string>
+    <string name="card_reader_detail_connected_header">ANSLUTEN LÄSARE</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Anslut kortläsare</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Sätt på kortläsaren och placera den bredvid den mobila enheten</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Se till att kortläsare är laddad</string>
+    <string name="card_reader_detail_not_connected_header">Anslut din kortläsare</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kort avvisades</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kort avvisades. Försök igen med ett annat kort.</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Ansluter till läsaren</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Förbereder för att ta emot betalning</string>
+    <string name="shipping_label_customs_value_zero_error">Det deklarerade värdet måste vara större än noll</string>
+    <string name="shipping_label_customs_weight_zero_error">Vikt måste vara större än noll</string>
+    <string name="shipping_label_customs_required_field">Detta fält är obligatoriskt</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Beskriv vilken typ av begränsningar detta paket måste ha.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Beskriv vilken typ av varor detta paket innehåller.</string>
+    <string name="shipping_label_customs_weight_hint">Vikt (%1$s per enhet)</string>
+    <string name="shipping_label_customs_value_hint">Värde (%1$s per enhet)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s om HS-tariffnummer</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s om internt transaktionsnummer</string>
+    <string name="shipping_label_customs_line_item">Anpassad rad %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">Annat</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Sanitär/fytosanitär inspektion</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Karantän</string>
+    <string name="shipping_label_customs_restriction_type_none">Ingen</string>
+    <string name="shipping_label_customs_contents_type_other">Annat</string>
+    <string name="shipping_label_customs_contents_type_sample">Prov</string>
+    <string name="shipping_label_customs_contents_type_gifts">Presenter</string>
+    <string name="shipping_label_customs_contents_type_documents">Dokument</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Handelsvaror</string>
+    <string name="shipping_label_customs_origin_country_explanation">Land där produkten tillverkades eller monterades</string>
+    <string name="shipping_label_customs_origin_country_hint">Ursprungsland</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">Tariffnumret måste vara 6 siffror långt</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS-tariffnummer (valfritt)</string>
+    <string name="shipping_label_customs_item_description_hint">Beskrivning</string>
+    <string name="shipping_label_customs_package_content">Paketinnehåll</string>
+    <string name="shipping_label_customs_itn_required_country">ITN krävs för försändelser till %1$s.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">ITN krävs för frakt av artiklar till ett värde som överstiger 2 500 USD per tariffnummer</string>
+    <string name="shipping_label_customs_itn_invalid_format">Ogiltigt format</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Begränsningsdetaljer</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Innehållsdetaljer</string>
+    <string name="shipping_label_customs_restriction_type_hint">Begränsningstyp</string>
+    <string name="shipping_label_customs_contents_type_hint">Innehållstyp</string>
+    <string name="shipping_label_customs_return_to_sender">Returnera till avsändare om paketet inte kan levereras</string>
+    <string name="shipping_label_rate_insurance_up_to">upp till %s</string>
+    <string name="order_fulfill_email_info">Om du har aktiverat den här inställningen kommer kunden att få ett bekräftelsemeddelande via e-post när beställningen har slutförts.</string>
+    <string name="order_fulfill_title">Granska beställning</string>
+    <string name="order_fulfill_completed">🎉 Beställning slutförd!</string>
+    <string name="user_access_verifying">Verifierar roll …</string>
+    <string name="user_role_access_error_retry">Du har inte den korrekta användarrollen</string>
+    <string name="user_role_access_error_link">Lär dig mer om roller och behörigheter</string>
+    <string name="user_role_access_error_msg">Den här appen har endast stöd för användarrollerna Administratör och Butikschef. Kontakta butiksägaren för att uppgradera din roll.</string>
+    <string name="login_prologue_label_reviews">Övervaka och godkänn dina produktrecensioner</string>
+    <string name="login_prologue_label_products">Redigera och lägg till nya produkter var som helst</string>
+    <string name="login_prologue_label_orders">Hantera dina butiksbeställningar i farten </string>
+    <string name="login_prologue_label_analytics">Spåra försäljning och högpresterande produkter</string>
+    <string name="skip">Hoppa över</string>
     <string name="product_type_external_title">Extern produkt</string>
     <string name="product_type_grouped_title">Grupperad produkt</string>
     <string name="product_type_variable_title">Variabel produkt</string>
@@ -78,7 +145,8 @@ Language: sv_SE
     <string name="shipping_label_selected_rates_description">%s avgifter valda</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Berättigar till gratis signaturkrav</string>
     <string name="shipping_label_rate_included_options_free_pickup">Berättigar till gratis upphämtning </string>
-    <string name="shipping_label_rate_included_options_insurance">Försäkring (upp till %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">Försäkring  (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">spårning</string>
     <string name="shipping_label_rate_included_options">Inkluderar %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Måste signeras av en vuxen (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Signatur obligatoriskt (%s)</string>
@@ -1320,7 +1388,6 @@ Language: sv_SE
     <string name="login_avatar_content_description">Ditt profilfoto</string>
     <string name="login_connected_store">Ansluten butik</string>
     <string name="login_configure_link">Läs %skonfigurationsinstruktionerna%s.</string>
-    <string name="login_prologue_banner">Hantera ordrar, spåra försäljning och övervaka butiksaktivitet med varningar i realtid.</string>
     <string name="login_jetpack_required">Denna app kräver Jetpack för att ansluta till din butik.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Ange adressen till den WooCommerce-butik som du vill ansluta.</string>

@@ -80,14 +80,18 @@ class OrderDetailRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
+    suspend fun fetchOrder(orderIdentifier: OrderIdentifier, useCachedOnFailure: Boolean = true): Order? {
         val remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
-        continuationFetchOrder.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+        val requestResult = continuationFetchOrder.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
         }
-
-        return getOrder(orderIdentifier)
+        val requestSuccessful = requestResult is Success && requestResult.value
+        return if (requestSuccessful || useCachedOnFailure) {
+            getOrder(orderIdentifier)
+        } else {
+            null
+        }
     }
 
     suspend fun fetchOrderNotes(

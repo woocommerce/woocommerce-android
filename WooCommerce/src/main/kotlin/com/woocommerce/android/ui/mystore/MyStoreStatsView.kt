@@ -107,9 +107,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val ordersValue
         get() = binding.root.findViewById<MaterialTextView>(R.id.orders_value)
 
-    val myStoreDateBar
-        get() = binding.myStoreDateBar
-
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: MyStoreStatsListener,
@@ -437,8 +434,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
     private fun getFormattedVisitorValue(date: String) =
-            if (activeGranularity == StatsGranularity.DAYS) "" else
-                chartVisitorStats[date]?.toString() ?: "0"
+            if (activeGranularity == StatsGranularity.DAYS) "" else chartVisitorStats[date]?.toString() ?: "0"
 
     /**
      * Method to format the incoming visitor stats data

@@ -49,14 +49,15 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditShippingLabelAddressFragment
-    : BaseFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
+class EditShippingLabelAddressFragment : BaseFragment(R.layout.fragment_edit_shipping_label_address),
+    BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
         const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
     }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
@@ -164,16 +165,19 @@ class EditShippingLabelAddressFragment
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
             }
-            new.addressError?.takeIfNotEqualTo(old?.addressError) {
+            new.addressError.takeIfNotEqualTo(old?.addressError) {
                 showErrorOrClear(binding.address1Layout, it)
             }
-            new.nameError?.takeIfNotEqualTo(old?.nameError) {
+            new.phoneError.takeIfNotEqualTo(old?.phoneError) {
+                showErrorOrClear(binding.phoneLayout, it)
+            }
+            new.nameError.takeIfNotEqualTo(old?.nameError) {
                 showErrorOrClear(binding.nameLayout, it)
             }
-            new.cityError?.takeIfNotEqualTo(old?.cityError) {
+            new.cityError.takeIfNotEqualTo(old?.cityError) {
                 showErrorOrClear(binding.cityLayout, it)
             }
-            new.zipError?.takeIfNotEqualTo(old?.zipError) {
+            new.zipError.takeIfNotEqualTo(old?.zipError) {
                 showErrorOrClear(binding.zipLayout, it)
             }
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
@@ -193,8 +197,8 @@ class EditShippingLabelAddressFragment
                         )
                     } else {
                         hideProgressDialog()
+                    }
                 }
-            }
             new.isLoadingProgressDialogVisible?.takeIfNotEqualTo(old?.isLoadingProgressDialogVisible) { isVisible ->
                 if (isVisible) {
                     showProgressDialog(
@@ -264,8 +268,8 @@ class EditShippingLabelAddressFragment
         })
     }
 
-    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int) {
-        if (message == 0) {
+    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int?) {
+        if (message == null || message == 0) {
             inputLayout.error = null
         } else {
             inputLayout.error = resources.getString(message)

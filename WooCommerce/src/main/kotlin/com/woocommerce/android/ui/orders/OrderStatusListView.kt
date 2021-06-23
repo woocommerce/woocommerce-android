@@ -52,8 +52,9 @@ class OrderStatusListView @JvmOverloads constructor(
         }
     }
 
-    class OrderStatusListAdapter(private val listener: OrderStatusListListener)
-        : RecyclerView.Adapter<OrderStatusListViewHolder>() {
+    class OrderStatusListAdapter(
+        private val listener: OrderStatusListListener
+    ) : RecyclerView.Adapter<OrderStatusListViewHolder>() {
         private val orderStatusList: ArrayList<WCOrderStatusModel> = ArrayList()
 
         fun setOrderStatusList(newList: List<WCOrderStatusModel>) {

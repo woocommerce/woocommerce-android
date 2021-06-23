@@ -1,3 +1,1 @@
-Back by popular demand, the order fulfill screen now displays when you click the "Mark order complete" button!
-
-In addition, we fixed a bug that was breaking the product list screen and added an error message for unauthorized users who attempt to access your store. 
+Fewer taps are needed to get to attributes on a variable product – they’re listed right in the product details! They say pictures say more than words, so we’ve refreshed some illustrations throughout the app. We also fixed a few bugs and made things a bit zippier – we hope that you notice!

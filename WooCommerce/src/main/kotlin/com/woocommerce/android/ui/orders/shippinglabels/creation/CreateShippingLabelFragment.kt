@@ -5,7 +5,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
@@ -17,6 +16,7 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.Companion.EDIT_PAYMENTS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment.Companion.SHIPPING_CARRIERS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment.Companion.SHIPPING_CARRIERS_RESULT
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment.Companion.EDIT_CUSTOMS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment.Companion.EDIT_CUSTOMS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
@@ -129,8 +130,11 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         handleResult<List<ShippingRate>>(SHIPPING_CARRIERS_RESULT) {
             viewModel.onShippingCarriersSelected(it)
         }
-        handleNotice(EDIT_CUSTOMS_RESULT) {
-            viewModel.onCustomsFilledOut()
+        handleResult<List<CustomsPackage>>(EDIT_CUSTOMS_RESULT) {
+            viewModel.onCustomsFilledOut(it)
+        }
+        handleNotice(EDIT_CUSTOMS_CLOSED) {
+            viewModel.onCustomsEditCanceled()
         }
     }
 
@@ -188,15 +192,16 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowAddressEditor -> {
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToEditShippingLabelAddressFragment(
-                            event.address,
-                            event.type,
-                            event.validationResult
+                            address = event.address,
+                            addressType = event.type,
+                            validationResult = event.validationResult,
+                            requiresPhoneNumber = event.requiresPhoneNumber
                         )
                     findNavController().navigateSafely(action)
                 }
@@ -229,6 +234,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             event.destinationAddress,
                             event.shippingLabelPackages.toTypedArray(),
                             event.order,
+                            event.customsPackages?.toTypedArray(),
                             event.selectedRates.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
@@ -252,14 +258,16 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                 is ShowCustomsForm -> {
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToShippingCustomsFragment(
+                            originCountryCode = event.originCountryCode,
                             destinationCountryCode = event.destinationCountryCode,
-                            customsPackages = event.customsPacakges.toTypedArray()
+                            shippingPackages = event.shippingPackages.toTypedArray(),
+                            customsPackages = event.customsPackages.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
             }
-        })
+        }
     }
 
     private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {

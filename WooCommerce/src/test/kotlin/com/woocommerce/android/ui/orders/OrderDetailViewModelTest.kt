@@ -26,6 +26,7 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
@@ -45,7 +46,6 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
-import java.util.Date
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -63,6 +63,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val resources: ResourceProvider = mock {
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
     }
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
 
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
 
@@ -103,7 +104,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 appPrefsWrapper,
                 networkStatus,
                 resources,
-                repository
+                repository,
+                paymentCollectibilityChecker
             )
         )
 
@@ -190,23 +192,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when order not paid then show collect button`() =
+    fun `collect button hidden if payment is not collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            initForCheckIfOrderCollectable(datePaid = Date())
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `when order is paid then hide collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(datePaid = null, paymentMethodTitle = "")
+            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
 
             // WHEN
             viewModel.start()
@@ -216,185 +208,19 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order in USD then show collect button`() =
+    fun `collect button shown if payment is collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            initForCheckIfOrderCollectable(currency = "USD")
+            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
 
             // WHEN
             viewModel.start()
 
             // THEN
             assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `when order has subscriptions items then hide collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(hasSubscriptionItems = true)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
-        }
-
-    @Test
-    fun `when order has no subscriptions items then show collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(hasSubscriptionItems = false)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `when order has code payment method then show collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentMethod = "cod")
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `when order has empty payment method then show collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentMethod = "")
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `when order has non code payment method then hide collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentMethod = "stripe")
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
-        }
-
-    @Test
-    fun `when order has processing status then show collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentStatus = Order.Status.Processing)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `when order has on hold status then show collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentStatus = Order.Status.OnHold)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `when order has pending status then show collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentStatus = Order.Status.Pending)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isTrue()
-        }
-
-    @Test
-    fun `when order has refunded status then hide collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentStatus = Order.Status.Refunded)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
-        }
-
-    @Test
-    fun `when order has custom status then hide collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentStatus = Order.Status.Custom("custom"))
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
-        }
-
-    @Test
-    fun `when order has failed status then hide collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentStatus = Order.Status.Failed)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
-        }
-
-    @Test
-    fun `when order has completed status then hide collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentStatus = Order.Status.Completed)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
-        }
-
-    @Test
-    fun `when order has cancelled status then hide collect button`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initForCheckIfOrderCollectable(paymentStatus = Order.Status.Cancelled)
-
-            // WHEN
-            viewModel.start()
-
-            // THEN
-            assertThat(currentViewStateValue!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
         }
 
     @Test
@@ -402,7 +228,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = order.copy(items = emptyList())
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -424,7 +250,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(repository).hasVirtualProductsOnly(listOf(3, 4))
             doReturn(virtualOrder).whenever(repository).getOrder(any())
-            doReturn(virtualOrder).whenever(repository).fetchOrder(any())
+            doReturn(virtualOrder).whenever(repository).fetchOrder(any(), any())
 
             doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
 
@@ -447,7 +273,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(false).whenever(repository).hasVirtualProductsOnly(listOf(1, 2))
             doReturn(mixedOrder).whenever(repository).getOrder(any())
-            doReturn(mixedOrder).whenever(repository).fetchOrder(any())
+            doReturn(mixedOrder).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -485,7 +311,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             val order = order.copy(items = items)
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
             doReturn(1).whenever(repository).getProductCountForOrder(ids)
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -504,7 +330,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Do not display product list when all products are refunded`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -538,7 +364,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Display product list when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -571,7 +397,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Hide Create shipping label button and show Products area menu when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -617,7 +443,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Show Create shipping label button and hide Products area menu when no shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -664,7 +490,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Do not display shipment tracking when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -737,7 +563,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(repository, times(1)).getOrder(ORDER_IDENTIFIER)
-        verify(repository, times(0)).fetchOrder(any())
+        verify(repository, times(0)).fetchOrder(any(), any())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
@@ -747,7 +573,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newOrderStatus = OrderStatus(CoreOrderStatus.PROCESSING.value, CoreOrderStatus.PROCESSING.value)
 
         doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
         doReturn(orderStatus).doReturn(newOrderStatus).doReturn(orderStatus).whenever(repository).getOrderStatus(any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -794,7 +620,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newOrderStatus = OrderStatus(CoreOrderStatus.PROCESSING.value, CoreOrderStatus.PROCESSING.value)
 
         doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
         doReturn(orderStatus).doReturn(newOrderStatus).whenever(repository).getOrderStatus(any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -849,7 +675,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         )
 
         doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
 
@@ -877,7 +703,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `show shipping label creation if the order is eligible`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
 
         doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
@@ -904,7 +730,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `hide shipping label creation if wcs is older than supported version`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(WooPlugin(isInstalled = true, isActive = true, version = "1.25.10")).whenever(repository)
                 .getWooServicesPluginInfo()
@@ -931,7 +757,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `hide shipping label creation if the order is not eligible`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(
                 WooPlugin(
@@ -964,7 +790,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `hide shipping label creation if wcs plugin is not installed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(
                 WooPlugin(
@@ -992,7 +818,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `re-fetch order when payment flow completes`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        initForCheckIfOrderCollectable()
         viewModel.start()
         val orderAfterPayment = order.copy(status = Status.fromDataModel(CoreOrderStatus.COMPLETED)!!)
         doReturn(orderAfterPayment).whenever(repository).getOrder(any())
@@ -1000,32 +825,5 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.onCardReaderPaymentCompleted()
 
         assertThat(viewModel.order).isEqualTo(orderAfterPayment)
-    }
-
-    private suspend fun initForCheckIfOrderCollectable(
-        currency: String = "USD",
-        paymentStatus: Order.Status = Order.Status.Processing,
-        paymentMethod: String = "cod",
-        paymentMethodTitle: String = "title",
-        datePaid: Date? = null,
-        hasSubscriptionItems: Boolean = false
-    ) {
-        val nonPaidOrder = order.copy(
-            currency = currency,
-            paymentMethod = paymentMethod,
-            paymentMethodTitle = paymentMethodTitle,
-            datePaid = datePaid,
-            status = paymentStatus
-        )
-
-        doReturn(nonPaidOrder).whenever(repository).getOrder(any())
-        doReturn(nonPaidOrder).whenever(repository).fetchOrder(any())
-        doReturn(hasSubscriptionItems).whenever(repository).hasSubscriptionProducts(any())
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
-        doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-        doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
     }
 }

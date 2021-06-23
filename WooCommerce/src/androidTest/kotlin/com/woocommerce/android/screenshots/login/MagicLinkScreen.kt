@@ -8,7 +8,7 @@ class MagicLinkScreen : Screen {
         const val USE_PASSWORD_BUTTON = R.id.login_enter_password
     }
 
-    constructor(): super(USE_PASSWORD_BUTTON)
+    constructor() : super(USE_PASSWORD_BUTTON)
 
     fun proceedWithPassword(): PasswordScreen {
         clickOn(USE_PASSWORD_BUTTON)

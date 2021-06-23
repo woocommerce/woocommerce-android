@@ -10,10 +10,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -34,10 +36,17 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Kind.STORE_ORDER
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
@@ -51,6 +60,7 @@ import kotlin.random.Random
 @Singleton
 class NotificationHandler @Inject constructor(
     private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
+    private val wcOrderStore: WCOrderStore, // Required to ensure instantiated when app started from a push
     private val siteStore: SiteStore,
     private val dispatcher: Dispatcher
 ) {
@@ -273,6 +283,10 @@ class NotificationHandler @Inject constructor(
             // Fire off the event to fetch the actual notification from the api
             dispatcher.dispatch(NotificationActionBuilder
                     .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
+
+            if (it.type == STORE_ORDER) {
+                dispatchNewOrderEvents(it)
+            }
         }
 
         // don't display the notification if user chose to disable this type of notification - note
@@ -328,6 +342,30 @@ class NotificationHandler @Inject constructor(
         }
 
         EventBus.getDefault().post(NotificationReceivedEvent(noteType))
+    }
+
+    @VisibleForTesting
+    fun dispatchNewOrderEvents(model: NotificationModel) {
+        dispatcher.dispatch(
+            WCOrderActionBuilder.newFetchOrderListAction(
+                FetchOrderListPayload(
+                    offset = 0,
+                    listDescriptor = WCOrderListDescriptor(site = siteStore.getSiteBySiteId(model.remoteSiteId))
+                )
+            )
+        )
+
+        dispatcher.dispatch(
+            WCOrderActionBuilder.newFetchOrderListAction(
+                FetchOrderListPayload(
+                    offset = 0,
+                    listDescriptor = WCOrderListDescriptor(
+                        site = siteStore.getSiteBySiteId(model.remoteSiteId),
+                        statusFilter = PROCESSING.value
+                    )
+                )
+            )
+        )
     }
 
     /**
@@ -408,6 +446,7 @@ class NotificationHandler @Inject constructor(
 
             // check for existing channel first
             manager.getNotificationChannel(channelId)?.let {
+                WooLog.i(T.NOTIFS, "Notification channel already created with the following attributes: $it")
                 return
             }
 
@@ -483,7 +522,7 @@ class NotificationHandler @Inject constructor(
             NEW_ORDER -> {
                 if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
                     builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
-                    builder.setSound(getChaChingUri(context))
+                    builder.setSound(getChaChingUri(context), AudioManager.STREAM_NOTIFICATION)
                 } else {
                     builder.setDefaults(NotificationCompat.DEFAULT_ALL)
                 }

@@ -27,7 +27,8 @@ data class ShippingLabel(
     val originAddress: Address? = null,
     val destinationAddress: Address? = null,
     val refund: Refund? = null,
-    val products: List<Order.Item> = emptyList()
+    val products: List<Order.Item> = emptyList(),
+    val commercialInvoiceUrl: String?
 ) : Parcelable {
     @IgnoredOnParcel
     val trackingLink: String
@@ -46,6 +47,9 @@ data class ShippingLabel(
     @IgnoredOnParcel
     val refundExpiryDate: Date?
         get() = createdDate?.let { Date(it.time + TimeUnit.DAYS.toMillis(30)) }
+
+    val hasCommercialInvoice
+        get() = !commercialInvoiceUrl.isNullOrEmpty()
 
     @Parcelize
     data class Refund(
@@ -71,7 +75,8 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
         productIds = getProductIdsList(),
         originAddress = getOriginAddress()?.toAppModel(),
         destinationAddress = getDestinationAddress()?.toAppModel(),
-        refund = getRefundModel()?.toAppModel()
+        refund = getRefundModel()?.toAppModel(),
+        commercialInvoiceUrl = commercialInvoiceUrl
     )
 }
 

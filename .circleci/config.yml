@@ -38,8 +38,8 @@ jobs:
           cache-prefix: lint-cache-v1
       - copy-gradle-properties
       - run:
-          name: Checkstyle & klint
-          command: ./gradlew --stacktrace checkstyle ciktlint
+          name: Checkstyle & Detekt
+          command: ./gradlew --stacktrace checkstyle detektAll
       - run:
           name: Lint
           command: ./gradlew --stacktrace lintVanillaRelease

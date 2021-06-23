@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
@@ -113,7 +113,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             AppPrefs.setImageOptimizationEnabled(isChecked)
         }
 
-        binding.storeSettingsContainer.visibility = if (FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+        updateStoreSettings()
         binding.optionCardReader.setOnClickListener {
             // TODO cardreader Add tracking
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderSettingsFragment)
@@ -223,6 +223,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         // knows it has changed
         if (requestCode == RequestCodes.SITE_PICKER && resultCode == Activity.RESULT_OK) {
             updateStoreViews()
+            updateStoreSettings()
             settingsListener.onSiteChanged()
         }
     }
@@ -243,6 +244,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun updateStoreViews() {
         binding.optionStore.optionTitle = presenter.getStoreDomainName()
         binding.optionStore.optionValue = presenter.getUserDisplayName()
+    }
+
+    private fun updateStoreSettings() {
+        binding.storeSettingsContainer.visibility = if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
     }
 
     /**

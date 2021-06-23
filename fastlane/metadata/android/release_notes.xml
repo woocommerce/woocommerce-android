@@ -1,85 +1,102 @@
 <ar>
-6.7:
-لقد سمعنا أنه قد تتم تلبية الطلبات في شحنات متعددة. يمكنك الآن بفضل هذا التحديث طباعة أكثر من تسمية واحدة لطلب ما. أصلحنا كذلك بعض الأمور الصغيرة الأخرى لجعل تجربتك أفضل.
+6.8:
+ارجع إلى الطلب الشائع، تظهر الآن شاشة تنفيذ الطلب عند النقر على زر "وضع علامة على الطلب على أنه مكتمل"!
 
+بالإضافة إلى ذلك، أصلحنا خطأ كان يخترق شاشة قائمة المنتج، وتمت إضافة رسالة خطأ للمستخدمين غير المصرح لهم الذين يحاولون الوصول إلى مخزنك.
 </ar>
 <de-DE>
-6.7:
-Wir haben gehört, dass Bestellungen möglicherweise aus mehreren Lieferungen bestehen. Mit diesem Update kannst du jetzt mehr als ein Etikett pro Bestellung drucken. Wir haben auch noch andere kleine Fehler behoben, um deine Erfahrung zu verbessern.
+6.8:
+Auf großen Wunsch hin wird die Bestellabschluss-Ansicht nun angezeigt, nachdem du auf den Button „Bestellung als abgeschlossen markieren“ geklickt hast.
 
+Außerdem haben wir einen Fehler behoben, bei dem die Produktlistenansicht fehlerhaft dargestellt und unberechtigten Benutzern, die auf deinen Store zugreifen wollten, eine Fehlermeldung angezeigt wurde.
 </de-DE>
 <es-ES>
-6.7:
-Hemos oído que algunos pedidos necesitan varios envíos para completarse. Con esta actualización, podrás imprimir más de una etiqueta por pedido. También hemos solucionado algunos otros detalles para mejorar la experiencia.
+6.8:
+Por petición popular, ahora la pantalla de realizar pedido aparece al hacer clic en el botón de "Marcar el pedido como completado".
 
+Además, hemos corregido un error de la pantalla de la lista de productos y añadido un mensaje de error para los usuarios no autorizados que intenten acceder a tu tienda.
 </es-ES>
 <fr-FR>
-6.7 :
-Nous avons entendu dire que les commandes peuvent être exécutées en plusieurs envois. Avec cette mise à jour, vous pouvez désormais imprimer plusieurs étiquettes pour une commande. Nous avons également corrigé quelques autres petites choses pour améliorer votre expérience.
+6.8 :
+Suite à une demande récurrente, l’écran d’exécution de commande s’affiche désormais lorsque vous cliquez sur le bouton « Marquer la commande comme terminée » !
 
+De plus, nous avons résolu un bogue qui bloquait l’écran de la liste de produits et ajouté un message d’erreur pour les utilisateurs non autorisés qui tentent d’accéder à votre boutique.
 </fr-FR>
 <iw-IL>
-6.7:
-הבנו שאפשר להשלים הזמנות במספר משלוחים שונים. בעדכון הזה, אפשר כעת להדפיס מעל תווית אחת לכל הזמנה. תיקנו גם כמה דברים קטנים כדי לשפר את חוויית השימוש.
+6.8:
+הודות לביקוש הרב, החזרנו את המסך שמאשר שההזמנה הושלמה לאחר שלוחצים על הכפתור "לסמן את ההזמנה כ'הושלמה'"!
 
+בנוסף, תיקנו את הבאג שגרם לתצוגה משובשת במסך של רשימת המוצרים והוספנו הודעת שגיאה למשתמשים ללא הרשאה אשר מנסים לגשת לחנות שלך.
 </iw-IL>
 <id>
-6.7:
-Kami menyadari bahwa pesanan bisa dipenuhi dengan beberapa pengiriman. Dengan pembaruan ini, Anda kini dapat mencetak lebih dari satu label untuk satu pesanan. Kami juga memperbaiki beberapa hal kecil lainnya agar Anda mendapatkan pengalaman yang lebih baik.
+6.8:
+Karena banyaknya permintaan, kini saat Anda mengklik tombol "Tandai pesanan selesai", layar penuhi pesanan akan muncul!
 
+Selain itu, kami telah memperbaiki bug yang mengganggu layar daftar produk dan menambahkan pesan error bagi pengguna tanpa izin yang mencoba mengakses toko Anda.
 </id>
 <it-IT>
-6.7:
-Abbiamo saputo che gli ordini potrebbero essere evasi in più spedizioni. Con questo aggiornamento, ora puoi stampare più di un'etichetta per un ordine. Abbiamo anche corretto qualche altro piccolo dettaglio per rendere migliore la tua esperienza.
+6.8:
+A grande richiesta, la schermata di evasione dell'ordine ora viene visualizzata quando fai clic sul pulsante "Contrassegna ordine come completo".
 
+In aggiunta, abbiamo corretto un bug che interrompeva la schermata dell'elenco dei prodotti e aggiunto un messaggio di errore per utenti non autorizzati che tentano di accedere al negozio.
 </it-IT>
 <ja-JP>
-6.7:
-注文が複数回の配送により履行される場合があると聞いています。 今回のアップデートにより、1件の注文に対して複数のラベルを印刷できるようになりました。 また、より快適にご利用いただくために、いくつかの細かい点も修正しました。
+6.8:
+たくさんのご要望にお応えし、「注文を完了としてマーク」ボタンをクリックすると注文フルフィルメント画面が表示されるようになりました。
 
+また製品リスト画面を崩すバグを修正し、オンラインストアにアクセスしようとする不正ユーザーにエラーメッセージが表示されるようになりました。
 </ja-JP>
 <ko-KR>
-6.7:
-주문이 여러 건의 배송으로 처리될 수 있다는 이야기를 들었습니다. 이 업데이트를 통해 이제 주문에 대한 레이블을 1개 이상 인쇄할 수 있습니다. 환경이 더 좋아지도록 몇 가지 소소한 문제도 해결했습니다.
+6.8:
+많이 사용하는 주문 처리 화면이 이제 "주문을 완료로 표시" 버튼을 클릭하면 표시됩니다!
 
+또한, 제품 목록 화면이 손상되는 버그를 수정하고 스토어 액세스를 시도하는 권한 없는 사용에 대한 오류 메시지를 추가했습니다.
 </ko-KR>
 <nl-NL>
-6.7:
-We hebben vernomen dat bestellingen voltooid kunnen worden in meerdere verzendingen. Met deze update kun je nu meer dan één label afdrukken voor een bestelling. We hebben tevens een paar andere kleine problemen opgelost om je ervaring te verbeteren.
+6.8:
+Terug op veler verzoek: het scherm Bestelling voltooien wordt nu weergegeven als je klikt op de knop 'Bestelling markeren als voltooid'.
 
+Daarnaast hebben we een bug hersteld waardoor het scherm met de productlijst niet goed werd weergegeven en we hebben een foutbericht toegevoegd voor onbevoegde gebruikers die toegang proberen te krijgen tot je winkel.
 </nl-NL>
 <pt-BR>
-6.7:
-Soubemos que os pedidos podem ser enviados em várias remessas. Com esta atualização, agora você pode imprimir mais de uma etiqueta por pedido. Também corrigimos outros detalhes para melhorar sua experiência
+6.8:
+De volta graças ao grande sucesso que teve, a tela de finalização de pedidos agora é exibida quando você clica no botão "Marcar pedido como concluído".
 
+Além disso, corrigimos um bug que causava erro na tela de lista de produtos e exibia uma mensagem de erro para usuários não autorizados que tentavam acessar sua loja.
 </pt-BR>
 <ru-RU>
-6.7
-Мы слышали о том, что заказы могут выполняться несколькими отгрузками. Теперь для каждого заказа можно напечатать несколько этикеток. Мы также исправили несколько других мелких проблем, чтобы вам было удобнее работать.
+6.8:
+По многочисленным просьбам теперь при нажатии кнопки «Отметить заказ как выполненный» открывается окно выполняемых заказов!
 
+Мы также исправили ошибку, из-за которой неправильно отображался экран списка товаров, и добавили сообщение об ошибке для неавторизованных пользователей, которые пытаются войти в магазин.
 </ru-RU>
 <sv-SE>
-6,7:
-Vi har hört att beställningar kan uppfyllas i flera olika leveranser. Med den här uppdateringen kan du skriva ut mer än en etikett för en beställning. Vi har även åtgärdat andra små saker för att göra din upplevelse bättre.
+6.8:
+På allmän begäran visas nu skärmen Orderhantering igen när du klickar på knappen "Markera beställning som slutförd"!
 
+Dessutom har vi korrigerat ett fel som bröt produktlisteskärmen och lagt till ett felmeddelande för obehöriga användare som försöker komma åt din butik.
 </sv-SE>
 <tr-TR>
-6.7:
-Siparişlerin birden fazla gönderimle yapılabildiğini duyduk. Bu güncelleme ile, artık bir sipariş için birden fazla etiket yazdırabilirsiniz. Ayrıca deneyiminizi daha iyi hale getirmek için birkaç küçük düzeltme daha yaptık.
+6.8:
+Yaygın talepler doğrultusunda, sipariş karşılama ekranı artık "Siparişi tamamlandı olarak işaretle" düğmesini tıkladığınızda görüntülenecek şekilde ayarlandı.
 
+Ayrıca, ürün listesi ekranını bozan bir hata düzeltildi ve mağazanıza erişmeye çalışan yetkisiz kullanıcılar için bir hata mesajı eklendi.
 </tr-TR>
 <zh-CN>
-6.7：
-我们听说订单可能会分多批完成。 此次更新后，您现在可以为一份订单打印多个标签。 我们还修复了一些其他小问题，为您提供更好的体验。
+6.8：
+应大众需求，现在点击“标记订单完成”按钮时，将显示订单完成屏幕！
 
+此外，我们还修复一个破坏产品列表屏幕的错误，并为尝试访问您商店的未授权用户添加了一条错误消息。
 </zh-CN>
 <zh-TW>
-6.7：
-使用者反映訂單可能需分批運送。 在此更新版本中，你現在可以為一份訂單列印多個標籤。 我們也修正了其他小問題，期望改善你的使用體驗。
+6.8：
+在許多使用者的要求下，現在當你按一下「將訂單標示為完成」按鈕時，會顯示完成訂單畫面！
 
+另外，我們修正了會破壞產品清單畫面的錯誤，並新增未經授權使用者嘗試存取你的商店的錯誤訊息。
 </zh-TW>
 <en-US>
-6.7:
-We have heard that orders may get fulfilled in multiple shipments. With this update, you can now print more than one label for an order. We also fixed a few other small things to make your experience better.
+6.8:
+Back by popular demand, the order fulfill screen now displays when you click the "Mark order complete" button!
 
+In addition, we fixed a bug that was breaking the product list screen and added an error message for unauthorized users who attempt to access your store. 
 </en-US>

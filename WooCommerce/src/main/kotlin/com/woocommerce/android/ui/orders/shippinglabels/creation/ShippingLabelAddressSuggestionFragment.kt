@@ -26,8 +26,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ShippingLabelAddressSuggestionFragment
-    : BaseFragment(R.layout.fragment_shipping_label_address_suggestion), BackPressListener {
+class ShippingLabelAddressSuggestionFragment : BaseFragment(
+    R.layout.fragment_shipping_label_address_suggestion
+), BackPressListener {
     companion object {
         const val SUGGESTED_ADDRESS_DISCARDED = "key_suggested_address_dialog_closed"
         const val SELECTED_ADDRESS_ACCEPTED = "key_selected_address_accepted"

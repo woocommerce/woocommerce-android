@@ -140,7 +140,7 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
             new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
                 binding.issueRefundSelectButton.text = it
             }
-            new.isShippingMainSwitchChecked?.takeIfNotEqualTo(old?.isShippingMainSwitchChecked) { checked ->
+            new.isShippingMainSwitchChecked.takeIfNotEqualTo(old?.isShippingMainSwitchChecked) { checked ->
                 binding.issueRefundShippingMainSwitch.isChecked = checked
             }
             new.selectedShippingLines?.takeIfNotEqualTo(old?.selectedShippingLines) { shippingLines ->
@@ -192,7 +192,7 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
                 is ShowNumberPicker -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
                             getString(R.string.order_refunds_select_quantity),
-                            event.refundItem.orderItem.uniqueId,
+                            event.refundItem.orderItem.itemId,
                             event.refundItem.maxQuantity,
                             event.refundItem.quantity
                     )
