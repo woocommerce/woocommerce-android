@@ -11,6 +11,8 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
@@ -72,6 +74,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
@@ -86,7 +89,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             orderRepository = orderRepository,
             resourceProvider = resourceProvider,
             selectedSite = selectedSite,
-            paymentCollectibilityChecker = paymentCollectibilityChecker
+            paymentCollectibilityChecker = paymentCollectibilityChecker,
+            tracker = tracker
         )
 
         val mockedOrder = mock<Order>()
@@ -117,6 +121,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
     }
+
+    @Test
+    fun `when fetching order fails, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+
+            viewModel.start()
+
+            verify(tracker).track(
+                eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
+            )
+        }
 
     @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
@@ -230,6 +246,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when payment completed, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            viewModel.start()
+
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        }
+
+    @Test
     fun `when payment fails, then ui updated to failed state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
@@ -239,6 +267,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
+        }
+
+    @Test
+    fun `when payment fails, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            viewModel.start()
+
+            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), any())
         }
 
     @Test
