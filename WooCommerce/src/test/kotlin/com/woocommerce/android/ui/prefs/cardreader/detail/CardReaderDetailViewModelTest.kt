@@ -5,6 +5,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
@@ -32,6 +34,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.Initializing))
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
+
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `when view model init with connected state should emit loading view state`() {
@@ -285,6 +289,36 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(NotConnectedState::class.java)
         }
 
+    @Test
+    fun `when connect button clicked should track event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as NotConnectedState).onPrimaryActionClicked.invoke()
+
+            // THEN
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_TAPPED)
+        }
+
+    @Test
+    fun `when disconnect button clicked should track event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            whenever(cardReaderManager.disconnectReader()).thenReturn(true)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+
+            // THEN
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
+        }
+
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {
         val state = viewModel.viewStateData.value as NotConnectedState
         assertThat(state.headerLabel)
@@ -347,6 +381,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     private fun createViewModel() = CardReaderDetailViewModel(
         cardReaderManager,
+        tracker,
         mock(),
         SavedStateHandle()
     )

@@ -229,6 +229,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
         SHIPPING_LABEL_ORDER_FULFILL_FAILED,
 
+        // -- Card Present Payments - connection
+        CARD_READER_DISCOVERY_TAPPED,
+        CARD_READER_DISCOVERY_FAILED,
+        CARD_READER_DISCOVERY_READER_DISCOVERED,
+        CARD_READER_CONNECTION_TAPPED,
+        CARD_READER_CONNECTION_FAILED,
+        CARD_READER_CONNECTION_SUCCESS,
+        CARD_READER_DISCONNECT_TAPPED,
+
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
         MAIN_MENU_CONTACT_SUPPORT_TAPPED,

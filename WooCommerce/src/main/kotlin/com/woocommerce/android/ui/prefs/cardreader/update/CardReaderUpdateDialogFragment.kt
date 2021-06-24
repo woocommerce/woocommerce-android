@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogCardReaderUpdateBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
@@ -53,6 +54,11 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
                 updateReaderSecondaryActionBtn.setOnClickListener { state.secondaryButton?.onActionClicked?.invoke() }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     companion object {
