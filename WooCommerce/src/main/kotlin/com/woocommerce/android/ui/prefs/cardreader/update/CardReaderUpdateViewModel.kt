@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Failed
@@ -61,32 +63,38 @@ class CardReaderUpdateViewModel @Inject constructor(
         launch {
             cardReaderManager.updateSoftware().collect { status ->
                 when (status) {
-                    is Failed -> {
-                        tracker.track(
-                            Stat.CARD_READER_SOFTWARE_UPDATE_FAILED,
-                            this@CardReaderUpdateViewModel.javaClass.simpleName,
-                            null,
-                            status.message
-                        )
-                        finishFlow(FAILED)
-                    }
+                    is Failed -> onUpdateFailed(status)
                     Initializing, is Installing -> viewState.value = UpdatingState
-                    Success -> {
-                        tracker.track(Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS)
-                        finishFlow(SUCCESS)
-                    }
-                    UpToDate -> {
-                        tracker.track(
-                            Stat.CARD_READER_SOFTWARE_UPDATE_FAILED,
-                            this@CardReaderUpdateViewModel.javaClass.simpleName,
-                            null,
-                            "Already up to date"
-                        )
-                        finishFlow(SKIPPED)
-                    }
+                    Success -> onUpdateSucceeded()
+                    UpToDate -> onUpdateUpToDate()
                 }.exhaustive
             }
         }
+    }
+
+    private fun onUpdateUpToDate() {
+        tracker.track(
+            CARD_READER_SOFTWARE_UPDATE_FAILED,
+            this@CardReaderUpdateViewModel.javaClass.simpleName,
+            null,
+            "Already up to date"
+        )
+        finishFlow(SKIPPED)
+    }
+
+    private fun onUpdateSucceeded() {
+        tracker.track(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
+        finishFlow(SUCCESS)
+    }
+
+    private fun onUpdateFailed(status: Failed) {
+        tracker.track(
+            CARD_READER_SOFTWARE_UPDATE_FAILED,
+            this@CardReaderUpdateViewModel.javaClass.simpleName,
+            null,
+            status.message
+        )
+        finishFlow(FAILED)
     }
 
     private fun onSkipClicked() {
