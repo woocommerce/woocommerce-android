@@ -371,13 +371,10 @@ class ProductDetailViewModel @Inject constructor(
             viewState.productDraft?.let { draft ->
                 variationRepository.createEmptyVariation(draft)
                     ?.let {
-                        val fetchedProduct = productRepository.fetchProduct(draft.remoteId)
-                        if (fetchedProduct != null) {
-                            updateProductState(productToUpdateFrom = fetchedProduct)
-                        }
-                    }
-                    ?.let { triggerEvent(ExitProductAttributeList(variationCreated = true)) }
-                    ?: triggerEvent(ExitProductAttributeList())
+                        productRepository.fetchProduct(draft.remoteId)
+                                ?.also { updateProductState(productToUpdateFrom = it) }
+                        triggerEvent(ExitProductAttributeList(variationCreated = true))
+                    } ?: triggerEvent(ExitProductAttributeList())
             }.also {
                 attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
             }
