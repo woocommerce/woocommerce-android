@@ -137,20 +137,9 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
             updateMultipleReadersFoundRecyclerView(binding, viewState)
 
-            if (viewState.isImageAnimated) {
-                startAnimation(binding)
-            } else {
-                stopAnimation(binding)
-            }
+            // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
+            (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
         }
-    }
-
-    private fun startAnimation(binding: FragmentCardReaderConnectBinding) {
-        (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
-    }
-
-    private fun stopAnimation(binding: FragmentCardReaderConnectBinding) {
-        (binding.illustration.drawable as? AnimatedVectorDrawable)?.stop()
     }
 
     private fun updateMultipleReadersFoundRecyclerView(

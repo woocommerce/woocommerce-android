@@ -296,10 +296,6 @@ class CardReaderConnectViewModel @Inject constructor(
         open val onPrimaryActionClicked: (() -> Unit)? = null
         open val onSecondaryActionClicked: (() -> Unit)? = null
 
-        // signifies that the image is an animated vector drawable that needs to be started
-        val isImageAnimated: Boolean
-            get() = this is ScanningState || this is ConnectingState
-
         data class ScanningState(override val onSecondaryActionClicked: (() -> Unit)) : ViewState(
             headerLabel = UiStringRes(R.string.card_reader_connect_scanning_header),
             illustration = R.drawable.img_card_reader_scanning,
