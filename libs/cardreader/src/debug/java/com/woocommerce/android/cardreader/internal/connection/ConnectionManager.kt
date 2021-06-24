@@ -38,7 +38,7 @@ internal class ConnectionManager(
                     CardReaderDiscoveryEvents.Started
                 }
                 is DiscoverReadersStatus.Failure -> {
-                    CardReaderDiscoveryEvents.Failed(state.exception.toString())
+                    CardReaderDiscoveryEvents.Failed(state.exception.errorMessage)
                 }
                 is DiscoverReadersStatus.FoundReaders -> {
                     CardReaderDiscoveryEvents.ReadersFound(state.readers.map { CardReaderImpl(it) })
