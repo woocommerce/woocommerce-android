@@ -19,6 +19,7 @@ import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.SuppressOnBackPressed
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ExplanationState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
@@ -170,6 +171,20 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
             assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(UpdateResult.SKIPPED)
+        }
+
+    @Test
+    fun `when click on primary btn explanation state should prevent the user from leaving the screen`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(SuppressOnBackPressed)
         }
 
     @Test

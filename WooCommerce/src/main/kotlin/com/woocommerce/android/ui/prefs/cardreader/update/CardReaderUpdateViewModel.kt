@@ -59,6 +59,7 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onUpdateClicked() {
+        triggerEvent(SuppressOnBackPressed)
         tracker.track(Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED)
         launch {
             cardReaderManager.updateSoftware().collect { status ->
@@ -135,4 +136,6 @@ class CardReaderUpdateViewModel @Inject constructor(
     enum class UpdateResult {
         SUCCESS, SKIPPED, FAILED
     }
+
+    object SuppressOnBackPressed: Event()
 }

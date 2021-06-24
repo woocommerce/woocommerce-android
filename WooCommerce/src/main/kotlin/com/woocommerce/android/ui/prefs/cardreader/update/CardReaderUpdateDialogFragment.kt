@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogCardReaderUpdateBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.SuppressOnBackPressed
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -35,6 +36,7 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
     private fun initObservers(binding: DialogCardReaderUpdateBinding) {
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
+                is SuppressOnBackPressed -> dialog?.setCancelable(false)
                 is ExitWithResult<*> -> navigateBackWithResult(
                     KEY_READER_UPDATE_RESULT,
                     event.data as UpdateResult
