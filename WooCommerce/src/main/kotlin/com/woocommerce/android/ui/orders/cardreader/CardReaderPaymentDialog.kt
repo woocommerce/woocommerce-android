@@ -103,6 +103,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
 
     override fun onResume() {
         super.onResume()
+        AnalyticsTracker.trackViewShown(this)
         handlePrintResultIfAvailable()
     }
 
@@ -133,10 +134,5 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
         } catch (e: ActivityNotFoundException) {
             viewModel.onEmailActivityNotFound()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
     }
 }
