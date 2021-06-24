@@ -375,7 +375,7 @@ class CardReaderPaymentViewModel
             override val isProgressVisible: Boolean = false
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_completed_payment_header,
-            illustration = if(isProgressVisible) null else R.drawable.img_celebration,
+            illustration = if (isProgressVisible) null else R.drawable.img_celebration,
             primaryActionLabel = R.string.card_reader_payment_print_receipt,
             secondaryActionLabel = R.string.card_reader_payment_send_receipt
         )
