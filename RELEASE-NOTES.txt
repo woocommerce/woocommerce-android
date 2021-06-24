@@ -2,7 +2,7 @@
 
 7.0
 -----
-
+- [***] Merchants using WooCommerce Shipping in their store can create international labels from the app [https://github.com/woocommerce/woocommerce-android/pull/4250]
 
 6.9
 -----

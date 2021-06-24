@@ -3,8 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -73,7 +72,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
         val shippingPackagesResult = shippingLabelRepository.getShippingPackages()
         if (shippingPackagesResult.isError) {
-            triggerEvent(ShowSnackbar(R.string.shipping_label_packages_loading_error))
+            triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
             triggerEvent(Exit)
             return emptyList()
         }
@@ -143,8 +142,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onPackageSpinnerClicked(position: Int) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_PACKAGE_SPINNER_TAPPED)
-
         triggerEvent(OpenPackageSelectorEvent(position))
     }
 
@@ -162,8 +159,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_DONE_BUTTON_TAPPED)
-
         triggerEvent(ExitWithResult(viewState.shippingLabelPackages))
     }
 

@@ -45,7 +45,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
 
     override fun getFragmentTitle(): String {
         return if (navArgs.isReprint) {
-            getString(R.string.orderdetail_shipping_label_reprint)
+            getString(R.string.orderdetail_shipping_label_print)
         } else {
             getString(R.string.shipping_label_print_screen_title)
         }
