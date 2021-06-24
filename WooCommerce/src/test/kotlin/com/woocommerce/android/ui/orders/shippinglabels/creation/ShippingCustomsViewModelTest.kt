@@ -81,7 +81,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                     attributesList = it.attributesList,
                     weight = 0f,
                     value = it.price,
-                    quantity = it.quantity.toFloat()
+                    quantity = it.quantity
                 )
             }
         )

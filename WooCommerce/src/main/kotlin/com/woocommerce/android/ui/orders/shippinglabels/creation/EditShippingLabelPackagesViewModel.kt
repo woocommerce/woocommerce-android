@@ -187,8 +187,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             productId = uniqueId,
             name = name,
             attributesList = attributesList,
-            // TODO remove the conversion when the order quantity starts supporting decimal values
-            quantity = quantity.toFloat(),
+            quantity = quantity,
             value = price,
             weight = weight
         )
