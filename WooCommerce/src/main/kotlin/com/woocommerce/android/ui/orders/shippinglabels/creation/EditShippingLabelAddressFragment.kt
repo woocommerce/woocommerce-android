@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -323,9 +322,7 @@ class EditShippingLabelAddressFragment : BaseFragment(R.layout.fragment_edit_shi
             viewModel.onUseAddressAsIsButtonClicked()
         }
         binding.countrySpinner.onClick {
-            if (FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                viewModel.onCountrySpinnerTapped()
-            }
+            viewModel.onCountrySpinnerTapped()
         }
         binding.stateSpinner.onClick {
             viewModel.onStateSpinnerTapped()

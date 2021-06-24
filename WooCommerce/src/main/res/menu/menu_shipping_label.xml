@@ -9,6 +9,6 @@
 
     <item
         android:id="@+id/menu_print_customs_form"
-        android:title="@string/orderdetail_shipping_label_reprint_customs_form"
+        android:title="@string/orderdetail_shipping_label_print_customs_form"
         app:showAsAction="always" />
 </menu>
