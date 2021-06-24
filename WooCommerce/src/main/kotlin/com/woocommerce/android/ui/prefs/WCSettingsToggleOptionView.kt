@@ -34,38 +34,38 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
 
         if (attrs != null) {
             val a = context
-                    .obtainStyledAttributes(attrs, R.styleable.WCSettingsToggleOptionView, defStyleAttr, defStyleRes)
+                .obtainStyledAttributes(attrs, R.styleable.WCSettingsToggleOptionView, defStyleAttr, defStyleRes)
             try {
                 // Set the view title
                 StyleAttrUtils.getString(
-                        a,
-                        isInEditMode,
-                        R.styleable.WCSettingsToggleOptionView_toggleOptionTitle,
-                        R.styleable.WCSettingsToggleOptionView_tools_toggleOptionTitle
+                    a,
+                    isInEditMode,
+                    R.styleable.WCSettingsToggleOptionView_toggleOptionTitle,
+                    R.styleable.WCSettingsToggleOptionView_tools_toggleOptionTitle
                 ).let { UiHelpers.setTextOrHide(binding.toggleSettingTitle, it) }
 
                 // Set the view description if it exists, or hide
                 StyleAttrUtils.getString(
-                        a,
-                        isInEditMode,
-                        R.styleable.WCSettingsToggleOptionView_toggleOptionDesc,
-                        R.styleable.WCSettingsToggleOptionView_tools_toggleOptionDesc
+                    a,
+                    isInEditMode,
+                    R.styleable.WCSettingsToggleOptionView_toggleOptionDesc,
+                    R.styleable.WCSettingsToggleOptionView_tools_toggleOptionDesc
                 ).let { UiHelpers.setTextOrHide(binding.toggleSettingDesc, it) }
 
                 // Set the view icon if exists, or hide
                 StyleAttrUtils.getResourceId(
-                        a,
-                        isInEditMode,
-                        R.styleable.WCSettingsToggleOptionView_toggleOptionIcon,
-                        R.styleable.WCSettingsToggleOptionView_tools_toggleOptionIcon
+                    a,
+                    isInEditMode,
+                    R.styleable.WCSettingsToggleOptionView_toggleOptionIcon,
+                    R.styleable.WCSettingsToggleOptionView_tools_toggleOptionIcon
                 ).let { UiHelpers.setImageOrHide(binding.toggleSettingIcon, it, setInvisible = true) }
 
                 // Set the view checked state
                 binding.toggleSettingSwitch.isChecked = StyleAttrUtils.getBoolean(
-                        a,
-                        isInEditMode,
-                        R.styleable.WCSettingsToggleOptionView_toggleOptionChecked,
-                        R.styleable.WCSettingsToggleOptionView_tools_toggleOptionIcon
+                    a,
+                    isInEditMode,
+                    R.styleable.WCSettingsToggleOptionView_toggleOptionChecked,
+                    R.styleable.WCSettingsToggleOptionView_tools_toggleOptionIcon
                 )
 
                 setOnClickListener { toggle() }

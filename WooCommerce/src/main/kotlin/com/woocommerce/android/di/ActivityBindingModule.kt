@@ -13,9 +13,12 @@ import org.wordpress.android.login.di.LoginFragmentModule
 @Module
 abstract class ActivityBindingModule {
     @ActivityScope
-    @ContributesAndroidInjector(modules = [
-        LoginFragmentModule::class,
-        WooLoginFragmentModule::class])
+    @ContributesAndroidInjector(
+        modules = [
+            LoginFragmentModule::class,
+            WooLoginFragmentModule::class
+        ]
+    )
     abstract fun provideLoginActivityInjector(): LoginActivity
 
     @ActivityScope

@@ -59,7 +59,8 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(5, ORDER_IDENTIFIER)
-    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(5,
+    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(
+        5,
         ORDER_IDENTIFIER
     )
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
@@ -77,12 +78,12 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         viewModel = spy(
             OrderFulfillViewModel(
-            savedState,
-            appPrefsWrapper,
-            networkStatus,
-            resources,
-            repository
-        )
+                savedState,
+                appPrefsWrapper,
+                networkStatus,
+                resources,
+                repository
+            )
         )
 
         clearInvocations(
@@ -218,9 +219,11 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         viewModel.start()
         viewModel.onMarkOrderCompleteButtonClicked()
 
-        assertThat(exit).isEqualTo(ExitWithResult(
-            CoreOrderStatus.COMPLETED.value, OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
-        ))
+        assertThat(exit).isEqualTo(
+            ExitWithResult(
+                CoreOrderStatus.COMPLETED.value, OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
+            )
+        )
         assertNull(snackBar)
     }
 
@@ -305,9 +308,11 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         viewModel.onBackButtonClicked()
         assertNull(exit)
-        assertThat(exitWithResult).isEqualTo(ExitWithResult(
-            true, OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT
-        ))
+        assertThat(exitWithResult).isEqualTo(
+            ExitWithResult(
+                true, OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT
+            )
+        )
     }
 
     @Test

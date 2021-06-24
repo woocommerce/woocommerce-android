@@ -116,7 +116,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
                 unifiedLoginTracker.trackClick(Click.TRY_AGAIN)
                 jetpackLoginListener?.showUsernamePasswordScreen(
-                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                    siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
                 )
             }
         }

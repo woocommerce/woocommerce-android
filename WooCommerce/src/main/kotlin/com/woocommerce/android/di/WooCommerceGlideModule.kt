@@ -77,7 +77,7 @@ class WooCommerceGlideModule : AppGlideModule() {
 
                         val quotaStr = NumberFormat.getInstance().format(quota / 1024) + "MB"
                         val diffStr = NumberFormat.getInstance().format(
-                                (DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE - quota) / 1024
+                            (DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE - quota) / 1024
                         ) + "MB"
                         WooLog.d(T.UTILS, "Reduced image disk cache to $quotaStr ($diffStr smaller)")
                     }

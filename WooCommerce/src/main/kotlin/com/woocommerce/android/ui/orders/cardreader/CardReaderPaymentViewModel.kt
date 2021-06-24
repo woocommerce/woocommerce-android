@@ -187,12 +187,14 @@ class CardReaderPaymentViewModel
         orderId: Long,
         amountLabel: String
     ) {
-        viewState.postValue(PaymentSuccessfulState(
-            amountLabel,
-            // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-            { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
-            { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
-        ))
+        viewState.postValue(
+            PaymentSuccessfulState(
+                amountLabel,
+                // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
+                { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
+                { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
+            )
+        )
         reFetchOrder()
     }
 
@@ -254,11 +256,11 @@ class CardReaderPaymentViewModel
     }
 
     private fun Order.getPaymentDescription(): String =
-            resourceProvider.getString(
-                    R.string.card_reader_payment_description,
-                    this.number,
-                    selectedSite.get().name.orEmpty()
-            )
+        resourceProvider.getString(
+            R.string.card_reader_payment_description,
+            this.number,
+            selectedSite.get().name.orEmpty()
+        )
 
     sealed class CardReaderPaymentEvent : Event() {
         data class PrintReceipt(val receiptUrl: String, val documentName: String) : CardReaderPaymentEvent()
@@ -344,11 +346,11 @@ class CardReaderPaymentViewModel
             override val onPrimaryActionClicked: (() -> Unit),
             override val onSecondaryActionClicked: (() -> Unit)
         ) : ViewState(
-                headerLabel = R.string.card_reader_payment_completed_payment_header,
-                illustration = R.drawable.img_celebration,
-                primaryActionLabel = R.string.card_reader_payment_print_receipt,
-                secondaryActionLabel = R.string.card_reader_payment_send_receipt
-            )
+            headerLabel = R.string.card_reader_payment_completed_payment_header,
+            illustration = R.drawable.img_celebration,
+            primaryActionLabel = R.string.card_reader_payment_print_receipt,
+            secondaryActionLabel = R.string.card_reader_payment_send_receipt
+        )
 
         object ReFetchingOrderState : ViewState(
             headerLabel = R.string.card_reader_payment_fetch_order_loading_header,
@@ -366,10 +368,10 @@ class CardReaderPaymentViewModel
     }
 
     private fun CardPaymentStatusErrorType.mapToUiError(): PaymentFlowError =
-            when (this) {
-                CardPaymentStatusErrorType.NO_NETWORK -> PaymentFlowError.NO_NETWORK
-                CardPaymentStatusErrorType.PAYMENT_DECLINED -> PaymentFlowError.PAYMENT_DECLINED
-                CardPaymentStatusErrorType.CARD_READ_TIMED_OUT,
-                CardPaymentStatusErrorType.GENERIC_ERROR -> PaymentFlowError.GENERIC_ERROR
-            }
- }
+        when (this) {
+            CardPaymentStatusErrorType.NO_NETWORK -> PaymentFlowError.NO_NETWORK
+            CardPaymentStatusErrorType.PAYMENT_DECLINED -> PaymentFlowError.PAYMENT_DECLINED
+            CardPaymentStatusErrorType.CARD_READ_TIMED_OUT,
+            CardPaymentStatusErrorType.GENERIC_ERROR -> PaymentFlowError.GENERIC_ERROR
+        }
+}

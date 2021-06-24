@@ -46,10 +46,14 @@ class PrivacySettingsPresenter @Inject constructor(
 
         // sync with wpcom if a token is available
         if (accountStore.hasAccessToken()) {
-            AnalyticsTracker.track(SETTING_CHANGE, mapOf(
+            AnalyticsTracker.track(
+                SETTING_CHANGE,
+                mapOf(
                     AnalyticsTracker.KEY_NAME to SETTING_TRACKS_OPT_OUT,
                     AnalyticsTracker.KEY_FROM to !sendUsageStats,
-                    AnalyticsTracker.KEY_TO to sendUsageStats))
+                    AnalyticsTracker.KEY_TO to sendUsageStats
+                )
+            )
 
             val payload = PushAccountSettingsPayload().apply {
                 params = mapOf(SETTING_TRACKS_OPT_OUT to !sendUsageStats)
@@ -71,10 +75,11 @@ class PrivacySettingsPresenter @Inject constructor(
             when (event.error.type) {
                 SETTINGS_POST_ERROR -> {
                     AnalyticsTracker.track(
-                            SETTING_CHANGE_FAILED,
-                            this::class.java.simpleName,
-                            event.error.type.toString(),
-                            event.error.message)
+                        SETTING_CHANGE_FAILED,
+                        this::class.java.simpleName,
+                        event.error.type.toString(),
+                        event.error.message
+                    )
                 }
                 else -> {}
             }

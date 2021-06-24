@@ -100,7 +100,7 @@ class VariationListAdapter(
         val newList: List<ProductVariation>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                oldList[oldItemPosition].remoteVariationId == newList[newItemPosition].remoteVariationId
+            oldList[oldItemPosition].remoteVariationId == newList[newItemPosition].remoteVariationId
 
         override fun getOldListSize(): Int = oldList.size
 

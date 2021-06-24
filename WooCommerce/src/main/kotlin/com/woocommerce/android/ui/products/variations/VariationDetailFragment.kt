@@ -49,7 +49,8 @@ import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail),
+class VariationDetailFragment :
+    BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
     OnGalleryImageInteractionListener {
     companion object {
@@ -234,22 +235,28 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
             }
         }
 
-        viewModel.variationDetailCards.observe(viewLifecycleOwner, Observer {
-            showVariationCards(it)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is VariationNavigationTarget -> {
-                    navigator.navigate(this, event)
-                }
-                is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
-                is ShowDialog -> event.showDialog()
-                is Exit -> requireActivity().onBackPressed()
-                else -> event.isHandled = false
+        viewModel.variationDetailCards.observe(
+            viewLifecycleOwner,
+            Observer {
+                showVariationCards(it)
             }
-        })
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is VariationNavigationTarget -> {
+                        navigator.navigate(this, event)
+                    }
+                    is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
+                    is ShowDialog -> event.showDialog()
+                    is Exit -> requireActivity().onBackPressed()
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun showVariationDetails(variation: ProductVariation) {

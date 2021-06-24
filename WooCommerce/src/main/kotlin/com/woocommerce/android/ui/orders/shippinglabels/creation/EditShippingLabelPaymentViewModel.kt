@@ -104,8 +104,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
             get() {
                 return currentAccountSettings?.let {
                     val selectedPaymentMethod = paymentMethods.find { it.isSelected }
-                    (selectedPaymentMethod != null &&
-                        selectedPaymentMethod.paymentMethod.id != currentAccountSettings.selectedPaymentId) ||
+                    (
+                        selectedPaymentMethod != null &&
+                            selectedPaymentMethod.paymentMethod.id != currentAccountSettings.selectedPaymentId
+                        ) ||
                         emailReceipts != currentAccountSettings.isEmailReceiptEnabled
                 } ?: false
             }

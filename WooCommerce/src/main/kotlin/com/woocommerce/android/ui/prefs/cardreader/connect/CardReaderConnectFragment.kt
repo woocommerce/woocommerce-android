@@ -80,11 +80,11 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     private fun initMultipleReadersFoundRecyclerView(binding: FragmentCardReaderConnectBinding) {
         binding.multipleCardReadersFoundRv.layoutManager = LinearLayoutManager(requireContext())
         binding.multipleCardReadersFoundRv.addItemDecoration(
-                AlignedDividerDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL,
-                    R.id.readers_found_reader_id
-                )
+            AlignedDividerDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL,
+                R.id.readers_found_reader_id
+            )
         )
         binding.multipleCardReadersFoundRv.adapter = MultipleCardReadersFoundAdapter()
     }

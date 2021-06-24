@@ -147,7 +147,8 @@ class OrderFulfillViewModel @Inject constructor(
             mapOf(
                 AnalyticsTracker.KEY_ID to order.remoteId,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
+            )
         )
         viewState = viewState.copy(shouldRefreshShipmentTracking = true)
         _shipmentTrackings.value = repository.getOrderShipmentTrackings(orderIdSet.id)
@@ -164,19 +165,21 @@ class OrderFulfillViewModel @Inject constructor(
                 shipmentTrackings.remove(deletedShipmentTracking)
                 _shipmentTrackings.value = shipmentTrackings
 
-                triggerEvent(ShowUndoSnackbar(
-                    message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
-                    undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
-                    dismissAction = object : Callback() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-                            if (event != DISMISS_EVENT_ACTION) {
-                                // delete the shipment only if user has not clicked on the undo snackbar
-                                deleteOrderShipmentTracking(deletedShipmentTracking)
+                triggerEvent(
+                    ShowUndoSnackbar(
+                        message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
+                        undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                        dismissAction = object : Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                super.onDismissed(transientBottomBar, event)
+                                if (event != DISMISS_EVENT_ACTION) {
+                                    // delete the shipment only if user has not clicked on the undo snackbar
+                                    deleteOrderShipmentTracking(deletedShipmentTracking)
+                                }
                             }
                         }
-                    }
-                ))
+                    )
+                )
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))

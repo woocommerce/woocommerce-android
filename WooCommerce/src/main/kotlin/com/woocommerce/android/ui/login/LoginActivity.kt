@@ -56,8 +56,14 @@ import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
 @Suppress("SameParameterValue")
-class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, PrologueFinishedListener,
-        HasAndroidInjector, LoginNoJetpackListener, LoginEmailHelpDialogFragment.Listener {
+class LoginActivity :
+    AppCompatActivity(),
+    LoginListener,
+    GoogleListener,
+    PrologueFinishedListener,
+    HasAndroidInjector,
+    LoginNoJetpackListener,
+    LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -136,18 +142,19 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     private fun showMagicLinkInterceptFragment(authToken: String) {
         val fragment = MagicLinkInterceptFragment.newInstance(authToken)
         supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
+            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
     }
 
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(
-                R.anim.activity_slide_in_from_right,
-                R.anim.activity_slide_out_to_left,
-                R.anim.activity_slide_in_from_left,
-                R.anim.activity_slide_out_to_right)
+            R.anim.activity_slide_in_from_right,
+            R.anim.activity_slide_out_to_left,
+            R.anim.activity_slide_in_from_left,
+            R.anim.activity_slide_out_to_right
+        )
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {
             fragmentTransaction.addToBackStack(null)
@@ -174,7 +181,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
-            supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
+        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -235,7 +242,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     private fun jumpToUsernamePassword(username: String?, password: String?) {
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                "wordpress.com", "wordpress.com", username, password, true)
+            "wordpress.com", "wordpress.com", username, password, true
+        )
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
@@ -278,7 +286,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         val scheme = WOOCOMMERCE
         val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment
             .newInstance(
-                email, scheme, false, null, verifyEmail, allowPassword, forceRequestAtStart)
+                email, scheme, false, null, verifyEmail, allowPassword, forceRequestAtStart
+            )
         slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
     }
 
@@ -294,8 +303,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         service: String?,
         isPasswordRequired: Boolean
     ) {
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, idToken,
-                service, isPasswordRequired)
+        val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(
+            email, null, idToken,
+            service, isPasswordRequired
+        )
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
@@ -346,8 +357,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         nonceSms: String?
     ) {
         loginAnalyticsListener.trackLoginSocial2faNeeded()
-        val login2FaFragment = Login2FaFragment.newInstanceSocial(email, userId,
-                nonceAuthenticator, nonceBackup, nonceSms)
+        val login2FaFragment = Login2FaFragment.newInstanceSocial(
+            email, userId,
+            nonceAuthenticator, nonceBackup, nonceSms
+        )
         slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
@@ -395,9 +408,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             // Show the 'Jetpack required' fragment
             val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddressClean)
             slideInFragment(
-                    fragment = jetpackReqFragment as Fragment,
-                    shouldAddToBackStack = true,
-                    tag = LoginJetpackRequiredFragment.TAG)
+                fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG
+            )
         }
     }
 
@@ -419,7 +433,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
 
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                inputSiteAddress, endpointAddress, null, null, false)
+            inputSiteAddress, endpointAddress, null, null, false
+        )
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
@@ -500,13 +515,14 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         checkJetpackAvailability: Boolean
     ) {
         val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
-                siteAddress, endpointAddress, username, password, userAvatarUrl,
-                checkJetpackAvailability
+            siteAddress, endpointAddress, username, password, userAvatarUrl,
+            checkJetpackAvailability
         )
         slideInFragment(
-                fragment = jetpackReqFragment as Fragment,
-                shouldAddToBackStack = true,
-                tag = LoginJetpackRequiredFragment.TAG)
+            fragment = jetpackReqFragment as Fragment,
+            shouldAddToBackStack = true,
+            tag = LoginJetpackRequiredFragment.TAG
+        )
     }
 
     override fun helpHandleDiscoveryError(
@@ -518,12 +534,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         errorMessage: Int
     ) {
         val discoveryErrorFragment = LoginDiscoveryErrorFragment.newInstance(
-                siteAddress, endpointAddress, username, password, userAvatarUrl, errorMessage
+            siteAddress, endpointAddress, username, password, userAvatarUrl, errorMessage
         )
         slideInFragment(
-                fragment = discoveryErrorFragment as Fragment,
-                shouldAddToBackStack = true,
-                tag = LoginJetpackRequiredFragment.TAG)
+            fragment = discoveryErrorFragment as Fragment,
+            shouldAddToBackStack = true,
+            tag = LoginJetpackRequiredFragment.TAG
+        )
     }
 
     // SmartLock
@@ -608,13 +625,16 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         if (siteAddress != null) {
             // Show the layout that includes the option to login with site credentials.
             val loginEmailFragment = getLoginEmailFragment(
-                siteCredsLayout = true) ?: LoginEmailFragment.newInstance(siteAddress, true)
+                siteCredsLayout = true
+            ) ?: LoginEmailFragment.newInstance(siteAddress, true)
             slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_SITE_CREDS_LAYOUT)
         } else {
             val loginEmailFragment = getLoginEmailFragment(
-                siteCredsLayout = false) ?: LoginEmailFragment.newInstance(siteAddress, false)
+                siteCredsLayout = false
+            ) ?: LoginEmailFragment.newInstance(siteAddress, false)
             slideInFragment(
-                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG
+            )
         }
     }
 
@@ -625,7 +645,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         inputPassword: String?
     ) {
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                siteAddress, endpointAddress, inputUsername, inputPassword, false)
+            siteAddress, endpointAddress, inputUsername, inputPassword, false
+        )
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
@@ -635,7 +656,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         slideInFragment(
             fragment = fragment as Fragment,
             shouldAddToBackStack = true,
-            tag = LoginNoWPcomAccountFoundFragment.TAG)
+            tag = LoginNoWPcomAccountFoundFragment.TAG
+        )
     }
 
     override fun gotUnregisteredSocialAccount(
@@ -684,7 +706,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             slideInFragment(
                 fragment = genericErrorFragment,
                 shouldAddToBackStack = true,
-                tag = LoginSiteCheckErrorFragment.TAG)
+                tag = LoginSiteCheckErrorFragment.TAG
+            )
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")

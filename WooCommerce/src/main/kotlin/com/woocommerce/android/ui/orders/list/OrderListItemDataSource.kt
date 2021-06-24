@@ -51,13 +51,13 @@ class OrderListItemDataSource(
         val remoteItemIds = itemIdentifiers.mapNotNull { (it as? OrderIdentifier)?.remoteId }
         val ordersMap = orderStore.getOrdersForDescriptor(listDescriptor, remoteItemIds)
         val isLastItemByRemoteIdMap = itemIdentifiers
-                .mapNotNull { (it as? OrderIdentifier) }
-                .associate { it.remoteId to it.isLastItemInSection }
+            .mapNotNull { (it as? OrderIdentifier) }
+            .associate { it.remoteId to it.isLastItemInSection }
 
         // Fetch missing items
         fetcher.fetchOrders(
-                site = listDescriptor.site,
-                remoteItemIds = remoteItemIds.filter { !ordersMap.containsKey(it) }
+            site = listDescriptor.site,
+            remoteItemIds = remoteItemIds.filter { !ordersMap.containsKey(it) }
         )
 
         val mapSummary = { remoteOrderId: RemoteId ->
@@ -66,17 +66,17 @@ class OrderListItemDataSource(
                     LoadingItem(remoteOrderId)
                 } else {
                     OrderListItemUI(
-                            localOrderId = LocalId(order.id),
-                            remoteOrderId = RemoteId(order.remoteOrderId),
-                            orderNumber = order.number,
-                            orderName = order.getBillingName(
-                                resourceProvider.getString(R.string.orderdetail_customer_name_default)
-                            ),
-                            orderTotal = order.total,
-                            status = order.status,
-                            dateCreated = order.dateCreated,
-                            currencyCode = order.currency,
-                            isLastItemInSection = isLastItemByRemoteIdMap[RemoteId(order.remoteOrderId)] ?: false
+                        localOrderId = LocalId(order.id),
+                        remoteOrderId = RemoteId(order.remoteOrderId),
+                        orderNumber = order.number,
+                        orderName = order.getBillingName(
+                            resourceProvider.getString(R.string.orderdetail_customer_name_default)
+                        ),
+                        orderTotal = order.total,
+                        status = order.status,
+                        dateCreated = order.dateCreated,
+                        currencyCode = order.currency,
+                        isLastItemInSection = isLastItemByRemoteIdMap[RemoteId(order.remoteOrderId)] ?: false
                     )
                 }
             }
@@ -96,17 +96,17 @@ class OrderListItemDataSource(
         isListFullyFetched: Boolean
     ): List<OrderListItemIdentifier> {
         val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, remoteItemIds)
-                .let { summariesByRemoteId ->
-                    val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }
+            .let { summariesByRemoteId ->
+                val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }
 
-                    if (!networkStatus.isConnected()) {
-                        // The network is not connected so remove any order summaries from the list where
-                        // a matching order has not yet been downloaded. This prevents the user from seeing
-                        // a "loading" view for that item indefinitely.
-                        val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, remoteItemIds)
-                        summaries.filter { cachedOrders.containsKey(RemoteId(it.remoteOrderId)) }
-                    } else summaries
-                }
+                if (!networkStatus.isConnected()) {
+                    // The network is not connected so remove any order summaries from the list where
+                    // a matching order has not yet been downloaded. This prevents the user from seeing
+                    // a "loading" view for that item indefinitely.
+                    val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, remoteItemIds)
+                    summaries.filter { cachedOrders.containsKey(RemoteId(it.remoteOrderId)) }
+                } else summaries
+            }
 
         val listFuture = mutableListOf<OrderIdentifier>()
         val listToday = mutableListOf<OrderIdentifier>()

@@ -120,7 +120,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
+        }
 
     @Test
     fun `when fetching order fails, then event tracked`() =
@@ -136,14 +136,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
-            coroutinesTestRule.testDispatcher.runBlockingTest {
-                whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
 
-                viewModel.start()
+            viewModel.start()
 
-                assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
-                        .isEqualTo(R.string.order_error_fetch_generic)
-            }
+            assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
+                .isEqualTo(R.string.order_error_fetch_generic)
+        }
 
     @Test
     fun `when payment screen shown, then loading data state is shown`() {
@@ -172,9 +172,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val siteName = "testName"
             val expectedResult = "hooray"
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                name = siteName
-            })
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    name = siteName
+                }
+            )
             whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_NUMBER, siteName))
                 .thenReturn(expectedResult)
             val stringCaptor = argumentCaptor<String>()

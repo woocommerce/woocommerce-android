@@ -57,7 +57,7 @@ class ProductFilterListViewModel @Inject constructor(
      */
     private val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
         val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
-                ?: mutableMapOf()
+            ?: mutableMapOf()
         arguments.selectedStockStatus?.let { params.put(STOCK_STATUS, it) }
         arguments.selectedProductType?.let { params.put(TYPE, it) }
         arguments.selectedProductStatus?.let { params.put(STATUS, it) }
@@ -81,8 +81,8 @@ class ProductFilterListViewModel @Inject constructor(
         } else resourceProvider.getString(string.product_list_filters)
 
         productFilterListViewState = productFilterListViewState.copy(
-                screenTitle = screenTitle,
-                displayClearButton = productFilterOptions.isNotEmpty()
+            screenTitle = screenTitle,
+            displayClearButton = productFilterOptions.isNotEmpty()
         )
     }
 
@@ -91,19 +91,21 @@ class ProductFilterListViewModel @Inject constructor(
             val filterItem = it[selectedFilterListItemPosition]
             _filterOptionListItems.value = filterItem.filterOptionListItems
             productFilterOptionListViewState = productFilterOptionListViewState.copy(
-                    screenTitle = filterItem.filterItemName
+                screenTitle = filterItem.filterItemName
             )
         }
     }
 
     fun onBackButtonClicked(): Boolean {
         return if (hasChanges()) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                },
-                negativeButtonId = string.keep_changes
-            ))
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(Exit)
+                    },
+                    negativeButtonId = string.keep_changes
+                )
+            )
             false
         } else {
             true
@@ -125,7 +127,7 @@ class ProductFilterListViewModel @Inject constructor(
             val filterItem = it[selectedFilterListItemPosition]
             val filterOptionItemList = filterItem.filterOptionListItems.map { filterOptionItem ->
                 filterOptionItem.copy(
-                        isSelected = filterOptionItem.filterOptionItemValue == selectedFilterItem.filterOptionItemValue
+                    isSelected = filterOptionItem.filterOptionItemValue == selectedFilterItem.filterOptionItemValue
                 )
             }
             _filterOptionListItems.value = filterOptionItemList
@@ -153,45 +155,48 @@ class ProductFilterListViewModel @Inject constructor(
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
         return listOf(
-                FilterListItemUiModel(
-                        STOCK_STATUS,
-                        resourceProvider.getString(string.product_stock_status),
-                        addDefaultFilterOption(
-                                CoreProductStockStatus.values().map {
-                                    FilterListOptionItemUiModel(
-                                            resourceProvider.getString(fromString(it.value).stringResource),
-                                            filterOptionItemValue = it.value,
-                                            isSelected = productFilterOptions[STOCK_STATUS] == it.value
-                                    )
-                                }.toMutableList(), productFilterOptions[STOCK_STATUS].isNullOrEmpty()
+            FilterListItemUiModel(
+                STOCK_STATUS,
+                resourceProvider.getString(string.product_stock_status),
+                addDefaultFilterOption(
+                    CoreProductStockStatus.values().map {
+                        FilterListOptionItemUiModel(
+                            resourceProvider.getString(fromString(it.value).stringResource),
+                            filterOptionItemValue = it.value,
+                            isSelected = productFilterOptions[STOCK_STATUS] == it.value
                         )
-                ),
-                FilterListItemUiModel(
-                        STATUS,
-                        resourceProvider.getString(string.product_status),
-                        addDefaultFilterOption(
-                                ProductStatus.values().map {
-                                    FilterListOptionItemUiModel(
-                                            resourceProvider.getString(it.stringResource),
-                                            filterOptionItemValue = it.value,
-                                            isSelected = productFilterOptions[STATUS] == it.value
-                                    )
-                                }.toMutableList(), productFilterOptions[STATUS].isNullOrEmpty()
-                        )
-                ),
-                FilterListItemUiModel(
-                        TYPE,
-                        resourceProvider.getString(string.product_type),
-                        addDefaultFilterOption(
-                                ProductType.values().filterNot { it == OTHER || it == VIRTUAL }.map {
-                                    FilterListOptionItemUiModel(
-                                            resourceProvider.getString(it.stringResource),
-                                            filterOptionItemValue = it.value,
-                                            isSelected = productFilterOptions[TYPE] == it.value
-                                    )
-                                }.toMutableList(), productFilterOptions[TYPE].isNullOrEmpty()
-                        )
+                    }.toMutableList(),
+                    productFilterOptions[STOCK_STATUS].isNullOrEmpty()
                 )
+            ),
+            FilterListItemUiModel(
+                STATUS,
+                resourceProvider.getString(string.product_status),
+                addDefaultFilterOption(
+                    ProductStatus.values().map {
+                        FilterListOptionItemUiModel(
+                            resourceProvider.getString(it.stringResource),
+                            filterOptionItemValue = it.value,
+                            isSelected = productFilterOptions[STATUS] == it.value
+                        )
+                    }.toMutableList(),
+                    productFilterOptions[STATUS].isNullOrEmpty()
+                )
+            ),
+            FilterListItemUiModel(
+                TYPE,
+                resourceProvider.getString(string.product_type),
+                addDefaultFilterOption(
+                    ProductType.values().filterNot { it == OTHER || it == VIRTUAL }.map {
+                        FilterListOptionItemUiModel(
+                            resourceProvider.getString(it.stringResource),
+                            filterOptionItemValue = it.value,
+                            isSelected = productFilterOptions[TYPE] == it.value
+                        )
+                    }.toMutableList(),
+                    productFilterOptions[TYPE].isNullOrEmpty()
+                )
+            )
         )
     }
 
@@ -204,11 +209,14 @@ class ProductFilterListViewModel @Inject constructor(
         isDefaultFilterOptionSelected: Boolean
     ): MutableList<FilterListOptionItemUiModel> {
         return filterOptionList.apply {
-            add(0, FilterListOptionItemUiModel(
-                filterOptionItemName = resourceProvider.getString(string.product_filter_default),
-                filterOptionItemValue = "",
-                isSelected = isDefaultFilterOptionSelected
-            ))
+            add(
+                0,
+                FilterListOptionItemUiModel(
+                    filterOptionItemName = resourceProvider.getString(string.product_filter_default),
+                    filterOptionItemValue = "",
+                    isSelected = isDefaultFilterOptionSelected
+                )
+            )
         }
     }
 
@@ -244,8 +252,9 @@ class ProductFilterListViewModel @Inject constructor(
     ) : Parcelable {
         fun isSameFilter(updatedFilterOption: FilterListItemUiModel): Boolean {
             if (this.filterItemName == updatedFilterOption.filterItemName &&
-                    this.filterItemKey == updatedFilterOption.filterItemKey &&
-                    this.filterOptionListItems.isSameFilterOptions(updatedFilterOption.filterOptionListItems)) {
+                this.filterItemKey == updatedFilterOption.filterItemKey &&
+                this.filterOptionListItems.isSameFilterOptions(updatedFilterOption.filterOptionListItems)
+            ) {
                 return true
             }
             return false
@@ -290,8 +299,9 @@ class ProductFilterListViewModel @Inject constructor(
     ) : Parcelable {
         fun isSameFilterOption(updatedFilterOption: FilterListOptionItemUiModel): Boolean {
             if (this.isSelected == updatedFilterOption.isSelected &&
-                    this.filterOptionItemName == updatedFilterOption.filterOptionItemName &&
-                    this.filterOptionItemValue == updatedFilterOption.filterOptionItemValue) {
+                this.filterOptionItemName == updatedFilterOption.filterOptionItemName &&
+                this.filterOptionItemValue == updatedFilterOption.filterOptionItemValue
+            ) {
                 return true
             }
             return false

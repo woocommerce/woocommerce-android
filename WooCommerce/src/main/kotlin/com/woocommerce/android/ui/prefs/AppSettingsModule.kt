@@ -12,5 +12,5 @@ abstract class AppSettingsModule {
     @ActivityScoped
     @Binds
     abstract fun provideAppSettingsPresenter(appSettingsPresenter: AppSettingsPresenter):
-            AppSettingsContract.Presenter
+        AppSettingsContract.Presenter
 }

@@ -25,9 +25,9 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
             // for debug builds, alert the dev to the downgrade
             if (BuildConfig.DEBUG) {
                 val toast = Toast.makeText(
-                        context,
-                        R.string.database_downgraded,
-                        Toast.LENGTH_LONG
+                    context,
+                    R.string.database_downgraded,
+                    Toast.LENGTH_LONG
                 )
                 toast.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 0)
                 toast.show()
@@ -51,9 +51,9 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
     fun resetDatabase() {
         if (BuildConfig.DEBUG) {
             val toast = Toast.makeText(
-                    context,
-                    "Resetting database",
-                    Toast.LENGTH_LONG
+                context,
+                "Resetting database",
+                Toast.LENGTH_LONG
             )
             toast.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 0)
             toast.show()

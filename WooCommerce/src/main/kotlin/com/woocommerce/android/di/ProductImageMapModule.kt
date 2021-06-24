@@ -12,5 +12,5 @@ class ProductImageMapModule {
     @Provides
     @Singleton
     fun provideProductImageMap(selectedSite: SelectedSite, productStore: WCProductStore) =
-            ProductImageMap(selectedSite, productStore)
+        ProductImageMap(selectedSite, productStore)
 }

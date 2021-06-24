@@ -82,7 +82,7 @@ open class Screen {
         val modeSuffix = if (isDarkTheme()) "dark" else "light"
         val screenshotName = "$screenshotCount-$name-$modeSuffix"
 //        try {
-            Screengrab.screenshot(screenshotName)
+        Screengrab.screenshot(screenshotName)
 //        } catch (e: Throwable) {
 //            Log.w("screenshots", "Error capturing $screenshotName", e)
 //        }
@@ -91,7 +91,7 @@ open class Screen {
 
     fun isDarkTheme(): Boolean {
         return getCurrentActivity()!!.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+            Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 
     fun clickOn(elementID: Int) {
@@ -118,8 +118,8 @@ open class Screen {
     fun typeTextInto(elementID: Int, text: String) {
         waitForElementToBeDisplayed(elementID)
         onView(withId(elementID))
-                .perform(ViewActions.replaceText(text))
-                .perform(ViewActions.closeSoftKeyboard())
+            .perform(ViewActions.replaceText(text))
+            .perform(ViewActions.closeSoftKeyboard())
     }
 
     fun openToolbarActionMenu() {
@@ -131,21 +131,23 @@ open class Screen {
     fun flipSwitchOn(elementID: Int, elementParentId: Int = 0) {
         if (elementParentId == 0) {
             onView(withId(elementID))
-                    .check(matches(isNotChecked()))
-                    .perform(click())
+                .check(matches(isNotChecked()))
+                .perform(click())
         } else {
             onView(allOf(isDescendantOfA(withId(elementParentId)), withId(elementID)))
-                    .check(matches(isNotChecked()))
-                    .perform(click())
+                .check(matches(isNotChecked()))
+                .perform(click())
         }
     }
 
     fun selectItemWithTitleInTabLayout(stringID: Int, tabLayout: Int, elementParentId: Int) {
         val string = getTranslatedString(stringID)
-        val tabLayout = onView(allOf(
+        val tabLayout = onView(
+            allOf(
                 isDescendantOfA(withId(elementParentId)),
                 withId(tabLayout)
-        ))
+            )
+        )
 
         tabLayout.perform(selectTabWithText(string))
     }
@@ -156,8 +158,8 @@ open class Screen {
 
             override fun getConstraints(): Matcher<View>? {
                 return allOf(
-                        isDisplayed(),
-                        isAssignableFrom(TabLayout::class.java)
+                    isDisplayed(),
+                    isAssignableFrom(TabLayout::class.java)
                 )
             }
 
@@ -183,7 +185,7 @@ open class Screen {
         idleFor(1000)
 
         onView(withId(recyclerViewId))
-                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
     }
 
     fun clickButtonInDialogWithTitle(resourceID: Int) {
@@ -194,7 +196,7 @@ open class Screen {
 
     fun isDisplayingDialog(): Boolean {
         val dialog = onView(withId(R.id.button1))
-                .inRoot(isDialog())
+            .inRoot(isDialog())
 
         return isElementDisplayed(dialog)
     }
@@ -208,22 +210,28 @@ open class Screen {
     }
 
     fun waitForElementToBeDisplayed(elementID: Int) {
-        waitForConditionToBeTrue(Supplier<Boolean> {
-            isElementDisplayed(elementID)
-        })
+        waitForConditionToBeTrue(
+            Supplier<Boolean> {
+                isElementDisplayed(elementID)
+            }
+        )
     }
 
     private fun waitForElementToBeDisplayed(element: ViewInteraction) {
-        waitForConditionToBeTrue(Supplier<Boolean> {
-            isElementDisplayed(element)
-        })
+        waitForConditionToBeTrue(
+            Supplier<Boolean> {
+                isElementDisplayed(element)
+            }
+        )
     }
 
     fun waitForElementToBeDisplayedWithoutFailure(elementId: Int): Boolean {
         try {
-            waitForConditionToBeTrueWithoutFailure(Supplier<Boolean> {
-                isElementDisplayed(elementId)
-            })
+            waitForConditionToBeTrueWithoutFailure(
+                Supplier<Boolean> {
+                    isElementDisplayed(elementId)
+                }
+            )
         } catch (e: java.lang.Exception) { // ignore the failure
         }
         return isElementDisplayed(elementId)
@@ -249,10 +257,12 @@ open class Screen {
     // HELPERS
     private fun atLeastOneElementIsDisplayed(elementId: Int): Boolean {
         return try {
-            onView(allOf(
-                withId(elementId),
-                first()
-            )).check(matches(isDisplayed()))
+            onView(
+                allOf(
+                    withId(elementId),
+                    first()
+                )
+            ).check(matches(isDisplayed()))
             true
         } catch (e: Throwable) {
             false
@@ -274,9 +284,11 @@ open class Screen {
     }
 
     private fun waitForAtLeastOneElementToBeDisplayed(elementId: Int) {
-        waitForConditionToBeTrue(Supplier {
-            atLeastOneElementIsDisplayed(elementId)
-        })
+        waitForConditionToBeTrue(
+            Supplier {
+                atLeastOneElementIsDisplayed(elementId)
+            }
+        )
     }
 
     // MATCHERS
@@ -287,16 +299,16 @@ open class Screen {
     private var mCurrentActivity: Activity? = null
     private fun getCurrentActivity(): Activity? {
         InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync {
-                    val resumedActivities: Collection<*> = ActivityLifecycleMonitorRegistry
-                            .getInstance()
-                            .getActivitiesInStage(RESUMED)
-                    mCurrentActivity = if (resumedActivities.iterator().hasNext()) {
-                        resumedActivities.iterator().next() as Activity?
-                    } else {
-                        resumedActivities.toTypedArray()[0] as Activity?
-                    }
+            .runOnMainSync {
+                val resumedActivities: Collection<*> = ActivityLifecycleMonitorRegistry
+                    .getInstance()
+                    .getActivitiesInStage(RESUMED)
+                mCurrentActivity = if (resumedActivities.iterator().hasNext()) {
+                    resumedActivities.iterator().next() as Activity?
+                } else {
+                    resumedActivities.toTypedArray()[0] as Activity?
                 }
+            }
         return mCurrentActivity
     }
 

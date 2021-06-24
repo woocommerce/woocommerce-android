@@ -39,7 +39,7 @@ open class SavedStateWithArgs(
     }
 
     fun <T> getLiveData(key: String, initialValue: T? = null): MutableLiveData<T> =
-            savedState.getLiveData(key, initialValue)
+        savedState.getLiveData(key, initialValue)
 
     operator fun <T> get(key: String): T? = savedState.get(key)
 

@@ -150,7 +150,8 @@ class GroupedProductListViewModel @Inject constructor(
             mapOf(
                 KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductListType.statContext.value,
                 KEY_CONNECTED_PRODUCTS_LIST_ACTION to action.value
-            ))
+            )
+        )
     }
 
     @Parcelize

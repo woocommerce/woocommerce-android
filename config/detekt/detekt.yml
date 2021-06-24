@@ -5,3 +5,8 @@ complexity:
   LongParameterList:
     ignoreDefaultParameters: true
     ignoreAnnotated: ['Inject']
+
+formatting:
+  active: true
+  Indentation:
+    active: true

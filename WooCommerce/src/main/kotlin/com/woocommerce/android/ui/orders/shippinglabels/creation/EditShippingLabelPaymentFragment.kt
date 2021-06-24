@@ -25,9 +25,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditShippingLabelPaymentFragment : BaseFragment(
-    R.layout.fragment_edit_shipping_label_payment
-), BackPressListener {
+class EditShippingLabelPaymentFragment :
+    BaseFragment(
+        R.layout.fragment_edit_shipping_label_payment
+    ),
+    BackPressListener {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"

@@ -107,11 +107,13 @@ class AddOrderNoteViewModel @Inject constructor(
 
     fun onBackPressed() {
         if (addOrderNoteViewState.draftNote.note.trim().isNotEmpty()) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                }
-            ))
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(Exit)
+                    }
+                )
+            )
         } else {
             triggerEvent(Exit)
         }

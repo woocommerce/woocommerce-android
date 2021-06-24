@@ -54,8 +54,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
         private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
-        private val SALE_END_DATE = Date.from(LocalDateTime.of(2020, 4, 1, 8, 0)
-            .toInstant(ZoneOffset.UTC))
+        private val SALE_END_DATE = Date.from(
+            LocalDateTime.of(2020, 4, 1, 8, 0)
+                .toInstant(ZoneOffset.UTC)
+        )
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -100,12 +102,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ProductDetailViewState(
-            productDraft = product,
-            storedProduct = product,
-            productBeforeEnteringFragment = product,
-            isSkeletonShown = false,
-            uploadingImageUris = emptyList(),
-            showBottomSheetButton = true
+        productDraft = product,
+        storedProduct = product,
+        productBeforeEnteringFragment = product,
+        isSkeletonShown = false,
+        uploadingImageUris = emptyList(),
+        showBottomSheetButton = true
     )
 
     private val expectedCards = listOf(
@@ -159,10 +161,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 PropertyGroup(
                     R.string.product_shipping,
                     mapOf(
-                        Pair(resources.getString(R.string.product_weight),
-                            productWithParameters.productDraft?.getWeightWithUnits(siteParams.weightUnit) ?: ""),
-                        Pair(resources.getString(R.string.product_dimensions),
-                            productWithParameters.productDraft?.getSizeWithUnits(siteParams.dimensionUnit) ?: ""),
+                        Pair(
+                            resources.getString(R.string.product_weight),
+                            productWithParameters.productDraft?.getWeightWithUnits(siteParams.weightUnit) ?: ""
+                        ),
+                        Pair(
+                            resources.getString(R.string.product_dimensions),
+                            productWithParameters.productDraft?.getSizeWithUnits(siteParams.dimensionUnit) ?: ""
+                        ),
                         Pair(resources.getString(R.string.product_shipping_class), "")
                     ),
                     R.drawable.ic_gridicons_shipping,
@@ -204,20 +210,22 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
 
-        viewModel = spy(ProductDetailViewModel(
-            savedState,
-            coroutinesTestRule.testDispatchers,
-            parameterRepository,
-            productRepository,
-            networkStatus,
-            currencyFormatter,
-            resources,
-            productCategoriesRepository,
-            productTagsRepository,
-            mediaFilesRepository,
-            variationRepository,
-            prefs
-        ))
+        viewModel = spy(
+            ProductDetailViewModel(
+                savedState,
+                coroutinesTestRule.testDispatchers,
+                parameterRepository,
+                productRepository,
+                networkStatus,
+                currencyFormatter,
+                resources,
+                productCategoriesRepository,
+                productTagsRepository,
+                mediaFilesRepository,
+                variationRepository,
+                prefs
+            )
+        )
 
         clearInvocations(
             viewModel,
