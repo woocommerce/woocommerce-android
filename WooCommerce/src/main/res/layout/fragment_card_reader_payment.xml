@@ -40,8 +40,8 @@
 
         <ImageView
             android:id="@+id/illustration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/payments_illustration_width"
+            android:layout_height="@dimen/payments_illustration_height"
             android:layout_marginTop="@dimen/major_275"
             android:contentDescription="@null"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,16 +51,16 @@
 
         <FrameLayout
             android:id="@+id/progress_bar_wrapper"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/major_275"
-            android:paddingBottom="@dimen/major_275"
+            android:layout_width="@dimen/payments_illustration_width"
+            android:layout_height="@dimen/payments_illustration_height"
+            android:layout_marginTop="@dimen/major_275"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/amount_label">
 
             <ProgressBar
                 android:id="@+id/progress_bar"
+                android:layout_gravity="center"
                 android:layout_width="@dimen/progress_bar_large"
                 android:layout_height="@dimen/progress_bar_large" />
         </FrameLayout>
