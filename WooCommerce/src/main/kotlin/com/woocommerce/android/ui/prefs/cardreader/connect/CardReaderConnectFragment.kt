@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -163,6 +164,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
     override fun onResume() {
         super.onResume()
+        AnalyticsTracker.trackViewShown(this)
         viewModel.onScreenResumed()
     }
 

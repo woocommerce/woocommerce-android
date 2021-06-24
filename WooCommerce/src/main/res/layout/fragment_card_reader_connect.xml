@@ -38,7 +38,7 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/hint_label"
             style="@style/Woo.Card.Body.High"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_extra_extra_medium_large"
             android:layout_marginEnd="@dimen/margin_extra_extra_medium_large"

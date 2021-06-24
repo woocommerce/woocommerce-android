@@ -5,15 +5,18 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
+import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.list.OrderFetcher
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -43,6 +46,7 @@ import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
+import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
@@ -67,7 +71,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
-    private val orderFetcher: OrderFetcher = mock()
+    private val orderFetcher: WCOrderFetcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
 
     @Before
@@ -541,4 +545,34 @@ class OrderListViewModelTest : BaseUnitTest() {
             verify(repository, times(0)).fetchPaymentGateways()
             assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
         }
+
+    /**
+     * Ideally, this shouldn't be required as [NotificationHandler.dispatchNewOrderEvents]
+     * dispatches events that will trigger fetching orders and updating UI state.
+     *
+     * This doesn't work for search queries though as they use custom [WCOrderListDescriptor]
+     * which contains a search query and based on this UI is refreshed or not.
+     *
+     * ATM we'll just trigger [PagedListWrapper.fetchFirstPage]. It's not an issue as later
+     * in the flow we use [WCOrderFetcher] which filters out requests that duplicate requests
+     * of fetching order.
+     */
+    @Test
+    fun `Request refresh for active list when received new order notification and is in search`() =
+            coroutinesTestRule.testDispatcher.runBlockingTest {
+                doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+                doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+                viewModel.isSearching = true
+                viewModel.initializeListsForMainTabs()
+
+                viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
+
+                // Reset as we're no interested in previous invocations in this test
+                reset(viewModel.activePagedListWrapper)
+                viewModel.onNotificationReceived(
+                        NotificationReceivedEvent(NotificationChannelType.NEW_ORDER)
+                )
+
+                verify(viewModel.activePagedListWrapper)?.fetchFirstPage()
+            }
 }

@@ -5,7 +5,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
@@ -54,6 +57,7 @@ private const val SHOW_LAST_N_DIGITS_OF_CARD_READERS_ID = 8
 class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
+    private val tracker: AnalyticsTrackerWrapper,
     private val appLogWrapper: AppLogWrapper
 ) : ScopedViewModel(savedState) {
     /**
@@ -159,8 +163,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private suspend fun startScanning() {
         cardReaderManager
-            // TODO cardreader set isSimulated to false or add a temporary checkbox to the UI
-            .discoverReaders(isSimulated = true)
+            .discoverReaders(isSimulated = BuildConfig.USE_SIMULATED_READER)
             // TODO cardreader should we move flowOn to CardReaderModule?
             .flowOn(dispatchers.io)
             .collect { discoveryEvent ->
@@ -175,11 +178,23 @@ class CardReaderConnectViewModel @Inject constructor(
                     viewState.value = ScanningState(::onCancelClicked)
                 }
             }
-            is ReadersFound -> onReadersFound(discoveryEvent)
+            is ReadersFound -> {
+                tracker.track(
+                    AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED,
+                    mapOf("reader_count" to discoveryEvent.list.size)
+                )
+                onReadersFound(discoveryEvent)
+            }
             Succeeded -> {
                 // noop
             }
             is Failed -> {
+                tracker.track(
+                    AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED,
+                    this.javaClass.simpleName,
+                    null,
+                    discoveryEvent.msg
+                )
                 appLogWrapper.e(T.MAIN, "Scanning failed: ${discoveryEvent.msg}")
                 viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
             }
@@ -220,12 +235,15 @@ class CardReaderConnectViewModel @Inject constructor(
             })
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
+        tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
+                tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
                 onReaderConnected()
             } else {
+                tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
                 appLogWrapper.e(T.MAIN, "Connecting to reader failed.")
                 viewState.value = ConnectingFailedState({ onConnectToReaderClicked(cardReader) }, ::onCancelClicked)
             }

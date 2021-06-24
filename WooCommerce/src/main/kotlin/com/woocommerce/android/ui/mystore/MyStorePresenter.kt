@@ -142,6 +142,15 @@ class MyStorePresenter @Inject constructor(
         }
     }
 
+    override fun getSelectedSiteName(): String? =
+        selectedSite.getIfExists()?.let { site ->
+            if (!site.displayName.isNullOrBlank()) {
+                site.displayName
+            } else {
+                site.name
+            }
+        }
+
     private suspend fun handleTopPerformersResult(
         result: WooResult<List<WCTopPerformerProductModel>>,
         granularity: StatsGranularity

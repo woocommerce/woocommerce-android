@@ -99,7 +99,7 @@
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$ValidationResult"
             app:nullable="true" />
         <argument
-            android:name="isInternational"
+            android:name="requiresPhoneNumber"
             app:argType="boolean" />
         <action
             android:id="@+id/action_editShippingLabelAddressFragment_to_itemSelectorDialog"
