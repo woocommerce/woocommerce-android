@@ -82,9 +82,9 @@ Language: zh_CN
     <string name="card_reader_connect_open_bluetooth_settings">打开设置</string>
     <string name="card_reader_connect_open_location_settings">打开设置</string>
     <string name="card_reader_connect_open_permission_settings">打开设置</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">蓝牙已禁用</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">位置已禁用</string>
-    <string name="card_reader_connect_missing_permissions_hint">缺少所需的位置权限</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">蓝牙已禁用</string>
+    <string name="card_reader_connect_location_provider_disabled_header">位置已禁用</string>
+    <string name="card_reader_connect_missing_permissions_header">缺少所需的位置权限</string>
     <string name="card_reader_connect_connecting_failed_hint">我们无法连接到阅读器。</string>
     <string name="card_reader_connect_scanning_failed_hint">我们找不到任何阅读器。</string>
     <string name="card_reader_connect_failed_header">连接阅读器失败</string>

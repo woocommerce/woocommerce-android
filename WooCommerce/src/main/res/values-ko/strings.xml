@@ -82,9 +82,9 @@ Language: ko_KR
     <string name="card_reader_connect_open_bluetooth_settings">설정 열기</string>
     <string name="card_reader_connect_open_location_settings">설정 열기</string>
     <string name="card_reader_connect_open_permission_settings">설정 열기</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">블루투스가 비활성화되었음</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">위치가 비활성화되었음</string>
-    <string name="card_reader_connect_missing_permissions_hint">필수 위치 권한이 없음</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">블루투스가 비활성화되었음</string>
+    <string name="card_reader_connect_location_provider_disabled_header">위치가 비활성화되었음</string>
+    <string name="card_reader_connect_missing_permissions_header">필수 위치 권한이 없음</string>
     <string name="card_reader_connect_connecting_failed_hint">리더에 연결할 수 없습니다.</string>
     <string name="card_reader_connect_scanning_failed_hint">리더를 찾을 수 없습니다.</string>
     <string name="card_reader_connect_failed_header">리더에 연결하지 못함</string>

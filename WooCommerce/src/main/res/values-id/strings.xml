@@ -82,9 +82,9 @@ Language: id
     <string name="card_reader_connect_open_bluetooth_settings">Buka pengaturan</string>
     <string name="card_reader_connect_open_location_settings">Buka pengaturan</string>
     <string name="card_reader_connect_open_permission_settings">Buka pengaturan</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth dinonaktifkan</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Lokasi dinonaktifkan</string>
-    <string name="card_reader_connect_missing_permissions_hint">Izin lokasi wajib yang belum disetujui</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth dinonaktifkan</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Lokasi dinonaktifkan</string>
+    <string name="card_reader_connect_missing_permissions_header">Izin lokasi wajib yang belum disetujui</string>
     <string name="card_reader_connect_connecting_failed_hint">Tidak dapat menyambungkan ke pembaca.</string>
     <string name="card_reader_connect_scanning_failed_hint">Tidak dapat menemukan pembaca.</string>
     <string name="card_reader_connect_failed_header">Sambungan ke pembaca gagal</string>

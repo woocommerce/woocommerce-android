@@ -82,9 +82,9 @@ Language: zh_TW
     <string name="card_reader_connect_open_bluetooth_settings">開啟設定</string>
     <string name="card_reader_connect_open_location_settings">開啟設定</string>
     <string name="card_reader_connect_open_permission_settings">開啟設定</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">已停用藍牙</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">已停用位置</string>
-    <string name="card_reader_connect_missing_permissions_hint">缺少所需的位置權限</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">已停用藍牙</string>
+    <string name="card_reader_connect_location_provider_disabled_header">已停用位置</string>
+    <string name="card_reader_connect_missing_permissions_header">缺少所需的位置權限</string>
     <string name="card_reader_connect_connecting_failed_hint">無法連線至閱讀器。</string>
     <string name="card_reader_connect_scanning_failed_hint">找不到任何閱讀器。</string>
     <string name="card_reader_connect_failed_header">連線至閱讀器失敗</string>

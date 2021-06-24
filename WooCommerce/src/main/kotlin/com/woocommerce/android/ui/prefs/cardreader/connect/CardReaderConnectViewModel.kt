@@ -343,7 +343,7 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
+            headerLabel = UiStringRes(R.string.card_reader_connect_scanning_failed_header),
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.try_again,
             secondaryActionLabel = R.string.cancel,
@@ -365,33 +365,33 @@ class CardReaderConnectViewModel @Inject constructor(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
+            headerLabel = UiStringRes(R.string.card_reader_connect_missing_permissions_header),
             illustration = R.drawable.img_products_error,
-            hintLabel = R.string.card_reader_connect_missing_permissions_hint,
             primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
-            secondaryActionLabel = R.string.cancel
+            secondaryActionLabel = R.string.cancel,
+            illustrationVerticalMargin = R.dimen.major_150
         )
 
         data class LocationDisabledError(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
+            headerLabel = UiStringRes(R.string.card_reader_connect_location_provider_disabled_header),
             illustration = R.drawable.img_products_error,
-            hintLabel = R.string.card_reader_connect_location_provider_disabled_hint,
             primaryActionLabel = R.string.card_reader_connect_open_location_settings,
-            secondaryActionLabel = R.string.cancel
+            secondaryActionLabel = R.string.cancel,
+            illustrationVerticalMargin = R.dimen.major_150
         )
 
         data class BluetoothDisabledError(
             override val onPrimaryActionClicked: () -> Unit,
             override val onSecondaryActionClicked: () -> Unit
         ) : ViewState(
-            headerLabel = UiStringRes(R.string.card_reader_connect_failed_header),
+            headerLabel = UiStringRes(R.string.card_reader_connect_bluetooth_disabled_header),
             illustration = R.drawable.img_products_error,
-            hintLabel = R.string.card_reader_connect_bluetooth_disabled_hint,
             primaryActionLabel = R.string.card_reader_connect_open_bluetooth_settings,
-            secondaryActionLabel = R.string.cancel
+            secondaryActionLabel = R.string.cancel,
+            illustrationVerticalMargin = R.dimen.major_150
         )
     }
 

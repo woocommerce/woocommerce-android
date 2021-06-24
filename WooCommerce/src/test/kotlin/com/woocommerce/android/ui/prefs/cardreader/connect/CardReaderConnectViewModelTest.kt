@@ -548,7 +548,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
-                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_scanning_failed_header))
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
                 .isEqualTo(R.string.try_again)
@@ -600,10 +600,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(MissingPermissionsError::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
-                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_missing_permissions_header))
             assertThat(viewModel.viewStateData.value!!.hintLabel)
                 .describedAs("Check hint")
-                .isEqualTo(R.string.card_reader_connect_missing_permissions_hint)
+                .isNull()
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
                 .isEqualTo(R.string.card_reader_connect_open_permission_settings)
@@ -613,6 +613,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationVerticalMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -624,10 +627,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(LocationDisabledError::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
-                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_location_provider_disabled_header))
             assertThat(viewModel.viewStateData.value!!.hintLabel)
                 .describedAs("Check hint")
-                .isEqualTo(R.string.card_reader_connect_location_provider_disabled_hint)
+                .isNull()
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
                 .isEqualTo(R.string.card_reader_connect_open_location_settings)
@@ -637,6 +640,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationVerticalMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -650,10 +656,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(BluetoothDisabledError::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
-                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_bluetooth_disabled_header))
             assertThat(viewModel.viewStateData.value!!.hintLabel)
                 .describedAs("Check hint")
-                .isEqualTo(R.string.card_reader_connect_bluetooth_disabled_hint)
+                .isNull()
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
                 .isEqualTo(R.string.card_reader_connect_open_bluetooth_settings)
@@ -663,6 +669,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationVerticalMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
         }
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {

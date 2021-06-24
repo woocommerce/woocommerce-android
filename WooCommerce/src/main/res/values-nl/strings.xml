@@ -82,9 +82,9 @@ Language: nl
     <string name="card_reader_connect_open_bluetooth_settings">Instellingen openen</string>
     <string name="card_reader_connect_open_location_settings">Instellingen openen</string>
     <string name="card_reader_connect_open_permission_settings">Instellingen openen</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth is uitgeschakeld</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Locatie is uitgeschakeld</string>
-    <string name="card_reader_connect_missing_permissions_hint">Ontbrekende vereiste locatietoestemming</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is uitgeschakeld</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Locatie is uitgeschakeld</string>
+    <string name="card_reader_connect_missing_permissions_header">Ontbrekende vereiste locatietoestemming</string>
     <string name="card_reader_connect_connecting_failed_hint">We kunnen geen verbinding maken met de lezer.</string>
     <string name="card_reader_connect_scanning_failed_hint">We hebben geen lezers kunnen vinden.</string>
     <string name="card_reader_connect_failed_header">Verbinding maken met lezer mislukt</string>

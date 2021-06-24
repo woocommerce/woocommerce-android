@@ -44,6 +44,11 @@
             android:gravity="center"
             tools:text="Please wait" />
 
+        <androidx.legacy.widget.Space
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/primary_action_btn"
             style="@style/Woo.Button.Colored"

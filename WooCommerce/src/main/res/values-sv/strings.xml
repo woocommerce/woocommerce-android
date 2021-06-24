@@ -82,9 +82,9 @@ Language: sv_SE
     <string name="card_reader_connect_open_bluetooth_settings">Öppna inställningar</string>
     <string name="card_reader_connect_open_location_settings">Öppna inställningar</string>
     <string name="card_reader_connect_open_permission_settings">Öppna inställningar</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth är inaktiverat</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Plats är inaktiverat</string>
-    <string name="card_reader_connect_missing_permissions_hint">Saknar nödvändig platsbehörighet</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth är inaktiverat</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Plats är inaktiverat</string>
+    <string name="card_reader_connect_missing_permissions_header">Saknar nödvändig platsbehörighet</string>
     <string name="card_reader_connect_connecting_failed_hint">Det gick inte att ansluta till läsaren.</string>
     <string name="card_reader_connect_scanning_failed_hint">Det gick inte att hitta några läsare.</string>
     <string name="card_reader_connect_failed_header">Misslyckades med att ansluta till läsaren</string>
