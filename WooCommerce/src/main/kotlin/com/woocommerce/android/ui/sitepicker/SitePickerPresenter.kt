@@ -27,7 +27,6 @@ import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
 class SitePickerPresenter
-@Suppress("LongParameterList")
 @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
