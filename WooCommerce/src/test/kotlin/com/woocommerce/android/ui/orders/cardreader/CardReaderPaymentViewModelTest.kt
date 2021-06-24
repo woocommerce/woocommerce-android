@@ -592,6 +592,33 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when user clicks on print receipt button, then progress shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            assertThat((viewModel.viewStateData.value as PaymentSuccessfulState).isProgressVisible).isTrue()
+        }
+
+    @Test
+    fun `when print result received, then progress hidden`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            viewModel.onPrintResult(mock())
+
+            assertThat((viewModel.viewStateData.value as PaymentSuccessfulState).isProgressVisible).isFalse()
+        }
+
+    @Test
     fun `when user clicks on print receipt button, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
