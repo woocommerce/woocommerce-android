@@ -334,7 +334,7 @@ class CardReaderPaymentViewModel
             headerLabel = R.string.card_reader_payment_payment_failed_header,
             paymentStateLabel = errorType.message,
             paymentStateLabelTopMargin = R.dimen.major_100,
-            primaryActionLabel = R.string.card_reader_payment_failed_retry,
+            primaryActionLabel = R.string.try_again,
             // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
         )
