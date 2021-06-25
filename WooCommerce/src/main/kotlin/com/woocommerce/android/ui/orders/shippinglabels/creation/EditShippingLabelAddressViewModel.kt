@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
@@ -167,7 +168,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 viewState = viewState.copy(
                     phoneError = validatePhone(address)
                 )
-                triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+                triggerEvent(ShowSnackbar(string.shipping_label_address_data_invalid_snackbar_message))
             }
         }
     }
@@ -230,14 +231,10 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onCountrySpinnerTapped() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_COUNTRY_SPINNER_TAPPED)
-
         triggerEvent(ShowCountrySelector(countries, viewState.address?.country))
     }
 
     fun onStateSpinnerTapped() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_STATE_SPINNER_TAPPED)
-
         triggerEvent(ShowStateSelector(states, viewState.address?.state))
     }
 

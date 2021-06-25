@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
@@ -15,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
@@ -574,6 +576,60 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val draftTerms = draftAttribute.terms
         assertThat(draftTerms[0]).isEqualTo(secondTerm)
         assertThat(draftTerms[1]).isEqualTo(firstTerm)
+    }
+
+    /**
+     * Protection for a race condition bug in Variations.
+     *
+     * We're requiring [ProductDetailRepository.fetchProduct] to be called right after
+     * [VariationRepository.createEmptyVariation] to fix a race condition problem in the Product Details page. The
+     * bug can be reproduced inconsistently by following these steps:
+     *
+     * 1. Create a new variable product.
+     * 2. Follow the flow of adding a variation until you've generated a variation.
+     * 3. You'll be navigated back to the Product Details page. And you'll see “Variations” with 1 count.
+     * 4. Navigate to the variations list by tapping on “Variations”.
+     * 5. Navigate back. The Variations count will sometimes be zero.
+     *
+     * The reason for this is that [VariationListViewModel.onExit] dictates what the number of variations should be
+     * displayed in the Product Detail page. So if the [VariationListViewModel] does not have the recent product
+     * information, it will incorrectly update the variations count.
+     *
+     * This can be inconsistent because, sometimes, there's a random _updating_ of the underlying Product
+     * like in [ProductDetailViewModel.saveAttributeChanges], which eventually fixes the variations count.
+     *
+     * Fetching right after generating a variation ensures that we have the latest Product information
+     * (and variations count) from the API.
+     */
+    @Test
+    fun `When generating a variation, the latest Product should be fetched from the site`() =
+            coroutinesTestRule.testDispatcher.runBlockingTest {
+        // Given
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        clearInvocations(productRepository)
+
+        // Precondition
+        assertThat(productData?.productDraft?.numVariations).isZero
+
+        doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
+        doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))
+
+        // When
+        viewModel.onAttributeListDoneButtonClicked()
+
+        // Then
+        verify(variationRepository, times(1)).createEmptyVariation(eq(product))
+        // Prove that we fetched from the API.
+        verify(productRepository, times(1)).fetchProduct(eq(product.remoteId))
+
+        // The VM state should have been updated with the _fetched_ product's numVariations
+        assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
     }
 
     private val productsDraft

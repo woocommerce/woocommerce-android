@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:context=".ui.prefs.cardreader.connect.CardReaderConnectFragment">
 
     <LinearLayout
         android:layout_width="@dimen/payments_dialog_width"
@@ -30,6 +31,7 @@
             android:id="@+id/illustration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
             android:contentDescription="@null"
             tools:srcCompat="@drawable/img_card_reader_scanning" />
