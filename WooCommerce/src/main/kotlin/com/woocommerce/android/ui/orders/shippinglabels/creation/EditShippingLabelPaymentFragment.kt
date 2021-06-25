@@ -34,7 +34,7 @@ import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-private const val FETCH_PAYMENT_METHOD_URL = "me/payment-methods"
+private const val FETCH_PAYMENT_METHOD_URL_PATH = "me/payment-methods"
 
 @AndroidEntryPoint
 class EditShippingLabelPaymentFragment : BaseFragment(
