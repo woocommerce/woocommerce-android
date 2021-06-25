@@ -15,9 +15,9 @@ Language: tr
     <string name="card_reader_connect_open_bluetooth_settings">Ayarları aç</string>
     <string name="card_reader_connect_open_location_settings">Ayarları aç</string>
     <string name="card_reader_connect_open_permission_settings">Ayarları aç</string>
-    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth devre dışı</string>
-    <string name="card_reader_connect_location_provider_disabled_header">Konum devre dışı</string>
-    <string name="card_reader_connect_missing_permissions_header">Gerekli konum izni eksik</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth devre dışı</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Konum devre dışı</string>
+    <string name="card_reader_connect_missing_permissions_hint">Gerekli konum izni eksik</string>
     <string name="card_reader_connect_connecting_failed_hint">Okuyucuya bağlanılamadı.</string>
     <string name="card_reader_connect_scanning_failed_hint">Herhangi bir okuyucu bulunamadı.</string>
     <string name="card_reader_connect_failed_header">Okuyucuya bağlanılamadı</string>

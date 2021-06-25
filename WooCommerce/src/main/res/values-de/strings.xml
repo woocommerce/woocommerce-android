@@ -82,9 +82,9 @@ Language: de
     <string name="card_reader_connect_open_bluetooth_settings">Einstellungen öffnen</string>
     <string name="card_reader_connect_open_location_settings">Einstellungen öffnen</string>
     <string name="card_reader_connect_open_permission_settings">Einstellungen öffnen</string>
-    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth ist deaktiviert</string>
-    <string name="card_reader_connect_location_provider_disabled_header">Standort ist deaktiviert</string>
-    <string name="card_reader_connect_missing_permissions_header">Erforderliche Standortrechte fehlen</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth ist deaktiviert</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Standort ist deaktiviert</string>
+    <string name="card_reader_connect_missing_permissions_hint">Erforderliche Standortrechte fehlen</string>
     <string name="card_reader_connect_connecting_failed_hint">Es konnte keine Verbindung zum Reader hergestellt werden.</string>
     <string name="card_reader_connect_scanning_failed_hint">Es konnten keine Reader gefunden werden.</string>
     <string name="card_reader_connect_failed_header">Verbindung zum Reader fehlgeschlagen</string>

@@ -82,9 +82,9 @@ Language: it
     <string name="card_reader_connect_open_bluetooth_settings">Apri le impostazioni</string>
     <string name="card_reader_connect_open_location_settings">Apri le impostazioni</string>
     <string name="card_reader_connect_open_permission_settings">Apri le impostazioni</string>
-    <string name="card_reader_connect_bluetooth_disabled_header">Il Bluetooth è disabilitato</string>
-    <string name="card_reader_connect_location_provider_disabled_header">La posizione è disabilitata</string>
-    <string name="card_reader_connect_missing_permissions_header">Autorizzazione della posizione richiesta mancante</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Il Bluetooth è disabilitato</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">La posizione è disabilitata</string>
+    <string name="card_reader_connect_missing_permissions_hint">Autorizzazione della posizione richiesta mancante</string>
     <string name="card_reader_connect_connecting_failed_hint">Impossibile connettersi al lettore.</string>
     <string name="card_reader_connect_scanning_failed_hint">Impossibile trovare un lettore.</string>
     <string name="card_reader_connect_failed_header">Connessione al lettore non riuscita</string>

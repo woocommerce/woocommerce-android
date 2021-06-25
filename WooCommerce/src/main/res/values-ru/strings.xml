@@ -82,9 +82,9 @@ Language: ru
     <string name="card_reader_connect_open_bluetooth_settings">Открыть настройки</string>
     <string name="card_reader_connect_open_location_settings">Открыть настройки</string>
     <string name="card_reader_connect_open_permission_settings">Открыть настройки</string>
-    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth отключен</string>
-    <string name="card_reader_connect_location_provider_disabled_header">Определение местоположения отключено</string>
-    <string name="card_reader_connect_missing_permissions_header">Отсутствует необходимое разрешение на определение местоположения</string>
+    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth отключен</string>
+    <string name="card_reader_connect_location_provider_disabled_hint">Определение местоположения отключено</string>
+    <string name="card_reader_connect_missing_permissions_hint">Отсутствует необходимое разрешение на определение местоположения</string>
     <string name="card_reader_connect_connecting_failed_hint">Не удалось подключиться к устройству чтения.</string>
     <string name="card_reader_connect_scanning_failed_hint">Не удалось найти устройство чтения.</string>
     <string name="card_reader_connect_failed_header">Не удалось подключиться к устройству чтения.</string>
