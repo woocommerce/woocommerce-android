@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-08 11:54:44+0000
+Translation-Revision-Date: 2021-06-23 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="empty_order_list_message">探索如何增加商店銷售額</string>
+    <string name="empty_product_message">為商店新增第一個產品，立即開始銷售。</string>
+    <string name="empty_product_add_product_button">新增商品</string>
+    <string name="variable_product_attributes">款式屬性</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">開啟行動裝置的藍牙</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;瞭解更多&lt;/a&gt;有關使用行動裝置接受付款及訂購讀卡機的資訊</string>
+    <string name="card_reader_fetching_order_failed">擷取訂單時發生錯誤。 應用程式中的訂單狀態可能已過期。</string>
+    <string name="card_reader_payment_email_client_not_found">無法偵測電子郵件用戶端應用程式</string>
+    <string name="card_reader_payment_receipt_email_content">感謝你的購買！ 你可以在以下連結找到付款收據：%s</string>
+    <string name="card_reader_payment_receipt_email_subject">你的 %s 收據</string>
+    <string name="card_reader_payment_description">%s %s 訂單線上付款</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">正在重新整理訂單</string>
+    <string name="card_reader_payment_fetch_order_loading_header">正在更新應用程式狀態</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">顧客已選取 %1$s</string>
+    <string name="shipping_label_address_phone_invalid">海關表格要求填寫 10 位數電話號碼</string>
+    <string name="shipping_label_address_phone_required">必須提供電話號碼，因為此貨件需要提交海關表格</string>
+    <string name="shipping_label_create_customs_done">已填妥海關表格</string>
+    <string name="print_receipt_label_info_step_7">如果從裝置列印時遇到問題，請聯絡印表機的客服人員。</string>
+    <string name="print_receipt_label_info_step_6">如果無法列印，你可以將收據另存為 PDF，然後透過電子郵件傳送到其他裝置列印。</string>
+    <string name="print_receipt_label_info_step_5">視需要調整紙張尺寸，準備好列印收據時選取「列印」。</string>
+    <string name="print_receipt_label_info_step_4">出現提示時，配對印表機並連結到手機。</string>
+    <string name="print_receipt_label_info_step_3">接受付款後選取「列印收據」，將「另存為 PDF」換成「所有印表機」，然後搜尋新印表機。</string>
+    <string name="print_receipt_label_info_step_2">啟用印表機的藍牙或 Wi-Fi 連線。</string>
+    <string name="print_receipt_label_info_step_1">確認已為印表機安裝列印服務外掛程式。</string>
+    <string name="orderdetail_printing_instructions_button">深入瞭解使用裝置列印收據</string>
+    <string name="product_create_attribute_helper">若要建立款式，需要先設定其屬性 (即「顏色」、「尺寸」)</string>
+    <string name="product_variation_single_count">1 種款式</string>
+    <string name="product_variation_multiple_count">%1$s 種款式</string>
     <string name="shipping_label_rate_included_options_usps_tracking">%s 追蹤中</string>
     <string name="card_reader_software_update_in_progress_title">正在更新讀卡機軟體</string>
     <string name="card_reader_software_update_title">軟體更新</string>
@@ -97,7 +125,7 @@ Language: zh_TW
     <string name="orderdetail_products_recreate_shipping_label_menu">建立新的運送標籤</string>
     <string name="product_type_virtual_title">簡單的虛擬產品</string>
     <string name="variation_confirm_delete">你要刪除此「款式」嗎？</string>
-    <string name="variation_create_dialog_title">建立款式</string>
+    <string name="variation_create_dialog_title">正在產生款式</string>
     <string name="product_delete_dialog_title">刪除產品</string>
     <string name="card_reader_payment_send_receipt">傳送收據</string>
     <string name="card_reader_payment_print_receipt">列印收據</string>
@@ -150,10 +178,7 @@ Language: zh_TW
     <string name="shipping_label_rate_included_options">包含 %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">需成人簽名 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">需簽名 (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">免費運送</string>
-    <string name="shipping_label_shipping_method_local_pickup">自行取貨</string>
-    <string name="shipping_label_shipping_method_flat_rate">單一費率</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">客戶支付 %1$s (%2$s) 運費</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">顧客支付 %1$s (%2$s) 運費</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">向 WooCommerce 購買運送標籤，費率會比郵局低 5% 至 40%。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">什麼是 WooCommerce Services 折扣？</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">載入運送選項時發生錯誤</string>
@@ -200,7 +225,7 @@ Language: zh_TW
     <string name="shipping_label_single_package_total_weight">包裹總重：%1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">自訂包裹</string>
     <string name="shipping_label_package_details_fetch_products_error">無法擷取產品</string>
-    <string name="shipping_label_missing_data_snackbar_message">某些必填欄位仍為空白。</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">某些必填欄位仍為空白。</string>
     <string name="shipping_label_package_details_weight_error">重量無效</string>
     <string name="shipping_label_package_selector_title">所選包裹</string>
     <string name="shipping_label_packages_loading_message">請稍候…</string>
@@ -610,7 +635,6 @@ Language: zh_TW
     <string name="empty_review_list_message">為你的商店擷取高品質的產品評論</string>
     <string name="empty_review_list_title">取得你的第一批評論</string>
     <string name="empty_order_list_all_processed">所有訂單均已完成</string>
-    <string name="empty_order_list_message">我們會在收到新訂單時通知你。在此期間，請探索如何提高商店銷售量。</string>
     <string name="empty_order_list_title">等候你的第一筆訂單</string>
     <string name="share_your_store_message">透過社群媒體和電子郵件與聯絡人分享你的商店</string>
     <string name="get_the_word_out">讓我們宣傳你的商店資訊</string>
