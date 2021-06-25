@@ -360,15 +360,21 @@ class ProductDetailViewModel @Inject constructor(
         updateProductBeforeEnteringFragment()
     }
 
+    /**
+     * Called during the Add _first_ Variation flow. Uploads the pending attribute changes and generates the first
+     * variation for the variable product.
+     */
     fun onAttributeListDoneButtonClicked() {
         saveAttributeChanges()
         attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
         launch {
             viewState.productDraft?.let { draft ->
                 variationRepository.createEmptyVariation(draft)
-                    ?.let { updateProductDraft(numVariation = draft.numVariations + 1) }
-                    ?.let { triggerEvent(ExitProductAttributeList(variationCreated = true)) }
-                    ?: triggerEvent(ExitProductAttributeList())
+                    ?.let {
+                        productRepository.fetchProduct(draft.remoteId)
+                                ?.also { updateProductState(productToUpdateFrom = it) }
+                        triggerEvent(ExitProductAttributeList(variationCreated = true))
+                    } ?: triggerEvent(ExitProductAttributeList())
             }.also {
                 attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
             }
