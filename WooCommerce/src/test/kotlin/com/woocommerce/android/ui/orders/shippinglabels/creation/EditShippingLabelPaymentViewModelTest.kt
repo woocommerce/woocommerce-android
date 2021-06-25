@@ -11,7 +11,7 @@ import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.PaymentMethodUiModel
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -75,7 +75,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
                 PaymentMethodUiModel(paymentMethods[1], isSelected = false)
         )
         verify(shippingLabelRepository).getAccountSettings()
-        assertThat(viewState!!.uiState).isEqualTo(UiState.Success)
+        assertThat(viewState!!.dataLoadState).isEqualTo(DataLoadState.Success)
         assertThat(viewState!!.paymentMethods).isEqualTo(paymentMethodModels)
         assertThat(viewState!!.emailReceipts).isEqualTo(shippingAccountSettings.isEmailReceiptEnabled)
         assertThat(viewState!!.canManagePayments).isEqualTo(shippingAccountSettings.canManagePayments)
@@ -86,7 +86,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         setup(WooResult(WooError(GENERIC_ERROR, UNKNOWN)))
 
         val viewState = viewModel.viewStateData.liveData.value
-        assertThat(viewState!!.uiState).isEqualTo(UiState.Error)
+        assertThat(viewState!!.dataLoadState).isEqualTo(DataLoadState.Error)
     }
 
     @Test

@@ -7,7 +7,7 @@ import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState.Success
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Success
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -34,18 +34,18 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     private fun loadInitialData() {
         launch {
             loadPaymentMethods(forceRefresh = false)
-            if (viewState.uiState == UiState.Success && viewState.paymentMethods.isEmpty()) {
+            if (viewState.dataLoadState == DataLoadState.Success && viewState.paymentMethods.isEmpty()) {
                 triggerEvent(AddPaymentMethod)
             }
         }
     }
 
     private suspend fun loadPaymentMethods(forceRefresh: Boolean) {
-        viewState = viewState.copy(uiState = UiState.Loading)
+        viewState = viewState.copy(dataLoadState = DataLoadState.Loading)
         viewState = shippingLabelRepository.getAccountSettings(forceRefresh)
             .model?.let { accountSettings ->
                 viewState.copy(
-                    uiState = UiState.Success,
+                    dataLoadState = DataLoadState.Success,
                     currentAccountSettings = accountSettings,
                     paymentMethods = accountSettings.paymentMethods.map {
                         PaymentMethodUiModel(
@@ -60,7 +60,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
                     emailReceipts = accountSettings.isEmailReceiptEnabled,
                     storeOwnerDetails = accountSettings.storeOwnerDetails
                 )
-            } ?: viewState.copy(uiState = UiState.Error)
+            } ?: viewState.copy(dataLoadState = DataLoadState.Error)
     }
 
     fun onEmailReceiptsCheckboxChanged(isChecked: Boolean) {
@@ -117,7 +117,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         launch {
             val countOfCurrentPaymentMethods = viewState.paymentMethods.size
             loadPaymentMethods(forceRefresh = true)
-            if (viewState.uiState == Success &&
+            if (viewState.dataLoadState == Success &&
                     viewState.paymentMethods.size == countOfCurrentPaymentMethods + 1) {
                 triggerEvent(ShowSnackbar(R.string.shipping_label_payment_method_added))
             }
@@ -126,7 +126,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val uiState: UiState? = null,
+        val dataLoadState: DataLoadState? = null,
         val currentAccountSettings: ShippingAccountSettings? = null,
         val canManagePayments: Boolean = false,
         val canEditSettings: Boolean = false,
@@ -139,7 +139,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
             get() = canEditSettings && paymentMethods.any { it.isSelected }
     }
 
-    enum class UiState {
+    enum class DataLoadState {
         Loading, Error, Success
     }
 

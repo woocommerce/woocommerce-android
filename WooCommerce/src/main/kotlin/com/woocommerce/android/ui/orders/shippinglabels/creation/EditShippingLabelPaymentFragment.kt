@@ -22,9 +22,9 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState.Error
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState.Loading
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.UiState.Success
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Error
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Loading
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Success
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -107,7 +107,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
 
     private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.uiState?.takeIfNotEqualTo(old?.uiState) { uiState ->
+            new.dataLoadState?.takeIfNotEqualTo(old?.dataLoadState) { uiState ->
                 when (uiState) {
                     Loading -> {
                         showSkeleton(binding)
