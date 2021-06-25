@@ -32,4 +32,6 @@ object AppUrls {
     const val SHIPPING_LABEL_CUSTOMS_ITN = "https://pe.usps.com/text/imm/immc5_010.htm"
     const val SHIPPING_LABEL_CUSTOMS_HS_TARIFF_NUMBER =
         "https://docs.woocommerce.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-29"
+
+    const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
 }

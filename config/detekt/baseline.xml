@@ -321,6 +321,7 @@
     <ID>TooManyFunctions:DateUtils.kt$DateUtils</ID>
     <ID>TooManyFunctions:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:EditShippingLabelAddressViewModel.kt$EditShippingLabelAddressViewModel : ScopedViewModel</ID>
+    <ID>TooManyFunctions:EditShippingLabelPaymentFragment.kt$EditShippingLabelPaymentFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:EditVariationAttributesFragment.kt$EditVariationAttributesFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:FeedbackSurveyFragment.kt$FeedbackSurveyFragment : Fragment</ID>
     <ID>TooManyFunctions:HelpActivity.kt$HelpActivity : AppCompatActivity</ID>
