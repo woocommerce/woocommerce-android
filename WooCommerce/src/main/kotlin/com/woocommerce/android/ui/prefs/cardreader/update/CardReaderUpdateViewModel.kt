@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Failed
@@ -59,7 +60,7 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onUpdateClicked() {
-        tracker.track(Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED)
+        tracker.track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
         launch {
             cardReaderManager.updateSoftware().collect { status ->
                 when (status) {
@@ -98,7 +99,7 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onSkipClicked() {
-        tracker.track(Stat.CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED)
+        tracker.track(CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED)
         finishFlow(SKIPPED)
     }
 
