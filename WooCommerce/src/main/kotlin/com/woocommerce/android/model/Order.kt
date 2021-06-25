@@ -64,12 +64,12 @@ data class Order(
     @IgnoredOnParcel
     val isAwaitingPayment = status == Pending || status == OnHold || datePaid == null
 
-    @IgnoredOnParcel
-    val isRefundAvailable = refundTotal < total
-
     // Allow refunding only integer quantities
     @IgnoredOnParcel
     val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt()
+
+    @IgnoredOnParcel
+    val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
 
     @Parcelize
     data class ShippingMethod(
