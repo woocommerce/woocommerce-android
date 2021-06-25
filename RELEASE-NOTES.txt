@@ -3,7 +3,7 @@
 7.0
 -----
 - [***] Merchants using WooCommerce Shipping in their store can create international labels from the app [https://github.com/woocommerce/woocommerce-android/pull/4250]
-
+- [*] Fixed a bug where the app doesn't show the correct quantity in orders if it's decimal [https://github.com/woocommerce/woocommerce-android/pull/4267]
 6.9
 -----
 - [*] Products: Attributes are now accessible directly from the Product Details view
