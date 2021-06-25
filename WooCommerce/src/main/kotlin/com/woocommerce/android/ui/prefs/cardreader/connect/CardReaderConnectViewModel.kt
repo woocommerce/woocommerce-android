@@ -310,8 +310,7 @@ class CardReaderConnectViewModel @Inject constructor(
         @StringRes val hintLabel: Int? = null,
         val primaryActionLabel: Int? = null,
         val secondaryActionLabel: Int? = null,
-        @DimenRes val illustrationVerticalMargin: Int = R.dimen.major_200,
-        @DimenRes val hintBottomMargin: Int = R.dimen.major_200,
+        @DimenRes val illustrationTopMargin: Int = R.dimen.major_200,
         open val listItems: List<ListItemViewState>? = null
     ) {
         open val onPrimaryActionClicked: (() -> Unit)? = null
@@ -337,7 +336,7 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_card_reader,
             primaryActionLabel = R.string.card_reader_connect_to_reader,
             secondaryActionLabel = R.string.cancel,
-            illustrationVerticalMargin = R.dimen.major_275
+            illustrationTopMargin = R.dimen.major_275
         )
 
         data class MultipleReadersFoundState(
@@ -353,8 +352,7 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_card_reader_connecting,
             hintLabel = R.string.card_reader_connect_connecting_hint,
             secondaryActionLabel = R.string.cancel,
-            illustrationVerticalMargin = R.dimen.major_275,
-            hintBottomMargin = R.dimen.major_275
+            illustrationTopMargin = R.dimen.major_275
         )
 
         data class ScanningFailedState(
@@ -365,7 +363,7 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.try_again,
             secondaryActionLabel = R.string.cancel,
-            illustrationVerticalMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150
         )
 
         data class ConnectingFailedState(
@@ -376,7 +374,7 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.try_again,
             secondaryActionLabel = R.string.cancel,
-            illustrationVerticalMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150
         )
 
         data class MissingPermissionsError(
@@ -387,7 +385,7 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
             secondaryActionLabel = R.string.cancel,
-            illustrationVerticalMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150
         )
 
         data class LocationDisabledError(
@@ -398,7 +396,7 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.card_reader_connect_open_location_settings,
             secondaryActionLabel = R.string.cancel,
-            illustrationVerticalMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150
         )
 
         data class BluetoothDisabledError(
@@ -409,7 +407,7 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.card_reader_connect_open_bluetooth_settings,
             secondaryActionLabel = R.string.cancel,
-            illustrationVerticalMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150
         )
     }
 
