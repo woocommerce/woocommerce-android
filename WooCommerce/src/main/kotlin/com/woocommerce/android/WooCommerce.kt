@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 open class WooCommerce : MultiDexApplication(), HasAndroidInjector {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
-    // inject it lazily to avoid creating it before initializing WellSql
+    // inject it lazily to avoid creating it before initializing WellSql - test
     @Inject lateinit var appInitializer: Lazy<AppInitializer>
 
     override fun onCreate() {
