@@ -149,7 +149,10 @@ class IssueRefundViewModel @Inject constructor(
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
+        // Convert the quantities to integer values
         maxQuantities = refunds.getMaxRefundQuantities(order.items)
+            .map { (id, quantity) -> id to quantity.toInt() }
+            .toMap()
         gateway = loadPaymentGateway()
         refundableShippingLineIds = getRefundableShippingLineIds()
 

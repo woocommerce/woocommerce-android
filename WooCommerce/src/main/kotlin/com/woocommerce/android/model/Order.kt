@@ -4,6 +4,8 @@ import android.os.Parcelable
 import com.woocommerce.android.extensions.CASH_PAYMENTS
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.roundError
+import com.woocommerce.android.extensions.sumByBigDecimal
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
@@ -23,8 +25,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
-import kotlin.collections.sumBy
-import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 @Parcelize
 data class Order(
@@ -67,8 +67,9 @@ data class Order(
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total
 
+    // Allow refunding only integer quantities
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumBy { it.quantity }
+    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt()
 
     @Parcelize
     data class ShippingMethod(
@@ -91,7 +92,7 @@ data class Order(
         val name: String,
         val price: BigDecimal,
         val sku: String,
-        val quantity: Int,
+        val quantity: Float,
         val subtotal: BigDecimal,
         val totalTax: BigDecimal,
         val total: BigDecimal,
@@ -264,7 +265,7 @@ fun WCOrderModel.toAppModel(): Order {
                                 it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
                                 it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.sku ?: "",
-                                it.quantity?.toInt() ?: 0,
+                                it.quantity ?: 0f,
                                 it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
