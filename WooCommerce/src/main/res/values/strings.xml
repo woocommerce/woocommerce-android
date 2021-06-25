@@ -513,6 +513,9 @@
     <string name="shipping_label_create_package_title">Add new package</string>
     <string name="shipping_label_create_custom_package_field_info">Set up the package you\'ll be using to ship your products. We\'ll save it for future orders.</string>
     <string name="shipping_label_create_custom_package_field_type">Package type</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Choose package type</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Box</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Envelope</string>
     <string name="shipping_label_create_custom_package_field_name">Package name</string>
     <string name="shipping_label_create_custom_package_field_length">Length %1$s</string>
     <string name="shipping_label_create_custom_package_field_width">Width %1$s</string>
