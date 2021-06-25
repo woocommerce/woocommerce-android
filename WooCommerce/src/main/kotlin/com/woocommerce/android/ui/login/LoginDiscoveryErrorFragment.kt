@@ -31,6 +31,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
         private const val ARG_USER_AVATAR_URL = "ARG_USER_AVATAR_URL"
         const val ARG_ERROR_MESSAGE = "ARG_ERROR_MESSAGE"
 
+        @Suppress("LongParameterList")
         fun newInstance(
             siteAddress: String,
             endpointAddress: String?,

@@ -56,7 +56,6 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 
 @HiltViewModel
 class CardReaderPaymentViewModel
-@Suppress("LongParameterList")
 @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
@@ -132,6 +131,7 @@ class CardReaderPaymentViewModel
         }
     }
 
+    @Suppress("LongParameterList")
     private suspend fun collectPaymentFlow(
         cardReaderManager: CardReaderManager,
         paymentDescription: String,
@@ -280,7 +280,6 @@ class CardReaderPaymentViewModel
         }
     }
 
-    @Suppress("LongParameterList")
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
         @StringRes val headerLabel: Int? = null,
