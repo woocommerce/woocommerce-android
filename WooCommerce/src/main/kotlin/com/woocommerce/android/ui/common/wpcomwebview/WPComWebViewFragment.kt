@@ -73,7 +73,6 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     }
 
     override fun onLoadUrl(url: String) {
-        println(url)
         navArgs.urlToTriggerExit?.let {
             if (url.contains(it)) {
                 navigateBackWithNotice(WEBVIEW_RESULT)
