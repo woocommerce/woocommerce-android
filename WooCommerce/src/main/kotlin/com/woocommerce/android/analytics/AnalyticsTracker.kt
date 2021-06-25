@@ -234,14 +234,18 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CARD_PRESENT_COLLECT_PAYMENT_FAILED,
         CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
 
+        // -- Card Reader - discovery
         CARD_READER_DISCOVERY_TAPPED,
         CARD_READER_DISCOVERY_FAILED,
         CARD_READER_DISCOVERY_READER_DISCOVERED,
+
+        // -- Card Reader - connection
         CARD_READER_CONNECTION_TAPPED,
         CARD_READER_CONNECTION_FAILED,
         CARD_READER_CONNECTION_SUCCESS,
         CARD_READER_DISCONNECT_TAPPED,
 
+        // -- Receipts
         RECEIPT_PRINT_TAPPED,
         RECEIPT_EMAIL_TAPPED,
         RECEIPT_EMAIL_FAILED,
