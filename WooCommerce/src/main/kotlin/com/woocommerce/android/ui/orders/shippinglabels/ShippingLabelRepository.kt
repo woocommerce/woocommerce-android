@@ -178,7 +178,7 @@ class ShippingLabelRepository @Inject constructor(
                 serviceId = rate.serviceId,
                 serviceName = rate.serviceName,
                 carrierId = rate.carrierId,
-                products = labelPackage.items.map { it.productId }
+                products = labelPackage.items.map { item -> List(item.quantity) { item.productId } }.flatten()
             )
         }
         // Retrieve account settings, normally they should be cached at this point, and the response would be
