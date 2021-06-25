@@ -420,22 +420,6 @@
         android:label="ShippingLabelCreatePackageFragment"
         tools:layout="@layout/fragment_shipping_label_create_package"/>
     <fragment
-        android:id="@+id/shippingLabelCreateCustomPackageFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageFragment"
-        android:label="ShippingLabelCreateCustomPackageFragment" >
-        <action
-            android:id="@+id/action_shippingLabelCreateCustomPackageFragment_to_shippingLabelCustomPackageTypeDialog"
-            app:destination="@id/shippingLabelCustomPackageTypeDialog" />
-    </fragment>
-    <dialog
-        android:id="@+id/shippingLabelCustomPackageTypeDialog"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCustomPackageTypeDialog"
-        android:label="ShippingLabelCustomPackageTypeDialog">
-        <argument
-            android:name="currentCustomPackageType"
-            app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCustomPackageTypeDialog$ShippingLabelCustomPackageType" />
-    </dialog>
-    <fragment
         android:id="@+id/editShippingLabelPaymentFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment"
         android:label="EditShippingLabelPaymentFragment"

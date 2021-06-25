@@ -1,6 +1,8 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.CustomPackage
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.PredefinedOption
@@ -58,4 +60,9 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
             category = this.title
         )
     }
+}
+
+enum class CustomPackageType(@StringRes val stringResource: Int) {
+    BOX(R.string.shipping_label_create_custom_package_field_type_box),
+    ENVELOPE(R.string.shipping_label_create_custom_package_field_type_envelope)
 }
