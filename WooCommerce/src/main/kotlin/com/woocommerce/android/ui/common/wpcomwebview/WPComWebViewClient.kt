@@ -10,7 +10,4 @@ class WPComWebViewClient(private val urlInterceptor: UrlInterceptor) : WebViewCl
         url?.let { urlInterceptor.onLoadUrl(url) }
     }
 
-    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-        super.onPageStarted(view, url, favicon)
-    }
 }
