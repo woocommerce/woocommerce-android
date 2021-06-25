@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.clearInvocations
+import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -61,7 +62,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
     private val resources: ResourceProvider = mock {
-        on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
+        on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+        on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
 
@@ -604,7 +606,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newStatus = CoreOrderStatus.PROCESSING.value
         viewModel.onOrderStatusChanged(newStatus)
 
-        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_changed_to, newStatus))
+        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
         // simulate undo click event
         viewModel.onOrderStatusChangeReverted()

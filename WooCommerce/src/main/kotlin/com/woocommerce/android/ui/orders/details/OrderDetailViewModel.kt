@@ -319,11 +319,6 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onOrderStatusChanged(newStatus: String) {
-        val snackMessage = when (newStatus) {
-            CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
-            else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
-        }
-
         AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE, mapOf(
             AnalyticsTracker.KEY_ID to order.remoteId,
             AnalyticsTracker.KEY_FROM to order.status.value,
@@ -331,7 +326,7 @@ class OrderDetailViewModel @Inject constructor(
 
         // display undo snackbar
         triggerEvent(ShowUndoSnackbar(
-            message = snackMessage,
+            message = resourceProvider.getString(string.order_status_updated),
             undoAction = { onOrderStatusChangeReverted() },
             dismissAction = object : Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
