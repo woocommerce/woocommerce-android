@@ -1,0 +1,19 @@
+# All files in repository
+* @woocommerce/android-developers
+
+# Build tools
+/.bundle/           @woocommerce/android-developers @wordpress-mobile/platform-9
+/.circleci/         @woocommerce/android-developers @wordpress-mobile/platform-9
+/.configure-files/  @woocommerce/android-developers @wordpress-mobile/platform-9
+/.github/           @woocommerce/android-developers @wordpress-mobile/platform-9
+/fastlane/          @woocommerce/android-developers @wordpress-mobile/platform-9
+/gradle/            @woocommerce/android-developers @wordpress-mobile/platform-9
+/tools/             @woocommerce/android-developers @wordpress-mobile/platform-9
+.configure          @woocommerce/android-developers @wordpress-mobile/platform-9
+.ruby-version       @woocommerce/android-developers @wordpress-mobile/platform-9
+Gemfile             @woocommerce/android-developers @wordpress-mobile/platform-9
+Gemfile.lock        @woocommerce/android-developers @wordpress-mobile/platform-9
+*.gradle            @woocommerce/android-developers @wordpress-mobile/platform-9
+gradlew             @woocommerce/android-developers @wordpress-mobile/platform-9
+gradlew.bat         @woocommerce/android-developers @wordpress-mobile/platform-9
+
