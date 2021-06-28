@@ -22,7 +22,9 @@ class OrderDetailShipmentTrackingListAdapter(
                 ShipmentTrackingDiffCallback(
                     field,
                     value
-                ), true)
+                ),
+                true
+            )
             field = value
 
             diffResult.dispatchUpdatesTo(this)

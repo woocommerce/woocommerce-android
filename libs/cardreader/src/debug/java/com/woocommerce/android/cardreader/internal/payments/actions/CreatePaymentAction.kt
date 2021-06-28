@@ -45,7 +45,8 @@ internal class CreatePaymentAction(
                         this@callbackFlow.sendBlocking(Failure(e))
                         this@callbackFlow.close()
                     }
-                })
+                }
+            )
             awaitClose()
         }
     }

@@ -44,7 +44,8 @@ import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
+class MyStoreFragment :
+    TopLevelFragment(R.layout.fragment_my_store),
     MyStoreContract.View,
     MyStoreStatsListener {
     companion object {

@@ -41,7 +41,7 @@ class ShippingLabelItemView @JvmOverloads constructor(
 
                 // show/hide shipment tracking button
                 val showTrackingBtn =
-                a.getBoolean(R.styleable.ShippingLabelItemView_showTrackShipmentButton, false)
+                    a.getBoolean(R.styleable.ShippingLabelItemView_showTrackShipmentButton, false)
                 binding.shippingLabelItemBtnTrack.isVisible = showTrackingBtn
             } finally {
                 a.recycle()

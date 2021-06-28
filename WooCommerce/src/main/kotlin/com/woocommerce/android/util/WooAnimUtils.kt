@@ -114,19 +114,19 @@ object WooAnimUtils {
         duration: Duration
     ) {
         val scaleX = PropertyValuesHolder.ofFloat(
-                View.SCALE_X,
-                scaleStart,
-                scaleEnd
+            View.SCALE_X,
+            scaleStart,
+            scaleEnd
         )
         val scaleY = PropertyValuesHolder.ofFloat(
-                View.SCALE_Y,
-                scaleStart,
-                scaleEnd
+            View.SCALE_Y,
+            scaleStart,
+            scaleEnd
         )
         val animator = ObjectAnimator.ofPropertyValuesHolder(
-                target,
-                scaleX,
-                scaleY
+            target,
+            scaleX,
+            scaleY
         )
         animator.duration = duration.toMillis(target.context)
         animator.interpolator = AccelerateDecelerateInterpolator()
@@ -152,10 +152,11 @@ object WooAnimUtils {
             toY = if (isVisible) 0f else 1f
         }
         val animation = TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, fromY,
-                Animation.RELATIVE_TO_SELF, toY)
+            Animation.RELATIVE_TO_SELF, 0.0f,
+            Animation.RELATIVE_TO_SELF, 0.0f,
+            Animation.RELATIVE_TO_SELF, fromY,
+            Animation.RELATIVE_TO_SELF, toY
+        )
 
         val durationMillis = duration.toMillis(view.context)
         animation.duration = durationMillis

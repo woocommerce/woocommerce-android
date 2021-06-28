@@ -32,7 +32,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WPMediaPickerFragment : BaseFragment(R.layout.fragment_wpmedia_picker),
+class WPMediaPickerFragment :
+    BaseFragment(R.layout.fragment_wpmedia_picker),
     WPMediaGalleryListener,
     BackPressListener {
     companion object {
@@ -117,9 +118,12 @@ class WPMediaPickerFragment : BaseFragment(R.layout.fragment_wpmedia_picker),
     }
 
     private fun setupObservers() {
-        viewModel.mediaList.observe(viewLifecycleOwner, Observer {
-            binding.wpMediaGallery.showImages(it, this, isMultiSelectAllowed)
-        })
+        viewModel.mediaList.observe(
+            viewLifecycleOwner,
+            Observer {
+                binding.wpMediaGallery.showImages(it, this, isMultiSelectAllowed)
+            }
+        )
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isLoading?.takeIfNotEqualTo(old?.isLoading) { binding.loadingProgress.isVisible = it }
@@ -130,12 +134,15 @@ class WPMediaPickerFragment : BaseFragment(R.layout.fragment_wpmedia_picker),
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> findNavController().navigateUp()
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is Exit -> findNavController().navigateUp()
+                }
             }
-        })
+        )
     }
 
     /**
@@ -200,17 +207,18 @@ class WPMediaPickerFragment : BaseFragment(R.layout.fragment_wpmedia_picker),
     private fun confirmDiscard() {
         isConfirmingDiscard = true
         WooDialog.showDialog(
-                requireActivity(),
-                messageId = R.string.discard_message,
-                positiveButtonId = R.string.discard,
-                posBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    isConfirmingDiscard = false
-                    findNavController().navigateUp()
-                },
-                negativeButtonId = R.string.keep_editing,
-                negBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    isConfirmingDiscard = false
-                })
+            requireActivity(),
+            messageId = R.string.discard_message,
+            positiveButtonId = R.string.discard,
+            posBtnAction = DialogInterface.OnClickListener { _, _ ->
+                isConfirmingDiscard = false
+                findNavController().navigateUp()
+            },
+            negativeButtonId = R.string.keep_editing,
+            negBtnAction = DialogInterface.OnClickListener { _, _ ->
+                isConfirmingDiscard = false
+            }
+        )
     }
 
     private fun showEmptyView(show: Boolean) {

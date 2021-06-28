@@ -37,7 +37,8 @@ class ParentCategoryListAdapter(
             ParentCategoryListItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false)
+                false
+            )
         )
     }
 

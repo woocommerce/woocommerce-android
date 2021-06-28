@@ -15,11 +15,11 @@ data class PaymentGateway(
 
 fun WCGatewayModel.toAppModel(): PaymentGateway {
     return PaymentGateway(
-            this.title,
-            this.description,
-            this.isEnabled,
-            this.methodTitle,
-            this.methodDescription,
-            features.contains(REFUNDS_FEATURE)
+        this.title,
+        this.description,
+        this.isEnabled,
+        this.methodTitle,
+        this.methodDescription,
+        features.contains(REFUNDS_FEATURE)
     )
 }

@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -227,6 +228,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
+        AnalyticsTracker.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
         // TODO cardreader add tests for this functionality
         if (cardReaderManager.readerStatus.value is Connected) {
             triggerEvent(StartCardReaderPaymentFlow(order.identifier))
@@ -276,18 +278,21 @@ class OrderDetailViewModel @Inject constructor(
     fun onAddShipmentTrackingClicked() {
         triggerEvent(
             AddOrderShipmentTracking(
-            orderIdentifier = order.identifier,
-            orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
-            isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
-        ))
+                orderIdentifier = order.identifier,
+                orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
+                isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
+            )
+        )
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
         AnalyticsTracker.track(
             ORDER_TRACKING_ADD,
-            mapOf(AnalyticsTracker.KEY_ID to order.remoteId,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
+            )
         )
         refreshShipmentTracking()
     }
@@ -322,25 +327,31 @@ class OrderDetailViewModel @Inject constructor(
             else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
         }
 
-        AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE, mapOf(
-            AnalyticsTracker.KEY_ID to order.remoteId,
-            AnalyticsTracker.KEY_FROM to order.status.value,
-            AnalyticsTracker.KEY_TO to newStatus))
+        AnalyticsTracker.track(
+            Stat.ORDER_STATUS_CHANGE,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_FROM to order.status.value,
+                AnalyticsTracker.KEY_TO to newStatus
+            )
+        )
 
         // display undo snackbar
-        triggerEvent(ShowUndoSnackbar(
-            message = snackMessage,
-            undoAction = { onOrderStatusChangeReverted() },
-            dismissAction = object : Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (event != DISMISS_EVENT_ACTION) {
-                        // update the order only if user has not clicked on the undo snackbar
-                        updateOrderStatus(newStatus)
+        triggerEvent(
+            ShowUndoSnackbar(
+                message = snackMessage,
+                undoAction = { onOrderStatusChangeReverted() },
+                dismissAction = object : Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        super.onDismissed(transientBottomBar, event)
+                        if (event != DISMISS_EVENT_ACTION) {
+                            // update the order only if user has not clicked on the undo snackbar
+                            updateOrderStatus(newStatus)
+                        }
                     }
                 }
-            }
-        ))
+            )
+        )
 
         // change the order status
         val newOrderStatus = orderDetailRepository.getOrderStatus(newStatus)
@@ -366,19 +377,21 @@ class OrderDetailViewModel @Inject constructor(
                 shipmentTrackings.remove(deletedShipmentTracking)
                 _shipmentTrackings.value = shipmentTrackings
 
-                triggerEvent(ShowUndoSnackbar(
-                    message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
-                    undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
-                    dismissAction = object : Snackbar.Callback() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-                            if (event != DISMISS_EVENT_ACTION) {
-                                // delete the shipment only if user has not clicked on the undo snackbar
-                                deleteOrderShipmentTracking(deletedShipmentTracking)
+                triggerEvent(
+                    ShowUndoSnackbar(
+                        message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
+                        undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                        dismissAction = object : Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                super.onDismissed(transientBottomBar, event)
+                                if (event != DISMISS_EVENT_ACTION) {
+                                    // delete the shipment only if user has not clicked on the undo snackbar
+                                    deleteOrderShipmentTracking(deletedShipmentTracking)
+                                }
                             }
                         }
-                    }
-                ))
+                    )
+                )
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -448,9 +461,9 @@ class OrderDetailViewModel @Inject constructor(
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
             orderInfo = OrderInfo(
-                    order = order,
-                    isPaymentCollectableWithCardReader = paymentCollectibilityChecker
-                            .isCollectable(order)
+                order = order,
+                isPaymentCollectableWithCardReader = paymentCollectibilityChecker
+                    .isCollectable(order)
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(

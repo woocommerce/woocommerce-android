@@ -197,7 +197,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // GIVEN
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
 
             // WHEN
@@ -213,7 +213,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // GIVEN
             doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
 
             // WHEN
@@ -228,7 +228,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = order.copy(items = emptyList())
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -250,7 +250,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(repository).hasVirtualProductsOnly(listOf(3, 4))
             doReturn(virtualOrder).whenever(repository).getOrder(any())
-            doReturn(virtualOrder).whenever(repository).fetchOrder(any())
+            doReturn(virtualOrder).whenever(repository).fetchOrder(any(), any())
 
             doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
 
@@ -273,7 +273,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(false).whenever(repository).hasVirtualProductsOnly(listOf(1, 2))
             doReturn(mixedOrder).whenever(repository).getOrder(any())
-            doReturn(mixedOrder).whenever(repository).fetchOrder(any())
+            doReturn(mixedOrder).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -311,7 +311,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             val order = order.copy(items = items)
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
             doReturn(1).whenever(repository).getProductCountForOrder(ids)
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -330,7 +330,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Do not display product list when all products are refunded`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -364,7 +364,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Display product list when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -397,7 +397,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Hide Create shipping label button and show Products area menu when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -443,7 +443,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Show Create shipping label button and hide Products area menu when no shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -490,7 +490,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Do not display shipment tracking when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -563,7 +563,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(repository, times(1)).getOrder(ORDER_IDENTIFIER)
-        verify(repository, times(0)).fetchOrder(any())
+        verify(repository, times(0)).fetchOrder(any(), any())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
@@ -573,7 +573,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newOrderStatus = OrderStatus(CoreOrderStatus.PROCESSING.value, CoreOrderStatus.PROCESSING.value)
 
         doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
         doReturn(orderStatus).doReturn(newOrderStatus).doReturn(orderStatus).whenever(repository).getOrderStatus(any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -620,7 +620,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newOrderStatus = OrderStatus(CoreOrderStatus.PROCESSING.value, CoreOrderStatus.PROCESSING.value)
 
         doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
         doReturn(orderStatus).doReturn(newOrderStatus).whenever(repository).getOrderStatus(any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -675,7 +675,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         )
 
         doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
 
@@ -703,7 +703,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `show shipping label creation if the order is eligible`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
 
         doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
@@ -730,7 +730,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `hide shipping label creation if wcs is older than supported version`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(WooPlugin(isInstalled = true, isActive = true, version = "1.25.10")).whenever(repository)
                 .getWooServicesPluginInfo()
@@ -757,7 +757,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `hide shipping label creation if the order is not eligible`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(
                 WooPlugin(
@@ -790,7 +790,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `hide shipping label creation if wcs plugin is not installed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
 
             doReturn(
                 WooPlugin(

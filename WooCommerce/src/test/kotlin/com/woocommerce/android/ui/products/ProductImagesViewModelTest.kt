@@ -35,9 +35,9 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     private fun initialize(productImages: List<Image> = generateProductImagesList()) {
         viewModel = ProductImagesViewModel(
-                networkStatus,
-                productImagesServiceWrapper,
-                savedState(productImages)
+            networkStatus,
+            productImagesServiceWrapper,
+            savedState(productImages)
         ).apply {
             viewStateData.observeForever { _, _ -> }
         }
@@ -99,8 +99,8 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         val imageA = images.first()
 
         viewModel.onGalleryImageMoved(
-                from = images.indexOf(imageA),
-                to = images.lastIndex
+            from = images.indexOf(imageA),
+            to = images.lastIndex
         )
 
         observeState { state ->
@@ -150,8 +150,8 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
         viewModel.onGalleryImageDragStarted()
         viewModel.onGalleryImageMoved(
-                from = images.indexOf(imageToReorder),
-                to = 2
+            from = images.indexOf(imageToReorder),
+            to = 2
         )
         viewModel.onDeleteImageConfirmed(imageToRemove)
         viewModel.onValidateButtonClicked()
@@ -171,8 +171,8 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
         viewModel.onGalleryImageDragStarted()
         viewModel.onGalleryImageMoved(
-                from = images.indexOf(imageToReorder),
-                to = 2
+            from = images.indexOf(imageToReorder),
+            to = 2
         )
         viewModel.onDeleteImageConfirmed(imageToRemove)
         viewModel.onNavigateBackButtonClicked()
@@ -183,8 +183,8 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     }
 
     private fun observeState(check: (ProductImagesViewModel.ViewState) -> Unit) =
-            viewModel.viewStateData.liveData.observeForever { check(it) }
+        viewModel.viewStateData.liveData.observeForever { check(it) }
 
     private fun observeEvents(check: (Event) -> Unit) =
-            viewModel.event.observeForever { check(it) }
+        viewModel.event.observeForever { check(it) }
 }

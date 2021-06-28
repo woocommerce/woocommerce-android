@@ -330,9 +330,9 @@
     <string name="orderdetail_shipping_label_refund_title">%1$s label refund requested</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
-    <string name="orderdetail_shipping_label_reprint_customs_form">Print customs form</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Print customs form</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
-    <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
+    <string name="orderdetail_shipping_label_print">Print shipping label</string>
     <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Create shipping labels from your device!!</string>
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
@@ -504,6 +504,7 @@
     <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
+    <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_account_info"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
     <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
@@ -511,6 +512,7 @@
     <string name="shipping_label_payments_saving_dialog_title">Saving your settings</string>
     <string name="shipping_label_payments_saving_dialog_message">Please wait…</string>
     <string name="shipping_label_payments_saving_error">Error while saving your settings</string>
+    <string name="shipping_label_payment_method_added">Payment method added</string>
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the selected address and packages</string>
     <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
@@ -704,17 +706,17 @@
     <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
     <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
-    <string name="card_reader_payment_failed_retry">Try collecting payment again</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">The payment did not succeed</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
 
     <string name="card_reader_payment_description">Online payment for order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
-    <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! You can find the receipt for your payment at the following link: %s</string>
+    <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
-    <string name="card_reader_fetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+    <string name="card_reader_refetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <!--
             Card Reader Connection
         -->
@@ -727,21 +729,21 @@
     <string name="card_reader_connect_connect_button">Connect</string>
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
-    <string name="card_reader_connect_failed_header">Connecting to reader failed</string>
-    <string name="card_reader_connect_scanning_failed_hint">Want to keep looking for readers?</string>
+    <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
+    <string name="card_reader_connect_scanning_failed_header">No reader found</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
-    <string name="card_reader_connect_missing_permissions_hint">Missing required location permission</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Location is disabled</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth is disabled</string>
+    <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Open settings</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
 
     <!--
         Card Reader Detail
     -->
     <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
-    <string name="card_reader_detail_learn_more">&lt;a href="https://woocommerce.com/payments/"&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting mobile payments and ordering card readers</string>
     <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Turn mobile device bluetooth on</string>
@@ -753,9 +755,9 @@
     <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
     <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
     <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
-    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed. Please try again later</string>
+    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed</string>
     <string name="card_reader_detail_connected_update_success">Reader\’s software updated</string>
-    <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed. Please try again later</string>
+    <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed</string>
 
     <!--
         Card Reader Software update

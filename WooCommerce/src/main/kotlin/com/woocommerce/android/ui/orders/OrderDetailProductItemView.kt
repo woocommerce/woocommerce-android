@@ -47,9 +47,9 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
             GlideApp.with(context)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.ic_product)
-                    .into(binding.productInfoIcon)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_product)
+                .into(binding.productInfoIcon)
         } ?: binding.productInfoIcon.setImageResource(R.drawable.ic_product)
     }
 }

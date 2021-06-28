@@ -11,6 +11,14 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_CANCELED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
@@ -24,16 +32,21 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.CANCELLED
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.FAILED
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.STARTED
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FetchingOrderState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -51,12 +64,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.utils.AppLogWrapper
+import java.math.BigDecimal
 
-private const val DUMMY_TOTAL = "10.12"
-private const val DUMMY_ORDER_ID = 123
+private val DUMMY_TOTAL = BigDecimal(10.72)
+private const val DUMMY_ORDER_NUMBER = "123"
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -67,12 +78,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     private lateinit var viewModel: CardReaderPaymentViewModel
-    private val loggerWrapper: AppLogWrapper = mock()
-    private val orderStore: WCOrderStore = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
     private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
@@ -84,20 +95,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         viewModel = CardReaderPaymentViewModel(
             savedState,
             cardReaderManager = cardReaderManager,
-            logger = loggerWrapper,
-            orderStore = orderStore,
             orderRepository = orderRepository,
-            dispatchers = coroutinesTestRule.testDispatchers,
             resourceProvider = resourceProvider,
-            selectedSite = selectedSite
+            selectedSite = selectedSite,
+            paymentCollectibilityChecker = paymentCollectibilityChecker,
+            tracker = tracker
         )
 
-        val mockedOrder = mock<WCOrderModel>()
+        val mockedOrder = mock<Order>()
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
-        whenever(mockedOrder.billingEmail).thenReturn("test@test.test")
-        whenever(mockedOrder.id).thenReturn(DUMMY_ORDER_ID)
-        whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
+        val address = mock<Address>()
+        whenever(mockedOrder.billingAddress).thenReturn(address)
+        whenever(address.email).thenReturn("test@test.test")
+        whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
+        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(mockedOrder)
         whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
@@ -106,27 +118,41 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
         whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
+        whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
     }
 
     @Test
-    fun `given Order contains invalid total, when payment screen shown, then FailedPayment state is shown`() {
-        val mockedOrder = mock<WCOrderModel>()
-        whenever(mockedOrder.total).thenReturn("invalid big decimal")
-        whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
+    fun `given fetching order fails, when payment screen shown, then FailedPayment state is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
 
-        viewModel.start()
+            viewModel.start()
 
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
+        }
 
     @Test
-    fun `given Order not found in database, when payment screen shown, then FailedPayment state is shown`() {
-        whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(null)
+    fun `when fetching order fails, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
 
-        viewModel.start()
+            viewModel.start()
 
-        assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
+            verify(tracker).track(
+                eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
+            )
+        }
+
+    @Test
+    fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
+                .isEqualTo(R.string.order_error_fetch_generic)
+        }
 
     @Test
     fun `when payment screen shown, then loading data state is shown`() {
@@ -136,14 +162,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when payment not collectable, then flow terminated and snackbar shown`() {
+        whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.start()
+
+        assertThat((events[0] as ShowSnackbar).message)
+            .isEqualTo(R.string.card_reader_payment_order_paid_payment_cancelled)
+        assertThat(events[1]).isInstanceOf(Exit::class.java)
+    }
+
+    @Test
     fun `when flow started, then correct payment description is propagated to CardReaderManager`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val siteName = "testName"
             val expectedResult = "hooray"
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                name = siteName
-            })
-            whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_ID, siteName))
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    name = siteName
+                }
+            )
+            whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_NUMBER, siteName))
                 .thenReturn(expectedResult)
             val stringCaptor = argumentCaptor<String>()
 
@@ -214,6 +257,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when payment completed, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            viewModel.start()
+
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        }
+
+    @Test
     fun `when payment fails, then ui updated to failed state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
@@ -226,6 +281,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when payment fails, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            viewModel.start()
+
+            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), any())
+        }
+
+    @Test
     fun `given user clicks on retry, when payment fails and retryData are null, then flow restarted from scratch`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
@@ -235,6 +302,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             clearInvocations(cardReaderManager)
 
             (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
 
             verify(cardReaderManager).collectPayment(any(), any(), any(), any(), any())
         }
@@ -440,7 +508,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_retry)
+                .isEqualTo(R.string.try_again)
         }
 
     @Test
@@ -526,6 +594,40 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when user clicks on print receipt button, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(RECEIPT_PRINT_TAPPED)
+        }
+
+    @Test
+    fun `when OS accepts the print request, then print success event tracked`() {
+        viewModel.onPrintResult(STARTED)
+
+        verify(tracker).track(RECEIPT_PRINT_SUCCESS)
+    }
+
+    @Test
+    fun `when OS refuses the print request, then print failed event tracked`() {
+        viewModel.onPrintResult(FAILED)
+
+        verify(tracker).track(RECEIPT_PRINT_FAILED)
+    }
+
+    @Test
+    fun `when manually cancels the print request, then print cancelled event tracked`() {
+        viewModel.onPrintResult(CANCELLED)
+
+        verify(tracker).track(RECEIPT_PRINT_CANCELED)
+    }
+
+    @Test
     fun `when user clicks on send receipt button, then SendReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
@@ -539,20 +641,41 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back button, when re-fetching order, then FetchingOrderState shown`() =
+    fun `when user clicks on send receipt button, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).track(RECEIPT_EMAIL_TAPPED)
+        }
+
+    @Test
+    fun `when email activity not found, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            viewModel.onEmailActivityNotFound()
+
+            verify(tracker).track(RECEIPT_EMAIL_FAILED)
+        }
+
+    @Test
+    fun `given user presses back button, when re-fetching order, then ReFetchingOrderState shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
 
             viewModel.onBackPressed()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(FetchingOrderState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReFetchingOrderState::class.java)
         }
 
     @Test
-    fun `given user presses back, when already showing FetchingOrderState, then snackbar shown and screen dismissed`() =
+    fun `given user presses back, when already in ReFetchingOrderState, then snackbar shown and screen dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
-            viewModel.onBackPressed() // shows FetchingOrderState screen
+            viewModel.onBackPressed() // shows ReFetchingOrderState screen
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -565,10 +688,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back, when already showing FetchingOrderState, then correct snackbar message shown`() =
+    fun `given user presses back, when already showing ReFetchingOrderState, then correct snackbar message shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
-            viewModel.onBackPressed() // shows FetchingOrderState screen
+            viewModel.onBackPressed() // shows ReFetchingOrderState screen
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -577,7 +700,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onBackPressed()
 
             assertThat((events[0] as ShowSnackbar).message)
-                .isEqualTo(R.string.card_reader_fetching_order_failed)
+                .isEqualTo(R.string.card_reader_refetching_order_failed)
         }
 
     @Test
@@ -601,10 +724,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given FetchingOrderState shown, when re-fetching order completes, then screen auto-dismissed`() =
+    fun `given ReFetchingOrderState shown, when re-fetching order completes, then screen auto-dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
-            viewModel.onBackPressed() // show FetchingOrderState screen
+            viewModel.onBackPressed() // show ReFetchingOrderState screen
 
             viewModel.reFetchOrder()
 
@@ -612,7 +735,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given FetchingOrderState not shown, when re-fetching order completes, then screen not auto-dismissed`() =
+    fun `given ReFetchingOrderState not shown, when re-fetching order completes, then screen not auto-dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
 
@@ -624,7 +747,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when re-fetching order fails, then SnackBar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(any())).thenReturn(null)
+            whenever(orderRepository.fetchOrder(any(), any())).thenReturn(null)
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -638,6 +761,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private fun simulateFetchOrderJobState(inProgress: Boolean) {
         val job = mock<Job>()
         whenever(job.isActive).thenReturn(inProgress)
-        viewModel.fetchOrderJob = job
+        viewModel.refetchOrderJob = job
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+<!--
+    For use with AnimatedVectorDrawables. Note that this has to be applied at either the Vector
+    level of the Path level, since Groups don't support alpha.
+-->
+    <objectAnimator
+        android:duration="@android:integer/config_longAnimTime"
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:propertyName="fillAlpha"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"
+        android:valueFrom="0"
+        android:valueTo="1"
+        android:valueType="floatType" />
+
+</set>

@@ -45,7 +45,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
 
     override fun getFragmentTitle(): String {
         return if (navArgs.isReprint) {
-            getString(R.string.orderdetail_shipping_label_reprint)
+            getString(R.string.orderdetail_shipping_label_print)
         } else {
             getString(R.string.shipping_label_print_screen_title)
         }
@@ -91,14 +91,17 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
             new.tempFile?.takeIfNotEqualTo(old?.tempFile) { openShippingLabelPreview(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> displayError(event.message)
-                is OrderNavigationTarget -> navigator.navigate(this, event)
-                is ExitWithResult<*> -> navigateBackAndNotifyOrderDetails()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> displayError(event.message)
+                    is OrderNavigationTarget -> navigator.navigate(this, event)
+                    is ExitWithResult<*> -> navigateBackAndNotifyOrderDetails()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun setupResultHandlers(viewModel: PrintShippingLabelViewModel) {

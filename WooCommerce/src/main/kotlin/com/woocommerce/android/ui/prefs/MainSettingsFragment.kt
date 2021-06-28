@@ -91,13 +91,14 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             val settingsFooterText = getString(R.string.settings_footer, hiringText)
             val spannable = SpannableString(settingsFooterText)
             spannable.setSpan(
-                    WooClickableSpan {
-                        AnalyticsTracker.track(SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED)
-                        ChromeCustomTabUtils.launchUrl(context, AppUrls.AUTOMATTIC_HIRING)
-                    },
-                    (settingsFooterText.length - hiringText.length),
-                    settingsFooterText.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                WooClickableSpan {
+                    AnalyticsTracker.track(SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED)
+                    ChromeCustomTabUtils.launchUrl(context, AppUrls.AUTOMATTIC_HIRING)
+                },
+                (settingsFooterText.length - hiringText.length),
+                settingsFooterText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
 
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
@@ -107,8 +108,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionImageOptimization.isChecked = AppPrefs.getImageOptimizationEnabled()
         binding.optionImageOptimization.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
-                    SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
-                    mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
+                SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
+                mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
             )
             AppPrefs.setImageOptimizationEnabled(isChecked)
         }
@@ -116,7 +117,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         updateStoreSettings()
         binding.optionCardReader.setOnClickListener {
             // TODO cardreader Add tracking
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderSettingsFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderDetailFragment)
         }
 
         binding.optionHelpAndSupport.setOnClickListener {
@@ -255,10 +256,12 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
      */
     private fun trackSettingToggled(keyName: String, newValue: Boolean) {
         AnalyticsTracker.track(
-                SETTING_CHANGE, mapOf(
+            SETTING_CHANGE,
+            mapOf(
                 AnalyticsTracker.KEY_NAME to keyName,
                 AnalyticsTracker.KEY_FROM to !newValue,
-                AnalyticsTracker.KEY_TO to newValue)
+                AnalyticsTracker.KEY_TO to newValue
+            )
         )
     }
 
@@ -266,13 +269,13 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         val currentTheme = AppPrefs.getAppTheme()
         val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
         MaterialAlertDialogBuilder(requireActivity())
-                .setTitle(getString(R.string.settings_app_theme_title))
-                .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
-                    val selectedTheme = ThemeOption.values()[which]
-                    AppThemeUtils.setAppTheme(selectedTheme)
-                    binding.optionTheme.optionValue = getString(selectedTheme.label)
-                    dialog.dismiss()
-                }
-                .show()
+            .setTitle(getString(R.string.settings_app_theme_title))
+            .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
+                val selectedTheme = ThemeOption.values()[which]
+                AppThemeUtils.setAppTheme(selectedTheme)
+                binding.optionTheme.optionValue = getString(selectedTheme.label)
+                dialog.dismiss()
+            }
+            .show()
     }
 }
