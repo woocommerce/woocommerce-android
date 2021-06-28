@@ -68,7 +68,8 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         )
     }
 
-    private fun observeViewState(binding: FragmentCardReaderDetailBinding) {    viewModel.viewStateData.observe(
+    private fun observeViewState(binding: FragmentCardReaderDetailBinding) {
+        viewModel.viewStateData.observe(
             viewLifecycleOwner,
             { state ->
                 makeStateVisible(binding, state)
@@ -115,7 +116,8 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     }
                 }.exhaustive
             }
-        )}
+        )
+    }
 
     private fun initResultHandlers() {
         handleResult<UpdateResult>(CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT) {

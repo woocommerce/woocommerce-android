@@ -372,7 +372,7 @@ class ProductDetailViewModel @Inject constructor(
                 variationRepository.createEmptyVariation(draft)
                     ?.let {
                         productRepository.fetchProduct(draft.remoteId)
-                                ?.also { updateProductState(productToUpdateFrom = it) }
+                            ?.also { updateProductState(productToUpdateFrom = it) }
                         triggerEvent(ExitProductAttributeList(variationCreated = true))
                     } ?: triggerEvent(ExitProductAttributeList())
             }.also {
@@ -2011,24 +2011,29 @@ class ProductDetailViewModel @Inject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
+
         class ExitProductAttributeList(
             shouldShowDiscardDialog: Boolean = true,
             val variationCreated: Boolean = false
         ) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
     }
 
     object RefreshMenu : Event()
+
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.

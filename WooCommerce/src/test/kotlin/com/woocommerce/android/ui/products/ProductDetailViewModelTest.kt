@@ -611,34 +611,34 @@ class ProductDetailViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `When generating a variation, the latest Product should be fetched from the site`() =
-            coroutinesTestRule.testDispatcher.runBlockingTest {
-        // Given
-        doReturn(product).whenever(productRepository).getProduct(any())
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            doReturn(product).whenever(productRepository).getProduct(any())
 
-        var productData: ProductDetailViewState? = null
-        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+            var productData: ProductDetailViewState? = null
+            viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        viewModel.start()
+            viewModel.start()
 
-        clearInvocations(productRepository)
+            clearInvocations(productRepository)
 
-        // Precondition
-        assertThat(productData?.productDraft?.numVariations).isZero
+            // Precondition
+            assertThat(productData?.productDraft?.numVariations).isZero
 
-        doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
-        doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))
+            doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
+            doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))
 
-        // When
-        viewModel.onAttributeListDoneButtonClicked()
+            // When
+            viewModel.onAttributeListDoneButtonClicked()
 
-        // Then
-        verify(variationRepository, times(1)).createEmptyVariation(eq(product))
-        // Prove that we fetched from the API.
-        verify(productRepository, times(1)).fetchProduct(eq(product.remoteId))
+            // Then
+            verify(variationRepository, times(1)).createEmptyVariation(eq(product))
+            // Prove that we fetched from the API.
+            verify(productRepository, times(1)).fetchProduct(eq(product.remoteId))
 
-        // The VM state should have been updated with the _fetched_ product's numVariations
-        assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
-    }
+            // The VM state should have been updated with the _fetched_ product's numVariations
+            assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
+        }
 
     private val productsDraft
         get() = viewModel.productDetailViewStateData.liveData.value?.productDraft
