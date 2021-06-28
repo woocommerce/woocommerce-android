@@ -1,0 +1,2 @@
+6.9 :
+L’accès aux attributs sur un produit variable est plus rapide. Ils sont répertoriés directement dans les détails du produit ! On dit qu’une image vaut mille mots, nous avons donc actualisé certaines illustrations dans l’application. Nous avons également corrigé quelques bogues et rendu les choses un peu plus fluides. Nous espérons que vous le remarquerez !
