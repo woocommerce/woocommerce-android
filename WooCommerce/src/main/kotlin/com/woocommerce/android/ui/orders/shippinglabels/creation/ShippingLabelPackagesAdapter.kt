@@ -28,6 +28,10 @@ class ShippingLabelPackagesAdapter(
             diff.dispatchUpdatesTo(this)
         }
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShippingLabelPackageViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ShippingLabelPackageViewHolder(
@@ -37,17 +41,10 @@ class ShippingLabelPackagesAdapter(
 
     override fun getItemCount() = shippingLabelPackages.count()
 
+    override fun getItemId(position: Int): Long = shippingLabelPackages[position].packageId.hashCode().toLong()
+
     override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int) {
         holder.bind(position)
-    }
-
-    override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int, payloads: MutableList<Any>) {
-        if (payloads.size == 1 && payloads[0] == ChangePayload.Weight) {
-            // If the only change is weight, avoid updating the view, as it already has the last changes
-            return
-        } else {
-            onBindViewHolder(holder, position)
-        }
     }
 
     inner class ShippingLabelPackageViewHolder(
@@ -100,7 +97,7 @@ class ShippingLabelPackagesAdapter(
             (binding.itemsList.adapter as PackageProductsAdapter).items = shippingLabelPackage.adaptItemsForUi()
             binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
             if (!shippingLabelPackage.weight.isNaN()) {
-                binding.weightEditText.setText(shippingLabelPackage.weight.toString())
+                binding.weightEditText.setTextIfDifferent(shippingLabelPackage.weight.toString())
             }
         }
 
@@ -130,19 +127,6 @@ class ShippingLabelPackagesAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition] == newList[newItemPosition]
         }
-
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            return if (oldList[oldItemPosition].items == newList[newItemPosition].items &&
-                oldList[oldItemPosition].selectedPackage == newList[newItemPosition].selectedPackage
-            ) {
-                ChangePayload.Weight
-            } else null
-        }
-    }
-
-    // TODO We will the ExpansionState to animate collapsing expanding later
-    enum class ChangePayload {
-        Weight, ExpansionState
     }
 }
 

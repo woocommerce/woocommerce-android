@@ -8,6 +8,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPackagesBinding
@@ -84,6 +85,10 @@ class EditShippingLabelPackagesFragment :
         with(binding.packagesList) {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = packagesAdapter
+            itemAnimator = DefaultItemAnimator().apply {
+                // Disable change animations to avoid duplicating viewholders
+                supportsChangeAnimations = false
+            }
         }
 
         setupObservers(binding)
