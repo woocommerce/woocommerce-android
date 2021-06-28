@@ -26,32 +26,21 @@ import javax.inject.Singleton
 class CardReaderModule {
     @Provides
     @Singleton
-    fun provideCardReaderManager(): CardReaderManager = object : CardReaderManager {
-        override val isInitialized: Boolean = false
-        override val readerStatus: StateFlow<CardReaderStatus> = MutableStateFlow(NotConnected)
+    fun provideCardReaderManager(
+        selectedSite: SelectedSite,
+        payStore: WCPayStore,
+        responseMapper: CapturePaymentResponseMapper
+    ): CardReaderManager {
+        return CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
+            override suspend fun getConnectionToken(): String {
+                val result = payStore.fetchConnectionToken(selectedSite.get())
+                return result.model?.token.orEmpty()
+            }
 
-        override fun initialize(app: Application) {}
-
-        override fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> = flow {}
-
-        override suspend fun connectToReader(cardReader: CardReader): Boolean = false
-        override suspend fun disconnectReader(): Boolean = false
-
-        override suspend fun collectPayment(
-            paymentDescription: String,
-            orderId: Long,
-            amount: BigDecimal,
-            currency: String,
-            customerEmail: String?
-        ): Flow<CardPaymentStatus> = flow {}
-
-        override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
-            flow {}
-
-        override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = flow {}
-
-        override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> = flow {}
-
-        override suspend fun clearCachedCredentials() {}
+            override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse {
+                val response = payStore.capturePayment(selectedSite.get(), paymentId, orderId)
+                return responseMapper.mapResponse(response)
+            }
+        })
     }
 }
