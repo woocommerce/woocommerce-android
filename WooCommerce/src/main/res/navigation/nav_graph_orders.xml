@@ -401,6 +401,9 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_editShippingLabelPackagesFragment_to_moveShippingItemDialog"
+            app:destination="@id/moveShippingItemDialog" />
     </fragment>
     <fragment
         android:id="@+id/shippingPackageSelectorFragment"
@@ -478,6 +481,11 @@
             android:name="customsPackages"
             app:argType="com.woocommerce.android.model.CustomsPackage[]" />
     </fragment>
+    <dialog
+        android:id="@+id/moveShippingItemDialog"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemDialog"
+        android:label="MoveShippingItemDialog"
+        tools:layout="@layout/dialog_move_shipping_item"/>
     <action
         android:id="@+id/action_global_addOrderShipmentTrackingFragment"
         app:destination="@id/addOrderShipmentTrackingFragment"
