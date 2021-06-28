@@ -109,7 +109,8 @@ class VariationDetailRepository @Inject constructor(
     fun onVariationChanged(event: OnVariationChanged) {
         if (event.causeOfChange == FETCH_SINGLE_VARIATION &&
             event.remoteProductId == remoteProductId &&
-            event.remoteVariationId == remoteVariationId) {
+            event.remoteVariationId == remoteVariationId
+        ) {
             if (continuationFetchVariation.isWaiting) {
                 if (event.isError) {
                     lastFetchVariationErrorType = event.error?.type
@@ -130,11 +131,12 @@ class VariationDetailRepository @Inject constructor(
         if (event.causeOfChange == UPDATED_VARIATION) {
             if (event.isError) {
                 AnalyticsTracker.track(
-                    PRODUCT_VARIATION_UPDATE_ERROR, mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                )
+                    PRODUCT_VARIATION_UPDATE_ERROR,
+                    mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
                 )
                 lastUpdateVariationErrorType = event.error?.type
                 continuationUpdateVariation.continueWith(false)

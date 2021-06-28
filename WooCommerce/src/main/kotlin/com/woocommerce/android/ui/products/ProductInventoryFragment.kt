@@ -23,7 +23,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_product_inventory),
+class ProductInventoryFragment :
+    BaseProductEditorFragment(R.layout.fragment_product_inventory),
     ProductItemSelectorDialogListener {
     private val viewModel: ProductInventoryViewModel by viewModels()
 
@@ -121,15 +122,18 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                 binding.soldIndividuallySwitch.isChecked = it
             }
 
-            viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> navigateBackWithResult(KEY_INVENTORY_DIALOG_RESULT, event.data)
-                    is Exit -> findNavController().navigateUp()
-                    is ShowDialog -> event.showDialog()
-                    else -> event.isHandled = false
+            viewModel.event.observe(
+                viewLifecycleOwner,
+                Observer { event ->
+                    when (event) {
+                        is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                        is ExitWithResult<*> -> navigateBackWithResult(KEY_INVENTORY_DIALOG_RESULT, event.data)
+                        is Exit -> findNavController().navigateUp()
+                        is ShowDialog -> event.showDialog()
+                        else -> event.isHandled = false
+                    }
                 }
-            })
+            )
         }
     }
 

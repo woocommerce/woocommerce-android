@@ -48,7 +48,8 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditShippingLabelAddressFragment : BaseFragment(R.layout.fragment_edit_shipping_label_address),
+class EditShippingLabelAddressFragment :
+    BaseFragment(R.layout.fragment_edit_shipping_label_address),
     BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
@@ -224,47 +225,50 @@ class EditShippingLabelAddressFragment : BaseFragment(R.layout.fragment_edit_shi
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(EDIT_ADDRESS_RESULT, event.data)
-                is Exit -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
-                is ShowSuggestedAddress -> {
-                    val action = EditShippingLabelAddressFragmentDirections
-                        .actionEditShippingLabelAddressFragmentToShippingLabelAddressSuggestionFragment(
-                            event.originalAddress,
-                            event.suggestedAddress,
-                            event.type
-                        )
-                    findNavController().navigateSafely(action)
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> navigateBackWithResult(EDIT_ADDRESS_RESULT, event.data)
+                    is Exit -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
+                    is ShowSuggestedAddress -> {
+                        val action = EditShippingLabelAddressFragmentDirections
+                            .actionEditShippingLabelAddressFragmentToShippingLabelAddressSuggestionFragment(
+                                event.originalAddress,
+                                event.suggestedAddress,
+                                event.type
+                            )
+                        findNavController().navigateSafely(action)
+                    }
+                    is ShowCountrySelector -> {
+                        val action = EditShippingLabelAddressFragmentDirections
+                            .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
+                                event.currentCountry,
+                                event.locations.map { it.name }.toTypedArray(),
+                                event.locations.map { it.code }.toTypedArray(),
+                                SELECT_COUNTRY_REQUEST,
+                                getString(R.string.shipping_label_edit_address_country)
+                            )
+                        findNavController().navigateSafely(action)
+                    }
+                    is ShowStateSelector -> {
+                        val action = EditShippingLabelAddressFragmentDirections
+                            .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
+                                event.currentState,
+                                event.locations.map { it.name }.toTypedArray(),
+                                event.locations.map { it.code }.toTypedArray(),
+                                SELECT_STATE_REQUEST,
+                                getString(R.string.shipping_label_edit_address_state)
+                            )
+                        findNavController().navigateSafely(action)
+                    }
+                    is OpenMapWithAddress -> launchMapsWithAddress(event.address)
+                    is DialPhoneNumber -> dialPhoneNumber(event.phoneNumber)
+                    else -> event.isHandled = false
                 }
-                is ShowCountrySelector -> {
-                    val action = EditShippingLabelAddressFragmentDirections
-                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
-                            event.currentCountry,
-                            event.locations.map { it.name }.toTypedArray(),
-                            event.locations.map { it.code }.toTypedArray(),
-                            SELECT_COUNTRY_REQUEST,
-                            getString(R.string.shipping_label_edit_address_country)
-                        )
-                    findNavController().navigateSafely(action)
-                }
-                is ShowStateSelector -> {
-                    val action = EditShippingLabelAddressFragmentDirections
-                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
-                            event.currentState,
-                            event.locations.map { it.name }.toTypedArray(),
-                            event.locations.map { it.code }.toTypedArray(),
-                            SELECT_STATE_REQUEST,
-                            getString(R.string.shipping_label_edit_address_state)
-                        )
-                    findNavController().navigateSafely(action)
-                }
-                is OpenMapWithAddress -> launchMapsWithAddress(event.address)
-                is DialPhoneNumber -> dialPhoneNumber(event.phoneNumber)
-                else -> event.isHandled = false
             }
-        })
+        )
     }
 
     private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int?) {

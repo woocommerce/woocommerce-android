@@ -127,9 +127,9 @@ object ProductImagesUtils {
         val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return try {
             File.createTempFile(
-                    "JPEG_${timeStamp}_",
-                    ".jpg",
-                    storageDir
+                "JPEG_${timeStamp}_",
+                ".jpg",
+                storageDir
             )
         } catch (ex: IOException) {
             WooLog.e(T.MEDIA, ex)
@@ -138,7 +138,7 @@ object ProductImagesUtils {
     }
 
     private fun hasCamera(context: Context): Boolean =
-            context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 
     /**
      * Create an intent for capturing a device photo
@@ -155,9 +155,9 @@ object ProductImagesUtils {
                     // capturedPhotoPath = file.absolutePath
                     val authority = context.applicationContext.packageName + ".provider"
                     val imageUri = FileProvider.getUriForFile(
-                            context,
-                            authority,
-                            file
+                        context,
+                        authority,
+                        file
                     )
                     intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri)
                     return intent

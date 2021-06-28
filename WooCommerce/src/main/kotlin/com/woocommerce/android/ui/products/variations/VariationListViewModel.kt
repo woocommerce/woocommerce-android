@@ -154,9 +154,9 @@ class VariationListViewModel @Inject constructor(
     }
 
     private suspend fun Product.createVariation() =
-            variationRepository.createEmptyVariation(this)
-                ?.copy(remoteProductId = remoteId)
-                ?.apply { syncProductToVariations(remoteId) }
+        variationRepository.createEmptyVariation(this)
+            ?.copy(remoteProductId = remoteId)
+            ?.apply { syncProductToVariations(remoteId) }
 
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)

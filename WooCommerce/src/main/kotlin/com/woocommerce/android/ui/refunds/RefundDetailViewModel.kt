@@ -91,10 +91,10 @@ class RefundDetailViewModel @Inject constructor(
 
             val (subtotal, taxes) = items.calculateTotals()
             viewState = viewState.copy(
-                    currency = order.currency,
-                    areItemsVisible = true,
-                    subtotal = formatCurrency(subtotal),
-                    taxes = formatCurrency(taxes)
+                currency = order.currency,
+                areItemsVisible = true,
+                subtotal = formatCurrency(subtotal),
+                taxes = formatCurrency(taxes)
             )
 
             _refundItems.value = items
@@ -103,20 +103,22 @@ class RefundDetailViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(
-                screenTitle = "${resourceProvider.getString(R.string.order_refunds_refund)} #${refund.id}",
-                refundAmount = formatCurrency(refund.amount),
-                refundMethod = resourceProvider.getString(
-                        R.string.order_refunds_refunded_via,
-                        getRefundMethod(order, refund)),
-                refundReason = refund.reason,
-                areDetailsVisible = true
+            screenTitle = "${resourceProvider.getString(R.string.order_refunds_refund)} #${refund.id}",
+            refundAmount = formatCurrency(refund.amount),
+            refundMethod = resourceProvider.getString(
+                R.string.order_refunds_refunded_via,
+                getRefundMethod(order, refund)
+            ),
+            refundReason = refund.reason,
+            areDetailsVisible = true
         )
     }
 
     private fun getRefundMethod(order: Order, refund: Refund): String {
         val manualRefund = resourceProvider.getString(R.string.order_refunds_manual_refund)
         return if (order.paymentMethodTitle.isNotBlank() &&
-                (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)) {
+            (refund.automaticGatewayRefund || order.paymentMethod.isCashPayment)
+        ) {
             order.paymentMethodTitle
         } else if (order.paymentMethodTitle.isNotBlank()) {
             "$manualRefund - ${order.paymentMethodTitle}"

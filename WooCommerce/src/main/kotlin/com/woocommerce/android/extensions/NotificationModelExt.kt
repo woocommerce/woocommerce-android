@@ -85,11 +85,11 @@ fun NotificationModel.getReviewDetail(): NotificationReviewDetail? {
     }
 
     return NotificationReviewDetail(
-            getMessageDetail(),
-            getConvertedTimestamp(),
-            getRating(),
-            getUserInfo(),
-            getProductInfo()
+        getMessageDetail(),
+        getConvertedTimestamp(),
+        getRating(),
+        getUserInfo(),
+        getProductInfo()
     )
 }
 
@@ -162,7 +162,7 @@ fun NotificationModel.buildComment(): CommentModel {
  * If true, user can approve or un-approve this notification.
  */
 fun NotificationModel.canModerate() = NotificationHelper
-        .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
+    .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_APPROVE) ?: false
 
 /**
  * If the notification has been approved, return true, else false
@@ -181,7 +181,7 @@ fun NotificationModel.isApproved(): Boolean {
  * If true, user can mark this notification as spam.
  */
 fun NotificationModel.canMarkAsSpam() = NotificationHelper
-        .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_SPAM) ?: false
+    .getCommentBlockFromBody(this)?.actions?.containsKey(ReviewActionKeys.ACTION_KEY_SPAM) ?: false
 
 /**
  * There is an action option for trash, but in the interest of consistent notification UX

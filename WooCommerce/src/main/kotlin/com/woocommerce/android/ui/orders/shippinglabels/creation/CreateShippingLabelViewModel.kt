@@ -376,11 +376,11 @@ class CreateShippingLabelViewModel @Inject constructor(
 
         fun StepsState.getOrderSummary(): OrderSummaryState {
             val isVisible = originAddressStep.status == DONE &&
-                    shippingAddressStep.status == DONE &&
-                    packagingStep.status == DONE &&
-                    (!customsStep.isVisible || customsStep.status == DONE) &&
-                    carrierStep.status == DONE &&
-                    paymentsStep.status == DONE
+                shippingAddressStep.status == DONE &&
+                packagingStep.status == DONE &&
+                (!customsStep.isVisible || customsStep.status == DONE) &&
+                carrierStep.status == DONE &&
+                paymentsStep.status == DONE
             if (!isVisible) return OrderSummaryState()
 
             AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to VALUE_PURCHASE_READY))

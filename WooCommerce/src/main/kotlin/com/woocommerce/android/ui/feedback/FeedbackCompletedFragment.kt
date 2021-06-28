@@ -67,10 +67,11 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment(R.layout.fragme
     private fun trackSurveyCompletedScreenAnalytics() {
         AnalyticsTracker.trackViewShown(this)
         AnalyticsTracker.track(
-            SURVEY_SCREEN, mapOf(
-            KEY_FEEDBACK_CONTEXT to feedbackContext,
-            KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_COMPLETED
-        )
+            SURVEY_SCREEN,
+            mapOf(
+                KEY_FEEDBACK_CONTEXT to feedbackContext,
+                KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_COMPLETED
+            )
         )
     }
 }

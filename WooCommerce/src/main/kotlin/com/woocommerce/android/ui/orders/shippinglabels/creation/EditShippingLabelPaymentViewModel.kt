@@ -84,7 +84,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
                 viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
 
             val requiresSaving = selectedPaymentMethod.id != viewState.currentAccountSettings?.selectedPaymentId ||
-                    viewState.emailReceipts != viewState.emailReceipts
+                viewState.emailReceipts != viewState.emailReceipts
 
             if (requiresSaving) {
                 viewState = viewState.copy(showSavingProgressDialog = true)
@@ -118,7 +118,8 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
             val countOfCurrentPaymentMethods = viewState.paymentMethods.size
             loadPaymentMethods(forceRefresh = true)
             if (viewState.dataLoadState == Success &&
-                    viewState.paymentMethods.size == countOfCurrentPaymentMethods + 1) {
+                viewState.paymentMethods.size == countOfCurrentPaymentMethods + 1
+            ) {
                 triggerEvent(ShowSnackbar(R.string.shipping_label_payment_method_added))
             }
         }

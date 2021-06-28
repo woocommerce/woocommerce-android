@@ -165,10 +165,12 @@ class MyStorePresenterTest {
         presenter.takeView(myStoreView)
 
         // Simulate onOrderChanged event: FETCH-ORDERS w/error - My Store TAB should ignore
-        presenter.onOrderChanged(OnOrderChanged(0).apply {
-            causeOfChange = FETCH_ORDERS
-            error = OrderError()
-        })
+        presenter.onOrderChanged(
+            OnOrderChanged(0).apply {
+                causeOfChange = FETCH_ORDERS
+                error = OrderError()
+            }
+        )
         verify(myStoreView, times(0)).refreshMyStoreStats(forced = any())
     }
 

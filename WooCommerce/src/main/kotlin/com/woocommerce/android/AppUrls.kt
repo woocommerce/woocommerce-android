@@ -18,9 +18,9 @@ object AppUrls {
     const val URL_LEARN_MORE_ORDERS = "https://woocommerce.com/blog/"
 
     const val JETPACK_INSTRUCTIONS =
-            "https://docs.woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app/"
+        "https://docs.woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app/"
     const val JETPACK_TROUBLESHOOTING =
-            "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
+        "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
 
     const val CROWDSIGNAL_MAIN_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-user-survey"
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
@@ -34,4 +34,5 @@ object AppUrls {
         "https://docs.woocommerce.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-29"
 
     const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
+    const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS = "https://woocommerce.com/payments/"
 }

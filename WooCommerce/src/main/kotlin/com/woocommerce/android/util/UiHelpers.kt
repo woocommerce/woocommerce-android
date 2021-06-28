@@ -22,24 +22,24 @@ import org.wordpress.android.util.DisplayUtils
 
 object UiHelpers {
     fun getPxOfUiDimen(context: Context, uiDimen: UiDimen): Int =
-            when (uiDimen) {
-                is UiDimenRes -> context.resources.getDimensionPixelSize(uiDimen.dimenRes)
-                is UiDimenDPInt -> DisplayUtils.dpToPx(context, uiDimen.dimensionDP)
-            }
+        when (uiDimen) {
+            is UiDimenRes -> context.resources.getDimensionPixelSize(uiDimen.dimenRes)
+            is UiDimenDPInt -> DisplayUtils.dpToPx(context, uiDimen.dimensionDP)
+        }
 
     fun getTextOfUiString(context: Context, uiString: UiString): String =
-            when (uiString) {
-                is UiStringText -> uiString.text
-                is UiStringRes -> context.getString(
-                    uiString.stringRes,
-                    *uiString.params.map { value ->
-                        getTextOfUiString(
-                            context,
-                            value
-                        )
-                    }.toTypedArray()
-                )
-            }
+        when (uiString) {
+            is UiStringText -> uiString.text
+            is UiStringRes -> context.getString(
+                uiString.stringRes,
+                *uiString.params.map { value ->
+                    getTextOfUiString(
+                        context,
+                        value
+                    )
+                }.toTypedArray()
+            )
+        }
 
     fun updateVisibility(view: View, visible: Boolean, setInvisible: Boolean = false) {
         view.visibility = if (visible) {

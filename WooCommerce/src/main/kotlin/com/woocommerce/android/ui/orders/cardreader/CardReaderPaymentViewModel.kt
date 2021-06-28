@@ -65,7 +65,6 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 
 @HiltViewModel
 class CardReaderPaymentViewModel
-@Suppress("LongParameterList")
 @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
@@ -141,6 +140,7 @@ class CardReaderPaymentViewModel
         }
     }
 
+    @Suppress("LongParameterList")
     private suspend fun collectPaymentFlow(
         cardReaderManager: CardReaderManager,
         paymentDescription: String,
@@ -196,12 +196,14 @@ class CardReaderPaymentViewModel
         orderId: Long,
         amountLabel: String
     ) {
-        viewState.postValue(PaymentSuccessfulState(
-            amountLabel,
-            // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-            { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
-            { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
-        ))
+        viewState.postValue(
+            PaymentSuccessfulState(
+                amountLabel,
+                // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
+                { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
+                { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
+            )
+        )
         reFetchOrder()
     }
 
@@ -302,7 +304,6 @@ class CardReaderPaymentViewModel
         }
     }
 
-    @Suppress("LongParameterList")
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
         @StringRes val headerLabel: Int? = null,
@@ -334,7 +335,7 @@ class CardReaderPaymentViewModel
             headerLabel = R.string.card_reader_payment_payment_failed_header,
             paymentStateLabel = errorType.message,
             paymentStateLabelTopMargin = R.dimen.major_100,
-            primaryActionLabel = R.string.card_reader_payment_failed_retry,
+            primaryActionLabel = R.string.try_again,
             // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
         )

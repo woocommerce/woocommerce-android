@@ -27,17 +27,19 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
 
     fun collectPayment(paymentIntent: PaymentIntent): Flow<CollectPaymentStatus> {
         return callbackFlow {
-            terminal.collectPaymentMethod(paymentIntent, object : ReaderDisplayListener {
-                override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
-                    logWrapper.d("CardReader", message.toString())
-                    this@callbackFlow.sendBlocking(DisplayMessageRequested(message))
-                }
+            terminal.collectPaymentMethod(
+                paymentIntent,
+                object : ReaderDisplayListener {
+                    override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
+                        logWrapper.d("CardReader", message.toString())
+                        this@callbackFlow.sendBlocking(DisplayMessageRequested(message))
+                    }
 
-                override fun onRequestReaderInput(options: ReaderInputOptions) {
-                    logWrapper.d("CardReader", "Waiting for input: $options")
-                    this@callbackFlow.sendBlocking(ReaderInputRequested(options))
-                }
-            },
+                    override fun onRequestReaderInput(options: ReaderInputOptions) {
+                        logWrapper.d("CardReader", "Waiting for input: $options")
+                        this@callbackFlow.sendBlocking(ReaderInputRequested(options))
+                    }
+                },
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         logWrapper.d("CardReader", "Payment collected")
@@ -50,7 +52,8 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                         this@callbackFlow.sendBlocking(Failure(exception))
                         this@callbackFlow.close()
                     }
-                })
+                }
+            )
             // TODO cardreader implement timeout
             awaitClose()
         }

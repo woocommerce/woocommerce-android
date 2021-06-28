@@ -28,11 +28,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_downloads_list) {
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
-                dragDirs = UP or DOWN,
-                onMove = { from, to ->
-                    viewModel.swapDownloadableFiles(from, to)
-                    updateFilesFromProductDraft()
-                }
+            dragDirs = UP or DOWN,
+            onMove = { from, to ->
+                viewModel.swapDownloadableFiles(from, to)
+                updateFilesFromProductDraft()
+            }
         )
     }
 

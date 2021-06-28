@@ -51,15 +51,18 @@ internal class ConnectionManager(
 
     suspend fun connectToReader(cardReader: CardReader) = suspendCoroutine<Boolean> { continuation ->
         (cardReader as CardReaderImpl).let {
-            terminal.connectToReader(it.cardReader, object : ReaderCallback {
-                override fun onFailure(e: TerminalException) {
-                    continuation.resume(false)
-                }
+            terminal.connectToReader(
+                it.cardReader,
+                object : ReaderCallback {
+                    override fun onFailure(e: TerminalException) {
+                        continuation.resume(false)
+                    }
 
-                override fun onSuccess(reader: Reader) {
-                    continuation.resume(true)
+                    override fun onSuccess(reader: Reader) {
+                        continuation.resume(true)
+                    }
                 }
-            })
+            )
         }
     }
 

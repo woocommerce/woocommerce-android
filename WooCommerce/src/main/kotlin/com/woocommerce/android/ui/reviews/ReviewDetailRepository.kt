@@ -105,10 +105,11 @@ class ReviewDetailRepository @Inject constructor(
                     dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
 
                     AnalyticsTracker.track(
-                        Stat.REVIEW_MARK_READ, mapOf(
-                        AnalyticsTracker.KEY_ID to remoteReviewId,
-                        AnalyticsTracker.KEY_NOTE_ID to notification.remoteNoteId
-                    )
+                        Stat.REVIEW_MARK_READ,
+                        mapOf(
+                            AnalyticsTracker.KEY_ID to remoteReviewId,
+                            AnalyticsTracker.KEY_NOTE_ID to notification.remoteNoteId
+                        )
                     )
                 }
             } catch (e: CancellationException) {
@@ -159,16 +160,18 @@ class ReviewDetailRepository @Inject constructor(
             if (continuationReview.isWaiting) {
                 if (event.isError) {
                     AnalyticsTracker.track(
-                        Stat.REVIEW_LOAD_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                    )
+                        Stat.REVIEW_LOAD_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                        )
                     )
 
                     WooLog.e(
-                        REVIEWS, "Error fetching product review: " +
-                        "${event.error?.type} - ${event.error?.message}"
+                        REVIEWS,
+                        "Error fetching product review: " +
+                            "${event.error?.type} - ${event.error?.message}"
                     )
                     continuationReview.continueWith(false)
                 } else {
@@ -186,24 +189,27 @@ class ReviewDetailRepository @Inject constructor(
             if (continuationReview.isWaiting) {
                 if (event.isError) {
                     AnalyticsTracker.track(
-                        Stat.REVIEW_PRODUCT_LOAD_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                    )
+                        Stat.REVIEW_PRODUCT_LOAD_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                        )
                     )
 
                     WooLog.e(
-                        REVIEWS, "Error fetching matching product for product review: " +
-                        "${event.error?.type} - ${event.error?.message}"
+                        REVIEWS,
+                        "Error fetching matching product for product review: " +
+                            "${event.error?.type} - ${event.error?.message}"
                     )
                     continuationProduct.continueWith(false)
                 } else {
                     AnalyticsTracker.track(
-                        Stat.REVIEW_PRODUCT_LOADED, mapOf(
-                        AnalyticsTracker.KEY_ID to remoteProductId,
-                        AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId
-                    )
+                        Stat.REVIEW_PRODUCT_LOADED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ID to remoteProductId,
+                            AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId
+                        )
                     )
                     continuationProduct.continueWith(true)
                 }
@@ -220,16 +226,18 @@ class ReviewDetailRepository @Inject constructor(
             if (event.changedNotificationLocalIds.contains(localNoteId)) {
                 if (event.isError) {
                     AnalyticsTracker.track(
-                        Stat.REVIEW_MARK_READ_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                    )
+                        Stat.REVIEW_MARK_READ_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                        )
                     )
 
                     WooLog.e(
-                        REVIEWS, "$TAG - Error marking review notification as read: " +
-                        "${event.error?.type} - ${event.error?.message}"
+                        REVIEWS,
+                        "$TAG - Error marking review notification as read: " +
+                            "${event.error?.type} - ${event.error?.message}"
                     )
                 } else {
                     AnalyticsTracker.track(Stat.REVIEW_MARK_READ_SUCCESS)

@@ -39,9 +39,9 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
         }
 
         return AlertDialog.Builder(requireActivity())
-                .setView(dialogView)
-                .setCancelable(true)
-                .create()
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
     }
 
     override fun onResume() {

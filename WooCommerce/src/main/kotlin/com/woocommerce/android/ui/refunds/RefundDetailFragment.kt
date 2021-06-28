@@ -58,6 +58,7 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
         productsBinding.issueRefundProducts.setHasFixedSize(true)
     }
 
+    @Suppress("LongMethod")
     private fun setupObservers(viewModel: RefundDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) {
@@ -78,12 +79,12 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
             }
             new.currency?.takeIfNotEqualTo(old?.currency) {
                 productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
-                        currencyFormatter.buildBigDecimalFormatter(new.currency),
-                        imageMap,
-                        isProductDetailList = true,
-                        onItemClicked = { uniqueId ->
-                            (activity as? MainNavigationRouter)?.showProductDetail(uniqueId)
-                        }
+                    currencyFormatter.buildBigDecimalFormatter(new.currency),
+                    imageMap,
+                    isProductDetailList = true,
+                    onItemClicked = { uniqueId ->
+                        (activity as? MainNavigationRouter)?.showProductDetail(uniqueId)
+                    }
                 )
             }
             new.areItemsVisible?.takeIfNotEqualTo(old?.areItemsVisible) { isVisible ->
@@ -113,9 +114,12 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
             }
         }
 
-        viewModel.refundItems.observe(viewLifecycleOwner, Observer { list ->
-            val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
-            adapter.update(list)
-        })
+        viewModel.refundItems.observe(
+            viewLifecycleOwner,
+            Observer { list ->
+                val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
+                adapter.update(list)
+            }
+        )
     }
 }

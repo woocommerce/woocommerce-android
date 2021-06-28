@@ -61,9 +61,11 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
-            startActivity(HelpActivity.createIntent(
-                requireActivity(), Origin.USER_ELIGIBILITY_ERROR, arrayListOf(binding.textUserRoles.text.toString())
-            ))
+            startActivity(
+                HelpActivity.createIntent(
+                    requireActivity(), Origin.USER_ELIGIBILITY_ERROR, arrayListOf(binding.textUserRoles.text.toString())
+                )
+            )
             return true
         }
 
@@ -101,27 +103,30 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
             new.user?.takeIfNotEqualTo(old?.user) { showView(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
         }
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> {
-                    uiMessageResolver.showSnack(event.message)
-                }
-                is Exit -> {
-                    findNavController().navigateUp()
-                }
-                is Logout -> {
-                    requireActivity().apply {
-                        setResult(Activity.RESULT_CANCELED)
-                        val intent = Intent(activity, LoginActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        LoginMode.WOO_LOGIN_MODE.putInto(intent)
-                        startActivity(intent)
-                        finish()
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> {
+                        uiMessageResolver.showSnack(event.message)
                     }
+                    is Exit -> {
+                        findNavController().navigateUp()
+                    }
+                    is Logout -> {
+                        requireActivity().apply {
+                            setResult(Activity.RESULT_CANCELED)
+                            val intent = Intent(activity, LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            LoginMode.WOO_LOGIN_MODE.putInto(intent)
+                            startActivity(intent)
+                            finish()
+                        }
+                    }
+                    else -> event.isHandled = false
                 }
-                else -> event.isHandled = false
             }
-        })
+        )
         viewModel.start()
     }
 

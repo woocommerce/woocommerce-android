@@ -65,6 +65,7 @@ class RoundedBarChartRenderer internal constructor(
         }
     }
 
+    @Suppress("LoopWithTooManyJumpStatements", "LongMethod", "ComplexMethod")
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
         val trans = mChart.getTransformer(dataSet.axisDependency)
         mBarBorderPaint.color = dataSet.barBorderColor
@@ -82,7 +83,7 @@ class RoundedBarChartRenderer internal constructor(
             var x: Float
             var i = 0
             val count = ceil(dataSet.entryCount.toFloat() * phaseX.toDouble()).toInt()
-                    .coerceAtMost(dataSet.entryCount)
+                .coerceAtMost(dataSet.entryCount)
 
             while (i < count) {
                 val e = dataSet.getEntryForIndex(i)
@@ -135,24 +136,28 @@ class RoundedBarChartRenderer internal constructor(
             val barEntry = dataSet.getEntryForIndex(j / 4)
             val corners = if (barEntry != null && barEntry.y < 0) {
                 floatArrayOf(
-                        0f, 0f, // Top left corner
-                        0f, 0f, // Top right corner
-                        mRadius, mRadius, // Bottom right corner
-                        mRadius, mRadius // Bottom left corner
+                    0f, 0f, // Top left corner
+                    0f, 0f, // Top right corner
+                    mRadius, mRadius, // Bottom right corner
+                    mRadius, mRadius // Bottom left corner
                 )
             } else {
                 floatArrayOf(
-                        mRadius, mRadius, // Top left corner
-                        mRadius, mRadius, // Top right corner
-                        0f, 0f, // Bottom right corner
-                        0f, 0f // Bottom left corner
+                    mRadius, mRadius, // Top left corner
+                    mRadius, mRadius, // Top right corner
+                    0f, 0f, // Bottom right corner
+                    0f, 0f // Bottom left corner
                 )
             }
 
             val path = Path()
             path.addRoundRect(
-                    RectF(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
-                            buffer.buffer[j + 3]), corners, Path.Direction.CW)
+                RectF(
+                    buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
+                    buffer.buffer[j + 3]
+                ),
+                corners, Path.Direction.CW
+            )
             c.drawPath(path, mRenderPaint)
 
             if (drawBorder) {

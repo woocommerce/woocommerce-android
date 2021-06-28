@@ -182,10 +182,14 @@ class MagicLinkInterceptRepository @Inject constructor(
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
             WooLog.e(LOGIN, "onAuthenticationChanged has error: ${event.error?.type} : ${event.error?.message}")
-            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_UPDATE_TOKEN_FAILED, mapOf(
+            AnalyticsTracker.track(
+                Stat.LOGIN_MAGIC_LINK_UPDATE_TOKEN_FAILED,
+                mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                )
+            )
 
             continuationUpdateToken.continueWith(false)
         } else {
@@ -205,10 +209,14 @@ class MagicLinkInterceptRepository @Inject constructor(
                 else -> null
             }
             trackEvent?.let {
-                AnalyticsTracker.track(it, mapOf(
+                AnalyticsTracker.track(
+                    it,
+                    mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                )
             }
         } else {
             when {
@@ -230,10 +238,14 @@ class MagicLinkInterceptRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onSiteChanged(event: OnSiteChanged) {
         if (event.isError) {
-            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_SITES_FAILED, mapOf(
+            AnalyticsTracker.track(
+                Stat.LOGIN_MAGIC_LINK_FETCH_SITES_FAILED,
+                mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                )
+            )
 
             continuationFetchSites.continueWith(false)
         } else {

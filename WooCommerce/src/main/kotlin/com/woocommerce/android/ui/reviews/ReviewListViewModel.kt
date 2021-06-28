@@ -153,15 +153,16 @@ class ReviewListViewModel @Inject constructor(
     fun submitReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
         if (networkStatus.isConnected()) {
             val payload = UpdateProductReviewStatusPayload(
-                    selectedSite.get(),
-                    review.remoteId,
-                    newStatus.toString()
+                selectedSite.get(),
+                review.remoteId,
+                newStatus.toString()
             )
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
 
             AnalyticsTracker.track(
-                    Stat.REVIEW_ACTION,
-                    mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString()))
+                Stat.REVIEW_ACTION,
+                mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString())
+            )
 
             sendReviewModerationUpdate(ActionStatus.SUBMITTED)
         } else {
@@ -197,9 +198,9 @@ class ReviewListViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(
-                isSkeletonShown = false,
-                isLoadingMore = false,
-                isRefreshing = false
+            isSkeletonShown = false,
+            isLoadingMore = false,
+            isRefreshing = false
         )
     }
 

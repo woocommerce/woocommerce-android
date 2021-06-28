@@ -92,11 +92,11 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         doReturn(taxClasses).whenever(productRepository).getTaxClassesForSite()
 
         viewModel = ProductPricingViewModel(
-                savedState,
-                productRepository,
-                wooCommerceStore,
-                selectedSite,
-                parameterRepository
+            savedState,
+            productRepository,
+            wooCommerceStore,
+            selectedSite,
+            parameterRepository
         )
 
         clearInvocations(
@@ -165,13 +165,15 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         val savedState = ProductPricingFragmentArgs(RequestCodes.VARIATION_DETAIL_PRICING, pricingData)
             .initSavedStateHandle()
 
-        viewModel = spy(ProductPricingViewModel(
+        viewModel = spy(
+            ProductPricingViewModel(
                 savedState,
                 productRepository,
                 wooCommerceStore,
                 selectedSite,
                 parameterRepository
-        ))
+            )
+        )
 
         var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }

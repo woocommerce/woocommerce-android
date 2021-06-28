@@ -41,7 +41,8 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
+class ReviewListFragment :
+    TopLevelFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
     ReviewListAdapter.OnReviewClickListener {
     companion object {
@@ -176,28 +177,37 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.notifsLoadMoreProgress.isVisible = it }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
+                }
             }
-        })
+        )
 
-        viewModel.moderateProductReview.observe(viewLifecycleOwner, Observer {
-            if (reviewsAdapter.isEmpty()) {
-                pendingModerationRequest = it
-            } else {
-                it?.let { request -> handleReviewModerationRequest(request) }
+        viewModel.moderateProductReview.observe(
+            viewLifecycleOwner,
+            Observer {
+                if (reviewsAdapter.isEmpty()) {
+                    pendingModerationRequest = it
+                } else {
+                    it?.let { request -> handleReviewModerationRequest(request) }
+                }
             }
-        })
+        )
 
-        viewModel.reviewList.observe(viewLifecycleOwner, Observer {
-            showReviewList(it)
-            pendingModerationRequest?.let {
-                handleReviewModerationRequest(it)
-                pendingModerationRequest = null
+        viewModel.reviewList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showReviewList(it)
+                pendingModerationRequest?.let {
+                    handleReviewModerationRequest(it)
+                    pendingModerationRequest = null
+                }
             }
-        })
+        )
     }
 
     private fun handleMarkAllAsReadEvent(status: ActionStatus) {

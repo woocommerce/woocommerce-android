@@ -9,34 +9,34 @@ class DraggableItemTouchHelper(
     private val onDragStarted: () -> Unit = {},
     private val onMove: (from: Int, to: Int) -> Unit
 ) : ItemTouchHelper(
-        object : ItemTouchHelper.SimpleCallback(dragDirs, 0) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: ViewHolder,
-                target: ViewHolder
-            ): Boolean {
-                val from = viewHolder.adapterPosition
-                val to = target.adapterPosition
-                onMove(from, to)
+    object : ItemTouchHelper.SimpleCallback(dragDirs, 0) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: ViewHolder,
+            target: ViewHolder
+        ): Boolean {
+            val from = viewHolder.adapterPosition
+            val to = target.adapterPosition
+            onMove(from, to)
 
-                return true
-            }
+            return true
+        }
 
-            override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
-                // no-op
-            }
+        override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
+            // no-op
+        }
 
             /*
              `onSelectedChanged` is triggered on any drag & drop related events
              for selected item on RecyclerView
             */
-            override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(viewHolder, actionState)
-                if (actionState == ACTION_STATE_DRAG) {
-                    onDragStarted()
-                }
+        override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
+            super.onSelectedChanged(viewHolder, actionState)
+            if (actionState == ACTION_STATE_DRAG) {
+                onDragStarted()
             }
         }
+    }
 ) {
     var isAttached: Boolean = false
 
