@@ -1,1 +1,2 @@
-Fewer taps are needed to get to attributes on a variable product – they’re listed right in the product details! They say pictures say more than words, so we’ve refreshed some illustrations throughout the app. We also fixed a few bugs and made things a bit zippier – we hope that you notice!
+- [***] Merchants using WooCommerce Shipping in their store can create international labels from the app [https://github.com/woocommerce/woocommerce-android/pull/4250]
+
