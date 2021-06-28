@@ -116,7 +116,7 @@ class SitePickerPresenter
     }
 
     override fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel> {
-        return siteIdList.map { siteStore.getSiteByLocalId(it) }
+        return siteIdList.toList().mapNotNull { siteStore.getSiteByLocalId(it) }
     }
 
     override fun getSiteModelByUrl(url: String): SiteModel? =

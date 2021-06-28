@@ -4,6 +4,7 @@ import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -47,21 +48,16 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     @Inject lateinit var cardReaderManager: CardReaderManager
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
-        (viewModel.event.value as? RequestLocationPermissions)?.let {
-            it.onPermissionsRequestResult.invoke(isGranted)
-        }
+        (viewModel.event.value as? RequestLocationPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
     }
 
     private val requestEnableBluetoothLauncher = registerForActivityResult(StartActivityForResult()) { activityResult ->
-        (viewModel.event.value as? RequestEnableBluetooth)?.let {
-            it.onEnableBluetoothRequestResult.invoke(activityResult.resultCode == RESULT_OK)
-        }
+        (viewModel.event.value as? RequestEnableBluetooth)?.onEnableBluetoothRequestResult
+            ?.invoke(activityResult.resultCode == RESULT_OK)
     }
 
-    private val requestEnableLocationProviderLauncher = registerForActivityResult(StartActivityForResult()) { _ ->
-        (viewModel.event.value as? OpenLocationSettings)?.let {
-            it.onLocationSettingsClosed.invoke()
-        }
+    private val requestEnableLocationProviderLauncher = registerForActivityResult(StartActivityForResult()) {
+        (viewModel.event.value as? OpenLocationSettings)?.onLocationSettingsClosed?.invoke()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -141,6 +137,9 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
             }
 
             updateMultipleReadersFoundRecyclerView(binding, viewState)
+
+            // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
+            (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
         }
     }
 

@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Success
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -26,34 +28,39 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     private var viewState by viewStateData
 
     init {
-        loadPaymentMethods()
+        loadInitialData()
     }
 
-    private fun loadPaymentMethods() {
+    private fun loadInitialData() {
         launch {
-            viewState = viewState.copy(isLoading = true)
-            val accountSettings = shippingLabelRepository.getAccountSettings().let {
-                if (it.isError) {
-                    triggerEvent(ShowSnackbar(0))
-                    triggerEvent(Exit)
-                    return@launch
-                }
-                it.model!!
+            loadPaymentMethods(forceRefresh = false)
+            if (viewState.dataLoadState == DataLoadState.Success && viewState.paymentMethods.isEmpty()) {
+                triggerEvent(AddPaymentMethod)
             }
-            viewState = ViewState(
-                isLoading = false,
-                currentAccountSettings = accountSettings,
-                paymentMethods = accountSettings.paymentMethods.map {
-                    PaymentMethodUiModel(paymentMethod = it, isSelected = it.id == accountSettings.selectedPaymentId)
-                },
-                canManagePayments = accountSettings.canManagePayments,
-                // Allow editing the email receipts option if the user has either the permission to change settings
-                // or changing payment options
-                canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
-                emailReceipts = accountSettings.isEmailReceiptEnabled,
-                storeOwnerDetails = accountSettings.storeOwnerDetails
-            )
         }
+    }
+
+    private suspend fun loadPaymentMethods(forceRefresh: Boolean) {
+        viewState = viewState.copy(dataLoadState = DataLoadState.Loading)
+        viewState = shippingLabelRepository.getAccountSettings(forceRefresh)
+            .model?.let { accountSettings ->
+                viewState.copy(
+                    dataLoadState = DataLoadState.Success,
+                    currentAccountSettings = accountSettings,
+                    paymentMethods = accountSettings.paymentMethods.map {
+                        PaymentMethodUiModel(
+                            paymentMethod = it,
+                            isSelected = it.id == accountSettings.selectedPaymentId
+                        )
+                    },
+                    canManagePayments = accountSettings.canManagePayments,
+                    // Allow editing the email receipts option if the user has either the permission to change settings
+                    // or changing payment options
+                    canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
+                    emailReceipts = accountSettings.isEmailReceiptEnabled,
+                    storeOwnerDetails = accountSettings.storeOwnerDetails
+                )
+            } ?: viewState.copy(dataLoadState = DataLoadState.Error)
     }
 
     fun onEmailReceiptsCheckboxChanged(isChecked: Boolean) {
@@ -67,21 +74,32 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         viewState = viewState.copy(paymentMethods = paymentMethodsModels)
     }
 
+    fun onAddPaymentMethodClicked() {
+        triggerEvent(AddPaymentMethod)
+    }
+
     fun onDoneButtonClicked() {
         launch {
-            viewState = viewState.copy(showSavingProgressDialog = true)
-            val selectedPaymentMethod = viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
-            val result = shippingLabelRepository.updatePaymentSettings(
-                selectedPaymentMethodId = selectedPaymentMethod.id,
-                emailReceipts = viewState.emailReceipts
-            )
-            viewState = viewState.copy(showSavingProgressDialog = false)
+            val selectedPaymentMethod =
+                viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
 
-            if (result.isError) {
-                triggerEvent(ShowSnackbar(string.shipping_label_payments_saving_error))
-            } else {
-                triggerEvent(ExitWithResult(selectedPaymentMethod))
+            val requiresSaving = selectedPaymentMethod.id != viewState.currentAccountSettings?.selectedPaymentId ||
+                    viewState.emailReceipts != viewState.emailReceipts
+
+            if (requiresSaving) {
+                viewState = viewState.copy(showSavingProgressDialog = true)
+                val result = shippingLabelRepository.updatePaymentSettings(
+                    selectedPaymentMethodId = selectedPaymentMethod.id,
+                    emailReceipts = viewState.emailReceipts
+                )
+                viewState = viewState.copy(showSavingProgressDialog = false)
+
+                if (result.isError) {
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_payments_saving_error))
+                    return@launch
+                }
             }
+            triggerEvent(ExitWithResult(selectedPaymentMethod))
         }
     }
 
@@ -89,10 +107,27 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun refreshData() {
+        launch {
+            loadPaymentMethods(forceRefresh = false)
+        }
+    }
+
+    fun onPaymentMethodAdded() {
+        launch {
+            val countOfCurrentPaymentMethods = viewState.paymentMethods.size
+            loadPaymentMethods(forceRefresh = true)
+            if (viewState.dataLoadState == Success &&
+                    viewState.paymentMethods.size == countOfCurrentPaymentMethods + 1) {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_payment_method_added))
+            }
+        }
+    }
+
     @Parcelize
     data class ViewState(
-        val isLoading: Boolean = false,
-        private val currentAccountSettings: ShippingAccountSettings? = null,
+        val dataLoadState: DataLoadState? = null,
+        val currentAccountSettings: ShippingAccountSettings? = null,
         val canManagePayments: Boolean = false,
         val canEditSettings: Boolean = false,
         val paymentMethods: List<PaymentMethodUiModel> = emptyList(),
@@ -100,17 +135,12 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         val storeOwnerDetails: StoreOwnerDetails? = null,
         val showSavingProgressDialog: Boolean = false
     ) : Parcelable {
-        val hasChanges: Boolean
-            get() {
-                return currentAccountSettings?.let {
-                    val selectedPaymentMethod = paymentMethods.find { it.isSelected }
-                    (
-                        selectedPaymentMethod != null &&
-                            selectedPaymentMethod.paymentMethod.id != currentAccountSettings.selectedPaymentId
-                        ) ||
-                        emailReceipts != currentAccountSettings.isEmailReceiptEnabled
-                } ?: false
-            }
+        val canSave: Boolean
+            get() = canEditSettings && paymentMethods.any { it.isSelected }
+    }
+
+    enum class DataLoadState {
+        Loading, Error, Success
     }
 
     @Parcelize
@@ -118,4 +148,6 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
         val paymentMethod: PaymentMethod,
         val isSelected: Boolean
     ) : Parcelable
+
+    object AddPaymentMethod : MultiLiveEvent.Event()
 }

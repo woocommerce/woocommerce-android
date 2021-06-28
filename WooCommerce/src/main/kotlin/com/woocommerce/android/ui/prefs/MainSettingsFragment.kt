@@ -117,7 +117,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         updateStoreSettings()
         binding.optionCardReader.setOnClickListener {
             // TODO cardreader Add tracking
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderSettingsFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderDetailFragment)
         }
 
         binding.optionHelpAndSupport.setOnClickListener {

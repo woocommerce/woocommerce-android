@@ -352,26 +352,28 @@ class NotificationHandler @Inject constructor(
 
     @VisibleForTesting
     fun dispatchNewOrderEvents(model: NotificationModel) {
-        dispatcher.dispatch(
-            WCOrderActionBuilder.newFetchOrderListAction(
-                FetchOrderListPayload(
-                    offset = 0,
-                    listDescriptor = WCOrderListDescriptor(site = siteStore.getSiteBySiteId(model.remoteSiteId))
-                )
-            )
-        )
-
-        dispatcher.dispatch(
-            WCOrderActionBuilder.newFetchOrderListAction(
-                FetchOrderListPayload(
-                    offset = 0,
-                    listDescriptor = WCOrderListDescriptor(
-                        site = siteStore.getSiteBySiteId(model.remoteSiteId),
-                        statusFilter = PROCESSING.value
+        siteStore.getSiteBySiteId(model.remoteSiteId)?.let { site ->
+            dispatcher.dispatch(
+                WCOrderActionBuilder.newFetchOrderListAction(
+                    FetchOrderListPayload(
+                        offset = 0,
+                        listDescriptor = WCOrderListDescriptor(site = site)
                     )
                 )
             )
-        )
+
+            dispatcher.dispatch(
+                WCOrderActionBuilder.newFetchOrderListAction(
+                    FetchOrderListPayload(
+                        offset = 0,
+                        listDescriptor = WCOrderListDescriptor(
+                            site = site,
+                            statusFilter = PROCESSING.value
+                        )
+                    )
+                )
+            )
+        } ?: WooLog.e(T.NOTIFS, "Site not found - can't dispatchNewOrderEvents")
     }
 
     /**

@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
 import com.woocommerce.android.extensions.exhaustive
@@ -36,10 +37,12 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
 
-        initObservers(binding)
+        observeEvents(binding)
+        observeViewState(binding)
+        initResultHandlers()
     }
 
-    private fun initObservers(binding: FragmentCardReaderDetailBinding) {
+    private fun observeEvents(binding: FragmentCardReaderDetailBinding) {
         viewModel.event.observe(
             viewLifecycleOwner,
             { event ->
@@ -63,8 +66,9 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 }
             }
         )
+    }
 
-        viewModel.viewStateData.observe(
+    private fun observeViewState(binding: FragmentCardReaderDetailBinding) {    viewModel.viewStateData.observe(
             viewLifecycleOwner,
             { state ->
                 makeStateVisible(binding, state)
@@ -81,7 +85,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                                 state.secondaryButtonState?.onActionClicked?.invoke()
                             }
                             binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(
-                                R.color.warning_banner_foreground_color
+                                color.warning_banner_foreground_color
                             )
                             with(cardReaderDetailLearnMoreTv.root) {
                                 movementMethod = LinkMovementMethod.getInstance()
@@ -111,8 +115,9 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     }
                 }.exhaustive
             }
-        )
+        )}
 
+    private fun initResultHandlers() {
         handleResult<UpdateResult>(CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT) {
             viewModel.onUpdateReaderResult(it)
         }
