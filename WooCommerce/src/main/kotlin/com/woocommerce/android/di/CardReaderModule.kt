@@ -1,24 +1,16 @@
 package com.woocommerce.android.di
 
-import android.app.Application
-import com.woocommerce.android.cardreader.CardPaymentStatus
-import com.woocommerce.android.cardreader.CardReader
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus
-import com.woocommerce.android.cardreader.CardReaderStatus.NotConnected
-import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.CardReaderManagerFactory
+import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CapturePaymentResponseMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
-import java.math.BigDecimal
+import org.wordpress.android.fluxc.store.WCPayStore
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
