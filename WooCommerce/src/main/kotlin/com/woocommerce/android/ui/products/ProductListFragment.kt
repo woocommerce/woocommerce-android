@@ -26,7 +26,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M3
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.VARIATIONS
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
@@ -489,7 +489,7 @@ class ProductListFragment :
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(PRODUCTS_M3.name, state)
+        FeatureFeedbackSettings(VARIATIONS.name, state)
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 
