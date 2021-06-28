@@ -376,7 +376,7 @@ class ProductListFragment :
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
             val wipCardTitleId = R.string.product_wip_title_m5
-            val wipCardMessageId = R.string.product_wip_message_m5
+            val wipCardMessageId = R.string.product_wip_message_variations
 
             binding.productsWipCard.visibility = View.VISIBLE
             binding.productsWipCard.initView(
