@@ -1,2 +1,10 @@
 build:
   maxIssues: 0
+
+complexity:
+  LongParameterList:
+    ignoreDefaultParameters: true
+    ignoreAnnotated: ['Inject']
+
+  TooManyFunctions:
+    ignoreOverridden: true

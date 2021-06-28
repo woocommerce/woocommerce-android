@@ -7,7 +7,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
 import com.woocommerce.android.extensions.exhaustive
@@ -23,6 +25,7 @@ import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewMo
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,10 +39,18 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
 
-        initObservers(binding)
+        val learnMoreListener = View.OnClickListener {
+            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        }
+        binding.readerConnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
+        binding.readerDisconnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
+
+        observeEvents(binding)
+        observeViewState(binding)
+        initResultHandlers()
     }
 
-    private fun initObservers(binding: FragmentCardReaderDetailBinding) {
+    private fun observeEvents(binding: FragmentCardReaderDetailBinding) {
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
                 is CardReaderConnectScreen ->
@@ -60,7 +71,9 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 else -> event.isHandled = false
             }
         })
+    }
 
+    private fun observeViewState(binding: FragmentCardReaderDetailBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner, { state ->
             makeStateVisible(binding, state)
             when (state) {
@@ -74,7 +87,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState?.text)
                         secondaryActionBtn.setOnClickListener { state.secondaryButtonState?.onActionClicked?.invoke() }
                         binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(
-                            R.color.warning_banner_foreground_color
+                            color.warning_banner_foreground_color
                         )
                         with(cardReaderDetailLearnMoreTv.root) {
                             movementMethod = LinkMovementMethod.getInstance()
@@ -104,7 +117,9 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 }
             }.exhaustive
         })
+    }
 
+    private fun initResultHandlers() {
         handleResult<UpdateResult>(CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT) {
             viewModel.onUpdateReaderResult(it)
         }
