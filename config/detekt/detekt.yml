@@ -5,3 +5,6 @@ complexity:
   LongParameterList:
     ignoreDefaultParameters: true
     ignoreAnnotated: ['Inject']
+
+  TooManyFunctions:
+    ignoreOverridden: true
