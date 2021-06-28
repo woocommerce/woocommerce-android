@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBi
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
@@ -78,6 +79,10 @@ class ShippingLabelPackagesAdapter(
 
             binding.selectedPackageSpinner.setClickListener {
                 onPackageSpinnerClicked(adapterPosition)
+            }
+
+            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
+                binding.expandIcon.isVisible = false
             }
         }
 
@@ -151,6 +156,12 @@ class PackageProductsAdapter(private val weightUnit: String) : RecyclerView.Adap
     inner class PackageProductViewHolder(
         val binding: ShippingLabelPackageProductListItemBinding
     ) : ViewHolder(binding.root) {
+        init {
+            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
+                binding.moveButton.isVisible = false
+            }
+        }
+
         fun bind(item: ShippingLabelPackage.Item) {
             binding.productName.text = item.name
             val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
