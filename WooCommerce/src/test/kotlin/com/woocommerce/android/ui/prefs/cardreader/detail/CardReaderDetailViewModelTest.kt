@@ -235,6 +235,20 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when on update result with success then software update status checked`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verify(cardReaderManager).softwareUpdateAvailability()
+        }
+    }
+
+    @Test
     fun `when on update result with failed should send snackbar event with failed text`() {
         // GIVEN
         val viewModel = createViewModel()

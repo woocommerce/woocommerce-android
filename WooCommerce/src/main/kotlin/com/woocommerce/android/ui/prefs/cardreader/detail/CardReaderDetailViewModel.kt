@@ -132,7 +132,10 @@ class CardReaderDetailViewModel @Inject constructor(
 
     fun onUpdateReaderResult(updateResult: UpdateResult) {
         when (updateResult) {
-            SUCCESS -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+            SUCCESS -> {
+                launch { checkForUpdates() }
+                triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+            }
             FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
             SKIPPED -> {
             }
