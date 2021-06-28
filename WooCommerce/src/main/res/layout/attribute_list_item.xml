@@ -3,31 +3,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/minor_100"
-    android:paddingBottom="@dimen/minor_100">
+    android:orientation="vertical">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/attributeName"
-        style="@style/Woo.ListItem.Title"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_50"
-        android:layout_marginBottom="@dimen/minor_50"
-        android:ellipsize="end"
-        android:includeFontPadding="false"
-        android:maxLines="2"
-        tools:text="Color" />
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/minor_100"
+        android:paddingBottom="@dimen/minor_100">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/attributeTerms"
-        style="@style/Woo.ListItem.Body"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/attributeName"
+            style="@style/Woo.ListItem.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_50"
+            android:layout_marginBottom="@dimen/minor_50"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="2"
+            tools:text="Color" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/attributeTerms"
+            style="@style/Woo.ListItem.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/minor_50"
+            android:ellipsize="end"
+            android:maxLines="2"
+            tools:text="Blue, Green" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/minor_50"
-        android:ellipsize="end"
-        android:maxLines="2"
-        tools:text="Blue, Green" />
+        android:layout_marginStart="@dimen/major_100"/>
 
 </LinearLayout>

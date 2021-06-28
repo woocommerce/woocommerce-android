@@ -62,12 +62,15 @@
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
+    <string name="product_variation_multiple_count">%1$s variations</string>
+    <string name="product_variation_single_count">1 variation</string>
     <string name="product_variations_edit_attr">Edit attributes</string>
     <string name="product_variation_attributes">Attributes</string>
     <string name="product_add_attribute">Add attribute</string>
     <string name="product_new_attribute_name">New attribute name</string>
     <string name="product_rename_attribute">Rename attribute</string>
     <string name="product_rename_attribute_helper">Type of variation, eg. size or color</string>
+    <string name="product_create_attribute_helper">To create a variation, you\'ll need to set its attributes (ie \"Color\", \"Size\") first</string>
     <string name="product_select_attribute">Or tap to select an existing attribute</string>
     <string name="product_new_attribute_term_name">Option name</string>
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
@@ -310,6 +313,7 @@
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="orderdetail_collect_payment_button">Collect Payment</string>
+    <string name="orderdetail_printing_instructions_button">Learn more about printing receipts with your device</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Create new shipping label</string>
     <string name="orderdetail_shipping_label_item_header">Package %d</string>
     <string name="orderdetail_shipping_label_item_menu">Refund shipping label</string>
@@ -387,6 +391,20 @@
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
+    <string name="print_receipt_label_info_step_count_1" translatable="false">1</string>
+    <string name="print_receipt_label_info_step_count_2" translatable="false">2</string>
+    <string name="print_receipt_label_info_step_count_3" translatable="false">3</string>
+    <string name="print_receipt_label_info_step_count_4" translatable="false">4</string>
+    <string name="print_receipt_label_info_step_count_5" translatable="false">5</string>
+    <string name="print_receipt_label_info_step_count_6" translatable="false">6</string>
+    <string name="print_receipt_label_info_step_count_7" translatable="false">7</string>
+    <string name="print_receipt_label_info_step_1">Make sure the Print Service Plugin for yor printer is installed.</string>
+    <string name="print_receipt_label_info_step_2">Enable bluetooth or Wifi connection on your printer.</string>
+    <string name="print_receipt_label_info_step_3">When selecting "Print receipt" after accepting payment, replace "Save as PDF" with "All printers", and search for new printer.</string>
+    <string name="print_receipt_label_info_step_4">Pair and connect the printer to your mobile when prompted.</string>
+    <string name="print_receipt_label_info_step_5">Adjust paper size as needed, and select "Print" when ready to print the receipt.</string>
+    <string name="print_receipt_label_info_step_6">If printing is not available, you can always save your receipt as PDF and send it by email to print it from another device.</string>
+    <string name="print_receipt_label_info_step_7">If you are experiencing issues printing from your device, contact customer support for your printer.</string>
     <string name="print_shipping_label_info_title">Print with your device</string>
     <string name="print_shipping_label_format_options_title">Label format options</string>
     <string name="print_shipping_label_info_step_count_1" translatable="false">1</string>
@@ -413,6 +431,7 @@
     <string name="shipping_label_create_packaging_details_description">Select the type of packaging you\’d like to ship your items in</string>
     <string name="shipping_label_create_customs">Customs</string>
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
+    <string name="shipping_label_create_customs_done">Customs form completed</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
     <string name="shipping_label_create_payment_description">Add a new credit card</string>
     <string name="shipping_label_create_order_summary">Shipping label order summary</string>
@@ -456,6 +475,9 @@
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
     <string name="shipping_label_address_suggestion_entered_address">Entered address</string>
     <string name="shipping_label_address_suggestion_suggested_address">Suggested address</string>
+    <string name="shipping_label_address_phone_required">A phone number is required because this shipment requires a customs form</string>
+    <string name="shipping_label_address_phone_invalid">Customs forms require a 10-digit phone number</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Certain required fields are blank.</string>
     <string name="shipping_label_package_details_items_section_title">Items to fulfill</string>
     <string name="shipping_label_package_details_move_item">Move</string>
     <string name="shipping_label_package_details_section_title">Package details</string>
@@ -473,7 +495,6 @@
     <string name="shipping_label_packages_loading_message">Please wait…</string>
     <string name="shipping_label_package_selector_title">Selected Package</string>
     <string name="shipping_label_package_details_weight_error">Invalid weight</string>
-    <string name="shipping_label_missing_data_snackbar_message">Certain required fields are blank.</string>
     <string name="shipping_label_package_details_fetch_products_error">Can\'t fetch products</string>
     <string name="shipping_label_packages_custom_section_title">Custom packages</string>
     <string name="shipping_label_single_package_total_weight">Total package weight: %1$s %2$s</string>
@@ -497,10 +518,8 @@
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates.</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid %1$s (%2$s) for shipping</string>
-    <string name="shipping_label_shipping_method_flat_rate">Flat rate</string>
-    <string name="shipping_label_shipping_method_local_pickup">Local pickup</string>
-    <string name="shipping_label_shipping_method_free_shipping">Free shipping</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid a %1$s of %2$s for shipping</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Your customer selected %1$s</string>
     <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
     <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
@@ -661,6 +680,10 @@
     <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Connecting to reader</string>
 
+    <string name="card_reader_payment_fetch_order_loading_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Updating the app state</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Refreshing order</string>
+
     <string name="card_reader_collect_payment">Collect payment</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
@@ -679,6 +702,11 @@
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
 
+    <string name="card_reader_payment_description">Online payment for order %s for %s</string>
+    <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
+    <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! You can find the receipt for your payment at the following link: %s</string>
+    <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
+    <string name="card_reader_fetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
     <!--
             Card Reader Connection
         -->
@@ -702,8 +730,10 @@
         Card Reader Detail
     -->
     <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+    <string name="card_reader_detail_learn_more">&lt;a href="https://woocommerce.com/payments/"&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
     <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Turn mobile device bluetooth on</string>
     <string name="card_reader_details_not_connected_connect_button_label">Connect card reader</string>
 
     <string name="card_reader_detail_connected_header">CONNECTED READER</string>
@@ -774,6 +804,7 @@
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_price_empty">Add price</string>
+    <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
@@ -962,6 +993,8 @@
     <string name="cross_sells_desc">Products promoted in the cart when current product is selected</string>
     <string name="add_products_button">Add products</string>
     <string name="edit_products_button">Edit products</string>
+    <string name="empty_product_add_product_button">Add product</string>
+    <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
 
     <plurals name="product_count">
         <item quantity="one">%d product</item>
@@ -996,7 +1029,7 @@
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
-    <string name="variation_create_dialog_title">Creating variation</string>
+    <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
 
     <!--
@@ -1033,7 +1066,7 @@
     <string name="get_the_word_out">Let\'s get the word out</string>
     <string name="share_your_store_message">Share your store on social media and by email with your contacts</string>
     <string name="empty_order_list_title">Waiting for your first order</string>
-    <string name="empty_order_list_message">We\’ll notify you when you receive a new order. In the meantime, explore how you can increase your store sales.</string>
+    <string name="empty_order_list_message">Explore how you can increase your store sales.</string>
     <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
     <string name="empty_review_list_title">Get your first reviews</string>
     <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
@@ -1312,7 +1345,7 @@
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
-    <string name="product_type_simple_title">Simple physical productt</string>
+    <string name="product_type_simple_title">Simple physical product</string>
     <string name="product_type_simple_desc">A unique physical product that you may have to ship to the customer</string>
     <string name="product_type_virtual_title">Simple virtual product</string>
     <string name="product_type_virtual_desc">A unique digital product like services, downloadable books, music or videos</string>

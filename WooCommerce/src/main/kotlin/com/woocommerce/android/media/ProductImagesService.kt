@@ -11,7 +11,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import dagger.android.AndroidInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -31,6 +31,7 @@ import javax.inject.Inject
 /**
  * Service which uploads device images to the WP media library to be later assigned to a product
  */
+@AndroidEntryPoint
 class ProductImagesService : JobIntentService() {
     companion object {
         const val KEY_ID = "key_id"
@@ -102,11 +103,10 @@ class ProductImagesService : JobIntentService() {
     private lateinit var notifHandler: ProductImagesNotificationHandler
 
     override fun onCreate() {
+        super.onCreate()
         WooLog.i(T.MEDIA, "productImagesService > created")
-        AndroidInjection.inject(this)
         dispatcher.register(this)
         EventBus.getDefault().register(this)
-        super.onCreate()
     }
 
     override fun onDestroy() {

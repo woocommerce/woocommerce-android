@@ -9,7 +9,7 @@ import com.woocommerce.android.JobServiceIds.JOB_FCM_REGISTRATION_SERVICE_ID
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import dagger.android.AndroidInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.store.NotificationStore.NotificationAppKey.WO
 import org.wordpress.android.fluxc.store.NotificationStore.RegisterDevicePayload
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class FCMRegistrationIntentService : JobIntentService() {
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var accountStore: AccountStore
@@ -35,11 +36,6 @@ class FCMRegistrationIntentService : JobIntentService() {
             JobIntentService.enqueueWork(context, FCMRegistrationIntentService::class.java,
                     JOB_FCM_REGISTRATION_SERVICE_ID, work)
         }
-    }
-
-    override fun onCreate() {
-        AndroidInjection.inject(this)
-        super.onCreate()
     }
 
     override fun onHandleWork(intent: Intent) {

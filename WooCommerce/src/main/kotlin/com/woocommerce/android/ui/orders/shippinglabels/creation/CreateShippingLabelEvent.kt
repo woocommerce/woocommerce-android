@@ -16,7 +16,8 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     data class ShowAddressEditor(
         val address: Address,
         val type: AddressType,
-        val validationResult: ValidationResult?
+        val validationResult: ValidationResult?,
+        val isInternational: Boolean
     ) : CreateShippingLabelEvent()
 
     data class ShowSuggestedAddress(
@@ -53,8 +54,10 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     ) : CreateShippingLabelEvent()
 
     data class ShowCustomsForm(
+        val originCountryCode: String,
         val destinationCountryCode: String,
-        val customsPacakges: List<CustomsPackage>
+        val shippingPackages: List<ShippingLabelPackage>,
+        val customsPackages: List<CustomsPackage>
     ) : CreateShippingLabelEvent()
 
     data class ShowShippingRates(
@@ -62,6 +65,7 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val originAddress: Address,
         val destinationAddress: Address,
         val shippingLabelPackages: List<ShippingLabelPackage>,
+        val customsPackages: List<CustomsPackage>?,
         val selectedRates: List<ShippingRate>
     ) : CreateShippingLabelEvent()
 

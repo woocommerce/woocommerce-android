@@ -1,47 +1,34 @@
 package com.woocommerce.android.ui.products
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.AndroidSupportInjection
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
-    @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
-
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
+@AndroidEntryPoint
+class ProductDetailBottomSheetFragment : BottomSheetDialogFragment() {
+    val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
 
     private lateinit var productDetailBottomSheetAdapter: ProductDetailBottomSheetAdapter
 
     private var _binding: DialogProductDetailBottomSheetListBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        AndroidSupportInjection.inject(this)
-        return super.onCreateDialog(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DialogProductDetailBottomSheetListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -88,9 +75,5 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
         productDetailBottomSheetOptions: List<ProductDetailBottomSheetUiItem>
     ) {
         productDetailBottomSheetAdapter.setProductDetailBottomSheetOptions(productDetailBottomSheetOptions)
-    }
-
-    override fun androidInjector(): AndroidInjector<Any> {
-        return childInjector
     }
 }

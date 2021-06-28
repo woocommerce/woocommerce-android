@@ -1,11 +1,10 @@
 package com.woocommerce.android.ui.refunds
 
-import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -14,10 +13,11 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundByItemsView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -28,6 +28,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 class IssueRefundViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val wooStore: WooCommerceStore = mock()
@@ -47,13 +48,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
     }
 
-    private val savedState: SavedStateWithArgs = spy(
-        SavedStateWithArgs(
-            SavedStateHandle(),
-            null,
-            IssueRefundFragmentArgs(0)
-        )
-    )
+    private val savedState = IssueRefundFragmentArgs(0).initSavedStateHandle()
 
     private lateinit var viewModel: IssueRefundViewModel
 

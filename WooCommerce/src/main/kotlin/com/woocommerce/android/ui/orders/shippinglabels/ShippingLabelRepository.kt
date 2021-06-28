@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabel
@@ -89,7 +90,8 @@ class ShippingLabelRepository @Inject constructor(
         order: Order,
         origin: Address,
         destination: Address,
-        packages: List<ShippingLabelPackage>
+        packages: List<ShippingLabelPackage>,
+        customsPackages: List<CustomsPackage>?
     ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
         val carrierRates = shippingLabelStore.getShippingRates(
             site = selectedSite.get(),
@@ -108,7 +110,7 @@ class ShippingLabelRepository @Inject constructor(
                     isLetter = pack.isLetter
                 )
             },
-            customsData = null
+            customsData = customsPackages?.map { it.toDataModel() }
         )
 
         return when {
@@ -159,7 +161,8 @@ class ShippingLabelRepository @Inject constructor(
         origin: Address,
         destination: Address,
         packages: List<ShippingLabelPackage>,
-        rates: List<ShippingRate>
+        rates: List<ShippingRate>,
+        customsPackages: List<CustomsPackage>?
     ): WooResult<List<ShippingLabel>> {
         val packagesData = packages.mapIndexed { i, labelPackage ->
             val rate = rates.first { it.packageId == labelPackage.packageId }
@@ -178,13 +181,19 @@ class ShippingLabelRepository @Inject constructor(
                 products = labelPackage.items.map { it.productId }
             )
         }
+        // Retrieve account settings, normally they should be cached at this point, and the response would be
+        // instantaneous
+        // We fallback to true as it's the default value in the plugin
+        val emailReceipts = getAccountSettings().model?.isEmailReceiptEnabled ?: true
+
         return shippingLabelStore.purchaseShippingLabels(
             site = selectedSite.get(),
             orderId = orderId,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
             packagesData = packagesData,
-            customsData = null
+            customsData = customsPackages?.map { it.toDataModel() },
+            emailReceipts = emailReceipts
         ).let { result ->
             when {
                 result.isError -> WooResult(result.error)

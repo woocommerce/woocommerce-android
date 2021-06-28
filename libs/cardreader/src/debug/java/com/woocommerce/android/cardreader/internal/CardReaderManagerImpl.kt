@@ -87,8 +87,14 @@ internal class CardReaderManagerImpl(
         return connectionManager.disconnectReader()
     }
 
-    override suspend fun collectPayment(orderId: Long, amount: BigDecimal, currency: String): Flow<CardPaymentStatus> =
-        paymentManager.acceptPayment(orderId, amount, currency)
+    override suspend fun collectPayment(
+        paymentDescription: String,
+        orderId: Long,
+        amount: BigDecimal,
+        currency: String,
+        customerEmail: String?
+    ): Flow<CardPaymentStatus> =
+        paymentManager.acceptPayment(paymentDescription, orderId, amount, currency, customerEmail)
 
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
         paymentManager.retryPayment(orderId, paymentData)
@@ -101,4 +107,9 @@ internal class CardReaderManagerImpl(
         softwareUpdateManager.softwareUpdateStatus()
 
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
+
+    override suspend fun clearCachedCredentials() {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        terminal.clearCachedCredentials()
+    }
 }

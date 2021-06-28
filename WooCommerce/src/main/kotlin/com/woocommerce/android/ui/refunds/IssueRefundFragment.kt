@@ -8,30 +8,27 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class IssueRefundFragment : BaseDaggerFragment() {
-    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
+@AndroidEntryPoint
+class IssueRefundFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) {
-        viewModelFactory.get()
-    }
+    private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)

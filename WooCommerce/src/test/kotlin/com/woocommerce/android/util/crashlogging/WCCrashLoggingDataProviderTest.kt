@@ -1,9 +1,18 @@
 package com.woocommerce.android.util.crashlogging
 
+import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
+import com.automattic.android.tracks.crashlogging.EventLevel.INFO
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.EXTRA_UUID
+import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_ID_KEY
+import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_URL_KEY
 import com.woocommerce.android.util.locale.LocaleProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
@@ -24,6 +33,8 @@ class WCCrashLoggingDataProviderTest {
     private val accountStore: AccountStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val appPrefs: AppPrefs = mock()
+    private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs = mock()
+    private val uuidGenerator: UuidGenerator = mock()
 
     @Before
     fun setUp() {
@@ -31,7 +42,9 @@ class WCCrashLoggingDataProviderTest {
             localeProvider = localeProvider,
             accountStore = accountStore,
             selectedSite = selectedSite,
-            appPrefs = appPrefs
+            appPrefs = appPrefs,
+            enqueueSendingEncryptedLogs = enqueueSendingEncryptedLogs,
+            uuidGenerator = uuidGenerator
         )
     }
 
@@ -43,8 +56,8 @@ class WCCrashLoggingDataProviderTest {
 
         assertThat(appContext).containsAllEntriesOf(
             mapOf(
-                "site_id" to TEST_SITE_MODEL.siteId.toString(),
-                "site_url" to TEST_SITE_MODEL.url
+                SITE_ID_KEY to TEST_SITE_MODEL.siteId.toString(),
+                SITE_URL_KEY to TEST_SITE_MODEL.url
             )
         )
     }
@@ -78,7 +91,7 @@ class WCCrashLoggingDataProviderTest {
 
     @Test
     fun `should not include extra keys for events`() {
-        assertThat(sut.extraKnownKeys()).isEmpty()
+        assertThat(sut.extraKnownKeys()).containsOnly(EXTRA_UUID)
     }
 
     @Test
@@ -112,6 +125,38 @@ class WCCrashLoggingDataProviderTest {
         whenever(localeProvider.provideLocale()).thenReturn(Locale.CANADA)
 
         assertThat(sut.locale).isEqualTo(Locale.CANADA)
+    }
+
+    @Test
+    fun `should request encrypted logs upload when providing extras for event`() {
+        val generatedUuid = "123"
+        whenever(uuidGenerator.generateUuid()).thenReturn(generatedUuid)
+
+        val extras = sut.provideExtrasForEvent(currentExtras = emptyMap(), eventLevel = INFO)
+
+        verify(enqueueSendingEncryptedLogs, times(1)).invoke(generatedUuid, INFO)
+        assertThat(extras).containsValue(generatedUuid)
+    }
+
+    @Test
+    fun `should not request encrypted logs upload when uuid is already provided`() {
+        val generatedUuid = "123"
+
+        val extras = sut.provideExtrasForEvent(currentExtras = mapOf("uuid" to generatedUuid), eventLevel = INFO)
+
+        verify(enqueueSendingEncryptedLogs, never()).invoke(any(), any())
+        assertThat(extras).containsValue(generatedUuid)
+    }
+
+    @Test
+    fun `should not upload immediately when event is fatal`() {
+        val generatedUuid = "123"
+        whenever(uuidGenerator.generateUuid()).thenReturn(generatedUuid)
+
+        val extras = sut.provideExtrasForEvent(currentExtras = emptyMap(), eventLevel = FATAL)
+
+        verify(enqueueSendingEncryptedLogs, times(1)).invoke(generatedUuid, FATAL)
+        assertThat(extras).containsValue(generatedUuid)
     }
 
     companion object {

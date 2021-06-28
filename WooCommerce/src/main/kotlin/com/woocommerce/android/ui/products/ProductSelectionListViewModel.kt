@@ -3,35 +3,31 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
-import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-@OpenClassOnDebug
-class ProductSelectionListViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ProductSelectionListViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val productRepository: ProductListRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
@@ -41,8 +37,7 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
 
-    final val productSelectionListViewStateLiveData =
-        LiveDataDelegateWithArgs(savedState, ProductSelectionListViewState())
+    val productSelectionListViewStateLiveData = LiveDataDelegate(savedState, ProductSelectionListViewState())
     private var productSelectionListViewState by productSelectionListViewStateLiveData
 
     private val isRefreshing
@@ -251,7 +246,4 @@ class ProductSelectionListViewModel @AssistedInject constructor(
         val searchQuery: String? = null,
         val isSearchActive: Boolean? = null
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ProductSelectionListViewModel>
 }

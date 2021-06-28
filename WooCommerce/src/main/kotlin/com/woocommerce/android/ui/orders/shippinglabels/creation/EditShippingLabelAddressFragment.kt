@@ -27,7 +27,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
@@ -41,15 +41,16 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class EditShippingLabelAddressFragment
-    : BaseDaggerFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
+    : BaseFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
@@ -57,13 +58,12 @@ class EditShippingLabelAddressFragment
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
     }
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
 
     private var progressDialog: CustomProgressDialog? = null
     private var _binding: FragmentEditShippingLabelAddressBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: EditShippingLabelAddressViewModel by viewModels { viewModelFactory }
+    val viewModel: EditShippingLabelAddressViewModel by viewModels()
 
     private var screenTitle = ""
         set(value) {
@@ -164,16 +164,19 @@ class EditShippingLabelAddressFragment
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
             }
-            new.addressError?.takeIfNotEqualTo(old?.addressError) {
+            new.addressError.takeIfNotEqualTo(old?.addressError) {
                 showErrorOrClear(binding.address1Layout, it)
             }
-            new.nameError?.takeIfNotEqualTo(old?.nameError) {
+            new.phoneError.takeIfNotEqualTo(old?.phoneError) {
+                showErrorOrClear(binding.phoneLayout, it)
+            }
+            new.nameError.takeIfNotEqualTo(old?.nameError) {
                 showErrorOrClear(binding.nameLayout, it)
             }
-            new.cityError?.takeIfNotEqualTo(old?.cityError) {
+            new.cityError.takeIfNotEqualTo(old?.cityError) {
                 showErrorOrClear(binding.cityLayout, it)
             }
-            new.zipError?.takeIfNotEqualTo(old?.zipError) {
+            new.zipError.takeIfNotEqualTo(old?.zipError) {
                 showErrorOrClear(binding.zipLayout, it)
             }
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
@@ -264,8 +267,8 @@ class EditShippingLabelAddressFragment
         })
     }
 
-    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int) {
-        if (message == 0) {
+    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int?) {
+        if (message == null || message == 0) {
             inputLayout.error = null
         } else {
             inputLayout.error = resources.getString(message)

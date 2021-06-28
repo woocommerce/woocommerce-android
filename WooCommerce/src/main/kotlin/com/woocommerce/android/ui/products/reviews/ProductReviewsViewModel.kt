@@ -3,35 +3,31 @@ package com.woocommerce.android.ui.products.reviews
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
-import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-@OpenClassOnDebug
-class ProductReviewsViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ProductReviewsViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val reviewsRepository: ProductReviewsRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
 
-    final val productReviewsViewStateData = LiveDataDelegateWithArgs(savedState, ProductReviewsViewState())
+    final val productReviewsViewStateData = LiveDataDelegate(savedState, ProductReviewsViewState())
     private var productReviewsViewState by productReviewsViewStateData
 
     private val navArgs: ProductReviewsFragmentArgs by savedState.navArgs()
@@ -101,7 +97,4 @@ class ProductReviewsViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ProductReviewsViewModel>
 }

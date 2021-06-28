@@ -17,10 +17,11 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCustomsForm
@@ -49,6 +50,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.Companion.EDIT_PAYMENTS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment.Companion.SHIPPING_CARRIERS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment.Companion.SHIPPING_CARRIERS_RESULT
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment.Companion.EDIT_CUSTOMS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment.Companion.EDIT_CUSTOMS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
@@ -56,21 +58,21 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
+import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_shipping_label) {
+@AndroidEntryPoint
+class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label) {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    val viewModel: CreateShippingLabelViewModel by viewModels { viewModelFactory }
+    val viewModel: CreateShippingLabelViewModel by viewModels()
 
     private val skeletonView: SkeletonView = SkeletonView()
 
@@ -129,8 +131,11 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
         handleResult<List<ShippingRate>>(SHIPPING_CARRIERS_RESULT) {
             viewModel.onShippingCarriersSelected(it)
         }
-        handleNotice(EDIT_CUSTOMS_RESULT) {
-            viewModel.onCustomsFilledOut()
+        handleResult<List<CustomsPackage>>(EDIT_CUSTOMS_RESULT) {
+            viewModel.onCustomsFilledOut(it)
+        }
+        handleNotice(EDIT_CUSTOMS_CLOSED) {
+            viewModel.onCustomsEditCanceled()
         }
     }
 
@@ -194,9 +199,10 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
                 is ShowAddressEditor -> {
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToEditShippingLabelAddressFragment(
-                            event.address,
-                            event.type,
-                            event.validationResult
+                            address = event.address,
+                            addressType = event.type,
+                            validationResult = event.validationResult,
+                            isInternational = event.isInternational
                         )
                     findNavController().navigateSafely(action)
                 }
@@ -229,6 +235,7 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
                             event.destinationAddress,
                             event.shippingLabelPackages.toTypedArray(),
                             event.order,
+                            event.customsPackages?.toTypedArray(),
                             event.selectedRates.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
@@ -252,8 +259,10 @@ class CreateShippingLabelFragment : BaseDaggerFragment(R.layout.fragment_create_
                 is ShowCustomsForm -> {
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToShippingCustomsFragment(
+                            originCountryCode = event.originCountryCode,
                             destinationCountryCode = event.destinationCountryCode,
-                            customsPackages = event.customsPacakges.toTypedArray()
+                            shippingPackages = event.shippingPackages.toTypedArray(),
+                            customsPackages = event.customsPackages.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
                 }

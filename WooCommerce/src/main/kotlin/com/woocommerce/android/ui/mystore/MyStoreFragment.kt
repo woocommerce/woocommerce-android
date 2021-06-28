@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.mystore
 
-import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -8,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
-import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -34,7 +32,7 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
@@ -43,6 +41,7 @@ import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     MyStoreContract.View,
     MyStoreStatsListener {
@@ -62,7 +61,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
-    @Inject lateinit var crashLogging: CrashLogging
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -104,11 +102,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         override fun onTabUnselected(tab: TabLayout.Tab) {}
 
         override fun onTabReselected(tab: TabLayout.Tab) {}
-    }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
