@@ -574,6 +574,9 @@
     <string name="shipping_label_print_customs_form">Print customs form</string>
     <string name="shipping_label_print_customs_form_screen_title">Print customs invoice</string>
     <string name="shipping_label_print_customs_form_download_failed">Error downloading the customs form</string>
+    <string name="shipping_label_move_item_dialog_title">Move item</string>
+    <string name="shipping_label_move_item_dialog_move">Move</string>
+    <string name="shipping_label_move_item_dialog_cancel">Cancel</string>
     <!--
             Refunds
         -->
