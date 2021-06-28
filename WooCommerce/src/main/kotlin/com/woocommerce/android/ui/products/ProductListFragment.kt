@@ -78,8 +78,11 @@ class ProductListFragment :
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = _binding!!
 
-    private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
+    private val feedbackState: FeedbackState
+        get() =
+            FeedbackPrefs.getFeatureFeedbackSettings(TAG)
+                ?.takeIf { it.name == VARIATIONS.name }
+                ?.state ?: UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
