@@ -8,11 +8,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
         android:layout_height="@dimen/payments_dialog_height"
+        android:background="?attr/colorSurface"
         android:paddingStart="@dimen/major_150"
         android:paddingTop="@dimen/major_150"
         android:paddingEnd="@dimen/major_150"
-        android:paddingBottom="@dimen/major_150"
-        tools:background="?attr/colorSurface">
+        android:paddingBottom="@dimen/major_150">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/header_label"
