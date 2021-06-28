@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -103,6 +104,14 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
             binding.secondaryActionBtn.setOnClickListener {
                 viewState.onSecondaryActionClicked?.invoke()
             }
+
+            binding.headerLabel.setTextColor(
+                if (viewState.isError) {
+                    ContextCompat.getColor(requireActivity(), R.color.color_error)
+                } else {
+                    ContextCompat.getColor(requireActivity(), R.color.color_on_surface_medium)
+                }
+            )
 
             with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
                 topMargin = resources.getDimensionPixelSize(viewState.illustrationTopMargin)

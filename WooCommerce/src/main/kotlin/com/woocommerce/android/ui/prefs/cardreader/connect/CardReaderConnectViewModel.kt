@@ -312,7 +312,8 @@ class CardReaderConnectViewModel @Inject constructor(
         val primaryActionLabel: Int? = null,
         val secondaryActionLabel: Int? = null,
         @DimenRes val illustrationTopMargin: Int = R.dimen.major_200,
-        open val listItems: List<ListItemViewState>? = null
+        open val listItems: List<ListItemViewState>? = null,
+        val isError: Boolean = false,
     ) {
         open val onPrimaryActionClicked: (() -> Unit)? = null
         open val onSecondaryActionClicked: (() -> Unit)? = null
@@ -364,7 +365,8 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.try_again,
             secondaryActionLabel = R.string.cancel,
-            illustrationTopMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150,
+            isError = true
         )
 
         data class ConnectingFailedState(
@@ -375,7 +377,8 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.try_again,
             secondaryActionLabel = R.string.cancel,
-            illustrationTopMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150,
+            isError = true
         )
 
         data class MissingPermissionsError(
@@ -386,7 +389,8 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
             secondaryActionLabel = R.string.cancel,
-            illustrationTopMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150,
+            isError = true
         )
 
         data class LocationDisabledError(
@@ -397,7 +401,8 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.card_reader_connect_open_location_settings,
             secondaryActionLabel = R.string.cancel,
-            illustrationTopMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150,
+            isError = true
         )
 
         data class BluetoothDisabledError(
@@ -408,7 +413,8 @@ class CardReaderConnectViewModel @Inject constructor(
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.card_reader_connect_open_bluetooth_settings,
             secondaryActionLabel = R.string.cancel,
-            illustrationTopMargin = R.dimen.major_150
+            illustrationTopMargin = R.dimen.major_150,
+            isError = true
         )
     }
 
