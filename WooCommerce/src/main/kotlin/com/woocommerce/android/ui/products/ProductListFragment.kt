@@ -26,7 +26,6 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.VARIATIONS
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
@@ -56,8 +55,10 @@ class ProductListFragment :
     OnLoadMoreListener,
     OnQueryTextListener,
     OnActionExpandListener {
+
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
+        val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.VARIATIONS
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
@@ -81,7 +82,7 @@ class ProductListFragment :
     private val feedbackState: FeedbackState
         get() =
             FeedbackPrefs.getFeatureFeedbackSettings(TAG)
-                ?.takeIf { it.name == VARIATIONS.name }
+                ?.takeIf { it.name == CURRENT_WIP_NOTICE_FEATURE.name }
                 ?.state ?: UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -492,7 +493,7 @@ class ProductListFragment :
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(VARIATIONS.name, state)
+        FeatureFeedbackSettings(CURRENT_WIP_NOTICE_FEATURE.name, state)
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 
