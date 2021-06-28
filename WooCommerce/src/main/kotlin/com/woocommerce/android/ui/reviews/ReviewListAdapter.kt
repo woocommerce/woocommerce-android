@@ -109,9 +109,10 @@ class ReviewListAdapter(
         val didMatch = fun(review: ProductReview): Boolean {
             reviewList.forEach {
                 if (it.remoteId == review.remoteId &&
-                        it.review == review.review &&
-                        it.read == (review.read != false) &&
-                        it.status == review.status) {
+                    it.review == review.review &&
+                    it.read == (review.read != false) &&
+                    it.status == review.status
+                ) {
                     return true
                 }
             }
@@ -331,7 +332,7 @@ class ReviewListAdapter(
         val title: String,
         val list: MutableList<ProductReview>
     ) : StatelessSection(
-            SectionParameters.Builder(R.layout.notifs_list_item).headerResourceId(R.layout.order_list_header).build()
+        SectionParameters.Builder(R.layout.notifs_list_item).headerResourceId(R.layout.order_list_header).build()
     ) {
         override fun getContentItemsTotal() = list.size
 
@@ -397,10 +398,12 @@ class ReviewListAdapter(
 
             viewBinding.notifTitle.text = if (review.product == null) {
                 viewBinding.root.context.getString(
-                    R.string.product_review_list_item_title, review.reviewerName)
+                    R.string.product_review_list_item_title, review.reviewerName
+                )
             } else {
                 viewBinding.root.context.getString(
-                    R.string.review_list_item_title, review.reviewerName, review.product?.name?.fastStripHtml())
+                    R.string.review_list_item_title, review.reviewerName, review.product?.name?.fastStripHtml()
+                )
             }
 
             viewBinding.notifDesc.text = StringUtils.getRawTextFromHtml(review.review)

@@ -49,7 +49,8 @@ class OrderShipmentProvidersRepository @Inject constructor(
         val order = orderStore.getOrderByIdentifier(orderIdentifier)
         if (order == null) {
             WooLog.e(
-                    ORDERS, "Can't find order with id ${orderIdentifier.toIdSet().remoteOrderId} " +
+                ORDERS,
+                "Can't find order with id ${orderIdentifier.toIdSet().remoteOrderId} " +
                     "while trying to fetch shipment providers list"
             )
             return null
@@ -69,7 +70,7 @@ class OrderShipmentProvidersRepository @Inject constructor(
     }
 
     private fun getShipmentProvidersFromDB(): List<OrderShipmentProvider> =
-            orderStore.getShipmentProvidersForSite(selectedSite.get()).map { it.toAppModel() }
+        orderStore.getShipmentProvidersForSite(selectedSite.get()).map { it.toAppModel() }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

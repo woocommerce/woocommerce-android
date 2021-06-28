@@ -71,7 +71,8 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
                 dispatcher,
                 accountStore,
                 userEligibilityFetcher
-            ))
+            )
+        )
 
         clearInvocations(
             viewModel,
@@ -97,30 +98,30 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     @Test
     fun `Handles retry button correctly when user is not eligible`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
-        doReturn(false).whenever(appPrefsWrapper).isUserEligible()
+            doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
+            doReturn(false).whenever(appPrefsWrapper).isUserEligible()
 
-        val isProgressDialogShown = ArrayList<Boolean>()
-        viewModel.viewStateData.observeForever { old, new ->
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
-                isProgressDialogShown.add(it)
+            val isProgressDialogShown = ArrayList<Boolean>()
+            viewModel.viewStateData.observeForever { old, new ->
+                new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                    isProgressDialogShown.add(it)
+                }
             }
+
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.onRetryButtonClicked()
+
+            verify(userEligibilityFetcher, times(1)).fetchUserInfo()
+            verify(userEligibilityFetcher, times(1)).updateUserInfo(any())
+
+            assertFalse(appPrefsWrapper.isUserEligible())
+            assertThat(snackbar).isEqualTo(ShowSnackbar(string.user_role_access_error_retry))
+            assertThat(isProgressDialogShown).containsExactly(true, false)
         }
-
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
-        }
-
-        viewModel.onRetryButtonClicked()
-
-        verify(userEligibilityFetcher, times(1)).fetchUserInfo()
-        verify(userEligibilityFetcher, times(1)).updateUserInfo(any())
-
-        assertFalse(appPrefsWrapper.isUserEligible())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.user_role_access_error_retry))
-        assertThat(isProgressDialogShown).containsExactly(true, false)
-    }
 
     @Test
     fun `Handles retry button correctly when user is eligible`() = coroutinesTestRule.testDispatcher.runBlockingTest {

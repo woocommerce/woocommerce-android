@@ -232,7 +232,8 @@ class CardReaderConnectViewModel @Inject constructor(
             readerType = reader.type,
             onConnectClicked = {
                 onConnectToReaderClicked(reader)
-            })
+            }
+        )
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)

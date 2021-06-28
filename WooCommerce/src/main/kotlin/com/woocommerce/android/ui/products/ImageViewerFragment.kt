@@ -82,9 +82,9 @@ class ImageViewerFragment : Fragment(R.layout.fragment_image_viewer), RequestLis
         showProgress(true)
 
         GlideApp.with(this)
-                .load(imageUrl)
-                .listener(this)
-                .into(binding.photoView)
+            .load(imageUrl)
+            .listener(this)
+            .into(binding.photoView)
     }
 
     private fun showProgress(show: Boolean) {

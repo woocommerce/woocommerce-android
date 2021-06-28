@@ -20,7 +20,7 @@ class MagicLinkInterceptActivity : Activity() {
         intent.action = getIntent().action
         intent.data = getIntent().data
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TASK
+            Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }

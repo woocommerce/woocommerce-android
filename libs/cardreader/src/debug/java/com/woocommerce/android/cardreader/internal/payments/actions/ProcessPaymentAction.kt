@@ -20,20 +20,26 @@ internal class ProcessPaymentAction(private val terminal: TerminalWrapper, priva
 
     fun processPayment(paymentIntent: PaymentIntent): Flow<ProcessPaymentStatus> {
         return callbackFlow {
-            terminal.processPayment(paymentIntent, object : PaymentIntentCallback {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
-                    logWrapper.d("CardReader", "Processing payment succeeded")
-                    this@callbackFlow.sendBlocking(Success(paymentIntent))
-                    this@callbackFlow.close()
-                }
+            terminal.processPayment(
+                paymentIntent,
+                object : PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                        logWrapper.d("CardReader", "Processing payment succeeded")
+                        this@callbackFlow.sendBlocking(Success(paymentIntent))
+                        this@callbackFlow.close()
+                    }
 
-                override fun onFailure(exception: TerminalException) {
-                    logWrapper.e("CardReader", "Processing payment failed. " +
-                        "Message: ${exception.errorMessage}, DeclineCode: ${exception.apiError?.declineCode}")
-                    this@callbackFlow.sendBlocking(Failure(exception))
-                    this@callbackFlow.close()
+                    override fun onFailure(exception: TerminalException) {
+                        logWrapper.e(
+                            "CardReader",
+                            "Processing payment failed. " +
+                                "Message: ${exception.errorMessage}, DeclineCode: ${exception.apiError?.declineCode}"
+                        )
+                        this@callbackFlow.sendBlocking(Failure(exception))
+                        this@callbackFlow.close()
+                    }
                 }
-            })
+            )
             awaitClose()
         }
     }

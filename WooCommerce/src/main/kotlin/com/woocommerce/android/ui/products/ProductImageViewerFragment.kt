@@ -32,7 +32,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_viewer),
+class ProductImageViewerFragment :
+    BaseFragment(R.layout.fragment_product_image_viewer),
     ImageViewerListener,
     BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -139,11 +140,11 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true
         confirmationDialog = ConfirmRemoveProductImageDialog(
-                requireActivity(),
-                onPositiveButton = this::removeCurrentImage,
-                onNegativeButton = {
-                    isConfirmationShowing = false
-                }
+            requireActivity(),
+            onPositiveButton = this::removeCurrentImage,
+            onNegativeButton = {
+                isConfirmationShowing = false
+            }
         ).show()
     }
 
@@ -188,7 +189,8 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
     private fun showToolbar(show: Boolean) {
         if (isAdded) {
             if ((show && binding.fakeToolbar.visibility == View.VISIBLE) ||
-                (!show && binding.fakeToolbar.visibility != View.VISIBLE)) {
+                (!show && binding.fakeToolbar.visibility != View.VISIBLE)
+            ) {
                 return
             }
 
@@ -236,7 +238,7 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
     }
 
     internal inner class ImageViewerAdapter(fm: FragmentManager, val images: ArrayList<Product.Image>) :
-            FragmentStatePagerAdapter(fm) {
+        FragmentStatePagerAdapter(fm) {
         fun indexOfImageId(imageId: Long): Int {
             for (index in images.indices) {
                 if (imageId == images[index].id) {

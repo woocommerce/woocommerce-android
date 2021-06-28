@@ -10,8 +10,8 @@ import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.PaymentMethodUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.PaymentMethodUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -36,20 +36,20 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
     @Suppress("DEPRECATION")
     private val paymentMethods = listOf(
-            CreateShippingLabelTestUtils.generatePaymentMethod(id = 1, cardType = "visa"),
-            CreateShippingLabelTestUtils.generatePaymentMethod(id = 2, cardType = "mastercard")
+        CreateShippingLabelTestUtils.generatePaymentMethod(id = 1, cardType = "visa"),
+        CreateShippingLabelTestUtils.generatePaymentMethod(id = 2, cardType = "mastercard")
     )
 
     private val shippingAccountSettings = ShippingAccountSettings(
-            canManagePayments = true,
-            canEditSettings = true,
-            paymentMethods = paymentMethods,
-            selectedPaymentId = 1,
-            lastUsedBoxId = null,
-            storeOwnerDetails = StoreOwnerDetails(
-                    "email", "username", "username", "name"
-            ),
-            isEmailReceiptEnabled = true
+        canManagePayments = true,
+        canEditSettings = true,
+        paymentMethods = paymentMethods,
+        selectedPaymentId = 1,
+        lastUsedBoxId = null,
+        storeOwnerDetails = StoreOwnerDetails(
+            "email", "username", "username", "name"
+        ),
+        isEmailReceiptEnabled = true
     )
 
     private lateinit var viewModel: EditShippingLabelPaymentViewModel
@@ -59,8 +59,8 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
             whenever(shippingLabelRepository.getAccountSettings()).thenReturn(accountSettings)
         }
         viewModel = EditShippingLabelPaymentViewModel(
-                SavedStateHandle(),
-                shippingLabelRepository = shippingLabelRepository
+            SavedStateHandle(),
+            shippingLabelRepository = shippingLabelRepository
         )
     }
 
@@ -71,8 +71,8 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
         val paymentMethodModels = listOf(
-                PaymentMethodUiModel(paymentMethods[0], isSelected = true),
-                PaymentMethodUiModel(paymentMethods[1], isSelected = false)
+            PaymentMethodUiModel(paymentMethods[0], isSelected = true),
+            PaymentMethodUiModel(paymentMethods[1], isSelected = false)
         )
         verify(shippingLabelRepository).getAccountSettings()
         assertThat(viewState!!.dataLoadState).isEqualTo(DataLoadState.Success)
@@ -182,18 +182,18 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `show snackbar when new payment method is added`() = testBlocking {
         val singleCardResult = shippingAccountSettings
-                .copy(paymentMethods = shippingAccountSettings.paymentMethods.subList(0, 1))
+            .copy(paymentMethods = shippingAccountSettings.paymentMethods.subList(0, 1))
         whenever(shippingLabelRepository.getAccountSettings(any()))
-                .thenReturn(WooResult(singleCardResult))
-                .thenReturn(WooResult(shippingAccountSettings))
+            .thenReturn(WooResult(singleCardResult))
+            .thenReturn(WooResult(shippingAccountSettings))
         viewModel = EditShippingLabelPaymentViewModel(
-                SavedStateHandle(),
-                shippingLabelRepository = shippingLabelRepository
+            SavedStateHandle(),
+            shippingLabelRepository = shippingLabelRepository
         )
 
         viewModel.onPaymentMethodAdded()
 
         assertThat(viewModel.event.value)
-                .isEqualTo(ShowSnackbar(R.string.shipping_label_payment_method_added))
+            .isEqualTo(ShowSnackbar(R.string.shipping_label_payment_method_added))
     }
 }

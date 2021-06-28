@@ -72,14 +72,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private lateinit var listener: OnGalleryImageInteractionListener
 
     private val draggableItemTouchHelper = DraggableItemTouchHelper(
-            dragDirs = ItemTouchHelper.START or
-                    ItemTouchHelper.END or
-                    ItemTouchHelper.UP or
-                    ItemTouchHelper.DOWN,
-            onDragStarted = {
-                listener.onGalleryImageDragStarted()
-            },
-            onMove = this::onProductImagesPositionChanged
+        dragDirs = ItemTouchHelper.START or
+            ItemTouchHelper.END or
+            ItemTouchHelper.UP or
+            ItemTouchHelper.DOWN,
+        onDragStarted = {
+            listener.onGalleryImageDragStarted()
+        },
+        onMove = this::onProductImagesPositionChanged
     )
 
     init {
@@ -88,8 +88,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             try {
                 isGridView = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isGridView, false)
                 showAddImageIcon = attrArray.getBoolean(
-                        R.styleable.WCProductImageGalleryView_showAddImageIcon,
-                        false
+                    R.styleable.WCProductImageGalleryView_showAddImageIcon,
+                    false
                 )
                 isDraggingEnabled = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isDraggingEnabled, false)
             } finally {
@@ -122,10 +122,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         // create a reusable Glide request for all images
         glideRequest = glideRequests
-                .asDrawable()
-                .error(R.drawable.ic_product)
-                .placeholder(R.drawable.product_detail_image_background)
-                .transition(DrawableTransitionOptions.withCrossFade())
+            .asDrawable()
+            .error(R.drawable.ic_product)
+            .placeholder(R.drawable.product_detail_image_background)
+            .transition(DrawableTransitionOptions.withCrossFade())
 
         // create a reusable Glide rounded corner transformation for all images
         val borderRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_small)
@@ -141,16 +141,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         addItemDecoration(
-                if (isGridView) {
-                    GridItemDecoration(
-                            spanCount = NUM_COLUMNS,
-                            spacing = resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-                    )
-                } else {
-                    HorizontalItemDecoration(
-                            spacing = resources.getDimensionPixelSize(R.dimen.minor_100)
-                    )
-                }
+            if (isGridView) {
+                GridItemDecoration(
+                    spanCount = NUM_COLUMNS,
+                    spacing = resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+                )
+            } else {
+                HorizontalItemDecoration(
+                    spacing = resources.getDimensionPixelSize(R.dimen.minor_100)
+                )
+            }
         )
     }
 
@@ -170,7 +170,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private fun updateDraggingItemTouchHelper(images: List<Product.Image>) {
         draggableItemTouchHelper.attachToRecyclerView(
-                if (isDraggingEnabled && images.size > 1) this else null
+            if (isDraggingEnabled && images.size > 1) this else null
         )
     }
 
@@ -243,11 +243,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             // restore the "Add image" icon (never shown when list is empty)
             if (showAddImageIcon && imageList.size > 0) {
-                imageList.add(Product.Image(
+                imageList.add(
+                    Product.Image(
                         id = ADD_IMAGE_ITEM_ID,
                         name = "",
                         source = "",
-                        dateCreated = Date()))
+                        dateCreated = Date()
+                    )
+                )
             }
 
             notifyDataSetChanged()

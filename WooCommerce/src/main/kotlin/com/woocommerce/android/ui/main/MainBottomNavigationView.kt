@@ -27,7 +27,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : BottomNavigationView(context, attrs),
-    OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
+    OnNavigationItemSelectedListener,
+    OnNavigationItemReselectedListener {
     private lateinit var navController: NavController
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable

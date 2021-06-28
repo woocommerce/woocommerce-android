@@ -64,10 +64,11 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
         AnalyticsTracker.track(
-            SURVEY_SCREEN, mapOf(
-            KEY_FEEDBACK_CONTEXT to feedbackContext,
-            KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_OPENED
-        )
+            SURVEY_SCREEN,
+            mapOf(
+                KEY_FEEDBACK_CONTEXT to feedbackContext,
+                KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_OPENED
+            )
         )
 
         activity?.let {
@@ -99,10 +100,11 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
     override fun onDestroy() {
         if (surveyCompleted.not()) {
             AnalyticsTracker.track(
-                SURVEY_SCREEN, mapOf(
-                KEY_FEEDBACK_CONTEXT to feedbackContext,
-                KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_CANCELED
-            )
+                SURVEY_SCREEN,
+                mapOf(
+                    KEY_FEEDBACK_CONTEXT to feedbackContext,
+                    KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_CANCELED
+                )
             )
         }
         super.onDestroy()

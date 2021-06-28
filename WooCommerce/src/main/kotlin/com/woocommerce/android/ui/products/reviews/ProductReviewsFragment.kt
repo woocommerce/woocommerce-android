@@ -26,7 +26,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductReviewsFragment : BaseFragment(R.layout.fragment_reviews_list),
+class ProductReviewsFragment :
+    BaseFragment(R.layout.fragment_reviews_list),
     ReviewListAdapter.OnReviewClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -95,16 +96,22 @@ class ProductReviewsFragment : BaseFragment(R.layout.fragment_reviews_list),
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
-        viewModel.reviewList.observe(viewLifecycleOwner, Observer {
-            showReviewList(it)
-        })
+        viewModel.reviewList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showReviewList(it)
+            }
+        )
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {

@@ -127,7 +127,8 @@ class ShippingLabelPackagesAdapter(
 
         override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
             return if (oldList[oldItemPosition].items == newList[newItemPosition].items &&
-                oldList[oldItemPosition].selectedPackage == newList[newItemPosition].selectedPackage) {
+                oldList[oldItemPosition].selectedPackage == newList[newItemPosition].selectedPackage
+            ) {
                 ChangePayload.Weight
             } else null
         }

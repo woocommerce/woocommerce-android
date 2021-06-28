@@ -196,12 +196,14 @@ class CardReaderPaymentViewModel
         orderId: Long,
         amountLabel: String
     ) {
-        viewState.postValue(PaymentSuccessfulState(
-            amountLabel,
-            // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-            { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
-            { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
-        ))
+        viewState.postValue(
+            PaymentSuccessfulState(
+                amountLabel,
+                // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
+                { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
+                { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
+            )
+        )
         reFetchOrder()
     }
 

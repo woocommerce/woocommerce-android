@@ -28,15 +28,15 @@ class ProductImagesNotificationHandler(
 
     init {
         notificationManager = SystemServiceFactory.get(
-                context,
-                Context.NOTIFICATION_SERVICE
+            context,
+            Context.NOTIFICATION_SERVICE
         ) as NotificationManager
 
         createChannel()
 
         notificationBuilder = NotificationCompat.Builder(
-                context,
-                CHANNEL_ID
+            context,
+            CHANNEL_ID
         ).also {
             it.color = ContextCompat.getColor(context, R.color.woo_gray_40)
             it.setSmallIcon(android.R.drawable.stat_sys_upload)

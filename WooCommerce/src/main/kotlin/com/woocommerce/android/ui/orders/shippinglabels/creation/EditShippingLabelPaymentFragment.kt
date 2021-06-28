@@ -37,9 +37,11 @@ import javax.inject.Inject
 private const val FETCH_PAYMENT_METHOD_URL_PATH = "me/payment-methods"
 
 @AndroidEntryPoint
-class EditShippingLabelPaymentFragment : BaseFragment(
-    R.layout.fragment_edit_shipping_label_payment
-), BackPressListener {
+class EditShippingLabelPaymentFragment :
+    BaseFragment(
+        R.layout.fragment_edit_shipping_label_payment
+    ),
+    BackPressListener {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"

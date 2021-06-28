@@ -33,7 +33,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductSelectionListFragment : BaseFragment(R.layout.fragment_product_list),
+class ProductSelectionListFragment :
+    BaseFragment(R.layout.fragment_product_list),
     OnLoadMoreListener,
     OnActionModeEventListener,
     OnQueryTextListener,
@@ -184,21 +185,27 @@ class ProductSelectionListFragment : BaseFragment(R.layout.fragment_product_list
             }
         }
 
-        viewModel.productList.observe(viewLifecycleOwner, Observer {
-            showProductList(it)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> {
-                    val key = viewModel.groupedProductListType.resultKey
-                    val productIds = (event.data as? List<Long>) ?: emptyList()
-                    navigateBackWithResult(key, productIds)
-                }
-                else -> event.isHandled = false
+        viewModel.productList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProductList(it)
             }
-        })
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> {
+                        val key = viewModel.groupedProductListType.resultKey
+                        val productIds = (event.data as? List<Long>) ?: emptyList()
+                        navigateBackWithResult(key, productIds)
+                    }
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun showSkeleton(show: Boolean) {
