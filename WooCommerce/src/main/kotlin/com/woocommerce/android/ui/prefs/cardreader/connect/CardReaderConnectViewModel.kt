@@ -324,7 +324,7 @@ class CardReaderConnectViewModel @Inject constructor(
         data class ReaderFoundState(
             override val onPrimaryActionClicked: (() -> Unit),
             override val onSecondaryActionClicked: (() -> Unit),
-            val readerId: String
+            val readerId: String,
         ) : ViewState(
             headerLabel = UiStringRes(
                 stringRes = R.string.card_reader_connect_reader_found_header,
