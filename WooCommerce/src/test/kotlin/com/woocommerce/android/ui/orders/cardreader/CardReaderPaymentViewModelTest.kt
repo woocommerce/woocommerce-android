@@ -506,7 +506,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_retry)
+                .isEqualTo(R.string.try_again)
         }
 
     @Test
