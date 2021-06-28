@@ -170,11 +170,6 @@ dependencies {
     }
 
     implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
-    constraints {
-        implementation('com.fasterxml.jackson.core:jackson-core:2.12.3') {
-            because 'previous version from tracks conflicts with WireMock for UI tests'
-        }
-    }
 
     implementation("$gradle.ext.fluxCBinaryPath:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
