@@ -31,10 +31,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
-import com.woocommerce.android.util.LocationUtils
-import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.util.*
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
@@ -112,6 +109,10 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
             // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
             (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
+
+            if (viewState is ViewState.ReaderFoundState) {
+                WooAnimUtils.pop(binding.illustration, WooAnimUtils.Duration.LONG)
+            }
         }
     }
 
