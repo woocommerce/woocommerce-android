@@ -7,22 +7,34 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.AppUrls
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBinding
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Error
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Loading
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Success
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
+private const val FETCH_PAYMENT_METHOD_URL_PATH = "me/payment-methods"
 
 @AndroidEntryPoint
 class EditShippingLabelPaymentFragment : BaseFragment(
@@ -34,6 +46,8 @@ class EditShippingLabelPaymentFragment : BaseFragment(
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private val skeletonView = SkeletonView()
 
     private val viewModel: EditShippingLabelPaymentViewModel by viewModels()
 
@@ -53,7 +67,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.hasChanges ?: false
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,7 +80,14 @@ class EditShippingLabelPaymentFragment : BaseFragment(
         binding.emailReceiptsCheckbox.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onEmailReceiptsCheckboxChanged(isChecked)
         }
+        binding.addPaymentMethodButton.setOnClickListener {
+            viewModel.onAddPaymentMethodClicked()
+        }
+        binding.addFirstPaymentMethodButton.setOnClickListener {
+            viewModel.onAddPaymentMethodClicked()
+        }
         setupObservers(binding)
+        setupResultHandlers()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -86,9 +107,25 @@ class EditShippingLabelPaymentFragment : BaseFragment(
 
     private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
-                binding.loadingProgress.isVisible = isLoading
-                binding.contentLayout.isVisible = !isLoading
+            new.dataLoadState?.takeIfNotEqualTo(old?.dataLoadState) { uiState ->
+                when (uiState) {
+                    Loading -> {
+                        showSkeleton(binding)
+                        binding.errorView.hide()
+                    }
+                    Error -> {
+                        skeletonView.hide()
+                        binding.contentLayout.isVisible = false
+                        binding.errorView.show(
+                            type = WCEmptyView.EmptyViewType.NETWORK_ERROR,
+                            onButtonClick = { viewModel.refreshData() }
+                        )
+                    }
+                    Success -> {
+                        skeletonView.hide()
+                        binding.errorView.hide()
+                    }
+                }
             }
             new.canManagePayments.takeIfNotEqualTo(old?.canManagePayments) { canManagePayments ->
                 binding.editWarningBanner.isVisible = !canManagePayments
@@ -97,6 +134,12 @@ class EditShippingLabelPaymentFragment : BaseFragment(
             }
             new.paymentMethods.takeIfNotEqualTo(old?.paymentMethods) {
                 paymentMethodsAdapter.items = it
+                it.isEmpty().let { isListEmpty ->
+                    binding.paymentMethodsSectionTitle.isVisible = !isListEmpty
+                    binding.paymentMethodsList.isVisible = !isListEmpty
+                    binding.addPaymentMethodButton.isVisible = !isListEmpty
+                    binding.addFirstPaymentMethodButton.isVisible = isListEmpty
+                }
             }
             new.canEditSettings.takeIfNotEqualTo(old?.canEditSettings) { canEditSettings ->
                 binding.emailReceiptsCheckbox.isEnabled = canEditSettings
@@ -122,7 +165,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(
                     details.wpcomEmail
                 )
             }
-            new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
+            new.canSave.takeIfNotEqualTo(old?.canSave) {
                 if (::doneMenuItem.isInitialized) {
                     doneMenuItem.isVisible = it
                 }
@@ -135,14 +178,33 @@ class EditShippingLabelPaymentFragment : BaseFragment(
                 }
             }
         }
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is AddPaymentMethod -> {
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
+                            urlToTriggerExit = FETCH_PAYMENT_METHOD_URL_PATH
+                        )
+                    )
+                }
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PAYMENTS_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_PAYMENTS_CLOSED)
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun setupResultHandlers() {
+        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+            viewModel.onPaymentMethodAdded()
+        }
+    }
+
+    fun showSkeleton(binding: FragmentEditShippingLabelPaymentBinding) {
+        skeletonView.show(binding.contentLayout, R.layout.skeleton_shipping_label_payment_list, delayed = false)
     }
 
     private fun showSavingProgressDialog() {

@@ -77,7 +77,6 @@
     <ID>FunctionOnlyReturningConstant:Screen.kt$Screen.Companion$fun isVisible(): Boolean</ID>
     <ID>LargeClass:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
     <ID>LongMethod:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment$private fun setupObservers(binding: FragmentAddShipmentTrackingBinding)</ID>
-    <ID>LongMethod:CardReaderDetailFragment.kt$CardReaderDetailFragment$private fun initObservers(binding: FragmentCardReaderDetailBinding)</ID>
     <ID>LongMethod:CreateShippingLabelFragment.kt$CreateShippingLabelFragment$private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding)</ID>
     <ID>LongMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun initializeStateMachine()</ID>
     <ID>LongMethod:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment$@SuppressLint("SetTextI18n") private fun subscribeObservers()</ID>
@@ -120,7 +119,6 @@
     <ID>MagicNumber:AttributeTermsListAdapter.kt$AttributeTermsListAdapter$300</ID>
     <ID>MagicNumber:BottomNavigationPosition.kt$BottomNavigationPosition.REVIEWS$3</ID>
     <ID>MagicNumber:CardReaderDetailViewModel.kt$CardReaderDetailViewModel$100</ID>
-    <ID>MagicNumber:CardReaderSettingsFragment.kt$CardReaderSettingsFragment$100</ID>
     <ID>MagicNumber:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$1000.0</ID>
     <ID>MagicNumber:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$4</ID>
     <ID>MagicNumber:CurrencyAmountDialog.kt$CurrencyAmountDialog$200</ID>
@@ -209,7 +207,6 @@
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
     <ID>NestedBlockDepth:SitePickerActivity.kt$SitePickerActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
-    <ID>ProtectedMemberInFinalClass:CardReaderSettingsFragment.kt$CardReaderSettingsFragment$protected var job: Job = Job()</ID>
     <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val _orderStatusOptions = MutableLiveData&lt;Map&lt;String, WCOrderStatusModel&gt;&gt;()</ID>
     <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val _pagedListData = MediatorLiveData&lt;PagedOrdersList&gt;()</ID>
     <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val lifecycleRegistry: LifecycleRegistry by lazy { LifecycleRegistry(this) }</ID>
