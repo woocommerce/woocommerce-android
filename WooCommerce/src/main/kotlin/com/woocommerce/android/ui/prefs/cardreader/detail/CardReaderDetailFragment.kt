@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -24,6 +25,7 @@ import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewMo
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +38,12 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
+
+        val learnMoreListener = View.OnClickListener {
+            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        }
+        binding.readerConnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
+        binding.readerDisconnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
 
         observeEvents(binding)
         observeViewState(binding)
