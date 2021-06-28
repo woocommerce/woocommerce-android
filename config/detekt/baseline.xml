@@ -69,16 +69,12 @@
     <ID>ForbiddenComment:NotificationHandler.kt$NotificationHandler$// TODO: Add quick actions for reviews</ID>
     <ID>ForbiddenComment:OrderDetailPaymentInfoView.kt$OrderDetailPaymentInfoView$// TODO: Once the refund by amount is supported again, this condition will need to be updated</ID>
     <ID>ForbiddenComment:OrderDetailRefundsAdapter.kt$OrderDetailRefundsAdapter.ViewHolder$// TODO: open refund detail screen</ID>
-    <ID>ForbiddenComment:OrderFetcher.kt$OrderFetcher$// FIXME: Add error handling</ID>
-    <ID>ForbiddenComment:OrderFetcher.kt$OrderFetcher$// FIXME: Possible add new tracks event to track error fetching order list data "order_list_load_failed"</ID>
     <ID>ForbiddenComment:ProductDetailFragment.kt$ProductDetailFragment$// TODO: add tracking events here</ID>
     <ID>ForbiddenComment:ProductDetailFragment.kt$ProductDetailFragment$// TODO: remove the null checks once the root cause is identified is fixed</ID>
     <ID>ForbiddenComment:ProductDetailRepository.kt$ProductDetailRepository$// TODO: add event to track sku availability success</ID>
     <ID>ForbiddenComment:RefundByItemsFragment.kt$RefundByItemsFragment$// TODO: Temporarily disabled, this will be used in a future release - do not remove</ID>
     <ID>ForbiddenComment:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
-    <ID>ForbiddenComment:MainActivity.kt$MainActivity$// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")</ID>
     <ID>FunctionOnlyReturningConstant:Screen.kt$Screen.Companion$fun isVisible(): Boolean</ID>
-    <ID>LargeClass:OrderDetailViewModelTest.kt$OrderDetailViewModelTest : BaseUnitTest</ID>
     <ID>LargeClass:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
     <ID>LongMethod:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment$private fun setupObservers(binding: FragmentAddShipmentTrackingBinding)</ID>
     <ID>LongMethod:CardReaderDetailFragment.kt$CardReaderDetailFragment$private fun initObservers(binding: FragmentCardReaderDetailBinding)</ID>
@@ -94,7 +90,6 @@
     <ID>LongMethod:Order.kt$fun WCOrderModel.toAppModel(): Order</ID>
     <ID>LongMethod:OrderDetailCustomerInfoView.kt$OrderDetailCustomerInfoView$fun updateCustomerInfo( order: Order, isVirtualOrder: Boolean // don't display shipping section for virtual products )</ID>
     <ID>LongMethod:OrderDetailFragment.kt$OrderDetailFragment$private fun setupObservers(viewModel: OrderDetailViewModel)</ID>
-    <ID>LongMethod:OrderDetailPaymentInfoView.kt$OrderDetailPaymentInfoView$fun updatePaymentInfo( order: Order, isPaymentCollectableWithCardReader: Boolean, formatCurrencyForDisplay: (BigDecimal) -&gt; String, onIssueRefundClickListener: (view: View) -&gt; Unit, onCollectCardPresentPaymentClickListener: (view: View) -&gt; Unit, onPrintingInstructionsClickListener: (view: View) -&gt; Unit )</ID>
     <ID>LongMethod:OrderDetailRepository.kt$OrderDetailRepository$@Suppress("unused") @Subscribe(threadMode = MAIN) fun onOrderChanged(event: OnOrderChanged)</ID>
     <ID>LongMethod:OrderDetailShippingLabelsAdapter.kt$OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder$fun bind(shippingLabel: ShippingLabel)</ID>
     <ID>LongMethod:OrderListItemDataSource.kt$OrderListItemDataSource$override fun getItemIdentifiers( listDescriptor: WCOrderListDescriptor, remoteItemIds: List&lt;RemoteId&gt;, isListFullyFetched: Boolean ): List&lt;OrderListItemIdentifier&gt;</ID>
@@ -186,7 +181,6 @@
     <ID>MagicNumber:WooWellSqlConfig.kt$WooWellSqlConfig$1024L</ID>
     <ID>MagicNumber:WooWellSqlConfig.kt$WooWellSqlConfig$5L</ID>
     <ID>MatchingDeclarationName:NavController.kt$CallThrottler</ID>
-    <ID>MaxLineLength:Address.kt$Address$*</ID>
     <ID>MaxLineLength:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
     <ID>MaxLineLength:MainActivity.kt$MainActivity.&lt;no name provided&gt;$// We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value</ID>
     <ID>MaxLineLength:MainPresenter.kt$MainPresenter$// Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI</ID>
@@ -214,7 +208,6 @@
     <ID>NestedBlockDepth:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false )</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
-    <ID>NestedBlockDepth:ShippingLabelAddressValidator.kt$ShippingLabelAddressValidator$suspend fun validateAddress( address: Address, type: AddressType, isInternationalShipment: Boolean ): ValidationResult</ID>
     <ID>NestedBlockDepth:SitePickerActivity.kt$SitePickerActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
     <ID>ProtectedMemberInFinalClass:CardReaderSettingsFragment.kt$CardReaderSettingsFragment$protected var job: Job = Job()</ID>
     <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val _orderStatusOptions = MutableLiveData&lt;Map&lt;String, WCOrderStatusModel&gt;&gt;()</ID>
@@ -227,7 +220,6 @@
     <ID>ReturnCount:EditShippingLabelPackagesViewModel.kt$EditShippingLabelPackagesViewModel$suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean</ID>
     <ID>ReturnCount:KeepStateNavigator.kt$KeepStateNavigator$override fun navigate( destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras? ): NavDestination?</ID>
     <ID>ReturnCount:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
-    <ID>ReturnCount:MyStoreFragment.kt$MyStoreFragment$override fun getFragmentTitle(): String</ID>
     <ID>ReturnCount:MyStoreStatsView.kt$MyStoreStatsView$ private fun getRecencyMessage(): String?</ID>
     <ID>ReturnCount:NotificationHandler.kt$NotificationHandler$@Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel)</ID>
     <ID>ReturnCount:NotificationHandler.kt$NotificationHandler$private fun getLargeIconBitmap(context: Context, iconUrl: String?, shouldCircularizeIcon: Boolean): Bitmap?</ID>
@@ -248,7 +240,6 @@
     <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$private fun isSameList(reviews: List&lt;ProductReview&gt;): Boolean</ID>
     <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
-    <ID>ReturnCount:ShippingLabelAddressValidator.kt$ShippingLabelAddressValidator$suspend fun validateAddress( address: Address, type: AddressType, isInternationalShipment: Boolean ): ValidationResult</ID>
     <ID>ReturnCount:SitePickerAdapter.kt$SitePickerAdapter$ private fun isSameSiteList(sites: List&lt;SiteModel&gt;): Boolean</ID>
     <ID>ReturnCount:StringExt.kt$ fun String.fastStripHtml(): String</ID>
     <ID>ReturnCount:StringExt.kt$fun String.semverCompareTo(otherVersion: String): Int</ID>
@@ -279,43 +270,23 @@
     <ID>TooGenericExceptionCaught:TokenProvider.kt$TokenProvider$e: RuntimeException</ID>
     <ID>TooGenericExceptionCaught:WooLogViewerActivity.kt$WooLogViewerActivity$e: Exception</ID>
     <ID>TooGenericExceptionThrown:ActionableEmptyView.kt$ActionableEmptyView$throw RuntimeException("$context: ActionableEmptyView must have a title (aevTitle)")</ID>
-    <ID>TooManyFunctions:AddAttributeFragment.kt$AddAttributeFragment : BaseProductFragment</ID>
     <ID>TooManyFunctions:AddAttributeTermsFragment.kt$AddAttributeTermsFragment : BaseProductFragment</ID>
-    <ID>TooManyFunctions:AddOrderNoteFragment.kt$AddOrderNoteFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:AddOrderTrackingProviderListFragment.kt$AddOrderTrackingProviderListFragment : BaseFragmentOnQueryTextListenerOnProviderClickListener</ID>
-    <ID>TooManyFunctions:AddProductCategoryFragment.kt$AddProductCategoryFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:AddProductCategoryViewModel.kt$AddProductCategoryViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:AppPrefs.kt$AppPrefs$AppPrefs</ID>
-    <ID>TooManyFunctions:AppSettingsActivity.kt$AppSettingsActivity : AppCompatActivityAppSettingsListenerView</ID>
-    <ID>TooManyFunctions:AppUpgradeActivity.kt$AppUpgradeActivity : AppCompatActivityAppUpgradeActivityViewInstallStateUpdatedListener</ID>
-    <ID>TooManyFunctions:AttributeListFragment.kt$AttributeListFragment : BaseProductFragment</ID>
-    <ID>TooManyFunctions:AttributeTermsListAdapter.kt$AttributeTermsListAdapter : Adapter</ID>
-    <ID>TooManyFunctions:AztecEditorFragment.kt$AztecEditorFragment : BaseFragmentIAztecToolbarClickListenerBackPressListenerIHistoryListener</ID>
     <ID>TooManyFunctions:CardReaderConnectViewModel.kt$CardReaderConnectViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:CardReaderPaymentViewModel.kt$CardReaderPaymentViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:CreateShippingLabelFragment.kt$CreateShippingLabelFragment : BaseFragment</ID>
     <ID>TooManyFunctions:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:DateExt.kt$com.woocommerce.android.extensions.DateExt.kt</ID>
     <ID>TooManyFunctions:DateUtils.kt$DateUtils</ID>
     <ID>TooManyFunctions:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:EditShippingLabelAddressViewModel.kt$EditShippingLabelAddressViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:EditVariationAttributesFragment.kt$EditVariationAttributesFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:FeedbackSurveyFragment.kt$FeedbackSurveyFragment : Fragment</ID>
-    <ID>TooManyFunctions:HelpActivity.kt$HelpActivity : AppCompatActivity</ID>
     <ID>TooManyFunctions:IssueRefundViewModel.kt$IssueRefundViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:LoginActivity.kt$LoginActivity : AppCompatActivityLoginListenerGoogleListenerPrologueFinishedListenerHasAndroidInjectorLoginNoJetpackListenerListener</ID>
-    <ID>TooManyFunctions:LoginAnalyticsTracker.kt$LoginAnalyticsTracker : LoginAnalyticsListener</ID>
-    <ID>TooManyFunctions:MagicLinkInterceptFragment.kt$MagicLinkInterceptFragment : Fragment</ID>
     <ID>TooManyFunctions:MagicLinkInterceptRepository.kt$MagicLinkInterceptRepository</ID>
     <ID>TooManyFunctions:MainActivity.kt$MainActivity : AppUpgradeActivityViewMainNavigationRouterMainNavigationListenerOnDestinationChangedListenerPromoDialogListener</ID>
-    <ID>TooManyFunctions:MainBottomNavigationView.kt$MainBottomNavigationView : BottomNavigationViewOnNavigationItemSelectedListenerOnNavigationItemReselectedListener</ID>
     <ID>TooManyFunctions:MainContract.kt$MainContract$View : BaseViewTopLevelFragmentRouter</ID>
     <ID>TooManyFunctions:MainNavigationRouter.kt$MainNavigationRouter</ID>
-    <ID>TooManyFunctions:MainPresenter.kt$MainPresenter : Presenter</ID>
     <ID>TooManyFunctions:MyStoreContract.kt$MyStoreContract$View : BaseView</ID>
-    <ID>TooManyFunctions:MyStoreFragment.kt$MyStoreFragment : TopLevelFragmentViewMyStoreStatsListener</ID>
-    <ID>TooManyFunctions:MyStorePresenter.kt$MyStorePresenter : Presenter</ID>
     <ID>TooManyFunctions:MyStoreStatsView.kt$MyStoreStatsView : MaterialCardViewOnChartValueSelectedListenerBarChartGestureListener</ID>
     <ID>TooManyFunctions:NotificationHandler.kt$NotificationHandler</ID>
     <ID>TooManyFunctions:NotificationHandler.kt$NotificationHandler$Companion</ID>
@@ -323,33 +294,19 @@
     <ID>TooManyFunctions:OrderDetailFragment.kt$OrderDetailFragment : BaseFragmentOrderProductActionListener</ID>
     <ID>TooManyFunctions:OrderDetailRepository.kt$OrderDetailRepository</ID>
     <ID>TooManyFunctions:OrderDetailViewModel.kt$OrderDetailViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:OrderFulfillFragment.kt$OrderFulfillFragment : BaseFragmentOrderProductActionListenerBackPressListener</ID>
     <ID>TooManyFunctions:OrderFulfillViewModel.kt$OrderFulfillViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:OrderListFragment.kt$OrderListFragment : TopLevelFragmentOrderStatusListListenerOnQueryTextListenerOnActionExpandListenerOrderListListener</ID>
     <ID>TooManyFunctions:OrderListViewModel.kt$OrderListViewModel : ScopedViewModelLifecycleOwner</ID>
-    <ID>TooManyFunctions:ParentCategoryListFragment.kt$ParentCategoryListFragment : BaseFragmentOnLoadMoreListenerOnProductCategoryClickListener</ID>
-    <ID>TooManyFunctions:PrintShippingLabelFragment.kt$PrintShippingLabelFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:Product.kt$Product : ParcelableIProduct</ID>
-    <ID>TooManyFunctions:ProductCatalogVisibilityFragment.kt$ProductCatalogVisibilityFragment : BaseProductSettingsFragmentOnClickListener</ID>
-    <ID>TooManyFunctions:ProductCategoriesFragment.kt$ProductCategoriesFragment : BaseProductFragmentOnLoadMoreListenerOnProductCategoryClickListener</ID>
     <ID>TooManyFunctions:ProductDetailCardBuilder.kt$ProductDetailCardBuilder</ID>
     <ID>TooManyFunctions:ProductDetailFragment.kt$ProductDetailFragment : BaseProductFragmentOnGalleryImageInteractionListener</ID>
     <ID>TooManyFunctions:ProductDetailRepository.kt$ProductDetailRepository</ID>
     <ID>TooManyFunctions:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductDownloadDetailsFragment.kt$ProductDownloadDetailsFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:ProductDownloadsFragment.kt$ProductDownloadsFragment : BaseProductFragment</ID>
     <ID>TooManyFunctions:ProductFilterListViewModel.kt$ProductFilterListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductImageViewerFragment.kt$ProductImageViewerFragment : BaseFragmentImageViewerListenerBackPressListener</ID>
     <ID>TooManyFunctions:ProductImagesFragment.kt$ProductImagesFragment : BaseProductEditorFragmentOnGalleryImageInteractionListener</ID>
     <ID>TooManyFunctions:ProductImagesViewModel.kt$ProductImagesViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:ProductListFragment.kt$ProductListFragment : TopLevelFragmentOnProductClickListenerProductSortAndFilterListenerOnLoadMoreListenerOnQueryTextListenerOnActionExpandListener</ID>
     <ID>TooManyFunctions:ProductListViewModel.kt$ProductListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductPricingFragment.kt$ProductPricingFragment : BaseProductEditorFragmentProductItemSelectorDialogListener</ID>
-    <ID>TooManyFunctions:ProductSelectionListFragment.kt$ProductSelectionListFragment : BaseFragmentOnLoadMoreListenerOnActionModeEventListenerOnQueryTextListenerOnActionExpandListener</ID>
-    <ID>TooManyFunctions:ProductStatusFragment.kt$ProductStatusFragment : BaseProductSettingsFragmentOnClickListener</ID>
-    <ID>TooManyFunctions:ProductTagsFragment.kt$ProductTagsFragment : BaseProductFragmentOnLoadMoreListenerOnProductTagClickListener</ID>
-    <ID>TooManyFunctions:ProductVisibilityFragment.kt$ProductVisibilityFragment : BaseProductSettingsFragmentOnClickListener</ID>
-    <ID>TooManyFunctions:ReviewDetailFragment.kt$ReviewDetailFragment : BaseFragment</ID>
     <ID>TooManyFunctions:ReviewDetailRepository.kt$ReviewDetailRepository</ID>
     <ID>TooManyFunctions:ReviewListAdapter.kt$ReviewListAdapter : SectionedRecyclerViewAdapter</ID>
     <ID>TooManyFunctions:ReviewListFragment.kt$ReviewListFragment : TopLevelFragmentItemDecorationListenerOnReviewClickListener</ID>
@@ -357,28 +314,17 @@
     <ID>TooManyFunctions:ReviewListViewModel.kt$ReviewListViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:Section.kt$Section</ID>
     <ID>TooManyFunctions:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter : Adapter</ID>
-    <ID>TooManyFunctions:ShippingCarrierRatesFragment.kt$ShippingCarrierRatesFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:ShippingCustomsAdapter.kt$ShippingCustomsFormListener</ID>
-    <ID>TooManyFunctions:ShippingCustomsViewModel.kt$ShippingCustomsViewModel : ScopedViewModelShippingCustomsFormListener</ID>
-    <ID>TooManyFunctions:SitePickerActivity.kt$SitePickerActivity : AppCompatActivityViewOnSiteClickListenerListenerHasAndroidInjector</ID>
     <ID>TooManyFunctions:SitePickerContract.kt$SitePickerContract$Presenter : BasePresenter</ID>
     <ID>TooManyFunctions:SitePickerContract.kt$SitePickerContract$View : BaseView</ID>
-    <ID>TooManyFunctions:SitePickerPresenter.kt$SitePickerPresenter : Presenter</ID>
     <ID>TooManyFunctions:StringUtils.kt$StringUtils$StringUtils</ID>
     <ID>TooManyFunctions:StyleAttrUtils.kt$StyleAttrUtils$StyleAttrUtils</ID>
     <ID>TooManyFunctions:TerminalWrapper.kt$TerminalWrapper</ID>
     <ID>TooManyFunctions:UnifiedLoginTracker.kt$UnifiedLoginTracker</ID>
-    <ID>TooManyFunctions:UserEligibilityErrorFragment.kt$UserEligibilityErrorFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:VariationDetailCardBuilder.kt$VariationDetailCardBuilder</ID>
-    <ID>TooManyFunctions:VariationDetailFragment.kt$VariationDetailFragment : BaseFragmentBackPressListenerOnGalleryImageInteractionListener</ID>
     <ID>TooManyFunctions:VariationDetailViewModel.kt$VariationDetailViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:VariationListFragment.kt$VariationListFragment : BaseFragmentBackPressListenerOnLoadMoreListener</ID>
     <ID>TooManyFunctions:VariationListViewModel.kt$VariationListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:WCMaterialOutlinedEditTextView.kt$WCMaterialOutlinedEditTextView : TextInputLayout</ID>
-    <ID>TooManyFunctions:WCMaterialOutlinedSpinnerView.kt$WCMaterialOutlinedSpinnerView : TextInputLayout</ID>
-    <ID>TooManyFunctions:WCProductImageGalleryView.kt$WCProductImageGalleryView$ImageGalleryAdapter : Adapter</ID>
-    <ID>TooManyFunctions:WPMediaGalleryView.kt$WPMediaGalleryView$WPMediaLibraryGalleryAdapter : Adapter</ID>
-    <ID>TooManyFunctions:WPMediaPickerFragment.kt$WPMediaPickerFragment : BaseFragmentWPMediaGalleryListenerBackPressListener</ID>
     <ID>TooManyFunctions:WooLog.kt$WooLog$WooLog</ID>
     <ID>TooManyFunctions:ZendeskHelper.kt$ZendeskHelper</ID>
     <ID>TopLevelPropertyNaming:ZendeskHelper.kt$private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500</ID>

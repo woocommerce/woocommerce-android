@@ -76,8 +76,8 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
 
+@Suppress("LargeClass", "ForbiddenComment")
 // TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")
-@Suppress("LargeClass")
 @AndroidEntryPoint
 class MainActivity : AppUpgradeActivity(),
     MainContract.View,
