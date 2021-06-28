@@ -62,7 +62,7 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
     }
 }
 
-enum class CustomPackageType(@StringRes val stringResource: Int) {
+enum class CustomPackageType(@StringRes val stringRes: Int) {
     BOX(R.string.shipping_label_create_custom_package_field_type_box),
     ENVELOPE(R.string.shipping_label_create_custom_package_field_type_envelope)
 }
