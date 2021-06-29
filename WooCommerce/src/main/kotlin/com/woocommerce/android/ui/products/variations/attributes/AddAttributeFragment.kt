@@ -193,7 +193,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             }
         )
         binding.attributeSelectionHint.isVisible =
-            globalDraftAttributes.isNotEmpty() or localDraftAttributes.isNotEmpty()
+            globalAttributes.isNotEmpty() or localDraftAttributes.isNotEmpty()
     }
 
     private fun showSkeleton(show: Boolean) {
