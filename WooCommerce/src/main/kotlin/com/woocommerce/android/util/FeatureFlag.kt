@@ -18,7 +18,7 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             ORDER_CREATION -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
-            CARD_READER -> PackageUtils.isDebugBuild() && CardPresentEligibleFeatureChecker.isCardPresentEligible.get()
+            CARD_READER -> true // TODO PackageUtils.isDebugBuild() && CardPresentEligibleFeatureChecker.isCardPresentEligible.get()
         }
     }
 }

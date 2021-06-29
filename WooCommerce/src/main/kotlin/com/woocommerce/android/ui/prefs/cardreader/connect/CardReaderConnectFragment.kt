@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
@@ -89,31 +91,51 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
     private fun observeState(binding: FragmentCardReaderConnectBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
-            UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
-            UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
-            UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
-            UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
-            UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
-            binding.primaryActionBtn.setOnClickListener {
-                viewState.onPrimaryActionClicked?.invoke()
-            }
-            binding.secondaryActionBtn.setOnClickListener {
-                viewState.onSecondaryActionClicked?.invoke()
-            }
-
-            with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
-                topMargin = resources.getDimensionPixelSize(viewState.illustrationTopMargin)
-            }
-
-            updateMultipleReadersFoundRecyclerView(binding, viewState)
-
-            // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
-            (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
-
             if (viewState is ViewState.ReaderFoundState) {
-                WooAnimUtils.pop(binding.illustration, WooAnimUtils.Duration.LONG)
+                moveToReaderFoundState(binding, viewState)
+            } else {
+                moveToState(binding, viewState)
             }
         }
+    }
+
+    /**
+     * When a reader is found, we scale out the scanning illustration, update the UI to the new state, then
+     * scale in the reader found illustration
+     */
+    private fun moveToReaderFoundState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
+        val scaleOut = WooAnimUtils.getScaleOutAnim(binding.illustration)
+        val scaleIn = WooAnimUtils.getScaleInAnim(binding.illustration)
+        scaleOut.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                moveToState(binding, viewState)
+                scaleIn.start()
+            }
+        })
+        scaleOut.start()
+    }
+
+    private fun moveToState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
+        UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
+        UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
+        UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
+        UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
+        UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
+        binding.primaryActionBtn.setOnClickListener {
+            viewState.onPrimaryActionClicked?.invoke()
+        }
+        binding.secondaryActionBtn.setOnClickListener {
+            viewState.onSecondaryActionClicked?.invoke()
+        }
+
+        with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
+            topMargin = resources.getDimensionPixelSize(viewState.illustrationTopMargin)
+        }
+
+        updateMultipleReadersFoundRecyclerView(binding, viewState)
+
+        // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
+        (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
     }
 
     private fun observeEvents() {
