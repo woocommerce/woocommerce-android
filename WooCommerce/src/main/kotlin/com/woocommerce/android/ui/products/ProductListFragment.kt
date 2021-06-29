@@ -58,7 +58,7 @@ class ProductListFragment :
 
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.VARIATIONS
+        val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.PRODUCTS_VARIATIONS
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
