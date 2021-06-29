@@ -46,8 +46,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusChangeSource.DIALOG
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusChangeSource.FULFILL_SCREEN
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.DIALOG
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.FULFILL_SCREEN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -325,7 +325,7 @@ class OrderDetailViewModel @Inject constructor(
         launch { fetchOrder(false) }
     }
 
-    fun onOrderStatusChanged(newStatus: String, changeSource: OrderStatusChangeSource) {
+    fun onOrderStatusChanged(newStatus: String, updateSource: OrderStatusUpdateSource) {
         val snackMessage = when (newStatus) {
             CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
             else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
@@ -340,7 +340,7 @@ class OrderDetailViewModel @Inject constructor(
             )
         )
 
-        val message = when (changeSource) {
+        val message = when (updateSource) {
             FULFILL_SCREEN -> {
                 resourceProvider.getString(string.order_fulfill_completed)
             }
@@ -646,7 +646,7 @@ class OrderDetailViewModel @Inject constructor(
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 
-    enum class OrderStatusChangeSource {
+    enum class OrderStatusUpdateSource {
         FULFILL_SCREEN, DIALOG
     }
 }

@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusChangeSource
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -606,7 +606,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         val oldStatus = order.status
         val newStatus = CoreOrderStatus.PROCESSING.value
-        viewModel.onOrderStatusChanged(newStatus, OrderStatusChangeSource.DIALOG)
+        viewModel.onOrderStatusChanged(newStatus, OrderStatusUpdateSource.DIALOG)
 
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
@@ -645,7 +645,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusChangeSource.DIALOG)
+        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
 
         assertThat(newOrder?.status).isEqualTo(order.status)
     }
@@ -662,7 +662,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.order = order
         viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusChangeSource.DIALOG)
+        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
         viewModel.updateOrderStatus(CoreOrderStatus.PROCESSING.value)
 
         verify(repository, times(0)).updateOrderStatus(any(), any(), any())
@@ -842,7 +842,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-            viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusChangeSource.DIALOG)
+            viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
 
             assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
         }
@@ -858,7 +858,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusChangeSource.DIALOG)
+            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusUpdateSource.DIALOG)
 
             assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
         }
@@ -874,7 +874,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusChangeSource.FULFILL_SCREEN)
+            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusUpdateSource.FULFILL_SCREEN)
 
             assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_fulfill_completed))
         }
