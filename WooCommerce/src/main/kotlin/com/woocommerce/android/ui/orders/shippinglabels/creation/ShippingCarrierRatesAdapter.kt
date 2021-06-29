@@ -22,6 +22,7 @@ import com.woocommerce.android.model.ShippingRate.Option
 import com.woocommerce.android.model.ShippingRate.Option.ADULT_SIGNATURE
 import com.woocommerce.android.model.ShippingRate.Option.DEFAULT
 import com.woocommerce.android.model.ShippingRate.Option.SIGNATURE
+import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateItemDiffUtil.ChangePayload
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateItemDiffUtil.ChangePayload.SELECTED_OPTION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateListAdapter.RateViewHolder
@@ -32,7 +33,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.UiHelpers
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.Date
@@ -69,7 +69,7 @@ class ShippingCarrierRatesAdapter(
         }
         @SuppressLint("SetTextI18n")
         fun bind(rateList: PackageRateListItem) {
-            binding.packageName.text = UiHelpers.getTextOfUiString(binding.root.context, rateList.shippingPackage.title)
+            binding.packageName.text = rateList.shippingPackage.getTitle(binding.root.context)
 
             binding.packageItemsCount.text = "- ${binding.root.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,

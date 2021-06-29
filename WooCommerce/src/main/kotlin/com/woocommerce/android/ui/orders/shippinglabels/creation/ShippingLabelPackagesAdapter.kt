@@ -12,11 +12,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBinding
 import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
 import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.util.UiHelpers
 
 class ShippingLabelPackagesAdapter(
     val weightUnit: String,
@@ -91,7 +91,7 @@ class ShippingLabelPackagesAdapter(
         fun bind(position: Int) {
             val context = binding.root.context
             val shippingLabelPackage = shippingLabelPackages[position]
-            binding.packageName.text = UiHelpers.getTextOfUiString(context, shippingLabelPackage.title)
+            binding.packageName.text = shippingLabelPackage.getTitle(context)
             binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
                 shippingLabelPackage.items.size,
