@@ -55,7 +55,6 @@ class ProductListFragment :
     OnLoadMoreListener,
     OnQueryTextListener,
     OnActionExpandListener {
-
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.PRODUCTS_VARIATIONS
