@@ -326,11 +326,6 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onOrderStatusChanged(newStatus: String, updateSource: OrderStatusUpdateSource) {
-        val snackMessage = when (newStatus) {
-            CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
-            else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
-        }
-
         AnalyticsTracker.track(
             Stat.ORDER_STATUS_CHANGE,
             mapOf(
