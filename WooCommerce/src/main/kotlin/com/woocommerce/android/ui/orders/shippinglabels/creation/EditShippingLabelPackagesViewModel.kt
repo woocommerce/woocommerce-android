@@ -92,7 +92,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val totalWeight = items.sumByFloat { it.weight * it.quantity } + (lastUsedPackage?.boxWeight ?: 0f)
         return listOf(
             ShippingLabelPackage(
-                packageId = "package1",
+                position = 1,
                 selectedPackage = lastUsedPackage,
                 weight = if (totalWeight != 0f) totalWeight else Float.NaN,
                 items = items
