@@ -16,6 +16,7 @@ import com.woocommerce.android.databinding.ShippingRateListItemBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.ShippingRate.Option
 import com.woocommerce.android.model.ShippingRate.Option.ADULT_SIGNATURE
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.UiHelpers
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.Date
@@ -55,7 +57,7 @@ class ShippingCarrierRatesAdapter(
     }
 
     override fun onBindViewHolder(holder: RateListViewHolder, position: Int) {
-        holder.bind(items[position], position)
+        holder.bind(items[position])
     }
 
     inner class RateListViewHolder(private val binding: ShippingRateListBinding) : ViewHolder(binding.root) {
@@ -66,11 +68,8 @@ class ShippingCarrierRatesAdapter(
             }
         }
         @SuppressLint("SetTextI18n")
-        fun bind(rateList: PackageRateListItem, position: Int) {
-            binding.packageName.text = binding.root.resources.getString(
-                R.string.shipping_label_package_details_title_template,
-                position + 1
-            )
+        fun bind(rateList: PackageRateListItem) {
+            binding.packageName.text = UiHelpers.getTextOfUiString(binding.root.context, rateList.shippingPackage.title)
 
             binding.packageItemsCount.text = "- ${binding.root.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
@@ -298,9 +297,14 @@ class ShippingCarrierRatesAdapter(
     @Parcelize
     data class PackageRateListItem(
         val id: String,
-        val itemCount: Int,
+        val shippingPackage: ShippingLabelPackage,
         val rateOptions: List<ShippingRateItem>
     ) : Parcelable {
+        @IgnoredOnParcel
+        val itemCount
+            get() = shippingPackage.items.size
+
+        @IgnoredOnParcel
         val selectedRate: ShippingRate?
             get() {
                 return rateOptions.mapNotNull { rate ->
