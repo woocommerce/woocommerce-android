@@ -235,16 +235,71 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when on update result with success then software update status checked`() {
+    fun `given up to date software, when on update result successful, then connected state without update emitted`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
+            initConnectedState()
 
             // WHEN
             viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
 
             // THEN
             verify(cardReaderManager).softwareUpdateAvailability()
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+        }
+    }
+
+    @Test
+    fun `given software update available, when on update result successful, then connected with update emitted`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+
+            // WHEN
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verify(cardReaderManager).softwareUpdateAvailability()
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = true
+            )
+        }
+    }
+
+    @Test
+    fun `given software update check failed, when on update result successful, then connected state with snackbar`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
+
+            // WHEN
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verify(cardReaderManager).softwareUpdateAvailability()
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+            assertThat(events[0])
+                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
+            assertThat(events[1])
+                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
         }
     }
 
