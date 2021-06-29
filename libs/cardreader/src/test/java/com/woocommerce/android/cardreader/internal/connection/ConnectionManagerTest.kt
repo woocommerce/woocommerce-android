@@ -9,6 +9,7 @@ import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
 import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
 import com.stripe.stripeterminal.model.external.ConnectionStatus.NOT_CONNECTED
 import com.stripe.stripeterminal.model.external.Reader
+import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderImpl
@@ -47,7 +48,8 @@ class ConnectionManagerTest {
         val dummyReaderId = "12345"
         val discoveredReaders = listOf(
             mock<Reader>()
-                .apply { whenever(serialNumber).thenReturn(dummyReaderId) })
+                .apply { whenever(serialNumber).thenReturn(dummyReaderId) }
+        )
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
 
@@ -59,8 +61,9 @@ class ConnectionManagerTest {
 
     @Test
     fun `when discovery fails, then observers get notified`() = runBlockingTest {
+        val terminalException = mock<TerminalException>().also { whenever(it.errorMessage).thenReturn("test") }
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
-            .thenReturn(flow { emit(Failure(mock())) })
+            .thenReturn(flow { emit(Failure(terminalException)) })
 
         val result = connectionManager.discoverReaders(true).single()
 

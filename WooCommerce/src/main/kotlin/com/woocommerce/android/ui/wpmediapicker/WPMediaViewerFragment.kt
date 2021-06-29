@@ -17,7 +17,8 @@ import com.woocommerce.android.di.GlideApp
 /**
  * Fullscreen single image viewer
  */
-class WPMediaViewerFragment : androidx.fragment.app.Fragment(R.layout.fragment_wpmedia_viewer),
+class WPMediaViewerFragment :
+    androidx.fragment.app.Fragment(R.layout.fragment_wpmedia_viewer),
     RequestListener<Drawable> {
     private val navArgs: WPMediaViewerFragmentArgs by navArgs()
 
@@ -51,9 +52,9 @@ class WPMediaViewerFragment : androidx.fragment.app.Fragment(R.layout.fragment_w
     private fun loadImage() {
         binding.progressBar.isVisible = true
         GlideApp.with(this)
-                .load(navArgs.imageUrl)
-                .listener(this)
-                .into(binding.photoView)
+            .load(navArgs.imageUrl)
+            .listener(this)
+            .into(binding.photoView)
     }
 
     /**

@@ -119,13 +119,15 @@ object WCMatchers {
         return object : ViewAction {
             override fun getConstraints(): Matcher<View> {
                 return allOf(
-                        withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE), isDescendantOfA(
+                    withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),
+                    isDescendantOfA(
                         anyOf(
-                                isAssignableFrom(ScrollView::class.java),
-                                isAssignableFrom(HorizontalScrollView::class.java),
-                                isAssignableFrom(NestedScrollView::class.java)
+                            isAssignableFrom(ScrollView::class.java),
+                            isAssignableFrom(HorizontalScrollView::class.java),
+                            isAssignableFrom(NestedScrollView::class.java)
                         )
-                ))
+                    )
+                )
             }
 
             override fun getDescription(): String? {

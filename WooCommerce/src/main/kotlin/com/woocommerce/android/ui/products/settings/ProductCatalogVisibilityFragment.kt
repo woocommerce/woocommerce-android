@@ -19,7 +19,8 @@ import kotlinx.parcelize.Parcelize
 /**
  * Settings screen which enables choosing a product's catalog visibility
  */
-class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_product_catalog_visibility),
+class ProductCatalogVisibilityFragment :
+    BaseProductSettingsFragment(R.layout.fragment_product_catalog_visibility),
     OnClickListener {
     companion object {
         const val ARG_CATALOG_VISIBILITY = "catalog_visibility"

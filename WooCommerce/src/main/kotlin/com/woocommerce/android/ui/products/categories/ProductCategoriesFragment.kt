@@ -26,8 +26,10 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_categories_list),
-    OnLoadMoreListener, OnProductCategoryClickListener {
+class ProductCategoriesFragment :
+    BaseProductFragment(R.layout.fragment_product_categories_list),
+    OnLoadMoreListener,
+    OnProductCategoryClickListener {
     private lateinit var productCategoriesAdapter: ProductCategoriesAdapter
 
     private val skeletonView = SkeletonView()
@@ -69,8 +71,8 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
             adapter = productCategoriesAdapter
             addItemDecoration(
                 AlignedDividerDecoration(
-                activity, DividerItemDecoration.VERTICAL, R.id.categoryName, clipToMargin = false
-            )
+                    activity, DividerItemDecoration.VERTICAL, R.id.categoryName, clipToMargin = false
+                )
             )
         }
 
@@ -102,16 +104,22 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
             }
         }
 
-        viewModel.productCategories.observe(viewLifecycleOwner, Observer {
-            showProductCategories(it)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitProductCategories -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.productCategories.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProductCategories(it)
             }
-        })
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitProductCategories -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun setupResultHandlers() {

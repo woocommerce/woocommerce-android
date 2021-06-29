@@ -31,6 +31,7 @@ sealed class MultipleCardReadersFoundViewHolder(
                 uiState.onConnectClicked()
             }
             UiHelpers.setTextOrHide(binding.readersFoundReaderId, uiState.readerId)
+            UiHelpers.setTextOrHide(binding.readersFoundReaderType, uiState.readerType)
         }
     }
 

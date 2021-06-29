@@ -102,8 +102,8 @@ class WCPromoDialog : androidx.fragment.app.DialogFragment() {
         checkOrientation()
 
         return MaterialAlertDialogBuilder(activity as Context)
-                .setView(dialogView)
-                .setCancelable(true)
-                .create()
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
     }
 }

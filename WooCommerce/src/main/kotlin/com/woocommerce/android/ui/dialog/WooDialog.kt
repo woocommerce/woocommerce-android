@@ -40,11 +40,11 @@ object WooDialog {
         val negativeButtonTextId = negativeButtonId ?: string.keep_editing
 
         val builder = MaterialAlertDialogBuilder(activity)
-                .setMessage(message)
-                .setCancelable(true)
-                .setPositiveButton(positiveButtonTextId, posBtnAction)
-                .setNegativeButton(negativeButtonTextId, negBtnAction)
-                .setOnDismissListener { onCleared() }
+            .setMessage(message)
+            .setCancelable(true)
+            .setPositiveButton(positiveButtonTextId, posBtnAction)
+            .setNegativeButton(negativeButtonTextId, negBtnAction)
+            .setOnDismissListener { onCleared() }
 
         neutBtAction?.let {
             val neutralButtonTextId = neutralButtonId ?: string.product_detail_save_as_draft

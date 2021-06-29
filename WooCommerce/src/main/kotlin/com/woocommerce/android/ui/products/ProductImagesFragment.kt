@@ -48,8 +48,9 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageI
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_product_images),
-        OnGalleryImageInteractionListener {
+class ProductImagesFragment :
+    BaseProductEditorFragment(R.layout.fragment_product_images),
+    OnGalleryImageInteractionListener {
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "key_captured_photo_uri"
     }
@@ -175,27 +176,30 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
-                is ShowDialog -> event.showDialog()
-                ShowImageSourceDialog -> showImageSourceDialog()
-                is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
-                ShowStorageChooser -> chooseProductImage()
-                ShowCamera -> captureProductImage()
-                ShowWPMediaPicker -> showWPMediaPicker()
-                is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
+                    is ShowDialog -> event.showDialog()
+                    ShowImageSourceDialog -> showImageSourceDialog()
+                    is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
+                    ShowStorageChooser -> chooseProductImage()
+                    ShowCamera -> captureProductImage()
+                    ShowWPMediaPicker -> showWPMediaPicker()
+                    is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun showConfirmationDialog(image: Image) {
         ConfirmRemoveProductImageDialog(
-                requireActivity(),
-                onPositiveButton = { viewModel.onDeleteImageConfirmed(image) },
-                onNegativeButton = { /* no-op */ }
+            requireActivity(),
+            onPositiveButton = { viewModel.onDeleteImageConfirmed(image) },
+            onNegativeButton = { /* no-op */ }
         ).show()
     }
 

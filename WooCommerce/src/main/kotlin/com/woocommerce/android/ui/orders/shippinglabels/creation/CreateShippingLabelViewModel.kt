@@ -9,14 +9,19 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_AMOUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FULFILL_ORDER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STEP
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARRIER_RATES_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARRIER_RATES_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOMS_COMPLETE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOMS_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DESTINATION_ADDRESS_COMPLETE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DESTINATION_ADDRESS_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORIGIN_ADDRESS_COMPLETE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORIGIN_ADDRESS_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PACKAGES_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PACKAGES_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENT_METHOD_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENT_METHOD_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_INITIATED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_READY
@@ -272,6 +277,18 @@ class CreateShippingLabelViewModel @Inject constructor(
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to action))
     }
 
+    private fun trackStartedStep(step: FlowStep) {
+        val action = when (step) {
+            FlowStep.ORIGIN_ADDRESS -> VALUE_ORIGIN_ADDRESS_STARTED
+            FlowStep.SHIPPING_ADDRESS -> VALUE_DESTINATION_ADDRESS_STARTED
+            FlowStep.PACKAGING -> VALUE_PACKAGES_STARTED
+            FlowStep.CUSTOMS -> VALUE_CUSTOMS_STARTED
+            FlowStep.CARRIER -> VALUE_CARRIER_RATES_STARTED
+            FlowStep.PAYMENT -> VALUE_PAYMENT_METHOD_STARTED
+        }
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to action))
+    }
+
     private suspend fun handleResult(
         @StringRes progressDialogTitle: Int = 0,
         @StringRes progressDialogMessage: Int = 0,
@@ -362,7 +379,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                 shippingAddressStep.status == DONE &&
                 packagingStep.status == DONE &&
                 (!customsStep.isVisible || customsStep.status == DONE) &&
-                carrierStep.status == DONE
+                carrierStep.status == DONE &&
+                paymentsStep.status == DONE
             if (!isVisible) return OrderSummaryState()
 
             AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to VALUE_PURCHASE_READY))
@@ -582,57 +600,46 @@ class CreateShippingLabelViewModel @Inject constructor(
     fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
 
     fun onAddressEditConfirmed(address: Address) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_EDIT_CONFIRMED)
         stateMachine.handleEvent(AddressValidated(address))
     }
 
     fun onAddressEditCanceled() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_EDIT_CANCELED)
         stateMachine.handleEvent(AddressEditCanceled)
     }
 
     fun onSuggestedAddressDiscarded() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_DISCARDED)
         stateMachine.handleEvent(SuggestedAddressDiscarded)
     }
 
     fun onSuggestedAddressAccepted(address: Address) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_ACCEPTED)
         stateMachine.handleEvent(SuggestedAddressAccepted(address))
     }
 
     fun onSuggestedAddressEditRequested(address: Address) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_EDIT_REQUESTED)
         stateMachine.handleEvent(EditAddressRequested(address))
     }
 
     fun onPackagesUpdated(packages: List<ShippingLabelPackage>) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_UPDATED)
         stateMachine.handleEvent(PackagesSelected(packages))
     }
 
     fun onPackagesEditCanceled() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_CANCELED)
         stateMachine.handleEvent(EditPackagingCanceled)
     }
 
     fun onPaymentsUpdated(paymentMethod: PaymentMethod) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_UPDATED)
         stateMachine.handleEvent(PaymentSelected(paymentMethod))
     }
 
     fun onPaymentsEditCanceled() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_SELECTION_CANCELED)
         stateMachine.handleEvent(EditPaymentCanceled)
     }
 
     fun onShippingCarriersSelected(rates: List<ShippingRate>) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SHIPPING_CARRIER_UPDATED)
         stateMachine.handleEvent(ShippingCarrierSelected(rates))
     }
 
     fun onShippingCarrierSelectionCanceled() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SHIPPING_CARRIER_SELECTION_CANCELED)
         stateMachine.handleEvent(ShippingCarrierSelectionCanceled)
     }
 
@@ -650,12 +657,11 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     fun onPurchaseButtonClicked(fulfillOrder: Boolean) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_BUTTON_TAPPED)
         stateMachine.handleEvent(PurchaseStarted(fulfillOrder))
     }
 
     fun onEditButtonTapped(step: FlowStep) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_BUTTON_TAPPED, mapOf(KEY_STEP to step.name))
+        trackStartedStep(step)
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.EditOriginAddressRequested
             FlowStep.SHIPPING_ADDRESS -> Event.EditShippingAddressRequested
@@ -671,7 +677,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     fun onContinueButtonTapped(step: FlowStep) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_CONTINUE_BUTTON_TAPPED, mapOf(KEY_STEP to step.name))
+        trackStartedStep(step)
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.OriginAddressValidationStarted
             FlowStep.SHIPPING_ADDRESS -> Event.ShippingAddressValidationStarted

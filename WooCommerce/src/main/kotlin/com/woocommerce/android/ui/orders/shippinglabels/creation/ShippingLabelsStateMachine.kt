@@ -584,15 +584,17 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     )
                     if (isSamePhysicalAddress) newState else newState.invalidateCarrierStep()
                 }
-                is PackagingStep -> copy(
-                    packagingStep = packagingStep.copy(status = DONE, data = newData as List<ShippingLabelPackage>)
-                )
-                    .invalidateCustomsStep()
-                    .invalidateCarrierStep()
-                is CustomsStep -> copy(
-                    customsStep = customsStep.copy(status = DONE, data = newData as List<CustomsPackage>)
-                )
-                    .invalidateCarrierStep()
+                is PackagingStep -> {
+                    copy(
+                        packagingStep = packagingStep.copy(status = DONE, data = newData as List<ShippingLabelPackage>)
+                    )
+                        .invalidateCustomsStep()
+                        .invalidateCarrierStep()
+                }
+                is CustomsStep -> {
+                    copy(customsStep = customsStep.copy(status = DONE, data = newData as List<CustomsPackage>))
+                        .invalidateCarrierStep()
+                }
                 is CarrierStep -> {
                     val paymentStatus = if (paymentsStep.data == null) READY else DONE
                     copy(
@@ -616,7 +618,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
             val shippingAddressStep = if (isInternational &&
                 carrierStep.requiresDestinationPhoneNumber &&
-                !shippingAddressStep.data.hasValidPhoneNumber(DESTINATION)) {
+                !shippingAddressStep.data.hasValidPhoneNumber(DESTINATION)
+            ) {
                 shippingAddressStep.copy(status = READY)
             } else shippingAddressStep
 

@@ -76,15 +76,18 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
                 binding.productShippingClassSpinner.setText(viewModel.getShippingClassByRemoteShippingClassId(classId))
             }
         }
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(KEY_SHIPPING_DIALOG_RESULT, event.data)
-                is Exit -> findNavController().navigateUp()
-                is ShowDialog -> event.showDialog()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> navigateBackWithResult(KEY_SHIPPING_DIALOG_RESULT, event.data)
+                    is Exit -> findNavController().navigateUp()
+                    is ShowDialog -> event.showDialog()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun setupResultHandlers() {
@@ -139,9 +142,9 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
 
     private fun showShippingClassFragment() {
         val action = ProductShippingFragmentDirections
-                .actionProductShippingFragmentToProductShippingClassFragment(
-                    productShippingClassId = viewModel.shippingData.shippingClassId ?: -1
-                )
+            .actionProductShippingFragmentToProductShippingClassFragment(
+                productShippingClassId = viewModel.shippingData.shippingClassId ?: -1
+            )
         findNavController().navigateSafely(action)
     }
 

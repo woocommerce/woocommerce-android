@@ -40,8 +40,8 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
-                    attrs,
-                    R.styleable.WCMaterialOutlinedCurrencyEditTextView
+                attrs,
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView
             )
             try {
                 isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)

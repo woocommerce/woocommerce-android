@@ -122,20 +122,26 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     private fun setupObservers() {
-        viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer {
-            showAttributes(it)
-        })
+        viewModel.globalAttributeList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showAttributes(it)
+            }
+        )
 
         viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitProductAddAttribute -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitProductAddAttribute -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
@@ -173,9 +179,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                 // add the list of global attributes along with any terms each global attribute has in the product draft
                 allAttributes.addAll(
                     ArrayList<ProductAttribute>().also {
-                        it.addAll(globalAttributes.map { attribute ->
-                            attribute.toProductAttributeForDisplay(getGlobalDraftTerms(attribute.remoteId))
-                        })
+                        it.addAll(
+                            globalAttributes.map { attribute ->
+                                attribute.toProductAttributeForDisplay(getGlobalDraftTerms(attribute.remoteId))
+                            }
+                        )
                     }
                 )
 

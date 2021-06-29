@@ -50,15 +50,17 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
             triggerEvent(ViewProductAdd)
             triggerEvent(ExitWithResult(productTypeUiItem))
         } else {
-            triggerEvent(ShowDialog(
-                titleId = R.string.product_type_confirm_dialog_title,
-                messageId = R.string.product_type_confirm_dialog_message,
-                positiveButtonId = R.string.product_type_confirm_button,
-                negativeButtonId = R.string.cancel,
-                positiveBtnAction = { _, _ ->
-                    triggerEvent(ExitWithResult(productTypeUiItem))
-                }
-            ))
+            triggerEvent(
+                ShowDialog(
+                    titleId = R.string.product_type_confirm_dialog_title,
+                    messageId = R.string.product_type_confirm_dialog_message,
+                    positiveButtonId = R.string.product_type_confirm_button,
+                    negativeButtonId = R.string.cancel,
+                    positiveBtnAction = { _, _ ->
+                        triggerEvent(ExitWithResult(productTypeUiItem))
+                    }
+                )
+            )
         }
     }
 

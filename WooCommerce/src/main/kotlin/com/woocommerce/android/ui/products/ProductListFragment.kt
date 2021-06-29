@@ -49,7 +49,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
+class ProductListFragment :
+    TopLevelFragment(R.layout.fragment_product_list),
     OnProductClickListener,
     ProductSortAndFilterListener,
     OnLoadMoreListener,
@@ -229,6 +230,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         binding.productsRefreshLayout.isRefreshing = isRefreshing
     }
 
+    @Suppress("LongMethod")
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
@@ -269,24 +271,30 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             }
         }
 
-        viewModel.productList.observe(viewLifecycleOwner, Observer {
-            showProductList(it)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ScrollToTop -> scrollToTop()
-                is ShowAddProductBottomSheet -> showAddProductBottomSheet()
-                is ShowProductFilterScreen -> showProductFilterScreen(
-                    event.stockStatusFilter,
-                    event.productTypeFilter,
-                    event.productStatusFilter
-                )
-                is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
-                else -> event.isHandled = false
+        viewModel.productList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProductList(it)
             }
-        })
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ScrollToTop -> scrollToTop()
+                    is ShowAddProductBottomSheet -> showAddProductBottomSheet()
+                    is ShowProductFilterScreen -> showProductFilterScreen(
+                        event.stockStatusFilter,
+                        event.productTypeFilter,
+                        event.productStatusFilter
+                    )
+                    is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun setupResultHandlers() {
@@ -456,10 +464,11 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     private fun onGiveFeedbackClicked() {
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
-            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-        )
+            FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
         )
         registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
@@ -469,10 +478,11 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     private fun onDismissProductWIPNoticeCardClicked() {
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
-            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-        )
+            FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
         )
         registerFeedbackSetting(DISMISSED)
         showProductWIPNoticeCard(false)

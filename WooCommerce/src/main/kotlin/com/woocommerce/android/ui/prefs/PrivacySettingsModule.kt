@@ -12,5 +12,5 @@ internal abstract class PrivacySettingsModule {
     @FragmentScoped
     @Binds
     abstract fun providePrivacySettingsPresenter(privacySettingsPresenter: PrivacySettingsPresenter):
-            PrivacySettingsContract.Presenter
+        PrivacySettingsContract.Presenter
 }

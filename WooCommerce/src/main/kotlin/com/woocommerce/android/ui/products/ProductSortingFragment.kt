@@ -41,23 +41,26 @@ class ProductSortingFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is Exit -> {
-                    dismiss()
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is Exit -> {
+                        dismiss()
+                    }
+                    else -> event.isHandled = false
                 }
-                else -> event.isHandled = false
             }
-        })
+        )
     }
 
     private fun showSortingOptions() {
         val adapter = binding.sortingOptionsList.adapter as? ProductSortingListAdapter
-                ?: ProductSortingListAdapter(
-                        viewModel::onSortingOptionChanged,
-                        ProductSortingViewModel.SORTING_OPTIONS,
-                        viewModel.sortingChoice
-                )
+            ?: ProductSortingListAdapter(
+                viewModel::onSortingOptionChanged,
+                ProductSortingViewModel.SORTING_OPTIONS,
+                viewModel.sortingChoice
+            )
         binding.sortingOptionsList.adapter = adapter
         binding.sortingOptionsList.layoutManager = LinearLayoutManager(activity)
     }

@@ -5,7 +5,11 @@ import com.nhaarman.mockitokotlin2.argThat
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.eq
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
@@ -55,6 +59,7 @@ import org.mockito.junit.MockitoJUnitRunner
 class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
+    private val tracker: AnalyticsTrackerWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
@@ -64,6 +69,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         viewModel = CardReaderConnectViewModel(
             SavedStateHandle(),
             coroutinesTestRule.testDispatchers,
+            tracker,
             mock()
         )
     }
@@ -316,6 +322,34 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when scanning fails, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = FAILED)
+
+            verify(tracker).track(
+                eq(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
+            )
+        }
+
+    @Test
+    fun `when reader found, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = READER_FOUND)
+
+            verify(tracker)
+                .track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to 1))
+        }
+
+    @Test
+    fun `when multiple readers found, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = MULTIPLE_READERS_FOUND)
+
+            verify(tracker)
+                .track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to 2))
+        }
+
+    @Test
     fun `when user clicks on connect to reader button, then app starts connecting to reader`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
@@ -344,7 +378,30 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
 
             assertThat((viewModel.viewStateData.value as MultipleReadersFoundState).listItems.last())
-            .isInstanceOf(ScanningInProgressListItem::class.java)
+                .isInstanceOf(ScanningInProgressListItem::class.java)
+        }
+
+    @Test
+    fun `given user clicks on connect, when reader found, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = READER_FOUND)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(tracker)
+                .track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
+        }
+
+    @Test
+    fun `given user clicks on connect, when multiple readers found, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = MULTIPLE_READERS_FOUND)
+
+            val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
+            reader.onConnectClicked()
+
+            verify(tracker)
+                .track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
         }
 
     @Test
@@ -370,6 +427,15 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when connecting to reader succeeds, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(connectingSucceeds = true)
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
+        }
+
+    @Test
     fun `when connecting to reader fails, then connecting failed state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = false)
@@ -377,6 +443,15 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
+        }
+
+    @Test
+    fun `when connecting to reader fails, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(connectingSucceeds = false)
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
         }
 
     @Test
@@ -466,6 +541,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_scanning)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_200)
         }
 
     @Test
@@ -473,7 +551,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = READER_FOUND)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
@@ -496,6 +573,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_275)
         }
 
     @Test
@@ -521,6 +601,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_connecting)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_275)
         }
 
     @Test
@@ -531,19 +614,19 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
-                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
-            assertThat(viewModel.viewStateData.value!!.hintLabel)
-                .describedAs("Check hint")
-                .isEqualTo(R.string.card_reader_connect_scanning_failed_hint)
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_scanning_failed_header))
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
-                .isEqualTo(R.string.retry)
+                .isEqualTo(R.string.try_again)
             assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
                 .describedAs("Check secondaryActionLabel")
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -557,18 +640,18 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
-            assertThat(viewModel.viewStateData.value!!.hintLabel)
-                .describedAs("Check hint")
-                .isEqualTo(R.string.card_reader_connect_connecting_failed_hint)
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
-                .isEqualTo(R.string.retry)
+                .isEqualTo(R.string.try_again)
             assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
                 .describedAs("Check secondaryActionLabel")
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -580,10 +663,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(MissingPermissionsError::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
-                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_missing_permissions_header))
             assertThat(viewModel.viewStateData.value!!.hintLabel)
                 .describedAs("Check hint")
-                .isEqualTo(R.string.card_reader_connect_missing_permissions_hint)
+                .isNull()
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
                 .isEqualTo(R.string.card_reader_connect_open_permission_settings)
@@ -593,6 +676,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -604,10 +690,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(LocationDisabledError::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
-                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_location_provider_disabled_header))
             assertThat(viewModel.viewStateData.value!!.hintLabel)
                 .describedAs("Check hint")
-                .isEqualTo(R.string.card_reader_connect_location_provider_disabled_hint)
+                .isNull()
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
                 .isEqualTo(R.string.card_reader_connect_open_location_settings)
@@ -617,6 +703,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -630,10 +719,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(BluetoothDisabledError::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
-                .isEqualTo(UiStringRes(R.string.card_reader_connect_failed_header))
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_bluetooth_disabled_header))
             assertThat(viewModel.viewStateData.value!!.hintLabel)
                 .describedAs("Check hint")
-                .isEqualTo(R.string.card_reader_connect_bluetooth_disabled_hint)
+                .isNull()
             assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
                 .describedAs("Check primaryActionLabel")
                 .isEqualTo(R.string.card_reader_connect_open_bluetooth_settings)
@@ -643,6 +732,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
         }
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {

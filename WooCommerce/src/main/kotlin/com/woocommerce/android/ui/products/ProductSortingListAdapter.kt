@@ -60,7 +60,7 @@ class ProductSortingListAdapter(
         val result: List<SortingListItemUIModel>
     ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                items[oldItemPosition].value == result[newItemPosition].value
+            items[oldItemPosition].value == result[newItemPosition].value
 
         override fun getOldListSize(): Int = items.size
 

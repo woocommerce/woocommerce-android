@@ -47,13 +47,15 @@ class EnqueueSendingEncryptedLogsTest {
 
         sut.invoke("uuid", INFO)
 
-        verify(eventBusDispatcher, times(1)).dispatch(argForWhich {
-            (payload as? UploadEncryptedLogPayload).let {
-                it?.shouldStartUploadImmediately == true &&
-                    it.uuid == uuid &&
-                    it.file == tempFile
-            } && type == UPLOAD_LOG
-        })
+        verify(eventBusDispatcher, times(1)).dispatch(
+            argForWhich {
+                (payload as? UploadEncryptedLogPayload).let {
+                    it?.shouldStartUploadImmediately == true &&
+                        it.uuid == uuid &&
+                        it.file == tempFile
+                } && type == UPLOAD_LOG
+            }
+        )
     }
 
     // If the connection is not available, we shouldn't try to upload immediately
@@ -63,11 +65,13 @@ class EnqueueSendingEncryptedLogsTest {
 
         sut.invoke("uuid", INFO)
 
-        verify(eventBusDispatcher, times(1)).dispatch(argForWhich {
-            (payload as? UploadEncryptedLogPayload).let {
-                it?.shouldStartUploadImmediately == false
+        verify(eventBusDispatcher, times(1)).dispatch(
+            argForWhich {
+                (payload as? UploadEncryptedLogPayload).let {
+                    it?.shouldStartUploadImmediately == false
+                }
             }
-        })
+        )
     }
 
     @Test
@@ -76,21 +80,25 @@ class EnqueueSendingEncryptedLogsTest {
 
         sut.invoke("uuid", INFO)
 
-        verify(eventBusDispatcher, times(1)).dispatch(argForWhich {
-            (payload as? UploadEncryptedLogPayload).let {
-                it?.shouldStartUploadImmediately == true
+        verify(eventBusDispatcher, times(1)).dispatch(
+            argForWhich {
+                (payload as? UploadEncryptedLogPayload).let {
+                    it?.shouldStartUploadImmediately == true
+                }
             }
-        })
+        )
     }
 
     @Test
     fun `should not enqueue for immediately send when event is fatal`() {
         sut.invoke("uuid", FATAL)
 
-        verify(eventBusDispatcher, times(1)).dispatch(argForWhich {
-            (payload as? UploadEncryptedLogPayload).let {
-                it?.shouldStartUploadImmediately == false
+        verify(eventBusDispatcher, times(1)).dispatch(
+            argForWhich {
+                (payload as? UploadEncryptedLogPayload).let {
+                    it?.shouldStartUploadImmediately == false
+                }
             }
-        })
+        )
     }
 }

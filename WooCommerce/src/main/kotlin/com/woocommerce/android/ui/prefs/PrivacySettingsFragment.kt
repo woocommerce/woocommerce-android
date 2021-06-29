@@ -35,9 +35,13 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
 
         binding.switchSendStats.isChecked = presenter.getSendUsageStats()
         binding.switchSendStats.setOnCheckedChangeListener { _, isChecked ->
-            AnalyticsTracker.track(PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED, mapOf(
+            AnalyticsTracker.track(
+                PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
+                mapOf(
                     AnalyticsTracker.KEY_STATE to
-                        AnalyticsUtils.getToggleStateLabel(binding.switchSendStats.isChecked)))
+                        AnalyticsUtils.getToggleStateLabel(binding.switchSendStats.isChecked)
+                )
+            )
             presenter.setSendUsageStats(isChecked)
         }
 
@@ -57,9 +61,12 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
         binding.switchCrashReporting.isChecked = presenter.getCrashReportingEnabled()
         binding.switchCrashReporting.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
-                    PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED, mapOf(
+                PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
+                mapOf(
                     AnalyticsTracker.KEY_STATE to
-                        AnalyticsUtils.getToggleStateLabel(binding.switchCrashReporting.isChecked)))
+                        AnalyticsUtils.getToggleStateLabel(binding.switchCrashReporting.isChecked)
+                )
+            )
             presenter.setCrashReportingEnabled(requireActivity(), isChecked)
         }
     }
@@ -79,9 +86,9 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
     override fun onStart() {
         super.onStart()
         ChromeCustomTabUtils.connect(
-                activity as Context,
-                AppUrls.AUTOMATTIC_PRIVACY_POLICY,
-                arrayOf(AppUrls.AUTOMATTIC_COOKIE_POLICY)
+            activity as Context,
+            AppUrls.AUTOMATTIC_PRIVACY_POLICY,
+            arrayOf(AppUrls.AUTOMATTIC_COOKIE_POLICY)
         )
     }
 

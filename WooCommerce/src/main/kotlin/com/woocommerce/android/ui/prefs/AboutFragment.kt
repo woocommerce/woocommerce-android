@@ -63,9 +63,9 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
     override fun onStart() {
         super.onStart()
         ChromeCustomTabUtils.connect(
-                activity as Context,
-                AppUrls.AUTOMATTIC_PRIVACY_POLICY,
-                arrayOf(AppUrls.AUTOMATTIC_TOS, AppUrls.AUTOMATTIC_HOME)
+            activity as Context,
+            AppUrls.AUTOMATTIC_PRIVACY_POLICY,
+            arrayOf(AppUrls.AUTOMATTIC_TOS, AppUrls.AUTOMATTIC_HOME)
         )
     }
 

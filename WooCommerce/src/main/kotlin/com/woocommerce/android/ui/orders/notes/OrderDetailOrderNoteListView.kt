@@ -50,10 +50,11 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(
 
     private fun addHeaders(notes: List<OrderNote>): List<OrderNoteListItem> {
         return notes
-                .groupBy(
-                        { DateFormat.getMediumDateFormat(context).format(it.dateCreated) },
-                        { Note(it) })
-                .flatMap { listOf(Header(it.key)) + it.value }
+            .groupBy(
+                { DateFormat.getMediumDateFormat(context).format(it.dateCreated) },
+                { Note(it) }
+            )
+            .flatMap { listOf(Header(it.key)) + it.value }
     }
 
     fun updateView(notes: List<OrderNote>) {

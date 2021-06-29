@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-10 15:54:05+0000
+Translation-Revision-Date: 2021-06-24 15:58:51+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="empty_order_list_message">스토어 판매를 늘리는 방법을 살펴보세요.</string>
+    <string name="empty_product_message">스토어에 첫 번째 상품을 추가하고 지금 바로 판매를 시작하세요.</string>
+    <string name="empty_product_add_product_button">상품 추가</string>
+    <string name="variable_product_attributes">변형 속성</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">모바일 장치 블루투스 켜기</string>
+    <string name="card_reader_detail_learn_more">모바일 장치로 결제 수락 및 카드 리더 주문에 대해 &lt;a href=\"https://woocommerce.com/payments/\"&gt;더 알아보기&lt;/a&gt;</string>
+    <string name="card_reader_fetching_order_failed">주문을 가져오는 중 오류가 발생했습니다. 앱의 주문 상태가 기한이 지났을 수 있습니다.</string>
+    <string name="card_reader_payment_email_client_not_found">이메일 클라이언트 앱을 감지할 수 없습니다.</string>
+    <string name="card_reader_payment_receipt_email_content">구매해 주셔서 감사합니다! 결제 영수증은 링크 %s에서 찾으실 수 있습니다.</string>
+    <string name="card_reader_payment_receipt_email_subject">%s에서 받은 영수증</string>
+    <string name="card_reader_payment_description">%s의 주문 %s에 대한 온라인 결제</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">주문 새로 고치기</string>
+    <string name="card_reader_payment_fetch_order_loading_header">앱 상태 업데이트하기</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">고객이 %1$s을(를) 선택함</string>
+    <string name="shipping_label_address_phone_invalid">세관 양식에 10자리 전화번호 필요</string>
+    <string name="shipping_label_address_phone_required">이 배송에는 세관 양식이 필요하므로 전화번호가 필요합니다.</string>
+    <string name="shipping_label_create_customs_done">세관 양식 완료됨</string>
+    <string name="print_receipt_label_info_step_7">기기에서 인쇄하는 중 문제가 발생하면 프린터에 대한 고객 지원을 문의하세요.</string>
+    <string name="print_receipt_label_info_step_6">인쇄를 이용할 수 없는 경우에는 언제든지 영수증을 PDF로 저장하고 이메일로 보내 다른 기기에서 인쇄할 수 있습니다.</string>
+    <string name="print_receipt_label_info_step_5">필요하면 용지 크기를 조정하고 영수증을 인쇄할 준비가 되면 \"인쇄\"를 선택합니다.</string>
+    <string name="print_receipt_label_info_step_4">메시지가 표시되면 프린터를 모바일 장치와 페어링하고 연결합니다.</string>
+    <string name="print_receipt_label_info_step_3">결제 수락 후 \"영수증 인쇄\"를 선택할 때 \"PDF로 저장\"을 \"모든 프린터\"로 바꾸고 새 프린터를 검색합니다.</string>
+    <string name="print_receipt_label_info_step_2">프린터의 블루투스 또는 와이파이 연결을 활성화합니다.</string>
+    <string name="print_receipt_label_info_step_1">프린터의 인쇄 서비스 플러그인이 설치되었는지 확인합니다.</string>
+    <string name="orderdetail_printing_instructions_button">기기로 영수증 인쇄하기에 대해 자세히 알아보기</string>
+    <string name="product_create_attribute_helper">변형을 만들려면 속성(즉, \"색상\", \"사이즈\")을 먼저 설정해야 합니다.</string>
+    <string name="product_variation_single_count">변형 1개</string>
+    <string name="product_variation_multiple_count">변형 %1$s개</string>
     <string name="shipping_label_rate_included_options_usps_tracking">%s 추적</string>
     <string name="card_reader_software_update_in_progress_title">리더의 소프트웨어 업데이트하기</string>
     <string name="card_reader_software_update_title">소프트웨어 업데이트</string>
@@ -97,7 +125,7 @@ Language: ko_KR
     <string name="orderdetail_products_recreate_shipping_label_menu">새 배송 레이블 만들기</string>
     <string name="product_type_virtual_title">단순한 가상 제품</string>
     <string name="variation_confirm_delete">이 변경을 삭제하시겠어요?</string>
-    <string name="variation_create_dialog_title">변형 생성 중</string>
+    <string name="variation_create_dialog_title">변형 생성하기</string>
     <string name="product_delete_dialog_title">제품 삭제 중</string>
     <string name="card_reader_payment_send_receipt">영수증 발송</string>
     <string name="card_reader_payment_print_receipt">영수증 인쇄</string>
@@ -150,10 +178,7 @@ Language: ko_KR
     <string name="shipping_label_rate_included_options">포함 %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">성인 서명 필수(%s)</string>
     <string name="shipping_label_rate_option_signature_required">서명 필수(%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">무료배송</string>
-    <string name="shipping_label_shipping_method_local_pickup">방문 수령</string>
-    <string name="shipping_label_shipping_method_flat_rate">고정 요금</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">배송에 대해 고객이 결제한 %1$s(%2$s)</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">배송에 대해 고객이 결제한 %1$s/%2$s</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce를 통해 배송 레이블을 구매하면 우체국 요금보다 5~40% 할인됩니다.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  서비스 할인이란?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">배송 옵션을 로드하는 중 오류가 발생했습니다.</string>
@@ -200,7 +225,7 @@ Language: ko_KR
     <string name="shipping_label_single_package_total_weight">총 패키지 무게: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">사용자 정의 패키지</string>
     <string name="shipping_label_package_details_fetch_products_error">제품을 가져올 수 없음</string>
-    <string name="shipping_label_missing_data_snackbar_message">특정 필수 필드가 비어 있습니다.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">특정 필수 필드가 비어 있습니다.</string>
     <string name="shipping_label_package_details_weight_error">유효하지 않은 무게</string>
     <string name="shipping_label_package_selector_title">선택한 패키지</string>
     <string name="shipping_label_packages_loading_message">기다려주세요…</string>
@@ -610,7 +635,6 @@ Language: ko_KR
     <string name="empty_review_list_message">내 매장의 고품질 제품 리뷰 캡처</string>
     <string name="empty_review_list_title">첫 리뷰 받기</string>
     <string name="empty_order_list_all_processed">모든 주문이 이행되었습니다.</string>
-    <string name="empty_order_list_message">새로운 주문을 받으면 알려드리겠습니다. 그동안 매장 판매를 늘리는 방법을 알아보세요.</string>
     <string name="empty_order_list_title">첫 주문을 기다리는 중</string>
     <string name="share_your_store_message">소셜 미디어와 내 연락처를 통한 이메일로 매장 공유</string>
     <string name="get_the_word_out">홍보하기</string>

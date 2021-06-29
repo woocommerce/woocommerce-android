@@ -31,6 +31,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
         private const val ARG_USER_AVATAR_URL = "ARG_USER_AVATAR_URL"
         const val ARG_ERROR_MESSAGE = "ARG_ERROR_MESSAGE"
 
+        @Suppress("LongParameterList")
         fun newInstance(
             siteAddress: String,
             endpointAddress: String?,
@@ -115,7 +116,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
                 unifiedLoginTracker.trackClick(Click.TRY_AGAIN)
                 jetpackLoginListener?.showUsernamePasswordScreen(
-                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                    siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
                 )
             }
         }

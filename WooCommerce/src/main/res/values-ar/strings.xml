@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-09 11:54:04+0000
+Translation-Revision-Date: 2021-06-22 17:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="empty_order_list_message">استكشف كيف يمكنك زيادة مبيعات مخزنك.</string>
+    <string name="empty_product_message">ابدأ بالبيع اليوم عن طريق إضافة منتجك الأول إلى المخزن.</string>
+    <string name="empty_product_add_product_button">إضافة منتج</string>
+    <string name="variable_product_attributes">سمات المجموعات</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">تشغيل بلوتوث الجهاز المحمول</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;معرفة المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام جهازك المحمول وطلب قارئ البطاقات</string>
+    <string name="card_reader_fetching_order_failed">حدث خطأ في أثناء إحضار الطلب. قد تكون حالة الطلب الموجودة في التطبيق قديمة.</string>
+    <string name="card_reader_payment_email_client_not_found">لا يمكن اكتشاف تطبيق عميل البريد الإلكتروني الخاص بك</string>
+    <string name="card_reader_payment_receipt_email_content">شكراً لك على شرائك! يمكنك العثور على إيصال عملية الدفع الخاصة بك على الرابط الآتي: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">إيصالك من %s</string>
+    <string name="card_reader_payment_description">عملية الدفع عبر الإنترنت للطلب %s مقابل %s</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">تحديث الطلب</string>
+    <string name="card_reader_payment_fetch_order_loading_header">تحديث حالة التطبيق</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">قام عميلك بتحديد ⁦%1$s⁩</string>
+    <string name="shipping_label_address_phone_invalid">تتطلب النماذج الجمركية رقم هاتف مكوَّنًا من 10 أرقام</string>
+    <string name="shipping_label_address_phone_required">يلزم رقم هاتف، نظرًا إلى أن هذه الشحنة تتطلب نموذجًا جمركيًا</string>
+    <string name="shipping_label_create_customs_done">تم الانتهاء من النموذج الجمركي</string>
+    <string name="print_receipt_label_info_step_7">إذا كنت تواجه مشكلات في الطباعة من جهازك، فاتصل بدعم العملاء بشأن طابعتك.</string>
+    <string name="print_receipt_label_info_step_6">إذا كانت الطباعة غير متاحة، فيمكنك دائمًا حفظ إيصالك كملف PDF وإرساله عبر البريد الإلكتروني لطباعته من جهاز آخر.</string>
+    <string name="print_receipt_label_info_step_5">قم بتعديل مقاس الورقة حسب الحاجة، وحدِّد \"طباعة\" عندما تكون جاهزًا لطباعة الإيصال.</string>
+    <string name="print_receipt_label_info_step_4">قم بإقران الطابعة وربطها بهاتفك المحمول عندما يُطلب منك ذلك.</string>
+    <string name="print_receipt_label_info_step_3">عند تحديد \"طباعة إيصال\" بعد قبول عملية الدفع، استبدل \"حفظ كملف PDF\" بـ \"جميع الطابعات\"، وابحث عن طابعة جديدة.</string>
+    <string name="print_receipt_label_info_step_2">قم بتمكين البلوتوث أو اتصال الواي فاي على طابعتك.</string>
+    <string name="print_receipt_label_info_step_1">تأكَّد من تثبيت إضافة خدمة الطباعة لطابعتك.</string>
+    <string name="orderdetail_printing_instructions_button">معرفة المزيد حول طباعة الإيصال باستخدام جهازك</string>
+    <string name="product_create_attribute_helper">لإنشاء مجموعة، ستحتاج إلى تعيين سماتها (أي \"اللون\"، \"والحجم\") أولاً</string>
+    <string name="product_variation_single_count">مجموعة واحدة</string>
+    <string name="product_variation_multiple_count">⁦%1$s⁩ من المجموعات</string>
     <string name="shipping_label_rate_included_options_usps_tracking">تعقُّب %s</string>
     <string name="card_reader_software_update_in_progress_title">تحديث برنامج قارئك</string>
     <string name="card_reader_software_update_title">تحديث برنامج</string>
@@ -97,7 +125,7 @@ Language: ar
     <string name="orderdetail_products_recreate_shipping_label_menu">إنشاء ملصق شحن جديد</string>
     <string name="product_type_virtual_title">منتج افتراضي بسيط</string>
     <string name="variation_confirm_delete">هل ترغب في حذف هذه المجموعة المتنوعة؟</string>
-    <string name="variation_create_dialog_title">إنشاء مجموعة متنوعة</string>
+    <string name="variation_create_dialog_title">إنشاء مجموعة</string>
     <string name="product_delete_dialog_title">حذف منتج</string>
     <string name="card_reader_payment_send_receipt">إرسال إيصال</string>
     <string name="card_reader_payment_print_receipt">طباعة إيصال</string>
@@ -150,10 +178,7 @@ Language: ar
     <string name="shipping_label_rate_included_options">يتضمن %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">يلزم توقيع شخص بالغ (%s)</string>
     <string name="shipping_label_rate_option_signature_required">يلزم التوقيع (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">شحن مجاني</string>
-    <string name="shipping_label_shipping_method_local_pickup">إستلام محلي من المتجر</string>
-    <string name="shipping_label_shipping_method_flat_rate">سعر ثابت</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">دفع العميل مبلغًا قدره ⁦%1$s⁩ (⁦%2$s⁩) مقابل الشحن</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">دفع العميل مبلغًا قدره ⁦%1$s⁩ من ⁦%2$s⁩ مقابل الشحن</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">عند شراء ملصقات الشحن باستخدام WooCommerce، ستحصل على خصم يتراوح بين 5 % و40 % مقارنةً بأسعار مكاتب البريد.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">ما المقصود بخصم خدمات  WooCommerce؟</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">حدث خطأ ما في أثناء تحميل خيارات الشحن</string>
@@ -200,7 +225,7 @@ Language: ar
     <string name="shipping_label_single_package_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>
     <string name="shipping_label_packages_custom_section_title">حزم مخصصة</string>
     <string name="shipping_label_package_details_fetch_products_error">يتعذر إحضار المنتجات</string>
-    <string name="shipping_label_missing_data_snackbar_message">بعض الحقول المطلوبة فارغة.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">بعض الحقول المطلوبة فارغة.</string>
     <string name="shipping_label_package_details_weight_error">وزن غير صالح</string>
     <string name="shipping_label_package_selector_title">الحزمة المحدَّدة</string>
     <string name="shipping_label_packages_loading_message">يُرجى الانتظار…</string>
@@ -610,7 +635,6 @@ Language: ar
     <string name="empty_review_list_message">الحصول على مراجعات حول منتج بجودة عالية لمتجرك</string>
     <string name="empty_review_list_title">احصل على تقييماتك الأولى</string>
     <string name="empty_order_list_all_processed">تم استيفاء جميع الطلبات</string>
-    <string name="empty_order_list_message">سنُخطرك عندما تتلقى طلبًا جديدًا. في غضون ذلك، استكشف كيف يمكنك زيادة مبيعات متجرك.</string>
     <string name="empty_order_list_title">في انتظار طلبك الأول</string>
     <string name="share_your_store_message">شارك متجرك مع جهات الاتصال الخاصة بك عبر شبكات التواصل الاجتماعي والبريد الإلكتروني</string>
     <string name="get_the_word_out">لننشر الخبر</string>

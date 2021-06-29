@@ -51,7 +51,8 @@ object WooPermissionUtils {
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 allGranted = false
                 if (checkForAlwaysDenied && !ActivityCompat
-                                .shouldShowRequestPermissionRationale(activity, permissions[i])) {
+                    .shouldShowRequestPermissionRationale(activity, permissions[i])
+                ) {
                     showPermissionAlwaysDeniedDialog(activity, permissions[i])
                     break
                 }
@@ -75,9 +76,10 @@ object WooPermissionUtils {
         // otherwise, check whether permission has already been granted - if so we know it has
         // been asked
         if (ContextCompat.checkSelfPermission(
-                        context,
-                        permission
-                ) == PackageManager.PERMISSION_GRANTED) {
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             AppPrefs.setBoolean(key, true)
             return true
         }
@@ -94,11 +96,12 @@ object WooPermissionUtils {
         // denied, but it also returns false if the app has never requested that permission - so we
         // check it only if we know we've asked for this permission
         if (isPermissionAsked(activity, permission) && ContextCompat.checkSelfPermission(
-                        activity,
-                        permission
-                ) == PackageManager.PERMISSION_DENIED) {
+                activity,
+                permission
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
             val shouldShow = ActivityCompat
-                    .shouldShowRequestPermissionRationale(activity, permission)
+                .shouldShowRequestPermissionRationale(activity, permission)
             return !shouldShow
         }
 
@@ -146,17 +149,17 @@ object WooPermissionUtils {
         permission: String
     ) {
         val message = String.format(
-                activity.getString(R.string.permissions_denied_message),
-                getPermissionName(activity, permission)
+            activity.getString(R.string.permissions_denied_message),
+            getPermissionName(activity, permission)
         )
 
         val builder = MaterialAlertDialogBuilder(activity)
-                .setTitle(activity.getString(R.string.permissions_denied_title))
-                .setMessage(HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY))
-                .setPositiveButton(
-                        R.string.button_edit_permissions
-                ) { _, _ -> showAppSettings(activity) }
-                .setNegativeButton(R.string.button_not_now, null)
+            .setTitle(activity.getString(R.string.permissions_denied_title))
+            .setMessage(HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY))
+            .setPositiveButton(
+                R.string.button_edit_permissions
+            ) { _, _ -> showAppSettings(activity) }
+            .setNegativeButton(R.string.button_not_now, null)
         builder.show()
     }
 
@@ -176,7 +179,7 @@ object WooPermissionUtils {
 
     fun hasCameraPermission(context: Context): Boolean {
         return ContextCompat.checkSelfPermission(
-                context, permission.CAMERA
+            context, permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 

@@ -44,9 +44,9 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         val savedState = ProductShippingFragmentArgs(requestCode, initialData).initSavedStateHandle()
         return spy(
             ProductShippingViewModel(
-                    savedState,
-                    parameterRepository,
-                    productDetailRepository
+                savedState,
+                parameterRepository,
+                productDetailRepository
             )
         )
     }

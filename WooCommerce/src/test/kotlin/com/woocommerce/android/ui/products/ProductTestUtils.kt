@@ -113,15 +113,15 @@ object ProductTestUtils {
     }
 
     private fun generateProductImage(imageId: Long = 1L) =
-            Product.Image(
-                    id = imageId,
-                    name = "Image $imageId",
-                    source = "Image $imageId source",
-                    dateCreated = Date.from(Instant.EPOCH)
-            )
+        Product.Image(
+            id = imageId,
+            name = "Image $imageId",
+            source = "Image $imageId source",
+            dateCreated = Date.from(Instant.EPOCH)
+        )
 
     fun generateProductImagesList() =
-            (1L..10L).map { id -> generateProductImage(imageId = id) }
+        (1L..10L).map { id -> generateProductImage(imageId = id) }
 
     fun generateProductAttribute(id: Long): ProductAttribute {
         return ProductAttribute(

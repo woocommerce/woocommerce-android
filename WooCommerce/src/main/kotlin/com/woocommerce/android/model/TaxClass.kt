@@ -12,7 +12,7 @@ data class TaxClass(
 
 fun WCTaxClassModel.toAppModel(): TaxClass {
     return TaxClass(
-            name = this.name,
-            slug = this.slug
+        name = this.name,
+        slug = this.slug
     )
 }

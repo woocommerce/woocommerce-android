@@ -12,6 +12,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 object PriceUtils {
+    @Suppress("LongParameterList")
     fun getPriceGroup(
         parameters: SiteParameters,
         resources: ResourceProvider,
