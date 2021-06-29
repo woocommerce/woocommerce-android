@@ -6,7 +6,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +20,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShowMoveItemDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -46,7 +46,8 @@ class EditShippingLabelPackagesFragment :
         ShippingLabelPackagesAdapter(
             viewModel.weightUnit,
             viewModel::onWeightEdited,
-            viewModel::onPackageSpinnerClicked
+            viewModel::onPackageSpinnerClicked,
+            viewModel::onMoveButtonClicked
         )
     }
 
@@ -123,6 +124,15 @@ class EditShippingLabelPackagesFragment :
                     val action = EditShippingLabelPackagesFragmentDirections
                         .actionEditShippingLabelPackagesFragmentToShippingPackageSelectorFragment(
                             position = event.position
+                        )
+
+                    findNavController().navigateSafely(action)
+                }
+                is ShowMoveItemDialog -> {
+                    val action = EditShippingLabelPackagesFragmentDirections
+                        .actionEditShippingLabelPackagesFragmentToMoveShippingItemDialog(
+                            item = event.item,
+                            currentPackage = event.currentPackage
                         )
 
                     findNavController().navigateSafely(action)

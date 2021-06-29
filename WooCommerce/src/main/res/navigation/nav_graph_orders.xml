@@ -485,7 +485,14 @@
         android:id="@+id/moveShippingItemDialog"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemDialog"
         android:label="MoveShippingItemDialog"
-        tools:layout="@layout/dialog_move_shipping_item"/>
+        tools:layout="@layout/dialog_move_shipping_item">
+        <argument
+            android:name="item"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage$Item" />
+        <argument
+            android:name="currentPackage"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage" />
+    </dialog>
     <action
         android:id="@+id/action_global_addOrderShipmentTrackingFragment"
         app:destination="@id/addOrderShipmentTrackingFragment"

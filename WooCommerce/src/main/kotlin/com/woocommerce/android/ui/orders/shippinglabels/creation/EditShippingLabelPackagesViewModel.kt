@@ -159,6 +159,10 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         viewState = viewState.copy(shippingLabelPackages = packages)
     }
 
+    fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
+        triggerEvent(ShowMoveItemDialog(item, shippingPackage))
+    }
+
     fun onDoneButtonClicked() {
         triggerEvent(ExitWithResult(viewState.shippingLabelPackages))
     }
@@ -209,4 +213,9 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
+
+    data class ShowMoveItemDialog(
+        val item: ShippingLabelPackage.Item,
+        val currentPackage: ShippingLabelPackage
+    ) : MultiLiveEvent.Event()
 }

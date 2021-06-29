@@ -21,7 +21,8 @@ import com.woocommerce.android.util.StringUtils
 class ShippingLabelPackagesAdapter(
     val weightUnit: String,
     val onWeightEdited: (Int, Float) -> Unit,
-    val onPackageSpinnerClicked: (Int) -> Unit
+    val onPackageSpinnerClicked: (Int) -> Unit,
+    val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var shippingLabelPackages: List<ShippingLabelPackage> = emptyList()
         set(value) {
@@ -97,7 +98,10 @@ class ShippingLabelPackagesAdapter(
                 shippingLabelPackage.items.size,
                 shippingLabelPackage.items.size
             )}"
-            (binding.itemsList.adapter as PackageProductsAdapter).items = shippingLabelPackage.adaptItemsForUi()
+            with(binding.itemsList.adapter as PackageProductsAdapter) {
+                items = shippingLabelPackage.adaptItemsForUi()
+                moveItemClickListener = { item -> onMoveItemClicked(item, shippingLabelPackage) }
+            }
             binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
             if (!shippingLabelPackage.weight.isNaN()) {
                 binding.weightEditText.setTextIfDifferent(shippingLabelPackage.weight.toString())
@@ -133,12 +137,16 @@ class ShippingLabelPackagesAdapter(
     }
 }
 
-class PackageProductsAdapter(private val weightUnit: String) : RecyclerView.Adapter<PackageProductViewHolder>() {
+class PackageProductsAdapter(
+    private val weightUnit: String
+) : RecyclerView.Adapter<PackageProductViewHolder>() {
     var items: List<ShippingLabelPackage.Item> = emptyList()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
+
+    lateinit var moveItemClickListener: (ShippingLabelPackage.Item) -> Unit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackageProductViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -169,6 +177,9 @@ class PackageProductsAdapter(private val weightUnit: String) : RecyclerView.Adap
             } else {
                 binding.productDetails.isVisible = true
                 binding.productDetails.text = details
+            }
+            binding.moveButton.setOnClickListener {
+                moveItemClickListener(item)
             }
         }
     }
