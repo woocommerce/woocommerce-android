@@ -16,6 +16,7 @@ import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.base.BaseFragment
 import org.wordpress.android.util.ActivityUtils
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.InputName
 
 class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_shipping_label_create_custom_package) {
     private var _binding: FragmentShippingLabelCreateCustomPackageBinding? = null
@@ -51,14 +52,20 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
             mapper = { resources.getString(it.stringRes) }
         )
 
-        // Fill in initial values.
-        binding.customPackageFormLength.setText("0")
-        binding.customPackageFormWidth.setText("0")
-        binding.customPackageFormHeight.setText("0")
-        binding.customPackageFormEmptyWeight.setText("0")
-
+        binding.customPackageFormName.setOnTextChangedListener {
+            viewModel.onCustomPackageStringInputChanged(it.toString())
+        }
         binding.customPackageFormLength.setOnTextChangedListener {
-            viewModel.onCustomPackageFormLengthChanged(it.toString())
+            viewModel.onCustomPackageFloatInputChanged(it.toString(), InputName.LENGTH)
+        }
+        binding.customPackageFormWidth.setOnTextChangedListener {
+            viewModel.onCustomPackageFloatInputChanged(it.toString(), InputName.WIDTH)
+        }
+        binding.customPackageFormHeight.setOnTextChangedListener {
+            viewModel.onCustomPackageFloatInputChanged(it.toString(), InputName.HEIGHT)
+        }
+        binding.customPackageFormEmptyWeight.setOnTextChangedListener {
+            viewModel.onCustomPackageFloatInputChanged(it.toString(), InputName.EMPTY_WEIGHT)
         }
 
         // TODO fill metric values
@@ -72,6 +79,22 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
 
             new.customPackageFormLengthError.takeIfNotEqualTo(old?.customPackageFormLengthError) {
                 showErrorOrClear(binding.customPackageFormLength, it)
+            }
+
+            new.customPackageFormWidthError.takeIfNotEqualTo(old?.customPackageFormWidthError) {
+                showErrorOrClear(binding.customPackageFormHeight, it)
+            }
+
+            new.customPackageFormHeightError.takeIfNotEqualTo(old?.customPackageFormHeightError) {
+                showErrorOrClear(binding.customPackageFormLength, it)
+            }
+
+            new.customPackageFormWeightError.takeIfNotEqualTo(old?.customPackageFormWeightError) {
+                showErrorOrClear(binding.customPackageFormEmptyWeight, it)
+            }
+
+            new.customPackageFormNameError.takeIfNotEqualTo(old?.customPackageFormNameError) {
+                showErrorOrClear(binding.customPackageFormName, it)
             }
         }
     }
