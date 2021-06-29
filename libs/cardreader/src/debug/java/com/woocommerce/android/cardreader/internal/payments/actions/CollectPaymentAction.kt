@@ -12,10 +12,12 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CollectPayme
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.runBlocking
 
 internal class CollectPaymentAction(private val terminal: TerminalWrapper, private val logWrapper: LogWrapper) {
     sealed class CollectPaymentStatus {
@@ -32,12 +34,12 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                 object : ReaderDisplayListener {
                     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
                         logWrapper.d("CardReader", message.toString())
-                        this@callbackFlow.sendBlocking(DisplayMessageRequested(message))
+                        this@callbackFlow.sendBlockingIfOpen(DisplayMessageRequested(message))
                     }
 
                     override fun onRequestReaderInput(options: ReaderInputOptions) {
                         logWrapper.d("CardReader", "Waiting for input: $options")
-                        this@callbackFlow.sendBlocking(ReaderInputRequested(options))
+                        this@callbackFlow.sendBlockingIfOpen(ReaderInputRequested(options))
                     }
                 },
                 object : PaymentIntentCallback {
@@ -57,5 +59,9 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
             // TODO cardreader implement timeout
             awaitClose()
         }
+    }
+
+    private fun <E> SendChannel<E>.sendBlockingIfOpen(element: E) {
+        if (!isClosedForSend) sendBlocking(element)
     }
 }
