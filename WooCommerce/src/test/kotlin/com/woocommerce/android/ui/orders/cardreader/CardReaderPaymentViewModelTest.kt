@@ -181,9 +181,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val siteName = "testName"
             val expectedResult = "hooray"
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                name = siteName
-            })
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    name = siteName
+                }
+            )
             whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_NUMBER, siteName))
                 .thenReturn(expectedResult)
             val stringCaptor = argumentCaptor<String>()

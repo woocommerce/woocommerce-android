@@ -35,7 +35,9 @@ class AttributeTermsListAdapter(
                 TermItemDiffUtil(
                     field,
                     value
-                ), true)
+                ),
+                true
+            )
             field = value
 
             diffResult.dispatchUpdatesTo(this)
@@ -106,9 +108,12 @@ class AttributeTermsListAdapter(
      * to animate
      */
     private fun delayedChangeNotification() {
-        Handler().postDelayed({
-            notifyDataSetChanged()
-        }, 300)
+        Handler().postDelayed(
+            {
+                notifyDataSetChanged()
+            },
+            300
+        )
     }
 
     fun swapItems(from: Int, to: Int) {

@@ -49,15 +49,17 @@ class AddProductCategoryViewModel @Inject constructor(
     fun onBackButtonClicked(categoryName: String, parentId: String): Boolean {
         val hasChanges = categoryName.isNotEmpty() || parentId.isNotEmpty()
         return if (hasChanges && addProductCategoryViewState.shouldShowDiscardDialog) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    addProductCategoryViewState = addProductCategoryViewState.copy(shouldShowDiscardDialog = false)
-                    triggerEvent(Exit)
-                },
-                negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    addProductCategoryViewState = addProductCategoryViewState.copy(shouldShowDiscardDialog = true)
-                }
-            ))
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        addProductCategoryViewState = addProductCategoryViewState.copy(shouldShowDiscardDialog = false)
+                        triggerEvent(Exit)
+                    },
+                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        addProductCategoryViewState = addProductCategoryViewState.copy(shouldShowDiscardDialog = true)
+                    }
+                )
+            )
             false
         } else true
     }
@@ -203,7 +205,8 @@ class AddProductCategoryViewModel @Inject constructor(
             parentCategoryListViewState = parentCategoryListViewState.copy(
                 isLoading = true,
                 canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
-                isEmptyViewVisible = _parentCategories.value?.isEmpty() == true)
+                isEmptyViewVisible = _parentCategories.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }

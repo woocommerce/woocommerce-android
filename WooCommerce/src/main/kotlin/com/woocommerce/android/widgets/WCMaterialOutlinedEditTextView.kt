@@ -45,14 +45,14 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
-                    attrs,
-                    R.styleable.WCMaterialOutlinedEditTextView
+                attrs,
+                R.styleable.WCMaterialOutlinedEditTextView
             )
             try {
                 // Set the edit text input type
                 binding.editText.inputType = a.getInt(
-                        R.styleable.WCMaterialOutlinedEditTextView_android_inputType,
-                        EditorInfo.TYPE_TEXT_VARIATION_NORMAL
+                    R.styleable.WCMaterialOutlinedEditTextView_android_inputType,
+                    EditorInfo.TYPE_TEXT_VARIATION_NORMAL
                 )
 
                 // Set the max length
@@ -127,9 +127,12 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
             if (selectAll) {
                 binding.editText.selectAll()
             }
-            binding.editText.postDelayed({
-                ActivityUtils.showKeyboard(binding.editText)
-            }, 100)
+            binding.editText.postDelayed(
+                {
+                    ActivityUtils.showKeyboard(binding.editText)
+                },
+                100
+            )
         }
     }
 

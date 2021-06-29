@@ -29,7 +29,8 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
+class ProductTagsFragment :
+    BaseProductFragment(R.layout.fragment_product_tags),
     OnLoadMoreListener,
     OnProductTagClickListener {
     companion object {
@@ -79,7 +80,8 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
             addItemDecoration(
                 AlignedDividerDecoration(
                     activity, DividerItemDecoration.VERTICAL, R.id.tagName, clipToMargin = false
-                ))
+                )
+            )
         }
 
         binding.productTagsLayout.apply {
@@ -107,11 +109,14 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
      * perform a search while the user is typing
      */
     private fun setProductTagsFilterDelayed(filter: String) {
-        searchHandler.postDelayed({
-            if (filter == binding.addProductTagView.getEnteredTag()) {
-                viewModel.setProductTagsFilter(filter)
-            }
-        }, SEARCH_TYPING_DELAY_MS)
+        searchHandler.postDelayed(
+            {
+                if (filter == binding.addProductTagView.getEnteredTag()) {
+                    viewModel.setProductTagsFilter(filter)
+                }
+            },
+            SEARCH_TYPING_DELAY_MS
+        )
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -141,23 +146,32 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
             }
         }
 
-        viewModel.productTags.observe(viewLifecycleOwner, Observer {
-            showProductTags(it)
-        })
-
-        viewModel.addedProductTags.observe(viewLifecycleOwner, Observer {
-            addTags(it, this)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitProductTags -> {
-                    viewModel.clearProductTagsState()
-                    findNavController().navigateUp()
-                }
-                else -> event.isHandled = false
+        viewModel.productTags.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProductTags(it)
             }
-        })
+        )
+
+        viewModel.addedProductTags.observe(
+            viewLifecycleOwner,
+            Observer {
+                addTags(it, this)
+            }
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitProductTags -> {
+                        viewModel.clearProductTagsState()
+                        findNavController().navigateUp()
+                    }
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun showProductTags(productTags: List<ProductTag>) {

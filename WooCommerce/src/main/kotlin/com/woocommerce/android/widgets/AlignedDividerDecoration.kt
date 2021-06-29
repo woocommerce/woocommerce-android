@@ -97,57 +97,57 @@ class AlignedDividerDecoration @JvmOverloads constructor(
         val adjustedChildCount = parent.childCount - 2
         val isRtl = ViewCompat.getLayoutDirection(parent) == ViewCompat.LAYOUT_DIRECTION_RTL
         (0..adjustedChildCount)
-                .map { parent.getChildAt(it) }
-                .forEach {
-                    val left = it.findViewById<View>(if (isRtl) alignEndToEndOf else alignStartToStartOf)
-                    val right = it.findViewById<View>(if (isRtl) alignStartToStartOf else alignEndToEndOf)
+            .map { parent.getChildAt(it) }
+            .forEach {
+                val left = it.findViewById<View>(if (isRtl) alignEndToEndOf else alignStartToStartOf)
+                val right = it.findViewById<View>(if (isRtl) alignStartToStartOf else alignEndToEndOf)
 
-                    var dividerStart = left?.left ?: 0
-                    var dividerEnd = right?.right ?: parent.width
-                    if (clipToMargin) {
-                        (left?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
-                            dividerStart += it.marginStart
-                        }
-                        (right?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
-                            dividerEnd -= it.marginEnd
-                        }
+                var dividerStart = left?.left ?: 0
+                var dividerEnd = right?.right ?: parent.width
+                if (clipToMargin) {
+                    (left?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
+                        dividerStart += it.marginStart
                     }
-
-                    parent.getDecoratedBoundsWithMargins(it, bounds)
-                    val bottom = bounds.bottom + Math.round(it.translationY)
-                    val top = bottom - divider.intrinsicHeight
-                    divider.setBounds(dividerStart, top, dividerEnd, bottom)
-                    divider.draw(canvas)
+                    (right?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
+                        dividerEnd -= it.marginEnd
+                    }
                 }
+
+                parent.getDecoratedBoundsWithMargins(it, bounds)
+                val bottom = bounds.bottom + Math.round(it.translationY)
+                val top = bottom - divider.intrinsicHeight
+                divider.setBounds(dividerStart, top, dividerEnd, bottom)
+                divider.draw(canvas)
+            }
     }
 
     private fun drawForHorizontal(canvas: Canvas, parent: RecyclerView) {
         val adjustedChildCount = parent.childCount - 2
         (0..adjustedChildCount)
-                .map { parent.getChildAt(it) }
-                .forEach {
-                    val clipStartView = it.findViewById<View>(alignStartToStartOf)
-                    val clipEndView = it.findViewById<View>(alignEndToEndOf)
+            .map { parent.getChildAt(it) }
+            .forEach {
+                val clipStartView = it.findViewById<View>(alignStartToStartOf)
+                val clipEndView = it.findViewById<View>(alignEndToEndOf)
 
-                    var top = clipStartView?.top ?: 0
-                    var bottom = clipEndView?.bottom ?: parent.height
+                var top = clipStartView?.top ?: 0
+                var bottom = clipEndView?.bottom ?: parent.height
 
-                    // Calculate margins if enabled
-                    if (clipToMargin) {
-                        (clipStartView?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
-                            top += it.marginStart
-                        }
-                        (clipEndView?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
-                            bottom -= it.marginEnd
-                        }
+                // Calculate margins if enabled
+                if (clipToMargin) {
+                    (clipStartView?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
+                        top += it.marginStart
                     }
-
-                    parent.layoutManager?.getDecoratedBoundsWithMargins(it, bounds)
-                    val right = bounds.right + Math.round(it.translationX)
-                    val left = right - divider.intrinsicWidth
-                    divider.setBounds(left, top, right, bottom)
-                    divider.draw(canvas)
+                    (clipEndView?.layoutParams as ConstraintLayout.LayoutParams?)?.let {
+                        bottom -= it.marginEnd
+                    }
                 }
+
+                parent.layoutManager?.getDecoratedBoundsWithMargins(it, bounds)
+                val right = bounds.right + Math.round(it.translationX)
+                val left = right - divider.intrinsicWidth
+                divider.setBounds(left, top, right, bottom)
+                divider.draw(canvas)
+            }
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {

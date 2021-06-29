@@ -64,9 +64,9 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
 
     private fun loadAuthenticatedUrl(webView: WebView, urlToLoad: String) {
         val postData = getAuthenticationPostData(
-                urlToLoad = urlToLoad,
-                username = accountStore.account.userName,
-                token = accountStore.accessToken
+            urlToLoad = urlToLoad,
+            username = accountStore.account.userName,
+            token = accountStore.accessToken
         )
 
         webView.postUrl(WPCOM_LOGIN_URL, postData.toByteArray())
@@ -84,9 +84,9 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
         val utf8 = StandardCharsets.UTF_8.name()
         try {
             var postData = String.format(
-                    "log=%s&redirect_to=%s",
-                    URLEncoder.encode(StringUtils.notNullStr(username), utf8),
-                    URLEncoder.encode(StringUtils.notNullStr(urlToLoad), utf8)
+                "log=%s&redirect_to=%s",
+                URLEncoder.encode(StringUtils.notNullStr(username), utf8),
+                URLEncoder.encode(StringUtils.notNullStr(urlToLoad), utf8)
             )
 
             // Add token authorization

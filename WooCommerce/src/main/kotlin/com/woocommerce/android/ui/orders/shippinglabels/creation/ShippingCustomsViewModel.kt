@@ -238,9 +238,12 @@ class ShippingCustomsViewModel @Inject constructor(
                     .filter { it.hsTariffNumber.isNotEmpty() && it.validateHsTariff() == null }
                     .groupBy { it.hsTariffNumber }
                     .map { entry ->
-                        Pair(entry.key, entry.value.sumByBigDecimal {
-                            it.quantity.toBigDecimal() * (it.value ?: BigDecimal.ZERO)
-                        })
+                        Pair(
+                            entry.key,
+                            entry.value.sumByBigDecimal {
+                                it.quantity.toBigDecimal() * (it.value ?: BigDecimal.ZERO)
+                            }
+                        )
                     }
                     .filter { (_, value) -> value > BigDecimal.valueOf(2500.0) }
 

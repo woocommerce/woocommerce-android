@@ -22,7 +22,8 @@ class ProductDetailBottomSheetAdapter(
             ProductDetailBottomSheetListItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false)
+                false
+            )
         )
     }
 

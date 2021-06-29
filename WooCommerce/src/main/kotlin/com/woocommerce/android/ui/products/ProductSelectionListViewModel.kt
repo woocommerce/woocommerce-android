@@ -53,7 +53,7 @@ class ProductSelectionListViewModel @Inject constructor(
         get() = navArgs.groupedProductListType
 
     val searchQuery
-    get() = productSelectionListViewState.searchQuery
+        get() = productSelectionListViewState.searchQuery
 
     private var loadJob: Job? = null
     private var searchJob: Job? = null

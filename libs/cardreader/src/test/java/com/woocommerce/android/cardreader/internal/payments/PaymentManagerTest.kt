@@ -94,9 +94,11 @@ class PaymentManagerTest {
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(createPaymentAction.createPaymentIntent(anyString(), anyInt(), anyString(), anyString()))
-            .thenReturn(flow {
-                emit(CreatePaymentStatus.Success(createPaymentIntent(REQUIRES_PAYMENT_METHOD)))
-            })
+            .thenReturn(
+                flow {
+                    emit(CreatePaymentStatus.Success(createPaymentIntent(REQUIRES_PAYMENT_METHOD)))
+                }
+            )
 
         whenever(collectPaymentAction.collectPayment(anyOrNull()))
             .thenReturn(flow { emit(CollectPaymentStatus.Success(createPaymentIntent(REQUIRES_CONFIRMATION))) })
@@ -390,9 +392,15 @@ class PaymentManagerTest {
     @Test
     fun `when receiptUrl is empty, then PaymentFailed emitted`() = runBlockingTest {
         whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(flow { emit(ProcessPaymentStatus.Success(
-                createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
-            )) })
+            .thenReturn(
+                flow {
+                    emit(
+                        ProcessPaymentStatus.Success(
+                            createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
+                        )
+                    )
+                }
+            )
 
         val result = manager
             .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
@@ -403,9 +411,15 @@ class PaymentManagerTest {
     @Test
     fun `when receiptUrl is empty, then PaymentData for retry are empty`() = runBlockingTest {
         whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(flow { emit(ProcessPaymentStatus.Success(
-                createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
-            )) })
+            .thenReturn(
+                flow {
+                    emit(
+                        ProcessPaymentStatus.Success(
+                            createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
+                        )
+                    )
+                }
+            )
 
         val result = manager
             .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()
@@ -445,9 +459,15 @@ class PaymentManagerTest {
     fun `when capturing payment succeeds, then PaymentCompleted event contains receipt url`() = runBlockingTest {
         val expectedReceiptUrl = "abcd"
         whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(flow { emit(ProcessPaymentStatus.Success(
-                createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = expectedReceiptUrl)
-            )) })
+            .thenReturn(
+                flow {
+                    emit(
+                        ProcessPaymentStatus.Success(
+                            createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = expectedReceiptUrl)
+                        )
+                    )
+                }
+            )
 
         val result = manager
             .acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, DUMMY_AMOUNT, USD_CURRENCY, DUMMY_EMAIL).toList()

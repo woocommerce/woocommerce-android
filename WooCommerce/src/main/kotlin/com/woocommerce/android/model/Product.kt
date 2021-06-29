@@ -331,11 +331,13 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
     fun imagesToJson(): String {
         val jsonArray = JsonArray()
         for (image in images) {
-            jsonArray.add(JsonObject().also { json ->
-                json.addProperty("id", image.id)
-                json.addProperty("name", image.name)
-                json.addProperty("source", image.source)
-            })
+            jsonArray.add(
+                JsonObject().also { json ->
+                    json.addProperty("id", image.id)
+                    json.addProperty("name", image.name)
+                    json.addProperty("source", image.source)
+                }
+            )
         }
         return jsonArray.toString()
     }
@@ -343,11 +345,13 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
     fun categoriesToJson(): String {
         val jsonArray = JsonArray()
         for (category in categories) {
-            jsonArray.add(JsonObject().also { json ->
-                json.addProperty("id", category.remoteCategoryId)
-                json.addProperty("name", category.name)
-                json.addProperty("slug", category.slug)
-            })
+            jsonArray.add(
+                JsonObject().also { json ->
+                    json.addProperty("id", category.remoteCategoryId)
+                    json.addProperty("name", category.name)
+                    json.addProperty("slug", category.slug)
+                }
+            )
         }
         return jsonArray.toString()
     }
@@ -355,11 +359,13 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
     fun tagsToJson(): String {
         val jsonArray = JsonArray()
         for (tag in tags) {
-            jsonArray.add(JsonObject().also { json ->
-                json.addProperty("id", tag.remoteTagId)
-                json.addProperty("name", tag.name)
-                json.addProperty("slug", tag.slug)
-            })
+            jsonArray.add(
+                JsonObject().also { json ->
+                    json.addProperty("id", tag.remoteTagId)
+                    json.addProperty("name", tag.name)
+                    json.addProperty("slug", tag.slug)
+                }
+            )
         }
         return jsonArray.toString()
     }

@@ -48,7 +48,7 @@ class TagView @JvmOverloads constructor(
                 var borderColor = a.getColor(R.styleable.TagView_tagBorderColor, 0)
                 if (borderColor == 0) {
                     val borderColorResId =
-                            a.getResourceId(R.styleable.TagView_tagBorderColor, R.color.tagView_border_bg)
+                        a.getResourceId(R.styleable.TagView_tagBorderColor, R.color.tagView_border_bg)
                     borderColor = ContextCompat.getColor(context, borderColorResId)
                 }
                 config.borderColor = borderColor
@@ -61,12 +61,12 @@ class TagView @JvmOverloads constructor(
     }
 
     var tag: ITag? = null
-    set(v) {
-        field = v
-        tag?.let {
-            initTag(it.getTagConfiguration(context))
+        set(v) {
+            field = v
+            tag?.let {
+                initTag(it.getTagConfiguration(context))
+            }
         }
-    }
 
     /**
      * Should be called anytime the tag changes. Sets the background color, border

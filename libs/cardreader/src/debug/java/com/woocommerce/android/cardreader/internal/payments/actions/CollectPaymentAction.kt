@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CollectPayme
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -27,17 +28,19 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
 
     fun collectPayment(paymentIntent: PaymentIntent): Flow<CollectPaymentStatus> {
         return callbackFlow {
-            terminal.collectPaymentMethod(paymentIntent, object : ReaderDisplayListener {
-                override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
-                    logWrapper.d("CardReader", message.toString())
-                    this@callbackFlow.sendBlocking(DisplayMessageRequested(message))
-                }
+            terminal.collectPaymentMethod(
+                paymentIntent,
+                object : ReaderDisplayListener {
+                    override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
+                        logWrapper.d("CardReader", message.toString())
+                        this@callbackFlow.sendBlockingIfOpen(DisplayMessageRequested(message))
+                    }
 
-                override fun onRequestReaderInput(options: ReaderInputOptions) {
-                    logWrapper.d("CardReader", "Waiting for input: $options")
-                    this@callbackFlow.sendBlocking(ReaderInputRequested(options))
-                }
-            },
+                    override fun onRequestReaderInput(options: ReaderInputOptions) {
+                        logWrapper.d("CardReader", "Waiting for input: $options")
+                        this@callbackFlow.sendBlockingIfOpen(ReaderInputRequested(options))
+                    }
+                },
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         logWrapper.d("CardReader", "Payment collected")
@@ -50,9 +53,14 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                         this@callbackFlow.sendBlocking(Failure(exception))
                         this@callbackFlow.close()
                     }
-                })
+                }
+            )
             // TODO cardreader implement timeout
             awaitClose()
         }
+    }
+
+    private fun <E> SendChannel<E>.sendBlockingIfOpen(element: E) {
+        if (!isClosedForSend) sendBlocking(element)
     }
 }

@@ -559,20 +559,20 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Request refresh for active list when received new order notification and is in search`() =
-            coroutinesTestRule.testDispatcher.runBlockingTest {
-                doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-                doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
-                viewModel.isSearching = true
-                viewModel.initializeListsForMainTabs()
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+            viewModel.isSearching = true
+            viewModel.initializeListsForMainTabs()
 
-                viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
+            viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
 
-                // Reset as we're no interested in previous invocations in this test
-                reset(viewModel.activePagedListWrapper)
-                viewModel.onNotificationReceived(
-                        NotificationReceivedEvent(NotificationChannelType.NEW_ORDER)
-                )
+            // Reset as we're no interested in previous invocations in this test
+            reset(viewModel.activePagedListWrapper)
+            viewModel.onNotificationReceived(
+                NotificationReceivedEvent(NotificationChannelType.NEW_ORDER)
+            )
 
-                verify(viewModel.activePagedListWrapper)?.fetchFirstPage()
-            }
+            verify(viewModel.activePagedListWrapper)?.fetchFirstPage()
+        }
 }

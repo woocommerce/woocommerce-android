@@ -126,10 +126,10 @@ class ZendeskHelper(
             zendeskNeedsToBeEnabledError
         }
         val builder = HelpCenterActivity.builder()
-                .withArticlesForCategoryIds(ZendeskConstants.mobileHelpCategoryId)
-                .withContactUsButtonVisible(isIdentitySet)
-                .withLabelNames(ZendeskConstants.articleLabel)
-                .withShowConversationsMenuButton(isIdentitySet)
+            .withArticlesForCategoryIds(ZendeskConstants.mobileHelpCategoryId)
+            .withContactUsButtonVisible(isIdentitySet)
+            .withLabelNames(ZendeskConstants.articleLabel)
+            .withShowConversationsMenuButton(isIdentitySet)
         AnalyticsTracker.track(Stat.SUPPORT_HELP_CENTER_VIEWED)
         if (isIdentitySet) {
             builder.show(context, buildZendeskConfig(context, siteStore.sites, origin, selectedSite, extraTags))
@@ -175,7 +175,7 @@ class ZendeskHelper(
         }
         requireIdentity(context, selectedSite) {
             RequestListActivity.builder()
-                    .show(context, buildZendeskConfig(context, siteStore.sites, origin, selectedSite, extraTags))
+                .show(context, buildZendeskConfig(context, siteStore.sites, origin, selectedSite, extraTags))
         }
     }
 
@@ -184,7 +184,7 @@ class ZendeskHelper(
      * it's successful. We'll use the return value to decide whether to show a push notification or not.
      */
     fun refreshRequest(context: Context, requestId: String?): Boolean =
-            Support.INSTANCE.refreshRequest(requestId, context)
+        Support.INSTANCE.refreshRequest(requestId, context)
 
     /**
      * This function should be called when the user logs out of WordPress.com. Push notifications are only available
@@ -211,19 +211,21 @@ class ZendeskHelper(
         // The device token will not be available if the user is not logged in, so this check serves two purposes
         wcPushNotificationDeviceToken?.let { deviceToken ->
             zendeskPushRegistrationProvider?.registerWithDeviceIdentifier(
-                    deviceToken,
-                    object : ZendeskCallback<String>() {
-                        override fun onSuccess(result: String?) {
-                            WooLog.v(T.SUPPORT, "Zendesk push notifications successfully enabled!")
-                        }
+                deviceToken,
+                object : ZendeskCallback<String>() {
+                    override fun onSuccess(result: String?) {
+                        WooLog.v(T.SUPPORT, "Zendesk push notifications successfully enabled!")
+                    }
 
-                        override fun onError(errorResponse: ErrorResponse?) {
-                            WooLog.v(
-                                    T.SUPPORT, "Enabling Zendesk push notifications failed with" +
-                                    " error: ${errorResponse?.reason}"
-                            )
-                        }
-                    })
+                    override fun onError(errorResponse: ErrorResponse?) {
+                        WooLog.v(
+                            T.SUPPORT,
+                            "Enabling Zendesk push notifications failed with" +
+                                " error: ${errorResponse?.reason}"
+                        )
+                    }
+                }
+            )
         }
     }
 
@@ -239,18 +241,19 @@ class ZendeskHelper(
             return
         }
         zendeskPushRegistrationProvider?.unregisterDevice(
-                object : ZendeskCallback<Void>() {
-                    override fun onSuccess(response: Void?) {
-                        WooLog.v(T.SUPPORT, "Zendesk push notifications successfully disabled!")
-                    }
+            object : ZendeskCallback<Void>() {
+                override fun onSuccess(response: Void?) {
+                    WooLog.v(T.SUPPORT, "Zendesk push notifications successfully disabled!")
+                }
 
-                    override fun onError(errorResponse: ErrorResponse?) {
-                        WooLog.v(
-                                T.SUPPORT, "Disabling Zendesk push notifications failed with" +
-                                " error: ${errorResponse?.reason}"
-                        )
-                    }
-                })
+                override fun onError(errorResponse: ErrorResponse?) {
+                    WooLog.v(
+                        T.SUPPORT,
+                        "Disabling Zendesk push notifications failed with" +
+                            " error: ${errorResponse?.reason}"
+                    )
+                }
+            })
     }
 
     /**
@@ -288,7 +291,7 @@ class ZendeskHelper(
             return
         }
         val (emailSuggestion, nameSuggestion) = supportHelper
-                .getSupportEmailAndNameSuggestion(accountStore.account, selectedSite)
+            .getSupportEmailAndNameSuggestion(accountStore.account, selectedSite)
         supportHelper.showSupportIdentityInputDialog(context, emailSuggestion, nameSuggestion) { email, name ->
             AppPrefs.setSupportEmail(email)
             AppPrefs.setSupportName(name)
@@ -357,10 +360,10 @@ private fun buildZendeskConfig(
 ): Configuration {
     val customFields = buildZendeskCustomFields(context, allSites, selectedSite)
     return RequestActivity.builder()
-            .withTicketForm(TicketFieldIds.form, customFields)
-            .withRequestSubject(ZendeskConstants.ticketSubject)
-            .withTags(buildZendeskTags(allSites, origin ?: Origin.UNKNOWN, extraTags))
-            .config()
+        .withTicketForm(TicketFieldIds.form, customFields)
+        .withRequestSubject(ZendeskConstants.ticketSubject)
+        .withTags(buildZendeskTags(allSites, origin ?: Origin.UNKNOWN, extraTags))
+        .config()
 }
 
 private fun getHomeURLOrHostName(site: SiteModel): String {
@@ -386,16 +389,16 @@ private fun buildZendeskCustomFields(
         "not_selected"
     }
     return listOf(
-            CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
-            CustomField(TicketFieldIds.subcategoryId, ZendeskConstants.subcategoryValue),
-            CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
-            CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
-            CustomField(TicketFieldIds.currentSite, currentSiteInformation),
-            CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
-            CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
-            CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
-            CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
-            CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)
+        CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
+        CustomField(TicketFieldIds.subcategoryId, ZendeskConstants.subcategoryValue),
+        CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
+        CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
+        CustomField(TicketFieldIds.currentSite, currentSiteInformation),
+        CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
+        CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
+        CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
+        CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
+        CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)
     )
 }
 
@@ -478,9 +481,9 @@ private fun getNetworkInformation(context: Context): String {
     val carrierName = telephonyManager?.networkOperatorName ?: ZendeskConstants.unknownValue
     val countryCodeLabel = telephonyManager?.networkCountryIso ?: ZendeskConstants.unknownValue
     return listOf(
-            "${ZendeskConstants.networkTypeLabel} $networkType",
-            "${ZendeskConstants.networkCarrierLabel} $carrierName",
-            "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.toUpperCase()}"
+        "${ZendeskConstants.networkTypeLabel} $networkType",
+        "${ZendeskConstants.networkCarrierLabel} $carrierName",
+        "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.toUpperCase()}"
     ).joinToString(separator = "\n")
 }
 

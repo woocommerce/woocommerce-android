@@ -372,7 +372,7 @@ class ProductDetailViewModel @Inject constructor(
                 variationRepository.createEmptyVariation(draft)
                     ?.let {
                         productRepository.fetchProduct(draft.remoteId)
-                                ?.also { updateProductState(productToUpdateFrom = it) }
+                            ?.also { updateProductState(productToUpdateFrom = it) }
                         triggerEvent(ExitProductAttributeList(variationCreated = true))
                     } ?: triggerEvent(ExitProductAttributeList())
             }.also {
@@ -591,13 +591,15 @@ class ProductDetailViewModel @Inject constructor(
         } else if (isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                messageId = string.discard_images_message,
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    ProductImagesService.cancel()
-                    triggerEvent(ExitProduct)
-                }
-            ))
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    messageId = string.discard_images_message,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        ProductImagesService.cancel()
+                        triggerEvent(ExitProduct)
+                    }
+                )
+            )
             return false
         } else {
             return true
@@ -853,57 +855,57 @@ class ProductDetailViewModel @Inject constructor(
     ) {
         viewState.productDraft?.let { product ->
             val updatedProduct = product.copy(
-                    description = description ?: product.description,
-                    shortDescription = shortDescription ?: product.shortDescription,
-                    name = title ?: product.name,
-                    sku = sku ?: product.sku,
-                    slug = slug ?: product.slug,
-                    isStockManaged = manageStock ?: product.isStockManaged,
-                    stockStatus = stockStatus ?: product.stockStatus,
-                    isSoldIndividually = soldIndividually ?: product.isSoldIndividually,
-                    backorderStatus = backorderStatus ?: product.backorderStatus,
-                    stockQuantity = stockQuantity ?: product.stockQuantity,
-                    images = images ?: product.images,
-                    regularPrice = regularPrice ?: product.regularPrice,
-                    salePrice = salePrice ?: product.salePrice,
-                    isVirtual = isVirtual ?: product.isVirtual,
-                    taxStatus = taxStatus ?: product.taxStatus,
-                    taxClass = taxClass ?: product.taxClass,
-                    length = length ?: product.length,
-                    width = width ?: product.width,
-                    height = height ?: product.height,
-                    weight = weight ?: product.weight,
-                    shippingClass = shippingClass ?: product.shippingClass,
-                    shippingClassId = shippingClassId ?: product.shippingClassId,
-                    isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    status = productStatus ?: product.status,
-                    catalogVisibility = catalogVisibility ?: product.catalogVisibility,
-                    isFeatured = isFeatured ?: product.isFeatured,
-                    reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
-                    purchaseNote = purchaseNote ?: product.purchaseNote,
-                    externalUrl = externalUrl ?: product.externalUrl,
-                    buttonText = buttonText ?: product.buttonText,
-                    menuOrder = menuOrder ?: product.menuOrder,
-                    categories = categories ?: product.categories,
-                    tags = tags ?: product.tags,
-                    type = type ?: product.type,
-                    groupedProductIds = groupedProductIds ?: product.groupedProductIds,
-                    upsellProductIds = upsellProductIds ?: product.upsellProductIds,
-                    crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
-                    saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
-                        saleEndDate
-                    } else {
-                        viewState.storedProduct?.saleEndDateGmt
-                    },
-                    saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
-                        saleStartDate ?: product.saleStartDateGmt
-                    } else viewState.storedProduct?.saleStartDateGmt,
-                    downloads = downloads ?: product.downloads,
-                    downloadLimit = downloadLimit ?: product.downloadLimit,
-                    downloadExpiry = downloadExpiry ?: product.downloadExpiry,
-                    isDownloadable = isDownloadable ?: product.isDownloadable,
-                    attributes = attributes ?: product.attributes,
-                    numVariations = numVariation ?: product.numVariations
+                description = description ?: product.description,
+                shortDescription = shortDescription ?: product.shortDescription,
+                name = title ?: product.name,
+                sku = sku ?: product.sku,
+                slug = slug ?: product.slug,
+                isStockManaged = manageStock ?: product.isStockManaged,
+                stockStatus = stockStatus ?: product.stockStatus,
+                isSoldIndividually = soldIndividually ?: product.isSoldIndividually,
+                backorderStatus = backorderStatus ?: product.backorderStatus,
+                stockQuantity = stockQuantity ?: product.stockQuantity,
+                images = images ?: product.images,
+                regularPrice = regularPrice ?: product.regularPrice,
+                salePrice = salePrice ?: product.salePrice,
+                isVirtual = isVirtual ?: product.isVirtual,
+                taxStatus = taxStatus ?: product.taxStatus,
+                taxClass = taxClass ?: product.taxClass,
+                length = length ?: product.length,
+                width = width ?: product.width,
+                height = height ?: product.height,
+                weight = weight ?: product.weight,
+                shippingClass = shippingClass ?: product.shippingClass,
+                shippingClassId = shippingClassId ?: product.shippingClassId,
+                isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                status = productStatus ?: product.status,
+                catalogVisibility = catalogVisibility ?: product.catalogVisibility,
+                isFeatured = isFeatured ?: product.isFeatured,
+                reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
+                purchaseNote = purchaseNote ?: product.purchaseNote,
+                externalUrl = externalUrl ?: product.externalUrl,
+                buttonText = buttonText ?: product.buttonText,
+                menuOrder = menuOrder ?: product.menuOrder,
+                categories = categories ?: product.categories,
+                tags = tags ?: product.tags,
+                type = type ?: product.type,
+                groupedProductIds = groupedProductIds ?: product.groupedProductIds,
+                upsellProductIds = upsellProductIds ?: product.upsellProductIds,
+                crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
+                saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
+                    saleEndDate
+                } else {
+                    viewState.storedProduct?.saleEndDateGmt
+                },
+                saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
+                    saleStartDate ?: product.saleStartDateGmt
+                } else viewState.storedProduct?.saleStartDateGmt,
+                downloads = downloads ?: product.downloads,
+                downloadLimit = downloadLimit ?: product.downloadLimit,
+                downloadExpiry = downloadExpiry ?: product.downloadExpiry,
+                isDownloadable = isDownloadable ?: product.isDownloadable,
+                attributes = attributes ?: product.attributes,
+                numVariations = numVariation ?: product.numVariations
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -1172,9 +1174,11 @@ class ProductDetailViewModel @Inject constructor(
 
         // create an updated list without this attribute and save it to the draft
         ArrayList<ProductAttribute>().also { updatedAttributes ->
-            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
-                attribute.id == attributeId && attribute.name == attributeName
-            })
+            updatedAttributes.addAll(
+                draftAttributes.filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == attributeName
+                }
+            )
 
             updateProductDraft(attributes = updatedAttributes)
             trackWithProductId(Stat.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
@@ -1227,9 +1231,11 @@ class ProductDetailViewModel @Inject constructor(
 
         ArrayList<ProductAttribute>().also { updatedAttributes ->
             // create a list of draft attributes without the old one
-            updatedAttributes.addAll(productDraftAttributes.filterNot { attribute ->
-                attribute.id == attributeId && attribute.name == oldAttributeName
-            })
+            updatedAttributes.addAll(
+                productDraftAttributes.filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == oldAttributeName
+                }
+            )
 
             // add the renamed attribute to the list and update the draft attributes
             updatedAttributes.add(newAttribute)
@@ -1271,9 +1277,11 @@ class ProductDetailViewModel @Inject constructor(
 
         // create an updated list without this attribute, then add a new one with the updated terms
         ArrayList<ProductAttribute>().also { updatedAttributes ->
-            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
-                attribute.id == attributeId && attribute.name == attributeName
-            })
+            updatedAttributes.addAll(
+                draftAttributes.filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == attributeName
+                }
+            )
 
             updatedAttributes.add(
                 ProductAttribute(
@@ -1310,9 +1318,11 @@ class ProductDetailViewModel @Inject constructor(
 
         // create an updated list without this attribute...
         val updatedAttributes = ArrayList<ProductAttribute>().also {
-            it.addAll(draftAttributes.filter { attribute ->
-                attribute.id != attributeId && attribute.name != attributeName
-            })
+            it.addAll(
+                draftAttributes.filter { attribute ->
+                    attribute.id != attributeId && attribute.name != attributeName
+                }
+            )
         }.also {
             // ...then add this attribute back with the updated list of terms unless there are none
             if (updatedTerms.isNotEmpty()) {
@@ -1547,8 +1557,8 @@ class ProductDetailViewModel @Inject constructor(
         loadProductTaxAndShippingClassDependencies(updatedDraft)
 
         viewState = viewState.copy(
-                productDraft = updatedDraft,
-                storedProduct = productToUpdateFrom
+            productDraft = updatedDraft,
+            storedProduct = productToUpdateFrom
         )
 
         if (viewState.productBeforeEnteringFragment == null) {
@@ -2001,24 +2011,29 @@ class ProductDetailViewModel @Inject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
+
         class ExitProductAttributeList(
             shouldShowDiscardDialog: Boolean = true,
             val variationCreated: Boolean = false
         ) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
     }
 
     object RefreshMenu : Event()
+
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.

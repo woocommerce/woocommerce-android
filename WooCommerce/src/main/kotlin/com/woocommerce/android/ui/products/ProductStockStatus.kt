@@ -47,8 +47,8 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
         fun toStringResource(value: String) = fromString(value).stringResource
 
         fun toMap(context: Context) = CoreProductStockStatus.values()
-                .map { it.value to context.getString(fromString(it.value).stringResource) }
-                .toMap()
+            .map { it.value to context.getString(fromString(it.value).stringResource) }
+            .toMap()
 
         /**
          * returns the product's stock status formatted for display

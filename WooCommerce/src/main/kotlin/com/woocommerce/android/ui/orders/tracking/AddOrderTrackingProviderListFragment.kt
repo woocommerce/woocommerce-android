@@ -26,7 +26,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_tracking_provider_list),
+class AddOrderTrackingProviderListFragment :
+    BaseFragment(R.layout.dialog_order_tracking_provider_list),
     OnQueryTextListener,
     OnProviderClickListener {
     companion object {

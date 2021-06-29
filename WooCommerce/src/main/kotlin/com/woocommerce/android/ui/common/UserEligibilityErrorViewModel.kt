@@ -88,8 +88,9 @@ class UserEligibilityErrorViewModel @Inject constructor(
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
             WooLog.e(
-                T.LOGIN, "Account error [type = ${event.causeOfChange}] : " +
-                "${event.error.type} > ${event.error.message}"
+                T.LOGIN,
+                "Account error [type = ${event.causeOfChange}] : " +
+                    "${event.error.type} > ${event.error.message}"
             )
         } else if (!accountStore.hasAccessToken()) {
             triggerEvent(Logout)

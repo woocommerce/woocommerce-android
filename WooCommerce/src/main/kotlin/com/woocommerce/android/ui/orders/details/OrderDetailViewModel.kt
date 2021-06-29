@@ -285,15 +285,18 @@ class OrderDetailViewModel @Inject constructor(
                 orderIdentifier = order.identifier,
                 orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
                 isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
-            ))
+            )
+        )
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
         AnalyticsTracker.track(
             ORDER_TRACKING_ADD,
-            mapOf(AnalyticsTracker.KEY_ID to order.remoteId,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
+            )
         )
         refreshShipmentTracking()
     }
@@ -323,10 +326,19 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onOrderStatusChanged(newStatus: String, changeSource: OrderStatusChangeSource) {
-        AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE, mapOf(
-            AnalyticsTracker.KEY_ID to order.remoteId,
-            AnalyticsTracker.KEY_FROM to order.status.value,
-            AnalyticsTracker.KEY_TO to newStatus))
+        val snackMessage = when (newStatus) {
+            CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
+            else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
+        }
+
+        AnalyticsTracker.track(
+            Stat.ORDER_STATUS_CHANGE,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_FROM to order.status.value,
+                AnalyticsTracker.KEY_TO to newStatus
+            )
+        )
 
         val message = when (changeSource) {
             FULFILL_SCREEN -> {
@@ -338,19 +350,21 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         // display undo snackbar
-        triggerEvent(ShowUndoSnackbar(
-            message = message,
-            undoAction = { onOrderStatusChangeReverted() },
-            dismissAction = object : Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (event != DISMISS_EVENT_ACTION) {
-                        // update the order only if user has not clicked on the undo snackbar
-                        updateOrderStatus(newStatus)
+        triggerEvent(
+            ShowUndoSnackbar(
+                message = message,
+                undoAction = { onOrderStatusChangeReverted() },
+                dismissAction = object : Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        super.onDismissed(transientBottomBar, event)
+                        if (event != DISMISS_EVENT_ACTION) {
+                            // update the order only if user has not clicked on the undo snackbar
+                            updateOrderStatus(newStatus)
+                        }
                     }
                 }
-            }
-        ))
+            )
+        )
 
         // change the order status
         val newOrderStatus = orderDetailRepository.getOrderStatus(newStatus)
@@ -376,19 +390,21 @@ class OrderDetailViewModel @Inject constructor(
                 shipmentTrackings.remove(deletedShipmentTracking)
                 _shipmentTrackings.value = shipmentTrackings
 
-                triggerEvent(ShowUndoSnackbar(
-                    message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
-                    undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
-                    dismissAction = object : Snackbar.Callback() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-                            if (event != DISMISS_EVENT_ACTION) {
-                                // delete the shipment only if user has not clicked on the undo snackbar
-                                deleteOrderShipmentTracking(deletedShipmentTracking)
+                triggerEvent(
+                    ShowUndoSnackbar(
+                        message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
+                        undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                        dismissAction = object : Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                super.onDismissed(transientBottomBar, event)
+                                if (event != DISMISS_EVENT_ACTION) {
+                                    // delete the shipment only if user has not clicked on the undo snackbar
+                                    deleteOrderShipmentTracking(deletedShipmentTracking)
+                                }
                             }
                         }
-                    }
-                ))
+                    )
+                )
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -456,9 +472,9 @@ class OrderDetailViewModel @Inject constructor(
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
             orderInfo = OrderInfo(
-                    order = order,
-                    isPaymentCollectableWithCardReader = paymentCollectibilityChecker
-                            .isCollectable(order)
+                order = order,
+                isPaymentCollectableWithCardReader = paymentCollectibilityChecker
+                    .isCollectable(order)
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(

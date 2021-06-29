@@ -55,7 +55,8 @@ import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_detail),
+class ProductDetailFragment :
+    BaseProductFragment(R.layout.fragment_product_detail),
     OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
@@ -237,25 +238,34 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
             }
         }
 
-        viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
-            showProductCards(it)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is LaunchUrlInChromeTab -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                }
-                is RefreshMenu -> activity?.invalidateOptionsMenu()
-                is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_PRODUCT_DETAIL_RESULT, Bundle().also {
-                        it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
-                        it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
-                    })
-                }
-                else -> event.isHandled = false
+        viewModel.productDetailCards.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProductCards(it)
             }
-        })
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is LaunchUrlInChromeTab -> {
+                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    }
+                    is RefreshMenu -> activity?.invalidateOptionsMenu()
+                    is ExitWithResult<*> -> {
+                        navigateBackWithResult(
+                            KEY_PRODUCT_DETAIL_RESULT,
+                            Bundle().also {
+                                it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
+                                it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
+                            }
+                        )
+                    }
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun showProductDetails(product: Product) {
@@ -338,7 +348,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
         // visibility of these menu items depends on whether we're in the add product flow
         menu.findItem(R.id.menu_view_product)?.isVisible =
             viewModel.isProductPublished &&
-                !viewModel.isProductUnderCreation
+            !viewModel.isProductUnderCreation
 
         menu.findItem(R.id.menu_share)?.isVisible = !viewModel.isProductUnderCreation
         menu.findItem(R.id.menu_product_settings)?.isVisible = true

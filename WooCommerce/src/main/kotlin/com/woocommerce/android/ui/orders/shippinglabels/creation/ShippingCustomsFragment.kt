@@ -82,28 +82,34 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
     }
 
     private fun setupObservers(binding: FragmentShippingCustomsBinding) {
-        viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
-            new.customsPackages.takeIfNotEqualTo(old?.customsPackages) { customsPackages ->
-                customsAdapter.customsPackages = customsPackages
-            }
-            new.canSubmitForm.takeIfNotEqualTo(old?.canSubmitForm) { canSubmitForm ->
-                if (::doneMenuItem.isInitialized) {
-                    doneMenuItem.isVisible = canSubmitForm
+        viewModel.viewStateData.observe(
+            viewLifecycleOwner,
+            { old, new ->
+                new.customsPackages.takeIfNotEqualTo(old?.customsPackages) { customsPackages ->
+                    customsAdapter.customsPackages = customsPackages
+                }
+                new.canSubmitForm.takeIfNotEqualTo(old?.canSubmitForm) { canSubmitForm ->
+                    if (::doneMenuItem.isInitialized) {
+                        doneMenuItem.isVisible = canSubmitForm
+                    }
+                }
+                new.isProgressViewShown.takeIfNotEqualTo(old?.isProgressViewShown) { show ->
+                    binding.progressView.isVisible = show
+                    binding.packagesList.isVisible = !show
                 }
             }
-            new.isProgressViewShown.takeIfNotEqualTo(old?.isProgressViewShown) { show ->
-                binding.progressView.isVisible = show
-                binding.packagesList.isVisible = !show
+        )
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is ExitWithResult<*> -> navigateBackWithResult(EDIT_CUSTOMS_RESULT, event.data)
+                    is Exit -> navigateBackWithNotice(EDIT_CUSTOMS_CLOSED)
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    else -> event.isHandled = false
+                }
             }
-        })
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is ExitWithResult<*> -> navigateBackWithResult(EDIT_CUSTOMS_RESULT, event.data)
-                is Exit -> navigateBackWithNotice(EDIT_CUSTOMS_CLOSED)
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                else -> event.isHandled = false
-            }
-        })
+        )
     }
 
     override fun onRequestAllowBackPress(): Boolean {

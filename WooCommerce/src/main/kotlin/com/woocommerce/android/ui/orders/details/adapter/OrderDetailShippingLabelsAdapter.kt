@@ -43,7 +43,9 @@ class OrderDetailShippingLabelsAdapter(
                 ShippingLabelDiffCallback(
                     field,
                     value
-                ), true)
+                ),
+                true
+            )
             field = value
 
             diffResult.dispatchUpdatesTo(this)
@@ -143,17 +145,22 @@ class OrderDetailShippingLabelsAdapter(
                         context.getString(
                             R.string.orderdetail_shipping_label_refund_title,
                             shippingLabel.serviceName
-                        ))
+                        )
+                    )
                     setShippingLabelValue(
-                        context.getString(R.string.orderdetail_shipping_label_refund_subtitle,
+                        context.getString(
+                            R.string.orderdetail_shipping_label_refund_subtitle,
                             formatCurrencyForDisplay(shippingLabel.rate),
                             shippingLabel.refund.refundDate?.formatToMMMddYYYYhhmm() ?: ""
-                        ))
+                        )
+                    )
                     showTrackingItemButton(false)
                 } else {
-                    setShippingLabelTitle(context.getString(
-                        R.string.order_shipment_tracking_number_label
-                    ))
+                    setShippingLabelTitle(
+                        context.getString(
+                            R.string.order_shipment_tracking_number_label
+                        )
+                    )
                     setShippingLabelValue(shippingLabel.trackingNumber)
                     viewBinding.shippingLabelListBtnMenu.setOnClickListener {
                         showRefundPopup(shippingLabel, listener)
