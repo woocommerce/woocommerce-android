@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusChangeSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
@@ -203,7 +204,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
         handleDialogResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT, R.id.orderDetailFragment) {
-            viewModel.onOrderStatusChanged(it)
+            viewModel.onOrderStatusChanged(it, OrderStatusChangeSource.DIALOG)
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
             viewModel.onNewOrderNoteAdded(it)
@@ -215,7 +216,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             viewModel.onNewShipmentTrackingAdded(it)
         }
         handleResult<String>(OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT) {
-            viewModel.onOrderStatusChanged(it)
+            viewModel.onOrderStatusChanged(it, OrderStatusChangeSource.FULFILL_SCREEN)
         }
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()

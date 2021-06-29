@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusChangeSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -604,7 +605,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         val oldStatus = order.status
         val newStatus = CoreOrderStatus.PROCESSING.value
-        viewModel.onOrderStatusChanged(newStatus)
+        viewModel.onOrderStatusChanged(newStatus, OrderStatusChangeSource.DIALOG)
 
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
@@ -643,7 +644,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value)
+        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusChangeSource.DIALOG)
 
         assertThat(newOrder?.status).isEqualTo(order.status)
     }
@@ -660,7 +661,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.order = order
         viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value)
+        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusChangeSource.DIALOG)
         viewModel.updateOrderStatus(CoreOrderStatus.PROCESSING.value)
 
         verify(repository, times(0)).updateOrderStatus(any(), any(), any())
@@ -828,4 +829,50 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.order).isEqualTo(orderAfterPayment)
     }
+
+    @Test
+    fun `show order status updated snackbar on updating status from dialog`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
+        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+        var snackbar: ShowUndoSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowUndoSnackbar) snackbar = it
+        }
+
+        viewModel.start()
+        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusChangeSource.DIALOG)
+
+        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
+    }
+
+    @Test
+    fun `show order status updated snackbar on updating status to completed from dialog`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
+        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+        var snackbar: ShowUndoSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowUndoSnackbar) snackbar = it
+        }
+
+        viewModel.start()
+        viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusChangeSource.DIALOG)
+
+        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
+    }
+
+    @Test
+    fun `show order completed snackbar on updating status to completed from fullfill screen`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        doReturn(order).whenever(repository).fetchOrder(any(), any())
+        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+        var snackbar: ShowUndoSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowUndoSnackbar) snackbar = it
+        }
+
+        viewModel.start()
+        viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusChangeSource.FULFILL_SCREEN)
+
+        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_fulfill_completed))
+    }
+
 }
