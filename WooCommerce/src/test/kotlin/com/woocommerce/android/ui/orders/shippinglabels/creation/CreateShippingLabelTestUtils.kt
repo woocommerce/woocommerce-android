@@ -75,7 +75,7 @@ object CreateShippingLabelTestUtils {
     fun generateCustomsPackage(packageId: String = "package1"): CustomsPackage {
         return CustomsPackage(
             id = packageId,
-            box = generatePackage(),
+            labelPackage = generateShippingLabelPackage(),
             returnToSender = true,
             contentsType = ContentsType.Merchandise,
             contentsDescription = null,
