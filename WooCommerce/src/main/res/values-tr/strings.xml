@@ -1,11 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-28 13:54:50+0000
+Translation-Revision-Date: 2021-06-24 15:58:11+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="empty_order_list_message">Mağaza satışlarınızı nasıl artırabileceğinizi keşfedin.</string>
+    <string name="empty_product_message">Mağazanıza ilk ürünü ekleyerek hemen bugün satışa başlayın.</string>
+    <string name="empty_product_add_product_button">Ürün ekle</string>
+    <string name="variable_product_attributes">Varyasyon nitelikleri.</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Mobil cihazda Bluetooth\'u açın</string>
+    <string name="card_reader_detail_learn_more">Mobil cihazınızla ödeme kabul etme ve kart okuyucu sipariş etme hakkında &lt;a href=\"https://woocommerce.com/payments/\"&gt;daha fazla bilgi edinin &lt;/a&gt;</string>
+    <string name="card_reader_fetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
+    <string name="card_reader_payment_email_client_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
+    <string name="card_reader_payment_receipt_email_content">Alışverişiniz için teşekkürler! Ödemenizin makbuzunu şu bağlantıda bulabilirsiniz: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
+    <string name="card_reader_payment_description">%s (%s) siparişi için çevrimiçi ödeme</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Müşteriniz seçildi %1$s</string>
+    <string name="shipping_label_address_phone_invalid">Gümrük formları 10 haneli bir telefon numarası gerektirir</string>
+    <string name="shipping_label_address_phone_required">Bu gönderi bir gümrük formu gerektirdiğinden telefon numarası gerekir</string>
+    <string name="shipping_label_create_customs_done">Gümrük formu tamamlandı</string>
+    <string name="print_receipt_label_info_step_7">Cihazınızdan yazdırma ile ilgili sorun yaşıyorsanız, yazıcınızın müşteri desteği ile iletişime geçin.</string>
+    <string name="print_receipt_label_info_step_6">Yazdırmak mümkün olmuyorsa, makbuzunuzu her zaman PDF olarak kaydedebilir ve başka bir cihazdan yazdırmak üzere e-posta ile gönderebilirsiniz.</string>
+    <string name="print_receipt_label_info_step_5">Kağıt boyutunu gerektiği gibi ayarlayın ve makbuzu yazdırmaya hazır olduğunuzda \"Yazdır\"ı seçin.</string>
+    <string name="print_receipt_label_info_step_4">İstendiğinde yazıcıyı cep telefonunuzla eşleştirin ve bağlayın.</string>
+    <string name="print_receipt_label_info_step_3">Ödemeyi kabul ettikten sonra \"Makbuz yazdır\"ı seçerken, \"PDF Olarak Kaydet\" yerine \"Tüm yazıcılar\"ı seçin ve yeni yazıcı araması yapın.</string>
+    <string name="print_receipt_label_info_step_2">Yazıcınızda Bluetooth veya Wifi bağlantısını etkinleştirin.</string>
+    <string name="print_receipt_label_info_step_1">Yazıcınız için Yazdırma Hizmeti Eklentisinin kurulu olduğundan emin olun.</string>
+    <string name="orderdetail_printing_instructions_button">Cihazınızla makbuz yazdırma hakkında daha fazla bilgi edinin</string>
+    <string name="product_create_attribute_helper">Bir varyasyon oluşturmak için önce niteliklerini (yani \"Renk\", \"Boyut\") ayarlamanız gerekir.</string>
+    <string name="product_variation_single_count">1 varyasyon</string>
+    <string name="product_variation_multiple_count">%1$s varyasyon</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s izleniyor</string>
+    <string name="card_reader_software_update_in_progress_title">Okuyucunuzun yazılımını güncelleme</string>
+    <string name="card_reader_software_update_title">Yazılım güncellemesi</string>
+    <string name="card_reader_software_update_description">Sorunsuz çalışmaya devam etmesi için kart okuyucunuzun yazılımının güncellenmesi gerekir. Şimdi güncellemek istiyor musunuz?</string>
+    <string name="card_reader_detail_connected_update_failed">Okuyucu yazılımı güncelleme işlemi başarısız oldu. Lütfen daha sonra tekrar deneyin</string>
+    <string name="card_reader_detail_connected_update_success">Okuyucu yazılımı güncellendi</string>
+    <string name="card_reader_detail_connected_update_check_failed">Yazılım sürümü güncelleme denetimi başarısız oldu. Lütfen daha sonra tekrar deneyin</string>
+    <string name="card_reader_detail_connected_reader_unknown">BİLİNMEYEN KART OKUYUCU ADI</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Okuyucunun bağlantısını kes</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Ödemeleri kabul etmeye devam edebilmek için lütfen okuyucu yazılımınızı güncelleyin</string>
+    <string name="card_reader_detail_connected_update_software">Okuyucunun yazılımını güncelleyin</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% pil </string>
+    <string name="card_reader_detail_connected_header">BAĞLANTILI OKUYUCU</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Kart okuyucu bağlayın</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Kart okuyucuyu açın ve mobil cihazın yanına yerleştirin</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Kart okuyucunun şarjlı olduğundan emin olun</string>
+    <string name="card_reader_detail_not_connected_header">Kart okuyucunuzu bağlayın</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kart reddedildi</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kart reddedildi. Lütfen farklı bir kartla tekrar deneyin.</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Okuyucuya bağlanılıyor</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Ödeme almaya hazırlanıyor</string>
+    <string name="shipping_label_customs_value_zero_error">Bildirilen değer sıfırdan büyük olmalıdır</string>
+    <string name="shipping_label_customs_weight_zero_error">Ağırlık sıfırdan büyük olmalıdır</string>
+    <string name="shipping_label_customs_required_field">Bu alan zorunludur</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Lütfen bu paketin ne tür kısıtlamalara sahip olması gerektiğini açıklayın.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Lütfen bu paketin ne tür bir ürün içerdiğini açıklayın.</string>
+    <string name="shipping_label_customs_weight_hint">Ağırlık (%1$s birim başına)</string>
+    <string name="shipping_label_customs_value_hint">Değer (%1$s birim başına)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s HS Tarife numarası hakkında</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s Dahili İşlem Numarası hakkında</string>
+    <string name="shipping_label_customs_line_item">Özel Hat  %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">Diğer</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Sağlık/Bitki Sağlığı denetimi</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Karantina</string>
+    <string name="shipping_label_customs_restriction_type_none">Hiçbiri</string>
+    <string name="shipping_label_customs_contents_type_other">Diğer</string>
+    <string name="shipping_label_customs_contents_type_sample">Örnek</string>
+    <string name="shipping_label_customs_contents_type_gifts">Hediyeler</string>
+    <string name="shipping_label_customs_contents_type_documents">Belgeler</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Ticari Mal</string>
+    <string name="shipping_label_customs_origin_country_explanation">Ürünün üretildiği veya monte edildiği ülke</string>
+    <string name="shipping_label_customs_origin_country_hint">Menşe ülke</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">Tarife numarası 6 haneli olmalıdır</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS Tarife numarası (İsteğe bağlı)</string>
+    <string name="shipping_label_customs_item_description_hint">Açıklama</string>
+    <string name="shipping_label_customs_package_content">Paket içeriği</string>
+    <string name="shipping_label_customs_itn_required_country">%1$s gönderileri için ITN gereklidir.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">Tarife numarasına göre değeri 2.500 ABD Dolarının üzerindeki gönderiler için ITN gereklidir</string>
+    <string name="shipping_label_customs_itn_invalid_format">Geçersiz biçim</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Kısıtlama ayrıntıları</string>
+    <string name="shipping_label_customs_contents_type_other_hint">İçeriğin ayrıntıları</string>
+    <string name="shipping_label_customs_restriction_type_hint">Kısıtlama türü</string>
+    <string name="shipping_label_customs_contents_type_hint">İçerik türü</string>
+    <string name="shipping_label_customs_return_to_sender">Paket teslim edilemezse gönderene iade et</string>
+    <string name="shipping_label_rate_insurance_up_to">en fazla %s</string>
+    <string name="order_fulfill_email_info">Bu ayarı etkinleştirdiyseniz, sipariş tamamlandığında müşteriye bir onay e-postası gönderilir.</string>
+    <string name="order_fulfill_title">Siparişi gözden geçir</string>
+    <string name="order_fulfill_completed">🎉 Sipariş tamamlandı!</string>
+    <string name="user_access_verifying">Rol doğrulanıyor…</string>
+    <string name="user_role_access_error_retry">Doğru kullanıcı rolüne sahip değilsiniz</string>
+    <string name="user_role_access_error_link">Roller ve izinler hakkında daha fazla bilgi edinin</string>
+    <string name="user_role_access_error_msg">Bu uygulama yalnızca Yönetici ve Mağaza Yöneticisi kullanıcı rollerini destekler. Rolünüzü yükseltmek için lütfen mağazanızın sahibiyle iletişime geçin.</string>
+    <string name="login_prologue_label_reviews">Ürün incelemelerinizi izleyin ve onaylayın</string>
+    <string name="login_prologue_label_products">Her yerden yeni ürünler ekleyin ve düzenleyin</string>
+    <string name="login_prologue_label_orders">Mağaza siparişlerinizi hareket halindeyken yönetin</string>
+    <string name="login_prologue_label_analytics">Satışları ve yüksek performanslı ürünleri takip edin</string>
+    <string name="skip">Atla</string>
     <string name="product_type_external_title">Harici ürün</string>
     <string name="product_type_grouped_title">Gruplandırılmış ürün</string>
     <string name="product_type_variable_title">Varyasyonlu ürün</string>
@@ -30,7 +125,7 @@ Language: tr
     <string name="orderdetail_products_recreate_shipping_label_menu">Yeni gönderim etiketi oluştur</string>
     <string name="product_type_virtual_title">Basit sanal ürün</string>
     <string name="variation_confirm_delete">Bu Varyasyonu silmek istiyor musunuz?</string>
-    <string name="variation_create_dialog_title">Varyasyon oluşturuluyor</string>
+    <string name="variation_create_dialog_title">Varyasyon oluşturma</string>
     <string name="product_delete_dialog_title">Ürün siliniyor</string>
     <string name="card_reader_payment_send_receipt">Makbuz gönder</string>
     <string name="card_reader_payment_print_receipt">Makbuz yazdır</string>
@@ -78,13 +173,12 @@ Language: tr
     <string name="shipping_label_selected_rates_description">%s ücret seçildi</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Ücretsiz imza şartına uygun</string>
     <string name="shipping_label_rate_included_options_free_pickup">Ücretsiz teslim almaya uygun</string>
+    <string name="shipping_label_rate_included_options_insurance">Sigorta (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">izleme</string>
     <string name="shipping_label_rate_included_options">Dahiller %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Yetişkin imzası gerekli (%s)</string>
     <string name="shipping_label_rate_option_signature_required">İmza gerekli (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">Ücretsiz gönderim</string>
-    <string name="shipping_label_shipping_method_local_pickup">Mağazadan teslim</string>
-    <string name="shipping_label_shipping_method_flat_rate">Sabit fiyat</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Müşteri nakliye için %1$s (%2$s) ödedi</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Müşteri nakliye için bir %1$s (%2$s) ödedi</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce\'ten gönderim etiketi satın alırken, postane fiyatlarına kıyasla %5 ila %40 indirimden yararlanırsınız.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  Hizmetleri indirimi nedir?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Gönderim seçenekleri yüklenirken hata oluştu</string>
@@ -131,7 +225,7 @@ Language: tr
     <string name="shipping_label_single_package_total_weight">Toplam paket ağırlığı: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Özel paketler</string>
     <string name="shipping_label_package_details_fetch_products_error">Ürünleri getiremiyorum</string>
-    <string name="shipping_label_missing_data_snackbar_message">Bazı zorunlu alanlar boş.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Bazı zorunlu alanlar boş.</string>
     <string name="shipping_label_package_details_weight_error">Geçersiz ağırlık</string>
     <string name="shipping_label_package_selector_title">Seçilen Paket</string>
     <string name="shipping_label_packages_loading_message">Lütfen bekleyin…</string>
@@ -541,7 +635,6 @@ Language: tr
     <string name="empty_review_list_message">Mağazanız için yüksek kalitede ürün yorumları alın</string>
     <string name="empty_review_list_title">İlk yorumlarınızı alın</string>
     <string name="empty_order_list_all_processed">Tüm siparişler gönderildi</string>
-    <string name="empty_order_list_message">Yeni bir sipariş aldığınızda sizi bilgilendireceğiz. Bu sırada siz de mağaza satışlarınızı nasıl artırabileceğiniz keşfedebilirsiniz.</string>
     <string name="empty_order_list_title">İlk siparişiniz bekleniyor</string>
     <string name="share_your_store_message">Mağazanızı sosyal medyada ve e-posta yoluyla kişilerinizle paylaşın</string>
     <string name="get_the_word_out">Şimdi sesimizi duyurma zamanı</string>
