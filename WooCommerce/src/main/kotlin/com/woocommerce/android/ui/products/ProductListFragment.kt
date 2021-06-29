@@ -470,7 +470,7 @@ class ProductListFragment :
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER,
             mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
@@ -484,7 +484,7 @@ class ProductListFragment :
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER,
             mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
