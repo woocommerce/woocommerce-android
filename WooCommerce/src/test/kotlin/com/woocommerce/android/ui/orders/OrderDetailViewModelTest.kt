@@ -49,6 +49,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 
+@Suppress("LargeClass")
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class OrderDetailViewModelTest : BaseUnitTest() {
@@ -831,48 +832,50 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show order status updated snackbar on updating status from dialog`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).fetchOrder(any(), any())
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
-        var snackbar: ShowUndoSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowUndoSnackbar) snackbar = it
+    fun `show order status updated snackbar on updating status from dialog`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            var snackbar: ShowUndoSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowUndoSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusChangeSource.DIALOG)
+
+            assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
         }
-
-        viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusChangeSource.DIALOG)
-
-        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
-    }
 
     @Test
-    fun `show order status updated snackbar on updating status to completed from dialog`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).fetchOrder(any(), any())
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
-        var snackbar: ShowUndoSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowUndoSnackbar) snackbar = it
+    fun `show order status updated snackbar on updating status to completed from dialog`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            var snackbar: ShowUndoSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowUndoSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusChangeSource.DIALOG)
+
+            assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
         }
-
-        viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusChangeSource.DIALOG)
-
-        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
-    }
 
     @Test
-    fun `show order completed snackbar on updating status to completed from fullfill screen`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).fetchOrder(any(), any())
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
-        var snackbar: ShowUndoSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowUndoSnackbar) snackbar = it
+    fun `show order completed snackbar on updating status to completed from fulfill screen`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            var snackbar: ShowUndoSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowUndoSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusChangeSource.FULFILL_SCREEN)
+
+            assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_fulfill_completed))
         }
-
-        viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusChangeSource.FULFILL_SCREEN)
-
-        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_fulfill_completed))
-    }
-
 }
