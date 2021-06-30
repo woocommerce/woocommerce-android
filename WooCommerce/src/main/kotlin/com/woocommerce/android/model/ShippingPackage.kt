@@ -19,6 +19,15 @@ data class ShippingPackage(
     companion object {
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
     }
+
+    fun toCustomPackageAppModel(): CustomPackage {
+        return CustomPackage(
+            title = title,
+            isLetter = isLetter,
+            dimensions = dimensions.toDimensionsString(),
+            boxWeight = boxWeight
+        )
+    }
 }
 
 @Parcelize
@@ -26,7 +35,11 @@ data class PackageDimensions(
     val length: Float,
     val width: Float,
     val height: Float
-) : Parcelable
+) : Parcelable {
+    fun toDimensionsString() : String {
+        return "$length x $width x $height"
+    }
+}
 
 fun CustomPackage.toAppModel(): ShippingPackage {
     val dimensionsParts = dimensions.split("x")

@@ -6,10 +6,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -18,6 +20,7 @@ import javax.inject.Inject
 class ShippingLabelCreatePackageViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
+    private val shippingLabelRepository: ShippingLabelRepository
 ) : ScopedViewModel(savedState)  {
     val viewStateData = LiveDataDelegate(savedState, ShippingLabelCreatePackageViewState())
     private var viewState by viewStateData
@@ -88,7 +91,10 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
                 boxWeight = weightF
             )
             viewState = viewState.copy(customPackage = packageToCreate)
-            // TODO Save the data to API.
+
+            launch {
+                shippingLabelRepository.createCustomPackage(packageToCreate)
+            }
         }
     }
 

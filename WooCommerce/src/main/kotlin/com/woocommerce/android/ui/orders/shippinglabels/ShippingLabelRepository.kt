@@ -204,6 +204,14 @@ class ShippingLabelRepository @Inject constructor(
         }
     }
 
+    suspend fun createCustomPackage(packageToCreate: ShippingPackage) {
+        shippingLabelStore.createPackages(
+            site = selectedSite.get(),
+            customPackages = listOf(packageToCreate.toCustomPackageAppModel()),
+            predefinedPackages = emptyList()
+        )
+    }
+
     fun clearCache() {
         accountSettings = null
         availablePackages = null
