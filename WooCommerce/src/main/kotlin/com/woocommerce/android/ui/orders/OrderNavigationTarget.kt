@@ -53,4 +53,5 @@ sealed class OrderNavigationTarget : Event() {
     object StartCardReaderConnectFlow : OrderNavigationTarget()
     data class StartCardReaderPaymentFlow(val orderIdentifier: String) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
+    data class PreviewReceipt(val receiptUrl: String) : OrderNavigationTarget()
 }
