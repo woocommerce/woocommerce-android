@@ -167,7 +167,6 @@ class CardReaderPaymentViewModel
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
-            // TODO cardreader store receipt data into a persistent storage
             is PaymentCompleted -> {
                 tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
                 onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
@@ -283,12 +282,6 @@ class CardReaderPaymentViewModel
             this.number,
             selectedSite.get().name.orEmpty()
         )
-
-    sealed class CardReaderPaymentEvent : Event() {
-        data class PrintReceipt(val receiptUrl: String, val documentName: String) : CardReaderPaymentEvent()
-        data class SendReceipt(val content: UiString, val subject: UiString, val address: String) :
-            CardReaderPaymentEvent()
-    }
 
     fun onBackPressed() {
         if (refetchOrderJob?.isActive == true) {
