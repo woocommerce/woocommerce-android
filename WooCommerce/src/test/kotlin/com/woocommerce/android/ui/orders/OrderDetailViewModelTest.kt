@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
@@ -26,6 +27,7 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -43,6 +45,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
@@ -97,6 +100,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(WooPlugin(true, true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
+        doReturn(SiteModel()).whenever(selectedSite).getIfExists()
 
         viewModel = spy(
             OrderDetailViewModel(
@@ -105,6 +109,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 networkStatus,
                 resources,
                 repository,
+                selectedSite,
                 paymentCollectibilityChecker
             )
         )
@@ -826,4 +831,19 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.order).isEqualTo(orderAfterPayment)
     }
+
+    @Test
+    fun `given receipt url available, when user taps on see receipt, then preview receipt screen shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn("testing url")
+                .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            viewModel.start()
+
+            viewModel.onSeeReceiptClicked()
+
+            assertThat(viewModel.event.value).isInstanceOf(PreviewReceipt::class.java)
+        }
 }
