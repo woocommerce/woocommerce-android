@@ -41,7 +41,7 @@
         <ImageView
             android:id="@+id/illustration"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/payments_illustration_height"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_275"
             android:contentDescription="@null"
             app:layout_constraintEnd_toEndOf="parent"
