@@ -179,6 +179,7 @@ class ShippingLabelRepository @Inject constructor(
                 serviceId = rate.serviceId,
                 serviceName = rate.serviceName,
                 carrierId = rate.carrierId,
+                // duplicate items according to their quantities
                 products = labelPackage.items.map { item -> List(item.quantity) { item.productId } }.flatten()
             )
         }
