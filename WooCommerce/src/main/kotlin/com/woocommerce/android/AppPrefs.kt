@@ -5,9 +5,11 @@ package com.woocommerce.android
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
@@ -377,9 +379,19 @@ object AppPrefs {
         val editor = getPreferences().edit()
         DeletablePrefKey.values().forEach { a -> editor.remove(a.name) }
         editor.remove(SelectedSite.SELECTED_SITE_LOCAL_ID)
+        removePreferencesWithDynamicKey(editor)
         editor.apply()
 
         resetSitePreferences()
+    }
+
+    private fun removePreferencesWithDynamicKey(editor: Editor) {
+        getPreferences()
+            .all
+            .filter { it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) }
+            .forEach {
+                editor.remove(it.key)
+            }
     }
 
     /**
