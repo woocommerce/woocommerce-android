@@ -34,10 +34,10 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.util.LocationUtils
-import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
