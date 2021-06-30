@@ -47,11 +47,6 @@ object WooAnimUtils {
         with(ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
             duration = animDuration.toMillis(target.context)
             interpolator = LinearInterpolator()
-            addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator) {
-                    target.visibility = View.VISIBLE
-                }
-            })
             return this
         }
     }
