@@ -29,9 +29,11 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
@@ -45,6 +47,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -76,6 +79,7 @@ class OrderDetailViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository,
+    private val selectedSite: SelectedSite,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -237,8 +241,20 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun onSeeReceiptClicked() {
+        loadReceiptUrl()?.let {
+            triggerEvent(PreviewReceipt(it))
+        } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
+    }
+
     fun onPrintingInstructionsClicked() {
         triggerEvent(ViewPrintingInstructions)
+    }
+
+    private fun loadReceiptUrl(): String? {
+        return selectedSite.getIfExists()?.let {
+            appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.remoteId)
+        }
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
@@ -463,7 +479,8 @@ class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderInfo(
                 order = order,
                 isPaymentCollectableWithCardReader = paymentCollectibilityChecker
-                    .isCollectable(order)
+                    .isCollectable(order),
+                isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() && !loadReceiptUrl().isNullOrEmpty()
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
@@ -631,7 +648,11 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     @Parcelize
-    data class OrderInfo(val order: Order? = null, val isPaymentCollectableWithCardReader: Boolean = false) : Parcelable
+    data class OrderInfo(
+        val order: Order? = null,
+        val isPaymentCollectableWithCardReader: Boolean = false,
+        val isReceiptButtonsVisible: Boolean = false
+    ) : Parcelable
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }

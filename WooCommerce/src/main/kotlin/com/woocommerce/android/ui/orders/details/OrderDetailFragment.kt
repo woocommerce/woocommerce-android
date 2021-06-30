@@ -135,7 +135,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
-                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader)
+                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
@@ -256,7 +256,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
     }
 
-    private fun showOrderDetail(order: Order, isPaymentCollectableWithCardReader: Boolean) {
+    private fun showOrderDetail(
+        order: Order,
+        isPaymentCollectableWithCardReader: Boolean,
+        isReceiptButtonsVisible: Boolean
+    ) {
         binding.orderDetailOrderStatus.updateOrder(order)
         binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
         binding.orderDetailCustomerInfo.updateCustomerInfo(
@@ -266,8 +270,14 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+            isReceiptAvailable = isReceiptButtonsVisible,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
+            onSeeReceiptClickListener = {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
+                    viewModel.onSeeReceiptClicked()
+                }
+            },
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
                     cardReaderManager.let {
