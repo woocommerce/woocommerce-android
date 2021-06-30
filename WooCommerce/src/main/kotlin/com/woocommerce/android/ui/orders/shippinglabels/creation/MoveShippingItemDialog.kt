@@ -9,16 +9,22 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.databinding.DialogMoveShippingItemBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.getTitle
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationItem
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationItem.ExistingPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationItem.NewPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationItem.OriginalPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.ExistingPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.NewPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.OriginalPackage
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item) {
+    companion object {
+        const val SELECTED_DESTINATION_PACKAGE_RESULT = "selected_destination_package_result"
+    }
+
     private val viewModel: MoveShippingItemViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,6 +45,10 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
                 binding.optionsGroup.addView(it.generateRadioButton())
             }
         }
+
+        binding.moveButton.setOnClickListener {
+            viewModel.onMoveButtonClicked()
+        }
     }
 
     private fun setupObservers(binding: DialogMoveShippingItemBinding) {
@@ -50,9 +60,15 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
                 binding.moveButton.isEnabled = it
             }
         })
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitWithResult<*> -> navigateBackWithResult(SELECTED_DESTINATION_PACKAGE_RESULT, event.data)
+                else -> event.isHandled = false
+            }
+        }
     }
 
-    private fun DestinationItem.generateRadioButton(): RadioButton {
+    private fun DestinationPackage.generateRadioButton(): RadioButton {
         return RadioButton(requireContext()).apply {
             setText(
                 when (this@generateRadioButton) {
@@ -61,6 +77,11 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
                     OriginalPackage -> R.string.shipping_label_move_item_dialog_original_packaging_option
                 }
             )
+            setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    viewModel.onDestinationPackageSelected(this@generateRadioButton)
+                }
+            }
             tag = this@generateRadioButton
         }
     }
