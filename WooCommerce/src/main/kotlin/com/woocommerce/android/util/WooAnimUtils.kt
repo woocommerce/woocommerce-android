@@ -24,6 +24,7 @@ private const val DEGREES_0 = 0f
 private const val DEGREES_360 = 360f
 private const val PIVOT_CENTER = 0.5f
 
+@Suppress("TooManyFunctions")
 object WooAnimUtils {
     enum class Duration {
         SHORT,
