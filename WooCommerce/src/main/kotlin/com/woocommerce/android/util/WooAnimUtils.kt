@@ -72,7 +72,6 @@ object WooAnimUtils {
 
     fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION, endVisibility: Int = View.GONE) {
         with(getFadeOutAnim(target, animDuration)) {
-            interpolator = LinearInterpolator()
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     target.visibility = endVisibility
