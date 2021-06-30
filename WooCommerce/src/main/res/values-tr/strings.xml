@@ -667,7 +667,7 @@ Language: tr
     <string name="order_refunds_select_quantity">Miktar seçin</string>
     <string name="order_refunds_shipping_refund">Gönderim para iadesi</string>
     <string name="order_refunds_products_refund">Ürün para iadesi</string>
-    <string name="order_refunds_item_description">Her biri %d x %s</string>
+    <string name="order_refunds_item_description">Her biri %s x %s</string>
     <string name="order_refunds_items_selected">%d öge seçildi</string>
     <string name="order_refunds_items_select_none">Hiçbirini seçme</string>
     <string name="order_refunds_items_select_all">Tümünü seç</string>

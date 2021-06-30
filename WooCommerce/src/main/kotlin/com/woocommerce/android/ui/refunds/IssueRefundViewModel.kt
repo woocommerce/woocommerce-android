@@ -99,7 +99,7 @@ class IssueRefundViewModel @Inject constructor(
     val refundShippingLines: LiveData<List<ShippingRefundListItem>> = _refundShippingLines
 
     private val areAllItemsSelected: Boolean
-        get() = refundItems.value?.all { it.quantity == it.maxQuantity } ?: false
+        get() = refundItems.value?.all { it.quantity == it.availableRefundQuantity } ?: false
 
     val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
@@ -130,7 +130,7 @@ class IssueRefundViewModel @Inject constructor(
     private val refundableShippingLineIds: List<Long> /* Shipping lines that haven't been refunded */
 
     private val maxRefund: BigDecimal
-    private val maxQuantities: Map<Long, Int>
+    private val maxQuantities: Map<Long, Float>
     private val formatCurrency: (BigDecimal) -> String
     private val gateway: PaymentGateway
     private val arguments: RefundsArgs by savedState.navArgs()
@@ -151,9 +151,8 @@ class IssueRefundViewModel @Inject constructor(
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
-        // Convert the quantities to integer values
         maxQuantities = refunds.getMaxRefundQuantities(order.items)
-            .map { (id, quantity) -> id to quantity.toInt() }
+            .map { (id, quantity) -> id to quantity }
             .toMap()
         gateway = loadPaymentGateway()
         refundableShippingLineIds = getRefundableShippingLineIds()
@@ -241,8 +240,8 @@ class IssueRefundViewModel @Inject constructor(
         }
 
         val items = order.items.map {
-            val maxQuantity = maxQuantities[it.itemId] ?: 0
-            val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity)
+            val maxQuantity = maxQuantities[it.itemId] ?: 0f
+            val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity.toInt())
             ProductRefundListItem(it, maxQuantity, selectedQuantity)
         }
         updateRefundItems(items)
@@ -550,7 +549,7 @@ class IssueRefundViewModel @Inject constructor(
                 newItems.add(
                     it.copy(
                         quantity = newQuantity,
-                        maxQuantity = maxQuantities[uniqueId] ?: 0
+                        maxQuantity = maxQuantities[uniqueId] ?: 0f
                     )
                 )
             } else {
@@ -567,7 +566,7 @@ class IssueRefundViewModel @Inject constructor(
             }
         } else {
             _refundItems.value?.forEach {
-                onRefundQuantityChanged(it.orderItem.itemId, it.maxQuantity)
+                onRefundQuantityChanged(it.orderItem.itemId, it.availableRefundQuantity)
             }
         }
 
