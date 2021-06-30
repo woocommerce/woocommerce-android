@@ -11,5 +11,5 @@ class ReceiptPreviewViewModel
 @Inject constructor(
     savedState: SavedStateHandle
 ): ScopedViewModel(savedState) {
-//    private val arguments: ReceiptPreviewFragmentArgs by savedState.navArgs()
+    private val arguments: ReceiptPreviewFragmentArgs by savedState.navArgs()
 }

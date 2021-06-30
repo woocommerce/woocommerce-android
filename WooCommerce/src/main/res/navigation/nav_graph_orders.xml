@@ -250,8 +250,8 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderDetailFragment_to_previewReceiptFragment"
-            app:destination="@id/previewReceiptFragment"
+            android:id="@+id/action_orderDetailFragment_to_receiptPreviewFragment"
+            app:destination="@id/receiptPreviewFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
@@ -467,9 +467,9 @@
         android:label="CardReaderConnectDialog">
     </dialog>
     <fragment
-        android:id="@+id/previewReceiptFragment"
+        android:id="@+id/receiptPreviewFragment"
         android:name="com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewFragment"
-        android:label="PreviewReceiptFragment"
+        android:label="ReceiptPreviewFragment"
         tools:layout="@layout/fragment_receipt_preview">
     </fragment>
     <fragment

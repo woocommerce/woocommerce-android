@@ -156,7 +156,7 @@ class OrderNavigator @Inject constructor() {
             }
             is PreviewReceipt -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToPreviewReceiptFragment(target.receiptUrl)
+                    .actionOrderDetailFragmentToReceiptPreviewFragment(target.receiptUrl)
                 fragment.findNavController().navigateSafely(action)
             }
         }
