@@ -4,14 +4,20 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.CustomPackageType
+import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
-class ShippingLabelCreatePackageViewModel(
-    savedState: SavedStateHandle
+@HiltViewModel
+class ShippingLabelCreatePackageViewModel @Inject constructor(
+    savedState: SavedStateHandle,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState)  {
     val viewStateData = LiveDataDelegate(savedState, ShippingLabelCreatePackageViewState())
     private var viewState by viewStateData
@@ -19,26 +25,8 @@ class ShippingLabelCreatePackageViewModel(
     private val stringInputError = R.string.shipping_label_create_custom_package_field_name_hint
     private val floatInputError = R.string.shipping_label_create_custom_package_field_empty_hint
 
-
     fun onCustomPackageTypeSelected(selectedPackageType: CustomPackageType) {
         viewState = viewState.copy(customFormType = selectedPackageType)
-    }
-
-    fun onCreateCustomPackageDoneMenuClicked(input: ShippingPackage) {
-        // Validate all input-related fields one last time.
-        viewState = viewState.copy(
-            customFormNameError = if(input.title.isBlank()) stringInputError else null,
-            customFormLengthError = if(input.dimensions.length.equals(0f)) floatInputError else null,
-            customFormWidthError = if(input.dimensions.width.equals(0f)) floatInputError else null,
-            customFormHeightError = if(input.dimensions.height.equals(0f)) floatInputError else null,
-            customFormWeightError = if(input.boxWeight.equals(0f)) floatInputError else null
-        )
-
-        // At this point, if there's no errors, we assume everything is valid.
-        if(viewState.areAllRequiredFieldsValid) {
-            viewState = viewState.copy(customPackage = input)
-            // TODO Save the data to API.
-        }
     }
 
     fun onCustomPackageStringInputChanged(input: String) {
@@ -70,6 +58,42 @@ class ShippingLabelCreatePackageViewModel(
                 else -> { viewState } /* Do nothing */
             }
         }
+    }
+
+    fun onCustomFormDoneMenuClicked(type: String, name: String,
+                                    length: String, width: String,
+                                    height: String, weight: String) {
+        // Sanitize and validate all input-related fields one last time.
+        val lengthF = inputToFloatOrZero(length)
+        val widthF = inputToFloatOrZero(width)
+        val heightF = inputToFloatOrZero(height)
+        val weightF = inputToFloatOrZero(weight)
+
+        viewState = viewState.copy(
+            customFormNameError = if(name.isBlank()) stringInputError else null,
+            customFormLengthError = if(lengthF.equals(0f)) floatInputError else null,
+            customFormWidthError = if(widthF.equals(0f)) floatInputError else null,
+            customFormHeightError = if(heightF.equals(0f)) floatInputError else null,
+            customFormWeightError = if(weightF.equals(0f)) floatInputError else null
+        )
+
+        // At this point, if there's no errors, we assume everything is valid and good to go.
+        if(viewState.areAllRequiredFieldsValid) {
+            val packageToCreate = ShippingPackage(
+                id = "", /* Safe to set as empty, as it's not used for package creation */
+                title = name,
+                isLetter = type == resourceProvider.getString(CustomPackageType.ENVELOPE.stringRes),
+                category = "", /* Safe to set as empty, as it's not used for package creation */
+                dimensions = PackageDimensions(lengthF, widthF, heightF),
+                boxWeight = weightF
+            )
+            viewState = viewState.copy(customPackage = packageToCreate)
+            // TODO Save the data to API.
+        }
+    }
+
+    private fun inputToFloatOrZero(input: String) : Float {
+        return if(input.isBlank()) 0f else input.trim('.').toFloat()
     }
 
     @Parcelize

@@ -12,12 +12,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateCustomPackageBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.CustomPackageType
-import com.woocommerce.android.model.PackageDimensions
-import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.base.BaseFragment
 import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.InputName
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_shipping_label_create_custom_package) {
     private var _binding: FragmentShippingLabelCreateCustomPackageBinding? = null
     private val binding get() = _binding!!
@@ -111,33 +111,17 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onCreateCustomPackageDoneMenuClicked(gatherData()) // TODO: for data submission
+                viewModel.onCustomFormDoneMenuClicked(
+                    binding.customPackageFormType.getText(),
+                    binding.customPackageFormName.getText(),
+                    binding.customPackageFormLength.getText(),
+                    binding.customPackageFormWidth.getText(),
+                    binding.customPackageFormHeight.getText(),
+                    binding.customPackageFormEmptyWeight.getText()
+                )
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    // TODO: for data submission
-    private fun inputToFloatOrZero(input: String) : Float {
-        return if(input.isBlank()) 0f else input.trim('.').toFloat()
-    }
-    private fun gatherData(): ShippingPackage {
-        val dimensions = PackageDimensions(
-            inputToFloatOrZero(binding.customPackageFormLength.getText()),
-            inputToFloatOrZero(binding.customPackageFormWidth.getText()),
-            inputToFloatOrZero(binding.customPackageFormHeight.getText()),
-        )
-        val isLetter =
-            binding.customPackageFormType.getText() == resources.getString(CustomPackageType.ENVELOPE.stringRes)
-
-        return ShippingPackage(
-            id = "", /* Safe to set as empty, as it's not used for package creation */
-            title = binding.customPackageFormName.getText(),
-            isLetter = isLetter,
-            category = "", /* Safe to set as empty, as it's not used for package creation */
-            dimensions = dimensions,
-            boxWeight = inputToFloatOrZero(binding.customPackageFormEmptyWeight.getText())
-        )
     }
 }
