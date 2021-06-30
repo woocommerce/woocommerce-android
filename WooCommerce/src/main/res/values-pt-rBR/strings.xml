@@ -666,7 +666,7 @@ Language: pt_BR
     <string name="order_refunds_select_quantity">Selecione a quantidade</string>
     <string name="order_refunds_shipping_refund">Reembolso de envio</string>
     <string name="order_refunds_products_refund">Reembolso de produtos</string>
-    <string name="order_refunds_item_description">%d x %s cada</string>
+    <string name="order_refunds_item_description">%s x %s cada</string>
     <string name="order_refunds_items_selected">%d itens selecionados</string>
     <string name="order_refunds_items_select_none">Selecionar nenhum</string>
     <string name="order_refunds_items_select_all">Selecionar tudo</string>
