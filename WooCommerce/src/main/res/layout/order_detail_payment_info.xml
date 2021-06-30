@@ -340,6 +340,18 @@
             android:visibility="gone"
             tools:visibility="visible">
 
+            <!-- See Receipt button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/paymentInfo_seeReceiptButton"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_gravity="end|center_vertical"
+                android:text="@string/orderdetail_see_receipt_button"/>
+
             <!-- Accept Card Present Payment button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/paymentInfo_collectCardPresentPaymentButton"
