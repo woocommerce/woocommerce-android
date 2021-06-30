@@ -667,7 +667,7 @@ Language: ar
     <string name="order_refunds_select_quantity">تحديد الكمية</string>
     <string name="order_refunds_shipping_refund">استرداد أموال الشحن</string>
     <string name="order_refunds_products_refund">استرداد أموال المنتجات</string>
-    <string name="order_refunds_item_description">%d x %s لكل منتج</string>
+    <string name="order_refunds_item_description">%s x %s لكل منتج</string>
     <string name="order_refunds_items_selected">%d من العناصر المُحدَّدة</string>
     <string name="order_refunds_items_select_none">عدم اختيار أي شيء</string>
     <string name="order_refunds_items_select_all">اختيار الكل</string>

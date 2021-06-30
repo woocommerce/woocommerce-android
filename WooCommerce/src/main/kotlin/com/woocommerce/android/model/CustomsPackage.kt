@@ -42,7 +42,7 @@ data class CustomsLine(
     val productId: Long,
     val itemDescription: String,
     val hsTariffNumber: String,
-    val quantity: Float,
+    val quantity: Int,
     val weight: Float?,
     val value: BigDecimal?,
     val originCountry: Location

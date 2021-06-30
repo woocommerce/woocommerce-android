@@ -203,7 +203,7 @@ class RefundByItemsFragment :
                         val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
                             getString(R.string.order_refunds_select_quantity),
                             event.refundItem.orderItem.itemId,
-                            event.refundItem.maxQuantity,
+                            event.refundItem.availableRefundQuantity,
                             event.refundItem.quantity
                         )
                         findNavController().navigateSafely(action)

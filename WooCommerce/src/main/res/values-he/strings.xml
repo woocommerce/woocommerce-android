@@ -667,7 +667,7 @@ Language: he_IL
     <string name="order_refunds_select_quantity">יש לבחור את הכמות</string>
     <string name="order_refunds_shipping_refund">החזר כספי על דמי המשלוח</string>
     <string name="order_refunds_products_refund">החזר כספי על המוצרים</string>
-    <string name="order_refunds_item_description">%d x %s לכל פריט</string>
+    <string name="order_refunds_item_description">%s x %s לכל פריט</string>
     <string name="order_refunds_items_selected">%d פריטים נבחרו</string>
     <string name="order_refunds_items_select_none">לא לבחור בפריטים</string>
     <string name="order_refunds_items_select_all">בחר הכול</string>

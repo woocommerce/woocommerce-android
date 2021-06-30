@@ -22,6 +22,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
+import kotlin.math.ceil
 
 @RunWith(RobolectricTestRunner::class)
 class ShippingCustomsViewModelTest : BaseUnitTest() {
@@ -81,7 +82,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                     attributesList = it.attributesList,
                     weight = 0f,
                     value = it.price,
-                    quantity = it.quantity.toFloat()
+                    quantity = ceil(it.quantity).toInt()
                 )
             }
         )
