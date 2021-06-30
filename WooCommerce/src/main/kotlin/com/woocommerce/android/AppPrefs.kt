@@ -47,7 +47,8 @@ object AppPrefs {
         UNIFIED_LOGIN_LAST_ACTIVE_SOURCE,
         UNIFIED_LOGIN_LAST_ACTIVE_FLOW,
         IS_USER_ELIGIBLE,
-        USER_EMAIL
+        USER_EMAIL,
+        RECEIPT_PREFIX
     }
 
     /**
@@ -184,6 +185,18 @@ object AppPrefs {
     fun getUserEmail() = getString(DeletablePrefKey.USER_EMAIL)
 
     fun setUserEmail(email: String) = setString(DeletablePrefKey.USER_EMAIL, email)
+
+    fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
+        PreferenceUtils.getString(getPreferences(), getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId))
+
+    fun setReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long, url: String) =
+        PreferenceUtils.setString(
+            getPreferences(),
+            getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId),
+            url
+        )
+    private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
+        "${DeletablePrefKey.RECEIPT_PREFIX}:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId"
 
     /**
      * Flag to check products features are enabled
