@@ -243,7 +243,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onSeeReceiptClicked() {
         loadReceiptUrl()?.let {
-            triggerEvent(PreviewReceipt(it))
+            triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.remoteId))
         } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
     }
 
