@@ -13,7 +13,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingTop="@dimen/major_200"
-        android:paddingBottom="26dp">
+        android:paddingBottom="@dimen/payments_dialog_bottom_padding">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/header_label"
