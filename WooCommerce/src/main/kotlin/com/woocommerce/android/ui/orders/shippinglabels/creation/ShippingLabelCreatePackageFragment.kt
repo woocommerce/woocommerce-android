@@ -11,8 +11,9 @@ import com.woocommerce.android.databinding.FragmentShippingLabelCreatePackageBin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.PackageType
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shipping_label_create_package) {
     private var _binding: FragmentShippingLabelCreatePackageBinding? = null
     private val binding get() = _binding!!
