@@ -6,11 +6,14 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBinding
 import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
@@ -28,8 +31,25 @@ class ShippingLabelPackagesAdapter(
         set(value) {
             val diff = DiffUtil.calculateDiff(ShippingLabelPackageDiffCallback(field, value))
             field = value
+            diff.dispatchUpdatesTo(listUpdateListener)
             diff.dispatchUpdatesTo(this)
         }
+
+    private val expandedPackages = mutableSetOf(0)
+
+    // This listener makes sure to expand the last added item, and collapse the rest
+    private val listUpdateListener = object : ListUpdateCallback{
+        override fun onInserted(position: Int, count: Int) {
+            expandedPackages.clear()
+            expandedPackages.add(position + count - 1)
+        }
+
+        override fun onRemoved(position: Int, count: Int) {}
+
+        override fun onMoved(fromPosition: Int, toPosition: Int) {}
+
+        override fun onChanged(position: Int, count: Int, payload: Any?) {}
+    }
 
     init {
         setHasStableIds(true)
@@ -85,6 +105,18 @@ class ShippingLabelPackagesAdapter(
 
             if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
                 binding.expandIcon.isVisible = false
+            } else {
+                binding.titleLayout.setOnClickListener {
+                    if (binding.expandIcon.rotation == 0f) {
+                        binding.expandIcon.animate().rotation(180f).start()
+                        binding.detailsLayout.expand()
+                        expandedPackages.add(adapterPosition)
+                    } else {
+                        binding.expandIcon.animate().rotation(0f).start()
+                        binding.detailsLayout.collapse()
+                        expandedPackages.remove(adapterPosition)
+                    }
+                }
             }
         }
 
@@ -105,6 +137,13 @@ class ShippingLabelPackagesAdapter(
             binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
             if (!shippingLabelPackage.weight.isNaN()) {
                 binding.weightEditText.setTextIfDifferent(shippingLabelPackage.weight.toString())
+            }
+            if (expandedPackages.contains(position)) {
+                binding.expandIcon.rotation = 180f
+                binding.detailsLayout.isVisible = true
+            } else {
+                binding.expandIcon.rotation = 0f
+                binding.detailsLayout.isVisible = false
             }
         }
 
