@@ -43,10 +43,21 @@ object WooAnimUtils {
 
     private val DEFAULT_DURATION = Duration.SHORT
 
-    fun fadeIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
+    fun getFadeInAnim(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
         with(ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
             duration = animDuration.toMillis(target.context)
             interpolator = LinearInterpolator()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    target.visibility = View.VISIBLE
+                }
+            })
+            return this
+        }
+    }
+
+    fun fadeIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
+        with(getFadeInAnim(target, animDuration)) {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator) {
                     target.visibility = View.VISIBLE
@@ -56,9 +67,16 @@ object WooAnimUtils {
         }
     }
 
-    fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION, endVisibility: Int = View.GONE) {
+    fun getFadeOutAnim(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
         with(ObjectAnimator.ofFloat(target, View.ALPHA, 1.0f, 0.0f)) {
             duration = animDuration.toMillis(target.context)
+            interpolator = LinearInterpolator()
+            return this
+        }
+    }
+
+    fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION, endVisibility: Int = View.GONE) {
+        with(getFadeOutAnim(target, animDuration)) {
             interpolator = LinearInterpolator()
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {

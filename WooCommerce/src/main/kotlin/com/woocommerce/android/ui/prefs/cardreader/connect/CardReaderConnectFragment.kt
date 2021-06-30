@@ -100,19 +100,19 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     }
 
     /**
-     * When a reader is found, we scale out the scanning illustration, update the UI to the new state, then
-     * scale in the reader found illustration
+     * When a reader is found, we fade out the scanning illustration, update the UI to the new state, then
+     * fade in the reader found illustration
      */
     private fun moveToReaderFoundState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
-        val scaleOut = WooAnimUtils.getScaleOutAnim(binding.illustration)
-        val scaleIn = WooAnimUtils.getScaleInAnim(binding.illustration)
-        scaleOut.addListener(object : AnimatorListenerAdapter() {
+        val fadeOut = WooAnimUtils.getFadeOutAnim(binding.illustration)
+        val fadeIn = WooAnimUtils.getFadeInAnim(binding.illustration)
+        fadeOut.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 moveToState(binding, viewState)
-                scaleIn.start()
+                fadeIn.start()
             }
         })
-        scaleOut.start()
+        fadeOut.start()
     }
 
     private fun moveToState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
