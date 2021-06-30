@@ -40,11 +40,14 @@ class LiveDataDelegate<T : Parcelable>(
         }
 
         previousValue = null
-        _liveData.observe(owner, Observer {
-            onChange(previousValue, it)
-            observer(previousValue, it)
-            previousValue = it
-        })
+        _liveData.observe(
+            owner,
+            Observer {
+                onChange(previousValue, it)
+                observer(previousValue, it)
+                previousValue = it
+            }
+        )
     }
 
     fun observeForever(observer: (T?, T) -> Unit) {

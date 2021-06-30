@@ -27,7 +27,6 @@ import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
 class SitePickerPresenter
-@Suppress("LongParameterList")
 @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
@@ -121,14 +120,17 @@ class SitePickerPresenter
     }
 
     override fun getSiteModelByUrl(url: String): SiteModel? =
-            SiteUtils.getSiteByMatchingUrl(siteStore, url)
+        SiteUtils.getSiteByMatchingUrl(siteStore, url)
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
-            WooLog.e(T.LOGIN, "Account error [type = ${event.causeOfChange}] : " +
-                    "${event.error.type} > ${event.error.message}")
+            WooLog.e(
+                T.LOGIN,
+                "Account error [type = ${event.causeOfChange}] : " +
+                    "${event.error.type} > ${event.error.message}"
+            )
         } else if (!userIsLoggedIn()) {
             view?.didLogout()
         }
@@ -149,8 +151,11 @@ class SitePickerPresenter
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onApiVersionFetched(event: OnApiVersionFetched) {
         if (event.isError) {
-            WooLog.e(T.LOGIN, "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
-                    "${event.error?.type} - ${event.error?.message}")
+            WooLog.e(
+                T.LOGIN,
+                "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
+                    "${event.error?.type} - ${event.error?.message}"
+            )
             view?.siteVerificationError(event.site)
             return
         }

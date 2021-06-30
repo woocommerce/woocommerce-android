@@ -133,7 +133,8 @@ class ShippingLabelRepository @Inject constructor(
         }
     }
 
-    suspend fun getAccountSettings(): WooResult<ShippingAccountSettings> {
+    suspend fun getAccountSettings(forceRefresh: Boolean = false): WooResult<ShippingAccountSettings> {
+        if (forceRefresh) accountSettings = null
         return accountSettings?.let { WooResult(it) } ?: shippingLabelStore.getAccountSettings(selectedSite.get())
             .let { result ->
                 if (result.isError) return@let WooResult<ShippingAccountSettings>(error = result.error)

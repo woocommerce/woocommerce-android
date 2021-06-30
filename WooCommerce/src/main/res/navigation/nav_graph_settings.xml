@@ -9,8 +9,8 @@
         android:name="com.woocommerce.android.ui.prefs.MainSettingsFragment"
         android:label="MainSettingsFragment">
         <action
-            android:id="@+id/action_mainSettingsFragment_to_cardReaderSettingsFragment"
-            app:destination="@id/cardReaderSettingsFragment"
+            android:id="@+id/action_mainSettingsFragment_to_cardReaderDetailFragment"
+            app:destination="@id/cardReaderDetailFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
@@ -79,20 +79,6 @@
             app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
-    </fragment>
-    <fragment
-        android:id="@+id/cardReaderSettingsFragment"
-        android:name="com.woocommerce.android.ui.prefs.CardReaderSettingsFragment"
-        android:label="CardReaderSettingsFragment" >
-        <action
-            android:id="@+id/action_cardReaderSettingsFragment_to_cardReaderDetailFragment"
-            app:destination="@id/cardReaderDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
-            app:popUpTo="@id/mainSettingsFragment"
-            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"

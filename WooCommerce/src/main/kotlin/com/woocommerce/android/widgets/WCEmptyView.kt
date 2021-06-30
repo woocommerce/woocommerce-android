@@ -74,9 +74,12 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
             WooAnimUtils.fadeOut(this, Duration.SHORT)
             val durationMs = Duration.SHORT.toMillis(context) + 50L
-            Handler().postDelayed({
-                show(type, searchQueryOrFilter, onButtonClick)
-            }, durationMs)
+            Handler().postDelayed(
+                {
+                    show(type, searchQueryOrFilter, onButtonClick)
+                },
+                durationMs
+            )
             return
         }
 

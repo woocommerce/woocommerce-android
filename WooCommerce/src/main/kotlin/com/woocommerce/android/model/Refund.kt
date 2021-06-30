@@ -63,28 +63,28 @@ data class Refund(
 
 fun WCRefundModel.toAppModel(): Refund {
     return Refund(
-            id,
-            dateCreated,
-            amount.roundError(),
-            reason,
-            automaticGatewayRefund,
-            items.map { it.toAppModel() },
-            shippingLineItems.map { it.toAppModel() }
+        id,
+        dateCreated,
+        amount.roundError(),
+        reason,
+        automaticGatewayRefund,
+        items.map { it.toAppModel() },
+        shippingLineItems.map { it.toAppModel() }
     )
 }
 
 fun WCRefundItem.toAppModel(): Refund.Item {
     return Refund.Item(
-            productId ?: -1,
-            -quantity, // WCRefundItem.quantity is NEGATIVE
-            itemId,
-            name ?: "",
-            variationId ?: -1,
-            -subtotal.roundError(), // WCRefundItem.subtotal is NEGATIVE
-            -(total ?: BigDecimal.ZERO).roundError(), // WCRefundItem.total is NEGATIVE
-            -totalTax.roundError(), // WCRefundItem.totalTax is NEGATIVE
-            sku ?: "",
-            price?.roundError() ?: BigDecimal.ZERO,
+        productId ?: -1,
+        -quantity, // WCRefundItem.quantity is NEGATIVE
+        itemId,
+        name ?: "",
+        variationId ?: -1,
+        -subtotal.roundError(), // WCRefundItem.subtotal is NEGATIVE
+        -(total ?: BigDecimal.ZERO).roundError(), // WCRefundItem.total is NEGATIVE
+        -totalTax.roundError(), // WCRefundItem.totalTax is NEGATIVE
+        sku ?: "",
+        price?.roundError() ?: BigDecimal.ZERO,
         metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1
     )
 }

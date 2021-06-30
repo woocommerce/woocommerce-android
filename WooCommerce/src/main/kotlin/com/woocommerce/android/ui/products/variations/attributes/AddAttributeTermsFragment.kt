@@ -187,8 +187,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
          */
         menu.findItem(R.id.menu_rename)?.isVisible =
             !navArgs.isNewAttribute &&
-                !isGlobalAttribute &&
-                !navArgs.isVariationCreation
+            !isGlobalAttribute &&
+            !navArgs.isVariationCreation
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -306,9 +306,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun setupObservers() {
-        viewModel.attributeTermsList.observe(viewLifecycleOwner, Observer {
-            showGlobalAttributeTerms(it)
-        })
+        viewModel.attributeTermsList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showGlobalAttributeTerms(it)
+            }
+        )
 
         viewModel.globalAttributeTermsViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
@@ -316,12 +319,15 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitProductAddAttributeTerms -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitProductAddAttributeTerms -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun setupResultHandlers() {

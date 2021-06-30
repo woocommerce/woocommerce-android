@@ -1,8 +1,16 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
+import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Initializing
@@ -28,6 +36,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class CardReaderUpdateViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `on view model init with should emit explanation state`() {
@@ -163,6 +172,75 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(UpdateResult.SKIPPED)
         }
 
+    @Test
+    fun `when click on primary btn explanation state should track tap event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // THEN
+            verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
+        }
+
+    @Test
+    fun `when click on primary btn explanation state with success should track success event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Success))
+
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // THEN
+            verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
+        }
+
+    @Test
+    fun `when click on primary btn explanation state with failed should track failed event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Failed("")))
+
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // THEN
+            verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
+        }
+
+    @Test
+    fun `when click on primary btn explanation state with up to date should track error event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
+
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // THEN
+            verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
+        }
+
+    @Test
+    fun `when click on secondary btn explanation state should track skip event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).secondaryButton?.onActionClicked!!.invoke()
+
+            // THEN
+            verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED)
+        }
+
     private fun verifyExplanationState(viewModel: CardReaderUpdateViewModel, startedByUser: Boolean) {
         val state = viewModel.viewStateData.value as ExplanationState
         assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_title))
@@ -189,6 +267,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         startedByUser: Boolean = false
     ) = CardReaderUpdateViewModel(
         cardReaderManager,
+        tracker,
         CardReaderUpdateDialogFragmentArgs(startedByUser).initSavedStateHandle()
     )
 }

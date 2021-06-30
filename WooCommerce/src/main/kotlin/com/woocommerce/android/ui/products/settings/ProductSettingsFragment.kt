@@ -77,11 +77,11 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_PURCHASE_NOTE_TAPPED)
             val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
             viewModel.onEditProductCardClicked(
-                    ViewProductPurchaseNoteEditor(
-                            purchaseNote,
-                            getString(R.string.product_purchase_note),
-                            getString(R.string.product_purchase_note_caption)
-                    )
+                ViewProductPurchaseNoteEditor(
+                    purchaseNote,
+                    getString(R.string.product_purchase_note),
+                    getString(R.string.product_purchase_note_caption)
+                )
             )
         }
 
@@ -167,12 +167,15 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitSettings -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitSettings -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
         updateProductView()
     }

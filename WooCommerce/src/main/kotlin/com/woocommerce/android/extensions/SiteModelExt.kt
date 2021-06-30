@@ -8,8 +8,8 @@ val SiteModel.logInformation: String
         val planLog = "Plan: $planShortName ($planId)"
         val jetpackVersionLog = if (isJetpackInstalled) "Jetpack-version: $jetpackVersion" else ""
         return listOf(typeLog, planLog, jetpackVersionLog)
-                .filter { it != "" }
-                .joinToString(separator = " ", prefix = "<", postfix = ">")
+            .filter { it != "" }
+            .joinToString(separator = " ", prefix = "<", postfix = ">")
     }
 
 val SiteModel.stateLogInformation: String

@@ -65,8 +65,8 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
 
     private fun getItemViewHolder(parent: ViewGroup, section: Section): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
-                section.itemResourceId,
-                parent, false
+            section.itemResourceId,
+            parent, false
         )
         // get the item viewholder from the section
         return section.getItemViewHolder(view)
@@ -203,8 +203,8 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
 
                 // delegate the binding to the section content
                 getSectionForPosition(position).onBindContentViewHolder(
-                        holder,
-                        getPositionInSection(position)
+                    holder,
+                    getPositionInSection(position)
                 )
                 return
             }
@@ -739,8 +739,8 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      */
     fun notifyItemMovedInSection(tag: String, fromPosition: Int, toPosition: Int) {
         callSuperNotifyItemMoved(
-                getPositionInAdapter(tag, fromPosition),
-                getPositionInAdapter(tag, toPosition)
+            getPositionInAdapter(tag, fromPosition),
+            getPositionInAdapter(tag, toPosition)
         )
     }
 
@@ -754,8 +754,8 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
      */
     fun notifyItemMovedInSection(section: Section, fromPosition: Int, toPosition: Int) {
         callSuperNotifyItemMoved(
-                getPositionInAdapter(section, fromPosition),
-                getPositionInAdapter(section, toPosition)
+            getPositionInAdapter(section, fromPosition),
+            getPositionInAdapter(section, toPosition)
         )
     }
 

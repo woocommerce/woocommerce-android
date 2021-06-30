@@ -13,7 +13,7 @@ import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.SiteModel
 
 class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
-        RecyclerView.Adapter<SiteViewHolder>() {
+    RecyclerView.Adapter<SiteViewHolder>() {
     var siteList: List<SiteModel> = ArrayList()
         set(value) {
             if (!isSameSiteList(value)) {

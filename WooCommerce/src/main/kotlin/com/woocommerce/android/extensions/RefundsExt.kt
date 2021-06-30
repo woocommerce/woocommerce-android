@@ -12,9 +12,9 @@ fun List<ProductRefundListItem>.calculateTotals(): Pair<BigDecimal, BigDecimal> 
         subtotal += quantity.times(item.orderItem.price)
 
         val singleItemTax = item.orderItem.totalTax.divide(
-                item.orderItem.quantity.toBigDecimal(),
-                2,
-                HALF_UP
+            item.orderItem.quantity.toBigDecimal(),
+            2,
+            HALF_UP
         )
         taxes += quantity.times(singleItemTax)
     }

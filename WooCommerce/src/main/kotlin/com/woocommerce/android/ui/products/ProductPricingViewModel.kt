@@ -194,12 +194,12 @@ class ProductPricingViewModel @Inject constructor(
             val data = other as? PricingData
             return data?.let {
                 taxClass == it.taxClass &&
-                taxStatus == it.taxStatus &&
-                isSaleScheduled == it.isSaleScheduled &&
-                saleStartDate == it.saleStartDate &&
-                saleEndDate == it.saleEndDate &&
-                regularPrice isEquivalentTo it.regularPrice &&
-                salePrice isEquivalentTo it.salePrice
+                    taxStatus == it.taxStatus &&
+                    isSaleScheduled == it.isSaleScheduled &&
+                    saleStartDate == it.saleStartDate &&
+                    saleEndDate == it.saleEndDate &&
+                    regularPrice isEquivalentTo it.regularPrice &&
+                    salePrice isEquivalentTo it.salePrice
             } ?: false
         }
 

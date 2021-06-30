@@ -34,7 +34,8 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
+class RefundByItemsFragment :
+    BaseFragment(R.layout.fragment_refund_by_items),
     OnCheckedChangeListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
@@ -104,14 +105,15 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
         viewModel.refundByItemsStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
                 productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
-                        currencyFormatter.buildBigDecimalFormatter(new.currency),
-                        imageMap,
-                        false,
-                        { uniqueId -> viewModel.onRefundQuantityTapped(uniqueId) }
+                    currencyFormatter.buildBigDecimalFormatter(new.currency),
+                    imageMap,
+                    false,
+                    { uniqueId -> viewModel.onRefundQuantityTapped(uniqueId) }
                 )
                 shippingLinesBinding.issueRefundShippingLines.adapter = RefundShippingListAdapter(
                     this,
-                    currencyFormatter.buildBigDecimalFormatter(new.currency))
+                    currencyFormatter.buildBigDecimalFormatter(new.currency)
+                )
             }
             new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
                 binding.issueRefundBtnNextFromItems.isEnabled = it
@@ -177,43 +179,52 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
             }
         }
 
-        viewModel.refundItems.observe(viewLifecycleOwner, Observer { list ->
-            val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
-            adapter.update(list)
-        })
+        viewModel.refundItems.observe(
+            viewLifecycleOwner,
+            Observer { list ->
+                val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
+                adapter.update(list)
+            }
+        )
 
-        viewModel.refundShippingLines.observe(viewLifecycleOwner, Observer { list ->
-            val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
-            adapter.update(list)
-        })
+        viewModel.refundShippingLines.observe(
+            viewLifecycleOwner,
+            Observer { list ->
+                val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
+                adapter.update(list)
+            }
+        )
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowNumberPicker -> {
-                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowNumberPicker -> {
+                        val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
                             getString(R.string.order_refunds_select_quantity),
                             event.refundItem.orderItem.itemId,
                             event.refundItem.maxQuantity,
                             event.refundItem.quantity
-                    )
-                    findNavController().navigateSafely(action)
-                }
-                is ShowRefundAmountDialog -> {
-                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
+                        )
+                        findNavController().navigateSafely(action)
+                    }
+                    is ShowRefundAmountDialog -> {
+                        val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
                             getString(R.string.order_refunds_products_refund),
                             event.maxRefund,
                             event.refundAmount,
                             BigDecimal.ZERO,
                             event.message
-                    )
-                    findNavController().navigateSafely(action)
+                        )
+                        findNavController().navigateSafely(action)
+                    }
+                    is OpenUrl -> {
+                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    }
+                    else -> event.isHandled = false
                 }
-                is OpenUrl -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                }
-                else -> event.isHandled = false
             }
-        })
+        )
     }
 
     private fun updateRefundNoticeView(refundNoticeText: String) {
@@ -226,7 +237,8 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
             span,
             (noticeText.length - linkText.length),
             noticeText.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         productsBinding.issueRefundRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
         productsBinding.issueRefundRefundNotice.movementMethod = LinkMovementMethod.getInstance()

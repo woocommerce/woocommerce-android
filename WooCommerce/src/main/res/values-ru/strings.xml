@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-10 15:54:04+0000
+Translation-Revision-Date: 2021-06-23 17:54:50+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="empty_order_list_message">Узнайте о том, как увеличить продажи своего магазина.</string>
+    <string name="empty_product_message">Добавьте в магазин первый продукт, чтобы уже сегодня приступить к продаже товаров.</string>
+    <string name="empty_product_add_product_button">Добавить товар</string>
+    <string name="variable_product_attributes">Атрибуты вариантов</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Включите Bluetooth на мобильном устройстве</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;Подробнее&lt;/a&gt; о приёме платежей с помощью мобильного устройства и заказе устройств чтения карт</string>
+    <string name="card_reader_fetching_order_failed">Ошибка при загрузке заказа. Состояние заказа в приложении могло устареть.</string>
+    <string name="card_reader_payment_email_client_not_found">Не удалось определить ваш почтовый клиент</string>
+    <string name="card_reader_payment_receipt_email_content">Спасибо за покупку! Чтобы найти квитанцию для своего платежа, используйте следующую ссылку: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
+    <string name="card_reader_payment_description">Веб-платёж за заказ %s на %s</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Ваш клиент выбрал %1$s</string>
+    <string name="shipping_label_address_phone_invalid">Для таможенных форм требуется 10-значный телефонный номер</string>
+    <string name="shipping_label_address_phone_required">Телефонный номер необходимо указать, так как для этой доставки требуется таможенная форма</string>
+    <string name="shipping_label_create_customs_done">Таможенная форма заполнена</string>
+    <string name="print_receipt_label_info_step_7">При наличии проблем с печатью с устройства обратитесь в службу поддержки вашего принтера.</string>
+    <string name="print_receipt_label_info_step_6">Если печать недоступна, можно всегда сохранить квитанцию в формате PDF и отправить её по электронной почте, чтобы распечатать с другого устройства.</string>
+    <string name="print_receipt_label_info_step_5">Настройте размер бумаги требуемым образом и нажмите «Печать» для печати квитанции.</string>
+    <string name="print_receipt_label_info_step_4">Установите сопряжение и подключите принтер к мобильному устройству при появлении запроса.</string>
+    <string name="print_receipt_label_info_step_3">При выборе «Печать квитанции» после приёма платежа замените «Сохранить как PDF» на «Все принтеры» и выполните поиск нового принтера.</string>
+    <string name="print_receipt_label_info_step_2">Включите Bluetooth или соединение Wi-Fi на своём принтере.</string>
+    <string name="print_receipt_label_info_step_1">Убедитесь, что для принтера установлен плагин службы печати.</string>
+    <string name="orderdetail_printing_instructions_button">Подробнее о печати квитанций с помощью вашего устройства</string>
+    <string name="product_create_attribute_helper">Чтобы создать вариант, необходимо сначала задать атрибуты (например, «Цвет» или «Размер»).</string>
+    <string name="product_variation_single_count">1 вариант</string>
+    <string name="product_variation_multiple_count">Вариантов: %1$s</string>
     <string name="shipping_label_rate_included_options_usps_tracking">Отслеживание %s</string>
     <string name="card_reader_software_update_in_progress_title">Обновление ПО устройства чтения</string>
     <string name="card_reader_software_update_title">Обновление ПО</string>
@@ -150,10 +178,7 @@ Language: ru
     <string name="shipping_label_rate_included_options">Включает %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Требуется подпись совершеннолетнего лица (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Требуется подпись (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">Бесплатная доставка</string>
-    <string name="shipping_label_shipping_method_local_pickup">Самовывоз</string>
-    <string name="shipping_label_shipping_method_flat_rate">Единая ставка</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Клиент оплатил %1$s (%2$s) за доставку.</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Клиент оплатил %1$s из %2$s за доставку.</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">При покупке транспортных этикеток через WooCommerce вы сэкономите от 5 до 40 % по сравнению с тарифами почты.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Что такое скидка WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">При загрузке вариантов доставки произошла ошибка.</string>
@@ -200,7 +225,7 @@ Language: ru
     <string name="shipping_label_single_package_total_weight">Общий вес посылок: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Специальные посылки</string>
     <string name="shipping_label_package_details_fetch_products_error">Не удаётся получить данные о товарах</string>
-    <string name="shipping_label_missing_data_snackbar_message">Некоторые обязательные поля не заполнены.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Некоторые обязательные поля не заполнены.</string>
     <string name="shipping_label_package_details_weight_error">Неверный вес</string>
     <string name="shipping_label_package_selector_title">Выбранная посылка</string>
     <string name="shipping_label_packages_loading_message">Пожалуйста, подождите…</string>
@@ -610,7 +635,6 @@ Language: ru
     <string name="empty_review_list_message">Получайте высококачественные отзывы о продуктах в вашем магазине</string>
     <string name="empty_review_list_title">Получить первые отзывы</string>
     <string name="empty_order_list_all_processed">Все заказы выполнены</string>
-    <string name="empty_order_list_message">Мы уведомим вас о поступлении нового заказа. Тем временем вы можете почитать о том, как увеличить продажи своего магазина.</string>
     <string name="empty_order_list_title">Ожидание первого заказа</string>
     <string name="share_your_store_message">Поделитесь информацией о своем магазине в социальных сетях и по электронной почте со своими контактами</string>
     <string name="get_the_word_out">Дайте знать о себе</string>

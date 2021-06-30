@@ -44,9 +44,9 @@ class IssueRefundFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         childFragmentManager
-                .beginTransaction()
-                .replace(R.id.issueRefund_frame, RefundByItemsFragment())
-                .commit()
+            .beginTransaction()
+            .replace(R.id.issueRefund_frame, RefundByItemsFragment())
+            .commit()
 
         // TODO: Temporary; it will be used again in a future release - do not remove
 //        initializeViews(viewModel)
@@ -80,15 +80,18 @@ class IssueRefundFragment : BaseFragment() {
 //            }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowRefundSummary -> {
-                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
-                    findNavController().navigateSafely(action)
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowRefundSummary -> {
+                        val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
+                        findNavController().navigateSafely(action)
+                    }
+                    else -> event.isHandled = false
                 }
-                else -> event.isHandled = false
             }
-        })
+        )
     }
 
     // TODO: Temporarily unused; it will be used again in a future release - do not remove

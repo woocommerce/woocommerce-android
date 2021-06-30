@@ -76,16 +76,46 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     private fun initMultipleReadersFoundRecyclerView(binding: FragmentCardReaderConnectBinding) {
         binding.multipleCardReadersFoundRv.layoutManager = LinearLayoutManager(requireContext())
         binding.multipleCardReadersFoundRv.addItemDecoration(
-                AlignedDividerDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL,
-                    R.id.readers_found_reader_id
-                )
+            AlignedDividerDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL,
+                R.id.readers_found_reader_id
+            )
         )
         binding.multipleCardReadersFoundRv.adapter = MultipleCardReadersFoundAdapter()
     }
 
     private fun initObservers(binding: FragmentCardReaderConnectBinding) {
+        observeEvents()
+        observeState(binding)
+    }
+
+    private fun observeState(binding: FragmentCardReaderConnectBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
+            UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
+            UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
+            UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
+            UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
+            UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
+            binding.primaryActionBtn.setOnClickListener {
+                viewState.onPrimaryActionClicked?.invoke()
+            }
+            binding.secondaryActionBtn.setOnClickListener {
+                viewState.onSecondaryActionClicked?.invoke()
+            }
+
+            with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
+                topMargin = resources.getDimensionPixelSize(viewState.illustrationTopMargin)
+            }
+
+            updateMultipleReadersFoundRecyclerView(binding, viewState)
+
+            // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
+            (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
+        }
+    }
+
+    private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is CheckLocationPermissions -> {
@@ -122,24 +152,6 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                 }
                 else -> event.isHandled = false
             }
-        }
-        viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
-            UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
-            UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
-            UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
-            UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
-            UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
-            binding.primaryActionBtn.setOnClickListener {
-                viewState.onPrimaryActionClicked?.invoke()
-            }
-            binding.secondaryActionBtn.setOnClickListener {
-                viewState.onSecondaryActionClicked?.invoke()
-            }
-
-            updateMultipleReadersFoundRecyclerView(binding, viewState)
-
-            // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
-            (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
         }
     }
 

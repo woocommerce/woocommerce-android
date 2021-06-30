@@ -193,8 +193,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             ConnectionResult.SUCCESS -> true
             else -> {
                 WooLog.w(
-                    T.NOTIFS, "Google Play Services unavailable, connection result: " +
-                    googleApiAvailability.getErrorString(connectionResult)
+                    T.NOTIFS,
+                    "Google Play Services unavailable, connection result: " +
+                        googleApiAvailability.getErrorString(connectionResult)
                 )
                 return false
             }

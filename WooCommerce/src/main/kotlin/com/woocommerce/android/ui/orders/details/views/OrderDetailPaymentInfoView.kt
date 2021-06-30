@@ -26,6 +26,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailPaymentInfoBinding.inflate(LayoutInflater.from(ctx), this)
 
+    @Suppress("LongParameterList", "LongMethod")
     fun updatePaymentInfo(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,

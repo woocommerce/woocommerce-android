@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface">
+
+    <View
+        android:id="@+id/radiobox"
+        android:layout_width="@dimen/skeleton_list_item_icon_100"
+        android:layout_height="@dimen/skeleton_list_item_icon_100"
+        android:layout_marginStart="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/name"
+        android:layout_width="200dp"
+        android:layout_height="@dimen/skeleton_text_height_150"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/description"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/radiobox"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <View
+        android:id="@+id/description"
+        android:layout_width="120dp"
+        android:layout_height="@dimen/skeleton_text_height_100"
+        android:layout_marginTop="@dimen/minor_50"
+        android:layout_marginBottom="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/name"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
+
+
+    <View
+        android:id="@+id/price"
+        android:layout_width="60dp"
+        android:layout_height="@dimen/skeleton_text_height_150"
+        android:layout_marginEnd="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/name"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_width="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/name" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

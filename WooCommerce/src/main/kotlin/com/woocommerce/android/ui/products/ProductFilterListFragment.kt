@@ -28,7 +28,8 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_list),
+class ProductFilterListFragment :
+    BaseFragment(R.layout.fragment_product_filter_list),
     OnProductFilterClickListener,
     BackPressListener {
     companion object {
@@ -99,19 +100,25 @@ class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
             new.displayClearButton?.takeIfNotEqualTo(old?.displayClearButton) { showClearAllAction(it) }
         }
-        viewModel.filterListItems.observe(viewLifecycleOwner, Observer {
-            showProductFilterList(it)
-        })
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is Exit -> findNavController().navigateUp()
-                is ShowDialog -> event.showDialog()
-                is ExitWithResult<*> -> {
-                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
-                }
-                else -> event.isHandled = false
+        viewModel.filterListItems.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProductFilterList(it)
             }
-        })
+        )
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is Exit -> findNavController().navigateUp()
+                    is ShowDialog -> event.showDialog()
+                    is ExitWithResult<*> -> {
+                        navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
+                    }
+                    else -> event.isHandled = false
+                }
+            }
+        )
 
         viewModel.loadFilters()
     }

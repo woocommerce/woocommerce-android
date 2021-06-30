@@ -12,6 +12,12 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_CANCELED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
@@ -31,6 +37,9 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.CANCELLED
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.FAILED
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.STARTED
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
@@ -120,7 +129,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-    }
+        }
 
     @Test
     fun `when fetching order fails, then event tracked`() =
@@ -136,14 +145,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
-            coroutinesTestRule.testDispatcher.runBlockingTest {
-                whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
 
-                viewModel.start()
+            viewModel.start()
 
-                assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
-                        .isEqualTo(R.string.order_error_fetch_generic)
-            }
+            assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
+                .isEqualTo(R.string.order_error_fetch_generic)
+        }
 
     @Test
     fun `when payment screen shown, then loading data state is shown`() {
@@ -172,9 +181,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val siteName = "testName"
             val expectedResult = "hooray"
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                name = siteName
-            })
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    name = siteName
+                }
+            )
             whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_NUMBER, siteName))
                 .thenReturn(expectedResult)
             val stringCaptor = argumentCaptor<String>()
@@ -497,7 +508,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_retry)
+                .isEqualTo(R.string.try_again)
         }
 
     @Test
@@ -583,6 +594,40 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when user clicks on print receipt button, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(RECEIPT_PRINT_TAPPED)
+        }
+
+    @Test
+    fun `when OS accepts the print request, then print success event tracked`() {
+        viewModel.onPrintResult(STARTED)
+
+        verify(tracker).track(RECEIPT_PRINT_SUCCESS)
+    }
+
+    @Test
+    fun `when OS refuses the print request, then print failed event tracked`() {
+        viewModel.onPrintResult(FAILED)
+
+        verify(tracker).track(RECEIPT_PRINT_FAILED)
+    }
+
+    @Test
+    fun `when manually cancels the print request, then print cancelled event tracked`() {
+        viewModel.onPrintResult(CANCELLED)
+
+        verify(tracker).track(RECEIPT_PRINT_CANCELED)
+    }
+
+    @Test
     fun `when user clicks on send receipt button, then SendReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
@@ -593,6 +638,27 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
+        }
+
+    @Test
+    fun `when user clicks on send receipt button, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).track(RECEIPT_EMAIL_TAPPED)
+        }
+
+    @Test
+    fun `when email activity not found, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            viewModel.onEmailActivityNotFound()
+
+            verify(tracker).track(RECEIPT_EMAIL_FAILED)
         }
 
     @Test

@@ -18,6 +18,9 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.CANCELLED
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -58,44 +61,70 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     }
 
     private fun initObservers(binding: FragmentCardReaderPaymentBinding) {
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is PrintReceipt -> printHtmlHelper.printReceipt(
-                    requireActivity(),
-                    event.receiptUrl,
-                    event.documentName
-                )
-                is SendReceipt -> composeEmail(event.address, event.subject, event.content)
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                else -> event.isHandled = false
-            }
-        })
-        viewModel.viewStateData.observe(viewLifecycleOwner, { viewState ->
-            UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
-            UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
-            UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
-            UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
-            (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
-                .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
-            UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
-            UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
-            UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
-            UiHelpers.updateVisibility(binding.progressBarWrapper, viewState.isProgressVisible)
-            binding.primaryActionBtn.setOnClickListener {
-                viewState.onPrimaryActionClicked?.invoke()
-            }
-            binding.secondaryActionBtn.setOnClickListener {
-                viewState.onSecondaryActionClicked?.invoke()
-            }
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                Exit -> {
-                    navigateBackWithNotice(KEY_CARD_PAYMENT_RESULT)
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is PrintReceipt -> printHtmlHelper.printReceipt(
+                        requireActivity(),
+                        event.receiptUrl,
+                        event.documentName
+                    )
+                    is SendReceipt -> composeEmail(event.address, event.subject, event.content)
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    else -> event.isHandled = false
                 }
             }
-        })
+        )
+        viewModel.viewStateData.observe(
+            viewLifecycleOwner,
+            { viewState ->
+                UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
+                UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
+                UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
+                UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
+                (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
+                    .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
+                UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
+                UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
+                UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
+                UiHelpers.updateVisibility(binding.progressBarWrapper, viewState.isProgressVisible)
+                binding.primaryActionBtn.setOnClickListener {
+                    viewState.onPrimaryActionClicked?.invoke()
+                }
+                binding.secondaryActionBtn.setOnClickListener {
+                    viewState.onSecondaryActionClicked?.invoke()
+                }
+            }
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    Exit -> {
+                        navigateBackWithNotice(KEY_CARD_PAYMENT_RESULT)
+                    }
+                }
+            }
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+        handlePrintResultIfAvailable()
+    }
+
+    private fun handlePrintResultIfAvailable() {
+        printHtmlHelper.getAndClearPrintJob()?.let {
+            val result = when {
+                it.isCancelled -> CANCELLED
+                it.isFailed -> FAILED
+                else -> PrintJobResult.STARTED
+            }
+            viewModel.onPrintResult(result)
+        }
     }
 
     companion object {
@@ -114,10 +143,5 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
         } catch (e: ActivityNotFoundException) {
             viewModel.onEmailActivityNotFound()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
     }
 }

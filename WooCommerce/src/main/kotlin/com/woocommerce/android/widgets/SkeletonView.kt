@@ -58,12 +58,15 @@ class SkeletonView {
         if (delayed) {
             shimmerView.visibility = View.INVISIBLE
             parentView.addView(shimmerView)
-            handler.postDelayed({
-                if (isShowing) {
-                    shimmerView.visibility = View.VISIBLE
-                    shimmerView.startShimmer()
-                }
-            }, 250)
+            handler.postDelayed(
+                {
+                    if (isShowing) {
+                        shimmerView.visibility = View.VISIBLE
+                        shimmerView.startShimmer()
+                    }
+                },
+                250
+            )
         } else {
             parentView.addView(shimmerView)
             shimmerView.startShimmer()

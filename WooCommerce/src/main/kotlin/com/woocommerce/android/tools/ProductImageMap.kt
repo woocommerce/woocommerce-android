@@ -48,10 +48,10 @@ class ProductImageMap @Inject constructor(
             // product isn't in our database so fire event to fetch it unless there's a pending request for it
             if (!pendingRequestIds.contains(remoteProductId)) {
                 EventBus.getDefault().post(
-                        RequestFetchProductEvent(
-                                site,
-                                remoteProductId
-                        )
+                    RequestFetchProductEvent(
+                        site,
+                        remoteProductId
+                    )
                 )
                 // add to the list of pending requests so we don't keep fetching the same product
                 pendingRequestIds.add(remoteProductId)

@@ -106,10 +106,11 @@ class OrderListViewModel @Inject constructor(
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData<EmptyViewType?>(
-                offset = EMPTY_VIEW_THROTTLE,
-                coroutineScope = this,
-                mainDispatcher = dispatchers.main,
-                backgroundDispatcher = dispatchers.computation)
+            offset = EMPTY_VIEW_THROTTLE,
+            coroutineScope = this,
+            mainDispatcher = dispatchers.main,
+            backgroundDispatcher = dispatchers.computation
+        )
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
@@ -143,17 +144,18 @@ class OrderListViewModel @Inject constructor(
         if (allPagedListWrapper == null) {
             val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = false)
             allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
-                    .also { it.fetchFirstPage() }
+                .also { it.fetchFirstPage() }
         }
 
         // "PROCESSING" tab
         if (processingPagedListWrapper == null) {
             val processingDescriptor = WCOrderListDescriptor(
-                    site = selectedSite.get(),
-                    statusFilter = CoreOrderStatus.PROCESSING.value,
-                    excludeFutureOrders = false)
+                site = selectedSite.get(),
+                statusFilter = CoreOrderStatus.PROCESSING.value,
+                excludeFutureOrders = false
+            )
             processingPagedListWrapper = listStore.getList(processingDescriptor, dataSource, lifecycle)
-                    .also { it.fetchFirstPage() }
+                .also { it.fetchFirstPage() }
         }
 
         // Fetch order dependencies such as order status list and payment gateways
@@ -281,11 +283,14 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.observe(this, Observer {
-            it?.let {
-                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+        pagedListWrapper.listError.observe(
+            this,
+            Observer {
+                it?.let {
+                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                }
             }
-        })
+        )
 
         this.activePagedListWrapper = pagedListWrapper
 
@@ -322,7 +327,7 @@ class OrderListViewModel @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun createAndPostEmptyViewType(wrapper: PagedListWrapper<OrderListItemUIType>) {
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
-                wrapper.data.value == null
+            wrapper.data.value == null
         val isListEmpty = wrapper.isEmpty.value ?: true
         val hasOrders = repository.hasCachedOrdersForSite()
         val isError = wrapper.listError.value != null
@@ -369,7 +374,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun isShowingProcessingOrders() = orderStatusFilter.isNotEmpty() &&
-            orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
+        orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
 
     private fun showOfflineSnack() {
         // Network is not connected
@@ -436,10 +441,13 @@ class OrderListViewModel @Inject constructor(
         }
 
         val totalDurationInSeconds = event.duration.toDouble() / 1_000
-        AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(
-            KEY_TOTAL_DURATION to totalDurationInSeconds,
-            KEY_STATUS to event.listDescriptor.statusFilter
-        ))
+        AnalyticsTracker.track(
+            Stat.ORDERS_LIST_LOADED,
+            mapOf(
+                KEY_TOTAL_DURATION to totalDurationInSeconds,
+                KEY_STATUS to event.listDescriptor.statusFilter
+            )
+        )
     }
 
     sealed class OrderListEvent : Event() {

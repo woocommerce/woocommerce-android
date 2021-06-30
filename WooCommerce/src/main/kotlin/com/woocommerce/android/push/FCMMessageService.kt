@@ -34,9 +34,9 @@ class FCMMessageService : FirebaseMessagingService() {
             }
         } else {
             notificationHandler.buildAndShowNotificationFromNoteData(
-                    this.applicationContext,
-                    convertMapToBundle(message.data),
-                    accountStore.account
+                this.applicationContext,
+                convertMapToBundle(message.data),
+                accountStore.account
             )
         }
     }
