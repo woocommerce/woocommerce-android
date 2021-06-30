@@ -104,8 +104,9 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
      * fade in the reader found illustration
      */
     private fun moveToReaderFoundState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
-        val fadeOut = WooAnimUtils.getFadeOutAnim(binding.illustration)
-        val fadeIn = WooAnimUtils.getFadeInAnim(binding.illustration)
+        val fadeOut = WooAnimUtils.getFadeOutAnim(binding.illustration, WooAnimUtils.Duration.LONG)
+        val fadeIn = WooAnimUtils.getFadeInAnim(binding.illustration, WooAnimUtils.Duration.LONG)
+
         fadeOut.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 moveToState(binding, viewState)
