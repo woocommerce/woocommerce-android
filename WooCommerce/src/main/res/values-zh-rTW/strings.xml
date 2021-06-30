@@ -667,7 +667,7 @@ Language: zh_TW
     <string name="order_refunds_select_quantity">選取數量</string>
     <string name="order_refunds_shipping_refund">運費退款</string>
     <string name="order_refunds_products_refund">產品退款</string>
-    <string name="order_refunds_item_description">%d x %s (每個)</string>
+    <string name="order_refunds_item_description">%s x %s (每個)</string>
     <string name="order_refunds_items_selected">已選取 %d 個項目</string>
     <string name="order_refunds_items_select_none">全部不選</string>
     <string name="order_refunds_items_select_all">全部選取</string>

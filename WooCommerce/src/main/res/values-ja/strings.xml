@@ -667,7 +667,7 @@ Language: ja_JP
     <string name="order_refunds_select_quantity">数量を選択</string>
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
-    <string name="order_refunds_item_description">各%d x %s</string>
+    <string name="order_refunds_item_description">各%s x %s</string>
     <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>

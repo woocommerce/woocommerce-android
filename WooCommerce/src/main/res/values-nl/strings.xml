@@ -667,7 +667,7 @@ Language: nl
     <string name="order_refunds_select_quantity">Selecteer hoeveelheid</string>
     <string name="order_refunds_shipping_refund">Verzendkostenvergoeding</string>
     <string name="order_refunds_products_refund">Productvergoeding</string>
-    <string name="order_refunds_item_description">%d x %s per stuk</string>
+    <string name="order_refunds_item_description">%s x %s per stuk</string>
     <string name="order_refunds_items_selected">%d items geselecteerd</string>
     <string name="order_refunds_items_select_none">Niets selecteren</string>
     <string name="order_refunds_items_select_all">Alles selecteren</string>
