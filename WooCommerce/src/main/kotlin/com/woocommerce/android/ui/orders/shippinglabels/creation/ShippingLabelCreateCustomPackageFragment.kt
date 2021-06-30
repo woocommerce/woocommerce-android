@@ -73,27 +73,27 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
 
     private fun setupObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.customPackageType.takeIfNotEqualTo(old?.customPackageType) {
+            new.customFormType.takeIfNotEqualTo(old?.customFormType) {
                 binding.customPackageFormType.setText(getString(it.stringRes))
             }
 
-            new.customPackageFormLengthError.takeIfNotEqualTo(old?.customPackageFormLengthError) {
+            new.customFormLengthError.takeIfNotEqualTo(old?.customFormLengthError) {
                 showErrorOrClear(binding.customPackageFormLength, it)
             }
 
-            new.customPackageFormWidthError.takeIfNotEqualTo(old?.customPackageFormWidthError) {
+            new.customFormWidthError.takeIfNotEqualTo(old?.customFormWidthError) {
+                showErrorOrClear(binding.customPackageFormWidth, it)
+            }
+
+            new.customFormHeightError.takeIfNotEqualTo(old?.customFormHeightError) {
                 showErrorOrClear(binding.customPackageFormHeight, it)
             }
 
-            new.customPackageFormHeightError.takeIfNotEqualTo(old?.customPackageFormHeightError) {
-                showErrorOrClear(binding.customPackageFormLength, it)
-            }
-
-            new.customPackageFormWeightError.takeIfNotEqualTo(old?.customPackageFormWeightError) {
+            new.customFormWeightError.takeIfNotEqualTo(old?.customFormWeightError) {
                 showErrorOrClear(binding.customPackageFormEmptyWeight, it)
             }
 
-            new.customPackageFormNameError.takeIfNotEqualTo(old?.customPackageFormNameError) {
+            new.customFormNameError.takeIfNotEqualTo(old?.customFormNameError) {
                 showErrorOrClear(binding.customPackageFormName, it)
             }
         }
@@ -111,7 +111,7 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onCreateCustomPackageDoneButtonClicked(gatherData()) // TODO: for data submission
+                viewModel.onCreateCustomPackageDoneMenuClicked(gatherData()) // TODO: for data submission
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -119,22 +119,25 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
     }
 
     // TODO: for data submission
+    private fun inputToFloatOrZero(input: String) : Float {
+        return if(input.isBlank()) 0f else input.trim('.').toFloat()
+    }
     private fun gatherData(): ShippingPackage {
         val dimensions = PackageDimensions(
-            binding.customPackageFormLength.getText().trim().toFloat(),
-            binding.customPackageFormWidth.getText().trim().toFloat(),
-            binding.customPackageFormHeight.getText().trim().toFloat(),
+            inputToFloatOrZero(binding.customPackageFormLength.getText()),
+            inputToFloatOrZero(binding.customPackageFormWidth.getText()),
+            inputToFloatOrZero(binding.customPackageFormHeight.getText()),
         )
         val isLetter =
             binding.customPackageFormType.getText() == resources.getString(CustomPackageType.ENVELOPE.stringRes)
 
         return ShippingPackage(
-            id = "", /* Safe to set as empty, as it's not required for package creation */
+            id = "", /* Safe to set as empty, as it's not used for package creation */
             title = binding.customPackageFormName.getText(),
             isLetter = isLetter,
-            category = "", /* Safe to set as empty, as it's not required for package creation */
+            category = "", /* Safe to set as empty, as it's not used for package creation */
             dimensions = dimensions,
-            boxWeight = binding.customPackageFormEmptyWeight.getText().trim().toFloat()
+            boxWeight = inputToFloatOrZero(binding.customPackageFormEmptyWeight.getText())
         )
     }
 }
