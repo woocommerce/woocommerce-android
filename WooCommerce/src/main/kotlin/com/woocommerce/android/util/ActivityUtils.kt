@@ -13,6 +13,7 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
 import java.io.File
@@ -80,6 +81,21 @@ object ActivityUtils {
             activity.startActivity(sendIntent)
         } catch (exception: ActivityNotFoundException) {
             ToastUtils.showToast(activity, R.string.shipping_label_preview_pdf_app_missing)
+        }
+    }
+
+    fun composeEmail(activity: Activity, billingEmail: String, subject: UiString, content: UiString): Boolean {
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:") // only email apps should handle this
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(billingEmail))
+            putExtra(Intent.EXTRA_SUBJECT, UiHelpers.getTextOfUiString(activity, subject))
+            putExtra(Intent.EXTRA_TEXT, UiHelpers.getTextOfUiString(activity, content))
+        }
+        return try {
+            activity.startActivity(intent)
+            true
+        } catch (e: ActivityNotFoundException) {
+            false
         }
     }
 
