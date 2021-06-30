@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -48,16 +49,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
 
 @HiltViewModel
 class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    private val tracker: AnalyticsTrackerWrapper,
-    private val appLogWrapper: AppLogWrapper
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
@@ -194,7 +192,7 @@ class CardReaderConnectViewModel @Inject constructor(
                     null,
                     discoveryEvent.msg
                 )
-                appLogWrapper.e(T.MAIN, "Scanning failed: ${discoveryEvent.msg}")
+                WooLog.e(WooLog.T.CARD_READER, "Scanning failed: ${discoveryEvent.msg}")
                 viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
             }
         }
@@ -245,7 +243,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 onReaderConnected()
             } else {
                 tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
-                appLogWrapper.e(T.MAIN, "Connecting to reader failed.")
+                WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
                 viewState.value = ConnectingFailedState({ onConnectToReaderClicked(cardReader) }, ::onCancelClicked)
             }
         }
@@ -264,12 +262,12 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onCancelClicked() {
-        appLogWrapper.e(T.MAIN, "Connection flow interrupted by the user.")
+        WooLog.e(WooLog.T.CARD_READER, "Connection flow interrupted by the user.")
         exitFlow(connected = false)
     }
 
     private fun onReaderConnected() {
-        appLogWrapper.e(T.MAIN, "Connecting to reader succeeded.")
+        WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         exitFlow(connected = true)
     }
 

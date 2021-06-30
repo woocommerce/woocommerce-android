@@ -451,7 +451,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     private fun createViewModel() = CardReaderDetailViewModel(
         cardReaderManager,
         tracker,
-        mock(),
         SavedStateHandle()
     )
 
