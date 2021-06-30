@@ -19,8 +19,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.CANCELLED
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -113,17 +111,8 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        handlePrintResultIfAvailable()
-    }
-
-    private fun handlePrintResultIfAvailable() {
-        printHtmlHelper.getAndClearPrintJob()?.let {
-            val result = when {
-                it.isCancelled -> CANCELLED
-                it.isFailed -> FAILED
-                else -> PrintJobResult.STARTED
-            }
-            viewModel.onPrintResult(result)
+        printHtmlHelper.getAndClearPrintJobResult()?.let {
+            viewModel.onPrintResult(it)
         }
     }
 
