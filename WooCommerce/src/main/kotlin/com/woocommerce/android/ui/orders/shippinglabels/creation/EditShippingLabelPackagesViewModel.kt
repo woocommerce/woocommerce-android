@@ -11,6 +11,10 @@ import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.ExistingPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.NewPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.OriginalPackage
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
@@ -160,7 +164,11 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
-        triggerEvent(ShowMoveItemDialog(item, shippingPackage))
+        triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.shippingLabelPackages))
+    }
+
+    fun updatePackagesList(packages: List<ShippingLabelPackage>) {
+        viewState = viewState.copy(shippingLabelPackages = packages)
     }
 
     fun onDoneButtonClicked() {
@@ -216,6 +224,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     data class ShowMoveItemDialog(
         val item: ShippingLabelPackage.Item,
-        val currentPackage: ShippingLabelPackage
+        val currentPackage: ShippingLabelPackage,
+        val packagesList: List<ShippingLabelPackage>
     ) : MultiLiveEvent.Event()
 }

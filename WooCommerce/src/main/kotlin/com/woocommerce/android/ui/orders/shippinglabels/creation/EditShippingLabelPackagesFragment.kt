@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -100,6 +101,9 @@ class EditShippingLabelPackagesFragment :
         handleResult<ShippingPackageSelectorResult>(ShippingPackageSelectorFragment.SELECTED_PACKAGE_RESULT) { result ->
             viewModel.onPackageSelected(result.position, result.selectedPackage)
         }
+        handleResult<List<ShippingLabelPackage>>(MoveShippingItemDialog.MOVE_ITEM_RESULT) { packagesList ->
+            viewModel.updatePackagesList(packagesList)
+        }
     }
 
     private fun setupObservers(binding: FragmentEditShippingLabelPackagesBinding) {
@@ -132,7 +136,8 @@ class EditShippingLabelPackagesFragment :
                     val action = EditShippingLabelPackagesFragmentDirections
                         .actionEditShippingLabelPackagesFragmentToMoveShippingItemDialog(
                             item = event.item,
-                            currentPackage = event.currentPackage
+                            currentPackage = event.currentPackage,
+                            packagesList = event.packagesList.toTypedArray()
                         )
 
                     findNavController().navigateSafely(action)

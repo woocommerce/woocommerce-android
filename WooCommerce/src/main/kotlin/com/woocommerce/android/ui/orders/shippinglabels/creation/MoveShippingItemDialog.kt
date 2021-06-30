@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item) {
     companion object {
-        const val SELECTED_DESTINATION_PACKAGE_RESULT = "selected_destination_package_result"
+        const val MOVE_ITEM_RESULT = "move-item-result"
     }
 
     private val viewModel: MoveShippingItemViewModel by viewModels()
@@ -62,7 +62,7 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
         })
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ExitWithResult<*> -> navigateBackWithResult(SELECTED_DESTINATION_PACKAGE_RESULT, event.data)
+                is ExitWithResult<*> -> navigateBackWithResult(MOVE_ITEM_RESULT, event.data)
                 else -> event.isHandled = false
             }
         }

@@ -492,6 +492,9 @@
         <argument
             android:name="currentPackage"
             app:argType="com.woocommerce.android.model.ShippingLabelPackage" />
+        <argument
+            android:name="packagesList"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
     </dialog>
     <action
         android:id="@+id/action_global_addOrderShipmentTrackingFragment"
