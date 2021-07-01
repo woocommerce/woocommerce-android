@@ -348,10 +348,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/minor_100"
-                android:gravity="start"
-                android:paddingStart="0dp"
+                android:gravity="start|center_vertical"
+                android:paddingStart="@dimen/major_100"
                 android:text="@string/orderdetail_see_receipt_button"
                 android:textAllCaps="false" />
 
