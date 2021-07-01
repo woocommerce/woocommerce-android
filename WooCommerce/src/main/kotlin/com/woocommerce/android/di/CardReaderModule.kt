@@ -25,7 +25,6 @@ class CardReaderModule {
     ) = CardReaderManagerFactory.createCardReaderManager(cardReaderStore, logWrapper)
 
     @Provides
-    @Singleton
     fun provideCardReaderStore(
         selectedSite: SelectedSite,
         payStore: WCPayStore,
@@ -43,7 +42,6 @@ class CardReaderModule {
     }
 
     @Provides
-    @Singleton
     fun provideLogWrapper() = object : LogWrapper {
         private val TAG = WooLog.T.CARD_READER
 
