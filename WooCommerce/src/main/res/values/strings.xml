@@ -343,7 +343,7 @@
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_fulfill_completed">🎉 Order completed!</string>
-    <string name="order_status_changed_to">Order status changed to %s</string>
+    <string name="order_status_updated">Order status updated</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
@@ -603,7 +603,7 @@
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_select_none">Select none</string>
     <string name="order_refunds_items_selected">%d items selected</string>
-    <string name="order_refunds_item_description">%d x %s each</string>
+    <string name="order_refunds_item_description">%s x %s each</string>
     <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
@@ -730,7 +730,7 @@
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
-    <string name="card_reader_connect_scanning_failed_header">No reader found</string>
+    <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
@@ -903,8 +903,7 @@
     <string name="product_limited_editing_title">Limited editing available</string>
     <string name="product_limited_editing_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
     <string name="product_adding_wip_title">Create products from the app!</string>
-    <string name="product_wip_message_m4">It\'s now possible to create new simple, linked and grouped products on the go from the Woo app. Not ready yet? Save them as a draft!</string>
-    <string name="product_wip_message_m5">You can now add downloadable files to a product and link upsell &amp; cross-sell products. No longer want a product? Trash it!</string>
+    <string name="product_wip_message_variations">You can now create and manage product variations!</string>
     <string name="product_wip_title">New editing options available</string>
     <string name="product_wip_title_m5">New features available!</string>
     <string name="product_wip_message_m2">We\'ve added more editing functionalities to products! You can now update images, see previews and share your products.</string>

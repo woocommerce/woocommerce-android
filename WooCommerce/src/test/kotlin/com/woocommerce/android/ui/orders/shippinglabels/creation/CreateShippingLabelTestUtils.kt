@@ -48,7 +48,7 @@ object CreateShippingLabelTestUtils {
             id,
             selectedPackage ?: generatePackage(),
             weight,
-            listOf(Item(0L, "product", "", 2f, 10f, BigDecimal.valueOf(10L)))
+            listOf(Item(0L, "product", "", 2, 10f, BigDecimal.valueOf(10L)))
         )
     }
 
@@ -86,7 +86,7 @@ object CreateShippingLabelTestUtils {
                     productId = 1L,
                     itemDescription = "product",
                     hsTariffNumber = "",
-                    quantity = 1f,
+                    quantity = 1,
                     value = BigDecimal.valueOf(10),
                     weight = 1f,
                     originCountry = Location("US", "United States (US)")

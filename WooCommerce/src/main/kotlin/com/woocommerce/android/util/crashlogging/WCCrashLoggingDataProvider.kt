@@ -7,6 +7,7 @@ import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.locale.LocaleProvider
 import org.wordpress.android.fluxc.store.AccountStore
 import java.util.Locale
@@ -18,7 +19,8 @@ class WCCrashLoggingDataProvider @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs,
-    private val uuidGenerator: UuidGenerator
+    private val uuidGenerator: UuidGenerator,
+    buildConfig: BuildConfigWrapper,
 ) : CrashLoggingDataProvider {
     override val buildType: String = BuildConfig.BUILD_TYPE
 
@@ -27,7 +29,11 @@ class WCCrashLoggingDataProvider @Inject constructor(
     override val locale: Locale?
         get() = localeProvider.provideLocale()
 
-    override val releaseName: String = BuildConfig.VERSION_NAME
+    override val releaseName: String = if (buildConfig.debug) {
+        DEBUG_RELEASE_NAME
+    } else {
+        buildConfig.versionName
+    }
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
@@ -86,5 +92,6 @@ class WCCrashLoggingDataProvider @Inject constructor(
         const val SITE_ID_KEY = "site_id"
         const val SITE_URL_KEY = "site_url"
         const val EXTRA_UUID = "uuid"
+        const val DEBUG_RELEASE_NAME = "debug"
     }
 }
