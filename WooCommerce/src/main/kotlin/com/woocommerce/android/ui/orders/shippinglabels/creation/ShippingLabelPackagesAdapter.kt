@@ -67,7 +67,8 @@ class ShippingLabelPackagesAdapter(
     inner class ShippingLabelPackageViewHolder(
         val binding: ShippingLabelPackageDetailsListItemBinding
     ) : ViewHolder(binding.root) {
-        val isExpanded = binding.expandIcon.rotation == 180f
+        val isExpanded
+            get() = binding.expandIcon.rotation == 180f
 
         init {
             with(binding.itemsList) {
