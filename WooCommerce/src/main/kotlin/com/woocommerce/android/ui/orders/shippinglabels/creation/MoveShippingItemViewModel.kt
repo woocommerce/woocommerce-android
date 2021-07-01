@@ -6,6 +6,7 @@ import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.NewPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.OriginalPackage
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -39,6 +40,10 @@ class MoveShippingItemViewModel @Inject constructor(
         viewState.selectedDestination?.let {
             triggerEvent(ExitWithResult(MoveItemResult(navArgs.item, navArgs.currentPackage, it)))
         } ?: throw IllegalStateException("move button listener invoked while no package is selected")
+    }
+
+    fun onCancelButtonClicked() {
+        triggerEvent(Exit)
     }
 
     @Parcelize
