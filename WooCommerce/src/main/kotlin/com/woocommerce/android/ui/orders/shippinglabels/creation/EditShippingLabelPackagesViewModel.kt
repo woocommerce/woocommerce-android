@@ -231,7 +231,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        triggerEvent(ExitWithResult(viewState.packagesUiModels))
+        triggerEvent(ExitWithResult(viewState.packagesUiModels.map { it.data }))
     }
 
     fun onBackButtonClicked() {
