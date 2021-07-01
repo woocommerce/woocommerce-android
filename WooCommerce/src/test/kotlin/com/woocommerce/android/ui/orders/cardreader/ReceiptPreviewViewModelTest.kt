@@ -65,14 +65,14 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `verify progress state has correct values`() {
+    fun `when progress state shown, then progress is visible and content hidden`() {
         val contentState = viewModel.viewStateData.value as Loading
         assertThat(contentState.isProgressVisible).isTrue
         assertThat(contentState.isContentVisible).isFalse
     }
 
     @Test
-    fun `verify content state has correct values`() {
+    fun `when content state shown, then progress is hidden and content visible`() {
         viewModel.onReceiptLoaded()
 
         val contentState = viewModel.viewStateData.value as Content
