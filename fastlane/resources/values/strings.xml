@@ -330,8 +330,9 @@
     <string name="orderdetail_shipping_label_refund_title">%1$s label refund requested</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Print customs form</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
-    <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
+    <string name="orderdetail_shipping_label_print">Print shipping label</string>
     <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Create shipping labels from your device!!</string>
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
@@ -476,7 +477,8 @@
     <string name="shipping_label_address_suggestion_entered_address">Entered address</string>
     <string name="shipping_label_address_suggestion_suggested_address">Suggested address</string>
     <string name="shipping_label_address_phone_required">A phone number is required because this shipment requires a customs form</string>
-    <string name="shipping_label_address_phone_invalid">Customs forms require a 10-digit phone number</string>
+    <string name="shipping_label_origin_address_phone_invalid">Customs forms require a 10-digit phone number</string>
+    <string name="shipping_label_destination_address_phone_invalid">Please enter a valid phone number</string>
     <string name="shipping_label_address_data_invalid_snackbar_message">Certain required fields are blank.</string>
     <string name="shipping_label_package_details_items_section_title">Items to fulfill</string>
     <string name="shipping_label_package_details_move_item">Move</string>
@@ -502,6 +504,7 @@
     <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
+    <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_account_info"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
     <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
@@ -509,6 +512,7 @@
     <string name="shipping_label_payments_saving_dialog_title">Saving your settings</string>
     <string name="shipping_label_payments_saving_dialog_message">Please wait…</string>
     <string name="shipping_label_payments_saving_error">Error while saving your settings</string>
+    <string name="shipping_label_payment_method_added">Payment method added</string>
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the selected address and packages</string>
     <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
@@ -565,6 +569,11 @@
     <string name="shipping_label_customs_required_field">This field is required</string>
     <string name="shipping_label_customs_weight_zero_error">Weight must be greater than zero</string>
     <string name="shipping_label_customs_value_zero_error">Declared value must be greater than zero</string>
+    <string name="shipping_label_customs_form">Customs form</string>
+    <string name="shipping_label_print_customs_explanation">A customs form must be printed and included on this international shipment</string>
+    <string name="shipping_label_print_customs_form">Print customs form</string>
+    <string name="shipping_label_print_customs_form_screen_title">Print customs invoice</string>
+    <string name="shipping_label_print_customs_form_download_failed">Error downloading the customs form</string>
     <!--
             Refunds
         -->
@@ -695,42 +704,46 @@
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
     <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
-    <string name="card_reader_payment_failed_card_declined_state">Card declined. Please retry with a different card.</string>
+    <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Payment failed. Please try again.</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">The payment did not succeed</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
 
     <string name="card_reader_payment_description">Online payment for order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
-    <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! You can find the receipt for your payment at the following link: %s</string>
+    <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
-    <string name="card_reader_fetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+    <string name="card_reader_refetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <!--
             Card Reader Connection
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
+    <string name="card_reader_connect_scanning_progress" translatable="false">@string/card_reader_connect_scanning_header</string>
     <string name="card_reader_connect_scanning_hint">Press the power button of your reader until you see a flashing blue light</string>
     <string name="card_reader_connect_reader_found_header">Do you want to connect reader %s?</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
+    <string name="card_reader_connect_connect_button">Connect</string>
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
-    <string name="card_reader_connect_failed_header">Connecting to reader failed</string>
-    <string name="card_reader_connect_scanning_failed_hint">We couldn\'t find any readers.</string>
+    <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
+    <string name="card_reader_connect_scanning_failed_header">No reader found</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
-    <string name="card_reader_connect_missing_permissions_hint">Missing required location permission</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Location is disabled</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth is disabled</string>
+    <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Open settings</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
 
     <!--
         Card Reader Detail
     -->
     <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
-    <string name="card_reader_detail_learn_more">&lt;a href="https://woocommerce.com/payments/"&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting mobile payments and ordering card readers</string>
     <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Turn mobile device bluetooth on</string>
@@ -742,9 +755,9 @@
     <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
     <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
     <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
-    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed. Please try again later</string>
+    <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed</string>
     <string name="card_reader_detail_connected_update_success">Reader\’s software updated</string>
-    <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed. Please try again later</string>
+    <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed</string>
 
     <!--
         Card Reader Software update

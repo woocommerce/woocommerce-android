@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -47,6 +48,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.DIALOG
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.FULFILL_SCREEN
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -86,6 +89,7 @@ class OrderDetailViewModel @Inject constructor(
         // The required version to support shipping label creation
         const val SUPPORTED_WCS_VERSION = "1.25.11"
     }
+
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     private val orderIdSet: OrderIdSet
@@ -337,12 +341,7 @@ class OrderDetailViewModel @Inject constructor(
         launch { fetchOrder(false) }
     }
 
-    fun onOrderStatusChanged(newStatus: String) {
-        val snackMessage = when (newStatus) {
-            CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
-            else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
-        }
-
+    fun onOrderStatusChanged(newStatus: String, updateSource: OrderStatusUpdateSource) {
         AnalyticsTracker.track(
             Stat.ORDER_STATUS_CHANGE,
             mapOf(
@@ -352,10 +351,19 @@ class OrderDetailViewModel @Inject constructor(
             )
         )
 
+        val message = when (updateSource) {
+            FULFILL_SCREEN -> {
+                resourceProvider.getString(string.order_fulfill_completed)
+            }
+            DIALOG -> {
+                resourceProvider.getString(string.order_status_updated)
+            }
+        }
+
         // display undo snackbar
         triggerEvent(
             ShowUndoSnackbar(
-                message = snackMessage,
+                message = message,
                 undoAction = { onOrderStatusChangeReverted() },
                 dismissAction = object : Callback() {
                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
@@ -435,14 +443,12 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    @VisibleForTesting
     fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
                     order = order.copy(status = Status.fromValue(newStatus))
-                    if (newStatus == CoreOrderStatus.COMPLETED.value) {
-                        triggerEvent(ShowSnackbar(string.order_fulfill_completed))
-                    }
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -655,4 +661,8 @@ class OrderDetailViewModel @Inject constructor(
     ) : Parcelable
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+
+    enum class OrderStatusUpdateSource {
+        FULFILL_SCREEN, DIALOG
+    }
 }

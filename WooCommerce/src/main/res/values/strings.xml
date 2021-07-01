@@ -346,7 +346,7 @@
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_fulfill_completed">🎉 Order completed!</string>
-    <string name="order_status_changed_to">Order status changed to %s</string>
+    <string name="order_status_updated">Order status updated</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
@@ -606,7 +606,7 @@
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_select_none">Select none</string>
     <string name="order_refunds_items_selected">%d items selected</string>
-    <string name="order_refunds_item_description">%d x %s each</string>
+    <string name="order_refunds_item_description">%s x %s each</string>
     <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
@@ -733,7 +733,7 @@
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
-    <string name="card_reader_connect_scanning_failed_header">No reader found</string>
+    <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>

@@ -69,8 +69,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         viewModel = CardReaderConnectViewModel(
             SavedStateHandle(),
             coroutinesTestRule.testDispatchers,
-            tracker,
-            mock()
+            tracker
         )
     }
 

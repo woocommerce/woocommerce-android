@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.clearInvocations
+import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -33,6 +34,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -50,9 +52,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 
+@Suppress("LargeClass")
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-@Suppress("LargeClass")
 class OrderDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
@@ -65,7 +67,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
     private val resources: ResourceProvider = mock {
-        on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
+        on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+        on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
 
@@ -608,9 +611,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         val oldStatus = order.status
         val newStatus = CoreOrderStatus.PROCESSING.value
-        viewModel.onOrderStatusChanged(newStatus)
+        viewModel.onOrderStatusChanged(newStatus, OrderStatusUpdateSource.DIALOG)
 
-        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_changed_to, newStatus))
+        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
         // simulate undo click event
         viewModel.onOrderStatusChangeReverted()
@@ -647,7 +650,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value)
+        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
 
         assertThat(newOrder?.status).isEqualTo(order.status)
     }
@@ -664,7 +667,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.order = order
         viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value)
+        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
         viewModel.updateOrderStatus(CoreOrderStatus.PROCESSING.value)
 
         verify(repository, times(0)).updateOrderStatus(any(), any(), any())
@@ -832,6 +835,54 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.order).isEqualTo(orderAfterPayment)
     }
+
+    @Test
+    fun `show order status updated snackbar on updating status from dialog`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            var snackbar: ShowUndoSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowUndoSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
+
+            assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
+        }
+
+    @Test
+    fun `show order status updated snackbar on updating status to completed from dialog`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            var snackbar: ShowUndoSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowUndoSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusUpdateSource.DIALOG)
+
+            assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
+        }
+
+    @Test
+    fun `show order completed snackbar on updating status to completed from fulfill screen`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            var snackbar: ShowUndoSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowUndoSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusUpdateSource.FULFILL_SCREEN)
+
+            assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_fulfill_completed))
+        }
 
     @Test
     fun `given receipt url available, when user taps on see receipt, then preview receipt screen shown`() =

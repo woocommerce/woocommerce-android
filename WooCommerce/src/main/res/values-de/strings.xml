@@ -667,7 +667,7 @@ Language: de
     <string name="order_refunds_select_quantity">Menge wählen</string>
     <string name="order_refunds_shipping_refund">Versandrückerstattung</string>
     <string name="order_refunds_products_refund">Rückerstattung für Produkt</string>
-    <string name="order_refunds_item_description">%d x %s jeweils</string>
+    <string name="order_refunds_item_description">%s x %s jeweils</string>
     <string name="order_refunds_items_selected">%d Artikel ausgewählt</string>
     <string name="order_refunds_items_select_none">Keine auswählen</string>
     <string name="order_refunds_items_select_all">Alle auswählen</string>

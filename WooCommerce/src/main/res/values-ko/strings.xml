@@ -667,7 +667,7 @@ Language: ko_KR
     <string name="order_refunds_select_quantity">수량 선택</string>
     <string name="order_refunds_shipping_refund">배송비 환불</string>
     <string name="order_refunds_products_refund">제품 환불</string>
-    <string name="order_refunds_item_description">각각 %d x %s</string>
+    <string name="order_refunds_item_description">각각 %s x %s</string>
     <string name="order_refunds_items_selected">%d개 항목 선택됨</string>
     <string name="order_refunds_items_select_none">아무것도 선택하지 않음</string>
     <string name="order_refunds_items_select_all">모두 선택</string>

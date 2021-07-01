@@ -17,9 +17,8 @@ import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParamet
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 
 object CardReaderManagerFactory {
-    fun createCardReaderManager(cardReaderStore: CardReaderStore): CardReaderManager {
+    fun createCardReaderManager(cardReaderStore: CardReaderStore, logWrapper: LogWrapper): CardReaderManager {
         val terminal = TerminalWrapper()
-        val logWrapper = LogWrapper()
         return CardReaderManagerImpl(
             terminal,
             TokenProvider(cardReaderStore),

@@ -97,11 +97,17 @@ class ShippingLabelPackagesAdapter(
                 shippingLabelPackage.items.size,
                 shippingLabelPackage.items.size
             )}"
-            (binding.itemsList.adapter as PackageProductsAdapter).items = shippingLabelPackage.items
+            (binding.itemsList.adapter as PackageProductsAdapter).items = shippingLabelPackage.adaptItemsForUi()
             binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
             if (!shippingLabelPackage.weight.isNaN()) {
                 binding.weightEditText.setText(shippingLabelPackage.weight.toString())
             }
+        }
+
+        private fun ShippingLabelPackage.adaptItemsForUi(): List<ShippingLabelPackage.Item> {
+            return items.map { item ->
+                List(item.quantity) { item }
+            }.flatten()
         }
     }
 
