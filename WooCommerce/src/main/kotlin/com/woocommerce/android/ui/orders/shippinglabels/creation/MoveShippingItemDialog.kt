@@ -38,7 +38,7 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
 
     private fun initUi(binding: DialogMoveShippingItemBinding) {
         val packageDescription = viewModel.currentPackage.getTitle(requireContext()) +
-            viewModel.currentPackage.selectedPackage?.let { ": ${it.title}" }
+            (viewModel.currentPackage.selectedPackage?.let { ": ${it.title}" } ?: "")
         binding.dialogDescription.text =
             getString(string.shipping_label_move_item_dialog_description, packageDescription)
 
