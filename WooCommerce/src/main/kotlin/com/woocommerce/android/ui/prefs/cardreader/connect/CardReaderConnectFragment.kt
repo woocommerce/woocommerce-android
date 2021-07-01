@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -113,8 +114,11 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
 
         fadeOut.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                moveToState(binding, viewState)
-                fadeIn.start()
+                // make sure we haven't moved to another state before starting the fade in animation
+                if (viewModel.viewStateData.value is ViewState.ReaderFoundState) {
+                    moveToState(binding, viewState)
+                    if (lifecycle.currentState == Lifecycle.State.RESUMED) fadeIn.start()
+                }
             }
         })
         fadeOut.start()
