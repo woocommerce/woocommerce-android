@@ -50,7 +50,7 @@
             app:layout_constraintTop_toBottomOf="@+id/success_image" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_back_to_store"
+            android:id="@+id/generate_variation_button"
             style="@style/Woo.Button.Colored"
             android:layout_width="@dimen/minor_00"
             android:layout_height="wrap_content"
