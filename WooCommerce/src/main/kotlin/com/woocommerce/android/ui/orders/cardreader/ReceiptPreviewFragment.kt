@@ -25,7 +25,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        setHasOptionsMenu(true)
         val binding = FragmentReceiptPreviewBinding.bind(view)
         initObsevers(binding)
     }
