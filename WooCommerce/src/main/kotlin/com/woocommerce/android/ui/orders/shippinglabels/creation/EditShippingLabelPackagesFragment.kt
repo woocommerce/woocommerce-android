@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -111,7 +110,7 @@ class EditShippingLabelPackagesFragment :
     private fun setupObservers(binding: FragmentEditShippingLabelPackagesBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.packagesUiModels.takeIfNotEqualTo(old?.packagesUiModels) {
-                packagesAdapter.shippingLabelPackages = it
+                packagesAdapter.uiModels = it
             }
 
             new.showSkeletonView.takeIfNotEqualTo(old?.showSkeletonView) {

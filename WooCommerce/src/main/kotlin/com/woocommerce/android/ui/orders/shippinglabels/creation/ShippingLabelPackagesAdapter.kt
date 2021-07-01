@@ -28,7 +28,7 @@ class ShippingLabelPackagesAdapter(
     val onPackageSpinnerClicked: (Int) -> Unit,
     val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
-    var shippingLabelPackages: List<ShippingLabelPackageUiModel> = emptyList()
+    var uiModels: List<ShippingLabelPackageUiModel> = emptyList()
         set(value) {
             val diff = DiffUtil.calculateDiff(ShippingLabelPackageDiffCallback(field, value))
             field = value
@@ -46,9 +46,9 @@ class ShippingLabelPackagesAdapter(
         )
     }
 
-    override fun getItemCount() = shippingLabelPackages.count()
+    override fun getItemCount() = uiModels.size
 
-    override fun getItemId(position: Int): Long = shippingLabelPackages[position].data.packageId.hashCode().toLong()
+    override fun getItemId(position: Int): Long = uiModels[position].data.packageId.hashCode().toLong()
 
     override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int) {
         holder.bind(position)
@@ -56,13 +56,18 @@ class ShippingLabelPackagesAdapter(
 
     override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int, payloads: MutableList<Any>) {
         // When the difference is only the expansion state, then skip updating to keep animations smoother
-        if (payloads.size == 1 && payloads.contains(ShippingLabelPackageDiffCallback.EXPANSION_STATE_PAYLOAD)) return
+        if (payloads.size == 1 &&
+            payloads.contains(ShippingLabelPackageDiffCallback.EXPANSION_STATE_PAYLOAD) &&
+            holder.isExpanded == uiModels[position].isExpanded
+        ) return
         super.onBindViewHolder(holder, position, payloads)
     }
 
     inner class ShippingLabelPackageViewHolder(
         val binding: ShippingLabelPackageDetailsListItemBinding
     ) : ViewHolder(binding.root) {
+        val isExpanded = binding.expandIcon.rotation == 180f
+
         init {
             with(binding.itemsList) {
                 layoutManager =
@@ -76,7 +81,7 @@ class ShippingLabelPackagesAdapter(
             binding.weightEditText.setOnTextChangedListener {
                 val weight = it?.toString()?.trim('.')?.ifEmpty { null }?.toFloat() ?: Float.NaN
                 // Return early if the weight wasn't changed
-                if (weight == shippingLabelPackages[adapterPosition].data.weight) return@setOnTextChangedListener
+                if (weight == uiModels[adapterPosition].data.weight) return@setOnTextChangedListener
 
                 onWeightEdited(adapterPosition, weight)
 
@@ -97,7 +102,8 @@ class ShippingLabelPackagesAdapter(
                 binding.expandIcon.isVisible = false
             } else {
                 binding.titleLayout.setOnClickListener {
-                    if (shippingLabelPackages[adapterPosition].isExpanded) {
+                    @Suppress("MagicNumber")
+                    if (isExpanded) {
                         binding.expandIcon.animate().rotation(0f).start()
                         binding.detailsLayout.collapse()
                         onExpandedChanged(adapterPosition, false)
@@ -113,14 +119,16 @@ class ShippingLabelPackagesAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(position: Int) {
             val context = binding.root.context
-            val uiModel = shippingLabelPackages[position]
+            val uiModel = uiModels[position]
             val shippingLabelPackage = uiModel.data
             binding.packageName.text = shippingLabelPackage.getTitle(context)
-            binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
-                R.plurals.shipping_label_package_details_items_count,
-                shippingLabelPackage.items.size,
-                shippingLabelPackage.items.size
-            )}"
+            binding.packageItemsCount.text = "- ${
+                context.resources.getQuantityString(
+                    R.plurals.shipping_label_package_details_items_count,
+                    shippingLabelPackage.items.size,
+                    shippingLabelPackage.items.size
+                )
+            }"
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()
                 moveItemClickListener = { item -> onMoveItemClicked(item, shippingLabelPackage) }
