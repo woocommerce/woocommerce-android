@@ -56,7 +56,7 @@ class CardReaderModule {
         }
 
         override fun e(tag: String, message: String) {
-            WooLog.d(TAG, "$tag: $message")
+            WooLog.e(TAG, "$tag: $message")
         }
     }
 }
