@@ -16,10 +16,14 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
+import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
+import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -33,15 +37,23 @@ class ReceiptPreviewViewModel
     savedState: SavedStateHandle,
     private val tracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
-): ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState) {
     private val args: ReceiptPreviewFragmentArgs by savedState.navArgs()
 
-    private val viewState = MutableLiveData(args.receiptUrl)
-    val viewStateData: LiveData<String> = viewState
+    private val viewState = MutableLiveData<ReceiptPreviewViewState>(Loading)
+    val viewStateData: LiveData<ReceiptPreviewViewState> = viewState
+
+    init {
+        _event.value = LoadUrl(args.receiptUrl)
+    }
+
+    fun onReceiptLoaded() {
+        viewState.value = Content
+    }
 
     fun onPrintClicked() {
         tracker.track(RECEIPT_PRINT_TAPPED)
-        triggerEvent(PrintReceipt(args.receiptUrl,  "receipt-order-${args.orderId}"))
+        triggerEvent(PrintReceipt(args.receiptUrl, "receipt-order-${args.orderId}"))
     }
 
     fun onSendEmailClicked() {
@@ -76,5 +88,17 @@ class ReceiptPreviewViewModel
                 STARTED -> RECEIPT_PRINT_SUCCESS
             }
         )
+    }
+
+    sealed class ReceiptPreviewViewState(
+        val isProgressVisible: Boolean = false,
+        val isContentVisible: Boolean = false
+    ) {
+        object Loading : ReceiptPreviewViewState(isProgressVisible = true)
+        object Content : ReceiptPreviewViewState(isContentVisible = true)
+    }
+
+    sealed class ReceiptPreviewEvent : Event() {
+        data class LoadUrl(val url: String) : ReceiptPreviewEvent()
     }
 }
