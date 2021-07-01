@@ -12,12 +12,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReceiptPreviewBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,6 +28,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
     val viewModel: ReceiptPreviewViewModel by viewModels()
 
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,6 +56,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
                 is LoadUrl -> binding.receiptPreviewPreviewWebview.loadUrl(it.url)
                 is PrintReceipt -> printHtmlHelper.printReceipt(requireActivity(), it.receiptUrl, it.documentName)
                 is SendReceipt -> composeEmail(it)
+                is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 else -> it.isHandled = false
             }
         }
