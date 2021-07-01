@@ -6,6 +6,7 @@ import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -14,10 +15,13 @@ import javax.inject.Inject
 class ShippingLabelCreatePackageViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState)  {
+
+    private val arguments: ShippingLabelCreatePackageFragmentArgs by savedState.navArgs()
+
     fun onPackageCreated(madePackage: ShippingPackage) {
         triggerEvent(SelectPackageEvent(
             ShippingPackageSelectorResult(
-                position = 1, /* TODO: hardcoded for now as a test */
+                position = arguments.position,
                 selectedPackage = madePackage
             )
         ))

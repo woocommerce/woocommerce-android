@@ -68,7 +68,7 @@ class ShippingPackageSelectorViewModel @Inject constructor(
     }
 
     fun onCreateNewPackageButtonClicked() {
-        triggerEvent(ShowCreatePackageScreen)
+        triggerEvent(ShowCreatePackageScreen(arguments.position))
     }
 
     @Parcelize
@@ -77,7 +77,7 @@ class ShippingPackageSelectorViewModel @Inject constructor(
         val isLoading: Boolean = false
     ) : Parcelable
 
-    object ShowCreatePackageScreen : Event()
+    data class ShowCreatePackageScreen(val position: Int) : Event()
 }
 
 @Parcelize

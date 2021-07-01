@@ -418,7 +418,11 @@
         android:id="@+id/shippingLabelCreatePackageFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageFragment"
         android:label="ShippingLabelCreatePackageFragment"
-        tools:layout="@layout/fragment_shipping_label_create_package"/>
+        tools:layout="@layout/fragment_shipping_label_create_package">
+        <argument
+            android:name="position"
+            app:argType="integer" />
+    </fragment>
     <fragment
         android:id="@+id/editShippingLabelPaymentFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment"

@@ -69,7 +69,9 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
                 is Exit -> findNavController().navigateUp()
                 is ShowCreatePackageScreen -> {
                     val action = ShippingPackageSelectorFragmentDirections
-                        .actionShippingPackageSelectorFragmentToShippingLabelCreatePackageFragment()
+                        .actionShippingPackageSelectorFragmentToShippingLabelCreatePackageFragment(
+                            event.position
+                        )
                     findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
