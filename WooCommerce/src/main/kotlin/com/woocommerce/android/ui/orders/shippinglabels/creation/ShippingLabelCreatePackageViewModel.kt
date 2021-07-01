@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
@@ -14,6 +14,15 @@ import javax.inject.Inject
 class ShippingLabelCreatePackageViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState)  {
+    fun onPackageCreated(madePackage: ShippingPackage) {
+        triggerEvent(SelectPackageEvent(
+            ShippingPackageSelectorResult(
+                position = 1, /* TODO: hardcoded for now as a test */
+                selectedPackage = madePackage
+            )
+        ))
+    }
+
     val viewStateData = LiveDataDelegate(savedState, ShippingLabelCreatePackageViewState())
     private var viewState by viewStateData
 
@@ -26,4 +35,6 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
         CUSTOM,
         SERVICE
     }
+
+    data class SelectPackageEvent(val packageResult: ShippingPackageSelectorResult) : MultiLiveEvent.Event()
 }

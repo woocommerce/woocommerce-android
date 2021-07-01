@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateCustomPackageBinding
@@ -15,6 +16,7 @@ import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.ui.base.BaseFragment
 import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.InputName
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.PackageSuccessfullyMadeEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -98,6 +100,13 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
 
             new.customFormNameError.takeIfNotEqualTo(old?.customFormNameError) {
                 showErrorOrClear(binding.customPackageFormName, it)
+            }
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is PackageSuccessfullyMadeEvent -> parentViewModel.onPackageCreated(event.madePackage)
+                else -> event.isHandled = false
             }
         }
     }

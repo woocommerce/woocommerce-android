@@ -8,9 +8,12 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreatePackageBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.PackageType
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.SelectPackageEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment.Companion.SELECTED_PACKAGE_RESULT
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -52,7 +55,18 @@ class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shippin
     }
 
     private fun setupObservers(viewModel: ShippingLabelCreatePackageViewModel) {
-        // TODO
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is SelectPackageEvent -> {
+                    // TODO: Navigate back to EditShippingLabelPackagesFragment
+                    navigateBackWithResult(
+                        SELECTED_PACKAGE_RESULT,
+                        event.packageResult,
+                        R.id.editShippingLabelPackagesFragment)
+                }
+                else -> event.isHandled = false
+            }
+        }
     }
 
     override fun onDestroyView() {

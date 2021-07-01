@@ -8,10 +8,10 @@ import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -92,9 +92,13 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
             )
             viewState = viewState.copy(customPackage = packageToCreate)
 
+/*
+            // TODO: Add success/error handling. For now we assume it's always successful
             launch {
                 shippingLabelRepository.createCustomPackage(packageToCreate)
             }
+ */
+            triggerEvent(PackageSuccessfullyMadeEvent(packageToCreate))
         }
     }
 
@@ -126,4 +130,6 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         HEIGHT,
         EMPTY_WEIGHT
     }
+
+    data class PackageSuccessfullyMadeEvent(val madePackage: ShippingPackage) : MultiLiveEvent.Event()
 }
