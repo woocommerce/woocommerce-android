@@ -341,7 +341,7 @@
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your phone</string>
     <string name="receipt_preview_print_menu_item">Print</string>
-    <string name="receipt_preview_send_menu_item">Send email</string>
+    <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
