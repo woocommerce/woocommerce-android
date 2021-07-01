@@ -385,6 +385,12 @@ object AppPrefs {
         resetSitePreferences()
     }
 
+    /**
+     * This method removes entries in shared preferences which use dynamically created keys.
+     *
+     * For example order receipts are stored under "RECEIPT_PREFIX:siteId:...:orderId" - each entry has a different
+     * key based on the currently selected site and the order it's related to.
+     */
     private fun removePreferencesWithDynamicKey(editor: Editor) {
         getPreferences()
             .all
