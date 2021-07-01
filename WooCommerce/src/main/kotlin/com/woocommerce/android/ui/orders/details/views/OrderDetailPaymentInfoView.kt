@@ -107,6 +107,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 
         binding.paymentInfoIssueRefundButton.setOnClickListener(onIssueRefundClickListener)
         if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
+            binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.VISIBLE
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
                 onCollectCardPresentPaymentClickListener
             )
@@ -115,6 +116,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         }
 
         if (FeatureFlag.CARD_READER.isEnabled() && isReceiptAvailable) {
+            binding.paymentInfoSeeReceiptButton.visibility = View.VISIBLE
             binding.paymentInfoSeeReceiptButton.setOnClickListener(
                 onSeeReceiptClickListener
             )
