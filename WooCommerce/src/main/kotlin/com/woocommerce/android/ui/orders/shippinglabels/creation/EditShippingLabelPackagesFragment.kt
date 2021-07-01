@@ -5,11 +5,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPackagesBinding
@@ -49,6 +47,7 @@ class EditShippingLabelPackagesFragment :
         ShippingLabelPackagesAdapter(
             viewModel.weightUnit,
             viewModel::onWeightEdited,
+            viewModel::onExpandedChanged,
             viewModel::onPackageSpinnerClicked,
             viewModel::onMoveButtonClicked
         )
@@ -110,7 +109,7 @@ class EditShippingLabelPackagesFragment :
 
     private fun setupObservers(binding: FragmentEditShippingLabelPackagesBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.shippingLabelPackages.takeIfNotEqualTo(old?.shippingLabelPackages) {
+            new.packagesUiModels.takeIfNotEqualTo(old?.packagesUiModels) {
                 packagesAdapter.shippingLabelPackages = it
             }
 

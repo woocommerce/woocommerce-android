@@ -11,10 +11,6 @@ import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.ExistingPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.NewPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.OriginalPackage
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
@@ -61,14 +57,16 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     private fun initState() {
-        if (viewState.shippingLabelPackages.isNotEmpty()) return
+        if (viewState.packagesUiModels.isNotEmpty()) return
         launch {
             val packagesList = if (arguments.shippingLabelPackages.isEmpty()) {
                 createDefaultPackage()
             } else {
                 arguments.shippingLabelPackages.toList()
             }
-            viewState = ViewState(shippingLabelPackages = packagesList)
+            viewState = ViewState(packagesUiModels = packagesList.mapIndexed { index, shippingLabelPackage ->
+                ShippingLabelPackageUiModel(isExpanded = index == 0, data = shippingLabelPackage)
+            })
         }
     }
 
@@ -138,12 +136,18 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onWeightEdited(position: Int, weight: Float) {
-        val packages = viewState.shippingLabelPackages.toMutableList()
-        packages[position] = packages[position].copy(weight = weight)
+        val packages = viewState.packagesUiModels.toMutableList()
+        packages[position] = packages[position].copy(data = packages[position].data.copy(weight = weight))
         viewState = viewState.copy(
-            shippingLabelPackages = packages,
-            packagesWithEditedWeight = viewState.packagesWithEditedWeight + packages[position].packageId
+            packagesUiModels = packages,
+            packagesWithEditedWeight = viewState.packagesWithEditedWeight + packages[position].data.packageId
         )
+    }
+
+    fun onExpandedChanged(position: Int, isExpanded: Boolean) {
+        val packages = viewState.packagesUiModels.toMutableList()
+        packages[position] = packages[position].copy(isExpanded = isExpanded)
+        viewState = viewState.copy(packagesUiModels = packages)
     }
 
     fun onPackageSpinnerClicked(position: Int) {
@@ -151,8 +155,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
-        val packages = viewState.shippingLabelPackages.toMutableList()
-        packages[position] = with(packages[position]) {
+        val packages = viewState.packagesUiModels.toMutableList()
+        val updatedPackage = with(packages[position].data) {
             val weight = if (!viewState.packagesWithEditedWeight.contains(packageId)) {
                 items.sumByFloat { it.weight } + selectedPackage.boxWeight
             } else {
@@ -160,19 +164,24 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
             copy(selectedPackage = selectedPackage, weight = weight)
         }
-        viewState = viewState.copy(shippingLabelPackages = packages)
+        packages[position] = packages[position].copy(data = updatedPackage)
+        viewState = viewState.copy(packagesUiModels = packages)
     }
 
     fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
-        triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.shippingLabelPackages))
+        triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packagesUiModels.map { it.data }))
     }
 
     fun updatePackagesList(packages: List<ShippingLabelPackage>) {
-        viewState = viewState.copy(shippingLabelPackages = packages)
+        viewState = viewState.copy(packagesUiModels = packages.map {
+            ShippingLabelPackageUiModel(
+                isExpanded = false, data = it
+            )
+        })
     }
 
     fun onDoneButtonClicked() {
-        triggerEvent(ExitWithResult(viewState.shippingLabelPackages))
+        triggerEvent(ExitWithResult(viewState.packagesUiModels))
     }
 
     fun onBackButtonClicked() {
@@ -209,16 +218,22 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val shippingLabelPackages: List<ShippingLabelPackage> = emptyList(),
+        val packagesUiModels: List<ShippingLabelPackageUiModel> = emptyList(),
         val showSkeletonView: Boolean = false,
         val packagesWithEditedWeight: Set<String> = setOf()
     ) : Parcelable {
         val isDataValid: Boolean
-            get() = shippingLabelPackages.isNotEmpty() &&
-                shippingLabelPackages.all {
-                    !it.weight.isNaN() && it.weight > 0.0 && it.selectedPackage != null
+            get() = packagesUiModels.isNotEmpty() &&
+                packagesUiModels.all {
+                    !it.data.weight.isNaN() && it.data.weight > 0.0 && it.data.selectedPackage != null
                 }
     }
+
+    @Parcelize
+    data class ShippingLabelPackageUiModel(
+        val isExpanded: Boolean = false,
+        val data: ShippingLabelPackage
+    ): Parcelable
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
 
