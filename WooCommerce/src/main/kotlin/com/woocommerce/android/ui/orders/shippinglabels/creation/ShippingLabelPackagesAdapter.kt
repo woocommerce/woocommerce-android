@@ -63,6 +63,7 @@ class ShippingLabelPackagesAdapter(
         super.onBindViewHolder(holder, position, payloads)
     }
 
+    @Suppress("MagicNumber")
     inner class ShippingLabelPackageViewHolder(
         val binding: ShippingLabelPackageDetailsListItemBinding
     ) : ViewHolder(binding.root) {
@@ -102,7 +103,6 @@ class ShippingLabelPackagesAdapter(
                 binding.expandIcon.isVisible = false
             } else {
                 binding.titleLayout.setOnClickListener {
-                    @Suppress("MagicNumber")
                     if (isExpanded) {
                         binding.expandIcon.animate().rotation(0f).start()
                         binding.detailsLayout.collapse()
@@ -122,13 +122,11 @@ class ShippingLabelPackagesAdapter(
             val uiModel = uiModels[position]
             val shippingLabelPackage = uiModel.data
             binding.packageName.text = shippingLabelPackage.getTitle(context)
-            binding.packageItemsCount.text = "- ${
-                context.resources.getQuantityString(
-                    R.plurals.shipping_label_package_details_items_count,
-                    shippingLabelPackage.items.size,
-                    shippingLabelPackage.items.size
-                )
-            }"
+            binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
+                R.plurals.shipping_label_package_details_items_count,
+                shippingLabelPackage.items.size,
+                shippingLabelPackage.items.size
+            )}"
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()
                 moveItemClickListener = { item -> onMoveItemClicked(item, shippingLabelPackage) }
