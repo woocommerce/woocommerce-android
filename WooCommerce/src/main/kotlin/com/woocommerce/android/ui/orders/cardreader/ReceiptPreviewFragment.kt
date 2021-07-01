@@ -32,13 +32,13 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
         val binding = FragmentReceiptPreviewBinding.bind(view)
         initViews(binding)
         initObservers(binding)
     }
 
     private fun initViews(binding: FragmentReceiptPreviewBinding) {
+        setHasOptionsMenu(true)
         binding.receiptPreviewPreviewWebview.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 viewModel.onReceiptLoaded()
