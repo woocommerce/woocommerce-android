@@ -157,9 +157,9 @@ class OrderNavigator @Inject constructor() {
             is PreviewReceipt -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToReceiptPreviewFragment(
-                        target.billingEmail,
-                        target.receiptUrl,
-                        target.orderId
+                        receiptUrl = target.receiptUrl,
+                        billingEmail = target.billingEmail,
+                        orderId = target.orderId
                     )
                 fragment.findNavController().navigateSafely(action)
             }
