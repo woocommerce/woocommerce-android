@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShowMoveItemDialog
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.MoveItemResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -102,8 +103,8 @@ class EditShippingLabelPackagesFragment :
         handleResult<ShippingPackageSelectorResult>(ShippingPackageSelectorFragment.SELECTED_PACKAGE_RESULT) { result ->
             viewModel.onPackageSelected(result.position, result.selectedPackage)
         }
-        handleResult<List<ShippingLabelPackage>>(MoveShippingItemDialog.MOVE_ITEM_RESULT) { packagesList ->
-            viewModel.updatePackagesList(packagesList)
+        handleResult<MoveItemResult>(MoveShippingItemDialog.MOVE_ITEM_RESULT) { result ->
+            viewModel.handleMoveItemResult(result)
         }
     }
 

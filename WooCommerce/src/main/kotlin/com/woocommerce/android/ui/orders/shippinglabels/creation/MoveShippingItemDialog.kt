@@ -52,14 +52,14 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
     }
 
     private fun setupObservers(binding: DialogMoveShippingItemBinding) {
-        viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.selectedDestination?.takeIfNotEqualTo(old?.selectedDestination) { selectedItem ->
                 binding.optionsGroup.children.firstOrNull { it.tag == selectedItem }?.isSelected = true
             }
             new.isMoveButtonEnabled.takeIfNotEqualTo(old?.isMoveButtonEnabled) {
                 binding.moveButton.isEnabled = it
             }
-        })
+        }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitWithResult<*> -> navigateBackWithResult(MOVE_ITEM_RESULT, event.data)

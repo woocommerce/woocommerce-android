@@ -38,46 +38,8 @@ class MoveShippingItemViewModel @Inject constructor(
 
     fun onMoveButtonClicked() {
         viewState.selectedDestination?.let {
-            moveItem(it)
+            triggerEvent(ExitWithResult(MoveItemResult(navArgs.item, navArgs.currentPackage, it)))
         } ?: throw IllegalStateException("move button listener invoked while no package is selected")
-    }
-
-    private fun moveItem(destination: DestinationPackage) {
-        val packages = navArgs.packagesList.toMutableList()
-        val item = navArgs.item
-        val currentPackage = navArgs.currentPackage
-
-        fun moveItemToNewPackage(): List<ShippingLabelPackage> {
-            val updatedItems = if (item.quantity > 1) {
-                // if the item quantity is more than one, subtract 1 from it
-                val mutableItems = currentPackage.items.toMutableList()
-                val updatedItem = item.copy(quantity = item.quantity - 1)
-                mutableItems[mutableItems.indexOf(item)] = updatedItem
-                mutableItems
-            } else {
-                currentPackage.items - item
-            }
-            packages[packages.indexOf(currentPackage)] = currentPackage.copy(items = updatedItems)
-            packages.add(
-                ShippingLabelPackage(
-                    position = packages.size + 1,
-                    selectedPackage = currentPackage.selectedPackage,
-                    weight = item.weight + (currentPackage.selectedPackage?.boxWeight ?: 0f),
-                    items = listOf(item.copy(quantity = 1))
-                )
-            )
-            return packages
-        }
-
-        triggerEvent(
-            ExitWithResult(
-                when (destination) {
-                    is ExistingPackage -> TODO()
-                    NewPackage -> moveItemToNewPackage()
-                    OriginalPackage -> TODO()
-                }
-            )
-        )
     }
 
     @Parcelize
@@ -88,6 +50,13 @@ class MoveShippingItemViewModel @Inject constructor(
         val isMoveButtonEnabled
             get() = selectedDestination != null
     }
+
+    @Parcelize
+    data class MoveItemResult(
+        val item: ShippingLabelPackage.Item,
+        val currentPackage: ShippingLabelPackage,
+        val destination: DestinationPackage
+    ) : Parcelable
 
     sealed class DestinationPackage : Parcelable {
         @Parcelize

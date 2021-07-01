@@ -116,13 +116,11 @@ class ShippingLabelPackagesAdapter(
             val uiModel = shippingLabelPackages[position]
             val shippingLabelPackage = uiModel.data
             binding.packageName.text = shippingLabelPackage.getTitle(context)
-            binding.packageItemsCount.text = "- ${
-                context.resources.getQuantityString(
-                    R.plurals.shipping_label_package_details_items_count,
-                    shippingLabelPackage.items.size,
-                    shippingLabelPackage.items.size
-                )
-            }"
+            binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
+                R.plurals.shipping_label_package_details_items_count,
+                shippingLabelPackage.items.size,
+                shippingLabelPackage.items.size
+            )}"
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()
                 moveItemClickListener = { item -> onMoveItemClicked(item, shippingLabelPackage) }
