@@ -14,7 +14,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.ui.base.BaseFragment
 import org.wordpress.android.util.ActivityUtils
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.InputName
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.InputName
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,7 +22,10 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
     private var _binding: FragmentShippingLabelCreateCustomPackageBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ShippingLabelCreatePackageViewModel by viewModels()
+    // Needed for navigating back
+    private val parentViewModel: ShippingLabelCreatePackageViewModel by viewModels({ requireParentFragment() })
+
+    private val viewModel: ShippingLabelCreateCustomPackageViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
