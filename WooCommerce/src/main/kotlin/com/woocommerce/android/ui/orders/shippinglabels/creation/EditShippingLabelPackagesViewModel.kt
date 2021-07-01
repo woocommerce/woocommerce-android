@@ -25,6 +25,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
@@ -174,7 +175,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
-        triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packagesUiModels.map { it.data }))
+        triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
     fun handleMoveItemResult(result: MoveItemResult) {
@@ -231,7 +232,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        triggerEvent(ExitWithResult(viewState.packagesUiModels.map { it.data }))
+        triggerEvent(ExitWithResult(viewState.packages))
     }
 
     fun onBackButtonClicked() {
@@ -272,6 +273,9 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val showSkeletonView: Boolean = false,
         val packagesWithEditedWeight: Set<String> = setOf()
     ) : Parcelable {
+        @IgnoredOnParcel
+        val packages: List<ShippingLabelPackage>
+            get() = packagesUiModels.map { it.data }
         val isDataValid: Boolean
             get() = packagesUiModels.isNotEmpty() &&
                 packagesUiModels.all {
