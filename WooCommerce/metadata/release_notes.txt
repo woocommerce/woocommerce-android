@@ -1,2 +1,1 @@
-- [***] Merchants using WooCommerce Shipping in their store can create international labels from the app [https://github.com/woocommerce/woocommerce-android/pull/4250]
-
+Creating international shipping labels is a breeze! Merchants in the USA using WooCommerce Shipping & Tax in their store can now generate shipping labels and customs forms for international destinations. We’re continuing to build this feature – give it a whirl and let us know how it goes!
