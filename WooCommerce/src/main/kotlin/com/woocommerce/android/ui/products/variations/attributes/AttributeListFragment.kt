@@ -107,16 +107,22 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitProductAttributeList -> onExitProductAttributeList(event.variationCreated)
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitProductAttributeList -> onExitProductAttributeList(event.variationCreated)
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
-        viewModel.attributeList.observe(viewLifecycleOwner, Observer {
-            showAttributes(it)
-        })
+        viewModel.attributeList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showAttributes(it)
+            }
+        )
 
         viewModel.attributeListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isCreatingVariationDialogShown?.takeIfNotEqualTo(old?.isCreatingVariationDialogShown) {

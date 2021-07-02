@@ -33,27 +33,35 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
     }
 
     private fun initObservers(binding: DialogCardReaderUpdateBinding) {
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is ExitWithResult<*> -> navigateBackWithResult(
-                    KEY_READER_UPDATE_RESULT,
-                    event.data as UpdateResult
-                )
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is ExitWithResult<*> -> navigateBackWithResult(
+                        KEY_READER_UPDATE_RESULT,
+                        event.data as UpdateResult
+                    )
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
-        viewModel.viewStateData.observe(viewLifecycleOwner, { state ->
-            with(binding) {
-                UiHelpers.setTextOrHide(updateReaderTitleTv, state.title)
-                UiHelpers.setTextOrHide(updateReaderDescriptionTv, state.description)
-                UiHelpers.updateVisibility(updateReaderProgressGroup, state.showProgress)
-                UiHelpers.setTextOrHide(updateReaderPrimaryActionBtn, state.primaryButton?.text)
-                updateReaderPrimaryActionBtn.setOnClickListener { state.primaryButton?.onActionClicked?.invoke() }
-                UiHelpers.setTextOrHide(updateReaderSecondaryActionBtn, state.secondaryButton?.text)
-                updateReaderSecondaryActionBtn.setOnClickListener { state.secondaryButton?.onActionClicked?.invoke() }
+        viewModel.viewStateData.observe(
+            viewLifecycleOwner,
+            { state ->
+                with(binding) {
+                    UiHelpers.setTextOrHide(updateReaderTitleTv, state.title)
+                    UiHelpers.setTextOrHide(updateReaderDescriptionTv, state.description)
+                    UiHelpers.updateVisibility(updateReaderProgressGroup, state.showProgress)
+                    UiHelpers.setTextOrHide(updateReaderPrimaryActionBtn, state.primaryButton?.text)
+                    updateReaderPrimaryActionBtn.setOnClickListener { state.primaryButton?.onActionClicked?.invoke() }
+                    UiHelpers.setTextOrHide(updateReaderSecondaryActionBtn, state.secondaryButton?.text)
+                    updateReaderSecondaryActionBtn.setOnClickListener {
+                        state.secondaryButton?.onActionClicked?.invoke()
+                    }
+                }
             }
-        })
+        )
     }
 
     override fun onResume() {

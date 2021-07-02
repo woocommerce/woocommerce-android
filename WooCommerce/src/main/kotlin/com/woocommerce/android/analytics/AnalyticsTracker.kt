@@ -234,14 +234,24 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CARD_PRESENT_COLLECT_PAYMENT_FAILED,
         CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
 
+        // -- Card Reader - discovery
         CARD_READER_DISCOVERY_TAPPED,
         CARD_READER_DISCOVERY_FAILED,
         CARD_READER_DISCOVERY_READER_DISCOVERED,
+
+        // -- Card Reader - connection
         CARD_READER_CONNECTION_TAPPED,
         CARD_READER_CONNECTION_FAILED,
         CARD_READER_CONNECTION_SUCCESS,
         CARD_READER_DISCONNECT_TAPPED,
 
+        // -- Card Reader - software udpate
+        CARD_READER_SOFTWARE_UPDATE_TAPPED,
+        CARD_READER_SOFTWARE_UPDATE_SUCCESS,
+        CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED,
+        CARD_READER_SOFTWARE_UPDATE_FAILED,
+
+        // -- Receipts
         RECEIPT_PRINT_TAPPED,
         RECEIPT_EMAIL_TAPPED,
         RECEIPT_EMAIL_FAILED,
@@ -706,7 +716,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_CANCELED = "canceled"
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
-        const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
+        const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
         const val VALUE_SHIPPING_LABELS_M2_FEEDBACK = "shipping_labels_m2"
 

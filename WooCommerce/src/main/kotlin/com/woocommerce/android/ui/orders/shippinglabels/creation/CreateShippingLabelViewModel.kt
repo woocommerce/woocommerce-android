@@ -379,7 +379,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                 shippingAddressStep.status == DONE &&
                 packagingStep.status == DONE &&
                 (!customsStep.isVisible || customsStep.status == DONE) &&
-                carrierStep.status == DONE
+                carrierStep.status == DONE &&
+                paymentsStep.status == DONE
             if (!isVisible) return OrderSummaryState()
 
             AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to VALUE_PURCHASE_READY))

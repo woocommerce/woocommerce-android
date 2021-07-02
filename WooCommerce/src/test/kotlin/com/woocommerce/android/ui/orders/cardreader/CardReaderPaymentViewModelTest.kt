@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_FAILED
@@ -35,11 +36,6 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.CANCELLED
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.FAILED
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.STARTED
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
@@ -47,7 +43,12 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
+import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -84,6 +85,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
@@ -99,7 +101,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
-            tracker = tracker
+            tracker = tracker,
+            appPrefsWrapper = appPrefsWrapper
         )
 
         val mockedOrder = mock<Order>()
@@ -181,9 +184,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val siteName = "testName"
             val expectedResult = "hooray"
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                name = siteName
-            })
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    name = siteName
+                }
+            )
             whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_NUMBER, siteName))
                 .thenReturn(expectedResult)
             val stringCaptor = argumentCaptor<String>()
@@ -506,7 +511,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_retry)
+                .isEqualTo(R.string.try_again)
         }
 
     @Test
@@ -535,6 +540,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_card_declined_state)
+        }
+
+    @Test
+    fun `when payment succeeds, then receiptUrl stored into a persistant storage`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val receiptUrl = "testUrl"
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted(receiptUrl)) }
+            }
+
+            viewModel.start()
+
+            verify(appPrefsWrapper).setReceiptUrl(any(), any(), any(), any(), eq(receiptUrl))
         }
 
     @Test

@@ -91,14 +91,17 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
             new.tempFile?.takeIfNotEqualTo(old?.tempFile) { openShippingLabelPreview(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> displayError(event.message)
-                is OrderNavigationTarget -> navigator.navigate(this, event)
-                is ExitWithResult<*> -> navigateBackAndNotifyOrderDetails()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> displayError(event.message)
+                    is OrderNavigationTarget -> navigator.navigate(this, event)
+                    is ExitWithResult<*> -> navigateBackAndNotifyOrderDetails()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun setupResultHandlers(viewModel: PrintShippingLabelViewModel) {

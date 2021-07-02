@@ -148,10 +148,10 @@ class ProductImagesService : JobIntentService() {
 
             // create a media model from this local image uri
             currentMediaUpload = ProductImagesUtils.mediaModelFromLocalUri(
-                    this,
-                    selectedSite.get().id,
-                    localUri,
-                    mediaStore
+                this,
+                selectedSite.get().id,
+                localUri,
+                mediaStore
             )
 
             if (currentMediaUpload == null) {
@@ -213,14 +213,17 @@ class ProductImagesService : JobIntentService() {
         when {
             event.isError -> {
                 WooLog.w(
-                        T.MEDIA,
-                        "productImagesService > error uploading media: ${event.error.type}, ${event.error.message}"
+                    T.MEDIA,
+                    "productImagesService > error uploading media: ${event.error.type}, ${event.error.message}"
                 )
                 AnalyticsTracker.track(
-                    PRODUCT_IMAGE_UPLOAD_FAILED, mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                    PRODUCT_IMAGE_UPLOAD_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                )
                 handleFailure()
             }
             event.canceled -> {

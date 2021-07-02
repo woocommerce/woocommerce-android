@@ -106,7 +106,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 ComplexProperty(
                     R.string.product_description,
                     resources.getString(R.string.product_description_empty),
-                    showTitle = false)
+                    showTitle = false
+                )
             )
         ),
         ProductPropertyCard(

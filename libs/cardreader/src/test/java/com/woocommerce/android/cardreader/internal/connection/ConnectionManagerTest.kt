@@ -48,7 +48,8 @@ class ConnectionManagerTest {
         val dummyReaderId = "12345"
         val discoveredReaders = listOf(
             mock<Reader>()
-                .apply { whenever(serialNumber).thenReturn(dummyReaderId) })
+                .apply { whenever(serialNumber).thenReturn(dummyReaderId) }
+        )
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
 

@@ -32,9 +32,12 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         binding.switchProductsUI.isChecked = AppPrefs.isProductsFeatureEnabled()
         binding.switchProductsUI.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
-                    SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED, mapOf(
+                SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED,
+                mapOf(
                     AnalyticsTracker.KEY_STATE to
-                        AnalyticsUtils.getToggleStateLabel(binding.switchProductsUI.isChecked)))
+                        AnalyticsUtils.getToggleStateLabel(binding.switchProductsUI.isChecked)
+                )
+            )
             settingsListener.onProductsFeatureOptionChanged(isChecked)
         }
     }

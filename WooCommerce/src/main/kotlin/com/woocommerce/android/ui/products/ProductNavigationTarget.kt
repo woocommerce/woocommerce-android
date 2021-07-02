@@ -37,7 +37,7 @@ sealed class ProductNavigationTarget : Event() {
     ) : ProductNavigationTarget()
 
     data class ViewProductShortDescriptionEditor(val shortDescription: String, val title: String) :
-            ProductNavigationTarget()
+        ProductNavigationTarget()
     data class ViewProductImageGallery(
         val remoteId: Long,
         val images: List<Image>,
@@ -47,7 +47,7 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()
     data class ViewProductCatalogVisibility(val catalogVisibility: ProductCatalogVisibility?, val isFeatured: Boolean) :
-            ProductNavigationTarget()
+        ProductNavigationTarget()
     data class ViewProductVisibility(
         val visibility: ProductVisibility?,
         val password: String?

@@ -133,7 +133,8 @@ class ShippingLabelRepository @Inject constructor(
         }
     }
 
-    suspend fun getAccountSettings(): WooResult<ShippingAccountSettings> {
+    suspend fun getAccountSettings(forceRefresh: Boolean = false): WooResult<ShippingAccountSettings> {
+        if (forceRefresh) accountSettings = null
         return accountSettings?.let { WooResult(it) } ?: shippingLabelStore.getAccountSettings(selectedSite.get())
             .let { result ->
                 if (result.isError) return@let WooResult<ShippingAccountSettings>(error = result.error)
@@ -178,7 +179,8 @@ class ShippingLabelRepository @Inject constructor(
                 serviceId = rate.serviceId,
                 serviceName = rate.serviceName,
                 carrierId = rate.carrierId,
-                products = labelPackage.items.map { it.productId }
+                // duplicate items according to their quantities
+                products = labelPackage.items.map { item -> List(item.quantity) { item.productId } }.flatten()
             )
         }
         // Retrieve account settings, normally they should be cached at this point, and the response would be

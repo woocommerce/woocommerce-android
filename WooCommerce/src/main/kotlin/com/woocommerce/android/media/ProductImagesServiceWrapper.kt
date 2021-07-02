@@ -21,10 +21,10 @@ class ProductImagesServiceWrapper
             it.putParcelableArrayListExtra(ProductImagesService.KEY_LOCAL_URI_LIST, localMediaUriList)
         }
         JobIntentService.enqueueWork(
-                context,
-                ProductImagesService::class.java,
-                JobServiceIds.JOB_PRODUCT_IMAGES_SERVICE_ID,
-                intent
+            context,
+            ProductImagesService::class.java,
+            JobServiceIds.JOB_PRODUCT_IMAGES_SERVICE_ID,
+            intent
         )
     }
 }

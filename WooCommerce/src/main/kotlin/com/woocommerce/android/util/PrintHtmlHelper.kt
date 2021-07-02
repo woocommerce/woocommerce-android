@@ -8,6 +8,8 @@ import android.print.PrintManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.WooLog.T
 import javax.inject.Inject
 
@@ -38,8 +40,14 @@ class PrintHtmlHelper @Inject constructor() {
         webViewInstance = webView
     }
 
-    fun getAndClearPrintJob(): PrintJob? {
-        return printJob?.also { printJob = null }
+    fun getAndClearPrintJobResult(): PrintJobResult? {
+        return printJob?.let {
+            when {
+                it.isCancelled -> CANCELLED
+                it.isFailed -> FAILED
+                else -> PrintJobResult.STARTED
+            }.also { printJob = null }
+        }
     }
 
     private fun enqueuePrintJob(activity: Activity, webView: WebView, documentName: String) {
@@ -48,5 +56,9 @@ class PrintHtmlHelper @Inject constructor() {
             webView.createPrintDocumentAdapter(documentName),
             PrintAttributes.Builder().build()
         ).also { printJob = it }
+    }
+
+    enum class PrintJobResult {
+        CANCELLED, STARTED, FAILED
     }
 }

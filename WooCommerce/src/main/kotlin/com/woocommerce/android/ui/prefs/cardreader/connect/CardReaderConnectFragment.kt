@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -13,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -32,6 +36,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -47,21 +52,16 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     @Inject lateinit var cardReaderManager: CardReaderManager
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
-        (viewModel.event.value as? RequestLocationPermissions)?.let {
-            it.onPermissionsRequestResult.invoke(isGranted)
-        }
+        (viewModel.event.value as? RequestLocationPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
     }
 
     private val requestEnableBluetoothLauncher = registerForActivityResult(StartActivityForResult()) { activityResult ->
-        (viewModel.event.value as? RequestEnableBluetooth)?.let {
-            it.onEnableBluetoothRequestResult.invoke(activityResult.resultCode == RESULT_OK)
-        }
+        (viewModel.event.value as? RequestEnableBluetooth)?.onEnableBluetoothRequestResult
+            ?.invoke(activityResult.resultCode == RESULT_OK)
     }
 
-    private val requestEnableLocationProviderLauncher = registerForActivityResult(StartActivityForResult()) { _ ->
-        (viewModel.event.value as? OpenLocationSettings)?.let {
-            it.onLocationSettingsClosed.invoke()
-        }
+    private val requestEnableLocationProviderLauncher = registerForActivityResult(StartActivityForResult()) {
+        (viewModel.event.value as? OpenLocationSettings)?.onLocationSettingsClosed?.invoke()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -80,16 +80,74 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     private fun initMultipleReadersFoundRecyclerView(binding: FragmentCardReaderConnectBinding) {
         binding.multipleCardReadersFoundRv.layoutManager = LinearLayoutManager(requireContext())
         binding.multipleCardReadersFoundRv.addItemDecoration(
-                AlignedDividerDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL,
-                    R.id.readers_found_reader_id
-                )
+            AlignedDividerDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL,
+                R.id.readers_found_reader_id
+            )
         )
         binding.multipleCardReadersFoundRv.adapter = MultipleCardReadersFoundAdapter()
     }
 
     private fun initObservers(binding: FragmentCardReaderConnectBinding) {
+        observeEvents()
+        observeState(binding)
+    }
+
+    private fun observeState(binding: FragmentCardReaderConnectBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
+            if (viewState is ViewState.ReaderFoundState) {
+                moveToReaderFoundState(binding, viewState)
+            } else {
+                moveToState(binding, viewState)
+            }
+        }
+    }
+
+    /**
+     * When a reader is found, we fade out the scanning illustration, update the UI to the new state, then
+     * fade in the reader found illustration
+     */
+    private fun moveToReaderFoundState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
+        val fadeOut = WooAnimUtils.getFadeOutAnim(binding.illustration, WooAnimUtils.Duration.LONG)
+        val fadeIn = WooAnimUtils.getFadeInAnim(binding.illustration, WooAnimUtils.Duration.LONG)
+
+        fadeOut.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                // make sure we haven't moved to another state before starting the fade in animation
+                if (viewModel.viewStateData.value is ViewState.ReaderFoundState) {
+                    moveToState(binding, viewState)
+                    if (lifecycle.currentState == Lifecycle.State.RESUMED) fadeIn.start()
+                }
+            }
+        })
+        fadeOut.start()
+    }
+
+    private fun moveToState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
+        UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
+        UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
+        UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
+        UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
+        UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
+        binding.primaryActionBtn.setOnClickListener {
+            viewState.onPrimaryActionClicked?.invoke()
+        }
+        binding.secondaryActionBtn.setOnClickListener {
+            viewState.onSecondaryActionClicked?.invoke()
+        }
+
+        with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
+            topMargin = resources.getDimensionPixelSize(viewState.illustrationTopMargin)
+        }
+
+        updateMultipleReadersFoundRecyclerView(binding, viewState)
+
+        // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
+        (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
+    }
+
+    private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is CheckLocationPermissions -> {
@@ -126,21 +184,6 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                 }
                 else -> event.isHandled = false
             }
-        }
-        viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
-            UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
-            UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
-            UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
-            UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
-            UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
-            binding.primaryActionBtn.setOnClickListener {
-                viewState.onPrimaryActionClicked?.invoke()
-            }
-            binding.secondaryActionBtn.setOnClickListener {
-                viewState.onSecondaryActionClicked?.invoke()
-            }
-
-            updateMultipleReadersFoundRecyclerView(binding, viewState)
         }
     }
 

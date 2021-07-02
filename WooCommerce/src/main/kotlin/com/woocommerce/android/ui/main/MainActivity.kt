@@ -79,7 +79,8 @@ import kotlin.math.abs
 // TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")
 @Suppress("LargeClass")
 @AndroidEntryPoint
-class MainActivity : AppUpgradeActivity(),
+class MainActivity :
+    AppUpgradeActivity(),
     MainContract.View,
     MainNavigationRouter,
     MainBottomNavigationView.MainNavigationListener,

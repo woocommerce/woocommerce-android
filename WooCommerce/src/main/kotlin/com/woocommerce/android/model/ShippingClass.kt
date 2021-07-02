@@ -13,8 +13,8 @@ data class ShippingClass(
 
 fun WCProductShippingClassModel.toAppModel(): ShippingClass {
     return ShippingClass(
-            name = this.name,
-            slug = this.slug,
-            remoteShippingClassId = this.remoteShippingClassId
+        name = this.name,
+        slug = this.slug,
+        remoteShippingClassId = this.remoteShippingClassId
     )
 }

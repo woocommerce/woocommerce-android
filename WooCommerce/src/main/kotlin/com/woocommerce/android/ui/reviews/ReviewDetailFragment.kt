@@ -120,18 +120,21 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is MarkNotificationAsRead -> {
-                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is MarkNotificationAsRead -> {
+                        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(
                             requireContext(),
                             event.remoteNoteId.toString()
-                    )
+                        )
+                    }
+                    is Exit -> exitDetailView()
                 }
-                is Exit -> exitDetailView()
             }
-        })
+        )
     }
 
     private fun setReview(review: ProductReview) {
@@ -142,10 +145,10 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
 
         // Populate reviewer section
         GlideApp.with(binding.reviewGravatar.context)
-                .load(avatarUrl)
-                .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_user_circle_24dp))
-                .circleCrop()
-                .into(binding.reviewGravatar)
+            .load(avatarUrl)
+            .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_user_circle_24dp))
+            .circleCrop()
+            .into(binding.reviewGravatar)
 
         binding.reviewUserName.text = review.reviewerName
         binding.reviewTime.text = DateTimeUtils.javaDateToTimeSpan(review.dateCreated, requireActivity())
@@ -170,8 +173,8 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val stars = binding.reviewRatingBar.progressDrawable as? LayerDrawable
             stars?.getDrawable(2)?.setColorFilter(
-                    ContextCompat.getColor(requireContext(), R.color.woo_yellow_30),
-                    PorterDuff.Mode.SRC_ATOP
+                ContextCompat.getColor(requireContext(), R.color.woo_yellow_30),
+                PorterDuff.Mode.SRC_ATOP
             )
         }
 
@@ -189,9 +192,9 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
         productImageMap.get(remoteProductId)?.let { productImage ->
             val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
             GlideApp.with(activity as Context)
-                    .load(imageUrl)
-                    .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
-                    .into(binding.reviewProductIcon)
+                .load(imageUrl)
+                .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
+                .into(binding.reviewProductIcon)
         }
     }
 

@@ -46,8 +46,8 @@ sealed class ProductTaxStatus(@StringRes val stringResource: Int = 0, val value:
         fun toStringResource(value: String) = fromString(value).stringResource
 
         fun toMap(context: Context) = CoreProductTaxStatus.values()
-                .map { it.value to context.getString(fromString(it.value).stringResource) }
-                .toMap()
+            .map { it.value to context.getString(fromString(it.value).stringResource) }
+            .toMap()
 
         fun taxStatusToDisplayString(context: Context, status: ProductTaxStatus): String {
             return if (status.stringResource != 0) {
