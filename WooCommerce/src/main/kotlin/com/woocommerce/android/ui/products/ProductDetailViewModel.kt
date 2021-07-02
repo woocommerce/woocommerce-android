@@ -364,14 +364,6 @@ class ProductDetailViewModel @Inject constructor(
      * Called during the Add _first_ Variation flow. Uploads the pending attribute changes and generates the first
      * variation for the variable product.
      */
-    fun onAttributeListDoneButtonClicked() {
-        launch {
-            createEmptyVariation()?.let {
-                ExitProductAttributeList(variationCreated = true)
-            } ?: ExitProductAttributeList()
-        }
-    }
-
     fun onGenerateVariationClicked() {
         launch {
             createEmptyVariation()?.let {

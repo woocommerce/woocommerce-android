@@ -629,7 +629,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))
 
             // When
-            viewModel.onAttributeListDoneButtonClicked()
+            viewModel.onGenerateVariationClicked()
 
             // Then
             verify(variationRepository, times(1)).createEmptyVariation(eq(product))
