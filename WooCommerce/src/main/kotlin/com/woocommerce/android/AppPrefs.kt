@@ -88,8 +88,12 @@ object AppPrefs {
 
         // Application permissions
         ASKED_PERMISSION_CAMERA,
+
         // Date of the app installation
-        APP_INSTALATION_DATE
+        APP_INSTALATION_DATE,
+
+        // last connected card reader's id
+        LAST_CONNECTED_CARD_READER_ID
     }
 
     fun init(context: Context) {
@@ -125,7 +129,6 @@ object AppPrefs {
         get() = getString(UndeletablePrefKey.APP_INSTALATION_DATE)
             .toLongOrNull()
             ?.let { Date(it) }
-
         private set(value) = value
             ?.time.toString()
             .let { setString(UndeletablePrefKey.APP_INSTALATION_DATE, it) }
@@ -197,8 +200,17 @@ object AppPrefs {
             getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId),
             url
         )
+
     private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
-        "${DeletablePrefKey.RECEIPT_PREFIX}:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId"
+        "$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId"
+
+    fun setLastConnectedCardReaderId(readerId: String) =
+        setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
+
+    fun getLastConnectedCardReaderId() =
+        PreferenceUtils.getString(getPreferences(), UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID.toString(), null)
+
+    fun removeLastConnectedCardReaderId() = remove(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID)
 
     /**
      * Flag to check products features are enabled
