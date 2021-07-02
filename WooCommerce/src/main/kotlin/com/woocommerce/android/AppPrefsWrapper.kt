@@ -13,4 +13,10 @@ class AppPrefsWrapper @Inject constructor() {
         orderId: Long,
         url: String
     ) = AppPrefs.setReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId, url)
+
+    fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
+
+    fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
+
+    fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 }
