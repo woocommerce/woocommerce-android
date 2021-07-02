@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductVariati
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.CustomProgressDialog
 
-class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
+class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attributes_added) {
     companion object {
         const val TAG: String = "AttributesAddedFragment"
     }
