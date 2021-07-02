@@ -44,6 +44,8 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
                 viewModel.onReceiptLoaded()
             }
         }
+        binding.receiptPreviewPreviewWebview.settings.loadWithOverviewMode = true
+        binding.receiptPreviewPreviewWebview.settings.useWideViewPort = true
     }
 
     private fun initObservers(binding: FragmentReceiptPreviewBinding) {
