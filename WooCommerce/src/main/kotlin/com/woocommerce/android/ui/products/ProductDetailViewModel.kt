@@ -364,22 +364,34 @@ class ProductDetailViewModel @Inject constructor(
      * Called during the Add _first_ Variation flow. Uploads the pending attribute changes and generates the first
      * variation for the variable product.
      */
-    fun onGenerateVariationClicked() {
-        saveAttributeChanges()
-        attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+    fun onAttributeListDoneButtonClicked() {
         launch {
-            viewState.productDraft?.let { draft ->
-                variationRepository.createEmptyVariation(draft)
-                    ?.let {
-                        productRepository.fetchProduct(draft.remoteId)
-                            ?.also { updateProductState(productToUpdateFrom = it) }
-                        triggerEvent(ExitProductAttributeList(variationCreated = true))
-                    } ?: triggerEvent(ExitProductAttributeList())
-            }.also {
-                attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
-            }
+            createEmptyVariation()?.let {
+                ExitProductAttributeList(variationCreated = true)
+            } ?: ExitProductAttributeList()
         }
     }
+
+    fun onGenerateVariationClicked() {
+        launch {
+            createEmptyVariation()?.let {
+                ProductVariationCreated(success = true)
+            } ?: ProductVariationCreated(success = false)
+        }
+    }
+
+    private suspend fun createEmptyVariation() =
+        viewState.productDraft?.let { draft ->
+            saveAttributeChanges()
+            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+            variationRepository.createEmptyVariation(draft)
+                ?.let {
+                    productRepository.fetchProduct(draft.remoteId)
+                        ?.also { updateProductState(productToUpdateFrom = it) }
+                }
+        }.also {
+            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
+        }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
 
@@ -2032,6 +2044,7 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
+    class ProductVariationCreated(val success: Boolean) : Event()
     object RefreshMenu : Event()
 
     /**
