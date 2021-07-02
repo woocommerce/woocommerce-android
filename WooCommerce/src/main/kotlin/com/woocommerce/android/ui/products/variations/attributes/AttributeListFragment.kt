@@ -108,6 +108,15 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     }
 
     private fun setupObservers() {
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is ExitProductAttributeList -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
+            }
+        )
 
         viewModel.attributeList.observe(
             viewLifecycleOwner,
