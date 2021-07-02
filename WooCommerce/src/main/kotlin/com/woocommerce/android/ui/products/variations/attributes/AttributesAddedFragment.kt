@@ -2,10 +2,15 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAttributesAddedBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductVariationCreated
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.CustomProgressDialog
 
 class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
@@ -30,6 +35,21 @@ class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attribute_
             new.isCreatingVariationDialogShown?.takeIfNotEqualTo(old?.isCreatingVariationDialogShown) {
                 showProgressDialog(it)
             }
+        }
+        viewModel.event.observe(viewLifecycleOwner, Observer(::onEventReceived))
+    }
+
+    private fun onEventReceived(event: MultiLiveEvent.Event) {
+        when (event) {
+            is ProductVariationCreated -> {
+                if (event.success) {
+                    AttributesAddedFragmentDirections.actionAttributesAddedFragmentToProductDetailFragment()
+                        .apply { findNavController().navigateSafely(this) }
+                } else {
+                    findNavController().navigateUp()
+                }
+            }
+            else -> event.isHandled = false
         }
     }
 
