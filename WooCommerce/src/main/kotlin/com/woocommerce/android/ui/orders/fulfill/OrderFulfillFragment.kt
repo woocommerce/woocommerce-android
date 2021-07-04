@@ -36,7 +36,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), OrderProductActionListener,
+class OrderFulfillFragment :
+    BaseFragment(R.layout.fragment_order_fulfill),
+    OrderProductActionListener,
     BackPressListener {
     companion object {
         val TAG: String = OrderFulfillFragment::class.java.simpleName
@@ -102,23 +104,32 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
                 showAddShipmentTracking(it, binding)
             }
         }
-        viewModel.productList.observe(viewLifecycleOwner, Observer {
-            showOrderProducts(it, viewModel.order.currency, binding)
-        })
-        viewModel.shipmentTrackings.observe(viewLifecycleOwner, Observer {
-            showShipmentTrackings(it, binding)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> findNavController().navigateUp()
-                is ExitWithResult<*> -> navigateBackWithResult(event.key!!, event.data)
-                is OrderNavigationTarget -> navigator.navigate(this, event)
-                is ShowUndoSnackbar -> displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                else -> event.isHandled = false
+        viewModel.productList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showOrderProducts(it, viewModel.order.currency, binding)
             }
-        })
+        )
+        viewModel.shipmentTrackings.observe(
+            viewLifecycleOwner,
+            Observer {
+                showShipmentTrackings(it, binding)
+            }
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is Exit -> findNavController().navigateUp()
+                    is ExitWithResult<*> -> navigateBackWithResult(event.key!!, event.data)
+                    is OrderNavigationTarget -> navigator.navigate(this, event)
+                    is ShowUndoSnackbar -> displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun setupResultHandlers(viewModel: OrderFulfillViewModel) {
@@ -176,7 +187,8 @@ class OrderFulfillFragment : BaseFragment(R.layout.fragment_order_fulfill), Orde
             dateUtils = dateUtils,
             onDeleteShipmentTrackingClicked = {
                 viewModel.onDeleteShipmentTrackingClicked(it)
-            })
+            }
+        )
     }
 
     private fun displayUndoSnackbar(

@@ -69,8 +69,6 @@
     <ID>ForbiddenComment:NotificationHandler.kt$NotificationHandler$// TODO: Add quick actions for reviews</ID>
     <ID>ForbiddenComment:OrderDetailPaymentInfoView.kt$OrderDetailPaymentInfoView$// TODO: Once the refund by amount is supported again, this condition will need to be updated</ID>
     <ID>ForbiddenComment:OrderDetailRefundsAdapter.kt$OrderDetailRefundsAdapter.ViewHolder$// TODO: open refund detail screen</ID>
-    <ID>ForbiddenComment:OrderFetcher.kt$OrderFetcher$// FIXME: Add error handling</ID>
-    <ID>ForbiddenComment:OrderFetcher.kt$OrderFetcher$// FIXME: Possible add new tracks event to track error fetching order list data "order_list_load_failed"</ID>
     <ID>ForbiddenComment:ProductDetailFragment.kt$ProductDetailFragment$// TODO: add tracking events here</ID>
     <ID>ForbiddenComment:ProductDetailFragment.kt$ProductDetailFragment$// TODO: remove the null checks once the root cause is identified is fixed</ID>
     <ID>ForbiddenComment:ProductDetailRepository.kt$ProductDetailRepository$// TODO: add event to track sku availability success</ID>
@@ -78,10 +76,8 @@
     <ID>ForbiddenComment:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
     <ID>ForbiddenComment:MainActivity.kt$MainActivity$// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")</ID>
     <ID>FunctionOnlyReturningConstant:Screen.kt$Screen.Companion$fun isVisible(): Boolean</ID>
-    <ID>LargeClass:OrderDetailViewModelTest.kt$OrderDetailViewModelTest : BaseUnitTest</ID>
     <ID>LargeClass:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
     <ID>LongMethod:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment$private fun setupObservers(binding: FragmentAddShipmentTrackingBinding)</ID>
-    <ID>LongMethod:CardReaderDetailFragment.kt$CardReaderDetailFragment$private fun initObservers(binding: FragmentCardReaderDetailBinding)</ID>
     <ID>LongMethod:CreateShippingLabelFragment.kt$CreateShippingLabelFragment$private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding)</ID>
     <ID>LongMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun initializeStateMachine()</ID>
     <ID>LongMethod:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment$@SuppressLint("SetTextI18n") private fun subscribeObservers()</ID>
@@ -94,7 +90,6 @@
     <ID>LongMethod:Order.kt$fun WCOrderModel.toAppModel(): Order</ID>
     <ID>LongMethod:OrderDetailCustomerInfoView.kt$OrderDetailCustomerInfoView$fun updateCustomerInfo( order: Order, isVirtualOrder: Boolean // don't display shipping section for virtual products )</ID>
     <ID>LongMethod:OrderDetailFragment.kt$OrderDetailFragment$private fun setupObservers(viewModel: OrderDetailViewModel)</ID>
-    <ID>LongMethod:OrderDetailPaymentInfoView.kt$OrderDetailPaymentInfoView$fun updatePaymentInfo( order: Order, isPaymentCollectableWithCardReader: Boolean, formatCurrencyForDisplay: (BigDecimal) -&gt; String, onIssueRefundClickListener: (view: View) -&gt; Unit, onCollectCardPresentPaymentClickListener: (view: View) -&gt; Unit, onPrintingInstructionsClickListener: (view: View) -&gt; Unit )</ID>
     <ID>LongMethod:OrderDetailRepository.kt$OrderDetailRepository$@Suppress("unused") @Subscribe(threadMode = MAIN) fun onOrderChanged(event: OnOrderChanged)</ID>
     <ID>LongMethod:OrderDetailShippingLabelsAdapter.kt$OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder$fun bind(shippingLabel: ShippingLabel)</ID>
     <ID>LongMethod:OrderListItemDataSource.kt$OrderListItemDataSource$override fun getItemIdentifiers( listDescriptor: WCOrderListDescriptor, remoteItemIds: List&lt;RemoteId&gt;, isListFullyFetched: Boolean ): List&lt;OrderListItemIdentifier&gt;</ID>
@@ -116,30 +111,6 @@
     <ID>LongMethod:SitePickerActivity.kt$SitePickerActivity$override fun showSiteNotConnectedJetpackView(url: String)</ID>
     <ID>LongMethod:SitePickerActivity.kt$SitePickerActivity$override fun showStoreList(wcSites: List&lt;SiteModel&gt;)</ID>
     <ID>LongMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -&gt; Unit)? = null )</ID>
-    <ID>LongParameterList:CardReaderPaymentViewModel.kt$CardReaderPaymentViewModel$( cardReaderManager: CardReaderManager, paymentDescription: String, orderId: Long, amount: BigDecimal, currency: String, billingEmail: String, amountLabel: String )</ID>
-    <ID>LongParameterList:CardReaderPaymentViewModel.kt$CardReaderPaymentViewModel$( savedState: SavedStateHandle, private val cardReaderManager: CardReaderManager, private val dispatchers: CoroutineDispatchers, private val logger: AppLogWrapper, private val orderStore: WCOrderStore, private val orderRepository: OrderDetailRepository, private val resourceProvider: ResourceProvider, private val selectedSite: SelectedSite )</ID>
-    <ID>LongParameterList:CardReaderPaymentViewModel.kt$CardReaderPaymentViewModel.ViewState$( @StringRes val hintLabel: Int? = null, @StringRes val headerLabel: Int? = null, @StringRes val paymentStateLabel: Int? = null, @DrawableRes val illustration: Int? = null, // TODO cardreader add tests val isProgressVisible: Boolean = false, val primaryActionLabel: Int? = null, val secondaryActionLabel: Int? = null )</ID>
-    <ID>LongParameterList:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$( savedState: SavedStateHandle, parameterRepository: ParameterRepository, private val orderDetailRepository: OrderDetailRepository, private val shippingLabelRepository: ShippingLabelRepository, private val stateMachine: ShippingLabelsStateMachine, private val addressValidator: ShippingLabelAddressValidator, private val site: SelectedSite, private val wooStore: WooCommerceStore, private val accountStore: AccountStore, private val resourceProvider: ResourceProvider, private val currencyFormatter: CurrencyFormatter )</ID>
-    <ID>LongParameterList:IssueRefundViewModel.kt$IssueRefundViewModel$( savedState: SavedStateHandle, private val dispatchers: CoroutineDispatchers, currencyFormatter: CurrencyFormatter, private val orderStore: WCOrderStore, private val wooStore: WooCommerceStore, private val selectedSite: SelectedSite, private val networkStatus: NetworkStatus, private val resourceProvider: ResourceProvider, private val orderDetailRepository: OrderDetailRepository, private val gatewayStore: WCGatewayStore, private val refundStore: WCRefundStore )</ID>
-    <ID>LongParameterList:LoginDiscoveryErrorFragment.kt$LoginDiscoveryErrorFragment.Companion$( siteAddress: String, endpointAddress: String?, inputUsername: String, inputPassword: String, userAvatarUrl: String?, errorMessage: Int )</ID>
-    <ID>LongParameterList:LoginNoJetpackFragment.kt$LoginNoJetpackFragment.Companion$( siteAddress: String, endpointAddress: String?, inputUsername: String, inputPassword: String, userAvatarUrl: String?, checkJetpackAvailability: Boolean = false )</ID>
-    <ID>LongParameterList:MainPresenter.kt$MainPresenter$( private val dispatcher: Dispatcher, private val accountStore: AccountStore, private val siteStore: SiteStore, private val wooCommerceStore: WooCommerceStore, private val notificationStore: NotificationStore, private val selectedSite: SelectedSite, private val productImageMap: ProductImageMap, private val appPrefs: AppPrefs )</ID>
-    <ID>LongParameterList:MyStorePresenter.kt$MyStorePresenter$( private val dispatcher: Dispatcher, private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized! private val wcLeaderboardsStore: WCLeaderboardsStore, private val wcStatsStore: WCStatsStore, private val wcOrderStore: WCOrderStore, // Required to ensure the WCOrderStore is initialized! private val selectedSite: SelectedSite, private val networkStatus: NetworkStatus )</ID>
-    <ID>LongParameterList:OrderDetailPaymentInfoView.kt$OrderDetailPaymentInfoView$( order: Order, isPaymentCollectableWithCardReader: Boolean, formatCurrencyForDisplay: (BigDecimal) -&gt; String, onIssueRefundClickListener: (view: View) -&gt; Unit, onCollectCardPresentPaymentClickListener: (view: View) -&gt; Unit, onPrintingInstructionsClickListener: (view: View) -&gt; Unit )</ID>
-    <ID>LongParameterList:OrderDetailRepository.kt$OrderDetailRepository$( private val dispatcher: Dispatcher, private val orderStore: WCOrderStore, private val productStore: WCProductStore, private val refundStore: WCRefundStore, private val shippingLabelStore: WCShippingLabelStore, private val selectedSite: SelectedSite, private val wooCommerceStore: WooCommerceStore )</ID>
-    <ID>LongParameterList:OrderDetailViewModelTest.kt$OrderDetailViewModelTest$( currency: String = "USD", paymentStatus: Order.Status = Order.Status.Processing, paymentMethod: String = "cod", paymentMethodTitle: String = "title", datePaid: Date? = null, hasSubscriptionItems: Boolean = false )</ID>
-    <ID>LongParameterList:OrderListViewModel.kt$OrderListViewModel$( savedState: SavedStateHandle, private val dispatchers: CoroutineDispatchers, protected val repository: OrderListRepository, private val orderStore: WCOrderStore, private val listStore: ListStore, private val networkStatus: NetworkStatus, private val dispatcher: Dispatcher, private val selectedSite: SelectedSite, private val fetcher: WCOrderFetcher, private val resourceProvider: ResourceProvider, private val wooCommerceStore: WooCommerceStore )</ID>
-    <ID>LongParameterList:PriceUtils.kt$PriceUtils$( parameters: SiteParameters, resources: ResourceProvider, currencyFormatter: CurrencyFormatter, regularPrice: BigDecimal?, salePrice: BigDecimal?, isSaleScheduled: Boolean, saleStartDateGmt: Date?, saleEndDateGmt: Date? )</ID>
-    <ID>LongParameterList:ProductDetailViewModel.kt$ProductDetailViewModel$( description: String? = null, shortDescription: String? = null, title: String? = null, sku: String? = null, slug: String? = null, manageStock: Boolean? = null, stockStatus: ProductStockStatus? = null, soldIndividually: Boolean? = null, stockQuantity: Double? = null, backorderStatus: ProductBackorderStatus? = null, regularPrice: BigDecimal? = null, salePrice: BigDecimal? = null, isOnSale: Boolean? = null, isVirtual: Boolean? = null, isSaleScheduled: Boolean? = null, saleStartDate: Date? = null, saleEndDate: Date? = viewState.productDraft?.saleEndDateGmt, taxStatus: ProductTaxStatus? = null, taxClass: String? = null, length: Float? = null, width: Float? = null, height: Float? = null, weight: Float? = null, shippingClass: String? = null, images: List&lt;Product.Image&gt;? = null, shippingClassId: Long? = null, productStatus: ProductStatus? = null, catalogVisibility: ProductCatalogVisibility? = null, isFeatured: Boolean? = null, reviewsAllowed: Boolean? = null, purchaseNote: String? = null, externalUrl: String? = null, buttonText: String? = null, menuOrder: Int? = null, categories: List&lt;ProductCategory&gt;? = null, tags: List&lt;ProductTag&gt;? = null, type: String? = null, groupedProductIds: List&lt;Long&gt;? = null, upsellProductIds: List&lt;Long&gt;? = null, crossSellProductIds: List&lt;Long&gt;? = null, downloads: List&lt;ProductFile&gt;? = null, downloadLimit: Long? = null, downloadExpiry: Int? = null, isDownloadable: Boolean? = null, attributes: List&lt;ProductAttribute&gt;? = null, numVariation: Int? = null )</ID>
-    <ID>LongParameterList:ProductDetailViewModel.kt$ProductDetailViewModel$( savedState: SavedStateHandle, private val dispatchers: CoroutineDispatchers, parameterRepository: ParameterRepository, private val productRepository: ProductDetailRepository, private val networkStatus: NetworkStatus, private val currencyFormatter: CurrencyFormatter, private val resources: ResourceProvider, private val productCategoriesRepository: ProductCategoriesRepository, private val productTagsRepository: ProductTagsRepository, private val mediaFilesRepository: MediaFilesRepository, private val variationRepository: VariationRepository, private val prefs: AppPrefs )</ID>
-    <ID>LongParameterList:ProductInventoryViewModel.kt$ProductInventoryViewModel$( sku: String? = inventoryData.sku, backorderStatus: ProductBackorderStatus? = inventoryData.backorderStatus, isSoldIndividually: Boolean? = inventoryData.isSoldIndividually, isStockManaged: Boolean? = inventoryData.isStockManaged, stockQuantity: Double? = inventoryData.stockQuantity, stockStatus: ProductStockStatus? = inventoryData.stockStatus )</ID>
-    <ID>LongParameterList:ProductPricingViewModel.kt$ProductPricingViewModel$( regularPrice: BigDecimal? = pricingData.regularPrice, salePrice: BigDecimal? = pricingData.salePrice, isSaleScheduled: Boolean? = pricingData.isSaleScheduled, saleStartDate: Date? = pricingData.saleStartDate, saleEndDate: Date? = pricingData.saleEndDate, taxStatus: ProductTaxStatus? = pricingData.taxStatus, taxClass: String? = pricingData.taxClass )</ID>
-    <ID>LongParameterList:ProductShippingViewModel.kt$ProductShippingViewModel$( weight: Float? = shippingData.weight, length: Float? = shippingData.length, width: Float? = shippingData.width, height: Float? = shippingData.height, shippingClassSlug: String? = shippingData.shippingClassSlug, shippingClassId: Long? = shippingData.shippingClassId )</ID>
-    <ID>LongParameterList:ShippingLabelRepository.kt$ShippingLabelRepository$( orderId: Long, origin: Address, destination: Address, packages: List&lt;ShippingLabelPackage&gt;, rates: List&lt;ShippingRate&gt;, customsPackages: List&lt;CustomsPackage&gt;? )</ID>
-    <ID>LongParameterList:VariationDetailViewModel.kt$VariationDetailViewModel$( remoteProductId: Long? = null, remoteVariationId: Long? = null, sku: String? = null, image: Image? = null, regularPrice: BigDecimal? = null, salePrice: BigDecimal? = null, saleEndDate: Date? = viewState.variation?.saleEndDateGmt, saleStartDate: Date? = viewState.variation?.saleStartDateGmt, isSaleScheduled: Boolean? = null, stockStatus: ProductStockStatus? = null, backorderStatus: ProductBackorderStatus? = null, stockQuantity: Double? = null, options: List&lt;Option&gt;? = null, isPurchasable: Boolean? = null, isVirtual: Boolean? = null, isDownloadable: Boolean? = null, description: String? = null, isVisible: Boolean? = null, isStockManaged: Boolean? = null, shippingClass: String? = null, shippingClassId: Long? = null, attributes: Array&lt;VariantOption&gt;? = null, length: Float? = null, width: Float? = null, height: Float? = null, weight: Float? = null )</ID>
-    <ID>LongParameterList:VariationDetailViewModel.kt$VariationDetailViewModel$( savedState: SavedStateHandle, private val variationRepository: VariationDetailRepository, private val productRepository: ProductDetailRepository, private val networkStatus: NetworkStatus, private val currencyFormatter: CurrencyFormatter, private val parameterRepository: ParameterRepository, private val resources: ResourceProvider )</ID>
-    <ID>LongParameterList:WCProductPropertyView.kt$WCProductPropertyView$( orientation: Int, caption: String, detail: CharSequence?, showTitle: Boolean, @DrawableRes propertyIcon: Int? = null, isRating: Boolean = false )</ID>
-    <ID>LongParameterList:WooDialog.kt$WooDialog$( activity: Activity, posBtnAction: (OnClickListener)? = null, negBtnAction: (OnClickListener)? = null, neutBtAction: (OnClickListener)? = null, @StringRes titleId: Int? = null, @StringRes messageId: Int? = null, @StringRes positiveButtonId: Int? = null, @StringRes negativeButtonId: Int? = null, @StringRes neutralButtonId: Int? = null )</ID>
     <ID>LoopWithTooManyJumpStatements:DashboardStatsBarChart.kt$DashboardStatsBarChart$for (i in mIndicesToHighlight.indices) { val highlight = mIndicesToHighlight[i] // This is the line that causes the crash val set = mData.getDataSetByIndex(highlight.dataSetIndex) ?: continue val e = mData.getEntryForHighlight(mIndicesToHighlight[i]) as? BarEntry ?: continue val entryIndex = set.getEntryIndex(e) // make sure entry not null if (entryIndex &gt; set.entryCount * mAnimator.phaseX) { continue } val pos = getMarkerPosition(highlight) // check bounds if (!mViewPortHandler.isInBounds(pos[0], pos[1])) continue // callbacks to update the content mMarker.refreshContent(e, highlight) // draw the marker mMarker.draw(canvas, pos[0], pos[1]) }</ID>
     <ID>LoopWithTooManyJumpStatements:NotificationHandler.kt$NotificationHandler$for (pushBundle in notesMap.values) { // InboxStyle notification is limited to 5 lines if (noteCounter &gt; MAX_INBOX_ITEMS) break // Skip notes with no content from the 5-line inbox if (pushBundle.getString(PUSH_ARG_MSG) == null) continue if (noteType == REVIEW) { val pnTitle = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_TITLE)) val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG)) inboxStyle.addLine("$pnTitle: $pnMessage") } else { val pnMessage = StringEscapeUtils.unescapeHtml4(pushBundle.getString(PUSH_ARG_MSG)) inboxStyle.addLine(pnMessage) } noteCounter++ }</ID>
     <ID>LoopWithTooManyJumpStatements:RoundedBarChartRenderer.kt$RoundedBarChartRenderer$for (high in indices) { val set = barData.getDataSetByIndex(high.dataSetIndex) if (set == null || !set.isHighlightEnabled) continue val e = set.getEntryForXValue(high.x, high.y) if (!isInBoundsX(e, set)) continue val trans = mChart.getTransformer(set.axisDependency) mHighlightPaint.color = set.highLightColor mHighlightPaint.alpha = set.highLightAlpha val isStack = high.stackIndex &gt;= 0 &amp;&amp; e.isStacked val y1: Float val y2: Float if (isStack) { if (mChart.isHighlightFullBarEnabled) { y1 = e.positiveSum y2 = -e.negativeSum } else { val range = e.ranges[high.stackIndex] y1 = range.from y2 = range.to } } else { y1 = e.y y2 = 0f } prepareBarHighlight(e.x, y1, y2, barData.barWidth / 2f, trans) setHighlightDrawPos(high, mBarRect) c.drawRoundRect(mBarRect, mRadius, mRadius, mHighlightPaint) }</ID>
@@ -149,7 +120,6 @@
     <ID>MagicNumber:AttributeTermsListAdapter.kt$AttributeTermsListAdapter$300</ID>
     <ID>MagicNumber:BottomNavigationPosition.kt$BottomNavigationPosition.REVIEWS$3</ID>
     <ID>MagicNumber:CardReaderDetailViewModel.kt$CardReaderDetailViewModel$100</ID>
-    <ID>MagicNumber:CardReaderSettingsFragment.kt$CardReaderSettingsFragment$100</ID>
     <ID>MagicNumber:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$1000.0</ID>
     <ID>MagicNumber:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$4</ID>
     <ID>MagicNumber:CurrencyAmountDialog.kt$CurrencyAmountDialog$200</ID>
@@ -210,7 +180,6 @@
     <ID>MagicNumber:WooWellSqlConfig.kt$WooWellSqlConfig$1024L</ID>
     <ID>MagicNumber:WooWellSqlConfig.kt$WooWellSqlConfig$5L</ID>
     <ID>MatchingDeclarationName:NavController.kt$CallThrottler</ID>
-    <ID>MaxLineLength:Address.kt$Address$*</ID>
     <ID>MaxLineLength:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
     <ID>MaxLineLength:MainActivity.kt$MainActivity.&lt;no name provided&gt;$// We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value</ID>
     <ID>MaxLineLength:MainPresenter.kt$MainPresenter$// Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI</ID>
@@ -238,9 +207,7 @@
     <ID>NestedBlockDepth:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false )</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
-    <ID>NestedBlockDepth:ShippingLabelAddressValidator.kt$ShippingLabelAddressValidator$suspend fun validateAddress( address: Address, type: AddressType, isInternationalShipment: Boolean ): ValidationResult</ID>
     <ID>NestedBlockDepth:SitePickerActivity.kt$SitePickerActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
-    <ID>ProtectedMemberInFinalClass:CardReaderSettingsFragment.kt$CardReaderSettingsFragment$protected var job: Job = Job()</ID>
     <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val _orderStatusOptions = MutableLiveData&lt;Map&lt;String, WCOrderStatusModel&gt;&gt;()</ID>
     <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val _pagedListData = MediatorLiveData&lt;PagedOrdersList&gt;()</ID>
     <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val lifecycleRegistry: LifecycleRegistry by lazy { LifecycleRegistry(this) }</ID>
@@ -251,7 +218,6 @@
     <ID>ReturnCount:EditShippingLabelPackagesViewModel.kt$EditShippingLabelPackagesViewModel$suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean</ID>
     <ID>ReturnCount:KeepStateNavigator.kt$KeepStateNavigator$override fun navigate( destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras? ): NavDestination?</ID>
     <ID>ReturnCount:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
-    <ID>ReturnCount:MyStoreFragment.kt$MyStoreFragment$override fun getFragmentTitle(): String</ID>
     <ID>ReturnCount:MyStoreStatsView.kt$MyStoreStatsView$ private fun getRecencyMessage(): String?</ID>
     <ID>ReturnCount:NotificationHandler.kt$NotificationHandler$@Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel)</ID>
     <ID>ReturnCount:NotificationHandler.kt$NotificationHandler$private fun getLargeIconBitmap(context: Context, iconUrl: String?, shouldCircularizeIcon: Boolean): Bitmap?</ID>
@@ -272,7 +238,6 @@
     <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$private fun isSameList(reviews: List&lt;ProductReview&gt;): Boolean</ID>
     <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
-    <ID>ReturnCount:ShippingLabelAddressValidator.kt$ShippingLabelAddressValidator$suspend fun validateAddress( address: Address, type: AddressType, isInternationalShipment: Boolean ): ValidationResult</ID>
     <ID>ReturnCount:SitePickerAdapter.kt$SitePickerAdapter$ private fun isSameSiteList(sites: List&lt;SiteModel&gt;): Boolean</ID>
     <ID>ReturnCount:StringExt.kt$ fun String.fastStripHtml(): String</ID>
     <ID>ReturnCount:StringExt.kt$fun String.semverCompareTo(otherVersion: String): Int</ID>
@@ -303,43 +268,23 @@
     <ID>TooGenericExceptionCaught:TokenProvider.kt$TokenProvider$e: RuntimeException</ID>
     <ID>TooGenericExceptionCaught:WooLogViewerActivity.kt$WooLogViewerActivity$e: Exception</ID>
     <ID>TooGenericExceptionThrown:ActionableEmptyView.kt$ActionableEmptyView$throw RuntimeException("$context: ActionableEmptyView must have a title (aevTitle)")</ID>
-    <ID>TooManyFunctions:AddAttributeFragment.kt$AddAttributeFragment : BaseProductFragment</ID>
     <ID>TooManyFunctions:AddAttributeTermsFragment.kt$AddAttributeTermsFragment : BaseProductFragment</ID>
-    <ID>TooManyFunctions:AddOrderNoteFragment.kt$AddOrderNoteFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:AddOrderTrackingProviderListFragment.kt$AddOrderTrackingProviderListFragment : BaseFragmentOnQueryTextListenerOnProviderClickListener</ID>
-    <ID>TooManyFunctions:AddProductCategoryFragment.kt$AddProductCategoryFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:AddProductCategoryViewModel.kt$AddProductCategoryViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:AppPrefs.kt$AppPrefs$AppPrefs</ID>
-    <ID>TooManyFunctions:AppSettingsActivity.kt$AppSettingsActivity : AppCompatActivityAppSettingsListenerView</ID>
-    <ID>TooManyFunctions:AppUpgradeActivity.kt$AppUpgradeActivity : AppCompatActivityAppUpgradeActivityViewInstallStateUpdatedListener</ID>
-    <ID>TooManyFunctions:AttributeListFragment.kt$AttributeListFragment : BaseProductFragment</ID>
-    <ID>TooManyFunctions:AttributeTermsListAdapter.kt$AttributeTermsListAdapter : Adapter</ID>
-    <ID>TooManyFunctions:AztecEditorFragment.kt$AztecEditorFragment : BaseFragmentIAztecToolbarClickListenerBackPressListenerIHistoryListener</ID>
     <ID>TooManyFunctions:CardReaderConnectViewModel.kt$CardReaderConnectViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:CardReaderPaymentViewModel.kt$CardReaderPaymentViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:CreateShippingLabelFragment.kt$CreateShippingLabelFragment : BaseFragment</ID>
     <ID>TooManyFunctions:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:DateExt.kt$com.woocommerce.android.extensions.DateExt.kt</ID>
     <ID>TooManyFunctions:DateUtils.kt$DateUtils</ID>
     <ID>TooManyFunctions:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:EditShippingLabelAddressViewModel.kt$EditShippingLabelAddressViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:EditVariationAttributesFragment.kt$EditVariationAttributesFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:FeedbackSurveyFragment.kt$FeedbackSurveyFragment : Fragment</ID>
-    <ID>TooManyFunctions:HelpActivity.kt$HelpActivity : AppCompatActivity</ID>
     <ID>TooManyFunctions:IssueRefundViewModel.kt$IssueRefundViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:LoginActivity.kt$LoginActivity : AppCompatActivityLoginListenerGoogleListenerPrologueFinishedListenerHasAndroidInjectorLoginNoJetpackListenerListener</ID>
-    <ID>TooManyFunctions:LoginAnalyticsTracker.kt$LoginAnalyticsTracker : LoginAnalyticsListener</ID>
-    <ID>TooManyFunctions:MagicLinkInterceptFragment.kt$MagicLinkInterceptFragment : Fragment</ID>
     <ID>TooManyFunctions:MagicLinkInterceptRepository.kt$MagicLinkInterceptRepository</ID>
     <ID>TooManyFunctions:MainActivity.kt$MainActivity : AppUpgradeActivityViewMainNavigationRouterMainNavigationListenerOnDestinationChangedListenerPromoDialogListener</ID>
-    <ID>TooManyFunctions:MainBottomNavigationView.kt$MainBottomNavigationView : BottomNavigationViewOnNavigationItemSelectedListenerOnNavigationItemReselectedListener</ID>
     <ID>TooManyFunctions:MainContract.kt$MainContract$View : BaseViewTopLevelFragmentRouter</ID>
     <ID>TooManyFunctions:MainNavigationRouter.kt$MainNavigationRouter</ID>
-    <ID>TooManyFunctions:MainPresenter.kt$MainPresenter : Presenter</ID>
     <ID>TooManyFunctions:MyStoreContract.kt$MyStoreContract$View : BaseView</ID>
-    <ID>TooManyFunctions:MyStoreFragment.kt$MyStoreFragment : TopLevelFragmentViewMyStoreStatsListener</ID>
-    <ID>TooManyFunctions:MyStorePresenter.kt$MyStorePresenter : Presenter</ID>
     <ID>TooManyFunctions:MyStoreStatsView.kt$MyStoreStatsView : MaterialCardViewOnChartValueSelectedListenerBarChartGestureListener</ID>
     <ID>TooManyFunctions:NotificationHandler.kt$NotificationHandler</ID>
     <ID>TooManyFunctions:NotificationHandler.kt$NotificationHandler$Companion</ID>
@@ -347,33 +292,19 @@
     <ID>TooManyFunctions:OrderDetailFragment.kt$OrderDetailFragment : BaseFragmentOrderProductActionListener</ID>
     <ID>TooManyFunctions:OrderDetailRepository.kt$OrderDetailRepository</ID>
     <ID>TooManyFunctions:OrderDetailViewModel.kt$OrderDetailViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:OrderFulfillFragment.kt$OrderFulfillFragment : BaseFragmentOrderProductActionListenerBackPressListener</ID>
     <ID>TooManyFunctions:OrderFulfillViewModel.kt$OrderFulfillViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:OrderListFragment.kt$OrderListFragment : TopLevelFragmentOrderStatusListListenerOnQueryTextListenerOnActionExpandListenerOrderListListener</ID>
     <ID>TooManyFunctions:OrderListViewModel.kt$OrderListViewModel : ScopedViewModelLifecycleOwner</ID>
-    <ID>TooManyFunctions:ParentCategoryListFragment.kt$ParentCategoryListFragment : BaseFragmentOnLoadMoreListenerOnProductCategoryClickListener</ID>
-    <ID>TooManyFunctions:PrintShippingLabelFragment.kt$PrintShippingLabelFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:Product.kt$Product : ParcelableIProduct</ID>
-    <ID>TooManyFunctions:ProductCatalogVisibilityFragment.kt$ProductCatalogVisibilityFragment : BaseProductSettingsFragmentOnClickListener</ID>
-    <ID>TooManyFunctions:ProductCategoriesFragment.kt$ProductCategoriesFragment : BaseProductFragmentOnLoadMoreListenerOnProductCategoryClickListener</ID>
     <ID>TooManyFunctions:ProductDetailCardBuilder.kt$ProductDetailCardBuilder</ID>
     <ID>TooManyFunctions:ProductDetailFragment.kt$ProductDetailFragment : BaseProductFragmentOnGalleryImageInteractionListener</ID>
     <ID>TooManyFunctions:ProductDetailRepository.kt$ProductDetailRepository</ID>
     <ID>TooManyFunctions:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductDownloadDetailsFragment.kt$ProductDownloadDetailsFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:ProductDownloadsFragment.kt$ProductDownloadsFragment : BaseProductFragment</ID>
     <ID>TooManyFunctions:ProductFilterListViewModel.kt$ProductFilterListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductImageViewerFragment.kt$ProductImageViewerFragment : BaseFragmentImageViewerListenerBackPressListener</ID>
     <ID>TooManyFunctions:ProductImagesFragment.kt$ProductImagesFragment : BaseProductEditorFragmentOnGalleryImageInteractionListener</ID>
     <ID>TooManyFunctions:ProductImagesViewModel.kt$ProductImagesViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:ProductListFragment.kt$ProductListFragment : TopLevelFragmentOnProductClickListenerProductSortAndFilterListenerOnLoadMoreListenerOnQueryTextListenerOnActionExpandListener</ID>
     <ID>TooManyFunctions:ProductListViewModel.kt$ProductListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductPricingFragment.kt$ProductPricingFragment : BaseProductEditorFragmentProductItemSelectorDialogListener</ID>
-    <ID>TooManyFunctions:ProductSelectionListFragment.kt$ProductSelectionListFragment : BaseFragmentOnLoadMoreListenerOnActionModeEventListenerOnQueryTextListenerOnActionExpandListener</ID>
-    <ID>TooManyFunctions:ProductStatusFragment.kt$ProductStatusFragment : BaseProductSettingsFragmentOnClickListener</ID>
-    <ID>TooManyFunctions:ProductTagsFragment.kt$ProductTagsFragment : BaseProductFragmentOnLoadMoreListenerOnProductTagClickListener</ID>
-    <ID>TooManyFunctions:ProductVisibilityFragment.kt$ProductVisibilityFragment : BaseProductSettingsFragmentOnClickListener</ID>
-    <ID>TooManyFunctions:ReviewDetailFragment.kt$ReviewDetailFragment : BaseFragment</ID>
     <ID>TooManyFunctions:ReviewDetailRepository.kt$ReviewDetailRepository</ID>
     <ID>TooManyFunctions:ReviewListAdapter.kt$ReviewListAdapter : SectionedRecyclerViewAdapter</ID>
     <ID>TooManyFunctions:ReviewListFragment.kt$ReviewListFragment : TopLevelFragmentItemDecorationListenerOnReviewClickListener</ID>
@@ -381,28 +312,17 @@
     <ID>TooManyFunctions:ReviewListViewModel.kt$ReviewListViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:Section.kt$Section</ID>
     <ID>TooManyFunctions:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter : Adapter</ID>
-    <ID>TooManyFunctions:ShippingCarrierRatesFragment.kt$ShippingCarrierRatesFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:ShippingCustomsAdapter.kt$ShippingCustomsFormListener</ID>
-    <ID>TooManyFunctions:ShippingCustomsViewModel.kt$ShippingCustomsViewModel : ScopedViewModelShippingCustomsFormListener</ID>
-    <ID>TooManyFunctions:SitePickerActivity.kt$SitePickerActivity : AppCompatActivityViewOnSiteClickListenerListenerHasAndroidInjector</ID>
     <ID>TooManyFunctions:SitePickerContract.kt$SitePickerContract$Presenter : BasePresenter</ID>
     <ID>TooManyFunctions:SitePickerContract.kt$SitePickerContract$View : BaseView</ID>
-    <ID>TooManyFunctions:SitePickerPresenter.kt$SitePickerPresenter : Presenter</ID>
     <ID>TooManyFunctions:StringUtils.kt$StringUtils$StringUtils</ID>
     <ID>TooManyFunctions:StyleAttrUtils.kt$StyleAttrUtils$StyleAttrUtils</ID>
     <ID>TooManyFunctions:TerminalWrapper.kt$TerminalWrapper</ID>
     <ID>TooManyFunctions:UnifiedLoginTracker.kt$UnifiedLoginTracker</ID>
-    <ID>TooManyFunctions:UserEligibilityErrorFragment.kt$UserEligibilityErrorFragment : BaseFragmentBackPressListener</ID>
     <ID>TooManyFunctions:VariationDetailCardBuilder.kt$VariationDetailCardBuilder</ID>
-    <ID>TooManyFunctions:VariationDetailFragment.kt$VariationDetailFragment : BaseFragmentBackPressListenerOnGalleryImageInteractionListener</ID>
     <ID>TooManyFunctions:VariationDetailViewModel.kt$VariationDetailViewModel : ScopedViewModel</ID>
     <ID>TooManyFunctions:VariationListFragment.kt$VariationListFragment : BaseFragmentBackPressListenerOnLoadMoreListener</ID>
     <ID>TooManyFunctions:VariationListViewModel.kt$VariationListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:WCMaterialOutlinedEditTextView.kt$WCMaterialOutlinedEditTextView : TextInputLayout</ID>
-    <ID>TooManyFunctions:WCMaterialOutlinedSpinnerView.kt$WCMaterialOutlinedSpinnerView : TextInputLayout</ID>
-    <ID>TooManyFunctions:WCProductImageGalleryView.kt$WCProductImageGalleryView$ImageGalleryAdapter : Adapter</ID>
-    <ID>TooManyFunctions:WPMediaGalleryView.kt$WPMediaGalleryView$WPMediaLibraryGalleryAdapter : Adapter</ID>
-    <ID>TooManyFunctions:WPMediaPickerFragment.kt$WPMediaPickerFragment : BaseFragmentWPMediaGalleryListenerBackPressListener</ID>
     <ID>TooManyFunctions:WooLog.kt$WooLog$WooLog</ID>
     <ID>TooManyFunctions:ZendeskHelper.kt$ZendeskHelper</ID>
     <ID>TopLevelPropertyNaming:ZendeskHelper.kt$private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500</ID>

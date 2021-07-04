@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+7.1
+-----
+- [*] Fixed a bug where the app doesn't show the correct quantity in orders if it's decimal [https://github.com/woocommerce/woocommerce-android/pull/4267]
+
 7.0
 -----
 - [***] Merchants using WooCommerce Shipping in their store can create international labels from the app [https://github.com/woocommerce/woocommerce-android/pull/4250]

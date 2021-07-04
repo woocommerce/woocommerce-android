@@ -21,7 +21,9 @@ class ProductDownloadsAdapter(
                 ProductFileDiffUtil(
                     field,
                     value
-                ), true)
+                ),
+                true
+            )
             field = value
 
             diffResult.dispatchUpdatesTo(this)

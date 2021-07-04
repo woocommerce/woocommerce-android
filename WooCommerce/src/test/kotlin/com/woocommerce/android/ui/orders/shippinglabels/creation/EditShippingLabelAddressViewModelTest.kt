@@ -303,12 +303,14 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onCountrySelected("VI")
 
-        assertThat(viewState).isEqualTo(initialViewState.copy(
-            address.copy(country = "VI"),
-            selectedCountryName = "Virgin Islands (US)",
-            selectedStateName = "",
-            isStateFieldSpinner = false
-        ))
+        assertThat(viewState).isEqualTo(
+            initialViewState.copy(
+                address.copy(country = "VI"),
+                selectedCountryName = "Virgin Islands (US)",
+                selectedStateName = "",
+                isStateFieldSpinner = false
+            )
+        )
     }
 
     @Test

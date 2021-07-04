@@ -59,10 +59,10 @@ class HelpActivity : AppCompatActivity() {
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
         /**
-        * If the user taps on a Zendesk notification, we want to show them the `My Tickets` page. However, this
-        * should only be triggered when the activity is first created, otherwise if the user comes back from
-        * `My Tickets` and rotates the screen (or triggers the activity re-creation in any other way) it'll navigate
-        * them to `My Tickets` again since the `originFromExtras` will still be [Origin.ZENDESK_NOTIFICATION].
+         * If the user taps on a Zendesk notification, we want to show them the `My Tickets` page. However, this
+         * should only be triggered when the activity is first created, otherwise if the user comes back from
+         * `My Tickets` and rotates the screen (or triggers the activity re-creation in any other way) it'll navigate
+         * them to `My Tickets` again since the `originFromExtras` will still be [Origin.ZENDESK_NOTIFICATION].
          */
         if (savedInstanceState == null && originFromExtras == Origin.ZENDESK_NOTIFICATION) {
             showZendeskTickets()
@@ -107,7 +107,7 @@ class HelpActivity : AppCompatActivity() {
             AppPrefs.getSupportEmail()
         } else {
             supportHelper
-                    .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
+                .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
         }
 
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->

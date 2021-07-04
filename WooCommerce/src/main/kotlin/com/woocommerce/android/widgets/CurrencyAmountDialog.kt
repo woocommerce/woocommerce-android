@@ -70,15 +70,21 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         builder.setNegativeButton(R.string.cancel, this)
         builder.setView(view)
 
-        amountText.value.observe(this, Observer {
-            currentValue = if (it > maxValue) maxValue else it
-            isAmountValid(it)
-        })
+        amountText.value.observe(
+            this,
+            Observer {
+                currentValue = if (it > maxValue) maxValue else it
+                isAmountValid(it)
+            }
+        )
 
-        Handler().postDelayed({
-            amountText.requestFocus()
-            ActivityUtils.showKeyboard(amountText)
-        }, 200)
+        Handler().postDelayed(
+            {
+                amountText.requestFocus()
+                ActivityUtils.showKeyboard(amountText)
+            },
+            200
+        )
 
         return builder.create()
     }

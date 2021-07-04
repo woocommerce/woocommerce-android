@@ -10,7 +10,8 @@ enum class FeatureFlag {
     SHIPPING_LABELS_M4,
     DB_DOWNGRADE,
     ORDER_CREATION,
-    CARD_READER;
+    CARD_READER,
+    CARD_READER_RECONNECTION;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             SHIPPING_LABELS_M4 -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
@@ -18,7 +19,8 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             ORDER_CREATION -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
-            CARD_READER -> PackageUtils.isDebugBuild() && CardPresentEligibleFeatureChecker.isCardPresentEligible.get()
+            CARD_READER -> CardPresentEligibleFeatureChecker.isCardPresentEligible.get()
+            CARD_READER_RECONNECTION -> CARD_READER.isEnabled() && PackageUtils.isDebugBuild()
         }
     }
 }

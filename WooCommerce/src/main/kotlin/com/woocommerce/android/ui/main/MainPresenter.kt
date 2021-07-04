@@ -82,7 +82,7 @@ class MainPresenter @Inject constructor(
     }
 
     override fun getNotificationByRemoteNoteId(remoteNoteId: Long): NotificationModel? =
-            notificationStore.getNotificationByRemoteId(remoteNoteId)
+        notificationStore.getNotificationByRemoteId(remoteNoteId)
 
     override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 0
 
@@ -90,8 +90,10 @@ class MainPresenter @Inject constructor(
         productImageMap.reset()
 
         // Fetch a fresh list of order status options
-        dispatcher.dispatch(WCOrderActionBuilder
-                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site)))
+        dispatcher.dispatch(
+            WCOrderActionBuilder
+                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
+        )
     }
 
     override fun fetchUnfilledOrderCount() {
@@ -183,16 +185,17 @@ class MainPresenter @Inject constructor(
             FETCH_ORDERS_COUNT -> {
                 if (event.isError) {
                     WooLog.e(
-                            WooLog.T.ORDERS,
-                            "Error fetching a count of orders waiting to be fulfilled: ${event.error.message}"
+                        WooLog.T.ORDERS,
+                        "Error fetching a count of orders waiting to be fulfilled: ${event.error.message}"
                     )
                     mainView?.hideOrderBadge()
                     return
                 }
 
                 AnalyticsTracker.track(
-                        Stat.UNFULFILLED_ORDERS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0)))
+                    Stat.UNFULFILLED_ORDERS_LOADED,
+                    mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0))
+                )
 
                 if (event.rowsAffected > 0) {
                     mainView?.showOrderBadge(event.rowsAffected)

@@ -20,8 +20,10 @@ object OrderShipmentTrackingHelper {
     ) {
         try {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setPrimaryClip(ClipData.newPlainText(
-                context.getString(R.string.order_shipment_tracking_number), trackingNumber)
+            clipboard.setPrimaryClip(
+                ClipData.newPlainText(
+                    context.getString(R.string.order_shipment_tracking_number), trackingNumber
+                )
             )
             ToastUtils.showToast(context, R.string.order_shipment_tracking_number_clipboard)
         } catch (e: Exception) {
@@ -51,18 +53,24 @@ object OrderShipmentTrackingHelper {
         with(popup.menu.findItem(R.id.menu_track_shipment)) {
             isVisible = trackingLink.isNotEmpty()
             setOnMenuItemClickListener {
-                AnalyticsTracker.track(Stat.SHIPMENT_TRACKING_MENU_ACTION, mapOf(
-                    AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_SHIPMENT_TRACK
-                ))
+                AnalyticsTracker.track(
+                    Stat.SHIPMENT_TRACKING_MENU_ACTION,
+                    mapOf(
+                        AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_SHIPMENT_TRACK
+                    )
+                )
                 trackShipment(context, trackingLink)
                 true
             }
         }
 
         popup.menu.findItem(R.id.menu_copy_tracking)?.setOnMenuItemClickListener {
-            AnalyticsTracker.track(Stat.SHIPMENT_TRACKING_MENU_ACTION, mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_SHIPMENT_COPY
-            ))
+            AnalyticsTracker.track(
+                Stat.SHIPMENT_TRACKING_MENU_ACTION,
+                mapOf(
+                    AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_SHIPMENT_COPY
+                )
+            )
             copyTrackingNumber(context, trackingNumber)
             true
         }

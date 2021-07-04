@@ -57,8 +57,12 @@ data class ProductVariation(
         get() {
             val now = Date()
             return salePrice.isSet() &&
-                (!isSaleScheduled || ((saleStartDateGmt == null || now.after(saleStartDateGmt)) &&
-                    (saleEndDateGmt == null || now.before(saleEndDateGmt))))
+                (
+                    !isSaleScheduled || (
+                        (saleStartDateGmt == null || now.after(saleStartDateGmt)) &&
+                            (saleEndDateGmt == null || now.before(saleEndDateGmt))
+                        )
+                    )
         }
 
     override fun equals(other: Any?): Boolean {

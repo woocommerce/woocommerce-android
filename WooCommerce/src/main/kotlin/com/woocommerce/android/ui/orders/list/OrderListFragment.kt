@@ -44,8 +44,12 @@ import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
-class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
-    OrderStatusListView.OrderStatusListListener, OnQueryTextListener, OnActionExpandListener, OrderListListener {
+class OrderListFragment :
+    TopLevelFragment(R.layout.fragment_order_list),
+    OrderStatusListView.OrderStatusListListener,
+    OnQueryTextListener,
+    OnActionExpandListener,
+    OrderListListener {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
@@ -293,6 +297,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         binding.orderListView.scrollToTop()
     }
 
+    @Suppress("LongMethod")
     private fun initializeViewModel() {
         viewModel.initializeListsForMainTabs()
 
@@ -305,65 +310,83 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         }
 
         // setup observers
-        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner, Observer {
-            binding.orderRefreshLayout.isRefreshing = it == true
-        })
-
-        viewModel.isLoadingMore.observe(viewLifecycleOwner, Observer {
-            it?.let { isLoadingMore ->
-                binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
+        viewModel.isFetchingFirstPage.observe(
+            viewLifecycleOwner,
+            Observer {
+                binding.orderRefreshLayout.isRefreshing = it == true
             }
-        })
+        )
 
-        viewModel.orderStatusOptions.observe(viewLifecycleOwner, Observer {
-            it?.let { options ->
-                // So the order status can be matched to the appropriate label
-                binding.orderListView.setOrderStatusOptions(options)
-
-                updateOrderStatusList(options)
-            }
-        })
-
-        viewModel.pagedListData.observe(viewLifecycleOwner, Observer {
-            updatePagedListData(it)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowErrorSnack -> {
-                    uiMessageResolver.showSnack(event.messageRes)
-                    binding.orderRefreshLayout.isRefreshing = false
+        viewModel.isLoadingMore.observe(
+            viewLifecycleOwner,
+            Observer {
+                it?.let { isLoadingMore ->
+                    binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
                 }
-                else -> event.isHandled = false
             }
-        })
+        )
 
-        viewModel.emptyViewType.observe(viewLifecycleOwner, Observer {
-            it?.let { emptyViewType ->
-                when (emptyViewType) {
-                    EmptyViewType.SEARCH_RESULTS -> {
-                        binding.orderStatusListView
-                        emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
+        viewModel.orderStatusOptions.observe(
+            viewLifecycleOwner,
+            Observer {
+                it?.let { options ->
+                    // So the order status can be matched to the appropriate label
+                    binding.orderListView.setOrderStatusOptions(options)
+
+                    updateOrderStatusList(options)
+                }
+            }
+        )
+
+        viewModel.pagedListData.observe(
+            viewLifecycleOwner,
+            Observer {
+                updatePagedListData(it)
+            }
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowErrorSnack -> {
+                        uiMessageResolver.showSnack(event.messageRes)
+                        binding.orderRefreshLayout.isRefreshing = false
                     }
-                    EmptyViewType.ORDER_LIST -> {
-                        emptyView.show(emptyViewType) {
-                            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
+                    else -> event.isHandled = false
+                }
+            }
+        )
+
+        viewModel.emptyViewType.observe(
+            viewLifecycleOwner,
+            Observer {
+                it?.let { emptyViewType ->
+                    when (emptyViewType) {
+                        EmptyViewType.SEARCH_RESULTS -> {
+                            binding.orderStatusListView
+                            emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
+                        }
+                        EmptyViewType.ORDER_LIST -> {
+                            emptyView.show(emptyViewType) {
+                                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
+                            }
+                        }
+                        EmptyViewType.ORDER_LIST_FILTERED -> {
+                            emptyView.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
+                        }
+                        EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
+                            emptyView.show(emptyViewType) {
+                                refreshOrders()
+                            }
+                        }
+                        else -> {
+                            emptyView.show(emptyViewType)
                         }
                     }
-                    EmptyViewType.ORDER_LIST_FILTERED -> {
-                        emptyView.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
-                    }
-                    EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
-                        emptyView.show(emptyViewType) {
-                            refreshOrders()
-                        }
-                    }
-                    else -> {
-                        emptyView.show(emptyViewType)
-                    }
-                }
-            } ?: hideEmptyView()
-        })
+                } ?: hideEmptyView()
+            }
+        )
     }
 
     private fun hideEmptyView() {
@@ -388,10 +411,11 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
-            Stat.ORDER_OPEN, mapOf(
-            AnalyticsTracker.KEY_ID to remoteOrderId,
-            AnalyticsTracker.KEY_STATUS to orderStatus
-        )
+            Stat.ORDER_OPEN,
+            mapOf(
+                AnalyticsTracker.KEY_ID to remoteOrderId,
+                AnalyticsTracker.KEY_STATUS to orderStatus
+            )
         )
 
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
@@ -556,12 +580,15 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
      * perform a search while the user is typing
      */
     private fun submitSearchDelayed(query: String) {
-        searchHandler.postDelayed({
-            searchView?.let {
-                // submit the search if the searchView's query still matches the passed query
-                if (query == it.query.toString()) handleNewSearchRequest(query)
-            }
-        }, SEARCH_TYPING_DELAY_MS)
+        searchHandler.postDelayed(
+            {
+                searchView?.let {
+                    // submit the search if the searchView's query still matches the passed query
+                    if (query == it.query.toString()) handleNewSearchRequest(query)
+                }
+            },
+            SEARCH_TYPING_DELAY_MS
+        )
     }
 
     /**
@@ -644,10 +671,12 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         isFilterEnabled = true
         hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
-            .plus(orderStatusFilter.let { filter ->
-                val orderStatusLabel = getOrderStatusOptions()[filter]?.label
-                getString(R.string.orderlist_filtered, orderStatusLabel)
-            })
+            .plus(
+                orderStatusFilter.let { filter ->
+                    val orderStatusLabel = getOrderStatusOptions()[filter]?.label
+                    getString(R.string.orderlist_filtered, orderStatusLabel)
+                }
+            )
 
         searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
             it.setHintTextColor(requireContext().getColorFromAttribute(R.attr.colorOnSurface))

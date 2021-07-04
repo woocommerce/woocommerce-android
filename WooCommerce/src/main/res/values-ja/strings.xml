@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-10 09:54:04+0000
+Translation-Revision-Date: 2021-06-24 15:59:19+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="empty_order_list_message">ストアの売り上げを伸ばす方法を見つけましょう。</string>
+    <string name="empty_product_message">今すぐ販売を開始するには、最初の商品をストアに追加してください。</string>
+    <string name="empty_product_add_product_button">商品を追加</string>
+    <string name="variable_product_attributes">バリエーション属性</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">モバイルデバイスの Bluetooth をオンにする</string>
+    <string name="card_reader_detail_learn_more">モバイルデバイスや注文用カードリーダーでの支払いの受領方法について&lt;a href=\"https://woocommerce.com/payments/\"&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_fetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
+    <string name="card_reader_payment_email_client_not_found">メールクライアントアプリを検出できません</string>
+    <string name="card_reader_payment_receipt_email_content">ご購入ありがとうございます。 お支払いのレシートは次のリンクで確認できます: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">%s のレシート</string>
+    <string name="card_reader_payment_description">%s の %s のオンライン支払い</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">注文を更新する</string>
+    <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
+    <string name="shipping_label_address_phone_invalid">カスタムフォームには、10桁の電話番号を入力してください</string>
+    <string name="shipping_label_address_phone_required">この配送にはカスタムフォームが必要なため、電話番号が必須です</string>
+    <string name="shipping_label_create_customs_done">カスタムフォームの入力が完了しました</string>
+    <string name="print_receipt_label_info_step_7">デバイスからの印刷で問題が生じている場合は、プリンターのカスタマーサポートにお問い合わせください。</string>
+    <string name="print_receipt_label_info_step_6">印刷できない場合はレシートを PDF として保存し、メールで送信して別のデバイスから印刷できます。</string>
+    <string name="print_receipt_label_info_step_5">必要に応じて用紙サイズを調整し、レシートの印刷準備が整ったら「印刷」を選択します。</string>
+    <string name="print_receipt_label_info_step_4">プロンプトが表示されたら、プリンターをモバイルにペアリングして接続します。</string>
+    <string name="print_receipt_label_info_step_3">支払い完了後に「レシートを印刷」を選択する場合、「PDF として印刷」ではなく「すべてのプリンター」を選択して、新しいプリンターを検索します。</string>
+    <string name="print_receipt_label_info_step_2">プリンターの Bluetooth または WiFi 接続を有効にします。</string>
+    <string name="print_receipt_label_info_step_1">プリンターに印刷サービスプラグインがインストールされていることを確認します。</string>
+    <string name="orderdetail_printing_instructions_button">デバイスでのレシートの印刷について詳しく見る</string>
+    <string name="product_create_attribute_helper">バリエーションを作るには、最初にその属性 (「色」、「サイズ」など) を設定する必要があります</string>
+    <string name="product_variation_single_count">1個のバリエーション</string>
+    <string name="product_variation_multiple_count">%1$s個のバリエーション</string>
     <string name="shipping_label_rate_included_options_usps_tracking">%s追跡</string>
     <string name="card_reader_software_update_in_progress_title">Reader のソフトウェアを更新しています</string>
     <string name="card_reader_software_update_title">ソフトウェア更新</string>
@@ -150,10 +178,7 @@ Language: ja_JP
     <string name="shipping_label_rate_included_options">含む %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">成年の署名が必要 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">署名が必要 (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">送料無料</string>
-    <string name="shipping_label_shipping_method_local_pickup">店頭渡し</string>
-    <string name="shipping_label_shipping_method_flat_rate">定額送料</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">配送料としてお客様から %1$s (%2$s) の支払いがありました</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">配送料としてお客様から %2$s の %1$s の支払いがありました</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce で配送ラベルを購入すると、郵便局の価格と比べて5%～40% お得です。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  サービスの割引はどのくらいですか ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">配送オプションの読み込みでエラーが発生しました</string>
@@ -200,7 +225,7 @@ Language: ja_JP
     <string name="shipping_label_single_package_total_weight">荷物の総重量: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">カスタム荷物</string>
     <string name="shipping_label_package_details_fetch_products_error">商品を取得できません</string>
-    <string name="shipping_label_missing_data_snackbar_message">いくつかの必須フィールドが空白になっています。</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">いくつかの必須フィールドが空白になっています。</string>
     <string name="shipping_label_package_details_weight_error">無効な重量</string>
     <string name="shipping_label_package_selector_title">選択済みの荷物</string>
     <string name="shipping_label_packages_loading_message">しばらくお待ちください…</string>
@@ -610,7 +635,6 @@ Language: ja_JP
     <string name="empty_review_list_message">ストアに対する高品質な製品レビューを取得する</string>
     <string name="empty_review_list_title">最初のレビューを受け取る</string>
     <string name="empty_order_list_all_processed">注文がすべて処理されました</string>
-    <string name="empty_order_list_message">新しい注文が入ると通知が届きます。それまでの間、ストアの売り上げを伸ばす方法を見つけましょう。</string>
     <string name="empty_order_list_title">最初の注文を待っています</string>
     <string name="share_your_store_message">連絡先を使用してソーシャルメディアやメールでストアを紹介する</string>
     <string name="get_the_word_out">情報を広める</string>
@@ -643,7 +667,7 @@ Language: ja_JP
     <string name="order_refunds_select_quantity">数量を選択</string>
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
-    <string name="order_refunds_item_description">各%d x %s</string>
+    <string name="order_refunds_item_description">各%s x %s</string>
     <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>

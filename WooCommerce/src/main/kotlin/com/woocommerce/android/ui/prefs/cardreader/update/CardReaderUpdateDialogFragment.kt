@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
@@ -22,6 +23,7 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog!!.setCanceledOnTouchOutside(false)
+        dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -34,28 +36,36 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
     }
 
     private fun initObservers(binding: DialogCardReaderUpdateBinding) {
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is SuppressOnBackPressed -> dialog?.setCancelable(false)
-                is ExitWithResult<*> -> navigateBackWithResult(
-                    KEY_READER_UPDATE_RESULT,
-                    event.data as UpdateResult
-                )
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is SuppressOnBackPressed -> dialog?.setCancelable(false)
+                    is ExitWithResult<*> -> navigateBackWithResult(
+                        KEY_READER_UPDATE_RESULT,
+                        event.data as UpdateResult
+                    )
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
-        viewModel.viewStateData.observe(viewLifecycleOwner, { state ->
-            with(binding) {
-                UiHelpers.setTextOrHide(updateReaderTitleTv, state.title)
-                UiHelpers.setTextOrHide(updateReaderDescriptionTv, state.description)
-                UiHelpers.updateVisibility(updateReaderProgressGroup, state.showProgress)
-                UiHelpers.setTextOrHide(updateReaderPrimaryActionBtn, state.primaryButton?.text)
-                updateReaderPrimaryActionBtn.setOnClickListener { state.primaryButton?.onActionClicked?.invoke() }
-                UiHelpers.setTextOrHide(updateReaderSecondaryActionBtn, state.secondaryButton?.text)
-                updateReaderSecondaryActionBtn.setOnClickListener { state.secondaryButton?.onActionClicked?.invoke() }
+        viewModel.viewStateData.observe(
+            viewLifecycleOwner,
+            { state ->
+                with(binding) {
+                    UiHelpers.setTextOrHide(updateReaderTitleTv, state.title)
+                    UiHelpers.setTextOrHide(updateReaderDescriptionTv, state.description)
+                    UiHelpers.updateVisibility(updateReaderProgressGroup, state.showProgress)
+                    UiHelpers.setTextOrHide(updateReaderPrimaryActionBtn, state.primaryButton?.text)
+                    updateReaderPrimaryActionBtn.setOnClickListener { state.primaryButton?.onActionClicked?.invoke() }
+                    UiHelpers.setTextOrHide(updateReaderSecondaryActionBtn, state.secondaryButton?.text)
+                    updateReaderSecondaryActionBtn.setOnClickListener {
+                        state.secondaryButton?.onActionClicked?.invoke()
+                    }
+                }
             }
-        })
+        )
     }
 
     override fun onResume() {

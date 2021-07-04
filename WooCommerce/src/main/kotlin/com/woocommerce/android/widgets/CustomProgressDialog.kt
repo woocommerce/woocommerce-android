@@ -38,9 +38,9 @@ class CustomProgressDialog : DialogFragment() {
         dialogView.findViewById<MaterialTextView>(R.id.progress_text).text = progressMessage
 
         return MaterialAlertDialogBuilder(activity as Context)
-                .setView(dialogView)
-                .setCancelable(false)
-                .create()
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
     }
 
     override fun onCancel(dialog: DialogInterface) {

@@ -83,10 +83,10 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         // create a reusable Glide request for all images
         glideRequest = glideRequests
-                .asDrawable()
-                .error(R.drawable.ic_product)
-                .placeholder(R.drawable.product_detail_image_background)
-                .transition(DrawableTransitionOptions.withCrossFade())
+            .asDrawable()
+            .error(R.drawable.ic_product)
+            .placeholder(R.drawable.product_detail_image_background)
+            .transition(DrawableTransitionOptions.withCrossFade())
 
         // create a reusable Glide rounded corner transformation for all images
         val borderRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_small)
@@ -243,17 +243,17 @@ class WPMediaGalleryView @JvmOverloads constructor(
             // scale the thumbnail based on whether it's selected
             if (selected) {
                 WooAnimUtils.scale(
-                        holder.viewBinding.imageView,
-                        SCALE_NORMAL,
-                        SCALE_SELECTED,
-                        Duration.SHORT
+                    holder.viewBinding.imageView,
+                    SCALE_NORMAL,
+                    SCALE_SELECTED,
+                    Duration.SHORT
                 )
             } else {
                 WooAnimUtils.scale(
-                        holder.viewBinding.imageView,
-                        SCALE_SELECTED,
-                        SCALE_NORMAL,
-                        Duration.SHORT
+                    holder.viewBinding.imageView,
+                    SCALE_SELECTED,
+                    SCALE_NORMAL,
+                    Duration.SHORT
                 )
             }
 

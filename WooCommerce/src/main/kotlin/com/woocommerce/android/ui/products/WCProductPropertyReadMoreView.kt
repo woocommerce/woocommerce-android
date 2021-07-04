@@ -58,13 +58,13 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
         val customView = View.inflate(context, R.layout.view_alert_dialog, null)
         customView.findViewById<MaterialTextView>(R.id.product_purchase_note).text = content
         MaterialAlertDialogBuilder(context)
-                .setTitle(caption)
-                .setView(customView)
-                .setCancelable(true)
-                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
+            .setTitle(caption)
+            .setView(customView)
+            .setCancelable(true)
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 }

@@ -130,9 +130,9 @@ class VariationDetailViewModel @Inject constructor(
             ShowDialog(
                 positiveBtnAction = { _, _ ->
                     AnalyticsTracker.track(
-                            Stat.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
-                            mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId)
-                        )
+                        Stat.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
+                        mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId)
+                    )
                     viewState = viewState.copy(isConfirmingDeletion = false)
                     deleteVariation()
                 },
@@ -150,19 +150,23 @@ class VariationDetailViewModel @Inject constructor(
         when {
             isUploadingImages(navArgs.remoteVariationId) -> {
                 // images can't be assigned to the product until they finish uploading so ask whether to discard images.
-                triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(Exit)
-                    }
-                ))
+                triggerEvent(
+                    ShowDialog.buildDiscardDialogEvent(
+                        messageId = string.discard_images_message,
+                        positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                            triggerEvent(Exit)
+                        }
+                    )
+                )
             }
             viewState.variation != originalVariation -> {
-                triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(Exit)
-                    }
-                ))
+                triggerEvent(
+                    ShowDialog.buildDiscardDialogEvent(
+                        positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                            triggerEvent(Exit)
+                        }
+                    )
+                )
             }
             else -> {
                 triggerEvent(Exit)

@@ -1,1 +1,1 @@
-Fewer taps are needed to get to attributes on a variable product – they’re listed right in the product details! They say pictures say more than words, so we’ve refreshed some illustrations throughout the app. We also fixed a few bugs and made things a bit zippier – we hope that you notice!
+Creating international shipping labels is a breeze! Merchants in the USA using WooCommerce Shipping & Tax in their store can now generate shipping labels and customs forms for international destinations. We’re continuing to build this feature – give it a whirl and let us know how it goes!

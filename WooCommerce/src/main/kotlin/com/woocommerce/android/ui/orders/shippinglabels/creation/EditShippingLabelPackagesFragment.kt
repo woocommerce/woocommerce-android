@@ -28,7 +28,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_shipping_label_packages),
+class EditShippingLabelPackagesFragment :
+    BaseFragment(R.layout.fragment_edit_shipping_label_packages),
     BackPressListener {
     companion object {
         const val EDIT_PACKAGES_CLOSED = "edit_packages_closed"

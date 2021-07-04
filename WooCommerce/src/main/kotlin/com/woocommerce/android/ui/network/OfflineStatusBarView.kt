@@ -16,13 +16,16 @@ class OfflineStatusBarView @JvmOverloads constructor(
         View.inflate(context, R.layout.offline_status_bar, this)
         setOnClickListener {
             WooAnimUtils.animateBottomBar(this, false)
-            postDelayed({
-                if (NetworkUtils.isNetworkAvailable(context)) {
-                    hide()
-                } else {
-                    show()
-                }
-            }, 2000)
+            postDelayed(
+                {
+                    if (NetworkUtils.isNetworkAvailable(context)) {
+                        hide()
+                    } else {
+                        show()
+                    }
+                },
+                2000
+            )
         }
     }
 

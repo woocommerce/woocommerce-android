@@ -24,6 +24,7 @@ private const val DEGREES_0 = 0f
 private const val DEGREES_360 = 360f
 private const val PIVOT_CENTER = 0.5f
 
+@Suppress("TooManyFunctions")
 object WooAnimUtils {
     enum class Duration {
         SHORT,
@@ -43,10 +44,16 @@ object WooAnimUtils {
 
     private val DEFAULT_DURATION = Duration.SHORT
 
-    fun fadeIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
+    fun getFadeInAnim(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
         with(ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
             duration = animDuration.toMillis(target.context)
             interpolator = LinearInterpolator()
+            return this
+        }
+    }
+
+    fun fadeIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
+        with(getFadeInAnim(target, animDuration)) {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator) {
                     target.visibility = View.VISIBLE
@@ -56,10 +63,16 @@ object WooAnimUtils {
         }
     }
 
-    fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION, endVisibility: Int = View.GONE) {
+    fun getFadeOutAnim(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
         with(ObjectAnimator.ofFloat(target, View.ALPHA, 1.0f, 0.0f)) {
             duration = animDuration.toMillis(target.context)
             interpolator = LinearInterpolator()
+            return this
+        }
+    }
+
+    fun fadeOut(target: View, animDuration: Duration = DEFAULT_DURATION, endVisibility: Int = View.GONE) {
+        with(getFadeOutAnim(target, animDuration)) {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     target.visibility = endVisibility
@@ -69,13 +82,19 @@ object WooAnimUtils {
         }
     }
 
-    fun scaleIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
+    fun getScaleInAnim(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
         val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 0f, 1f)
         val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f, 1f)
 
         with(ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
             duration = animDuration.toMillis(target.context)
             interpolator = AccelerateDecelerateInterpolator()
+            return this
+        }
+    }
+
+    fun scaleIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
+        with(getScaleInAnim(target, animDuration)) {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator) {
                     target.visibility = View.VISIBLE
@@ -114,19 +133,19 @@ object WooAnimUtils {
         duration: Duration
     ) {
         val scaleX = PropertyValuesHolder.ofFloat(
-                View.SCALE_X,
-                scaleStart,
-                scaleEnd
+            View.SCALE_X,
+            scaleStart,
+            scaleEnd
         )
         val scaleY = PropertyValuesHolder.ofFloat(
-                View.SCALE_Y,
-                scaleStart,
-                scaleEnd
+            View.SCALE_Y,
+            scaleStart,
+            scaleEnd
         )
         val animator = ObjectAnimator.ofPropertyValuesHolder(
-                target,
-                scaleX,
-                scaleY
+            target,
+            scaleX,
+            scaleY
         )
         animator.duration = duration.toMillis(target.context)
         animator.interpolator = AccelerateDecelerateInterpolator()
@@ -152,10 +171,11 @@ object WooAnimUtils {
             toY = if (isVisible) 0f else 1f
         }
         val animation = TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, fromY,
-                Animation.RELATIVE_TO_SELF, toY)
+            Animation.RELATIVE_TO_SELF, 0.0f,
+            Animation.RELATIVE_TO_SELF, 0.0f,
+            Animation.RELATIVE_TO_SELF, fromY,
+            Animation.RELATIVE_TO_SELF, toY
+        )
 
         val durationMillis = duration.toMillis(view.context)
         animation.duration = durationMillis

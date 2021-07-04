@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-08 09:54:19+0000
+Translation-Revision-Date: 2021-06-23 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="empty_order_list_message">Utforska hur du kan öka din butiksförsäljning.</string>
+    <string name="empty_product_message">Börja sälja idag genom att lägga till din första produkt i butiken.</string>
+    <string name="empty_product_add_product_button">Lägg till produkt</string>
+    <string name="variable_product_attributes">Variationsattribut</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Aktivera Bluetooth på den mobila enheten</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;Läs mer&lt;/a&gt; om att ta emot betalningar med din mobila enhet och att beställa kortläsare</string>
+    <string name="card_reader_fetching_order_failed">Det gick inte att hämta beställningen. Beställningens status i appen kan vara föråldrad.</string>
+    <string name="card_reader_payment_email_client_not_found">Lyckas inte hitta ditt e-postprogram</string>
+    <string name="card_reader_payment_receipt_email_content">Tack för ditt köp! Du kan hitta kvittot för din betalning på följande länk: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">Ditt kvitto från %s</string>
+    <string name="card_reader_payment_description">Onlinebetalning för beställning %s för %s</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Uppdaterar beställning</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Uppdaterar appstatusen</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Din kund valde %1$s</string>
+    <string name="shipping_label_address_phone_invalid">Tullformulär kräver ett tiosiffrigt telefonnummer</string>
+    <string name="shipping_label_address_phone_required">Ett telefonnummer krävs eftersom denna försändelse kräver ett tullformulär</string>
+    <string name="shipping_label_create_customs_done">Tullformulär ifyllt</string>
+    <string name="print_receipt_label_info_step_7">Om du har problem med att skriva ut från din enhet kontaktar du kundsupporten för din skrivare.</string>
+    <string name="print_receipt_label_info_step_6">Om utskrift inte är tillgänglig kan du alltid spara ditt kvitto som PDF och skicka det via e-post för att skriva ut det från en annan enhet.</string>
+    <string name="print_receipt_label_info_step_5">Justera pappersstorleken efter behov och välj ”Skriv ut” när du är redo att skriva ut kvittot.</string>
+    <string name="print_receipt_label_info_step_4">Parkoppla och anslut skrivaren till din mobil när du uppmanas till det.</string>
+    <string name="print_receipt_label_info_step_3">När du väljer \"Skriv ut kvitto\" efter att ha godkänt betalningen, ersätt \"Spara som PDF\" med \"Alla skrivare\" och sök efter ny skrivare.</string>
+    <string name="print_receipt_label_info_step_2">Aktivera Bluetooth- eller Wifi-anslutning på din skrivare.</string>
+    <string name="print_receipt_label_info_step_1">Se till att Print Service-tillägget för din skrivare är installerat.</string>
+    <string name="orderdetail_printing_instructions_button">Lär dig mer om att skriva ut kvitton med din enhet</string>
+    <string name="product_create_attribute_helper">För att skapa en variation måste du först ställa in dess attribut (dvs. \"Färg\", \"Storlek\")</string>
+    <string name="product_variation_single_count">1 variation</string>
+    <string name="product_variation_multiple_count">%1$s variationer</string>
     <string name="shipping_label_rate_included_options_usps_tracking">%s-spårning</string>
     <string name="card_reader_software_update_in_progress_title">Uppdaterar din läsares programvara</string>
     <string name="card_reader_software_update_title">Programvaruuppdatering</string>
@@ -97,7 +125,7 @@ Language: sv_SE
     <string name="orderdetail_products_recreate_shipping_label_menu">Skapa ny leveransetikett</string>
     <string name="product_type_virtual_title">Enkel virtuell produkt</string>
     <string name="variation_confirm_delete">Vill du ta bort denna variant?</string>
-    <string name="variation_create_dialog_title">Skapar variation</string>
+    <string name="variation_create_dialog_title">Genererar variation</string>
     <string name="product_delete_dialog_title">Tar bort produkt</string>
     <string name="card_reader_payment_send_receipt">Skicka kvitto</string>
     <string name="card_reader_payment_print_receipt">Skriv ut kvitto</string>
@@ -150,10 +178,7 @@ Language: sv_SE
     <string name="shipping_label_rate_included_options">Inkluderar %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Måste signeras av en vuxen (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Signatur obligatoriskt (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">Gratis frakt</string>
-    <string name="shipping_label_shipping_method_local_pickup">Hämta själv</string>
-    <string name="shipping_label_shipping_method_flat_rate">Fast pris</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Kunden betalade %1$s (%2$s) för frakt</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Kunden betalade %1$s av %2$s för frakt</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">När du köper fraktetiketter med WooCommerce, får du 5 % till 40 % i rabatt jämfört med postkontoret.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Vad innebär rabatt på  WooCommerce-tjänster?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Det gick inte att hämta leveransalternativen</string>
@@ -200,7 +225,7 @@ Language: sv_SE
     <string name="shipping_label_single_package_total_weight">Total förpackningsvikt: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Anpassade paket</string>
     <string name="shipping_label_package_details_fetch_products_error">Kan inte hämta produkter</string>
-    <string name="shipping_label_missing_data_snackbar_message">Vissa obligatoriska fält är tomma.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Vissa obligatoriska fält är tomma.</string>
     <string name="shipping_label_package_details_weight_error">Ogiltig vikt</string>
     <string name="shipping_label_package_selector_title">Valt paket</string>
     <string name="shipping_label_packages_loading_message">Vänta …</string>
@@ -610,7 +635,6 @@ Language: sv_SE
     <string name="empty_review_list_message">Få högkvalitativa produktrecensioner för din butik</string>
     <string name="empty_review_list_title">Få dina första recensioner</string>
     <string name="empty_order_list_all_processed">Alla beställningar har slutförts</string>
-    <string name="empty_order_list_message">Vi meddelar dig när du får en ny beställning. Under tiden kan du utforska hur du kan öka din försäljning i butiken.</string>
     <string name="empty_order_list_title">Väntar på din första beställning</string>
     <string name="share_your_store_message">Dela din butik i sociala medier och via e-post med dina kontakter</string>
     <string name="get_the_word_out">Sprid ryktet</string>
@@ -643,7 +667,7 @@ Language: sv_SE
     <string name="order_refunds_select_quantity">Välj kvantitet</string>
     <string name="order_refunds_shipping_refund">Fraktåterbetalning</string>
     <string name="order_refunds_products_refund">Produktåterbetalning</string>
-    <string name="order_refunds_item_description">%d x %s vardera</string>
+    <string name="order_refunds_item_description">%s x %s vardera</string>
     <string name="order_refunds_items_selected">%d artiklar valda</string>
     <string name="order_refunds_items_select_none">Välj ingen</string>
     <string name="order_refunds_items_select_all">Välj alla</string>

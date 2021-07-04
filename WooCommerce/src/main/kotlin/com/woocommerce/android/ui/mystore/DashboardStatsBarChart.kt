@@ -15,8 +15,8 @@ import kotlin.math.abs
  * https://github.com/woocommerce/woocommerce-android/issues/1048
  */
 class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
-        context,
-        attrs
+    context,
+    attrs
 ) {
     init {
         val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.DashboardStatsBarChart, 0, 0)
@@ -73,8 +73,8 @@ class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val movement = Point(
-                            abs(event.x.toInt() - startTouchPoint.x),
-                            abs(event.y.toInt() - startTouchPoint.y)
+                        abs(event.x.toInt() - startTouchPoint.x),
+                        abs(event.y.toInt() - startTouchPoint.y)
                     )
                     // swallow the event if this is a horizontal scrub, which we determine by
                     // checking if the vertical motion is less than the horizontal motion

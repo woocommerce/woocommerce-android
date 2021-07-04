@@ -23,7 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ParentCategoryListFragment : BaseFragment(R.layout.fragment_product_categories_list),
+class ParentCategoryListFragment :
+    BaseFragment(R.layout.fragment_product_categories_list),
     OnLoadMoreListener,
     OnProductCategoryClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -98,17 +99,23 @@ class ParentCategoryListFragment : BaseFragment(R.layout.fragment_product_catego
             }
         }
 
-        viewModel.parentCategories.observe(viewLifecycleOwner, Observer {
-            showParentCategories(it)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.parentCategories.observe(
+            viewLifecycleOwner,
+            Observer {
+                showParentCategories(it)
             }
-        })
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is Exit -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun showParentCategories(productCategories: List<ProductCategoryItemUiModel>) {

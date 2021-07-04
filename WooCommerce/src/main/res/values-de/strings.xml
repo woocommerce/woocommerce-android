@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-10 09:54:04+0000
+Translation-Revision-Date: 2021-06-24 15:58:27+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="empty_order_list_message">Erkundige dich, wie du deine Verkäufe im Store steigern kannst.</string>
+    <string name="empty_product_message">Füge dein erstes Produkt zum Store hinzu, um jetzt mit dem Verkauf zu beginnen.</string>
+    <string name="empty_product_add_product_button">Produkt hinzufügen</string>
+    <string name="variable_product_attributes">Variantenattribute</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Aktiviere Bluetooth auf dem Mobilgerät</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;Weitere Informationen&lt;/a&gt; zum Empfang von Zahlungen mit deinem Mobilgerät und zur Bestellung von Kartenlesegeräten</string>
+    <string name="card_reader_fetching_order_failed">Fehler beim Abrufen der Bestellung Der Bestellstatus in der App ist eventuell nicht aktuell.</string>
+    <string name="card_reader_payment_email_client_not_found">E-Mail-Client-App wird nicht erkannt.</string>
+    <string name="card_reader_payment_receipt_email_content">Vielen Dank für deinen Einkauf! Den Beleg für deine Zahlung findest du unter folgendem Link: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">Dein Beleg vom %s</string>
+    <string name="card_reader_payment_description">Online-Zahlung für Bestellung %s für %s</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Bestellung aktualisieren</string>
+    <string name="card_reader_payment_fetch_order_loading_header">App-Status aktualisieren</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Dein Kunde hat %1$s ausgewählt</string>
+    <string name="shipping_label_address_phone_invalid">In Zollformularen muss eine zehnstellige Telefonnummer angegeben werden.</string>
+    <string name="shipping_label_address_phone_required">Die Telefonnummer ist erforderlich, weil für diese Lieferung ein Zollformular benötigt wird.</string>
+    <string name="shipping_label_create_customs_done">Zollformular ausgefüllt</string>
+    <string name="print_receipt_label_info_step_7">Wenn du Probleme beim Drucken von deinem Gerät aus hast, wende dich an den Kundensupport für deinen Drucker.</string>
+    <string name="print_receipt_label_info_step_6">Wenn die Option „Drucken“ nicht verfügbar ist, kannst du deinen Beleg stattdessen als PDF speichern und ihn per E-Mail an ein anderes Gerät senden, um ihn von dort aus zu drucken.</string>
+    <string name="print_receipt_label_info_step_5">Passe die Papiergröße nach Bedarf an und wähle „Drucken“, wenn du bereit bist, den Beleg zu drucken.</string>
+    <string name="print_receipt_label_info_step_4">Verbinde den Drucker mit deinem Mobilgerät, sobald du dazu aufgefordert wirst.</string>
+    <string name="print_receipt_label_info_step_3">Wenn du nach dem Empfang der Zahlung „Beleg drucken“ auswählst, ersetzt du „Als PDF speichern“ durch „Alle Drucker“ und suchst nach dem neuen Drucker.</string>
+    <string name="print_receipt_label_info_step_2">Aktiviere eine Bluetooth- oder WiFi-Verbindung zu deinem Drucker.</string>
+    <string name="print_receipt_label_info_step_1">Vergewissere dich, dass das Print Service-Plugin für deinen Drucker installiert ist.</string>
+    <string name="orderdetail_printing_instructions_button">Weitere Informationen über das Drucken von Belegen mit deinem Gerät</string>
+    <string name="product_create_attribute_helper">Um eine Variation zu erstellen, musst du zuerst deren Attribute festlegen (d. h. Farbe, Größe).</string>
+    <string name="product_variation_single_count">1 Variante</string>
+    <string name="product_variation_multiple_count">%1$s Varianten</string>
     <string name="shipping_label_rate_included_options_usps_tracking">Sendungsverfolgung für %s</string>
     <string name="card_reader_software_update_in_progress_title">Die Software deines Kartenlesegeräts wird aktualisiert</string>
     <string name="card_reader_software_update_title">Software-Update</string>
@@ -150,10 +178,7 @@ Language: de
     <string name="shipping_label_rate_included_options">Enthält %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Unterschrift von einem Erwachsenen erforderlich (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Unterschrift erforderlich (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">Kostenlose Lieferung</string>
-    <string name="shipping_label_shipping_method_local_pickup">Abholung vor Ort</string>
-    <string name="shipping_label_shipping_method_flat_rate">Versandkostenpauschale</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Der Kunde hat Versandkosten in Höhe von %1$s (%2$s) bezahlt</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Der Kunde hat für den Versand als %1$s den Betrag von %2$s bezahlt</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Beim Kauf von Versandetiketten bei WooCommerce erhältst du 5 % bis 40 % Rabatt im Vergleich zu den Preisen bei der Post.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Was ist der  WooCommerce-Dienstleistungsrabatt?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Beim Laden der Versandoptionen ist ein Fehler aufgetreten.</string>
@@ -200,7 +225,7 @@ Language: de
     <string name="shipping_label_single_package_total_weight">Gesamtgewicht des Pakets: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Individuelle Pakete</string>
     <string name="shipping_label_package_details_fetch_products_error">Produkte können nicht abgerufen werden</string>
-    <string name="shipping_label_missing_data_snackbar_message">Bestimmte Pflichtfelder sind leer.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Bestimmte Pflichtfelder sind leer.</string>
     <string name="shipping_label_package_details_weight_error">Ungültiges Gewicht</string>
     <string name="shipping_label_package_selector_title">Ausgewähltes Paket</string>
     <string name="shipping_label_packages_loading_message">Bitte warten …</string>
@@ -610,7 +635,6 @@ Language: de
     <string name="empty_review_list_message">Sammle hochwertige Produktbewertungen für deinen Shop.</string>
     <string name="empty_review_list_title">Erhalte deine ersten Bewertungen</string>
     <string name="empty_order_list_all_processed">Alle Bestellungen wurden ausgeführt</string>
-    <string name="empty_order_list_message">Wir benachrichtigen dich, wenn du eine neue Bestellung erhältst. Erkundige dich in der Zwischenzeit, wie du deine Shop-Verkäufe steigern kannst.</string>
     <string name="empty_order_list_title">Warten auf deine ersten Bestellung</string>
     <string name="share_your_store_message">Teile deinen Shop mit deinen Kontakten in den sozialen Medien und per E-Mail.</string>
     <string name="get_the_word_out">Sorge für mehr Bekanntheit</string>
@@ -643,7 +667,7 @@ Language: de
     <string name="order_refunds_select_quantity">Menge wählen</string>
     <string name="order_refunds_shipping_refund">Versandrückerstattung</string>
     <string name="order_refunds_products_refund">Rückerstattung für Produkt</string>
-    <string name="order_refunds_item_description">%d x %s jeweils</string>
+    <string name="order_refunds_item_description">%s x %s jeweils</string>
     <string name="order_refunds_items_selected">%d Artikel ausgewählt</string>
     <string name="order_refunds_items_select_none">Keine auswählen</string>
     <string name="order_refunds_items_select_all">Alle auswählen</string>

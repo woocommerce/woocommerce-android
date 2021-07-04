@@ -46,11 +46,11 @@ class VariationListViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         viewModel = spy(
             VariationListViewModel(
-                    savedState,
-                    variationRepository,
-                    productRepository,
-                    networkStatus,
-                    currencyFormatter
+                savedState,
+                variationRepository,
+                productRepository,
+                networkStatus,
+                currencyFormatter
             )
         )
     }

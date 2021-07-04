@@ -44,7 +44,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
         on(it.getString(R.string.and)).thenAnswer { "and" }
         on(it.getString(any(), any())).thenAnswer {
-            i -> "You can refund " + i.arguments[1].toString()
+            i ->
+            "You can refund " + i.arguments[1].toString()
         }
     }
 

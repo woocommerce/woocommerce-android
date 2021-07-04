@@ -110,14 +110,17 @@ class ProductPricingFragment :
             new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(KEY_PRICING_DIALOG_RESULT, event.data)
-                is Exit -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> navigateBackWithResult(KEY_PRICING_DIALOG_RESULT, event.data)
+                    is Exit -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun setupViews(currency: String, isCurrencyPrefix: Boolean, pricingData: PricingData) {
@@ -162,28 +165,34 @@ class ProductPricingFragment :
         updateSaleStartDate(pricingData.saleStartDate, pricingData.saleEndDate, viewModel.parameters.gmtOffset)
         with(binding.scheduleSaleStartDate) {
             setClickListener {
-                startDatePickerDialog = displayDatePickerDialog(binding.scheduleSaleStartDate, OnDateSetListener {
-                    _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = dateUtils.localDateToGmt(
+                startDatePickerDialog = displayDatePickerDialog(
+                    binding.scheduleSaleStartDate,
+                    OnDateSetListener {
+                        _, selectedYear, selectedMonth, dayOfMonth ->
+                        val selectedDate = dateUtils.localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, true
-                    )
+                        )
 
-                    viewModel.onDataChanged(saleStartDate = selectedDate)
-                })
+                        viewModel.onDataChanged(saleStartDate = selectedDate)
+                    }
+                )
             }
         }
 
         updateSaleEndDate(pricingData.saleEndDate, viewModel.parameters.gmtOffset)
         with(binding.scheduleSaleEndDate) {
             setClickListener {
-                endDatePickerDialog = displayDatePickerDialog(binding.scheduleSaleEndDate, OnDateSetListener {
-                    _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = dateUtils.localDateToGmt(
+                endDatePickerDialog = displayDatePickerDialog(
+                    binding.scheduleSaleEndDate,
+                    OnDateSetListener {
+                        _, selectedYear, selectedMonth, dayOfMonth ->
+                        val selectedDate = dateUtils.localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, false
-                    )
+                        )
 
-                    viewModel.onDataChanged(saleEndDate = selectedDate)
-                })
+                        viewModel.onDataChanged(saleEndDate = selectedDate)
+                    }
+                )
             }
         }
 
@@ -288,7 +297,7 @@ class ProductPricingFragment :
         }
         val (year, month, day) = dateString?.split("-").orEmpty()
         val datePicker = DatePickerDialog(
-                requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
+            requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
         )
 
         datePicker.show()

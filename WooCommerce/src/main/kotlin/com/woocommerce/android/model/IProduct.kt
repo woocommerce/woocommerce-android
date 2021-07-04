@@ -33,13 +33,17 @@ interface IProduct {
         val size = when (dimensions.size) {
             NO_DIMENSIONS -> EMPTY
             ONE_DIMENSIONAL -> dimensions[0].formatToString() + unit
-            TWO_DIMENSIONAL -> dimensions[0].formatToString() +
-                X + dimensions[1].formatToString() +
-                SPACE + unit
-            THREE_DIMENSIONAL -> dimensions[0].formatToString() +
-                X + dimensions[1].formatToString() +
-                X + dimensions[2].formatToString() +
-                SPACE + unit
+            TWO_DIMENSIONAL -> {
+                dimensions[0].formatToString() +
+                    X + dimensions[1].formatToString() +
+                    SPACE + unit
+            }
+            THREE_DIMENSIONAL -> {
+                dimensions[0].formatToString() +
+                    X + dimensions[1].formatToString() +
+                    X + dimensions[2].formatToString() +
+                    SPACE + unit
+            }
             else -> throw UnsupportedOperationException("More than three dimensions!")
         }
         return size.trim()

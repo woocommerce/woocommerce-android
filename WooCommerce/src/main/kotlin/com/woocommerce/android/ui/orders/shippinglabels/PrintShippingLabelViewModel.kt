@@ -44,10 +44,13 @@ class PrintShippingLabelViewModel @Inject constructor(
             shippingLabelId = arguments.shippingLabelId
         )
 
-    val viewStateData = LiveDataDelegate(savedState, PrintShippingLabelViewState(
-        isLabelExpired = label?.isAnonymized == true ||
-            label?.expiryDate?.let { Date().after(it) } ?: false
-    ))
+    val viewStateData = LiveDataDelegate(
+        savedState,
+        PrintShippingLabelViewState(
+            isLabelExpired = label?.isAnonymized == true ||
+                label?.expiryDate?.let { Date().after(it) } ?: false
+        )
+    )
     private var viewState by viewStateData
 
     fun onPrintShippingLabelInfoSelected() {

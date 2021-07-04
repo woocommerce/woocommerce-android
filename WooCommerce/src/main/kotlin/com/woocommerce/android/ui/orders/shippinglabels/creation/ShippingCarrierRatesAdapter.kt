@@ -314,15 +314,17 @@ class ShippingCarrierRatesAdapter(
         val hasSelectedOption: Boolean = rateOptions.any { it.selectedOption != null }
 
         fun updateSelectedRateAndCopy(selectedRate: ShippingRate): PackageRateListItem {
-            return copy(rateOptions = rateOptions.map { item ->
-                // update the selected rate for the specific carrier option and reset the rest, since only one
-                // rate option can be selected per package
-                if (item.serviceId == selectedRate.serviceId) {
-                    item.copy(selectedOption = selectedRate.option)
-                } else {
-                    item.copy(selectedOption = null)
+            return copy(
+                rateOptions = rateOptions.map { item ->
+                    // update the selected rate for the specific carrier option and reset the rest, since only one
+                    // rate option can be selected per package
+                    if (item.serviceId == selectedRate.serviceId) {
+                        item.copy(selectedOption = selectedRate.option)
+                    } else {
+                        item.copy(selectedOption = null)
+                    }
                 }
-            })
+            )
         }
     }
 

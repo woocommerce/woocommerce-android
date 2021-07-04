@@ -1,0 +1,2 @@
+6.9:
+São necessários menos toques para acessar os atributos de um produto variável: eles são listados nos detalhes do produto! Dizem que uma imagem vale mais do que mil palavras. Pensando nisso, atualizamos algumas ilustrações do aplicativo. Também corrigimos alguns erros e simplificamos alguns detalhes. Esperamos que você perceba!

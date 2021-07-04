@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
@@ -167,43 +168,61 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
         }
 
-        viewModel.orderNotes.observe(viewLifecycleOwner, Observer {
-            showOrderNotes(it)
-        })
-        viewModel.orderRefunds.observe(viewLifecycleOwner, Observer {
-            showOrderRefunds(it, viewModel.order)
-        })
-        viewModel.productList.observe(viewLifecycleOwner, Observer {
-            showOrderProducts(it, viewModel.order.currency)
-        })
-        viewModel.shipmentTrackings.observe(viewLifecycleOwner, Observer {
-            showShipmentTrackings(it)
-        })
-        viewModel.shippingLabels.observe(viewLifecycleOwner, Observer {
-            showShippingLabels(it, viewModel.order.currency)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> {
-                    if (event.args.isNotEmpty()) {
-                        uiMessageResolver.getSnack(event.message, *event.args).show()
-                    } else {
-                        uiMessageResolver.showSnack(event.message)
-                    }
-                }
-                is ShowUndoSnackbar -> {
-                    displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                }
-                is OrderNavigationTarget -> navigator.navigate(this, event)
-                else -> event.isHandled = false
+        viewModel.orderNotes.observe(
+            viewLifecycleOwner,
+            Observer {
+                showOrderNotes(it)
             }
-        })
+        )
+        viewModel.orderRefunds.observe(
+            viewLifecycleOwner,
+            Observer {
+                showOrderRefunds(it, viewModel.order)
+            }
+        )
+        viewModel.productList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showOrderProducts(it, viewModel.order.currency)
+            }
+        )
+        viewModel.shipmentTrackings.observe(
+            viewLifecycleOwner,
+            Observer {
+                showShipmentTrackings(it)
+            }
+        )
+        viewModel.shippingLabels.observe(
+            viewLifecycleOwner,
+            Observer {
+                showShippingLabels(it, viewModel.order.currency)
+            }
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> {
+                        if (event.args.isNotEmpty()) {
+                            uiMessageResolver.getSnack(event.message, *event.args).show()
+                        } else {
+                            uiMessageResolver.showSnack(event.message)
+                        }
+                    }
+                    is ShowUndoSnackbar -> {
+                        displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
+                    }
+                    is OrderNavigationTarget -> navigator.navigate(this, event)
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
         handleDialogResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT, R.id.orderDetailFragment) {
-            viewModel.onOrderStatusChanged(it)
+            viewModel.onOrderStatusChanged(it, OrderStatusUpdateSource.DIALOG)
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
             viewModel.onNewOrderNoteAdded(it)
@@ -215,7 +234,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             viewModel.onNewShipmentTrackingAdded(it)
         }
         handleResult<String>(OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT) {
-            viewModel.onOrderStatusChanged(it)
+            viewModel.onOrderStatusChanged(it, OrderStatusUpdateSource.FULFILL_SCREEN)
         }
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
@@ -362,7 +381,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             dateUtils = dateUtils,
             onDeleteShipmentTrackingClicked = {
                 viewModel.onDeleteShipmentTrackingClicked(it)
-            })
+            }
+        )
     }
 
     private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {
@@ -420,10 +440,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
 
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
-            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-        ))
+            FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
         registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.SHIPPING_LABELS)
@@ -438,10 +460,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
 
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
-            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-        ))
+            FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
         registerFeedbackSetting(DISMISSED)
         displayShippingLabelsWIPCard(false, isM1)
     }
