@@ -367,8 +367,8 @@ class ProductDetailViewModel @Inject constructor(
     fun onGenerateVariationClicked() {
         launch {
             createEmptyVariation()?.let {
-                ProductVariationCreated(success = true)
-            } ?: ProductVariationCreated(success = false)
+                triggerEvent(ProductVariationCreated(success = true))
+            } ?: triggerEvent(ProductVariationCreated(success = false))
         }
     }
 
@@ -2034,6 +2034,8 @@ class ProductDetailViewModel @Inject constructor(
         class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
+        object ExitAttributesAdded : ProductExitEvent(shouldShowDiscardDialog = false)
     }
 
     class ProductVariationCreated(val success: Boolean) : Event()
