@@ -10,7 +10,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductVariationCreated
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.CustomProgressDialog
 
@@ -42,8 +41,10 @@ class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attributes
 
     private fun onEventReceived(event: MultiLiveEvent.Event) {
         when (event) {
-            is ProductVariationCreated -> handleVariationCreationEvent(event)
-            is ExitAttributesAdded -> findNavController().navigateUp()
+            is ExitAttributesAdded ->
+                AttributesAddedFragmentDirections
+                    .actionAttributesAddedFragmentToProductDetailFragment()
+                    .apply { findNavController().navigateSafely(this) }
             else -> event.isHandled = false
         }
     }
@@ -73,14 +74,5 @@ class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attributes
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
-    }
-
-    private fun handleVariationCreationEvent(event: ProductVariationCreated) {
-        if (event.success) {
-            AttributesAddedFragmentDirections.actionAttributesAddedFragmentToProductDetailFragment()
-                .apply { findNavController().navigateSafely(this) }
-        } else {
-            findNavController().navigateUp()
-        }
     }
 }

@@ -46,13 +46,7 @@ import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.*
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
@@ -366,9 +360,8 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onGenerateVariationClicked() {
         launch {
-            createEmptyVariation()?.let {
-                triggerEvent(ProductVariationCreated(success = true))
-            } ?: triggerEvent(ProductVariationCreated(success = false))
+            createEmptyVariation()
+                .also { triggerEvent(ExitAttributesAdded) }
         }
     }
 
@@ -550,6 +543,10 @@ class ProductDetailViewModel @Inject constructor(
             }
             is ExitProductAddAttribute -> {
                 eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
+                hasChanges = hasAttributeChanges()
+            }
+            is ExitAttributesAdded -> {
+                eventName = Stat.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
         }
@@ -2038,7 +2035,6 @@ class ProductDetailViewModel @Inject constructor(
         object ExitAttributesAdded : ProductExitEvent(shouldShowDiscardDialog = false)
     }
 
-    class ProductVariationCreated(val success: Boolean) : Event()
     object RefreshMenu : Event()
 
     /**
