@@ -28,13 +28,12 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SKIPPED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -42,7 +41,6 @@ import kotlin.math.roundToInt
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
     private val tracker: AnalyticsTrackerWrapper,
-    private val appLogWrapper: AppLogWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(Loading)
@@ -124,7 +122,7 @@ class CardReaderDetailViewModel @Inject constructor(
         launch {
             val disconnectionResult = cardReaderManager.disconnectReader()
             if (!disconnectionResult) {
-                appLogWrapper.e(T.MAIN, "Disconnection from reader has failed")
+                WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
                 showNotConnectedState()
             }
         }
@@ -132,7 +130,10 @@ class CardReaderDetailViewModel @Inject constructor(
 
     fun onUpdateReaderResult(updateResult: UpdateResult) {
         when (updateResult) {
-            SUCCESS -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+            SUCCESS -> {
+                launch { checkForUpdates() }
+                triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+            }
             FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
             SKIPPED -> {
             }

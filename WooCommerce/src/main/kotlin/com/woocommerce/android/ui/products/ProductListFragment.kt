@@ -26,7 +26,6 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M3
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
@@ -58,6 +57,7 @@ class ProductListFragment :
     OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
+        val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.PRODUCTS_VARIATIONS
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
@@ -78,8 +78,11 @@ class ProductListFragment :
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = _binding!!
 
-    private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
+    private val feedbackState: FeedbackState
+        get() =
+            FeedbackPrefs.getFeatureFeedbackSettings(TAG)
+                ?.takeIf { it.name == CURRENT_WIP_NOTICE_FEATURE.name }
+                ?.state ?: UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -376,7 +379,7 @@ class ProductListFragment :
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
             val wipCardTitleId = R.string.product_wip_title_m5
-            val wipCardMessageId = R.string.product_wip_message_m5
+            val wipCardMessageId = R.string.product_wip_message_variations
 
             binding.productsWipCard.visibility = View.VISIBLE
             binding.productsWipCard.initView(
@@ -466,7 +469,7 @@ class ProductListFragment :
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER,
             mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
@@ -480,7 +483,7 @@ class ProductListFragment :
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER,
             mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
@@ -489,7 +492,7 @@ class ProductListFragment :
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(PRODUCTS_M3.name, state)
+        FeatureFeedbackSettings(CURRENT_WIP_NOTICE_FEATURE.name, state)
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 

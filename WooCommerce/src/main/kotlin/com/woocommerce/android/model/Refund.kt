@@ -125,8 +125,8 @@ fun List<Refund>.getNonRefundedProducts(
  */
 fun List<Refund>.getMaxRefundQuantities(
     products: List<Order.Item>
-): Map<Long, Int> {
-    val map = mutableMapOf<Long, Int>()
+): Map<Long, Float> {
+    val map = mutableMapOf<Long, Float>()
     val groupedRefunds = this.flatMap { it.items }.groupBy { it.orderItemId }
     products.map { item ->
         map[item.itemId] = item.quantity - (groupedRefunds[item.itemId]?.sumBy { it.quantity } ?: 0)

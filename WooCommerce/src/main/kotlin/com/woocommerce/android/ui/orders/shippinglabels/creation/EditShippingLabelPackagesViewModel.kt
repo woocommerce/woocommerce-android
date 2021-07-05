@@ -27,6 +27,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
+import kotlin.math.ceil
 
 @HiltViewModel
 class EditShippingLabelPackagesViewModel @Inject constructor(
@@ -197,8 +198,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             productId = uniqueId,
             name = name,
             attributesList = attributesList,
-            // TODO remove the conversion when the order quantity starts supporting decimal values
-            quantity = quantity.toFloat(),
+            // for shipping purposes, consider portion quantities as complete values
+            quantity = ceil(quantity).toInt(),
             value = price,
             weight = weight
         )
