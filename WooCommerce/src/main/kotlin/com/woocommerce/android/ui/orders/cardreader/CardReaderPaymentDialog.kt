@@ -13,7 +13,6 @@ import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
@@ -60,11 +59,6 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
             viewLifecycleOwner,
             { event ->
                 when (event) {
-                    is PrintReceipt -> printHtmlHelper.printReceipt(
-                        requireActivity(),
-                        event.receiptUrl,
-                        event.documentName
-                    )
                     is SendReceipt -> composeEmail(event.address, event.subject, event.content)
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     else -> event.isHandled = false
@@ -74,6 +68,13 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
         viewModel.viewStateData.observe(
             viewLifecycleOwner,
             { viewState ->
+                if (viewState is CardReaderPaymentViewModel.ViewState.PrintingReceiptState) {
+                    printHtmlHelper.printReceipt(
+                        requireActivity(),
+                        viewState.receiptUrl,
+                        viewState.documentName
+                    )
+                }
                 UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
                 UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
                 UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)

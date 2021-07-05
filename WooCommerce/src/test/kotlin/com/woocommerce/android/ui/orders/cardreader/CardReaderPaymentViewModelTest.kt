@@ -41,9 +41,9 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PrintingReceiptState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
@@ -597,7 +597,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when user clicks on print receipt button, then PrintReceipt event emitted`() =
+    fun `when user clicks on print receipt button, then PrintingReceiptState state emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -606,7 +606,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(PrintingReceiptState::class.java)
         }
 
     @Test
@@ -619,7 +619,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
-            assertThat((viewModel.viewStateData.value as PaymentSuccessfulState).isProgressVisible).isTrue()
+            assertThat((viewModel.viewStateData.value as PrintingReceiptState).isProgressVisible).isTrue()
         }
 
     @Test
@@ -651,6 +651,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when OS accepts the print request, then print success event tracked`() {
+        viewModel.start()
+
         viewModel.onPrintResult(STARTED)
 
         verify(tracker).track(RECEIPT_PRINT_SUCCESS)
@@ -658,6 +660,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when OS refuses the print request, then print failed event tracked`() {
+        viewModel.start()
+
         viewModel.onPrintResult(FAILED)
 
         verify(tracker).track(RECEIPT_PRINT_FAILED)
@@ -665,6 +669,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when manually cancels the print request, then print cancelled event tracked`() {
+        viewModel.start()
+
         viewModel.onPrintResult(CANCELLED)
 
         verify(tracker).track(RECEIPT_PRINT_CANCELED)
