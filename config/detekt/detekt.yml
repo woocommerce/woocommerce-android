@@ -12,4 +12,9 @@ formatting:
   active: true
   Indentation:
     active: true
+  NoWildcardImports:
+    active: false
 
+style:
+  WildcardImport:
+    active: false
