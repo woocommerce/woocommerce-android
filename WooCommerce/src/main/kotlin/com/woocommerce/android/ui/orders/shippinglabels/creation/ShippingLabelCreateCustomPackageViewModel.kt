@@ -36,7 +36,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     private val emptyInputError = string.shipping_label_create_custom_package_field_empty_hint
     private val invalidInputError = string.shipping_label_create_custom_package_field_invalid_hint
 
-    val parameters = parameterRepository.getParameters(KEY_PARAMETERS, savedState)
+    private val parameters = parameterRepository.getParameters(KEY_PARAMETERS, savedState)
     val weightUnit = parameters.weightUnit ?: ""
     val dimensionUnit = parameters.dimensionUnit ?: ""
 
@@ -159,5 +159,4 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     }
 
     data class PackageSuccessfullyMadeEvent(val madePackage: ShippingPackage) : Event()
-    object PackageCreationFailedEvent : Event()
 }

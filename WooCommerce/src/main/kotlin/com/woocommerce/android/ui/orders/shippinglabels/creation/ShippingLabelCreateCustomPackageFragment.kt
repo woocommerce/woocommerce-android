@@ -55,7 +55,6 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         inflater.inflate(R.menu.menu_done, menu)
     }
 
-
     private fun initializeInputFields() {
         // Initialize spinner
         binding.customPackageFormType.setup(

@@ -58,7 +58,8 @@ class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shippin
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is SelectPackageEvent -> {
-                    // Navigate back to EditShippingLabelPackagesFragment, delivering the newly created package
+                    // Once a package creation succeeds, we want to navigate right away to
+                    // EditShippingLabelPackagesFragment, delivering the newly created package to be used
                     // as a selected package.
                     navigateBackWithResult(
                         SELECTED_PACKAGE_RESULT,
