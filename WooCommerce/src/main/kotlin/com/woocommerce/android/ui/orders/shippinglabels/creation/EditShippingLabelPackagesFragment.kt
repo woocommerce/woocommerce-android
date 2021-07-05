@@ -92,7 +92,7 @@ class EditShippingLabelPackagesFragment :
 
     private fun setupResultHandlers() {
         handleResult<ShippingPackageSelectorResult>(ShippingPackageSelectorFragment.SELECTED_PACKAGE_RESULT) { result ->
-            viewModel.onPackageSelected(result.position, result.selectedPackage)
+            viewModel.onPackageSelected(result.position, result.selectedPackage, result.isFromPackageCreation)
         }
     }
 
@@ -122,7 +122,7 @@ class EditShippingLabelPackagesFragment :
 
                     findNavController().navigateSafely(action)
                 }
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PACKAGES_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_PACKAGES_CLOSED)
                 else -> event.isHandled = false

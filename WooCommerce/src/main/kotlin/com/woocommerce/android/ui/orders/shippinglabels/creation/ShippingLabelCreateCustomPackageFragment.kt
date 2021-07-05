@@ -14,13 +14,18 @@ import com.woocommerce.android.databinding.FragmentShippingLabelCreateCustomPack
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.InputName
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.PackageSuccessfullyMadeEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_shipping_label_create_custom_package) {
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     private var _binding: FragmentShippingLabelCreateCustomPackageBinding? = null
     private val binding get() = _binding!!
 
@@ -106,6 +111,7 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is PackageSuccessfullyMadeEvent -> parentViewModel.onPackageCreated(event.madePackage)
+                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 else -> event.isHandled = false
             }
         }

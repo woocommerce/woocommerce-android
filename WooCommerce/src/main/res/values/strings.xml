@@ -524,6 +524,10 @@
     <string name="shipping_label_create_custom_package_field_empty_weight_info">Weight of empty package</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Value must not be empty or zero</string>
     <string name="shipping_label_create_custom_package_field_name_hint">Please enter a package name</string>
+    <string name="shipping_label_create_custom_package_api_failure">Custom package creation failed: %1$s</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Custom package creation failed: unknown API issue.</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Custom package creation failed. Please try again.</string>
+    <string name="shipping_label_create_custom_package_success_message">\"%1$s\" saved</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
     <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>

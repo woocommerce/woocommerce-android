@@ -83,5 +83,6 @@ class ShippingPackageSelectorViewModel @Inject constructor(
 @Parcelize
 data class ShippingPackageSelectorResult(
     val position: Int,
-    val selectedPackage: ShippingPackage
+    val selectedPackage: ShippingPackage,
+    val isFromPackageCreation: Boolean = false
 ) : Parcelable

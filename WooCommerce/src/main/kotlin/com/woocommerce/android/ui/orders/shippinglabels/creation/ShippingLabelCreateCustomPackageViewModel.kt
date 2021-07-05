@@ -2,16 +2,18 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -25,8 +27,8 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ShippingLabelCreateCustomPackageViewState())
     private var viewState by viewStateData
 
-    private val stringInputError = R.string.shipping_label_create_custom_package_field_name_hint
-    private val floatInputError = R.string.shipping_label_create_custom_package_field_empty_hint
+    private val stringInputError = string.shipping_label_create_custom_package_field_name_hint
+    private val floatInputError = string.shipping_label_create_custom_package_field_empty_hint
 
     fun onCustomPackageTypeSelected(selectedPackageType: CustomPackageType) {
         viewState = viewState.copy(customFormType = selectedPackageType)
@@ -86,19 +88,37 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
                 id = "", /* Safe to set as empty, as it's not used for package creation */
                 title = name,
                 isLetter = type == resourceProvider.getString(CustomPackageType.ENVELOPE.stringRes),
-                category = "", /* Safe to set as empty, as it's not used for package creation */
+                category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY,
                 dimensions = PackageDimensions(lengthF, widthF, heightF),
                 boxWeight = weightF
             )
             viewState = viewState.copy(customPackage = packageToCreate)
 
-/*
-            // TODO: Add success/error handling. For now we assume it's always successful
             launch {
-                shippingLabelRepository.createCustomPackage(packageToCreate)
+                val result = shippingLabelRepository.createCustomPackage(packageToCreate)
+                when {
+                    result.isError -> {
+                        val errorMsg = if (result.error.message != null) {
+                            result.error.message
+                        } else {
+                            resourceProvider.getString(string.shipping_label_create_custom_package_api_unknown_failure)
+                        }
+
+                        triggerEvent(ShowSnackbar(
+                                message = string.shipping_label_create_custom_package_api_failure,
+                                args = arrayOf(errorMsg as String)
+                           )
+                        )
+                    }
+                    result.model == true -> {
+                        triggerEvent(PackageSuccessfullyMadeEvent(packageToCreate))
+                    }
+                    else -> triggerEvent(ShowSnackbar(string.shipping_label_create_custom_package_api_unknown_failure))
+                }
             }
- */
-            triggerEvent(PackageSuccessfullyMadeEvent(packageToCreate))
+        }
+        else {
+            triggerEvent(ShowSnackbar(string.shipping_label_create_custom_package_generic_failure))
         }
     }
 
@@ -131,5 +151,6 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         EMPTY_WEIGHT
     }
 
-    data class PackageSuccessfullyMadeEvent(val madePackage: ShippingPackage) : MultiLiveEvent.Event()
+    data class PackageSuccessfullyMadeEvent(val madePackage: ShippingPackage) : Event()
+    object PackageCreationFailedEvent : Event()
 }

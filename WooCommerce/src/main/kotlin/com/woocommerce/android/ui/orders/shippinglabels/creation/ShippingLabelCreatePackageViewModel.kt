@@ -15,15 +15,15 @@ import javax.inject.Inject
 class ShippingLabelCreatePackageViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState)  {
-
     private val arguments: ShippingLabelCreatePackageFragmentArgs by savedState.navArgs()
 
     fun onPackageCreated(madePackage: ShippingPackage) {
         triggerEvent(SelectPackageEvent(
-            ShippingPackageSelectorResult(
+            packageResult = ShippingPackageSelectorResult(
                 position = arguments.position,
-                selectedPackage = madePackage
-            )
+                selectedPackage = madePackage,
+                isFromPackageCreation = true
+            ),
         ))
     }
 
@@ -40,5 +40,6 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
         SERVICE
     }
 
-    data class SelectPackageEvent(val packageResult: ShippingPackageSelectorResult) : MultiLiveEvent.Event()
+    data class SelectPackageEvent(
+        val packageResult: ShippingPackageSelectorResult) : MultiLiveEvent.Event()
 }
