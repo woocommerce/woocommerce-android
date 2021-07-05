@@ -3,8 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.NewPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.OriginalPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -28,8 +27,10 @@ class MoveShippingItemViewModel @Inject constructor(
     val currentPackage = navArgs.currentPackage
 
     init {
-        // TODO
-        availableDestinations = listOf(NewPackage, OriginalPackage)
+        val availableExistingPackages = navArgs.packagesList.filter { it != navArgs.currentPackage }
+            .map { ExistingPackage(it) }
+
+        availableDestinations = availableExistingPackages + listOf(NewPackage, OriginalPackage)
     }
 
     fun onDestinationPackageSelected(destinationPackage: DestinationPackage) {
