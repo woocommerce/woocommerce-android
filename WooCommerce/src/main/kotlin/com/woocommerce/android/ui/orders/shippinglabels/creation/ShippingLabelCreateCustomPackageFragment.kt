@@ -65,19 +65,19 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         )
 
         binding.customPackageFormName.setOnTextChangedListener {
-            viewModel.onCustomPackageStringInputChanged(it.toString())
+            viewModel.sanitizeStringInput(it.toString())
         }
         binding.customPackageFormLength.setOnTextChangedListener {
-            viewModel.onCustomPackageFloatInputChanged(it.toString(), InputName.LENGTH)
+            viewModel.sanitizeFloatInput(it.toString(), InputName.LENGTH)
         }
         binding.customPackageFormWidth.setOnTextChangedListener {
-            viewModel.onCustomPackageFloatInputChanged(it.toString(), InputName.WIDTH)
+            viewModel.sanitizeFloatInput(it.toString(), InputName.WIDTH)
         }
         binding.customPackageFormHeight.setOnTextChangedListener {
-            viewModel.onCustomPackageFloatInputChanged(it.toString(), InputName.HEIGHT)
+            viewModel.sanitizeFloatInput(it.toString(), InputName.HEIGHT)
         }
         binding.customPackageFormEmptyWeight.setOnTextChangedListener {
-            viewModel.onCustomPackageFloatInputChanged(it.toString(), InputName.EMPTY_WEIGHT)
+            viewModel.sanitizeFloatInput(it.toString(), InputName.EMPTY_WEIGHT)
         }
 
         // TODO fill metric values

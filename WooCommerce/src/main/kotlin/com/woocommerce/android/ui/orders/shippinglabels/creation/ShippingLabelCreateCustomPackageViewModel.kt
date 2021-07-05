@@ -27,41 +27,38 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ShippingLabelCreateCustomPackageViewState())
     private var viewState by viewStateData
 
-    private val stringInputError = string.shipping_label_create_custom_package_field_name_hint
-    private val floatInputError = string.shipping_label_create_custom_package_field_empty_hint
+    private val emptyInputError = string.shipping_label_create_custom_package_field_empty_hint
+    private val invalidInputError = string.shipping_label_create_custom_package_field_invalid_hint
 
     fun onCustomPackageTypeSelected(selectedPackageType: CustomPackageType) {
         viewState = viewState.copy(customFormType = selectedPackageType)
     }
 
-    fun onCustomPackageStringInputChanged(input: String) {
-        viewState = if(input.isBlank()) {
-            viewState.copy(customFormNameError = stringInputError)
+    fun sanitizeStringInput(input: String) {
+        if(input.isBlank()) {
+            updateErrorViewState(InputName.NAME, emptyInputError)
         }
         else {
-            viewState.copy(customFormNameError = null)
+            updateErrorViewState(InputName.NAME, null)
         }
     }
 
-    fun onCustomPackageFloatInputChanged(input: String, name: InputName) {
-        val inputInFloat = if(input.isBlank()) 0f else input.trim('.').toFloat()
-        if(inputInFloat.equals(0f)) {
-            viewState = when(name) {
-                InputName.LENGTH -> viewState.copy(customFormLengthError = floatInputError)
-                InputName.WIDTH -> viewState.copy(customFormWidthError = floatInputError)
-                InputName.HEIGHT -> viewState.copy(customFormHeightError = floatInputError)
-                InputName.EMPTY_WEIGHT -> viewState.copy(customFormWeightError = floatInputError)
-                else -> { viewState } /* Do nothing */
-            }
+    fun sanitizeFloatInput(input: String, name: InputName) {
+        val acc = inputToFloat(input)
+        when {
+            acc.isNaN() -> updateErrorViewState(name, emptyInputError)
+            acc == 0f -> updateErrorViewState(name, invalidInputError)
+            else -> updateErrorViewState(name, null)
         }
-        else {
-            viewState = when(name) {
-                InputName.LENGTH -> viewState.copy(customFormLengthError = null)
-                InputName.WIDTH -> viewState.copy(customFormWidthError = null)
-                InputName.HEIGHT -> viewState.copy(customFormHeightError = null)
-                InputName.EMPTY_WEIGHT -> viewState.copy(customFormWeightError = null)
-                else -> { viewState } /* Do nothing */
-            }
+    }
+
+    private fun updateErrorViewState(name: InputName, errorMsg: Int?) {
+        viewState = when(name) {
+            InputName.LENGTH -> viewState.copy(customFormLengthError = errorMsg)
+            InputName.WIDTH -> viewState.copy(customFormWidthError = errorMsg)
+            InputName.HEIGHT -> viewState.copy(customFormHeightError = errorMsg)
+            InputName.EMPTY_WEIGHT -> viewState.copy(customFormWeightError = errorMsg)
+            InputName.NAME ->  viewState.copy(customFormNameError = errorMsg)
         }
     }
 
@@ -69,18 +66,11 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
                                     length: String, width: String,
                                     height: String, weight: String) {
         // Sanitize and validate all input-related fields one last time.
-        val lengthF = inputToFloatOrZero(length)
-        val widthF = inputToFloatOrZero(width)
-        val heightF = inputToFloatOrZero(height)
-        val weightF = inputToFloatOrZero(weight)
-
-        viewState = viewState.copy(
-            customFormNameError = if(name.isBlank()) stringInputError else null,
-            customFormLengthError = if(lengthF.equals(0f)) floatInputError else null,
-            customFormWidthError = if(widthF.equals(0f)) floatInputError else null,
-            customFormHeightError = if(heightF.equals(0f)) floatInputError else null,
-            customFormWeightError = if(weightF.equals(0f)) floatInputError else null
-        )
+        sanitizeStringInput(name)
+        sanitizeFloatInput(length, InputName.LENGTH)
+        sanitizeFloatInput(width, InputName.WIDTH)
+        sanitizeFloatInput(height, InputName.HEIGHT)
+        sanitizeFloatInput(weight, InputName.EMPTY_WEIGHT)
 
         // At this point, if there's no errors, we assume everything is valid and good to go.
         if(viewState.areAllRequiredFieldsValid) {
@@ -89,8 +79,12 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
                 title = name,
                 isLetter = type == resourceProvider.getString(CustomPackageType.ENVELOPE.stringRes),
                 category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY,
-                dimensions = PackageDimensions(lengthF, widthF, heightF),
-                boxWeight = weightF
+                dimensions = PackageDimensions(
+                    length = inputToFloat(length),
+                    width = inputToFloat(width),
+                    height =inputToFloat(height)
+                ),
+                boxWeight = inputToFloat(weight)
             )
             viewState = viewState.copy(customPackage = packageToCreate, isSavingProgressDialogVisible = true)
 
@@ -123,8 +117,8 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         }
     }
 
-    private fun inputToFloatOrZero(input: String) : Float {
-        return if(input.isBlank()) 0f else input.trim('.').toFloat()
+    private fun inputToFloat(input: String) : Float {
+        return if(input.isBlank()) Float.NaN else input.trim('.').toFloat()
     }
 
     @Parcelize
