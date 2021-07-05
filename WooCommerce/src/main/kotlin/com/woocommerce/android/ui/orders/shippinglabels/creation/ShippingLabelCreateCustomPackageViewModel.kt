@@ -92,7 +92,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
                 dimensions = PackageDimensions(lengthF, widthF, heightF),
                 boxWeight = weightF
             )
-            viewState = viewState.copy(customPackage = packageToCreate)
+            viewState = viewState.copy(customPackage = packageToCreate, isSavingProgressDialogVisible = true)
 
             launch {
                 val result = shippingLabelRepository.createCustomPackage(packageToCreate)
@@ -115,6 +115,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
                     }
                     else -> triggerEvent(ShowSnackbar(string.shipping_label_create_custom_package_api_unknown_failure))
                 }
+                viewState = viewState.copy(isSavingProgressDialogVisible = false)
             }
         }
         else {
@@ -134,7 +135,8 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         val customFormLengthError: Int? = null,
         val customFormWidthError: Int? = null,
         val customFormHeightError: Int? = null,
-        val customFormWeightError: Int? = null
+        val customFormWeightError: Int? = null,
+        val isSavingProgressDialogVisible: Boolean? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val areAllRequiredFieldsValid

@@ -19,6 +19,7 @@ import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.InputName
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.PackageSuccessfullyMadeEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_shipping_label_create_custom_package) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
+    private var progressDialog: CustomProgressDialog? = null
     private var _binding: FragmentShippingLabelCreateCustomPackageBinding? = null
     private val binding get() = _binding!!
 
@@ -106,6 +108,17 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
             new.customFormNameError.takeIfNotEqualTo(old?.customFormNameError) {
                 showErrorOrClear(binding.customPackageFormName, it)
             }
+
+            new.isSavingProgressDialogVisible?.takeIfNotEqualTo(old?.isSavingProgressDialogVisible) { isVisible ->
+                if(isVisible) {
+                    showProgressDialog(
+                        title = R.string.shipping_label_create_custom_package_saving_progress_title,
+                        message = R.string.shipping_label_create_custom_package_saving_progress_message
+                    )
+                } else {
+                    hideProgressDialog()
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -123,6 +136,20 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         } else {
             inputLayout.error = resources.getString(message)
         }
+    }
+
+    private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(title),
+            getString(message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
