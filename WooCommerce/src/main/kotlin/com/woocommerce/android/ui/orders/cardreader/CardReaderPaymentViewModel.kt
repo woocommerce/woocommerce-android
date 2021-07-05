@@ -240,6 +240,9 @@ class CardReaderPaymentViewModel
 
     private fun onPrintReceiptClicked(receiptUrl: String, documentName: String) {
         launch {
+            (viewState.value as? PaymentSuccessfulState)?.let {
+                viewState.value = it.copy(isProgressVisible = true)
+            }
             tracker.track(RECEIPT_PRINT_TAPPED)
             // TODO cardreader show a progress dialog as url loading might take some time
             triggerEvent(PrintReceipt(receiptUrl, documentName))
@@ -271,6 +274,9 @@ class CardReaderPaymentViewModel
     }
 
     fun onPrintResult(result: PrintJobResult) {
+        (viewState.value as? PaymentSuccessfulState)?.let {
+            viewState.value = it.copy(isProgressVisible = false)
+        }
         tracker.track(
             when (result) {
                 CANCELLED -> RECEIPT_PRINT_CANCELED
@@ -314,7 +320,7 @@ class CardReaderPaymentViewModel
         @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
         @DrawableRes val illustration: Int? = null,
         // TODO cardreader add tests
-        val isProgressVisible: Boolean = false,
+        open val isProgressVisible: Boolean = false,
         val primaryActionLabel: Int? = null,
         val secondaryActionLabel: Int? = null
     ) {
@@ -369,10 +375,11 @@ class CardReaderPaymentViewModel
         data class PaymentSuccessfulState(
             override val amountWithCurrencyLabel: String,
             override val onPrimaryActionClicked: (() -> Unit),
-            override val onSecondaryActionClicked: (() -> Unit)
+            override val onSecondaryActionClicked: (() -> Unit),
+            override val isProgressVisible: Boolean = false
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_completed_payment_header,
-            illustration = R.drawable.img_celebration,
+            illustration = if (isProgressVisible) null else R.drawable.img_celebration,
             primaryActionLabel = R.string.card_reader_payment_print_receipt,
             secondaryActionLabel = R.string.card_reader_payment_send_receipt
         )
