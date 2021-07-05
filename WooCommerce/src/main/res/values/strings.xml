@@ -524,7 +524,7 @@
     <string name="shipping_label_create_custom_package_field_width">Width (%1$s)</string>
     <string name="shipping_label_create_custom_package_field_height">Height (%1$s)</string>
     <string name="shipping_label_create_custom_package_field_empty_weight">Empty package weight (%1$s)</string>
-    <string name="shipping_label_create_custom_package_field_empty_weight_info">Weight of empty package</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Weight of empty package</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">This field is required.</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Invalid value.</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Creating new package</string>

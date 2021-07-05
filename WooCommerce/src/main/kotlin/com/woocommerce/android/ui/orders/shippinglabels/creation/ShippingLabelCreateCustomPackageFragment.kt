@@ -119,6 +119,9 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
 
             new.customFormWeightError.takeIfNotEqualTo(old?.customFormWeightError) {
                 showErrorOrClear(binding.customPackageFormEmptyWeight, it)
+                // Hide helper text if error is shown, as suggested by Material Design
+                // (see https://material.io/components/text-fields#anatomy)
+                binding.customPackageFormEmptyWeightHelper.visibility = if(it != null) View.INVISIBLE else View.VISIBLE
             }
 
             new.customFormNameError.takeIfNotEqualTo(old?.customFormNameError) {
@@ -149,6 +152,7 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
     private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int?) {
         if (message == null || message == 0) {
             inputLayout.error = null
+            inputLayout.isErrorEnabled = false /* Needed to make error message not use up layout height when hidden */
         } else {
             inputLayout.error = resources.getString(message)
         }

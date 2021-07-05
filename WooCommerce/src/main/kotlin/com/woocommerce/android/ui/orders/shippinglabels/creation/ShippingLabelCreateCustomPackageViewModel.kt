@@ -26,7 +26,6 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     private val shippingLabelRepository: ShippingLabelRepository,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
-
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
     }

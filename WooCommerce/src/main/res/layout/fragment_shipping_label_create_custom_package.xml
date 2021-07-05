@@ -99,11 +99,12 @@
             app:layout_constraintTop_toBottomOf="@id/custom_package_form_height" />
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/custom_package_form_empty_weight_helper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginBottom="@dimen/minor_100"
-            android:text="@string/shipping_label_create_custom_package_field_empty_weight_info"
+            android:text="@string/shipping_label_create_custom_package_field_empty_weight_helper"
             android:textAppearance="?attr/textAppearanceCaption"
             app:layout_constraintStart_toStartOf="@id/custom_package_form_empty_weight"
             app:layout_constraintTop_toBottomOf="@id/custom_package_form_empty_weight" />
