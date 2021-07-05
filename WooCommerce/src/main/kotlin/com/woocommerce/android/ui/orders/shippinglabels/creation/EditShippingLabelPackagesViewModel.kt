@@ -183,7 +183,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val item = result.item
         val currentPackage = result.currentPackage
 
-        fun moveItemToNewPackage(): List<ShippingLabelPackageUiModel> {
+        fun removeItemFromCurrentPackage(): MutableList<ShippingLabelPackageUiModel> {
             val updatedItems = if (item.quantity > 1) {
                 // if the item quantity is more than one, subtract 1 from it
                 val mutableItems = currentPackage.items.toMutableList()
@@ -199,7 +199,12 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             packages[indexOfCurrentPackage] = ShippingLabelPackageUiModel(
                 data = currentPackage.copy(items = updatedItems)
             )
-            packages.add(
+            return packages
+        }
+
+        fun moveItemToNewPackage(): List<ShippingLabelPackageUiModel> {
+            val updatedPackages = removeItemFromCurrentPackage()
+            updatedPackages.add(
                 ShippingLabelPackageUiModel(
                     data = ShippingLabelPackage(
                         position = packages.size + 1,
@@ -210,15 +215,40 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                 )
             )
 
-            return packages.mapIndexed { index, shippingLabelPackageUiModel ->
+            return updatedPackages.mapIndexed { index, shippingLabelPackageUiModel ->
                 // Collapse all items except the added one
                 shippingLabelPackageUiModel.copy(isExpanded = index == packages.size - 1)
             }
         }
 
+        fun moveItemToExistingPackage(destination: ShippingLabelPackage): List<ShippingLabelPackageUiModel> {
+            val updatedPackages = removeItemFromCurrentPackage()
+            val updatedItemsOfDestination = destination.items.toMutableList().apply {
+                val existingItem = firstOrNull { it.isSameProduct(item) }
+                if (existingItem != null) {
+                    // If the existing package has same product, then just increase the quantity
+                    set(indexOf(existingItem), existingItem.copy(quantity = existingItem.quantity + 1))
+                } else {
+                    // Otherwise add a new item with quantity set to 1
+                    add(item.copy(quantity = 1))
+                }
+            }
+
+            val indexOfDestinationPackage = updatedPackages.indexOfFirst { it.data == destination }
+            updatedPackages[indexOfDestinationPackage] = ShippingLabelPackageUiModel(
+                data = currentPackage.copy(items = updatedItemsOfDestination)
+            )
+
+            return packages.mapIndexed { index, shippingLabelPackageUiModel ->
+                // Collapse all items except the added one
+                shippingLabelPackageUiModel.copy(isExpanded = index == indexOfDestinationPackage)
+            }
+        }
+
         viewState = viewState.copy(
             packagesUiModels = when (result.destination) {
-                is DestinationPackage.ExistingPackage -> TODO()
+                is DestinationPackage.ExistingPackage ->
+                    moveItemToExistingPackage(result.destination.destinationPackage)
                 DestinationPackage.NewPackage -> moveItemToNewPackage()
                 DestinationPackage.OriginalPackage -> TODO()
             }.filter {

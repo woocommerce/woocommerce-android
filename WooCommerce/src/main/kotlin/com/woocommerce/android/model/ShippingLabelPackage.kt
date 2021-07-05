@@ -26,7 +26,12 @@ data class ShippingLabelPackage(
         val quantity: Int,
         val weight: Float,
         val value: BigDecimal
-    ) : Parcelable
+    ) : Parcelable {
+        fun isSameProduct(otherItem: Item): Boolean {
+            return productId == otherItem.productId &&
+                attributesList == otherItem.attributesList
+        }
+    }
 }
 
 fun ShippingLabelPackage.getTitle(context: Context) =
