@@ -73,8 +73,8 @@ class ShippingCarrierRatesAdapter(
 
             binding.packageItemsCount.text = "- ${binding.root.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
-                rateList.itemCount,
-                rateList.itemCount
+                rateList.shippingPackage.itemsCount,
+                rateList.shippingPackage.itemsCount
             )}"
 
             (binding.rateOptions.adapter as? RateListAdapter)?.updateRates(rateList)
@@ -300,10 +300,6 @@ class ShippingCarrierRatesAdapter(
         val shippingPackage: ShippingLabelPackage,
         val rateOptions: List<ShippingRateItem>
     ) : Parcelable {
-        @IgnoredOnParcel
-        val itemCount
-            get() = shippingPackage.items.size
-
         @IgnoredOnParcel
         val selectedRate: ShippingRate?
             get() {
