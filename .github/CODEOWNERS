@@ -2,6 +2,7 @@
 * @woocommerce/android-developers
 
 # Build tools
+/.buildkite/        @woocommerce/owl-team
 /.bundle/           @woocommerce/owl-team
 /.circleci/         @woocommerce/owl-team
 /.configure-files/  @woocommerce/owl-team
