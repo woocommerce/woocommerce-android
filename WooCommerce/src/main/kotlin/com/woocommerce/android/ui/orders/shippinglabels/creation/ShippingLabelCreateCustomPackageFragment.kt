@@ -80,7 +80,23 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
             viewModel.sanitizeFloatInput(it.toString(), InputName.EMPTY_WEIGHT)
         }
 
-        // TODO fill metric values
+        // Fill proper units
+        binding.customPackageFormLength.hint = binding.root.context.getString(
+            R.string.shipping_label_create_custom_package_field_length,
+            viewModel.dimensionUnit
+        )
+        binding.customPackageFormWidth.hint = binding.root.context.getString(
+            R.string.shipping_label_create_custom_package_field_width,
+            viewModel.dimensionUnit
+        )
+        binding.customPackageFormHeight.hint = binding.root.context.getString(
+            R.string.shipping_label_create_custom_package_field_height,
+            viewModel.dimensionUnit
+        )
+        binding.customPackageFormEmptyWeight.hint = binding.root.context.getString(
+            R.string.shipping_label_create_custom_package_field_empty_weight,
+            viewModel.weightUnit
+        )
     }
 
     private fun setupObservers() {

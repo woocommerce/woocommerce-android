@@ -7,6 +7,7 @@ import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -22,13 +23,24 @@ import javax.inject.Inject
 class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
-    private val shippingLabelRepository: ShippingLabelRepository
+    private val shippingLabelRepository: ShippingLabelRepository,
+    parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
+
+    companion object {
+        private const val KEY_PARAMETERS = "key_parameters"
+    }
+
     val viewStateData = LiveDataDelegate(savedState, ShippingLabelCreateCustomPackageViewState())
     private var viewState by viewStateData
 
     private val emptyInputError = string.shipping_label_create_custom_package_field_empty_hint
     private val invalidInputError = string.shipping_label_create_custom_package_field_invalid_hint
+
+    val parameters = parameterRepository.getParameters(KEY_PARAMETERS, savedState)
+    val weightUnit = parameters.weightUnit ?: ""
+    val dimensionUnit = parameters.dimensionUnit ?: ""
+
 
     fun onCustomPackageTypeSelected(selectedPackageType: CustomPackageType) {
         viewState = viewState.copy(customFormType = selectedPackageType)
