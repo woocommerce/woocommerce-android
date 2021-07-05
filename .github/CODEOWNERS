@@ -2,17 +2,17 @@
 * @woocommerce/android-developers
 
 # Build tools
-/.bundle/           @woocommerce/platform-9
-/.circleci/         @woocommerce/platform-9
-/.configure-files/  @woocommerce/platform-9
-/.github/           @woocommerce/platform-9
-/fastlane/          @woocommerce/platform-9
-/gradle/            @woocommerce/platform-9
-/tools/             @woocommerce/platform-9
-.configure          @woocommerce/platform-9
-.ruby-version       @woocommerce/platform-9
-Gemfile             @woocommerce/platform-9
-Gemfile.lock        @woocommerce/platform-9
-settings.gradle     @woocommerce/platform-9
-gradlew             @woocommerce/platform-9
-gradlew.bat         @woocommerce/platform-9
+/.bundle/           @woocommerce/owl-team
+/.circleci/         @woocommerce/owl-team
+/.configure-files/  @woocommerce/owl-team
+/.github/           @woocommerce/owl-team
+/fastlane/          @woocommerce/owl-team
+/gradle/            @woocommerce/owl-team
+/tools/             @woocommerce/owl-team
+.configure          @woocommerce/owl-team
+.ruby-version       @woocommerce/owl-team
+Gemfile             @woocommerce/owl-team
+Gemfile.lock        @woocommerce/owl-team
+settings.gradle     @woocommerce/owl-team
+gradlew             @woocommerce/owl-team
+gradlew.bat         @woocommerce/owl-team
