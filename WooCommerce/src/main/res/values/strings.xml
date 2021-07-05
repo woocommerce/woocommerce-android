@@ -577,6 +577,12 @@
     <string name="shipping_label_print_customs_form">Print customs form</string>
     <string name="shipping_label_print_customs_form_screen_title">Print customs invoice</string>
     <string name="shipping_label_print_customs_form_download_failed">Error downloading the customs form</string>
+    <string name="shipping_label_move_item_dialog_title">Move item</string>
+    <string name="shipping_label_move_item_dialog_move">Move</string>
+    <string name="shipping_label_move_item_dialog_cancel">Cancel</string>
+    <string name="shipping_label_move_item_dialog_description">This item is currently in %s. Where would you like to move it?</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Add to new package</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Ship in original packaging</string>
     <!--
             Refunds
         -->

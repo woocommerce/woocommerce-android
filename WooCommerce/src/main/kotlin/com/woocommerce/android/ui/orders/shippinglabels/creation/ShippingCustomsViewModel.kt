@@ -90,7 +90,7 @@ class ShippingCustomsViewModel @Inject constructor(
         return args.shippingPackages.map { labelPackage ->
             CustomsPackage(
                 id = labelPackage.packageId,
-                box = labelPackage.selectedPackage!!,
+                labelPackage = labelPackage,
                 contentsType = ContentsType.Merchandise,
                 restrictionType = RestrictionType.None,
                 returnToSender = true,

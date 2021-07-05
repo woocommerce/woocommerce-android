@@ -89,8 +89,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
         verify(orderDetailRepository).getOrder(any())
         verify(shippingLabelRepository).getAccountSettings()
-        assertThat(viewState!!.shippingLabelPackages.size).isEqualTo(1)
-        assertThat(viewState!!.shippingLabelPackages.first().selectedPackage).isEqualTo(availablePackages.first())
+        assertThat(viewState!!.packagesUiModels.size).isEqualTo(1)
+        assertThat(viewState!!.packages.first().selectedPackage).isEqualTo(availablePackages.first())
     }
 
     @Test
@@ -106,7 +106,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
         verify(orderDetailRepository, never()).getOrder(any())
         verify(shippingLabelRepository, never()).getAccountSettings()
-        assertThat(viewState!!.shippingLabelPackages).isEqualTo(currentShippingPackages.toList())
+        assertThat(viewState!!.packages).isEqualTo(currentShippingPackages.toList())
     }
 
     @Test
@@ -118,7 +118,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        assertThat(viewState!!.shippingLabelPackages.first().selectedPackage).isNull()
+        assertThat(viewState!!.packages.first().selectedPackage).isNull()
     }
 
     @Test
@@ -130,7 +130,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        assertThat(viewState!!.shippingLabelPackages.first().selectedPackage).isNull()
+        assertThat(viewState!!.packages.first().selectedPackage).isNull()
     }
 
     @Test
@@ -142,7 +142,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
         viewModel.onWeightEdited(0, 10.0f)
-        assertThat(viewState!!.shippingLabelPackages.first().weight).isEqualTo(10.0f)
+        assertThat(viewState!!.packagesUiModels.first().data.weight).isEqualTo(10.0f)
         assertThat(viewState!!.isDataValid).isTrue()
     }
 
@@ -156,7 +156,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
         viewModel.onPackageSpinnerClicked(0)
         viewModel.onPackageSelected(0, availablePackages[1])
-        assertThat(viewState!!.shippingLabelPackages.first().selectedPackage).isEqualTo(availablePackages[1])
+        assertThat(viewState!!.packages.first().selectedPackage).isEqualTo(availablePackages[1])
     }
 
     @Test

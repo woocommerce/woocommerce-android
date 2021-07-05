@@ -119,7 +119,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     fun `test show packages step`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val packagesList = listOf(
             ShippingLabelPackage(
-                packageId = "package1",
+                position = 1,
                 selectedPackage = ShippingPackage(
                     "id",
                     "title",
