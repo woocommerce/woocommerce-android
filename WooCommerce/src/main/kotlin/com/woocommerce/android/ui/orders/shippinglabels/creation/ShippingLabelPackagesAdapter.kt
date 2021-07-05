@@ -123,10 +123,11 @@ class ShippingLabelPackagesAdapter(
             val uiModel = uiModels[position]
             val shippingLabelPackage = uiModel.data
             binding.packageName.text = shippingLabelPackage.getTitle(context)
+            val itemsCount = shippingLabelPackage.items.sumBy { it.quantity }
             binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
-                shippingLabelPackage.items.size,
-                shippingLabelPackage.items.size
+                itemsCount,
+                itemsCount
             )}"
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()
