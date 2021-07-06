@@ -10,9 +10,6 @@ import org.wordpress.android.login.di.LoginFragmentModule
 @Module(includes = [LoginFragmentModule::class])
 @InstallIn(ActivityComponent::class)
 internal abstract class WooLoginFragmentModule {
-    @ContributesAndroidInjector
-    internal abstract fun loginPrologueFragment(): LoginPrologueFragment
-
     @FragmentScope
     @ContributesAndroidInjector(modules = [LoginNoJetpackModule::class])
     internal abstract fun loginNoJetpackFragment(): LoginNoJetpackFragment
@@ -20,16 +17,4 @@ internal abstract class WooLoginFragmentModule {
     @FragmentScope
     @ContributesAndroidInjector(modules = [MagicLinkInterceptModule::class])
     internal abstract fun magicLinkInterceptFragment(): MagicLinkInterceptFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    internal abstract fun loginDiscoveryErrorFragment(): LoginDiscoveryErrorFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    internal abstract fun loginNoWPcomAccountFoundFragment(): LoginNoWPcomAccountFoundFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    internal abstract fun loginSiteCheckErrorFragment(): LoginSiteCheckErrorFragment
 }
