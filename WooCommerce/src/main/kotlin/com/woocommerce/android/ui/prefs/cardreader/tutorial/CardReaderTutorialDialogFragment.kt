@@ -20,6 +20,8 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         const val KEY_READER_TUTORIAL_RESULT = "key_reader_tutorial_result"
     }
 
+    private var userDidSkip = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.let {
             it.setCanceledOnTouchOutside(false)
@@ -51,17 +53,19 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         binding.viewPagerIndicator.setupFromViewPager(binding.viewPager, listener)
 
         binding.buttonSkip.setOnClickListener {
+            userDidSkip = true
             exitTutorial()
         }
     }
 
     override fun onDetach() {
-        if (isRemoving) {
+        if (isRemoving && !userDidSkip) {
             exitTutorial()
         }
         super.onDetach()
     }
 
+    // TODO return whether the user completed the tutorial
     private fun exitTutorial() {
         navigateBackWithResult(KEY_READER_TUTORIAL_RESULT, true)
     }
