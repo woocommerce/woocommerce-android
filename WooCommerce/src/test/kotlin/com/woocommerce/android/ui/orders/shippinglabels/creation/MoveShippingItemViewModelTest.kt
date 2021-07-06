@@ -24,7 +24,8 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
     )
 
     private val defaultNavArgs by lazy {
-        val shippingLabelPackage = CreateShippingLabelTestUtils.generateShippingLabelPackage(items = listOf(defaultItem))
+        val shippingLabelPackage =
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(items = listOf(defaultItem))
         MoveShippingItemDialogArgs(
             item = shippingLabelPackage.items.first(),
             currentPackage = shippingLabelPackage,
@@ -49,7 +50,8 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
     fun `given the package has other items, when the UI loads, then display new package option`() {
         val currentItem = defaultItem.copy(quantity = 1)
         val otherItem = defaultItem.copy(productId = 1L)
-        val shippingLabelPackage = CreateShippingLabelTestUtils.generateShippingLabelPackage(items = listOf(currentItem, otherItem))
+        val shippingLabelPackage =
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(items = listOf(currentItem, otherItem))
         val args = MoveShippingItemDialogArgs(
             item = currentItem,
             currentPackage = shippingLabelPackage,
@@ -64,7 +66,8 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
     @Test
     fun `given the package has only a single item, when the UI loads, then display new package option`() {
         val currentItem = defaultItem.copy(quantity = 1)
-        val shippingLabelPackage = CreateShippingLabelTestUtils.generateShippingLabelPackage(items = listOf(currentItem))
+        val shippingLabelPackage =
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(items = listOf(currentItem))
         val args = MoveShippingItemDialogArgs(
             item = currentItem,
             currentPackage = shippingLabelPackage,
@@ -73,7 +76,8 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
 
         setup(args)
 
-        assertThat(viewModel.availableDestinations).doesNotContain(MoveShippingItemViewModel.DestinationPackage.NewPackage)
+        assertThat(viewModel.availableDestinations)
+            .doesNotContain(MoveShippingItemViewModel.DestinationPackage.NewPackage)
     }
 
     @Test
@@ -102,7 +106,8 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
         viewModel.onMoveButtonClicked()
 
         assertThat(viewModel.event.value).isInstanceOf(MultiLiveEvent.Event.ExitWithResult::class.java)
-        val event = viewModel.event.value as MultiLiveEvent.Event.ExitWithResult<MoveShippingItemViewModel.MoveItemResult>
+        val event =
+            viewModel.event.value as MultiLiveEvent.Event.ExitWithResult<MoveShippingItemViewModel.MoveItemResult>
         assertThat(event.data.destination).isEqualTo(destination)
     }
 
