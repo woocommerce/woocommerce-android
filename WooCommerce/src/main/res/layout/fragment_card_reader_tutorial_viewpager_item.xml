@@ -11,7 +11,6 @@
         style="@style/Woo.TextView.Subtitle2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_150"
         android:layout_marginBottom="@dimen/major_150"
         android:gravity="center"
         tools:layout_width="200dp"
