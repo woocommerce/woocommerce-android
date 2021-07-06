@@ -33,7 +33,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 binding.viewPagerIndicator.setSelectedIndicator(position)
-                val lastPosition = resources.getInteger(R.integer.card_reader_tutorial_page_count)
+                val lastPosition = resources.getInteger(R.integer.card_reader_tutorial_page_count) - 1
                 binding.buttonSkip.setText(if (position == lastPosition) R.string.close else R.string.skip)
             }
         })
