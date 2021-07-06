@@ -630,6 +630,7 @@ class SitePickerActivity :
         binding.siteListContainer.visibility = View.GONE
 
         binding.noStoresView.noStoresViewText.text = getString(R.string.login_not_connected_to_account, url)
+        binding.noStoresView.noStoresView.isVisible = true
 
         with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_need_help_finding_email)
