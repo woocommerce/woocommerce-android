@@ -64,19 +64,19 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         )
 
         binding.customPackageFormName.setOnTextChangedListener {
-            viewModel.sanitizeStringInput(it.toString())
+            viewModel.onFieldTextChanged(it.toString(), InputName.NAME)
         }
         binding.customPackageFormLength.setOnTextChangedListener {
-            viewModel.sanitizeFloatInput(it.toString(), InputName.LENGTH)
+            viewModel.onFieldTextChanged(it.toString(), InputName.LENGTH)
         }
         binding.customPackageFormWidth.setOnTextChangedListener {
-            viewModel.sanitizeFloatInput(it.toString(), InputName.WIDTH)
+            viewModel.onFieldTextChanged(it.toString(), InputName.WIDTH)
         }
         binding.customPackageFormHeight.setOnTextChangedListener {
-            viewModel.sanitizeFloatInput(it.toString(), InputName.HEIGHT)
+            viewModel.onFieldTextChanged(it.toString(), InputName.HEIGHT)
         }
         binding.customPackageFormEmptyWeight.setOnTextChangedListener {
-            viewModel.sanitizeFloatInput(it.toString(), InputName.EMPTY_WEIGHT)
+            viewModel.onFieldTextChanged(it.toString(), InputName.EMPTY_WEIGHT)
         }
 
         // Fill proper units
@@ -100,30 +100,30 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
 
     private fun setupObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.customFormType.takeIfNotEqualTo(old?.customFormType) {
+            new.type.takeIfNotEqualTo(old?.type) {
                 binding.customPackageFormType.setText(getString(it.stringRes))
             }
 
-            new.customFormLengthError.takeIfNotEqualTo(old?.customFormLengthError) {
+            new.lengthErrorMessage.takeIfNotEqualTo(old?.lengthErrorMessage) {
                 showErrorOrClear(binding.customPackageFormLength, it)
             }
 
-            new.customFormWidthError.takeIfNotEqualTo(old?.customFormWidthError) {
+            new.widthErrorMessage.takeIfNotEqualTo(old?.widthErrorMessage) {
                 showErrorOrClear(binding.customPackageFormWidth, it)
             }
 
-            new.customFormHeightError.takeIfNotEqualTo(old?.customFormHeightError) {
+            new.heightErrorMessage.takeIfNotEqualTo(old?.heightErrorMessage) {
                 showErrorOrClear(binding.customPackageFormHeight, it)
             }
 
-            new.customFormWeightError.takeIfNotEqualTo(old?.customFormWeightError) {
+            new.weightErrorMessage.takeIfNotEqualTo(old?.weightErrorMessage) {
                 showErrorOrClear(binding.customPackageFormEmptyWeight, it)
                 // Hide helper text if error is shown, as suggested by Material Design
                 // (see https://material.io/components/text-fields#anatomy)
                 binding.customPackageFormEmptyWeightHelper.visibility = if(it != null) View.INVISIBLE else View.VISIBLE
             }
 
-            new.customFormNameError.takeIfNotEqualTo(old?.customFormNameError) {
+            new.nameErrorMessage.takeIfNotEqualTo(old?.nameErrorMessage) {
                 showErrorOrClear(binding.customPackageFormName, it)
             }
 
@@ -175,14 +175,7 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onCustomFormDoneMenuClicked(
-                    binding.customPackageFormType.getText(),
-                    binding.customPackageFormName.getText(),
-                    binding.customPackageFormLength.getText(),
-                    binding.customPackageFormWidth.getText(),
-                    binding.customPackageFormHeight.getText(),
-                    binding.customPackageFormEmptyWeight.getText()
-                )
+                viewModel.onCustomFormDoneMenuClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)

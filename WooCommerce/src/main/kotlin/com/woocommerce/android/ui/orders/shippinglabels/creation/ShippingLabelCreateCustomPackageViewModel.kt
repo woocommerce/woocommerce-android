@@ -42,89 +42,101 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
 
 
     fun onCustomPackageTypeSelected(selectedPackageType: CustomPackageType) {
-        viewState = viewState.copy(customFormType = selectedPackageType)
+        viewState = viewState.copy(type = selectedPackageType)
     }
 
-    fun sanitizeStringInput(input: String) {
+    fun onFieldTextChanged(value: String, field: InputName) {
+        when(field) {
+            InputName.NAME -> validateNameField(value)
+            else -> validateFloatInput(value, field)
+        }
+        updateInputInViewState(value, field)
+    }
+
+    fun validateNameField(input: String) {
         if(input.isBlank()) {
-            updateErrorViewState(InputName.NAME, emptyInputError)
+            updateErrorInViewState(InputName.NAME, emptyInputError)
         }
         else {
-            updateErrorViewState(InputName.NAME, null)
+            updateErrorInViewState(InputName.NAME, null)
         }
     }
 
-    fun sanitizeFloatInput(input: String, name: InputName) {
+    fun validateFloatInput(input: String, name: InputName) {
         val acc = inputToFloat(input)
         when {
-            acc.isNaN() -> updateErrorViewState(name, emptyInputError)
-            acc == 0f -> updateErrorViewState(name, invalidInputError)
-            else -> updateErrorViewState(name, null)
+            acc.isNaN() -> updateErrorInViewState(name, emptyInputError)
+            acc == 0f -> updateErrorInViewState(name, invalidInputError)
+            else -> updateErrorInViewState(name, null)
         }
     }
 
-    private fun updateErrorViewState(name: InputName, errorMsg: Int?) {
-        viewState = when(name) {
-            InputName.LENGTH -> viewState.copy(customFormLengthError = errorMsg)
-            InputName.WIDTH -> viewState.copy(customFormWidthError = errorMsg)
-            InputName.HEIGHT -> viewState.copy(customFormHeightError = errorMsg)
-            InputName.EMPTY_WEIGHT -> viewState.copy(customFormWeightError = errorMsg)
-            InputName.NAME ->  viewState.copy(customFormNameError = errorMsg)
+    private fun updateInputInViewState(input: String, field: InputName) {
+        viewState = when(field) {
+            InputName.LENGTH -> viewState.copy(length = input)
+            InputName.WIDTH -> viewState.copy(width = input)
+            InputName.HEIGHT -> viewState.copy(height = input)
+            InputName.EMPTY_WEIGHT -> viewState.copy(weight = input)
+            InputName.NAME ->  viewState.copy(name = input)
         }
     }
 
-    fun onCustomFormDoneMenuClicked(type: String, name: String,
-                                    length: String, width: String,
-                                    height: String, weight: String) {
+    private fun updateErrorInViewState(field: InputName, errorMsg: Int?) {
+        viewState = when(field) {
+            InputName.LENGTH -> viewState.copy(lengthErrorMessage = errorMsg)
+            InputName.WIDTH -> viewState.copy(widthErrorMessage = errorMsg)
+            InputName.HEIGHT -> viewState.copy(heightErrorMessage = errorMsg)
+            InputName.EMPTY_WEIGHT -> viewState.copy(weightErrorMessage = errorMsg)
+            InputName.NAME ->  viewState.copy(nameErrorMessage = errorMsg)
+        }
+    }
+
+    fun onCustomFormDoneMenuClicked() {
         // Sanitize and validate all input-related fields one last time.
-        sanitizeStringInput(name)
-        sanitizeFloatInput(length, InputName.LENGTH)
-        sanitizeFloatInput(width, InputName.WIDTH)
-        sanitizeFloatInput(height, InputName.HEIGHT)
-        sanitizeFloatInput(weight, InputName.EMPTY_WEIGHT)
+        validateNameField(viewState.name)
+        validateFloatInput(viewState.length, InputName.LENGTH)
+        validateFloatInput(viewState.width, InputName.WIDTH)
+        validateFloatInput(viewState.height, InputName.HEIGHT)
+        validateFloatInput(viewState.weight, InputName.EMPTY_WEIGHT)
 
-        // At this point, if there's no errors, we assume everything is valid and good to go.
-        if(viewState.areAllRequiredFieldsValid) {
-            val packageToCreate = ShippingPackage(
-                id = "", /* Safe to set as empty, as it's not used for package creation */
-                title = name,
-                isLetter = type == resourceProvider.getString(CustomPackageType.ENVELOPE.stringRes),
-                category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY,
-                dimensions = PackageDimensions(
-                    length = inputToFloat(length),
-                    width = inputToFloat(width),
-                    height =inputToFloat(height)
-                ),
-                boxWeight = inputToFloat(weight)
-            )
-            viewState = viewState.copy(customPackage = packageToCreate, isSavingProgressDialogVisible = true)
+        if (!viewState.areAllRequiredFieldsValid) return
 
-            launch {
-                val result = shippingLabelRepository.createCustomPackage(packageToCreate)
-                when {
-                    result.isError -> {
-                        val errorMsg = if (result.error.message != null) {
-                            result.error.message
-                        } else {
-                            resourceProvider.getString(string.shipping_label_create_custom_package_api_unknown_failure)
-                        }
+        val packageToCreate = ShippingPackage(
+            id = "", /* Safe to set as empty, as it's not used for package creation */
+            title = viewState.name,
+            isLetter = viewState.type.stringRes == CustomPackageType.ENVELOPE.stringRes,
+            category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY,
+            dimensions = PackageDimensions(
+                length = inputToFloat(viewState.length),
+                width = inputToFloat(viewState.width),
+                height = inputToFloat(viewState.height)
+            ),
+            boxWeight = inputToFloat(viewState.weight)
+        )
+        viewState = viewState.copy(customPackage = packageToCreate, isSavingProgressDialogVisible = true)
 
-                        triggerEvent(ShowSnackbar(
-                                message = string.shipping_label_create_custom_package_api_failure,
-                                args = arrayOf(errorMsg as String)
-                           )
-                        )
+        launch {
+            val result = shippingLabelRepository.createCustomPackage(packageToCreate)
+            when {
+                result.isError -> {
+                    val errorMsg = if (result.error.message != null) {
+                        result.error.message
+                    } else {
+                        resourceProvider.getString(string.shipping_label_create_custom_package_api_unknown_failure)
                     }
-                    result.model == true -> {
-                        triggerEvent(PackageSuccessfullyMadeEvent(packageToCreate))
-                    }
-                    else -> triggerEvent(ShowSnackbar(string.shipping_label_create_custom_package_api_unknown_failure))
+
+                    triggerEvent(ShowSnackbar(
+                            message = string.shipping_label_create_custom_package_api_failure,
+                            args = arrayOf(errorMsg as String)
+                       )
+                    )
                 }
-                viewState = viewState.copy(isSavingProgressDialogVisible = false)
+                result.model == true -> {
+                    triggerEvent(PackageSuccessfullyMadeEvent(packageToCreate))
+                }
+                else -> triggerEvent(ShowSnackbar(string.shipping_label_create_custom_package_api_unknown_failure))
             }
-        }
-        else {
-            triggerEvent(ShowSnackbar(string.shipping_label_create_custom_package_generic_failure))
+            viewState = viewState.copy(isSavingProgressDialogVisible = false)
         }
     }
 
@@ -134,20 +146,25 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
 
     @Parcelize
     data class ShippingLabelCreateCustomPackageViewState(
-        val customPackage: ShippingPackage? = null, // TODO: for data submission
-        val customFormType: CustomPackageType = CustomPackageType.BOX,
-        val customFormNameError: Int? = null,
-        val customFormLengthError: Int? = null,
-        val customFormWidthError: Int? = null,
-        val customFormHeightError: Int? = null,
-        val customFormWeightError: Int? = null,
+        val customPackage: ShippingPackage? = null,
+        val type: CustomPackageType = CustomPackageType.BOX,
+        val name: String = "",
+        val length: String = "",
+        val width: String = "",
+        val height: String = "",
+        val weight: String = "",
+        val nameErrorMessage: Int? = null,
+        val lengthErrorMessage: Int? = null,
+        val widthErrorMessage: Int? = null,
+        val heightErrorMessage: Int? = null,
+        val weightErrorMessage: Int? = null,
         val isSavingProgressDialogVisible: Boolean? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val areAllRequiredFieldsValid
-            get() = customFormNameError == null && customFormLengthError == null &&
-                customFormWidthError == null && customFormHeightError ==  null &&
-                customFormWeightError == null
+            get() = nameErrorMessage == null && lengthErrorMessage == null &&
+                widthErrorMessage == null && heightErrorMessage ==  null &&
+                weightErrorMessage == null
     }
 
     enum class InputName {
