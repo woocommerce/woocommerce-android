@@ -33,6 +33,7 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
@@ -56,6 +57,7 @@ import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
 @Suppress("SameParameterValue")
+@AndroidEntryPoint
 class LoginActivity :
     AppCompatActivity(),
     LoginListener,
@@ -86,7 +88,6 @@ class LoginActivity :
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         binding = ActivityLoginBinding.inflate(layoutInflater)

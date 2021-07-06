@@ -16,8 +16,4 @@ internal abstract class SitePickerModule {
     @Binds
     abstract fun provideSitePickerPresenter(sitePickerPresenter: SitePickerPresenter):
         SitePickerContract.Presenter
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    internal abstract fun loginEmailHelpDialogFragment(): LoginEmailHelpDialogFragment
 }
