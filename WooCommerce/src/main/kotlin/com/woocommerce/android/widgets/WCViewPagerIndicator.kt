@@ -1,15 +1,16 @@
-package com.woocommerce.android.ui.login
+package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.login.LoginPrologueViewPager
 
 /**
- * Simple list of oval images used below the prologue view pager to indicate which page is selected
+ * Simple list of oval images used below a view pager to indicate which page is selected
  */
-class LoginPrologueViewPagerIndicator : LinearLayout {
+class WCViewPagerIndicator : LinearLayout {
     interface OnIndicatorClickedListener {
         fun onIndicatorClicked(index: Int)
     }
