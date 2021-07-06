@@ -71,6 +71,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSl
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -1622,7 +1623,9 @@ class ProductDetailViewModel @Inject constructor(
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
             val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(getRemoteProductId())
-            triggerEvent(Event.ShowActionSnackbar(errorMsg, action = { }))
+            triggerEvent(Event.ShowActionSnackbar(errorMsg, action = {
+                triggerEvent(ViewMediaUploadErrors(getRemoteProductId()))
+            }))
         } else {
             event.media?.let { media ->
                 addProductImageToDraft(media.toAppModel())

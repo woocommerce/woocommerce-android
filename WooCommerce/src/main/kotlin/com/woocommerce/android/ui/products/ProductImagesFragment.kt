@@ -47,6 +47,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductImagesFragment :
@@ -56,6 +57,7 @@ class ProductImagesFragment :
         private const val KEY_CAPTURED_PHOTO_URI = "key_captured_photo_uri"
     }
 
+    @Inject lateinit var navigator: ProductNavigator
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
@@ -191,6 +193,7 @@ class ProductImagesFragment :
                     ShowCamera -> captureProductImage()
                     ShowWPMediaPicker -> showWPMediaPicker()
                     is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
+                    is ProductNavigationTarget -> navigator.navigate(this, event)
                     else -> event.isHandled = false
                 }
             }

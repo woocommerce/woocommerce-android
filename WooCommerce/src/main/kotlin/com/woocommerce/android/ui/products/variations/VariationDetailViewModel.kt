@@ -24,10 +24,7 @@ import com.woocommerce.android.model.ProductVariation.Option
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductBackorderStatus
-import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.*
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
@@ -44,6 +41,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -427,7 +425,9 @@ class VariationDetailViewModel @Inject constructor(
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
             val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteVariationId)
-            triggerEvent(MultiLiveEvent.Event.ShowActionSnackbar(errorMsg, action = { }))
+            triggerEvent(MultiLiveEvent.Event.ShowActionSnackbar(errorMsg, action = {
+                triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId))
+            }))
         } else {
             event.media?.let { media ->
                 viewState.variation?.let {

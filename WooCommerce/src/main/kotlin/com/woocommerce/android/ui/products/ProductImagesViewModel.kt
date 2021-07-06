@@ -22,6 +22,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.util.swap
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -246,7 +247,9 @@ class ProductImagesViewModel @Inject constructor(
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
             val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteId)
-            triggerEvent(ShowActionSnackbar(errorMsg, action = {  }))
+            triggerEvent(ShowActionSnackbar(errorMsg, action = {
+                triggerEvent(ViewMediaUploadErrors(navArgs.remoteId))
+            }))
         } else {
             event.media?.let { media ->
                 viewState = if (isMultiSelectionAllowed) {
