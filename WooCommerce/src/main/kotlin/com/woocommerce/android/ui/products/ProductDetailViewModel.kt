@@ -29,6 +29,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.removeItem
+import com.woocommerce.android.media.MediaFileUploadHandler
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
@@ -121,6 +122,7 @@ class ProductDetailViewModel @Inject constructor(
     private val productTagsRepository: ProductTagsRepository,
     private val mediaFilesRepository: MediaFilesRepository,
     private val variationRepository: VariationRepository,
+    private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val prefs: AppPrefs
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -153,11 +155,11 @@ class ProductDetailViewModel @Inject constructor(
     private var productCategoriesViewState by productCategoriesViewStateData
 
     // view state for the product tags screen
-    final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
+    val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
 
     // view state for the product downloads screen
-    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
+    val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
     private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
@@ -1619,7 +1621,8 @@ class ProductDetailViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
-            triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
+            val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(getRemoteProductId())
+            triggerEvent(Event.ShowActionSnackbar(errorMsg, action = { }))
         } else {
             event.media?.let { media ->
                 addProductImageToDraft(media.toAppModel())

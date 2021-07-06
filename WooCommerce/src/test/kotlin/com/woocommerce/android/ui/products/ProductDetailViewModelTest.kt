@@ -14,6 +14,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.media.MediaFileUploadHandler
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
@@ -75,6 +76,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
     }
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
@@ -225,6 +227,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 productTagsRepository,
                 mediaFilesRepository,
                 variationRepository,
+                mediaFileUploadHandler,
                 prefs
             )
         )
