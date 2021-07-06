@@ -47,9 +47,6 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
@@ -60,8 +57,7 @@ class SitePickerActivity :
     AppCompatActivity(),
     SitePickerContract.View,
     OnSiteClickListener,
-    LoginEmailHelpDialogFragment.Listener,
-    HasAndroidInjector {
+    LoginEmailHelpDialogFragment.Listener {
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
@@ -83,7 +79,6 @@ class SitePickerActivity :
             fragment.startActivityForResult(intent, RequestCodes.SITE_PICKER)
         }
     }
-    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
@@ -838,6 +833,4 @@ class SitePickerActivity :
     override fun onEmailNeedMoreHelpClicked() {
         startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
-
-    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 }
