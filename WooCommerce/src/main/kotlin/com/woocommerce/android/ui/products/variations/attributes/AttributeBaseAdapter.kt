@@ -59,6 +59,6 @@ abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHo
 
     abstract class AttributeBaseViewHolder(val viewBinding: AttributeItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-            abstract fun bind(attribute: ProductAttribute)
-        }
+        abstract fun bind(attribute: ProductAttribute)
+    }
 }

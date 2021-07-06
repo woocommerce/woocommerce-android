@@ -196,7 +196,6 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             binding.attributeSelectionHint.isVisible = shouldBeVisible
             binding.divider.isVisible = shouldBeVisible
         }
-
     }
 
     private fun showSkeleton(show: Boolean) {

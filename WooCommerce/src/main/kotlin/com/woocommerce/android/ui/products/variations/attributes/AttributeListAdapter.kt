@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeItemBinding
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
