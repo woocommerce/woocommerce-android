@@ -205,7 +205,7 @@ class ShippingLabelRepository @Inject constructor(
         }
     }
 
-    suspend fun createCustomPackage(packageToCreate: ShippingPackage) : WooResult<Boolean> {
+    suspend fun createCustomPackage(packageToCreate: ShippingPackage): WooResult<Boolean> {
         return shippingLabelStore.createPackages(
             site = selectedSite.get(),
             customPackages = listOf(packageToCreate.toCustomPackageDataModel()),

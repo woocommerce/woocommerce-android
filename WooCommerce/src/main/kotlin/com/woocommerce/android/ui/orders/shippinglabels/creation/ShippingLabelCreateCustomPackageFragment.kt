@@ -119,15 +119,15 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
                 binding.weight.error = error?.let { getString(it) }
                 // Hide helper text if error is shown, as suggested by Material Design
                 // (see https://material.io/components/text-fields#anatomy)
-                binding.weightHelper.visibility = if(error != null) View.INVISIBLE else View.VISIBLE
+                binding.weightHelper.visibility = if (error != null) View.INVISIBLE else View.VISIBLE
             }
 
-            new.nameErrorMessage.takeIfNotEqualTo(old?.nameErrorMessage) {  error ->
+            new.nameErrorMessage.takeIfNotEqualTo(old?.nameErrorMessage) { error ->
                 binding.name.error = error?.let { getString(it) }
             }
 
             new.isSavingProgressDialogVisible?.takeIfNotEqualTo(old?.isSavingProgressDialogVisible) { isVisible ->
-                if(isVisible) {
+                if (isVisible) {
                     showProgressDialog(
                         title = R.string.shipping_label_create_custom_package_saving_progress_title,
                         message = R.string.shipping_label_create_custom_package_saving_progress_message
@@ -141,7 +141,10 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is PackageSuccessfullyMadeEvent -> parentViewModel.onPackageCreated(event.madePackage)
-                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                is ShowSnackbar -> uiMessageResolver.getSnack(
+                    stringResId = event.message,
+                    stringArgs = event.args
+                ).show()
                 else -> event.isHandled = false
             }
         }
@@ -172,4 +175,3 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         }
     }
 }
-

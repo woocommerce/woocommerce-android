@@ -122,7 +122,7 @@ class EditShippingLabelPackagesFragment :
 
                     findNavController().navigateSafely(action)
                 }
-                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PACKAGES_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_PACKAGES_CLOSED)
                 else -> event.isHandled = false

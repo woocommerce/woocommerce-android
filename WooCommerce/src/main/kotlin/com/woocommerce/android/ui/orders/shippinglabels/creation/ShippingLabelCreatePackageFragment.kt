@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shipping_label_create_package) {
+class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shipping_label_create_package) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var _binding: FragmentShippingLabelCreatePackageBinding? = null
@@ -44,7 +44,7 @@ class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shippin
     }
 
     private fun initializeTabs(tabLayout: TabLayout, viewPager: ViewPager2) {
-       val tabArray = resources.getStringArray(R.array.shipping_label_create_new_package_tabs).toList()
+        val tabArray = resources.getStringArray(R.array.shipping_label_create_new_package_tabs).toList()
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = tabArray[position]
         }.attach()
@@ -60,9 +60,13 @@ class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shippin
                     navigateBackWithResult(
                         SELECTED_PACKAGE_RESULT,
                         event.data,
-                        R.id.editShippingLabelPackagesFragment)
+                        R.id.editShippingLabelPackagesFragment
+                    )
                 }
-                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                is ShowSnackbar -> uiMessageResolver.getSnack(
+                    stringResId = event.message,
+                    stringArgs = event.args
+                ).show()
                 else -> event.isHandled = false
             }
         }

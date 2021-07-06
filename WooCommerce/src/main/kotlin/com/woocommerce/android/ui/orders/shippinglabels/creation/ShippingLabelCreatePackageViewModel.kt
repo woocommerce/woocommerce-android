@@ -20,17 +20,21 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
     private val arguments: ShippingLabelCreatePackageFragmentArgs by savedState.navArgs()
 
     fun onPackageCreated(madePackage: ShippingPackage) {
-        triggerEvent(ShowSnackbar(
-            message = R.string.shipping_label_create_custom_package_success_message,
-            args = arrayOf(madePackage.title)
-        ))
-
-        triggerEvent(ExitWithResult(
-            ShippingPackageSelectorResult(
-                position = arguments.position,
-                selectedPackage = madePackage
+        triggerEvent(
+            ShowSnackbar(
+                message = R.string.shipping_label_create_custom_package_success_message,
+                args = arrayOf(madePackage.title)
             )
-        ))
+        )
+
+        triggerEvent(
+            ExitWithResult(
+                ShippingPackageSelectorResult(
+                    position = arguments.position,
+                    selectedPackage = madePackage
+                )
+            )
+        )
     }
 
     val viewStateData = LiveDataDelegate(savedState, ShippingLabelCreatePackageViewState())

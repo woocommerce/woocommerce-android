@@ -36,7 +36,7 @@ data class PackageDimensions(
     val width: Float,
     val height: Float
 ) : Parcelable {
-    override fun toString() : String {
+    override fun toString(): String {
         return "$length x $width x $height" // This formatting mirrors how it's done in core.
     }
 }

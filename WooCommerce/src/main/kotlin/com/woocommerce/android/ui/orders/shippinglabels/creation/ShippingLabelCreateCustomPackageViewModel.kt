@@ -40,13 +40,12 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     val weightUnit = parameters.weightUnit ?: ""
     val dimensionUnit = parameters.dimensionUnit ?: ""
 
-
     fun onCustomPackageTypeSelected(selectedPackageType: CustomPackageType) {
         viewState = viewState.copy(type = selectedPackageType)
     }
 
     fun onFieldTextChanged(value: String, field: InputName) {
-        when(field) {
+        when (field) {
             InputName.NAME -> validateNameField(value)
             else -> validateFloatInput(value, field)
         }
@@ -54,10 +53,9 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     }
 
     fun validateNameField(input: String) {
-        if(input.isBlank()) {
+        if (input.isBlank()) {
             updateErrorInViewState(InputName.NAME, emptyInputError)
-        }
-        else {
+        } else {
             updateErrorInViewState(InputName.NAME, null)
         }
     }
@@ -72,22 +70,22 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     }
 
     private fun updateInputInViewState(input: String, field: InputName) {
-        viewState = when(field) {
+        viewState = when (field) {
             InputName.LENGTH -> viewState.copy(length = input)
             InputName.WIDTH -> viewState.copy(width = input)
             InputName.HEIGHT -> viewState.copy(height = input)
             InputName.EMPTY_WEIGHT -> viewState.copy(weight = input)
-            InputName.NAME ->  viewState.copy(name = input)
+            InputName.NAME -> viewState.copy(name = input)
         }
     }
 
     private fun updateErrorInViewState(field: InputName, errorMsg: Int?) {
-        viewState = when(field) {
+        viewState = when (field) {
             InputName.LENGTH -> viewState.copy(lengthErrorMessage = errorMsg)
             InputName.WIDTH -> viewState.copy(widthErrorMessage = errorMsg)
             InputName.HEIGHT -> viewState.copy(heightErrorMessage = errorMsg)
             InputName.EMPTY_WEIGHT -> viewState.copy(weightErrorMessage = errorMsg)
-            InputName.NAME ->  viewState.copy(nameErrorMessage = errorMsg)
+            InputName.NAME -> viewState.copy(nameErrorMessage = errorMsg)
         }
     }
 
@@ -125,10 +123,11 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
                         resourceProvider.getString(string.shipping_label_create_custom_package_api_unknown_failure)
                     }
 
-                    triggerEvent(ShowSnackbar(
+                    triggerEvent(
+                        ShowSnackbar(
                             message = string.shipping_label_create_custom_package_api_failure,
                             args = arrayOf(errorMsg as String)
-                       )
+                        )
                     )
                 }
                 result.model == true -> {
@@ -140,8 +139,8 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         }
     }
 
-    private fun inputToFloat(input: String) : Float {
-        return if(input.isBlank()) Float.NaN else input.trim('.').toFloat()
+    private fun inputToFloat(input: String): Float {
+        return if (input.isBlank()) Float.NaN else input.trim('.').toFloat()
     }
 
     @Parcelize
@@ -163,7 +162,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         @IgnoredOnParcel
         val areAllRequiredFieldsValid
             get() = nameErrorMessage == null && lengthErrorMessage == null &&
-                widthErrorMessage == null && heightErrorMessage ==  null &&
+                widthErrorMessage == null && heightErrorMessage == null &&
                 weightErrorMessage == null
     }
 
