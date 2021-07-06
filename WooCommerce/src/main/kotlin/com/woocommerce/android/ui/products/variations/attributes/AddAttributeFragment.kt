@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -109,7 +108,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         binding.attributeList.layoutManager = layoutManager
         binding.attributeList.itemAnimator = null
 
-        binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
+        binding.attributeEditText.setOnEditorActionListener { _, _, _ ->
             val attributeName = binding.attributeEditText.text?.toString() ?: ""
             if (attributeName.isNotBlank()) {
                 binding.attributeEditText.text?.clear()
@@ -124,7 +123,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     private fun setupObservers() {
         viewModel.globalAttributeList.observe(
             viewLifecycleOwner,
-            Observer {
+            {
                 showAttributes(it)
             }
         )
@@ -135,7 +134,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
         viewModel.event.observe(
             viewLifecycleOwner,
-            Observer { event ->
+            { event ->
                 when (event) {
                     is ExitProductAddAttribute -> findNavController().navigateUp()
                     else -> event.isHandled = false
@@ -192,8 +191,12 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                 allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
             }
         )
-        binding.attributeSelectionHint.isVisible =
-            globalAttributes.isNotEmpty() or localDraftAttributes.isNotEmpty()
+
+        (globalAttributes.isNotEmpty() or localDraftAttributes.isNotEmpty()).let { shouldBeVisible ->
+            binding.attributeSelectionHint.isVisible = shouldBeVisible
+            binding.divider.isVisible = shouldBeVisible
+        }
+
     }
 
     private fun showSkeleton(show: Boolean) {

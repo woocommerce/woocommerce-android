@@ -60,12 +60,18 @@
             android:textColor="@color/color_on_surface_medium"
             android:textAppearance="@style/TextAppearance.Woo.Subtitle2" />
 
+        <View
+            android:id="@+id/divider"
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_width="match_parent"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/attributeList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:itemCount="3"
-            tools:listitem="@layout/add_attribute_list_item" />
+            tools:listitem="@layout/attribute_list_item" />
     </LinearLayout>
 
 </LinearLayout>
