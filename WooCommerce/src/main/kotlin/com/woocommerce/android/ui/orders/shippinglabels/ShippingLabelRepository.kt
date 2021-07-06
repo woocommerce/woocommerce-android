@@ -205,6 +205,23 @@ class ShippingLabelRepository @Inject constructor(
         }
     }
 
+    suspend fun createCustomPackage(packageToCreate: ShippingPackage): WooResult<Boolean> {
+        return shippingLabelStore.createPackages(
+            site = selectedSite.get(),
+            customPackages = listOf(packageToCreate.toCustomPackageDataModel()),
+            predefinedPackages = emptyList()
+        ).let { result ->
+            when {
+                result.model == true -> {
+                    availablePackages = availablePackages?.let { it + packageToCreate }
+                    WooResult(true)
+                }
+                result.isError -> WooResult(result.error)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     fun clearCache() {
         accountSettings = null
         availablePackages = null

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
@@ -134,7 +133,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
             if (!result) {
                 // If we fail to fetch a non deleted product, display an error
-                triggerEvent(ShowSnackbar(R.string.shipping_label_package_details_fetch_products_error))
+                triggerEvent(ShowSnackbar(string.shipping_label_package_details_fetch_products_error))
                 triggerEvent(Exit)
                 return
             }

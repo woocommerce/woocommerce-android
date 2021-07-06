@@ -1,6 +1,8 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.CustomPackage
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.PredefinedOption
@@ -17,6 +19,15 @@ data class ShippingPackage(
     companion object {
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
     }
+
+    fun toCustomPackageDataModel(): CustomPackage {
+        return CustomPackage(
+            title = title,
+            isLetter = isLetter,
+            dimensions = dimensions.toString(),
+            boxWeight = boxWeight
+        )
+    }
 }
 
 @Parcelize
@@ -24,7 +35,11 @@ data class PackageDimensions(
     val length: Float,
     val width: Float,
     val height: Float
-) : Parcelable
+) : Parcelable {
+    override fun toString(): String {
+        return "$length x $width x $height" // This formatting mirrors how it's done in core.
+    }
+}
 
 fun CustomPackage.toAppModel(): ShippingPackage {
     val dimensionsParts = dimensions.split("x")
@@ -58,4 +73,9 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
             category = this.title
         )
     }
+}
+
+enum class CustomPackageType(@StringRes val stringRes: Int) {
+    BOX(R.string.shipping_label_create_custom_package_field_type_box),
+    ENVELOPE(R.string.shipping_label_create_custom_package_field_type_envelope)
 }
