@@ -55,6 +55,13 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         }
     }
 
+    override fun onDetach() {
+        if (isRemoving) {
+            exitTutorial()
+        }
+        super.onDetach()
+    }
+
     private fun exitTutorial() {
         navigateBackWithResult(KEY_READER_TUTORIAL_RESULT, true)
     }
