@@ -8,7 +8,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateCustomPackageBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -57,42 +56,42 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
 
     private fun initializeInputFields() {
         // Initialize spinner
-        binding.customPackageFormType.setup(
+        binding.typeSpinner.setup(
             values = CustomPackageType.values(),
             onSelected = { selectedPackage -> viewModel.onCustomPackageTypeSelected(selectedPackage) },
             mapper = { resources.getString(it.stringRes) }
         )
 
-        binding.customPackageFormName.setOnTextChangedListener {
+        binding.name.setOnTextChangedListener {
             viewModel.onFieldTextChanged(it.toString(), InputName.NAME)
         }
-        binding.customPackageFormLength.setOnTextChangedListener {
+        binding.length.setOnTextChangedListener {
             viewModel.onFieldTextChanged(it.toString(), InputName.LENGTH)
         }
-        binding.customPackageFormWidth.setOnTextChangedListener {
+        binding.width.setOnTextChangedListener {
             viewModel.onFieldTextChanged(it.toString(), InputName.WIDTH)
         }
-        binding.customPackageFormHeight.setOnTextChangedListener {
+        binding.height.setOnTextChangedListener {
             viewModel.onFieldTextChanged(it.toString(), InputName.HEIGHT)
         }
-        binding.customPackageFormEmptyWeight.setOnTextChangedListener {
+        binding.weight.setOnTextChangedListener {
             viewModel.onFieldTextChanged(it.toString(), InputName.EMPTY_WEIGHT)
         }
 
         // Fill proper units
-        binding.customPackageFormLength.hint = binding.root.context.getString(
+        binding.length.hint = binding.root.context.getString(
             R.string.shipping_label_create_custom_package_field_length,
             viewModel.dimensionUnit
         )
-        binding.customPackageFormWidth.hint = binding.root.context.getString(
+        binding.width.hint = binding.root.context.getString(
             R.string.shipping_label_create_custom_package_field_width,
             viewModel.dimensionUnit
         )
-        binding.customPackageFormHeight.hint = binding.root.context.getString(
+        binding.height.hint = binding.root.context.getString(
             R.string.shipping_label_create_custom_package_field_height,
             viewModel.dimensionUnit
         )
-        binding.customPackageFormEmptyWeight.hint = binding.root.context.getString(
+        binding.weight.hint = binding.root.context.getString(
             R.string.shipping_label_create_custom_package_field_empty_weight,
             viewModel.weightUnit
         )
@@ -101,30 +100,30 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
     private fun setupObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.type.takeIfNotEqualTo(old?.type) {
-                binding.customPackageFormType.setText(getString(it.stringRes))
+                binding.typeSpinner.setText(getString(it.stringRes))
             }
 
-            new.lengthErrorMessage.takeIfNotEqualTo(old?.lengthErrorMessage) {
-                showErrorOrClear(binding.customPackageFormLength, it)
+            new.lengthErrorMessage.takeIfNotEqualTo(old?.lengthErrorMessage) { error ->
+                binding.length.error = error?.let { getString(it) }
             }
 
-            new.widthErrorMessage.takeIfNotEqualTo(old?.widthErrorMessage) {
-                showErrorOrClear(binding.customPackageFormWidth, it)
+            new.widthErrorMessage.takeIfNotEqualTo(old?.widthErrorMessage) { error ->
+                binding.width.error = error?.let { getString(it) }
             }
 
-            new.heightErrorMessage.takeIfNotEqualTo(old?.heightErrorMessage) {
-                showErrorOrClear(binding.customPackageFormHeight, it)
+            new.heightErrorMessage.takeIfNotEqualTo(old?.heightErrorMessage) { error ->
+                binding.height.error = error?.let { getString(it) }
             }
 
-            new.weightErrorMessage.takeIfNotEqualTo(old?.weightErrorMessage) {
-                showErrorOrClear(binding.customPackageFormEmptyWeight, it)
+            new.weightErrorMessage.takeIfNotEqualTo(old?.weightErrorMessage) { error ->
+                binding.weight.error = error?.let { getString(it) }
                 // Hide helper text if error is shown, as suggested by Material Design
                 // (see https://material.io/components/text-fields#anatomy)
-                binding.customPackageFormEmptyWeightHelper.visibility = if(it != null) View.INVISIBLE else View.VISIBLE
+                binding.weightHelper.visibility = if(error != null) View.INVISIBLE else View.VISIBLE
             }
 
-            new.nameErrorMessage.takeIfNotEqualTo(old?.nameErrorMessage) {
-                showErrorOrClear(binding.customPackageFormName, it)
+            new.nameErrorMessage.takeIfNotEqualTo(old?.nameErrorMessage) {  error ->
+                binding.name.error = error?.let { getString(it) }
             }
 
             new.isSavingProgressDialogVisible?.takeIfNotEqualTo(old?.isSavingProgressDialogVisible) { isVisible ->
@@ -145,15 +144,6 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 else -> event.isHandled = false
             }
-        }
-    }
-
-    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int?) {
-        if (message == null || message == 0) {
-            inputLayout.error = null
-            inputLayout.isErrorEnabled = false /* Needed to make error message not use up layout height when hidden */
-        } else {
-            inputLayout.error = resources.getString(message)
         }
     }
 
@@ -182,3 +172,4 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         }
     }
 }
+

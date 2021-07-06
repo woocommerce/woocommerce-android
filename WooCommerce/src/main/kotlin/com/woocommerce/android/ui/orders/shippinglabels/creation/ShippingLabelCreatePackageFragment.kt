@@ -11,11 +11,9 @@ import com.woocommerce.android.databinding.FragmentShippingLabelCreatePackageBin
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.PackageType
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.SelectPackageEvent
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment.Companion.SELECTED_PACKAGE_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -25,63 +23,49 @@ class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shippin
 
     private var _binding: FragmentShippingLabelCreatePackageBinding? = null
     private val binding get() = _binding!!
-
-    private var _tabLayout: TabLayout? = null
-    private val tabLayout get() = _tabLayout!!
-
-    private var _viewPager: ViewPager2? = null
-    private val viewPager get() = _viewPager!!
-
     private val viewModel: ShippingLabelCreatePackageViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentShippingLabelCreatePackageBinding.bind(view)
-        _tabLayout = binding.createPackageTabLayout
-        _viewPager = binding.createPackagePager
+        val tabLayout = binding.createPackageTabLayout
+        val viewPager = binding.createPackagePager
 
-        val adapter = ShippingLabelCreatePackageViewPagerAdapter(this, PackageType.values().size)
+        val adapter = ShippingLabelCreatePackageViewPagerAdapter(this)
         viewPager.adapter = adapter
 
-        initializeTabs()
+        initializeTabs(tabLayout, viewPager)
         setupObservers(viewModel)
     }
 
-    private fun initializeTabs() {
-        // Get the english version to use for setting the tab tag.
-        val englishTabArray = StringUtils
-            .getStringArrayByLocale(requireContext(), R.array.shipping_label_create_new_package_tabs, "en")
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
 
+    private fun initializeTabs(tabLayout: TabLayout, viewPager: ViewPager2) {
        val tabArray = resources.getStringArray(R.array.shipping_label_create_new_package_tabs).toList()
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = tabArray[position]
-            tab.tag = englishTabArray?.get(position) ?: tabArray[position]
         }.attach()
     }
 
     private fun setupObservers(viewModel: ShippingLabelCreatePackageViewModel) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is SelectPackageEvent -> {
+                is ExitWithResult<*> -> {
                     // Once a package creation succeeds, we want to navigate right away to
                     // EditShippingLabelPackagesFragment, delivering the newly created package to be used
                     // as a selected package.
                     navigateBackWithResult(
                         SELECTED_PACKAGE_RESULT,
-                        event.packageResult,
+                        event.data,
                         R.id.editShippingLabelPackagesFragment)
                 }
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 else -> event.isHandled = false
             }
         }
-    }
-
-    override fun onDestroyView() {
-        _tabLayout = null
-        _viewPager = null
-        _binding = null
-        super.onDestroyView()
     }
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_create_package_title)

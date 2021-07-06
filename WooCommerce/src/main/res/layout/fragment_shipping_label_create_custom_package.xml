@@ -22,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/custom_package_form_type"
+            android:id="@+id/type_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -34,7 +34,7 @@
             app:layout_constraintTop_toBottomOf="@id/custom_package_form_info" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/custom_package_form_name"
+            android:id="@+id/name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -44,10 +44,10 @@
             android:inputType="text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/custom_package_form_type" />
+            app:layout_constraintTop_toBottomOf="@id/type_spinner" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/custom_package_form_length"
+            android:id="@+id/length"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -57,10 +57,10 @@
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/custom_package_form_name" />
+            app:layout_constraintTop_toBottomOf="@id/name" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/custom_package_form_width"
+            android:id="@+id/width"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -70,10 +70,10 @@
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/custom_package_form_length" />
+            app:layout_constraintTop_toBottomOf="@id/length" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/custom_package_form_height"
+            android:id="@+id/height"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -83,10 +83,10 @@
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/custom_package_form_width" />
+            app:layout_constraintTop_toBottomOf="@id/width" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/custom_package_form_empty_weight"
+            android:id="@+id/weight"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -96,18 +96,18 @@
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/custom_package_form_height" />
+            app:layout_constraintTop_toBottomOf="@id/height" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/custom_package_form_empty_weight_helper"
+            android:id="@+id/weight_helper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginBottom="@dimen/minor_100"
             android:text="@string/shipping_label_create_custom_package_field_empty_weight_helper"
             android:textAppearance="?attr/textAppearanceCaption"
-            app:layout_constraintStart_toStartOf="@id/custom_package_form_empty_weight"
-            app:layout_constraintTop_toBottomOf="@id/custom_package_form_empty_weight" />
+            app:layout_constraintStart_toStartOf="@id/weight"
+            app:layout_constraintTop_toBottomOf="@id/weight" />
 
     </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
 

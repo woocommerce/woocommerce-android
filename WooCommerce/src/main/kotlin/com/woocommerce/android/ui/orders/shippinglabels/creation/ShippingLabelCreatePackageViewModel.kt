@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ShippingLabelCreatePackageViewModel @Inject constructor(
     savedState: SavedStateHandle
-) : ScopedViewModel(savedState)  {
+) : ScopedViewModel(savedState) {
     private val arguments: ShippingLabelCreatePackageFragmentArgs by savedState.navArgs()
 
     fun onPackageCreated(madePackage: ShippingPackage) {
@@ -25,11 +25,11 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
             args = arrayOf(madePackage.title)
         ))
 
-        triggerEvent(SelectPackageEvent(
-            packageResult = ShippingPackageSelectorResult(
+        triggerEvent(ExitWithResult(
+            ShippingPackageSelectorResult(
                 position = arguments.position,
                 selectedPackage = madePackage
-            ),
+            )
         ))
     }
 
@@ -45,7 +45,4 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
         CUSTOM,
         SERVICE
     }
-
-    data class SelectPackageEvent(
-        val packageResult: ShippingPackageSelectorResult) : MultiLiveEvent.Event()
 }
