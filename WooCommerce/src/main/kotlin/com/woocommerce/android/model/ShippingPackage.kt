@@ -20,11 +20,11 @@ data class ShippingPackage(
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
     }
 
-    fun toCustomPackageAppModel(): CustomPackage {
+    fun toCustomPackageDataModel(): CustomPackage {
         return CustomPackage(
             title = title,
             isLetter = isLetter,
-            dimensions = dimensions.toDimensionsString(),
+            dimensions = dimensions.toString(),
             boxWeight = boxWeight
         )
     }
@@ -36,7 +36,7 @@ data class PackageDimensions(
     val width: Float,
     val height: Float
 ) : Parcelable {
-    fun toDimensionsString() : String {
+    override fun toString() : String {
         return "$length x $width x $height" // This formatting mirrors how it's done in core.
     }
 }

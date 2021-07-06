@@ -208,14 +208,11 @@ class ShippingLabelRepository @Inject constructor(
     suspend fun createCustomPackage(packageToCreate: ShippingPackage) : WooResult<Boolean> {
         return shippingLabelStore.createPackages(
             site = selectedSite.get(),
-            customPackages = listOf(packageToCreate.toCustomPackageAppModel()),
+            customPackages = listOf(packageToCreate.toCustomPackageDataModel()),
             predefinedPackages = emptyList()
         ).let { result ->
             when {
                 result.model == true -> {
-                    // Add package to existing list of available custom packages, so that it will
-                    // be available immediately in ShippingPackageSelectorFragment if user visits that page
-                    // again after creating a custom package.
                     availablePackages = availablePackages?.let { it + packageToCreate }
                     WooResult(true)
                 }
