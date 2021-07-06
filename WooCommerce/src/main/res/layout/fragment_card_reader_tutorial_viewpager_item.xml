@@ -6,22 +6,42 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/labelTextView"
+        style="@style/Woo.TextView.Subtitle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/major_150"
+        android:layout_marginBottom="@dimen/major_150"
+        android:gravity="center"
+        tools:layout_width="200dp"
+        tools:text="@string/card_reader_tutorial_connected_label" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_150"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
         tools:src="@drawable/img_prologue_analytics" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textView"
+        android:id="@+id/detailTextView"
         style="@style/Woo.TextView.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/major_150"
+        android:layout_marginBottom="@dimen/major_150"
         android:gravity="center"
         tools:layout_width="200dp"
-        tools:text="@string/login_prologue_label_analytics" />
+        tools:text="@string/card_reader_tutorial_connected_detail" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/update_reader_secondary_action_btn"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Skip" />
 </LinearLayout>

@@ -16,19 +16,22 @@ import org.wordpress.android.util.DisplayUtils
 class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_reader_tutorial_viewpager_item) {
     companion object {
         private const val ARG_DRAWABLE_ID = "drawable_id"
-        private const val ARG_STRING_ID = "string_id"
+        private const val ARG_LABEL_ID = "label_id"
+        private const val ARG_DETAIL_ID = "detail_id"
 
         private const val RATIO_PORTRAIT = 0.6f
         private const val RATIO_LANDSCAPE = 0.2f
 
         fun newInstance(
             @DrawableRes drawableId: Int,
-            @StringRes stringId: Int
+            @StringRes labelId: Int,
+            @StringRes detailId: Int
         ): CardReaderTutorialViewPagerItemFragment {
             CardReaderTutorialViewPagerItemFragment().also { fragment ->
                 fragment.arguments = Bundle().also { bundle ->
                     bundle.putInt(ARG_DRAWABLE_ID, drawableId)
-                    bundle.putInt(ARG_STRING_ID, stringId)
+                    bundle.putInt(ARG_LABEL_ID, labelId)
+                    bundle.putInt(ARG_DETAIL_ID, detailId)
                 }
                 return fragment
             }
@@ -40,7 +43,7 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
 
         arguments?.let { args ->
             val binding = FragmentCardReaderTutorialViewpagerItemBinding.bind(view)
-            binding.textView.setText(args.getInt(ARG_STRING_ID))
+            binding.detailTextView.setText(args.getInt(ARG_LABEL_ID))
 
             val isLandscape = DisplayUtils.isLandscape(context)
             val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
@@ -58,7 +61,7 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
             } else {
                 (DisplayUtils.getDisplayPixelWidth() * RATIO_PORTRAIT).toInt()
             }
-            binding.textView.layoutParams.width = ratio
+            binding.labelTextView.layoutParams.width = ratio
             binding.imageView.layoutParams.width = ratio
         }
     }

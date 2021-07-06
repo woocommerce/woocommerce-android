@@ -26,17 +26,25 @@ class CardReaderTutorialViewPager : WCViewPager {
             R.drawable.img_prologue_reviews
         )
 
-        private val stringIds = arrayOf(
-            R.string.login_prologue_label_analytics,
-            R.string.login_prologue_label_orders,
-            R.string.login_prologue_label_products,
-            R.string.login_prologue_label_reviews
+        private val labelIds = arrayOf(
+            R.string.card_reader_tutorial_connected_label,
+            R.string.card_reader_tutorial_collect_label,
+            R.string.card_reader_tutorial_reconnect_label,
+            R.string.card_reader_tutorial_charged_label
+        )
+
+        private val detailIds = arrayOf(
+            R.string.card_reader_tutorial_connected_detail,
+            R.string.card_reader_tutorial_collect_detail,
+            R.string.card_reader_tutorial_reconnect_detail,
+            R.string.card_reader_tutorial_charged_detail
         )
 
         override fun getItem(position: Int): Fragment {
             return CardReaderTutorialViewPagerItemFragment.newInstance(
                 drawableIds[position],
-                stringIds[position]
+                labelIds[position],
+                detailIds[position]
             )
         }
 
