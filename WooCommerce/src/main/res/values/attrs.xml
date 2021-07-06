@@ -174,4 +174,8 @@
         <attr name="title" format="string" />
         <attr name="message" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="WCViewPagerIndicator">
+        <attr name="pageCount" format="integer" />
+    </declare-styleable>
 </resources>
