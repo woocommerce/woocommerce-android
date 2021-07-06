@@ -25,6 +25,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
             it.setCanceledOnTouchOutside(false)
             it.requestWindowFeature(Window.FEATURE_NO_TITLE)
         }
+
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -50,8 +51,12 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         binding.viewPagerIndicator.setupFromViewPager(binding.viewPager, listener)
 
         binding.buttonSkip.setOnClickListener {
-            navigateBackWithResult(KEY_READER_TUTORIAL_RESULT, true)
+            exitTutorial()
         }
+    }
+
+    private fun exitTutorial() {
+        navigateBackWithResult(KEY_READER_TUTORIAL_RESULT, true)
     }
 
     override fun onResume() {
