@@ -144,6 +144,11 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             text = getString(R.string.login_no_jetpack, siteAddress)
         }
 
+        noStoresBinding.btnSecondaryAction.setOnClickListener {
+            AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED)
+            jetpackLoginListener?.showWhatIsJetpackDialog()
+        }
+
         with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_setup_instructions)
             setOnClickListener {

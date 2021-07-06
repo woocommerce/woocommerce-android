@@ -96,6 +96,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED(siteless = true),
         LOGIN_NO_JETPACK_TRY_AGAIN_TAPPED(siteless = true),
         LOGIN_NO_JETPACK_MENU_HELP_TAPPED(siteless = true),
+        LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED(siteless = true),
         LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED(siteless = true),
