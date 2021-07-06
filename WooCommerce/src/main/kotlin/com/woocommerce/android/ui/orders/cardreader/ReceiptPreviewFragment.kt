@@ -30,43 +30,13 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
+    private lateinit var binding: FragmentReceiptPreviewBinding
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val binding = FragmentReceiptPreviewBinding.bind(view)
-        initViews(binding)
+        binding = FragmentReceiptPreviewBinding.bind(view)
+        initViews(binding, savedInstanceState)
         initObservers(binding)
-    }
-
-    private fun initViews(binding: FragmentReceiptPreviewBinding) {
-        setHasOptionsMenu(true)
-        binding.receiptPreviewPreviewWebview.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView, url: String) {
-                viewModel.onReceiptLoaded()
-            }
-        }
-        binding.receiptPreviewPreviewWebview.settings.loadWithOverviewMode = true
-        binding.receiptPreviewPreviewWebview.settings.useWideViewPort = true
-    }
-
-    private fun initObservers(binding: FragmentReceiptPreviewBinding) {
-        viewModel.viewStateData.observe(viewLifecycleOwner) {
-            UiHelpers.updateVisibility(binding.receiptPreviewPreviewWebview, it.isContentVisible)
-            UiHelpers.updateVisibility(binding.receiptPreviewProgressBar, it.isProgressVisible)
-        }
-        viewModel.event.observe(viewLifecycleOwner) {
-            when (it) {
-                is LoadUrl -> binding.receiptPreviewPreviewWebview.loadUrl(it.url)
-                is PrintReceipt -> printHtmlHelper.printReceipt(requireActivity(), it.receiptUrl, it.documentName)
-                is SendReceipt -> composeEmail(it)
-                is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
-                else -> it.isHandled = false
-            }
-        }
-    }
-
-    private fun composeEmail(event: SendReceipt) {
-        val success = ActivityUtils.composeEmail(requireActivity(), event.address, event.subject, event.content)
-        if (!success) viewModel.onEmailActivityNotFound()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -94,5 +64,48 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
         printHtmlHelper.getAndClearPrintJobResult()?.let {
             viewModel.onPrintResult(it)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        binding.receiptPreviewPreviewWebview.saveState(outState)
+    }
+
+    private fun initViews(binding: FragmentReceiptPreviewBinding, savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
+        if (savedInstanceState != null) {
+            binding.receiptPreviewPreviewWebview.restoreState(savedInstanceState)
+        } else {
+            with(binding.receiptPreviewPreviewWebview) {
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView, url: String) {
+                        viewModel.onReceiptLoaded()
+                    }
+                }
+                settings.loadWithOverviewMode = true
+                settings.useWideViewPort = true
+            }
+        }
+    }
+
+    private fun initObservers(binding: FragmentReceiptPreviewBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) {
+            UiHelpers.updateVisibility(binding.receiptPreviewPreviewWebview, it.isContentVisible)
+            UiHelpers.updateVisibility(binding.receiptPreviewProgressBar, it.isProgressVisible)
+        }
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is LoadUrl -> binding.receiptPreviewPreviewWebview.loadUrl(it.url)
+                is PrintReceipt -> printHtmlHelper.printReceipt(requireActivity(), it.receiptUrl, it.documentName)
+                is SendReceipt -> composeEmail(it)
+                is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
+                else -> it.isHandled = false
+            }
+        }
+    }
+
+    private fun composeEmail(event: SendReceipt) {
+        val success = ActivityUtils.composeEmail(requireActivity(), event.address, event.subject, event.content)
+        if (!success) viewModel.onEmailActivityNotFound()
     }
 }
