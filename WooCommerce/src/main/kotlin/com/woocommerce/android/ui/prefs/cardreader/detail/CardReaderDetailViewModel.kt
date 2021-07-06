@@ -49,15 +49,12 @@ class CardReaderDetailViewModel @Inject constructor(
 
     init {
         launch {
-            triggerEvent(CardReaderTutorialScreen)
-            /* TODO
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> checkForUpdates()
                     else -> showNotConnectedState()
                 }
             }.exhaustive
-            */
         }
     }
 

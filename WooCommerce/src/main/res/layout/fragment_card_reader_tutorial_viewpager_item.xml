@@ -11,7 +11,6 @@
         style="@style/Woo.TextView.Subtitle2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/major_150"
         android:layout_marginBottom="@dimen/major_150"
         android:gravity="center"
@@ -23,14 +22,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:importantForAccessibility="no"
-        tools:src="@drawable/img_wc_ship_card_insert" />
+        tools:src="@drawable/img_wc_ship_payment" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/detailTextView"
         style="@style/Woo.TextView.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/major_150"
         android:layout_marginBottom="@dimen/major_150"
         android:gravity="center"

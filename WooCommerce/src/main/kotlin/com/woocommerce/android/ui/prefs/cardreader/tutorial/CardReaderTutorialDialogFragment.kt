@@ -17,8 +17,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_reader_tutorial) {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog!!.setCanceledOnTouchOutside(false)
-        dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog?.let {
+            it.setCanceledOnTouchOutside(false)
+            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

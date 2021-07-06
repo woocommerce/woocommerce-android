@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/payments_dialog_width"
-    android:layout_height="@dimen/payments_dialog_height">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".ui.prefs.cardreader.connect.CardReaderConnectFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/color_surface"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/payments_dialog_width"
+        android:layout_height="@dimen/payments_dialog_height"
+        android:background="?attr/colorSurface"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingTop="@dimen/major_200"
@@ -16,15 +18,21 @@
 
         <com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialViewPager
             android:id="@+id/viewPager"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:background="@color/blue_dark" />
 
         <com.woocommerce.android.widgets.WCViewPagerIndicator
             android:id="@+id/viewPagerIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/major_150" />
+            android:layout_marginBottom="@dimen/major_150"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/viewPager" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSkip"
@@ -32,7 +40,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/major_150"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/viewPagerIndicator"
             tools:text="Skip" />
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
+

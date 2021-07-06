@@ -19,6 +19,7 @@ class CardReaderTutorialViewPager : WCViewPager {
 
     private inner class ViewPagerAdapter(fm: FragmentManager) :
         FragmentPagerAdapter(fm) {
+        // TODO dark vectors
         private val drawableIds = arrayOf(
             R.drawable.img_wc_ship_payment,
             R.drawable.img_wc_ship_card_insert,
