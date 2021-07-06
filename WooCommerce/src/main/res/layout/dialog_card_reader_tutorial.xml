@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:context=".ui.prefs.cardreader.connect.CardReaderConnectFragment">
+    tools:context=".ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
         android:layout_height="@dimen/payments_dialog_height"
         android:layout_marginTop="@dimen/major_200"
-        android:gravity="center_horizontal"
-        tools:context=".ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment">
+        android:gravity="center_horizontal">
 
         <com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialViewPager
             android:id="@+id/viewPager"
