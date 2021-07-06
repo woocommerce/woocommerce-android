@@ -52,7 +52,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         updateInputInViewState(value, field)
     }
 
-    fun validateNameField(input: String) {
+    private fun validateNameField(input: String) {
         if (input.isBlank()) {
             updateErrorInViewState(InputName.NAME, emptyInputError)
         } else {
@@ -60,7 +60,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         }
     }
 
-    fun validateFloatInput(input: String, name: InputName) {
+    private fun validateFloatInput(input: String, name: InputName) {
         val acc = inputToFloat(input)
         when {
             acc.isNaN() -> updateErrorInViewState(name, emptyInputError)

@@ -21,13 +21,11 @@ import javax.inject.Inject
 class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shipping_label_create_package) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private var _binding: FragmentShippingLabelCreatePackageBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: ShippingLabelCreatePackageViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentShippingLabelCreatePackageBinding.bind(view)
+        val binding = FragmentShippingLabelCreatePackageBinding.bind(view)
         val tabLayout = binding.createPackageTabLayout
         val viewPager = binding.createPackagePager
 
@@ -36,11 +34,6 @@ class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shippi
 
         initializeTabs(tabLayout, viewPager)
         setupObservers(viewModel)
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
     }
 
     private fun initializeTabs(tabLayout: TabLayout, viewPager: ViewPager2) {

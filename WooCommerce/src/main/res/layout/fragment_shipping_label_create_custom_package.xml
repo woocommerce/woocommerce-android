@@ -96,19 +96,9 @@
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/height" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/weight_helper"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginBottom="@dimen/minor_100"
-            android:text="@string/shipping_label_create_custom_package_field_empty_weight_helper"
-            android:textAppearance="?attr/textAppearanceCaption"
-            app:layout_constraintStart_toStartOf="@id/weight"
-            app:layout_constraintTop_toBottomOf="@id/weight" />
-
+            app:layout_constraintTop_toBottomOf="@id/height"
+            app:helperText="@string/shipping_label_create_custom_package_field_empty_weight_helper"
+            />
     </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
 
 </ScrollView>

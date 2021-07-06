@@ -117,9 +117,6 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
 
             new.weightErrorMessage.takeIfNotEqualTo(old?.weightErrorMessage) { error ->
                 binding.weight.error = error?.let { getString(it) }
-                // Hide helper text if error is shown, as suggested by Material Design
-                // (see https://material.io/components/text-fields#anatomy)
-                binding.weightHelper.visibility = if (error != null) View.INVISIBLE else View.VISIBLE
             }
 
             new.nameErrorMessage.takeIfNotEqualTo(old?.nameErrorMessage) { error ->
