@@ -20,6 +20,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderTutorialScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
@@ -48,12 +49,15 @@ class CardReaderDetailViewModel @Inject constructor(
 
     init {
         launch {
+            triggerEvent(CardReaderTutorialScreen)
+            /* TODO
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> checkForUpdates()
                     else -> showNotConnectedState()
                 }
             }.exhaustive
+            */
         }
     }
 
@@ -161,6 +165,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
+        object CardReaderTutorialScreen : NavigationTarget()
         data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
     }
 

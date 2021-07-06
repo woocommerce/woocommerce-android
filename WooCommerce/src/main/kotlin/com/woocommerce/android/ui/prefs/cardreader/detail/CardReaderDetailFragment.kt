@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderTutorialScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
@@ -63,6 +64,9 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                             CardReaderDetailFragmentDirections
                                 .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(event.startedByUser)
                         )
+                    is CardReaderTutorialScreen ->
+                        findNavController()
+                            .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderTutorialDialogFragment)
                     is ShowSnackbar -> {
                         Snackbar.make(
                             binding.root,
