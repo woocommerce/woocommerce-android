@@ -3,13 +3,25 @@ package com.woocommerce.android.ui.products.variations.attributes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.databinding.AttributeItemBinding
 import com.woocommerce.android.model.ProductAttribute
 
-abstract class AttributeBaseAdapter<T : RecyclerView.ViewHolder> : RecyclerView.Adapter<T>() {
-    var attributeList = listOf<ProductAttribute>()
+abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHolder>(
+    private inline val onItemClick: (attributeId: Long, attributeName: String) -> Unit
+) : RecyclerView.Adapter<T>() {
+    private var attributeList = listOf<ProductAttribute>()
 
     init {
         setHasStableIds(true)
+    }
+
+    override fun onBindViewHolder(holder: T, position: Int) {
+        holder.bind(attributeList[position])
+
+        holder.itemView.setOnClickListener {
+            val item = attributeList[position]
+            onItemClick(item.id, item.name)
+        }
     }
 
     override fun getItemId(position: Int) = attributeList[position].id
@@ -44,4 +56,9 @@ abstract class AttributeBaseAdapter<T : RecyclerView.ViewHolder> : RecyclerView.
         attributeList = attributes
         diffResult.dispatchUpdatesTo(this)
     }
+
+    abstract class AttributeBaseViewHolder(val viewBinding: AttributeItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+            abstract fun bind(attribute: ProductAttribute)
+        }
 }
