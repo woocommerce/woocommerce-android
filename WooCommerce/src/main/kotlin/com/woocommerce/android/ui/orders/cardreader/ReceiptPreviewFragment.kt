@@ -30,11 +30,12 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var binding: FragmentReceiptPreviewBinding
+    private var _binding: FragmentReceiptPreviewBinding? = null
+    private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentReceiptPreviewBinding.bind(view)
+        _binding = FragmentReceiptPreviewBinding.bind(view)
         initViews(binding, savedInstanceState)
         initObservers(binding)
     }
@@ -69,6 +70,11 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         binding.receiptPreviewPreviewWebview.saveState(outState)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun initViews(binding: FragmentReceiptPreviewBinding, savedInstanceState: Bundle?) {
