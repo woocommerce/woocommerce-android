@@ -420,6 +420,18 @@
         <argument
             android:name="position"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_shippingPackageSelectorFragment_to_shippingLabelCreatePackageFragment"
+            app:destination="@id/shippingLabelCreatePackageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/shippingLabelCreatePackageFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageFragment"
+        android:label="ShippingLabelCreatePackageFragment"
+        tools:layout="@layout/fragment_shipping_label_create_package">
+        <argument
+            android:name="position"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/editShippingLabelPaymentFragment"
