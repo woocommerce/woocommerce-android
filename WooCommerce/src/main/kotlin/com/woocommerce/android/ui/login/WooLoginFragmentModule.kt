@@ -23,10 +23,6 @@ internal abstract class WooLoginFragmentModule {
 
     @FragmentScope
     @ContributesAndroidInjector
-    internal abstract fun loginEmailHelpDialogFragment(): LoginEmailHelpDialogFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
     internal abstract fun loginDiscoveryErrorFragment(): LoginDiscoveryErrorFragment
 
     @FragmentScope
