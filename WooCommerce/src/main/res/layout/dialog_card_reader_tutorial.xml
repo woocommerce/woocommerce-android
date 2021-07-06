@@ -22,4 +22,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/major_150" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonSkip"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/major_150"
+        tools:text="Skip" />
+
 </LinearLayout>

@@ -43,6 +43,7 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
 
         arguments?.let { args ->
             val binding = FragmentCardReaderTutorialViewpagerItemBinding.bind(view)
+            binding.labelTextView.setText(args.getInt(ARG_LABEL_ID))
             binding.detailTextView.setText(args.getInt(ARG_LABEL_ID))
 
             val isLandscape = DisplayUtils.isLandscape(context)
@@ -62,6 +63,7 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
                 (DisplayUtils.getDisplayPixelWidth() * RATIO_PORTRAIT).toInt()
             }
             binding.labelTextView.layoutParams.width = ratio
+            binding.detailTextView.layoutParams.width = ratio
             binding.imageView.layoutParams.width = ratio
         }
     }

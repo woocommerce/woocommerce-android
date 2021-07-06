@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -25,10 +26,13 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         super.onViewCreated(view, savedInstanceState)
 
         val binding = DialogCardReaderTutorialBinding.bind(view)
+
         binding.viewPager.initViewPager(childFragmentManager)
         binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 binding.viewPagerIndicator.setSelectedIndicator(position)
+                val lastPosition = resources.getInteger(R.integer.card_reader_tutorial_page_count)
+                binding.buttonSkip.setText(if (position == lastPosition) R.string.close else R.string.skip)
             }
         })
 
@@ -38,6 +42,10 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
             }
         }
         binding.viewPagerIndicator.setupFromViewPager(binding.viewPager, listener)
+
+        binding.buttonSkip.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     override fun onResume() {

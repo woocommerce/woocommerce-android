@@ -37,11 +37,4 @@
         android:gravity="center"
         tools:layout_width="200dp"
         tools:text="@string/card_reader_tutorial_connected_detail" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/update_reader_secondary_action_btn"
-        style="@style/Woo.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Skip" />
 </LinearLayout>

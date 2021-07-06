@@ -91,6 +91,7 @@
     <string name="clear">Clear</string>
     <string name="done">Done</string>
     <string name="back">Back</string>
+    <string name="close">Close</string>
     <string name="button_update_instructions">Update instructions</string>
     <string name="dismiss">Dismiss</string>
     <string name="no_thanks">No thanks</string>
