@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.content.res.use
+import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 
 /**
@@ -24,12 +24,9 @@ class WCViewPagerIndicator @JvmOverloads constructor(
     private var listener: OnIndicatorClickedListener? = null
     private var pageCount: Int = 0
 
-    init {
-        if (attrs != null) {
-            context.obtainStyledAttributes(attrs, R.styleable.WCViewPagerIndicator).use {
-                pageCount = it.getInt(R.styleable.WCViewPagerIndicator_pageCount, 0)
-            }
-        }
+    fun setupFromViewPager(viewPager: ViewPager, listener: OnIndicatorClickedListener?) {
+        this.listener = listener
+        this.pageCount = viewPager.adapter?.count ?: 0
 
         orientation = HORIZONTAL
         val padding = context.resources.getDimensionPixelSize(R.dimen.margin_small)
@@ -53,10 +50,6 @@ class WCViewPagerIndicator @JvmOverloads constructor(
         for (i in 0 until pageCount) {
             indicators[i].isSelected = i == index
         }
-    }
-
-    fun setListener(listener: OnIndicatorClickedListener) {
-        this.listener = listener
     }
 
     fun itemClicked(index: Int) {

@@ -52,11 +52,12 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
             }
         })
 
-        binding.viewPagerIndicator.setListener(object : OnIndicatorClickedListener {
+        val listener = object : OnIndicatorClickedListener {
             override fun onIndicatorClicked(index: Int) {
                 binding.viewPager.currentItem = index
             }
-        })
+        }
+        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager, listener)
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)

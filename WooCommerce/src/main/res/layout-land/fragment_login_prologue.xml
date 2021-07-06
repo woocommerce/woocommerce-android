@@ -52,8 +52,7 @@
         android:layout_marginBottom="@dimen/major_150"
         app:layout_constraintBottom_toTopOf="@+id/button_login_store"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:pageCount="@integer/login_prologue_page_count" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_store"
