@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.nhaarman.mockitokotlin2.mock
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.media.MediaFileUploadHandler
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
@@ -24,6 +25,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
 
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private fun savedState(productImages: List<Image>) = ProductImagesFragmentArgs(
         remoteId = 0,
@@ -37,6 +39,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel = ProductImagesViewModel(
             networkStatus,
             productImagesServiceWrapper,
+            mediaFileUploadHandler,
             savedState(productImages)
         ).apply {
             viewStateData.observeForever { _, _ -> }

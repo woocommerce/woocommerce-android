@@ -97,6 +97,7 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var networkStatus: NetworkStatus
+    @Inject lateinit var mediaFileUploadHandler: MediaFileUploadHandler
 
     private var doneSignal: CountDownLatch? = null
     private var currentMediaUpload: MediaModel? = null
@@ -156,7 +157,7 @@ class ProductImagesService : JobIntentService() {
 
             if (currentMediaUpload == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
-                handleFailure()
+//                handleFailure()
             } else {
                 currentMediaUpload!!.postId = id
                 currentMediaUpload!!.setUploadState(MediaModel.MediaUploadState.UPLOADING)
@@ -224,7 +225,7 @@ class ProductImagesService : JobIntentService() {
                         AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
                     )
                 )
-                handleFailure()
+                handleFailure(event.media, event.error)
             }
             event.canceled -> {
                 WooLog.d(T.MEDIA, "productImagesService > upload media cancelled")
@@ -247,8 +248,12 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(OnProductImageUploaded(uploadedMedia))
     }
 
-    private fun handleFailure() {
+    private fun handleFailure(
+        mediaModel: MediaModel,
+        mediaUploadError: MediaStore.MediaError
+    ) {
         countDown()
+        mediaFileUploadHandler.handleMediaUploadFailure(mediaModel, mediaUploadError)
         EventBus.getDefault().post(OnProductImageUploaded(isError = true))
     }
 

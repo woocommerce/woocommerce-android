@@ -41,6 +41,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -181,6 +182,7 @@ class ProductImagesFragment :
             Observer { event ->
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                     is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
                     is ShowDialog -> event.showDialog()
                     ShowImageSourceDialog -> showImageSourceDialog()
@@ -227,6 +229,19 @@ class ProductImagesFragment :
             viewModel.isImageDeletingAllowed, image.id
         )
         findNavController().navigateSafely(action, skipThrottling)
+    }
+
+    private fun displayProductImageUploadErrorSnackBar(
+        message: String,
+        actionListener: View.OnClickListener
+    ) {
+        uiMessageResolver.getActionSnack(
+            message = message,
+            actionText = getString(R.string.details),
+            actionListener = actionListener
+        ).also {
+            it.show()
+        }
     }
 
     private fun showImageSourceDialog() {
