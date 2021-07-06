@@ -70,7 +70,7 @@ class MoveShippingItemViewModel @Inject constructor(
         object NewPackage : DestinationPackage()
 
         @Parcelize
-        class ExistingPackage(val destinationPackage: ShippingLabelPackage) : DestinationPackage()
+        data class ExistingPackage(val destinationPackage: ShippingLabelPackage) : DestinationPackage()
 
         @Parcelize
         object OriginalPackage : DestinationPackage()

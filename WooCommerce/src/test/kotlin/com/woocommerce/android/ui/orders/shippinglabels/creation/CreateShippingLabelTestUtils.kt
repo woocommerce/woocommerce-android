@@ -48,7 +48,7 @@ object CreateShippingLabelTestUtils {
             position,
             selectedPackage ?: generatePackage(),
             weight,
-            listOf(Item(0L, "product", "", 2, 10f, BigDecimal.valueOf(10L)))
+            items ?: listOf(Item(0L, "product", "", 2, 10f, BigDecimal.valueOf(10L)))
         )
     }
 
