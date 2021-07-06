@@ -44,7 +44,7 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
         arguments?.let { args ->
             val binding = FragmentCardReaderTutorialViewpagerItemBinding.bind(view)
             binding.labelTextView.setText(args.getInt(ARG_LABEL_ID))
-            binding.detailTextView.setText(args.getInt(ARG_LABEL_ID))
+            binding.detailTextView.setText(args.getInt(ARG_DETAIL_ID))
 
             val isLandscape = DisplayUtils.isLandscape(context)
             val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
