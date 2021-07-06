@@ -23,13 +23,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     companion object {
         const val TAG = "LoginNoJetpackFragment"
@@ -82,9 +81,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
      * */
     private var mCheckJetpackAvailability: Boolean = false
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    private val viewModel: LoginNoJetpackViewModel by viewModels { viewModelFactory }
+    private val viewModel: LoginNoJetpackViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -182,7 +179,6 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     }
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface
