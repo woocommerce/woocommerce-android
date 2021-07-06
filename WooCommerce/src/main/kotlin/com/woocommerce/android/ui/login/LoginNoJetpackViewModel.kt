@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.login
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import dagger.assisted.AssistedFactory
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
