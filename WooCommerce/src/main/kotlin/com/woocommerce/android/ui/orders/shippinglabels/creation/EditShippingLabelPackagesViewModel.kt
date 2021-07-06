@@ -240,7 +240,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             )
 
             return packages.mapIndexed { index, shippingLabelPackageUiModel ->
-                // Collapse all items except the added one
+                // Collapse all items except the destination one
                 shippingLabelPackageUiModel.copy(isExpanded = index == indexOfDestinationPackage)
             }
         }
