@@ -6,7 +6,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.content.res.use
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.login.LoginPrologueViewPager
 
 /**
  * Simple list of oval images used below a view pager to indicate which page is selected
@@ -51,7 +50,7 @@ class WCViewPagerIndicator @JvmOverloads constructor(
     }
 
     fun setSelectedIndicator(index: Int) {
-        for (i in 0 until LoginPrologueViewPager.NUM_PAGES) {
+        for (i in 0 until pageCount) {
             indicators[i].isSelected = i == index
         }
     }
