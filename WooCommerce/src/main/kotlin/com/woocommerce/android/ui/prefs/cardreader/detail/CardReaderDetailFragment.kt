@@ -19,7 +19,6 @@ import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderTutorialScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
@@ -41,9 +40,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         val binding = FragmentCardReaderDetailBinding.bind(view)
 
         val learnMoreListener = View.OnClickListener {
-           // TODO ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
-            findNavController()
-                .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderTutorialDialogFragment)
+           ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
         binding.readerConnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
         binding.readerDisconnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
@@ -66,9 +63,6 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                             CardReaderDetailFragmentDirections
                                 .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(event.startedByUser)
                         )
-                    is CardReaderTutorialScreen ->
-                        findNavController()
-                            .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderTutorialDialogFragment)
                     is ShowSnackbar -> {
                         Snackbar.make(
                             binding.root,

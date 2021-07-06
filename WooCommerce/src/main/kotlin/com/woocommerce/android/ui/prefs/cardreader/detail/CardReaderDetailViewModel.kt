@@ -161,7 +161,6 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
-        object CardReaderTutorialScreen : NavigationTarget()
         data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
     }
 

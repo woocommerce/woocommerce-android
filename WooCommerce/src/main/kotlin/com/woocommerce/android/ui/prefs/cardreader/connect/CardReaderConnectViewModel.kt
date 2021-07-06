@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
@@ -271,8 +273,19 @@ class CardReaderConnectViewModel @Inject constructor(
         exitFlow(connected = true)
     }
 
+    // TODO
+    fun onTutorialClosed() {
+        AppPrefs.setShowCardReaderConnectedTutorial(false)
+        exitFlow(connected = true)
+    }
+
     private fun exitFlow(connected: Boolean) {
-        triggerEvent(ExitWithResult(connected))
+        // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
+        if (connected && AppPrefs.getShowCardReaderConnectedTutorial()) {
+            triggerEvent(ShowCardReaderTutorial)
+        } else {
+            triggerEvent(ExitWithResult(connected))
+        }
     }
 
     fun onScreenResumed() {
@@ -300,6 +313,8 @@ class CardReaderConnectViewModel @Inject constructor(
         object OpenPermissionsSettings : CardReaderConnectEvent()
 
         data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
+
+        object ShowCardReaderTutorial : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")

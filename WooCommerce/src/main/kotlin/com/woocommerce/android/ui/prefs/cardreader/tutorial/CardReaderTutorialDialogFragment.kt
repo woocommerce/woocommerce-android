@@ -6,16 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogCardReaderTutorialBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.widgets.WCViewPagerIndicator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_reader_tutorial) {
+    companion object {
+        const val KEY_READER_TUTORIAL_RESULT = "key_reader_tutorial_result"
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.let {
             it.setCanceledOnTouchOutside(false)
@@ -46,7 +50,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         binding.viewPagerIndicator.setupFromViewPager(binding.viewPager, listener)
 
         binding.buttonSkip.setOnClickListener {
-            findNavController().navigateUp()
+            navigateBackWithResult(KEY_READER_TUTORIAL_RESULT, true)
         }
     }
 
