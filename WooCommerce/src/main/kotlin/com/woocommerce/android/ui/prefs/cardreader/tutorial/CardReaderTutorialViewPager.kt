@@ -20,10 +20,10 @@ class CardReaderTutorialViewPager : WCViewPager {
     private inner class ViewPagerAdapter(fm: FragmentManager) :
         FragmentPagerAdapter(fm) {
         private val drawableIds = arrayOf(
-            R.drawable.img_prologue_analytics,
-            R.drawable.img_prologue_orders,
-            R.drawable.img_prologue_products,
-            R.drawable.img_prologue_reviews
+            R.drawable.img_wc_ship_payment,
+            R.drawable.img_wc_ship_card_insert,
+            R.drawable.img_wc_ship_card_sleep,
+            R.drawable.img_wc_ship_card_charge
         )
 
         private val labelIds = arrayOf(
