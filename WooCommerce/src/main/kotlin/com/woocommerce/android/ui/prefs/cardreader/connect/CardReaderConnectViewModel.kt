@@ -276,16 +276,15 @@ class CardReaderConnectViewModel @Inject constructor(
     fun onTutorialClosed() {
         AppPrefs.setShowCardReaderConnectedTutorial(false)
         exitFlow(connected = true)
-        AppPrefs.setShowCardReaderConnectedTutorial(true) // TODO
     }
 
     private fun exitFlow(connected: Boolean) {
         // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
         if (connected && AppPrefs.getShowCardReaderConnectedTutorial()) {
-            AppPrefs.setShowCardReaderConnectedTutorial(false)
             triggerEvent(ShowCardReaderTutorial)
         } else {
             triggerEvent(ExitWithResult(connected))
+            AppPrefs.setShowCardReaderConnectedTutorial(true) // TODO - remove this line
         }
     }
 
