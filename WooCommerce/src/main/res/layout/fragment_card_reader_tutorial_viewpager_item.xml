@@ -25,7 +25,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/detailTextView"
-        style="@style/Woo.TextView.Body1"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_150"
