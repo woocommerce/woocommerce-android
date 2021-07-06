@@ -40,7 +40,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         val binding = FragmentCardReaderDetailBinding.bind(view)
 
         val learnMoreListener = View.OnClickListener {
-           ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
         binding.readerConnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
         binding.readerDisconnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
