@@ -71,7 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:itemCount="3"
-            tools:listitem="@layout/attribute_list_item" />
+            tools:listitem="@layout/attribute_item" />
     </LinearLayout>
 
 </LinearLayout>
