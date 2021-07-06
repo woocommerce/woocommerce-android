@@ -92,7 +92,7 @@ class EditShippingLabelPackagesFragment :
 
     private fun setupResultHandlers() {
         handleResult<ShippingPackageSelectorResult>(ShippingPackageSelectorFragment.SELECTED_PACKAGE_RESULT) { result ->
-            viewModel.onPackageSelected(result.position, result.selectedPackage, result.isFromPackageCreation)
+            viewModel.onPackageSelected(result.position, result.selectedPackage)
         }
     }
 

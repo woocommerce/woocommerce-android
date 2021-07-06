@@ -126,7 +126,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
             if (!result) {
                 // If we fail to fetch a non deleted product, display an error
-                triggerEvent(ShowSnackbar(R.string.shipping_label_package_details_fetch_products_error))
+                triggerEvent(ShowSnackbar(string.shipping_label_package_details_fetch_products_error))
                 triggerEvent(Exit)
                 return
             }
@@ -146,7 +146,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(OpenPackageSelectorEvent(position))
     }
 
-    fun onPackageSelected(position: Int, selectedPackage: ShippingPackage, isFromPackageCreation: Boolean = false) {
+    fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = with(packages[position]) {
             val weight = if (!viewState.packagesWithEditedWeight.contains(packageId)) {
@@ -157,16 +157,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             copy(selectedPackage = selectedPackage, weight = weight)
         }
         viewState = viewState.copy(shippingLabelPackages = packages)
-
-        // When a package is successfully created inside the app, user is immediately returned from the creation form
-        // to this Edit Shipping Label screen. In this situation, we show a Snackbar to inform the user
-        // that the creation is completed successfully.
-        if(isFromPackageCreation) {
-            triggerEvent(ShowSnackbar(
-                message = string.shipping_label_create_custom_package_success_message,
-                args = arrayOf(selectedPackage.title)
-            ))
-        }
     }
 
     fun onDoneButtonClicked() {

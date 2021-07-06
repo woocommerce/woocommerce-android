@@ -10,14 +10,19 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreatePackageBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.PackageType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.SelectPackageEvent
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment.Companion.SELECTED_PACKAGE_RESULT
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shipping_label_create_package) {
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     private var _binding: FragmentShippingLabelCreatePackageBinding? = null
     private val binding get() = _binding!!
 
@@ -66,6 +71,7 @@ class ShippingLabelCreatePackageFragment: BaseFragment(R.layout.fragment_shippin
                         event.packageResult,
                         R.id.editShippingLabelPackagesFragment)
                 }
+                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 else -> event.isHandled = false
             }
         }
