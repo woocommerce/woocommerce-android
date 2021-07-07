@@ -10,7 +10,7 @@ import com.woocommerce.android.widgets.WCViewPager
 
 class CardReaderTutorialViewPager : WCViewPager {
     companion object {
-        private const val NUM_PAGES = 3
+        const val NUM_PAGES = 3
     }
 
     constructor(context: Context) : super(context)
