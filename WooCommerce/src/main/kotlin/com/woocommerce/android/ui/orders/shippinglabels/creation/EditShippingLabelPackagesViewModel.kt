@@ -82,11 +82,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             return emptyList()
         }
 
-        val lastUsedPackage = shippingLabelRepository.getAccountSettings().let { result ->
-            if (result.isError) return@let null
-            val savedPackageId = result.model!!.lastUsedBoxId
-            shippingPackagesResult.model!!.find { it.id == savedPackageId }
-        }
+        val lastUsedPackage = shippingLabelRepository.getLastUsedPackage()
 
         val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
         loadProductsWeightsIfNeeded(order)
@@ -198,14 +194,16 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             return packages
         }
 
-        fun moveItemToNewPackage(): List<ShippingLabelPackageUiModel> {
+        suspend fun moveItemToNewPackage(): List<ShippingLabelPackageUiModel> {
             val updatedPackages = removeItemFromCurrentPackage()
+            val selectedPackage = currentPackage.selectedPackage?.takeIf { !it.isIndividual }
+                ?: shippingLabelRepository.getLastUsedPackage()
             updatedPackages.add(
                 ShippingLabelPackageUiModel(
                     data = ShippingLabelPackage(
                         position = packages.size + 1,
-                        selectedPackage = currentPackage.selectedPackage,
-                        weight = item.weight + (currentPackage.selectedPackage?.boxWeight ?: 0f),
+                        selectedPackage = selectedPackage,
+                        weight = item.weight + (selectedPackage?.boxWeight ?: 0f),
                         items = listOf(item.copy(quantity = 1))
                     )
                 )
@@ -270,20 +268,22 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
         }
 
-        viewState = viewState.copy(
-            packagesUiModels = when (result.destination) {
-                is DestinationPackage.ExistingPackage ->
-                    moveItemToExistingPackage(result.destination.destinationPackage)
-                DestinationPackage.NewPackage -> moveItemToNewPackage()
-                DestinationPackage.OriginalPackage -> moveItemToIndividualPackage()
-            }.filter {
-                // Remove empty packages
-                it.data.items.isNotEmpty()
-            }.mapIndexed { index, model ->
-                // Recalculate positions
-                model.copy(data = model.data.copy(position = index + 1))
-            }
-        )
+        launch {
+            viewState = viewState.copy(
+                packagesUiModels = when (result.destination) {
+                    is DestinationPackage.ExistingPackage ->
+                        moveItemToExistingPackage(result.destination.destinationPackage)
+                    DestinationPackage.NewPackage -> moveItemToNewPackage()
+                    DestinationPackage.OriginalPackage -> moveItemToIndividualPackage()
+                }.filter {
+                    // Remove empty packages
+                    it.data.items.isNotEmpty()
+                }.mapIndexed { index, model ->
+                    // Recalculate positions
+                    model.copy(data = model.data.copy(position = index + 1))
+                }
+            )
+        }
     }
 
     fun onDoneButtonClicked() {

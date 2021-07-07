@@ -144,6 +144,16 @@ class ShippingLabelRepository @Inject constructor(
             }
     }
 
+    /**
+     * Returns the last used package.
+     * Please note that this will ignore all errors, and return null for those cases
+     */
+    suspend fun getLastUsedPackage(): ShippingPackage? {
+        return getAccountSettings().model?.lastUsedBoxId?.let { id ->
+            getShippingPackages().model?.firstOrNull { it.id == id }
+        }
+    }
+
     suspend fun updatePaymentSettings(selectedPaymentMethodId: Int, emailReceipts: Boolean): WooResult<Unit> {
         return shippingLabelStore.updateAccountSettings(
             site = selectedSite.get(),
