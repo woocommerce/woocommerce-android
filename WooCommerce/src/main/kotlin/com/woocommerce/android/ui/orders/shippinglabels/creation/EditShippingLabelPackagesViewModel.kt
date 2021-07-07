@@ -168,6 +168,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
+    // all the logic is inside local functions, so it should be OK, but detekt complains still
+    @Suppress("ComplexMethod")
     fun handleMoveItemResult(result: MoveItemResult) {
         val packages = viewState.packagesUiModels.toMutableList()
         val item = result.item
@@ -245,7 +247,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                 ?.items
                 ?.find { it.uniqueId == item.productId }
                 ?.let {
-                    if(it.isVariation) variationDetailRepository.getVariation(it.productId, it.variationId)
+                    if (it.isVariation) variationDetailRepository.getVariation(it.productId, it.variationId)
                     else productDetailRepository.getProduct(it.productId)
                 }
 

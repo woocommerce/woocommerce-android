@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.assertj.core.api.Assertions.assertThat
@@ -116,7 +115,6 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.availableDestinations)
             .doesNotContain(MoveShippingItemViewModel.DestinationPackage.OriginalPackage)
-
     }
 
     @Test
