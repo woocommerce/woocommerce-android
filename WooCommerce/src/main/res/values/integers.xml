@@ -13,6 +13,4 @@
     <integer name="maxlength_order_refund_summary_reason">255</integer>
 
     <integer name="activity_transition_duration">300</integer>
-
-    <integer name="login_prologue_page_count">4</integer>
 </resources>
