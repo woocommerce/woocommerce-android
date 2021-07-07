@@ -1057,6 +1057,7 @@
     <string name="product_image_service_error_uploading">Error uploading product image</string>
     <string name="product_image_service_error_uploading_single">%d file couldn\'t be uploaded</string>
     <string name="product_image_service_error_uploading_multiple">%d files couldn\'t be uploaded</string>
+    <string name="product_images_error_detail_title">Upload details (%d)</string>
     <string name="product_image_service_busy">Please wait for the current operation to complete</string>
     <string name="product_image_capture_failed">Failed to capture image</string>
     <string name="product_image_remove_confirmation">Are you sure you want to remove this image?</string>

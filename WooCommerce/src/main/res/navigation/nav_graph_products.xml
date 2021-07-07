@@ -645,7 +645,7 @@
         android:label="ProductDownloadsSettingsFragment" />
     <fragment
         android:id="@+id/mediaUploadErrorsFragment"
-        android:name="com.woocommerce.android.ui.products.MediaUploadErrorsFragment"
+        android:name="com.woocommerce.android.ui.products.media.MediaUploadErrorListFragment"
         android:label="MediaUploadErrorsFragment">
         <argument
             android:name="remoteId"
