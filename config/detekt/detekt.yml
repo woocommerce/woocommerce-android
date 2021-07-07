@@ -10,6 +10,13 @@ complexity:
 
 formatting:
   active: true
+  autoCorrect: true
   Indentation:
     active: true
+    autoCorrect: true
+  NoWildcardImports:
+    active: false
 
+style:
+  WildcardImport:
+    active: false

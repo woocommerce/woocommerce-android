@@ -39,13 +39,13 @@ object CreateShippingLabelTestUtils {
     }
 
     fun generateShippingLabelPackage(
-        id: String = "package1",
+        position: Int = 1,
         weight: Float = 10f,
         selectedPackage: ShippingPackage? = null,
         items: List<Item>? = null
     ): ShippingLabelPackage {
         return ShippingLabelPackage(
-            id,
+            position,
             selectedPackage ?: generatePackage(),
             weight,
             listOf(Item(0L, "product", "", 2, 10f, BigDecimal.valueOf(10L)))
@@ -75,7 +75,7 @@ object CreateShippingLabelTestUtils {
     fun generateCustomsPackage(packageId: String = "package1"): CustomsPackage {
         return CustomsPackage(
             id = packageId,
-            box = generatePackage(),
+            labelPackage = generateShippingLabelPackage(),
             returnToSender = true,
             contentsType = ContentsType.Merchandise,
             contentsDescription = null,

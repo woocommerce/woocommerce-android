@@ -29,8 +29,10 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     @Suppress("LongParameterList", "LongMethod")
     fun updatePaymentInfo(
         order: Order,
+        isReceiptAvailable: Boolean,
         isPaymentCollectableWithCardReader: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String,
+        onSeeReceiptClickListener: (view: View) -> Unit,
         onIssueRefundClickListener: (view: View) -> Unit,
         onCollectCardPresentPaymentClickListener: (view: View) -> Unit,
         onPrintingInstructionsClickListener: (view: View) -> Unit
@@ -105,6 +107,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 
         binding.paymentInfoIssueRefundButton.setOnClickListener(onIssueRefundClickListener)
         if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
+            binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.VISIBLE
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
                 onCollectCardPresentPaymentClickListener
             )
@@ -112,7 +115,15 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.GONE
         }
 
-        // TODO Cardreader update logic.
+        if (FeatureFlag.CARD_READER.isEnabled() && isReceiptAvailable) {
+            binding.paymentInfoSeeReceiptButton.visibility = View.VISIBLE
+            binding.paymentInfoSeeReceiptButton.setOnClickListener(
+                onSeeReceiptClickListener
+            )
+        } else {
+            binding.paymentInfoSeeReceiptButton.visibility = View.GONE
+        }
+
         if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
             binding.paymentInfoPrintingInstructions.setOnClickListener(
                 onPrintingInstructionsClickListener

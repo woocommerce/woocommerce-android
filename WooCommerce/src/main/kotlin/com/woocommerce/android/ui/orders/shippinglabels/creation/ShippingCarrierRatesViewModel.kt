@@ -206,7 +206,7 @@ class ShippingCarrierRatesViewModel @Inject constructor(
 
             PackageRateListItem(
                 pkg.boxId,
-                itemCount = arguments.packages[i].items.size,
+                shippingPackage = arguments.packages[i],
                 rateOptions = shippingRates
             )
         }
