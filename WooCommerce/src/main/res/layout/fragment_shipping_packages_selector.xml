@@ -17,11 +17,36 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/packages_list"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/packages_createNewContainer"
+        app:layout_constraintVertical_bias="0.0"
         tools:itemCount="5"
         tools:listitem="@layout/shipping_package_list_item" />
+
+    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+        android:id="@+id/packages_createNewContainer"
+        style="@style/Woo.Card.WithoutPadding"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/packages_list">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/packages_createNewButton"
+            style="@style/Woo.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/shipping_label_create_new_package_button"
+            app:icon="@drawable/ic_add"
+            app:iconPadding="@dimen/major_100" />
+    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

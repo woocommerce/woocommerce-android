@@ -505,6 +505,34 @@
     <string name="shipping_label_single_package_total_weight">Total package weight: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d items in %2$d packages</string>
     <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
+    <string name="shipping_label_create_new_package_button">Create new package</string>
+    <!--
+    Shipping label package creation labels
+    -->
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Custom package</item>
+        <item>Service package</item>
+    </string-array>
+    <string name="shipping_label_create_package_title">Add new package</string>
+    <string name="shipping_label_create_custom_package_field_info">Set up the package you\'ll be using to ship your products. We\'ll save it for future orders.</string>
+    <string name="shipping_label_create_custom_package_field_type">Package type</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Choose package type</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Box</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Envelope</string>
+    <string name="shipping_label_create_custom_package_field_name">Package name</string>
+    <string name="shipping_label_create_custom_package_field_length">Length (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Width (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Height (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Empty package weight (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Weight of empty package</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">This field is required.</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Invalid value.</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Creating new package</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Please wait…</string>
+    <string name="shipping_label_create_custom_package_api_failure">Package creation failed: %1$s</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Package creation failed: unknown API issue.</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Package creation failed. Please try again.</string>
+    <string name="shipping_label_create_custom_package_success_message">\"%1$s\" saved</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
     <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>
