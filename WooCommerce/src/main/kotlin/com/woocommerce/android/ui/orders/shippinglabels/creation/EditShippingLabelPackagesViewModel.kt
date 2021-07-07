@@ -4,10 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.sumByFloat
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingPackage
-import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
@@ -244,12 +241,41 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
         }
 
+        fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
+            val updatedPackages = removeItemFromCurrentPackage()
+
+            // We fetch products when this screen is opened, so we can retrieve details from DB
+            val product: IProduct? = orderDetailRepository.getOrder(arguments.orderId)
+                ?.items
+                ?.find { it.uniqueId == item.productId }
+                ?.let {
+                    if(it.isVariation) variationDetailRepository.getVariation(it.productId, it.variationId)
+                    else productDetailRepository.getProduct(it.productId)
+                }
+
+            val individualPackage = product.createIndividualShippingPackage()
+            updatedPackages.add(
+                ShippingLabelPackageUiModel(
+                    data = ShippingLabelPackage(
+                        position = packages.size + 1,
+                        selectedPackage = individualPackage,
+                        weight = item.weight,
+                        items = listOf(item.copy(quantity = 1))
+                    )
+                )
+            )
+            return updatedPackages.mapIndexed { index, shippingLabelPackageUiModel ->
+                // Collapse all items except the added one
+                shippingLabelPackageUiModel.copy(isExpanded = index == packages.size - 1)
+            }
+        }
+
         viewState = viewState.copy(
             packagesUiModels = when (result.destination) {
                 is DestinationPackage.ExistingPackage ->
                     moveItemToExistingPackage(result.destination.destinationPackage)
                 DestinationPackage.NewPackage -> moveItemToNewPackage()
-                DestinationPackage.OriginalPackage -> TODO()
+                DestinationPackage.OriginalPackage -> moveItemToIndividualPackage()
             }.filter {
                 // Remove empty packages
                 it.data.items.isNotEmpty()

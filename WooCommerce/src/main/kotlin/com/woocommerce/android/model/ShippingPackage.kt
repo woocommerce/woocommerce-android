@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingPackage.Companion.INDIVIDUAL_PACKAGE
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.CustomPackage
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.PredefinedOption
@@ -21,6 +22,10 @@ data class ShippingPackage(
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
         const val INDIVIDUAL_PACKAGE = "individual"
     }
+
+    @IgnoredOnParcel
+    val isIndividual
+        get() = id == INDIVIDUAL_PACKAGE
 
     fun toCustomPackageDataModel(): CustomPackage {
         return CustomPackage(
@@ -82,7 +87,7 @@ enum class CustomPackageType(@StringRes val stringRes: Int) {
     ENVELOPE(R.string.shipping_label_create_custom_package_field_type_envelope)
 }
 
-fun Product?.createIndividualShippingPackage(): ShippingPackage {
+fun IProduct?.createIndividualShippingPackage(): ShippingPackage {
     return ShippingPackage(
         id = INDIVIDUAL_PACKAGE,
         title = INDIVIDUAL_PACKAGE,
