@@ -41,6 +41,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -186,6 +187,7 @@ class ProductImagesFragment :
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                     is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
+                    is Exit -> findNavController().navigateUp()
                     is ShowDialog -> event.showDialog()
                     ShowImageSourceDialog -> showImageSourceDialog()
                     is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)

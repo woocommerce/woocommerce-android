@@ -89,6 +89,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -1623,7 +1624,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
             val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(getRemoteProductId())
-            triggerEvent(Event.ShowActionSnackbar(errorMsg, action = {
+            triggerEvent(ShowActionSnackbar(errorMsg, action = {
                 triggerEvent(ViewMediaUploadErrors(getRemoteProductId()))
             }))
         } else {

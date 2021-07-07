@@ -117,7 +117,7 @@ interface UIMessageResolver {
         actionText: String,
         actionListener: View.OnClickListener
     ): Snackbar {
-        return getSnackbarWithAction(
+        return getIndefiniteSnackbarWithAction(
             snackbarRoot,
             String.format(message, *stringArgs),
             actionText,

@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Var
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -262,6 +263,9 @@ class ProductDetailFragment :
                             }
                         )
                     }
+                    is ShowActionSnackbar -> {
+                        displayProductImageUploadErrorSnackBar(event.message, event.action)
+                    }
                     else -> event.isHandled = false
                 }
             }
@@ -312,6 +316,19 @@ class ProductDetailFragment :
         binding.addImageContainer.setOnClickListener {
             AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
             viewModel.onAddImageButtonClicked()
+        }
+    }
+
+    private fun displayProductImageUploadErrorSnackBar(
+        message: String,
+        actionListener: View.OnClickListener
+    ) {
+        uiMessageResolver.getActionSnack(
+            message = message,
+            actionText = getString(R.string.details),
+            actionListener = actionListener
+        ).also {
+            it.show()
         }
     }
 
