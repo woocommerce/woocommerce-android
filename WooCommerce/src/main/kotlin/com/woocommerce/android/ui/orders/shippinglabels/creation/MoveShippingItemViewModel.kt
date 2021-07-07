@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -31,8 +32,11 @@ class MoveShippingItemViewModel @Inject constructor(
             .map { ExistingPackage(it) }
 
         availableDestinations = availableExistingPackages +
-            if (currentPackage.items.size == 1 && navArgs.item.quantity == 1) listOf(OriginalPackage)
-            else listOf(NewPackage, OriginalPackage)
+            when {
+                currentPackage.selectedPackage?.id == ShippingPackage.INDIVIDUAL_PACKAGE -> listOf(NewPackage)
+                currentPackage.items.size == 1 && navArgs.item.quantity == 1 -> listOf(OriginalPackage)
+                else -> listOf(NewPackage, OriginalPackage)
+            }
     }
 
     fun onDestinationPackageSelected(destinationPackage: DestinationPackage) {
