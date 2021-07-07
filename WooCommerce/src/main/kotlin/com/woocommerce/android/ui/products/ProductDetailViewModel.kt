@@ -670,7 +670,8 @@ class ProductDetailViewModel @Inject constructor(
 
             launch {
                 val isSuccess = addProduct(it)
-                triggerEvent(ShowSnackbar(pickAddProductRequestSnackbarText(isSuccess)))
+                val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
+                triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
                     if (exitWhenDone) {
@@ -697,15 +698,15 @@ class ProductDetailViewModel @Inject constructor(
         if (isAddFlowEntryPoint) string.product_detail_publish_product_success
         else string.product_detail_update_product_success
 
-    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean) =
+    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
         if (productWasAdded) {
-            if (isDraftProduct()) {
+            if (requestedProductStatus == DRAFT) {
                 string.product_detail_publish_product_draft_success
             } else {
                 string.product_detail_publish_product_success
             }
         } else {
-            if (isDraftProduct()) {
+            if (requestedProductStatus == DRAFT) {
                 string.product_detail_publish_product_draft_error
             } else {
                 string.product_detail_publish_product_error
