@@ -53,7 +53,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         binding.viewPagerIndicator.setupFromViewPager(binding.viewPager, listener)
 
         binding.buttonSkip.setOnClickListener {
-            userDidSkip = true
+            userDidSkip = true // TODO not when DONE is tapped
             exitTutorial()
         }
     }
