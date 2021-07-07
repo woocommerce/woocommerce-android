@@ -9,6 +9,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.widgets.WCViewPager
 
 class LoginPrologueViewPager : WCViewPager {
+    companion object {
+        private const val NUM_PAGES = 4
+    }
+
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -40,6 +44,6 @@ class LoginPrologueViewPager : WCViewPager {
             )
         }
 
-        override fun getCount() = resources.getInteger(R.integer.login_prologue_page_count)
+        override fun getCount() = NUM_PAGES
     }
 }
