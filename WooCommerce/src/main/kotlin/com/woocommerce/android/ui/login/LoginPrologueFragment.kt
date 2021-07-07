@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -10,10 +11,11 @@ import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.LoginPrologueViewPagerIndicator.OnIndicatorClickedListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_login_prologue) {
+@AndroidEntryPoint
+class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
     companion object {
         const val TAG = "login-prologue-fragment"
 
@@ -64,7 +66,6 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_l
     }
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         if (activity is PrologueFinishedListener) {

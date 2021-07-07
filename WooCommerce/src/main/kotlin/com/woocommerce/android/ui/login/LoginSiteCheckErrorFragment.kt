@@ -13,10 +13,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginSiteCheckErrorBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginSiteCheckErrorFragment : Fragment(R.layout.fragment_login_site_check_error) {
     companion object {
         const val TAG = "LoginGenericErrorFragment"
@@ -103,7 +104,6 @@ class LoginSiteCheckErrorFragment : Fragment(R.layout.fragment_login_site_check_
     }
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login
 
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,11 +19,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.viewmodel.ViewModelFactory
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class MagicLinkInterceptFragment : Fragment() {
     companion object {
         private const val REQUEST_CODE_ADD_ACCOUNT = 100
@@ -44,17 +42,10 @@ class MagicLinkInterceptFragment : Fragment() {
     private var authToken: String? = null
     private var progressDialog: ProgressDialog? = null
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    private val viewModel: MagicLinkInterceptViewModel by viewModels { viewModelFactory }
+    private val viewModel: MagicLinkInterceptViewModel by viewModels()
 
     private var retryButton: Button? = null
     private var retryContainer: ScrollView? = null
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
