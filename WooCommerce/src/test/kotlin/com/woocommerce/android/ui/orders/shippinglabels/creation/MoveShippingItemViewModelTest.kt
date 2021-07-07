@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.assertj.core.api.Assertions.assertThat
@@ -64,7 +65,7 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the package has only a single item, when the UI loads, then display new package option`() {
+    fun `given the package has only a single item, when the UI loads, then hide new package option`() {
         val currentItem = defaultItem.copy(quantity = 1)
         val shippingLabelPackage =
             CreateShippingLabelTestUtils.generateShippingLabelPackage(items = listOf(currentItem))
@@ -94,6 +95,28 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.availableDestinations)
             .contains(MoveShippingItemViewModel.DestinationPackage.ExistingPackage(secondPackage))
+    }
+
+    @Test
+    fun `given item is in individual package, when the UI loads, then hide the original package option`() {
+        val currentItem = defaultItem.copy(quantity = 1)
+        val shippingLabelPackage =
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                items = listOf(currentItem),
+                selectedPackage = CreateShippingLabelTestUtils.generateIndividualPackage()
+            )
+
+        val args = MoveShippingItemDialogArgs(
+            item = currentItem,
+            currentPackage = shippingLabelPackage,
+            packagesList = listOf(shippingLabelPackage).toTypedArray()
+        )
+
+        setup(args)
+
+        assertThat(viewModel.availableDestinations)
+            .doesNotContain(MoveShippingItemViewModel.DestinationPackage.OriginalPackage)
+
     }
 
     @Test

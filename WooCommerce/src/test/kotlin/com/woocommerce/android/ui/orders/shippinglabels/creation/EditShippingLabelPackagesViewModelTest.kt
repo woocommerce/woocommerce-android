@@ -299,4 +299,33 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         assertThat(newPackages[0].items.size).isEqualTo(2)
         assertThat(newPackages[0].items).contains(defaultItem)
     }
+
+    @Test
+    fun `when item is moved to original packaging, then add correct package to the list`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(defaultItem, currentShippingPackages[0])
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                defaultItem,
+                currentShippingPackages[0],
+                MoveShippingItemViewModel.DestinationPackage.OriginalPackage
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].selectedPackage!!.isIndividual).isTrue
+        with(newPackages[0].selectedPackage!!.dimensions) {
+            assertThat(width).isEqualTo(testProduct.width)
+            assertThat(length).isEqualTo(testProduct.length)
+            assertThat(height).isEqualTo(testProduct.height)
+        }
+    }
 }
