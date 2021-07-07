@@ -89,5 +89,6 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
     }
 
     private val ShippingLabelPackage.description
-        get() = getTitle(requireContext()) + (selectedPackage?.let { ": ${it.title}" } ?: "")
+        get() = if (selectedPackage == null) getTitle(requireContext())
+        else "${getTitle(requireContext())}: ${selectedPackage.title}"
 }
