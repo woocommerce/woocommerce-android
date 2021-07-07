@@ -16,7 +16,6 @@ class WCViewPagerIndicator @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes) {
-
     private val indicators = ArrayList<ImageView>()
     private var pageCount: Int = 0
 
