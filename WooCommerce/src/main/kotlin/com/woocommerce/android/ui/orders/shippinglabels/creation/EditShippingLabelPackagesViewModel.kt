@@ -251,7 +251,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                     else productDetailRepository.getProduct(it.productId)
                 }
 
-            val individualPackage = product.createIndividualShippingPackage()
+            val individualPackage = item.createIndividualShippingPackage(product)
             updatedPackages.add(
                 ShippingLabelPackageUiModel(
                     data = ShippingLabelPackage(

@@ -91,15 +91,15 @@ enum class CustomPackageType(@StringRes val stringRes: Int) {
     ENVELOPE(R.string.shipping_label_create_custom_package_field_type_envelope)
 }
 
-fun IProduct?.createIndividualShippingPackage(): ShippingPackage {
+fun ShippingLabelPackage.Item.createIndividualShippingPackage(product: IProduct?): ShippingPackage {
     return ShippingPackage(
         id = INDIVIDUAL_PACKAGE,
-        title = INDIVIDUAL_PACKAGE,
+        title = name,
         isLetter = false,
         dimensions = PackageDimensions(
-            length = this?.length ?: 0f,
-            width = this?.width ?: 0f,
-            height = this?.height ?: 0f
+            length = product?.length ?: 0f,
+            width = product?.width ?: 0f,
+            height = product?.height ?: 0f
         ),
         boxWeight = 0f,
         category = INDIVIDUAL_PACKAGE
