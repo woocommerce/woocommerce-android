@@ -19,8 +19,7 @@ data class ShippingLabelPackage(
         get() = "package$position"
 
     @IgnoredOnParcel
-    val itemsCount: Int
-        get() = items.sumBy { it.quantity }
+    val itemsCount = items.sumBy { it.quantity }
 
     @Parcelize
     data class Item(
