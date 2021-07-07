@@ -28,7 +28,8 @@ class MoveShippingItemViewModel @Inject constructor(
     val currentPackage = navArgs.currentPackage
 
     init {
-        val availableExistingPackages = navArgs.packagesList.filter { it != currentPackage }
+        val availableExistingPackages = navArgs.packagesList
+            .filter { it != currentPackage && it.selectedPackage?.isIndividual != true }
             .map { ExistingPackage(it) }
 
         availableDestinations = availableExistingPackages +
