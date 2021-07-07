@@ -57,7 +57,8 @@ import javax.inject.Inject
 class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    private val tracker: AnalyticsTrackerWrapper
+    private val tracker: AnalyticsTrackerWrapper,
+    private val appPrefs: AppPrefs
 ) : ScopedViewModel(savedState) {
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
@@ -274,14 +275,13 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     fun onTutorialClosed() {
-        // the tutorial only appears the first time the user connects a reader
-        AppPrefs.setShowCardReaderConnectedTutorial(false)
+        appPrefs.setShowCardReaderConnectedTutorial(false)
         exitFlow(connected = true)
     }
 
     private fun exitFlow(connected: Boolean) {
         // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
-        if (connected && AppPrefs.getShowCardReaderConnectedTutorial()) {
+        if (connected && appPrefs.getShowCardReaderConnectedTutorial()) {
             triggerEvent(ShowCardReaderTutorial)
         } else {
             triggerEvent(ExitWithResult(connected))

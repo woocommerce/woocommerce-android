@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.eq
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
@@ -63,13 +65,15 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock()
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
+    private val appPrefsWrapper: AppPrefs = mock()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
         viewModel = CardReaderConnectViewModel(
             SavedStateHandle(),
             coroutinesTestRule.testDispatchers,
-            tracker
+            tracker,
+            appPrefsWrapper
         )
     }
 
@@ -432,6 +436,15 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
+        }
+
+    @Test
+    fun `when connecting to reader for the first time, then the tutorial shows`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefsWrapper.getShowCardReaderConnectedTutorial()).thenReturn(true)
+            init(connectingSucceeds = true)
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ShowCardReaderTutorial::class.java)
         }
 
     @Test
