@@ -395,6 +395,7 @@ class CardReaderPaymentViewModel
     enum class PaymentFlowError(val message: Int) {
         FETCHING_ORDER_FAILED(R.string.order_error_fetch_generic),
         NO_NETWORK(R.string.card_reader_payment_failed_no_network_state),
+        SERVER_ERROR(R.string.card_reader_payment_failed_server_error_state),
         PAYMENT_DECLINED(R.string.card_reader_payment_failed_card_declined_state),
         GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state)
     }
@@ -405,5 +406,6 @@ class CardReaderPaymentViewModel
             CardPaymentStatusErrorType.PAYMENT_DECLINED -> PaymentFlowError.PAYMENT_DECLINED
             CardPaymentStatusErrorType.CARD_READ_TIMED_OUT,
             CardPaymentStatusErrorType.GENERIC_ERROR -> PaymentFlowError.GENERIC_ERROR
+            CardPaymentStatusErrorType.SERVER_ERROR -> PaymentFlowError.SERVER_ERROR
         }
 }
