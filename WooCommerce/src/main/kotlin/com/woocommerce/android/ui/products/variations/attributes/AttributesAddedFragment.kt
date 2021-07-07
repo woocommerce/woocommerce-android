@@ -11,8 +11,11 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attributes_added) {
     companion object {
         const val TAG: String = "AttributesAddedFragment"
@@ -45,6 +48,7 @@ class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attributes
                 AttributesAddedFragmentDirections
                     .actionAttributesAddedFragmentToProductDetailFragment()
                     .apply { findNavController().navigateSafely(this) }
+            is ShowSnackbar -> uiMessageResolver.getSnack(event.message)
             else -> event.isHandled = false
         }
     }

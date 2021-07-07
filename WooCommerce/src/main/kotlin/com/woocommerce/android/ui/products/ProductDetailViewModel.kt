@@ -368,6 +368,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onGenerateVariationClicked() {
         launch {
             createEmptyVariation()
+                ?.let { triggerEvent(ShowSnackbar(string.variation_created_title)) }
                 .also { triggerEvent(ExitAttributesAdded) }
         }
     }
