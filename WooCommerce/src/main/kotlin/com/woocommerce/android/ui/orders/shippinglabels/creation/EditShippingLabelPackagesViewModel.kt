@@ -333,16 +333,21 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             get() = packagesUiModels.map { it.data }
         val isDataValid: Boolean
             get() = packagesUiModels.isNotEmpty() &&
-                packagesUiModels.all {
-                    !it.data.weight.isNaN() && it.data.weight > 0.0 && it.data.selectedPackage != null
-                }
+                packagesUiModels.all { it.isValid }
     }
 
     @Parcelize
     data class ShippingLabelPackageUiModel(
         val isExpanded: Boolean = false,
         val data: ShippingLabelPackage
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isValid: Boolean
+            get() = !data.weight.isNaN() &&
+                data.weight > 0.0 &&
+                data.selectedPackage != null &&
+                data.selectedPackage.dimensions.isValid
+    }
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
 
