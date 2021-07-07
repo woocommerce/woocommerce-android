@@ -271,7 +271,12 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onReaderConnected() {
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
-        exitFlow(connected = true)
+        // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
+        if (appPrefs.getShowCardReaderConnectedTutorial()) {
+            triggerEvent(ShowCardReaderTutorial)
+        } else {
+            exitFlow(connected = true)
+        }
     }
 
     fun onTutorialClosed() {
@@ -280,12 +285,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun exitFlow(connected: Boolean) {
-        // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
-        if (connected && appPrefs.getShowCardReaderConnectedTutorial()) {
-            triggerEvent(ShowCardReaderTutorial)
-        } else {
-            triggerEvent(ExitWithResult(connected))
-        }
+        triggerEvent(ExitWithResult(connected))
     }
 
     fun onScreenResumed() {

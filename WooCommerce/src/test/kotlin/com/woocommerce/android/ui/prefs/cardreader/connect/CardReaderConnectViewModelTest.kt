@@ -444,7 +444,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(appPrefsWrapper.getShowCardReaderConnectedTutorial()).thenReturn(true)
             init(connectingSucceeds = true)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ShowCardReaderTutorial::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(ShowCardReaderTutorial::class.java)
+        }
+
+    @Test
+    fun `when connecting to reader not for the first time, then the tutorial doesn't show`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefsWrapper.getShowCardReaderConnectedTutorial()).thenReturn(false)
+            init(connectingSucceeds = true)
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(true))
         }
 
     @Test
