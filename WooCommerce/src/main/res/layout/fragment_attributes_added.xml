@@ -41,7 +41,7 @@
             android:layout_width="@dimen/minor_00"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_175"
-            android:layout_marginTop="@dimen/major_250"
+            android:layout_marginTop="@dimen/major_200"
             android:layout_marginEnd="@dimen/major_175"
             android:lineSpacingExtra="@dimen/minor_50"
             android:text="@string/product_attributes_created_description"
