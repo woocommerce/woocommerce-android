@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBi
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShippingLabelPackageUiModel
@@ -142,19 +143,24 @@ class ShippingLabelPackagesAdapter(
             }
             if (shippingLabelPackage.selectedPackage?.isIndividual == true) {
                 binding.selectedPackageSpinner.isVisible = false
-                binding.individualPackageLabel.isVisible = true
+                binding.individualPackageLayout.isVisible = true
                 binding.individualPackageDimensions.isVisible = true
-                binding.individualPackageDimensions.text = context.getString(
-                    R.string.shipping_label_package_details_individual_package_dimensions,
-                    dimensionUnit,
-                    shippingLabelPackage.selectedPackage.dimensions.length.formatToString(),
-                    shippingLabelPackage.selectedPackage.dimensions.width.formatToString(),
-                    shippingLabelPackage.selectedPackage.dimensions.height.formatToString()
-                )
+                binding.individualPackageDimensions.text = with(shippingLabelPackage.selectedPackage.dimensions) {
+                    "${length.formatToString()} $dimensionUnit x" +
+                        " ${width.formatToString()} $dimensionUnit x" +
+                        " ${height.formatToString()} $dimensionUnit"
+                }
+                if (!shippingLabelPackage.selectedPackage.dimensions.isValid) {
+                    binding.individualPackageDimensions.setTextColor(context.getColorCompat(R.color.color_error))
+                    binding.individualPackageError.isVisible = true
+                } else {
+                    binding.individualPackageDimensions
+                        .setTextColor(context.getColorCompat(R.color.color_on_surface_medium))
+                    binding.individualPackageError.isVisible = false
+                }
             } else {
                 binding.selectedPackageSpinner.isVisible = true
-                binding.individualPackageLabel.isVisible = false
-                binding.individualPackageDimensions.isVisible = false
+                binding.individualPackageLayout.isVisible = false
                 binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
             }
             if (!shippingLabelPackage.weight.isNaN()) {

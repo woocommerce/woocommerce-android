@@ -494,8 +494,10 @@
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
     </plurals>
-    <string name="shipping_label_package_details_individual_package">Individually Shipped Item</string>
-    <string name="shipping_label_package_details_individual_package_dimensions">Item Dimensions - %2$s %1$s x %3$s %1$s x %4$s %1$s</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Individually Shipped Item</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Item Dimensions</string>
+    <string name="shipping_label_package_details_individual_package_title">Original packaging</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Package dimensions must be greater than zero. Please update your item’s dimensions in the Shipping section of your product page to continue.</string>
     <string name="shipping_label_items_count_placeholder">Items count</string>
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
