@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingIte
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.MoveItemResult
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -47,10 +48,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val weightUnit: String by lazy {
-        val parameters = parameterRepository.getParameters(KEY_PARAMETERS, savedState)
-        parameters.weightUnit ?: ""
-    }
+    val siteParameters: SiteParameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
 
     init {
         initState()

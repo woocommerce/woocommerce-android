@@ -13,16 +13,18 @@ import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBi
 import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShippingLabelPackageUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
-    val weightUnit: String,
+    val siteParameters: SiteParameters,
     val onWeightEdited: (Int, Float) -> Unit,
     val onExpandedChanged: (Int, Boolean) -> Unit,
     val onPackageSpinnerClicked: (Int) -> Unit,
@@ -34,6 +36,12 @@ class ShippingLabelPackagesAdapter(
             field = value
             diff.dispatchUpdatesTo(this)
         }
+
+    private val weightUnit
+        get() = siteParameters.weightUnit.orEmpty()
+
+    private val dimensionUnit
+        get() = siteParameters.dimensionUnit.orEmpty()
 
     init {
         setHasStableIds(true)
@@ -132,7 +140,23 @@ class ShippingLabelPackagesAdapter(
                 items = shippingLabelPackage.adaptItemsForUi()
                 moveItemClickListener = { item -> onMoveItemClicked(item, shippingLabelPackage) }
             }
-            binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
+            if (shippingLabelPackage.selectedPackage?.isIndividual == true) {
+                binding.selectedPackageSpinner.isVisible = false
+                binding.individualPackageLabel.isVisible = true
+                binding.individualPackageDimensions.isVisible = true
+                binding.individualPackageDimensions.text = context.getString(
+                    R.string.shipping_label_package_details_individual_package_dimensions,
+                    dimensionUnit,
+                    shippingLabelPackage.selectedPackage.dimensions.length.formatToString(),
+                    shippingLabelPackage.selectedPackage.dimensions.width.formatToString(),
+                    shippingLabelPackage.selectedPackage.dimensions.height.formatToString()
+                )
+            } else {
+                binding.selectedPackageSpinner.isVisible = true
+                binding.individualPackageLabel.isVisible = false
+                binding.individualPackageDimensions.isVisible = false
+                binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
+            }
             if (!shippingLabelPackage.weight.isNaN()) {
                 binding.weightEditText.setTextIfDifferent(shippingLabelPackage.weight.toString())
             }
