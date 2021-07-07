@@ -1510,11 +1510,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     /**
-     * Returns true if the product draft has a status of DRAFT
-     */
-    fun isDraftProduct() = viewState.productDraft?.status?.let { it == DRAFT } ?: false
-
-    /**
      * Add a new product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed. Returns true only
      * if product successfully added
