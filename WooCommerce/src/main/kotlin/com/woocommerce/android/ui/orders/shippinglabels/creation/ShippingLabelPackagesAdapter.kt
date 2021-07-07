@@ -125,8 +125,8 @@ class ShippingLabelPackagesAdapter(
             binding.packageName.text = shippingLabelPackage.getTitle(context)
             binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
-                shippingLabelPackage.items.size,
-                shippingLabelPackage.items.size
+                shippingLabelPackage.itemsCount,
+                shippingLabelPackage.itemsCount
             )}"
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()

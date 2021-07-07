@@ -1,10 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -28,6 +24,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -61,6 +58,14 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private val variationDetailRepository: VariationDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val parameterRepository: ParameterRepository = mock()
+    private val defaultItem = ShippingLabelPackage.Item(
+        productId = 15,
+        name = "test",
+        quantity = 1,
+        attributesList = "",
+        weight = 1f,
+        value = BigDecimal.TEN
+    )
 
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
@@ -187,5 +192,111 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         val createdShippingPackages = (event as ExitWithResult<List<ShippingLabelPackage>>).data
         assertThat(createdShippingPackages.size).isEqualTo(1)
         assertThat(createdShippingPackages.first().weight).isEqualTo(10.0f)
+    }
+
+    @Test
+    fun `given item's quantity bigger than 1, when the item is moved, then decrease the quantity`() = testBlocking {
+        val item = defaultItem.copy(quantity = 2)
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                items = listOf(item)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(item, currentShippingPackages.first())
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                item,
+                currentShippingPackages.first(),
+                MoveShippingItemViewModel.DestinationPackage.NewPackage
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(2)
+        assertThat(newPackages[0].items.first().quantity).isEqualTo(1)
+        assertThat(newPackages[1].items).isEqualTo(listOf(item.copy(quantity = 1)))
+    }
+
+    @Test
+    fun `given item's quantity equals 1, when the item is moved, then remove it from the package`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                items = listOf(defaultItem, defaultItem.copy(productId = 16))
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(defaultItem, currentShippingPackages.first())
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                defaultItem,
+                currentShippingPackages.first(),
+                MoveShippingItemViewModel.DestinationPackage.NewPackage
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(2)
+        assertThat(newPackages[0].items).doesNotContain(defaultItem)
+        assertThat(newPackages[1].items).isEqualTo(listOf(defaultItem))
+    }
+
+    @Test
+    fun `given package has same product, when item is moved to this package, then increase quantity`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem)
+            ),
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 2,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(defaultItem, currentShippingPackages[1])
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                defaultItem,
+                currentShippingPackages[1],
+                MoveShippingItemViewModel.DestinationPackage.ExistingPackage(currentShippingPackages[0])
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].items.first().quantity).isEqualTo(2)
+    }
+
+    @Test
+    fun `given package hasn't same product, when item is moved to this package, then add new item`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem.copy(productId = 16))
+            ),
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 2,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(defaultItem, currentShippingPackages[1])
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                defaultItem,
+                currentShippingPackages[1],
+                MoveShippingItemViewModel.DestinationPackage.ExistingPackage(currentShippingPackages[0])
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].items.size).isEqualTo(2)
+        assertThat(newPackages[0].items).contains(defaultItem)
     }
 }
