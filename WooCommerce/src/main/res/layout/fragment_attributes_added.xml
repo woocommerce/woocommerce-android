@@ -14,7 +14,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/completion_title"
-            style="@style/Woo.TextView.Headline6"
+            style="@style/Woo.TextView.Headline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="5sp"
@@ -37,7 +37,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/completion_help_guide"
-            style="@style/Woo.TextView.Body2"
+            style="@style/Woo.TextView.Body1"
             android:layout_width="@dimen/minor_00"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_175"
@@ -60,7 +60,7 @@
             android:layout_marginEnd="@dimen/major_300"
             android:layout_marginBottom="@dimen/major_75"
             android:text="@string/product_attributes_created_generate_action_text"
-            android:textAllCaps="false"
+            android:textAllCaps="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/completion_help_guide" />

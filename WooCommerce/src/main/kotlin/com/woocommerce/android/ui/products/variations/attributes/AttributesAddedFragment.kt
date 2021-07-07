@@ -33,6 +33,8 @@ class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attributes
         setupObservers()
     }
 
+    override fun getFragmentTitle() = getString(R.string.product_variations)
+
     private fun setupObservers() {
         viewModel.attributeListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isCreatingVariationDialogShown?.takeIfNotEqualTo(old?.isCreatingVariationDialogShown) {
