@@ -8,10 +8,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.databinding.DialogMoveShippingItemBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.ExistingPackage
@@ -37,10 +37,8 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
     }
 
     private fun initUi(binding: DialogMoveShippingItemBinding) {
-        val packageDescription = viewModel.currentPackage.getTitle(requireContext()) +
-            (viewModel.currentPackage.selectedPackage?.let { ": ${it.title}" } ?: "")
         binding.dialogDescription.text =
-            getString(string.shipping_label_move_item_dialog_description, packageDescription)
+            getString(R.string.shipping_label_move_item_dialog_description, viewModel.currentPackage.description)
 
         with(viewModel.availableDestinations) {
             forEach {
@@ -76,13 +74,11 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
 
     private fun DestinationPackage.generateRadioButton(): RadioButton {
         return RadioButton(requireContext()).apply {
-            setText(
-                when (this@generateRadioButton) {
-                    is ExistingPackage -> TODO()
-                    NewPackage -> R.string.shipping_label_move_item_dialog_new_package_option
-                    OriginalPackage -> R.string.shipping_label_move_item_dialog_original_packaging_option
-                }
-            )
+            text = when (this@generateRadioButton) {
+                is ExistingPackage -> destinationPackage.description
+                NewPackage -> getString(R.string.shipping_label_move_item_dialog_new_package_option)
+                OriginalPackage -> getString(R.string.shipping_label_move_item_dialog_original_packaging_option)
+            }
             setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     viewModel.onDestinationPackageSelected(this@generateRadioButton)
@@ -91,4 +87,8 @@ class MoveShippingItemDialog : DialogFragment(R.layout.dialog_move_shipping_item
             tag = this@generateRadioButton
         }
     }
+
+    private val ShippingLabelPackage.description
+        get() = if (selectedPackage == null) getTitle(requireContext())
+        else "${getTitle(requireContext())}: ${selectedPackage.title}"
 }
