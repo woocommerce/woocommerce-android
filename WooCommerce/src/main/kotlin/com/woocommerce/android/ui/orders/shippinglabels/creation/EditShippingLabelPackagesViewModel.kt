@@ -230,7 +230,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
             val indexOfDestinationPackage = updatedPackages.indexOfFirst { it.data == destination }
             updatedPackages[indexOfDestinationPackage] = ShippingLabelPackageUiModel(
-                data = currentPackage.copy(items = updatedItemsOfDestination)
+                data = destination.copy(items = updatedItemsOfDestination)
             )
 
             return packages.mapIndexed { index, shippingLabelPackageUiModel ->
