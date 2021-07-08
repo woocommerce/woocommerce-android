@@ -20,7 +20,7 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
         private const val ARG_DETAIL_ID = "detail_id"
 
         private const val RATIO_PORTRAIT = 0.6f
-        private const val RATIO_LANDSCAPE = 0.2f
+        private const val RATIO_LANDSCAPE = 0.3f
 
         fun newInstance(
             @DrawableRes drawableId: Int,
