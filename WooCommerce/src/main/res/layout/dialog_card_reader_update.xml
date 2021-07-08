@@ -25,7 +25,7 @@
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/update_reader_pb"
         android:layout_width="0dp"
-        android:layout_height="@dimen/progress_bar_mid"
+        android:layout_height="wrap_content"
         app:layout_constraintVertical_bias="0.0"
         android:layout_marginTop="@dimen/major_250"
         android:layout_marginBottom="@dimen/major_150"
