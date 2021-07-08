@@ -140,7 +140,6 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onCancelClicked() {
-        // TODO cancel the update in the stripe sdk
         tracker.track(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
             this@CardReaderUpdateViewModel.javaClass.simpleName,
