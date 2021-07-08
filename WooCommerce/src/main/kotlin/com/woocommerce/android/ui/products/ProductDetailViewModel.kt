@@ -679,7 +679,8 @@ class ProductDetailViewModel @Inject constructor(
 
             launch {
                 val isSuccess = addProduct(it)
-                triggerEvent(ShowSnackbar(pickAddProductRequestSnackbarText(isSuccess)))
+                val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
+                triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
                     if (exitWhenDone) {
@@ -706,15 +707,15 @@ class ProductDetailViewModel @Inject constructor(
         if (isAddFlowEntryPoint) string.product_detail_publish_product_success
         else string.product_detail_update_product_success
 
-    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean) =
+    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
         if (productWasAdded) {
-            if (isDraftProduct()) {
+            if (requestedProductStatus == DRAFT) {
                 string.product_detail_publish_product_draft_success
             } else {
                 string.product_detail_publish_product_success
             }
         } else {
-            if (isDraftProduct()) {
+            if (requestedProductStatus == DRAFT) {
                 string.product_detail_publish_product_draft_error
             } else {
                 string.product_detail_publish_product_error
@@ -1516,11 +1517,6 @@ class ProductDetailViewModel @Inject constructor(
 
         viewState = viewState.copy(isProgressDialogShown = false)
     }
-
-    /**
-     * Returns true if the product draft has a status of DRAFT
-     */
-    fun isDraftProduct() = viewState.productDraft?.status?.let { it == DRAFT } ?: false
 
     /**
      * Add a new product to the backend only if network is connected.

@@ -334,11 +334,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        // change the status to draft so we can verify that isDraftProduct works - this will also
-        // force the viewModel to consider the product as changed, so when we click the back button
+        // this will force the viewModel to consider the product as changed, so when we click the back button
         // below it will show the discard dialog
         viewModel.updateProductDraft(productStatus = DRAFT)
-        assertThat(viewModel.isDraftProduct()).isTrue()
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
