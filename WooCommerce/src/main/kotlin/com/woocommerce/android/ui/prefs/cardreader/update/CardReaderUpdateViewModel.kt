@@ -33,6 +33,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val PERCENT_100: Int = 100
+
 @HiltViewModel
 class CardReaderUpdateViewModel @Inject constructor(
     private val cardReaderManager: CardReaderManager,
@@ -148,7 +150,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         triggerEvent(Event.ExitWithResult(FAILED))
     }
 
-    private fun convertProgressToPercentage(progress: Float) = (progress * 100).toInt()
+    private fun convertProgressToPercentage(progress: Float) = (progress * PERCENT_100).toInt()
 
     sealed class ViewState(
         val title: UiString? = null,
