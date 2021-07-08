@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -70,6 +71,7 @@ class ProductImagesFragment :
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
+    private var detailSnackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -240,13 +242,16 @@ class ProductImagesFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        uiMessageResolver.getActionSnack(
-            message = message,
-            actionText = getString(R.string.details),
-            actionListener = actionListener
-        ).also {
-            it.show()
+        if (detailSnackbar == null) {
+            detailSnackbar = uiMessageResolver.getActionSnack(
+                message = message,
+                actionText = getString(R.string.details),
+                actionListener = actionListener
+            )
+        } else {
+            detailSnackbar?.setText(message)
         }
+        detailSnackbar?.show()
     }
 
     private fun showImageSourceDialog() {

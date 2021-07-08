@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -80,6 +81,7 @@ class ProductDetailFragment :
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
     private var updateMenuItem: MenuItem? = null
+    private var detailSnackbar: Snackbar? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val updateTitleId = R.string.update
@@ -323,13 +325,16 @@ class ProductDetailFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        uiMessageResolver.getActionSnack(
-            message = message,
-            actionText = getString(R.string.details),
-            actionListener = actionListener
-        ).also {
-            it.show()
+        if (detailSnackbar == null) {
+            detailSnackbar = uiMessageResolver.getActionSnack(
+                message = message,
+                actionText = getString(R.string.details),
+                actionListener = actionListener
+            )
+        } else {
+            detailSnackbar?.setText(message)
         }
+        detailSnackbar?.show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
