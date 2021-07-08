@@ -19,7 +19,6 @@ import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.SuppressOnBackPressed
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ExplanationState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
@@ -174,20 +173,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when click on primary btn explanation state should prevent the user from leaving the screen`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
-
-            // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
-
-            // THEN
-            assertThat(viewModel.event.value).isEqualTo(SuppressOnBackPressed)
-        }
-
-    @Test
     fun `when click on primary btn explanation state should track tap event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
@@ -261,7 +246,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_title))
         assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
         assertThat(state.primaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_update))
-        assertThat(state.showProgress).isFalse()
+        assertThat(state.progress).isNull()
         if (startedByUser) {
             assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_cancel))
         } else {
@@ -273,7 +258,8 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         val state = viewModel.viewStateData.value as UpdatingState
         assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_in_progress_title))
         assertThat(state.description).isNull()
-        assertThat(state.showProgress).isTrue()
+        assertThat(state.progress).isNotNull
+        assertThat(state.progressText).isNotNull
         assertThat(state.primaryButton).isNull()
         assertThat(state.secondaryButton).isNull()
     }
