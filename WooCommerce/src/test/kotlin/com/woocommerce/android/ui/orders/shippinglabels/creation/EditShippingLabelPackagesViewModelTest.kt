@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.nhaarman.mockitokotlin2.*
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -36,18 +34,6 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private val availablePackages = listOf(
         CreateShippingLabelTestUtils.generatePackage("id1", "provider1"),
         CreateShippingLabelTestUtils.generatePackage("id2", "provider2")
-    )
-
-    private val shippingAccountSettings = ShippingAccountSettings(
-        canEditSettings = true,
-        canManagePayments = true,
-        paymentMethods = emptyList(),
-        selectedPaymentId = null,
-        lastUsedBoxId = "id1",
-        storeOwnerDetails = StoreOwnerDetails(
-            "email", "username", "username", "name"
-        ),
-        isEmailReceiptEnabled = true
     )
 
     private val testOrder = OrderTestUtils.generateTestOrder(ORDER_ID)
@@ -86,14 +72,14 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `test first opening of the screen`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
         verify(orderDetailRepository).getOrder(any())
-        verify(shippingLabelRepository).getAccountSettings()
+        verify(shippingLabelRepository).getLastUsedPackage()
         assertThat(viewState!!.packagesUiModels.size).isEqualTo(1)
         assertThat(viewState!!.packages.first().selectedPackage).isEqualTo(availablePackages.first())
     }
@@ -116,20 +102,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `no last used package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val shippingAccountSettings = shippingAccountSettings.copy(lastUsedBoxId = null)
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
-
-        setup(emptyArray())
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> viewState = new }
-
-        assertThat(viewState!!.packages.first().selectedPackage).isNull()
-    }
-
-    @Test
-    fun `last used package deleted`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val shippingAccountSettings = shippingAccountSettings.copy(lastUsedBoxId = "missingId")
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(null)
 
         setup(emptyArray())
         var viewState: ViewState? = null
@@ -140,7 +113,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `edit weight of package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var viewState: ViewState? = null
@@ -153,7 +126,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `select a package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var viewState: ViewState? = null
@@ -166,7 +139,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `exit without saving changes`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var event: MultiLiveEvent.Event? = null
@@ -179,7 +152,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     @Suppress("UNCHECKED_CAST")
     @Test
     fun `save changes and exit`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var event: MultiLiveEvent.Event? = null
