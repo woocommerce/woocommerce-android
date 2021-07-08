@@ -22,32 +22,21 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
+import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -144,6 +133,14 @@ class ProductImagesFragment :
         binding.addImageButton.setOnClickListener {
             viewModel.onImageSourceButtonClicked()
         }
+        val learnMoreText = getString(R.string.product_images_learn_more)
+        binding.learnMoreButton.setClickableText(
+            content = getString(R.string.product_images_learn_more_button, learnMoreText),
+            clickableContent = learnMoreText,
+            clickAction = WooClickableSpan {
+                // TODO: open an external link
+            }
+        )
     }
 
     override fun onGalleryImageDeleteIconClicked(image: Image) {
