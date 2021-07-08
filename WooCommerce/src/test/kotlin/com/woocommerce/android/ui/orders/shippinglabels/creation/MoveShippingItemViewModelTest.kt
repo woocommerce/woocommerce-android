@@ -97,6 +97,25 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given there are individual packages, when the UI loads, then exclude them from existing packages list`() {
+        val firstPackage = CreateShippingLabelTestUtils.generateShippingLabelPackage(position = 1)
+        val secondPackage = CreateShippingLabelTestUtils.generateShippingLabelPackage(
+            position = 2,
+            selectedPackage = CreateShippingLabelTestUtils.generateIndividualPackage()
+        )
+        val args = MoveShippingItemDialogArgs(
+            item = firstPackage.items.first(),
+            currentPackage = firstPackage,
+            packagesList = listOf(firstPackage, secondPackage).toTypedArray()
+        )
+
+        setup(args)
+
+        assertThat(viewModel.availableDestinations)
+            .doesNotContain(MoveShippingItemViewModel.DestinationPackage.ExistingPackage(secondPackage))
+    }
+
+    @Test
     fun `given item is in individual package, when the UI loads, then hide the original package option`() {
         val currentItem = defaultItem.copy(quantity = 1)
         val shippingLabelPackage =
