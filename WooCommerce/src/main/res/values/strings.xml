@@ -856,6 +856,9 @@
     <string name="product_price_empty">Add price</string>
     <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
+    <string name="product_attributes_created_title">Attributes created</string>
+    <string name="product_attributes_created_description">Now that you\'ve added attributes, you can create your first variation!</string>
+    <string name="product_attributes_created_generate_action_text">Generate Variation</string>
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
@@ -1079,6 +1082,7 @@
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
     <string name="variation_create_dialog_title">Generating variation</string>
+    <string name="variation_created_title">Variation Created</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
 
     <!--

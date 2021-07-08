@@ -46,13 +46,14 @@ import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
@@ -364,22 +365,26 @@ class ProductDetailViewModel @Inject constructor(
      * Called during the Add _first_ Variation flow. Uploads the pending attribute changes and generates the first
      * variation for the variable product.
      */
-    fun onAttributeListDoneButtonClicked() {
-        saveAttributeChanges()
-        attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+    fun onGenerateVariationClicked() {
         launch {
-            viewState.productDraft?.let { draft ->
-                variationRepository.createEmptyVariation(draft)
-                    ?.let {
-                        productRepository.fetchProduct(draft.remoteId)
-                            ?.also { updateProductState(productToUpdateFrom = it) }
-                        triggerEvent(ExitProductAttributeList(variationCreated = true))
-                    } ?: triggerEvent(ExitProductAttributeList())
-            }.also {
-                attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
-            }
+            createEmptyVariation()
+                ?.let { triggerEvent(ShowSnackbar(string.variation_created_title)) }
+                .also { triggerEvent(ExitAttributesAdded) }
         }
     }
+
+    private suspend fun createEmptyVariation() =
+        viewState.productDraft?.let { draft ->
+            saveAttributeChanges()
+            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+            variationRepository.createEmptyVariation(draft)
+                ?.let {
+                    productRepository.fetchProduct(draft.remoteId)
+                        ?.also { updateProductState(productToUpdateFrom = it) }
+                }
+        }.also {
+            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
+        }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
 
@@ -546,6 +551,10 @@ class ProductDetailViewModel @Inject constructor(
             }
             is ExitProductAddAttribute -> {
                 eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
+                hasChanges = hasAttributeChanges()
+            }
+            is ExitAttributesAdded -> {
+                eventName = Stat.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
         }
@@ -2030,6 +2039,8 @@ class ProductDetailViewModel @Inject constructor(
         class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
+        object ExitAttributesAdded : ProductExitEvent(shouldShowDiscardDialog = false)
     }
 
     object RefreshMenu : Event()
