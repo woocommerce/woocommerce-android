@@ -22,6 +22,7 @@ import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCustomsForm
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
@@ -56,6 +57,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -65,7 +68,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label) {
+class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label), BackPressListener {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -265,6 +268,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     findNavController().navigateSafely(action)
                 }
+                is ShowDialog -> event.showDialog()
+                is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         }
@@ -333,6 +338,11 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         binding.orderSummaryLayout.purchaseLabelButton.setOnClickListener {
             viewModel.onPurchaseButtonClicked(binding.orderSummaryLayout.markOrderCompleteCheckbox.isChecked)
         }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
     }
 
     private fun ShippingLabelCreationStepView.update(data: StepUiState) {
