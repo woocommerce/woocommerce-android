@@ -24,7 +24,10 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ExplanationState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.StateWithProgress
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -69,7 +72,7 @@ class CardReaderUpdateViewModel @Inject constructor(
             cardReaderManager.updateSoftware().collect { status ->
                 when (status) {
                     is Failed -> onUpdateFailed(status)
-                    Initializing -> updateProgress(viewState.value, 0)
+                    Initializing -> viewState.value = UpdatingState(0)
                     is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))
                     Success -> onUpdateSucceeded()
                     UpToDate -> onUpdateUpToDate()
@@ -122,20 +125,20 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun updateProgress(currentState: ViewState?, progress: Int) {
-        if (currentState is UpdatingState) {
-            viewState.value = currentState.copy(progress = progress)
+        if (currentState is StateWithProgress<*>) {
+            viewState.value = currentState.copyWithUpdatedProgress(progress)
         } else {
-            viewState.value = UpdatingState(progress = progress)
+            WooLog.e(WooLog.T.CARD_READER, "Trying to update progress, but not in any of the updating states.")
         }
     }
 
     private fun showCancelButton(currentState: UpdatingState) {
-        viewState.value = currentState.copy(
+        viewState.value = UpdatingCancelingState(
+            currentState.progress,
             secondaryButton = ButtonState(
                 ::onCancelClicked,
                 UiStringRes(R.string.cancel_anyway)
-            ),
-            cancelWarning = UiStringRes(R.string.card_reader_software_update_progress_cancel_warning)
+            )
         )
     }
 
@@ -169,21 +172,43 @@ class CardReaderUpdateViewModel @Inject constructor(
         )
 
         data class UpdatingState(
-            override val progress: Int,
-            override val secondaryButton: ButtonState? = null,
-            override val cancelWarning: UiString? = null
-        ) : ViewState(
+            override val progress: Int
+        ) : StateWithProgress<UpdatingState>, ViewState(
             title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
             progressText = UiStringRes(
                 R.string.card_reader_software_update_progress_indicator,
                 listOf(UiStringText(progress.toString()))
             )
-        )
+        ) {
+            override fun copyWithUpdatedProgress(progress: Int): UpdatingState {
+                return this.copy(progress = progress)
+            }
+        }
+
+        data class UpdatingCancelingState(
+            override val progress: Int,
+            override val secondaryButton: ButtonState,
+        ) : StateWithProgress<UpdatingCancelingState>, ViewState(
+            title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
+            progressText = UiStringRes(
+                R.string.card_reader_software_update_progress_indicator,
+                listOf(UiStringText(progress.toString()))
+            ),
+            cancelWarning = UiStringRes(R.string.card_reader_software_update_progress_cancel_warning)
+        ) {
+            override fun copyWithUpdatedProgress(progress: Int): UpdatingCancelingState {
+                return this.copy(progress = progress)
+            }
+        }
 
         data class ButtonState(
             val onActionClicked: (() -> Unit),
             val text: UiString
         )
+
+        interface StateWithProgress<T : ViewState> {
+            fun copyWithUpdatedProgress(progress: Int): T
+        }
     }
 
     enum class UpdateResult {

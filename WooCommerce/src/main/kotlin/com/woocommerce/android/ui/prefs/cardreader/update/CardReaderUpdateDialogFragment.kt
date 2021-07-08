@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
 import android.app.Dialog
-import android.content.DialogInterface
-import android.content.DialogInterface.OnKeyListener
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +22,7 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
     val viewModel: CardReaderUpdateViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        with (requireDialog()) {
+        with(requireDialog()) {
             this.setCanceledOnTouchOutside(false)
             this.requestWindowFeature(Window.FEATURE_NO_TITLE)
         }

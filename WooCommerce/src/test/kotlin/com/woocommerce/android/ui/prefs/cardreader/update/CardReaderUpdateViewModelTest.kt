@@ -22,11 +22,13 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ExplanationState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -91,7 +93,12 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Installing(0f)))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(
+                flow {
+                    emit(Initializing)
+                    emit(Installing(0f))
+                }
+            )
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
@@ -275,30 +282,61 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(
+                flow {
+                    emit(Initializing)
+                    emit(Installing(0f))
+                }
+            )
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
 
             // WHEN
             viewModel.onBackPressed()
 
             // THEN
-            assertThat((viewModel.viewStateData.value as UpdatingState).cancelWarning).isNotNull
-            assertThat((viewModel.viewStateData.value as UpdatingState).secondaryButton).isNotNull
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingCancelingState::class.java)
         }
 
     @Test
-    fun `when update progresses, then progress percentage updated`() =
+    fun `given UpdatingState state shown, when update progresses, then progress percentage updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val currentProgress = 0.2f
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Installing(currentProgress)))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(
+                flow {
+                    emit(Initializing)
+                    emit(Installing(currentProgress))
+                }
+            )
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
 
             // THEN
             assertThat((viewModel.viewStateData.value as UpdatingState).progress)
+                .isEqualTo((currentProgress * 100).toInt())
+        }
+
+    @Test
+    fun `given UpdatingCancelingState state shown, when update progresses, then progress percentage updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val currentProgress = 0.2f
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(
+                flow {
+                    emit(Initializing)
+                    emit(Installing(currentProgress))
+                }
+            )
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // WHEN
+            viewModel.onBackPressed()
+
+            // THEN
+            assertThat((viewModel.viewStateData.value as UpdatingCancelingState).progress)
                 .isEqualTo((currentProgress * 100).toInt())
         }
 
