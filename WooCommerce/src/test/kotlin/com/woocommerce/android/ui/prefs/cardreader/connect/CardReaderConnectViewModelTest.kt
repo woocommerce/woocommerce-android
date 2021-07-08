@@ -454,7 +454,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given connecting failed screen shown, when user clicks on retry, then connecting restarted`() =
+    fun `given connecting failed screen shown, when user clicks on retry, then flow restarted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = false)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -462,7 +462,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             pauseDispatcher()
             (viewModel.viewStateData.value as ConnectingFailedState).onPrimaryActionClicked()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
             resumeDispatcher()
         }
 
