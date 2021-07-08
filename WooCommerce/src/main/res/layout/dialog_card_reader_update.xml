@@ -48,7 +48,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/update_reader_progress_warning_tv"
-        style="@style/Woo.TextView.Body1"
+        style="@style/Woo.TextView.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="0dp"
