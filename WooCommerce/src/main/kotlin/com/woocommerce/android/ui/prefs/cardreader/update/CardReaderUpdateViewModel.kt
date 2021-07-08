@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ExplanationState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -109,16 +109,15 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun finishFlow(result: UpdateResult) {
-        triggerEvent(Event.ExitWithResult(result))
+        triggerEvent(ExitWithResult(result))
     }
 
-    fun onBackPressed(): Boolean {
+    fun onBackPressed() {
         val currentState = viewState.value
         return if (currentState is UpdatingState) {
             showCancelButton(currentState)
-            true
         } else {
-            false
+            triggerEvent(ExitWithResult(FAILED))
         }
     }
 
@@ -147,7 +146,7 @@ class CardReaderUpdateViewModel @Inject constructor(
             null,
             "User manually cancelled the flow"
         )
-        triggerEvent(Event.ExitWithResult(FAILED))
+        triggerEvent(ExitWithResult(FAILED))
     }
 
     private fun convertProgressToPercentage(progress: Float) = (progress * PERCENT_100).toInt()

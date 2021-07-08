@@ -20,6 +20,7 @@ import com.woocommerce.android.cardreader.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ExplanationState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -155,7 +156,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
-            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(UpdateResult.FAILED)
+            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(FAILED)
         }
 
     @Test
@@ -248,10 +249,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
 
             // WHEN
-            val backConsumed = viewModel.onBackPressed()
+            viewModel.onBackPressed()
 
             // THEN
-            assertThat(backConsumed).isFalse()
+            assertThat(viewModel.event.value).isEqualTo(ExitWithResult(FAILED))
         }
 
     @Test
@@ -263,10 +264,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
 
             // WHEN
-            val backConsumed = viewModel.onBackPressed()
+            viewModel.onBackPressed()
 
             // THEN
-            assertThat(backConsumed).isTrue()
+            assertThat(viewModel.event.value).isNotEqualTo(ExitWithResult(FAILED))
         }
 
     @Test
