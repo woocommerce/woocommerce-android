@@ -808,7 +808,7 @@
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended.</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s %%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
 
     <!--
         Notifications
