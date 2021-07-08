@@ -16,6 +16,7 @@
             android:id="@+id/viewPager"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_150"
             app:layout_constraintBottom_toTopOf="@id/viewPagerIndicator"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -25,8 +26,8 @@
             android:id="@+id/viewPagerIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/buttonSkip"
             android:layout_marginBottom="@dimen/major_150"
+            app:layout_constraintBottom_toTopOf="@id/buttonSkip"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

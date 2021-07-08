@@ -20,6 +20,7 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/major_150"
         android:importantForAccessibility="no"
         tools:src="@drawable/img_wc_ship_payment" />
 
@@ -28,8 +29,6 @@
         style="@style/Woo.TextView.Body2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_150"
-        android:layout_marginBottom="@dimen/major_150"
         android:gravity="center"
         tools:layout_width="200dp"
         tools:text="@string/card_reader_tutorial_connected_detail" />
