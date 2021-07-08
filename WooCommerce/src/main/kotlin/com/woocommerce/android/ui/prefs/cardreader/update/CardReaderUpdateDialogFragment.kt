@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
+import android.content.DialogInterface
+import android.content.DialogInterface.OnKeyListener
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +14,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogCardReaderUpdateBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.SuppressOnBackPressed
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -24,6 +26,15 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog!!.setCanceledOnTouchOutside(false)
         dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog!!.setOnKeyListener(object : OnKeyListener {
+            override fun onKey(dialog: DialogInterface?, keyCode: Int, event: KeyEvent?): Boolean {
+                return if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    return viewModel.onBackPressed()
+                } else {
+                    false
+                }
+            }
+        })
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -40,7 +51,6 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
             viewLifecycleOwner,
             { event ->
                 when (event) {
-                    is SuppressOnBackPressed -> dialog?.setCancelable(false)
                     is ExitWithResult<*> -> navigateBackWithResult(
                         KEY_READER_UPDATE_RESULT,
                         event.data as UpdateResult
@@ -56,12 +66,17 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
                 with(binding) {
                     UiHelpers.setTextOrHide(updateReaderTitleTv, state.title)
                     UiHelpers.setTextOrHide(updateReaderDescriptionTv, state.description)
-                    UiHelpers.updateVisibility(updateReaderProgressGroup, state.showProgress)
+                    UiHelpers.setTextOrHide(updateReaderProgressWarningTv, state.cancelWarning)
+                    UiHelpers.setTextOrHide(updateReaderProgressDescriptionTv, state.progressText)
+                    UiHelpers.updateVisibility(updateReaderProgressGroup, state.progress != null)
                     UiHelpers.setTextOrHide(updateReaderPrimaryActionBtn, state.primaryButton?.text)
                     updateReaderPrimaryActionBtn.setOnClickListener { state.primaryButton?.onActionClicked?.invoke() }
                     UiHelpers.setTextOrHide(updateReaderSecondaryActionBtn, state.secondaryButton?.text)
                     updateReaderSecondaryActionBtn.setOnClickListener {
                         state.secondaryButton?.onActionClicked?.invoke()
+                    }
+                    state.progress?.let {
+                        updateReaderPb.progress = it
                     }
                 }
             }
