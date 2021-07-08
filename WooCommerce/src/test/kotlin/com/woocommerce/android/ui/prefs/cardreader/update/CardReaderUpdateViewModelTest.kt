@@ -314,7 +314,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // WHEN
             viewModel.onBackPressed()
 
-
             // THEN
             assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
         }
