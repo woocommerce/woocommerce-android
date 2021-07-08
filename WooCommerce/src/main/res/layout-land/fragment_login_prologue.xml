@@ -45,7 +45,7 @@
         app:layout_constraintWidth_percent="0.5"
         tools:background="@color/blue_dark" />
 
-    <com.woocommerce.android.ui.login.LoginPrologueViewPagerIndicator
+    <com.woocommerce.android.widgets.WCViewPagerIndicator
         android:id="@+id/viewPagerIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
