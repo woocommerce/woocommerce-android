@@ -79,7 +79,8 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ATTRIBUTE_LIST -> {
-                viewModel.onAttributeListDoneButtonClicked()
+                AttributeListFragmentDirections.actionAttributeListFragmentToAttributesAddedFragment()
+                    .apply { findNavController().navigateSafely(this) }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -107,16 +108,22 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitProductAttributeList -> onExitProductAttributeList(event.variationCreated)
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is ExitProductAttributeList -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
-        viewModel.attributeList.observe(viewLifecycleOwner, Observer {
-            showAttributes(it)
-        })
+        viewModel.attributeList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showAttributes(it)
+            }
+        )
 
         viewModel.attributeListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isCreatingVariationDialogShown?.takeIfNotEqualTo(old?.isCreatingVariationDialogShown) {
@@ -137,15 +144,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked(ExitProductAttributeList())
         return false
-    }
-
-    private fun onExitProductAttributeList(variationCreated: Boolean) {
-        if (variationCreated) {
-            AttributeListFragmentDirections.actionAttributeListFragmentToProductDetailFragment()
-                .apply { findNavController().navigateSafely(this) }
-        } else {
-            findNavController().navigateUp()
-        }
     }
 
     private fun showAttributes(attributes: List<ProductAttribute>) {

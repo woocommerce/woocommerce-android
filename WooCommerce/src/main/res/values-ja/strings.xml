@@ -1,11 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-28 09:54:04+0000
+Translation-Revision-Date: 2021-06-24 15:59:19+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="empty_order_list_message">ストアの売り上げを伸ばす方法を見つけましょう。</string>
+    <string name="empty_product_message">今すぐ販売を開始するには、最初の商品をストアに追加してください。</string>
+    <string name="empty_product_add_product_button">商品を追加</string>
+    <string name="variable_product_attributes">バリエーション属性</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">モバイルデバイスの Bluetooth をオンにする</string>
+    <string name="card_reader_detail_learn_more">モバイルデバイスや注文用カードリーダーでの支払いの受領方法について&lt;a href=\"https://woocommerce.com/payments/\"&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_fetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
+    <string name="card_reader_payment_email_client_not_found">メールクライアントアプリを検出できません</string>
+    <string name="card_reader_payment_receipt_email_content">ご購入ありがとうございます。 お支払いのレシートは次のリンクで確認できます: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">%s のレシート</string>
+    <string name="card_reader_payment_description">%s の %s のオンライン支払い</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">注文を更新する</string>
+    <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
+    <string name="shipping_label_address_phone_invalid">カスタムフォームには、10桁の電話番号を入力してください</string>
+    <string name="shipping_label_address_phone_required">この配送にはカスタムフォームが必要なため、電話番号が必須です</string>
+    <string name="shipping_label_create_customs_done">カスタムフォームの入力が完了しました</string>
+    <string name="print_receipt_label_info_step_7">デバイスからの印刷で問題が生じている場合は、プリンターのカスタマーサポートにお問い合わせください。</string>
+    <string name="print_receipt_label_info_step_6">印刷できない場合はレシートを PDF として保存し、メールで送信して別のデバイスから印刷できます。</string>
+    <string name="print_receipt_label_info_step_5">必要に応じて用紙サイズを調整し、レシートの印刷準備が整ったら「印刷」を選択します。</string>
+    <string name="print_receipt_label_info_step_4">プロンプトが表示されたら、プリンターをモバイルにペアリングして接続します。</string>
+    <string name="print_receipt_label_info_step_3">支払い完了後に「レシートを印刷」を選択する場合、「PDF として印刷」ではなく「すべてのプリンター」を選択して、新しいプリンターを検索します。</string>
+    <string name="print_receipt_label_info_step_2">プリンターの Bluetooth または WiFi 接続を有効にします。</string>
+    <string name="print_receipt_label_info_step_1">プリンターに印刷サービスプラグインがインストールされていることを確認します。</string>
+    <string name="orderdetail_printing_instructions_button">デバイスでのレシートの印刷について詳しく見る</string>
+    <string name="product_create_attribute_helper">バリエーションを作るには、最初にその属性 (「色」、「サイズ」など) を設定する必要があります</string>
+    <string name="product_variation_single_count">1個のバリエーション</string>
+    <string name="product_variation_multiple_count">%1$s個のバリエーション</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s追跡</string>
+    <string name="card_reader_software_update_in_progress_title">Reader のソフトウェアを更新しています</string>
+    <string name="card_reader_software_update_title">ソフトウェア更新</string>
+    <string name="card_reader_software_update_description">カードリーダーのソフトウェアを更新して順調な稼働が続くようにする必要があります。 今すぐ更新しますか ? </string>
+    <string name="card_reader_detail_connected_update_failed">Reader のソフトウェア更新が失敗しました。 後ほど、もう一度お試しください</string>
+    <string name="card_reader_detail_connected_update_success">Reader のソフトウェアが更新されました</string>
+    <string name="card_reader_detail_connected_update_check_failed">ソフトウェアのバージョン更新チェックが失敗しました。 後ほど、もう一度お試しください</string>
+    <string name="card_reader_detail_connected_reader_unknown">不明なカードリーダー名</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Reader の接続を解除</string>
+    <string name="card_reader_detail_connected_enforced_update_software">引き続き支払いを受け入れるには、Reader のソフトウェアを更新してください</string>
+    <string name="card_reader_detail_connected_update_software">Reader のソフトウェアを更新する</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%%バッテリー</string>
+    <string name="card_reader_detail_connected_header">Reader を接続しました</string>
+    <string name="card_reader_details_not_connected_connect_button_label">カードリーダーを接続</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">カードリーダーをオンにしてモバイルデバイスの横に配置する</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">カードリーダーが充電されていることを確認する</string>
+    <string name="card_reader_detail_not_connected_header">カードリーダーを接続</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">カードが拒否されました</string>
+    <string name="card_reader_payment_failed_card_declined_state">カードが拒否されました。 別のカードで再度お試しください。</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Reader に接続しています</string>
+    <string name="card_reader_payment_collect_payment_loading_header">支払いを受け取る準備をしています</string>
+    <string name="shipping_label_customs_value_zero_error">申告額はゼロよりも大きくする必要があります</string>
+    <string name="shipping_label_customs_weight_zero_error">重量はゼロよりも大きくする必要があります</string>
+    <string name="shipping_label_customs_required_field">このフィールドは必須です</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">この荷物にかける必要がある制限の種類について説明してください。</string>
+    <string name="shipping_label_customs_contents_type_description_missing">この荷物に含まれている商品の種類について説明してください。</string>
+    <string name="shipping_label_customs_weight_hint">重量 (%1$s/ 個)</string>
+    <string name="shipping_label_customs_value_hint">価値 (%1$s/ 個)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">HS コード番号に関する%1$s</string>
+    <string name="shipping_label_customs_learn_more_itn">国内取引番号 (ITN) に関する%1$s</string>
+    <string name="shipping_label_customs_line_item">カスタムライン%1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">その他</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">検疫 / 植物検疫検査</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">検疫</string>
+    <string name="shipping_label_customs_restriction_type_none">なし</string>
+    <string name="shipping_label_customs_contents_type_other">その他</string>
+    <string name="shipping_label_customs_contents_type_sample">サンプル</string>
+    <string name="shipping_label_customs_contents_type_gifts">贈り物</string>
+    <string name="shipping_label_customs_contents_type_documents">文書</string>
+    <string name="shipping_label_customs_contents_type_merchandise">商品</string>
+    <string name="shipping_label_customs_origin_country_explanation">商品製造国または商品の組み立てが行われた国</string>
+    <string name="shipping_label_customs_origin_country_hint">原産国</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">6桁の HS コードが必要です</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS コード番号 (任意)</string>
+    <string name="shipping_label_customs_item_description_hint">説明</string>
+    <string name="shipping_label_customs_package_content">荷物の中身</string>
+    <string name="shipping_label_customs_itn_required_country">%1$sへの出荷には ITN が必要です。</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">出荷品目の価値が HS コードあたり $2,500を超える荷物の出荷には ITN が必要です</string>
+    <string name="shipping_label_customs_itn_invalid_format">無効なフォーマットです</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">制限の種類</string>
+    <string name="shipping_label_customs_contents_type_other_hint">中身の商品の種類</string>
+    <string name="shipping_label_customs_restriction_type_hint">制限の種類</string>
+    <string name="shipping_label_customs_contents_type_hint">中身の商品の種類</string>
+    <string name="shipping_label_customs_return_to_sender">荷物を配達できなかった場合、荷送人に差し戻す</string>
+    <string name="shipping_label_rate_insurance_up_to">%s以下</string>
+    <string name="order_fulfill_email_info">この設定を有効にした場合、注文完了時に顧客に確認メールが届きます</string>
+    <string name="order_fulfill_title">注文を確認</string>
+    <string name="order_fulfill_completed">🎉の注文が完了しました。</string>
+    <string name="user_access_verifying">権限グループを認証中…</string>
+    <string name="user_role_access_error_retry">ユーザー権限グループが正しくありません</string>
+    <string name="user_role_access_error_link">権限グループと権限の詳細</string>
+    <string name="user_role_access_error_msg">このアプリでサポートされているユーザー権限グループは、管理者とショップマネージャーのみです。 自分の権限グループを更新するには、ストア所有者に連絡してください。</string>
+    <string name="login_prologue_label_reviews">商品レビューを監視、承認</string>
+    <string name="login_prologue_label_products">どこからでも新しい商品を編集、追加</string>
+    <string name="login_prologue_label_orders">外出先でもストアを管理</string>
+    <string name="login_prologue_label_analytics">セールスと売れ行きが好調な商品を追跡する</string>
+    <string name="skip">スキップ</string>
     <string name="product_type_external_title">外部商品</string>
     <string name="product_type_grouped_title">グループ化された商品</string>
     <string name="product_type_variable_title">バリエーションのある商品</string>
@@ -78,14 +173,12 @@ Language: ja_JP
     <string name="shipping_label_selected_rates_description">%s件の評価が選択済み</string>
     <string name="shipping_label_rate_included_options_signature_required_free">無料の署名要件を利用可能</string>
     <string name="shipping_label_rate_included_options_free_pickup">無料の受け取りを利用可能</string>
-    <string name="shipping_label_rate_included_options_insurance">保険 (最大%s)</string>
+    <string name="shipping_label_rate_included_options_insurance">保険 (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">追跡</string>
     <string name="shipping_label_rate_included_options">含む %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">成年の署名が必要 (%s)</string>
     <string name="shipping_label_rate_option_signature_required">署名が必要 (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">送料無料</string>
-    <string name="shipping_label_shipping_method_local_pickup">店頭渡し</string>
-    <string name="shipping_label_shipping_method_flat_rate">定額送料</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">配送料としてお客様から %1$s (%2$s) の支払いがありました</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">配送料としてお客様から %2$s の %1$s の支払いがありました</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce で配送ラベルを購入すると、郵便局の価格と比べて5%～40% お得です。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  サービスの割引はどのくらいですか ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">配送オプションの読み込みでエラーが発生しました</string>
@@ -132,7 +225,7 @@ Language: ja_JP
     <string name="shipping_label_single_package_total_weight">荷物の総重量: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">カスタム荷物</string>
     <string name="shipping_label_package_details_fetch_products_error">商品を取得できません</string>
-    <string name="shipping_label_missing_data_snackbar_message">いくつかの必須フィールドが空白になっています。</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">いくつかの必須フィールドが空白になっています。</string>
     <string name="shipping_label_package_details_weight_error">無効な重量</string>
     <string name="shipping_label_package_selector_title">選択済みの荷物</string>
     <string name="shipping_label_packages_loading_message">しばらくお待ちください…</string>
@@ -542,7 +635,6 @@ Language: ja_JP
     <string name="empty_review_list_message">ストアに対する高品質な製品レビューを取得する</string>
     <string name="empty_review_list_title">最初のレビューを受け取る</string>
     <string name="empty_order_list_all_processed">注文がすべて処理されました</string>
-    <string name="empty_order_list_message">新しい注文が入ると通知が届きます。それまでの間、ストアの売り上げを伸ばす方法を見つけましょう。</string>
     <string name="empty_order_list_title">最初の注文を待っています</string>
     <string name="share_your_store_message">連絡先を使用してソーシャルメディアやメールでストアを紹介する</string>
     <string name="get_the_word_out">情報を広める</string>
@@ -575,7 +667,7 @@ Language: ja_JP
     <string name="order_refunds_select_quantity">数量を選択</string>
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
-    <string name="order_refunds_item_description">各%d x %s</string>
+    <string name="order_refunds_item_description">各%s x %s</string>
     <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>
@@ -1320,7 +1412,6 @@ Language: ja_JP
     <string name="login_avatar_content_description">自分のプロフィール写真</string>
     <string name="login_connected_store">連携ストア</string>
     <string name="login_configure_link">%s設定手順%sを参照してください。</string>
-    <string name="login_prologue_banner">注文を管理し、売り上げをトラッキングし、ストアのアクティビティをリアルタイムのアラートでモニターします。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>

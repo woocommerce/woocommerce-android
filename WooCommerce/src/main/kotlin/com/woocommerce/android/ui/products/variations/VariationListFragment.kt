@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products.variations
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
@@ -44,7 +44,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
+class VariationListFragment :
+    BaseFragment(R.layout.fragment_variation_list),
     BackPressListener,
     OnLoadMoreListener {
     companion object {
@@ -108,9 +109,11 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
 
         binding.variationList.layoutManager = layoutManager
         binding.variationList.itemAnimator = null
-        binding.variationList.addItemDecoration(AlignedDividerDecoration(
-            requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
-        ))
+        binding.variationList.addItemDecoration(
+            AlignedDividerDecoration(
+                requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
+            )
+        )
 
         binding.variationListRefreshLayout.apply {
             scrollUpChild = binding.variationList
@@ -151,20 +154,26 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
             }
         }
 
-        viewModel.variationList.observe(viewLifecycleOwner, Observer {
-            showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
-            requireActivity().invalidateOptionsMenu()
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowVariationDetail -> openVariationDetail(event.variation)
-                is ShowAddAttributeView -> openAddAttributeView()
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
-                is Exit -> activity?.onBackPressed()
+        viewModel.variationList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
+                requireActivity().invalidateOptionsMenu()
             }
-        })
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowVariationDetail -> openVariationDetail(event.variation)
+                    is ShowAddAttributeView -> openAddAttributeView()
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
+                    is Exit -> activity?.onBackPressed()
+                }
+            }
+        )
     }
 
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
@@ -223,7 +232,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     }
 
     private fun handleEmptyViewChanges(isEmptyViewVisible: Boolean) {
-        binding.variationInfoContainer.visibility = if (isEmptyViewVisible) GONE else VISIBLE
+        binding.variationInfoContainer.visibility = if (isEmptyViewVisible) INVISIBLE else VISIBLE
         binding.firstVariationView.updateVisibility(
             shouldBeVisible = isEmptyViewVisible,
             showButton = true

@@ -53,16 +53,16 @@ class MainPresenterTest {
     @Before
     fun setup() {
         mainPresenter = spy(
-                MainPresenter(
-                        dispatcher,
-                        accountStore,
-                        siteStore,
-                        wooCommerceStore,
-                        notificationStore,
-                        selectedSite,
-                        productImageMap,
-                        appPrefs
-                )
+            MainPresenter(
+                dispatcher,
+                accountStore,
+                siteStore,
+                wooCommerceStore,
+                notificationStore,
+                selectedSite,
+                productImageMap,
+                appPrefs
+            )
         )
         mainPresenter.takeView(mainContractView)
         doReturn(SiteModel()).whenever(selectedSite).get()
@@ -124,10 +124,12 @@ class MainPresenterTest {
         mainPresenter.fetchUnfilledOrderCount()
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
-        mainPresenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
-            causeOfChange = FETCH_ORDERS_COUNT
-            canLoadMore = true
-        })
+        mainPresenter.onOrderChanged(
+            OnOrderChanged(totalOrders, filter).apply {
+                causeOfChange = FETCH_ORDERS_COUNT
+                canLoadMore = true
+            }
+        )
 
         verify(mainContractView).showOrderBadge(totalOrders)
     }
@@ -140,9 +142,11 @@ class MainPresenterTest {
         mainPresenter.fetchUnfilledOrderCount()
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
-        mainPresenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
-            causeOfChange = FETCH_ORDERS_COUNT
-        })
+        mainPresenter.onOrderChanged(
+            OnOrderChanged(totalOrders, filter).apply {
+                causeOfChange = FETCH_ORDERS_COUNT
+            }
+        )
 
         verify(mainContractView).hideOrderBadge()
     }
@@ -155,10 +159,12 @@ class MainPresenterTest {
         mainPresenter.fetchUnfilledOrderCount()
         verify(dispatcher, times(1)).dispatch(any<Action<FetchOrdersCountPayload>>())
 
-        mainPresenter.onOrderChanged(OnOrderChanged(totalOrders, filter).apply {
-            causeOfChange = FETCH_ORDERS_COUNT
-            error = OrderError()
-        })
+        mainPresenter.onOrderChanged(
+            OnOrderChanged(totalOrders, filter).apply {
+                causeOfChange = FETCH_ORDERS_COUNT
+                error = OrderError()
+            }
+        )
 
         verify(mainContractView).hideOrderBadge()
     }

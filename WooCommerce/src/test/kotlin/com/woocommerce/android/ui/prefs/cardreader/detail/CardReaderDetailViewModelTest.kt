@@ -5,6 +5,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
@@ -32,6 +34,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.Initializing))
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
+
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `when view model init with connected state should emit loading view state`() {
@@ -231,6 +235,70 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given up to date software, when on update result successful, then connected state without update emitted`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            initConnectedState()
+
+            // WHEN
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+        }
+    }
+
+    @Test
+    fun `given software update available, when on update result successful, then connected without update emitted`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+
+            // WHEN
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+        }
+    }
+
+    @Test
+    fun `given software update check failed, when on update result successful, then connected state with snackbar`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
+
+            // WHEN
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+            assertThat(events[0])
+                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+        }
+    }
+
+    @Test
     fun `when on update result with failed should send snackbar event with failed text`() {
         // GIVEN
         val viewModel = createViewModel()
@@ -283,6 +351,36 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.viewStateData.value).isInstanceOf(NotConnectedState::class.java)
+        }
+
+    @Test
+    fun `when connect button clicked should track event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as NotConnectedState).onPrimaryActionClicked.invoke()
+
+            // THEN
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_TAPPED)
+        }
+
+    @Test
+    fun `when disconnect button clicked should track event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            whenever(cardReaderManager.disconnectReader()).thenReturn(true)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+
+            // THEN
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         }
 
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {
@@ -347,7 +445,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     private fun createViewModel() = CardReaderDetailViewModel(
         cardReaderManager,
-        mock(),
+        tracker,
         SavedStateHandle()
     )
 

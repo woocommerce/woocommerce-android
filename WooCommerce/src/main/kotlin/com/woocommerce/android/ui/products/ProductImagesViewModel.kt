@@ -147,8 +147,8 @@ class ProductImagesViewModel @Inject constructor(
         when (val productImagesState = viewState.productImagesState) {
             is Dragging -> {
                 viewState = viewState.copy(
-                        productImagesState = Browsing,
-                        images = productImagesState.initialState
+                    productImagesState = Browsing,
+                    images = productImagesState.initialState
                 )
             }
             Browsing -> {
@@ -160,14 +160,16 @@ class ProductImagesViewModel @Inject constructor(
     private fun onExit() {
         when {
             ProductImagesService.isUploadingForProduct(navArgs.remoteId) -> {
-                triggerEvent(ShowDialog(
-                    messageId = string.discard_images_message,
-                    positiveButtonId = string.discard,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
-                        triggerEvent(ExitWithResult(originalImages))
-                    }
-                ))
+                triggerEvent(
+                    ShowDialog(
+                        messageId = string.discard_images_message,
+                        positiveButtonId = string.discard,
+                        positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                            ProductImagesService.cancel()
+                            triggerEvent(ExitWithResult(originalImages))
+                        }
+                    )
+                )
             }
             else -> {
                 triggerEvent(ExitWithResult(images))
@@ -188,7 +190,7 @@ class ProductImagesViewModel @Inject constructor(
 
     private fun updateDragAndDropDescriptionStates() {
         viewState = viewState.copy(
-                isDragDropDescriptionVisible = viewState.productImagesState is Dragging || images.size > 1
+            isDragDropDescriptionVisible = viewState.productImagesState is Dragging || images.size > 1
         )
     }
 

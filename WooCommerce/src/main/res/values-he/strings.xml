@@ -1,11 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-26 14:54:05+0000
+Translation-Revision-Date: 2021-06-23 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="empty_order_list_message">כדאי לראות איך אפשר להגדיל את המכירות בחנות שלך.</string>
+    <string name="empty_product_message">אפשר להתחיל למכור היום על ידי הוספה של המוצר הראשון לחנות שלך.</string>
+    <string name="empty_product_add_product_button">להוסיף מוצר</string>
+    <string name="variable_product_attributes">מאפייני סוגים</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">יש להפעיל את חיבור ה-Bluetooth של המכשיר הנייד</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;למידע נוסף&lt;/a&gt; על קבלת תשלומים באמצעות המכשיר הנייד והזמנה של קוראי כרטיסים</string>
+    <string name="card_reader_fetching_order_failed">שגיאה בהבאת ההזמנה. ייתכן שמצב ההזמנה באפליקציה לא מעודכן.</string>
+    <string name="card_reader_payment_email_client_not_found">לא ניתן לאתר את האפליקציה של שירות האימייל שלך</string>
+    <string name="card_reader_payment_receipt_email_content">תודה שרכשת אצלנו! אפשר למצור את הקבלה עבור התשלום בקישור הבא: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">הקבלה שלך מאת %s</string>
+    <string name="card_reader_payment_description">תשלום מקוון להזמנה %s עבור %s</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">מרענן את ההזמנה</string>
+    <string name="card_reader_payment_fetch_order_loading_header">מעדכן את מצב האפליקציה</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">הלקוח בחר את ⁦%1$s⁩</string>
+    <string name="shipping_label_address_phone_invalid">לטופסי מכס נדרש מספר טלפון בן 10 ספרות</string>
+    <string name="shipping_label_address_phone_required">מספר טלפון נדרש מאחר שלמשלוח נדרש טופס מכס</string>
+    <string name="shipping_label_create_customs_done">טופס המכס הושלם</string>
+    <string name="print_receipt_label_info_step_7">אם יש לך בעיה בהדפסה מהמכשיר, יש ליצור קשר עם שירות התמיכה של המדפסת.</string>
+    <string name="print_receipt_label_info_step_6">אם אפשרות ההדפסה לא זמינה, אפשר תמיד לשמור את הקבלה כקובץ PDF ולשלוח אותה באימייל כדי להדפיס אותה ממכשיר אחר.</string>
+    <string name="print_receipt_label_info_step_5">יש להתאים את גודל הנייר כנדרש ולבחור באפשרות \'Print\' (להדפיס) כאשר ברצונך להדפיס את הקבלה.</string>
+    <string name="print_receipt_label_info_step_4">יש לשייך ולחבר את המדפסת למכשיר הנייד כאשר מופיעה הודעה לעשות זאת.</string>
+    <string name="print_receipt_label_info_step_3">לאחר הבחירה ב\'Print receipt\' (להדפיס קבלה) אחרי קבלת התשלום, יש להחליף את האפשרות \'Save as PDF\' (לשמור כקובץ PDF) באפשרות \'All printers\' (כל המדפסות) ולחפש את המדפסת החדשה.</string>
+    <string name="print_receipt_label_info_step_2">יש להפעיל את חיבור ה-Bluetooth או ה-Wi-Fi למדפסת.</string>
+    <string name="print_receipt_label_info_step_1">יש לוודא שהתוסף Print Service (שירות הדפסה) מותקן למדפסת שלך.</string>
+    <string name="orderdetail_printing_instructions_button">לקבלת מידע נוסף על הדפסת קבלות באמצעות המכשיר שלך</string>
+    <string name="product_create_attribute_helper">כדי ליצור סוג, עליך קודם כל להגדיר את המאפיינים שלו (למשל, \'צבע\', \'מידה\')</string>
+    <string name="product_variation_single_count">סוג אחד</string>
+    <string name="product_variation_multiple_count">⁦%1$s⁩ סוגים</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">מבצע מעקב של %s</string>
+    <string name="card_reader_software_update_in_progress_title">מעדכן את התוכנה של הקורא שלך</string>
+    <string name="card_reader_software_update_title">עדכון תוכנה</string>
+    <string name="card_reader_software_update_description">עליך לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח את הפעילות התקינה שלה. האם ברצונך לעדכן כעת?</string>
+    <string name="card_reader_detail_connected_update_failed">העדכון של תוכנת הקורא נכשל. יש לנסות שוב מאוחר יותר</string>
+    <string name="card_reader_detail_connected_update_success">עדכון תוכנה של הקורא</string>
+    <string name="card_reader_detail_connected_update_check_failed">נכשלה הבדיקה של עדכון הגרסה של התוכנה. יש לנסות שוב מאוחר יותר</string>
+    <string name="card_reader_detail_connected_reader_unknown">שם לא מזוהה לקורא הכרטיסים</string>
+    <string name="card_reader_detail_connected_disconnect_reader">לנתק את הקורא</string>
+    <string name="card_reader_detail_connected_enforced_update_software">עליך לעדכן את התוכנה של הקורא כדי להמשיך לקבל תשלומים</string>
+    <string name="card_reader_detail_connected_update_software">לעדכן את התוכנה של הקורא</string>
+    <string name="card_reader_detail_connected_battery_percentage">סוללה %s%%</string>
+    <string name="card_reader_detail_connected_header">קורא מחובר</string>
+    <string name="card_reader_details_not_connected_connect_button_label">לחבר קורא כרטיסים</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">יש להפעיל את קורא הכרטיסים ולמקם אותו ליד המכשיר הנייד</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">יש לוודא שקורא הכרטיסים הוטען</string>
+    <string name="card_reader_detail_not_connected_header">לחבר את קורא הכרטיסים שלך</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">הכרטיס נדחה</string>
+    <string name="card_reader_payment_failed_card_declined_state">הכרטיס נדחה. יש לנסות שוב עם כרטיס שונה.</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">מתחבר אל הקורא</string>
+    <string name="card_reader_payment_collect_payment_loading_header">מתכונן לגביית התשלום</string>
+    <string name="shipping_label_customs_value_zero_error">הסכום המוצהר חייב להיות מעל אפס (0)</string>
+    <string name="shipping_label_customs_weight_zero_error">המשקל חייב להיות מעל אפס (0)</string>
+    <string name="shipping_label_customs_required_field">זהו שדה חובה</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">עליך לתאר איזה סוג של הגבלות חייבות להיות מוחלות על החבילה הזאת.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">עליך לתאר איזה סוג של סחורות החבילה הזאת מכילה.</string>
+    <string name="shipping_label_customs_weight_hint">משקל (⁦%1$s⁩ ליחידה)</string>
+    <string name="shipping_label_customs_value_hint">ערך (⁦%1$s⁩ ליחידה)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">⁦%1$s⁩ על מספר HS Tariff</string>
+    <string name="shipping_label_customs_learn_more_itn">⁦%1$s⁩ על מספר Internal Transaction Number</string>
+    <string name="shipping_label_customs_line_item">שורה מותאמת אישית ⁦%1$d⁩</string>
+    <string name="shipping_label_customs_restriction_type_other">אחר</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">בדיקת תברואה / בדיקה פיטוסניטרית</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">בידוד</string>
+    <string name="shipping_label_customs_restriction_type_none">ללא</string>
+    <string name="shipping_label_customs_contents_type_other">אחר</string>
+    <string name="shipping_label_customs_contents_type_sample">דוגמה</string>
+    <string name="shipping_label_customs_contents_type_gifts">מתנות</string>
+    <string name="shipping_label_customs_contents_type_documents">מסמכים</string>
+    <string name="shipping_label_customs_contents_type_merchandise">סחורה רשמית</string>
+    <string name="shipping_label_customs_origin_country_explanation">המדינה שבה המוצר נוצר או הורכב</string>
+    <string name="shipping_label_customs_origin_country_hint">מדינת המקור</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">מספר התעריף חייב להיות בן שש ספרות</string>
+    <string name="shipping_label_customs_hs_tariff_hint">מספר HS Tariff (אופציונלי)</string>
+    <string name="shipping_label_customs_item_description_hint">תיאור</string>
+    <string name="shipping_label_customs_package_content">תוכן החבילה</string>
+    <string name="shipping_label_customs_itn_required_country">יש לציין ITN למשלוחים אל ⁦%1$s⁩.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">יש לציין ITN למשלוח פריטים שערכם גדול מ-2,500 $ למספר תעריף</string>
+    <string name="shipping_label_customs_itn_invalid_format">פורמט לא חוקי</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">פרטי הגבלה</string>
+    <string name="shipping_label_customs_contents_type_other_hint">פרטי תכולה</string>
+    <string name="shipping_label_customs_restriction_type_hint">סוג הגבלה</string>
+    <string name="shipping_label_customs_contents_type_hint">סוג תכולה</string>
+    <string name="shipping_label_customs_return_to_sender">להחזיר לשולח אם לא ניתן לשלוח את החבילה</string>
+    <string name="shipping_label_rate_insurance_up_to">עד %s</string>
+    <string name="order_fulfill_email_info">אם הפעלת את ההגדרה הזאת, הלקוח יקבל אישור באימייל כאשר ההזמנה הושלמה</string>
+    <string name="order_fulfill_title">לבדוק את ההזמנה</string>
+    <string name="order_fulfill_completed">ההזמנה 🎉 הושלמה!</string>
+    <string name="user_access_verifying">מאמת תפקיד…</string>
+    <string name="user_role_access_error_retry">לא הוקצה לך תפקיד המשתמש המתאים</string>
+    <string name="user_role_access_error_link">למידע נוסף על תפקידים והרשאות</string>
+    <string name="user_role_access_error_msg">האפליקציה הזאת תומכת רק בתפקידי משתמש של \'מנהל מערכת\' ו\'מנהל חנות\'. יש ליצור קשר עם בעלי החנות כדי לשדרג את התפקיד שלך.</string>
+    <string name="login_prologue_label_reviews">לעקוב אחר ביקורות על מוצרים ולאשר אותן</string>
+    <string name="login_prologue_label_products">לערוך ולהוסיף מוצרים חדשים מכל מקום</string>
+    <string name="login_prologue_label_orders">לנהל את ההזמנות בחנות שלך מכל מקום</string>
+    <string name="login_prologue_label_analytics">לעקוב אחרי מכירות מוצרים ואחרי מוצרים עם ביצועים מובילים</string>
+    <string name="skip">לדלג</string>
     <string name="product_type_external_title">מוצר חיצוני</string>
     <string name="product_type_grouped_title">קבוצת מוצרים</string>
     <string name="product_type_variable_title">מוצר עם סוגים</string>
@@ -78,14 +173,12 @@ Language: he_IL
     <string name="shipping_label_selected_rates_description">נבחרו %s תעריפים</string>
     <string name="shipping_label_rate_included_options_signature_required_free">זכאי לדרישת חתימה בחינם</string>
     <string name="shipping_label_rate_included_options_free_pickup">זכאי לאיסוף בחינם</string>
-    <string name="shipping_label_rate_included_options_insurance">ביטוח (עד %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">ביטוח (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">עוקב</string>
     <string name="shipping_label_rate_included_options">כולל %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">נדרשת חתימה של אדם מבוגר (%s)</string>
     <string name="shipping_label_rate_option_signature_required">נדרשת חתימה (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">משלוח חינם</string>
-    <string name="shipping_label_shipping_method_local_pickup">איסוף מקומי</string>
-    <string name="shipping_label_shipping_method_flat_rate">תעריף קבוע</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">הלקוח שילם ⁦%1$s⁩ (⁦%2$s⁩) על משלוח</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">הלקוח שילם ⁦%1$s⁩ מתוך ⁦%2$s⁩ על משלוח</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">כאשר רוכשים תוויות משלוח עם WooCommerce, אפשר לחסוך בין 5% ל-40% לעומת תעריפי המשלוח דרך הדואר.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">מהי  הנחת השירותים של WooCommerce?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">אירעה שגיאה בטעינת אפשרויות המשלוח</string>
@@ -132,7 +225,7 @@ Language: he_IL
     <string name="shipping_label_single_package_total_weight">משקל החבילה הכולל: ⁦%1$s⁩ %2$s</string>
     <string name="shipping_label_packages_custom_section_title">חבילות מותאמות אישית</string>
     <string name="shipping_label_package_details_fetch_products_error">אין אפשרות להביא מוצרים</string>
-    <string name="shipping_label_missing_data_snackbar_message">חלק מהשדות הנדרשים ריקים.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">חלק מהשדות הנדרשים ריקים.</string>
     <string name="shipping_label_package_details_weight_error">משקל לא חוקי</string>
     <string name="shipping_label_package_selector_title">חבילה שנבחרה</string>
     <string name="shipping_label_packages_loading_message">רק רגע…</string>
@@ -542,7 +635,6 @@ Language: he_IL
     <string name="empty_review_list_message">לקבל ביקורות איכותיות על מוצר בחנות שלך</string>
     <string name="empty_review_list_title">לקבל את הביקורות הראשונות שלך</string>
     <string name="empty_order_list_all_processed">כל ההזמנות הושלמו</string>
-    <string name="empty_order_list_message">אנחנו נודיע לך כאשר תתקבל הזמנה חדשה. בינתיים, מומלץ לבדוק כיצד אפשר להגדיל את המכירות בחנות שלך.</string>
     <string name="empty_order_list_title">ממתין להזמנה הראשונה שלך</string>
     <string name="share_your_store_message">לשתף את החנות שלך ברשתות החברתיות ועם אנשי הקשר שלך באימייל</string>
     <string name="get_the_word_out">כדאי להפיץ את הבשורה</string>
@@ -575,7 +667,7 @@ Language: he_IL
     <string name="order_refunds_select_quantity">יש לבחור את הכמות</string>
     <string name="order_refunds_shipping_refund">החזר כספי על דמי המשלוח</string>
     <string name="order_refunds_products_refund">החזר כספי על המוצרים</string>
-    <string name="order_refunds_item_description">%d x %s לכל פריט</string>
+    <string name="order_refunds_item_description">%s x %s לכל פריט</string>
     <string name="order_refunds_items_selected">%d פריטים נבחרו</string>
     <string name="order_refunds_items_select_none">לא לבחור בפריטים</string>
     <string name="order_refunds_items_select_all">בחר הכול</string>
@@ -1320,7 +1412,6 @@ Language: he_IL
     <string name="login_avatar_content_description">תמונת הפרופיל שלך</string>
     <string name="login_connected_store">חנות מחוברת</string>
     <string name="login_configure_link">קריאת %sהוראות ההגדרה%s.</string>
-    <string name="login_prologue_banner">ניהול הזמנות, מעקב אחר מכירות ואחר פעילות החנות באמצעות התראות בזמן אמת.</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
     <string name="at_username">‎@‎%s‎</string>
     <string name="enter_site_address">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>

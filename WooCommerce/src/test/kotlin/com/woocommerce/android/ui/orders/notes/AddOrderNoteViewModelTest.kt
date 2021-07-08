@@ -153,10 +153,13 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.onIsCustomerCheckboxChanged(isCustomerNote)
             viewModel.pushOrderNote()
 
-            verify(repository, times(1)).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), argThat {
-                this.note == note
-                this.isCustomerNote == isCustomerNote
-            })
+            verify(repository, times(1)).addOrderNote(
+                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId),
+                argThat {
+                    this.note == note
+                    this.isCustomerNote == isCustomerNote
+                }
+            )
             assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
             assertEquals(R.string.add_order_note_added, (events[0] as ShowSnackbar).message)
             assertThat(events[1]).isInstanceOf(ExitWithResult::class.java)
@@ -203,10 +206,13 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.onIsCustomerCheckboxChanged(isCustomerNote)
             viewModel.pushOrderNote()
 
-            verify(repository, times(1)).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), argThat {
-                this.note == note
-                this.isCustomerNote == isCustomerNote
-            })
+            verify(repository, times(1)).addOrderNote(
+                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId),
+                argThat {
+                    this.note == note
+                    this.isCustomerNote == isCustomerNote
+                }
+            )
             assertThat(event).isInstanceOf(ShowSnackbar::class.java)
             assertEquals(R.string.add_order_note_error, (event as ShowSnackbar).message)
         }

@@ -42,6 +42,21 @@
                 tools:itemCount="2"
                 tools:listitem="@layout/shipping_label_payment_method_list_item" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_first_payment_method_button"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:text="@string/shipping_label_payments_add_first_credit_card"
+                app:icon="@drawable/ic_external"
+                app:iconGravity="textEnd"
+                app:iconPadding="@dimen/minor_100"
+                android:visibility="gone"/>
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/payments_info"
                 android:layout_width="wrap_content"
@@ -69,16 +84,16 @@
                 tools:ignore="RtlSymmetry"
                 tools:text="Email the label purchase receipts to username (username) at user@email.com" />
 
-            <!-- Not supported in M3 -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_payment_method_button"
                 style="@style/Woo.Button.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/major_100"
                 android:text="@string/shipping_label_payments_add_credit_card"
-                android:visibility="gone"
                 app:icon="@drawable/ic_external"
                 app:iconGravity="textEnd"
                 app:iconPadding="@dimen/minor_100" />
@@ -87,9 +102,9 @@
 
     </ScrollView>
 
-    <ProgressBar
-        android:id="@+id/loading_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+    <com.woocommerce.android.widgets.WCEmptyView
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 </FrameLayout>

@@ -76,8 +76,10 @@ class ProductDownloadDetailsFragment :
                 viewModel.onDoneOrUpdateClicked()
 
                 val action = if (navArgs.isEditing) DownloadableFileAction.UPDATED else DownloadableFileAction.ADDED
-                AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
-                    mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value))
+                AnalyticsTracker.track(
+                    Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                    mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value)
+                )
 
                 true
             }
@@ -90,20 +92,23 @@ class ProductDownloadDetailsFragment :
     }
 
     private fun setupObservers(viewModel: ProductDownloadDetailsViewModel) {
-        viewModel.productDownloadDetailsViewStateData.observe(owner = viewLifecycleOwner, observer = { old, new ->
-            new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.getText()) {
-                binding.productDownloadUrl.setText(it)
+        viewModel.productDownloadDetailsViewStateData.observe(
+            owner = viewLifecycleOwner,
+            observer = { old, new ->
+                new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.getText()) {
+                    binding.productDownloadUrl.setText(it)
+                }
+                new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.getText()) {
+                    binding.productDownloadName.setText(it)
+                }
+                new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
+                    showDoneMenuItem(it)
+                }
+                if (new.urlErrorMessage != old?.urlErrorMessage || new.nameErrorMessage != old?.nameErrorMessage) {
+                    updateErrorMessages(new.urlErrorMessage, new.nameErrorMessage)
+                }
             }
-            new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.getText()) {
-                binding.productDownloadName.setText(it)
-            }
-            new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
-                showDoneMenuItem(it)
-            }
-            if (new.urlErrorMessage != old?.urlErrorMessage || new.nameErrorMessage != old?.nameErrorMessage) {
-                updateErrorMessages(new.urlErrorMessage, new.nameErrorMessage)
-            }
-        })
+        )
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -126,8 +131,10 @@ class ProductDownloadDetailsFragment :
                 is DeleteFileEvent -> {
                     parentViewModel.deleteDownloadableFile(event.file)
 
-                    AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
-                        mapOf(KEY_DOWNLOADABLE_FILE_ACTION to DownloadableFileAction.DELETED.value))
+                    AnalyticsTracker.track(
+                        Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                        mapOf(KEY_DOWNLOADABLE_FILE_ACTION to DownloadableFileAction.DELETED.value)
+                    )
 
                     findNavController().navigateUp()
                 }

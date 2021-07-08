@@ -38,8 +38,8 @@ jobs:
           cache-prefix: lint-cache-v1
       - copy-gradle-properties
       - run:
-          name: Checkstyle & klint
-          command: ./gradlew --stacktrace checkstyle ciktlint
+          name: Checkstyle & Detekt
+          command: ./gradlew --stacktrace checkstyle detektAll
       - run:
           name: Lint
           command: ./gradlew --stacktrace lintVanillaRelease
@@ -71,7 +71,7 @@ jobs:
           command: ./gradlew --stacktrace testVanillaRelease
       - run:
           name: Unit tests CardReaderModule
-          command: ./gradlew --stacktrace lib:cardreader:testDebug
+          command: ./gradlew --stacktrace lib:cardreader:testRelease
       - android/save-gradle-cache:
           cache-prefix: tests-cache-v1
       - android/save-test-results

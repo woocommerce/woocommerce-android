@@ -23,13 +23,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     companion object {
         const val TAG = "LoginNoJetpackFragment"
@@ -82,9 +81,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
      * */
     private var mCheckJetpackAvailability: Boolean = false
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    private val viewModel: LoginNoJetpackViewModel by viewModels { viewModelFactory }
+    private val viewModel: LoginNoJetpackViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,17 +114,18 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
 
             val spannable = SpannableString(usernameText)
             spannable.setSpan(
-                    WooClickableSpan {
-                        AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED)
-                        activity?.setResult(Activity.RESULT_CANCELED)
-                        val intent = Intent(activity, LoginActivity::class.java)
-                        LoginMode.WOO_LOGIN_MODE.putInto(intent)
-                        startActivity(intent)
-                        activity?.finish()
-                    },
-                    (usernameText.length - logOutText.length),
-                    usernameText.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                WooClickableSpan {
+                    AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED)
+                    activity?.setResult(Activity.RESULT_CANCELED)
+                    val intent = Intent(activity, LoginActivity::class.java)
+                    LoginMode.WOO_LOGIN_MODE.putInto(intent)
+                    startActivity(intent)
+                    activity?.finish()
+                },
+                (usernameText.length - logOutText.length),
+                usernameText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
 
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
@@ -135,15 +133,20 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
 
         userAvatarUrl?.let {
             GlideApp.with(this)
-                    .load(it)
-                    .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.img_gravatar_placeholder))
-                    .circleCrop()
-                    .into(userInfoBinding.imageAvatar)
+                .load(it)
+                .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.img_gravatar_placeholder))
+                .circleCrop()
+                .into(userInfoBinding.imageAvatar)
         }
 
         with(noStoresBinding.noStoresViewText) {
             visibility = View.VISIBLE
             text = getString(R.string.login_no_jetpack, siteAddress)
+        }
+
+        noStoresBinding.btnSecondaryAction.setOnClickListener {
+            AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED)
+            jetpackLoginListener?.showWhatIsJetpackDialog()
         }
 
         with(btnBinding.buttonPrimary) {
@@ -164,7 +167,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
                     siteAddress?.let { viewModel.verifyJetpackAvailable(it) }
                 } else {
                     jetpackLoginListener?.showUsernamePasswordScreen(
-                            siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
                     )
                 }
             }
@@ -181,7 +184,6 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     }
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface
@@ -205,23 +207,29 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         setupObservers()
     }
 
-    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-    @Suppress("WrongConstant")
     private fun setupObservers() {
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            showProgressDialog(it)
-        })
-
-        viewModel.isJetpackAvailable.observe(viewLifecycleOwner, Observer { isJetpackAvailable ->
-            if (isJetpackAvailable) {
-                AppPrefs.setLoginUserBypassedJetpackRequired(false)
-                redirectToSiteCredentialsScreen()
-            } else {
-                view?.let { Snackbar.make(
-                        it, getString(R.string.login_jetpack_not_found), BaseTransientBottomBar.LENGTH_LONG
-                ).show() }
+        viewModel.isLoading.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProgressDialog(it)
             }
-        })
+        )
+
+        viewModel.isJetpackAvailable.observe(
+            viewLifecycleOwner,
+            Observer { isJetpackAvailable ->
+                if (isJetpackAvailable) {
+                    AppPrefs.setLoginUserBypassedJetpackRequired(false)
+                    redirectToSiteCredentialsScreen()
+                } else {
+                    view?.let {
+                        Snackbar.make(
+                            it, getString(R.string.login_jetpack_not_found), BaseTransientBottomBar.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        )
     }
 
     private fun showProgressDialog(show: Boolean) {
@@ -239,12 +247,13 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             if (isShowing) {
                 cancel()
                 progressDialog = null
-        } }
+            }
+        }
     }
 
     private fun redirectToSiteCredentialsScreen() {
         jetpackLoginListener?.showUsernamePasswordScreen(
-                siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+            siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
         )
     }
 }

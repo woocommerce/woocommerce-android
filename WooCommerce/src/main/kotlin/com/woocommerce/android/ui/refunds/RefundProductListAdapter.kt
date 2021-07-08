@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundViewHolder
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.util.PhotonUtils
@@ -33,10 +35,11 @@ class RefundProductListAdapter(
     private var items = mutableListOf<ProductRefundListItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
-        return if (isProductDetailList)
+        return if (isProductDetailList) {
             RefundDetailViewHolder(parent, formatCurrency, imageMap)
-        else
+        } else {
             IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageMap)
+        }
     }
 
     override fun onBindViewHolder(holder: RefundViewHolder, position: Int) {
@@ -52,7 +55,7 @@ class RefundProductListAdapter(
     }
 
     abstract class RefundViewHolder(parent: ViewGroup, @LayoutRes layout: Int) : RecyclerView.ViewHolder(
-            LayoutInflater.from(parent.context).inflate(layout, parent, false)
+        LayoutInflater.from(parent.context).inflate(layout, parent, false)
     ) {
         abstract fun bind(item: ProductRefundListItem)
     }
@@ -82,10 +85,10 @@ class RefundProductListAdapter(
             val totalRefund = formatCurrency(item.orderItem.price.times(item.quantity.toBigDecimal()))
             if (item.quantity > 1) {
                 descriptionTextView.text = itemView.context.getString(
-                        R.string.order_refunds_detail_item_description,
-                        totalRefund,
-                        formatCurrency(item.orderItem.price),
-                        item.quantity
+                    R.string.order_refunds_detail_item_description,
+                    totalRefund,
+                    formatCurrency(item.orderItem.price),
+                    item.quantity
                 )
             } else {
                 descriptionTextView.text = totalRefund
@@ -97,9 +100,9 @@ class RefundProductListAdapter(
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_product)
-                        .into(productImageView)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
         }
     }
@@ -120,23 +123,23 @@ class RefundProductListAdapter(
             nameTextView.text = item.orderItem.name
 
             descriptionTextView.text = itemView.context.getString(
-                    R.string.order_refunds_item_description,
-                    item.maxQuantity,
-                    formatCurrency(item.orderItem.price)
+                R.string.order_refunds_item_description,
+                item.maxQuantity.formatToString(),
+                formatCurrency(item.orderItem.price)
             )
 
             quantityTextView.text = item.quantity.toString()
             quantityTextView.setOnClickListener {
-                onItemClicked(item.orderItem.uniqueId)
+                onItemClicked(item.orderItem.itemId)
             }
 
             imageMap.get(item.orderItem.productId)?.let {
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_product)
-                        .into(productImageView)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
         }
     }
@@ -144,16 +147,19 @@ class RefundProductListAdapter(
     @Parcelize
     data class ProductRefundListItem(
         val orderItem: Order.Item,
-        val maxQuantity: Int = 0,
+        val maxQuantity: Float = 0f,
         val quantity: Int = 0
     ) : Parcelable {
+        @IgnoredOnParcel
+        val availableRefundQuantity
+            get() = maxQuantity.toInt()
         fun toDataModel(): WCRefundItem {
             return WCRefundItem(
-                    orderItem.itemId,
-                    quantity,
-                    quantity.toBigDecimal().times(orderItem.price),
-                    orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
-                            .times(quantity.toBigDecimal())
+                orderItem.itemId,
+                quantity,
+                quantity.toBigDecimal().times(orderItem.price),
+                orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
+                    .times(quantity.toBigDecimal())
             )
         }
     }
@@ -163,7 +169,7 @@ class RefundProductListAdapter(
         private val newList: List<ProductRefundListItem>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].orderItem.uniqueId == newList[newItemPosition].orderItem.uniqueId
+            return oldList[oldItemPosition].orderItem.itemId == newList[newItemPosition].orderItem.itemId
         }
 
         override fun getOldListSize(): Int = oldList.size
@@ -174,10 +180,10 @@ class RefundProductListAdapter(
             val old = oldList[oldItemPosition]
             val new = newList[newItemPosition]
             return old.orderItem.name == old.orderItem.name &&
-                    old.orderItem.price isEqualTo new.orderItem.price &&
-                    old.orderItem.quantity == new.orderItem.quantity &&
-                    old.quantity == new.quantity &&
-                    old.maxQuantity == new.maxQuantity
+                old.orderItem.price isEqualTo new.orderItem.price &&
+                old.orderItem.quantity == new.orderItem.quantity &&
+                old.quantity == new.quantity &&
+                old.maxQuantity == new.maxQuantity
         }
     }
 }

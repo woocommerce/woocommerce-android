@@ -55,16 +55,16 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
     private val countries = listOf(
         WCLocationModel().also {
-            it.name = "Slovakia"
-            it.code = "SK"
+            it.name = "Virgin Islands (US)"
+            it.code = "VI"
         },
         WCLocationModel().also {
             it.name = "USA"
             it.code = "US"
         },
         WCLocationModel().also {
-            it.name = "Canada"
-            it.code = "CA"
+            it.name = "Puerto Rico"
+            it.code = "PR"
         }
     )
 
@@ -87,8 +87,12 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     )
 
     private val savedState
-        get() = EditShippingLabelAddressFragmentArgs(address, ORIGIN, validationResult)
-            .initSavedStateHandle()
+        get() = EditShippingLabelAddressFragmentArgs(
+            address = address,
+            addressType = ORIGIN,
+            validationResult = validationResult,
+            requiresPhoneNumber = false
+        ).initSavedStateHandle()
 
     private lateinit var viewModel: EditShippingLabelAddressViewModel
 
@@ -96,7 +100,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     fun setup() {
         whenever(dataStore.getCountries()).thenReturn(countries)
         whenever(dataStore.getStates("US")).thenReturn(states)
-        whenever(dataStore.getStates("SK")).thenReturn(emptyList())
+        whenever(dataStore.getStates("VI")).thenReturn(emptyList())
         whenever(resourceProvider.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
 
         createViewModel()
@@ -155,7 +159,8 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows a snackbar on validation error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(addressValidator.validateAddress(any(), any())).thenReturn(ValidationResult.Error(GENERIC_ERROR))
+        whenever(addressValidator.validateAddress(any(), any(), any()))
+            .thenReturn(ValidationResult.Error(GENERIC_ERROR))
 
         var event: Event? = null
         viewModel.event.observeForever { event = it }
@@ -167,7 +172,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows the right error for an invalid street`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(addressValidator.validateAddress(any(), any()))
+        whenever(addressValidator.validateAddress(any(), any(), any()))
             .thenReturn(ValidationResult.Invalid("Street is invalid"))
 
         var viewState: ViewState? = null
@@ -193,7 +198,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onUseAddressAsIsButtonClicked()
 
-        verify(addressValidator, never()).validateAddress(any(), any())
+        verify(addressValidator, never()).validateAddress(any(), any(), any())
 
         assertThat(event).isEqualTo(ExitWithResult(address))
     }
@@ -221,14 +226,14 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Address validated and returned if valid`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(addressValidator.validateAddress(any(), any())).thenReturn(ValidationResult.Valid)
+        whenever(addressValidator.validateAddress(any(), any(), any())).thenReturn(ValidationResult.Valid)
 
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
         viewModel.onDoneButtonClicked(address)
 
-        verify(addressValidator, atLeastOnce()).validateAddress(any(), any())
+        verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
 
         assertThat(event).isEqualTo(ExitWithResult(address))
     }
@@ -236,7 +241,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     @Test
     fun `Address valid but changes suggested`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val suggestedAddress = address.copy(address1 = "Suggested street")
-        whenever(addressValidator.validateAddress(any(), any()))
+        whenever(addressValidator.validateAddress(any(), any(), any()))
             .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress))
 
         var event: Event? = null
@@ -244,7 +249,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onDoneButtonClicked(address)
 
-        verify(addressValidator, atLeastOnce()).validateAddress(any(), any())
+        verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
 
         assertThat(event).isEqualTo(ShowSuggestedAddress(address, suggestedAddress, ORIGIN))
     }
@@ -296,12 +301,12 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        viewModel.onCountrySelected("SK")
+        viewModel.onCountrySelected("VI")
 
         assertThat(viewState).isEqualTo(
             initialViewState.copy(
-                address.copy(country = "SK"),
-                selectedCountryName = "Slovakia",
+                address.copy(country = "VI"),
+                selectedCountryName = "Virgin Islands (US)",
                 selectedStateName = "",
                 isStateFieldSpinner = false
             )

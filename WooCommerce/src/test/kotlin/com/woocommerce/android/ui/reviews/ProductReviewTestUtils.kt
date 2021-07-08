@@ -14,15 +14,16 @@ object ProductReviewTestUtils {
         isRead: Boolean = false
     ): ProductReview {
         return ProductReview(
-                remoteId = id,
-                dateCreated = Date(),
-                review = "This is a test review",
-                rating = 3,
-                reviewerName = "Droid Test",
-                reviewerAvatarUrl = null,
-                remoteProductId = productId,
-                status = ProductReviewStatus.toString(),
-                read = isRead)
+            remoteId = id,
+            dateCreated = Date(),
+            review = "This is a test review",
+            rating = 3,
+            reviewerName = "Droid Test",
+            reviewerAvatarUrl = null,
+            remoteProductId = productId,
+            status = ProductReviewStatus.toString(),
+            read = isRead
+        )
     }
 
     fun generateProductReviewList(): List<ProductReview> {

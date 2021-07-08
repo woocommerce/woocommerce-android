@@ -2,7 +2,8 @@ buildscript {
     ext.kotlinVersion = '1.4.32'
     ext.navigationVersion = '2.3.5'
     ext.daggerVersion = '2.35.1'
-    ext.wordPressLoginVersion = '58-bd338e6eadb0eadf640f2320c791ca58f86c0cda'
+    ext.wordPressLoginVersion = '0.0.2'
+    ext.detektVersion = '1.15.0'
 
     repositories {
         google()
@@ -21,6 +22,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$daggerVersion"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion"
     }
 }
 
@@ -28,6 +30,7 @@ apply plugin: 'com.automattic.android.fetchstyle'
 
 allprojects {
     apply plugin: 'checkstyle'
+    apply plugin: 'io.gitlab.arturbosch.detekt'
 
     repositories {
         google()
@@ -48,31 +51,31 @@ allprojects {
 
 subprojects {
     configurations {
-        ktlint
-        compile.exclude group: 'org.jetbrains' , module:'annotations-java5'
+        compile.exclude group: 'org.jetbrains', module: 'annotations-java5'
     }
+}
 
-    dependencies {
-        ktlint 'com.github.shyiko:ktlint:0.29.0'
-    }
 
-    task ktlint(type: JavaExec) {
-        main = "com.github.shyiko.ktlint.Main"
-        classpath = configurations.ktlint
-        args "src/**/*.kt"
-    }
+tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
+    description = "Custom DETEKT build for all modules"
+    parallel = true
+    ignoreFailures = false
+    buildUponDefaultConfig = true
+    setSource(file(projectDir))
+    baseline.set(file("$rootDir/config/detekt/baseline.xml"))
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    include("**/*.kt")
+    exclude("**/resources/**", "**/build/**")
 
-    task ktlintFormat(type: JavaExec) {
-        main = "com.github.shyiko.ktlint.Main"
-        classpath = configurations.ktlint
-        args "-F", "src/**/*.kt"
+    reports {
+        html.enabled = true
+        xml.enabled = false
+        txt.enabled = false
     }
+}
 
-    task ciktlint(type: JavaExec) {
-        main = "com.github.shyiko.ktlint.Main"
-        classpath = configurations.ktlint
-        args "src/**/*.kt", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
-    }
+dependencies {
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"
 }
 
 task clean(type: Delete) {
@@ -83,7 +86,7 @@ task clean(type: Delete) {
  * Copies git-hooks from the `tools/team-props/git-hooks' directory to the `.git/hooks` folder
  * at the root of this project.
  */
-task installGitHooks(type: Copy) {
+tasks.register("installGitHooks", Copy) {
     println "Copying git-hooks scripts from tools/team-props/git-hooks to .git/hooks"
     from new File(rootProject.rootDir, 'tools/team-props/git-hooks')
     into { new File(rootProject.rootDir, '.git/hooks') }
@@ -91,7 +94,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '60acf539471e6e4494f4d01a57af689c2edac528'
+    fluxCVersion = '277f00cfe388212f7a189776b4091d6884eeec0e'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.3.0'
@@ -106,7 +109,7 @@ ext {
     lifecycleVersion = '2.3.1'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.85.0'
+    flipperVersion = '0.92.0'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.3.2'
     appCompatVersion = '1.2.0'
@@ -116,8 +119,6 @@ ext {
     robolectricVersion = '4.5.1'
     hiltJetpackVersion = '1.0.0'
 }
-
-tasks.getByPath('WooCommerce:preBuild').dependsOn installGitHooks
 
 // Onboarding and dev env setup tasks
 task checkBundler(type:Exec) {

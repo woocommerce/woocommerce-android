@@ -43,7 +43,7 @@
                 android:layout_marginStart="@dimen/margin_extra_large"
                 android:layout_marginTop="@dimen/margin_extra_large"
                 android:layout_marginEnd="@dimen/margin_extra_large"
-                android:text="@string/product_detail_add_variations"
+                android:text="@string/variation_list_generate_new_variation"
                 android:textAllCaps="true" />
 
             <androidx.recyclerview.widget.RecyclerView

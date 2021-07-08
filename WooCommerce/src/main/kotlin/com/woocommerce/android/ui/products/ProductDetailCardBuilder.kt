@@ -348,15 +348,17 @@ class ProductDetailCardBuilder(
             showTitle = this.regularPrice.isSet()
         ) {
             viewModel.onEditProductCardClicked(
-                ViewProductPricing(PricingData(
-                    taxClass,
-                    taxStatus,
-                    isSaleScheduled,
-                    saleStartDateGmt,
-                    saleEndDateGmt,
-                    regularPrice,
-                    salePrice
-                )),
+                ViewProductPricing(
+                    PricingData(
+                        taxClass,
+                        taxStatus,
+                        isSaleScheduled,
+                        saleStartDateGmt,
+                        saleEndDateGmt,
+                        regularPrice,
+                        salePrice
+                    )
+                ),
                 Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )
         }
@@ -535,7 +537,7 @@ class ProductDetailCardBuilder(
                     Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
                     mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
                 )
-
+                viewModel.saveAsDraftIfNewVariableProduct()
                 viewModel.onAddFirstVariationClicked()
             }
         )

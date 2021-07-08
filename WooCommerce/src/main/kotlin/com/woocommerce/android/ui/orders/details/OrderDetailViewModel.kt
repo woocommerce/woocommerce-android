@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -10,9 +11,9 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
@@ -21,9 +22,6 @@ import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.model.Order.Status.OnHold
-import com.woocommerce.android.model.Order.Status.Pending
-import com.woocommerce.android.model.Order.Status.Processing
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -32,9 +30,11 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
@@ -43,8 +43,14 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.DIALOG
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.FULFILL_SCREEN
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -75,12 +81,15 @@ class OrderDetailViewModel @Inject constructor(
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val orderDetailRepository: OrderDetailRepository
+    private val orderDetailRepository: OrderDetailRepository,
+    private val selectedSite: SelectedSite,
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
 ) : ScopedViewModel(savedState) {
     companion object {
         // The required version to support shipping label creation
         const val SUPPORTED_WCS_VERSION = "1.25.11"
     }
+
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     private val orderIdSet: OrderIdSet
@@ -227,11 +236,28 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
+        AnalyticsTracker.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
         // TODO cardreader add tests for this functionality
         if (cardReaderManager.readerStatus.value is Connected) {
             triggerEvent(StartCardReaderPaymentFlow(order.identifier))
         } else {
             triggerEvent(StartCardReaderConnectFlow)
+        }
+    }
+
+    fun onSeeReceiptClicked() {
+        loadReceiptUrl()?.let {
+            triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.remoteId))
+        } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
+    }
+
+    fun onPrintingInstructionsClicked() {
+        triggerEvent(ViewPrintingInstructions)
+    }
+
+    private fun loadReceiptUrl(): String? {
+        return selectedSite.getIfExists()?.let {
+            appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.remoteId)
         }
     }
 
@@ -263,21 +289,30 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(PrintShippingLabel(remoteOrderId = order.remoteId, shippingLabelId = shippingLabelId))
     }
 
+    fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
+        shippingLabel.commercialInvoiceUrl?.let {
+            triggerEvent(ViewPrintCustomsForm(it, isReprint = true))
+        }
+    }
+
     fun onAddShipmentTrackingClicked() {
         triggerEvent(
             AddOrderShipmentTracking(
-            orderIdentifier = order.identifier,
-            orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
-            isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
-        ))
+                orderIdentifier = order.identifier,
+                orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
+                isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
+            )
+        )
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
         AnalyticsTracker.track(
             ORDER_TRACKING_ADD,
-            mapOf(AnalyticsTracker.KEY_ID to order.remoteId,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
+            )
         )
         refreshShipmentTracking()
     }
@@ -306,31 +341,41 @@ class OrderDetailViewModel @Inject constructor(
         launch { fetchOrder(false) }
     }
 
-    fun onOrderStatusChanged(newStatus: String) {
-        val snackMessage = when (newStatus) {
-            CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
-            else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
+    fun onOrderStatusChanged(newStatus: String, updateSource: OrderStatusUpdateSource) {
+        AnalyticsTracker.track(
+            Stat.ORDER_STATUS_CHANGE,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_FROM to order.status.value,
+                AnalyticsTracker.KEY_TO to newStatus
+            )
+        )
+
+        val message = when (updateSource) {
+            FULFILL_SCREEN -> {
+                resourceProvider.getString(string.order_fulfill_completed)
+            }
+            DIALOG -> {
+                resourceProvider.getString(string.order_status_updated)
+            }
         }
 
-        AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE, mapOf(
-            AnalyticsTracker.KEY_ID to order.remoteId,
-            AnalyticsTracker.KEY_FROM to order.status.value,
-            AnalyticsTracker.KEY_TO to newStatus))
-
         // display undo snackbar
-        triggerEvent(ShowUndoSnackbar(
-            message = snackMessage,
-            undoAction = { onOrderStatusChangeReverted() },
-            dismissAction = object : Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (event != DISMISS_EVENT_ACTION) {
-                        // update the order only if user has not clicked on the undo snackbar
-                        updateOrderStatus(newStatus)
+        triggerEvent(
+            ShowUndoSnackbar(
+                message = message,
+                undoAction = { onOrderStatusChangeReverted() },
+                dismissAction = object : Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        super.onDismissed(transientBottomBar, event)
+                        if (event != DISMISS_EVENT_ACTION) {
+                            // update the order only if user has not clicked on the undo snackbar
+                            updateOrderStatus(newStatus)
+                        }
                     }
                 }
-            }
-        ))
+            )
+        )
 
         // change the order status
         val newOrderStatus = orderDetailRepository.getOrderStatus(newStatus)
@@ -356,19 +401,21 @@ class OrderDetailViewModel @Inject constructor(
                 shipmentTrackings.remove(deletedShipmentTracking)
                 _shipmentTrackings.value = shipmentTrackings
 
-                triggerEvent(ShowUndoSnackbar(
-                    message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
-                    undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
-                    dismissAction = object : Snackbar.Callback() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-                            if (event != DISMISS_EVENT_ACTION) {
-                                // delete the shipment only if user has not clicked on the undo snackbar
-                                deleteOrderShipmentTracking(deletedShipmentTracking)
+                triggerEvent(
+                    ShowUndoSnackbar(
+                        message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
+                        undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                        dismissAction = object : Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                super.onDismissed(transientBottomBar, event)
+                                if (event != DISMISS_EVENT_ACTION) {
+                                    // delete the shipment only if user has not clicked on the undo snackbar
+                                    deleteOrderShipmentTracking(deletedShipmentTracking)
+                                }
                             }
                         }
-                    }
-                ))
+                    )
+                )
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -396,14 +443,12 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    @VisibleForTesting
     fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
                     order = order.copy(status = Status.fromValue(newStatus))
-                    if (newStatus == CoreOrderStatus.COMPLETED.value) {
-                        triggerEvent(ShowSnackbar(string.order_fulfill_completed))
-                    }
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -437,7 +482,12 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
-            orderInfo = OrderInfo(order, isPaymentCollectableWithCardReader()),
+            orderInfo = OrderInfo(
+                order = order,
+                isPaymentCollectableWithCardReader = paymentCollectibilityChecker
+                    .isCollectable(order),
+                isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() && !loadReceiptUrl().isNullOrEmpty()
+            ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
@@ -560,18 +610,6 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private fun isPaymentCollectableWithCardReader(): Boolean {
-        return with(order) {
-            currency.equals("USD", ignoreCase = true) &&
-                (listOf(Pending, Processing, OnHold)).any { it == status } &&
-                !isOrderPaid &&
-                // Empty payment method explanation:
-                // https://github.com/woocommerce/woocommerce/issues/29471
-                (paymentMethod == CASH_ON_DELIVERY_PAYMENT_TYPE || paymentMethod.isEmpty()) &&
-                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
-        }
-    }
-
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductImageChanged(event: OnProductImageChanged) {
@@ -616,7 +654,15 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     @Parcelize
-    data class OrderInfo(val order: Order? = null, val isPaymentCollectableWithCardReader: Boolean = false) : Parcelable
+    data class OrderInfo(
+        val order: Order? = null,
+        val isPaymentCollectableWithCardReader: Boolean = false,
+        val isReceiptButtonsVisible: Boolean = false
+    ) : Parcelable
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+
+    enum class OrderStatusUpdateSource {
+        FULFILL_SCREEN, DIALOG
+    }
 }

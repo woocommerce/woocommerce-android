@@ -17,10 +17,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginDiscoveryErrorBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_error) {
     companion object {
         const val TAG = "LoginDiscoveryErrorFragment"
@@ -31,6 +32,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
         private const val ARG_USER_AVATAR_URL = "ARG_USER_AVATAR_URL"
         const val ARG_ERROR_MESSAGE = "ARG_ERROR_MESSAGE"
 
+        @Suppress("LongParameterList")
         fun newInstance(
             siteAddress: String,
             endpointAddress: String?,
@@ -115,7 +117,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
                 unifiedLoginTracker.trackClick(Click.TRY_AGAIN)
                 jetpackLoginListener?.showUsernamePasswordScreen(
-                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                    siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
                 )
             }
         }
@@ -137,7 +139,6 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
     }
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface

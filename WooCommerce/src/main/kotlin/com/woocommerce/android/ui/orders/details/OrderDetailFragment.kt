@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
@@ -135,7 +136,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
-                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader)
+                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
@@ -167,43 +168,61 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
         }
 
-        viewModel.orderNotes.observe(viewLifecycleOwner, Observer {
-            showOrderNotes(it)
-        })
-        viewModel.orderRefunds.observe(viewLifecycleOwner, Observer {
-            showOrderRefunds(it, viewModel.order)
-        })
-        viewModel.productList.observe(viewLifecycleOwner, Observer {
-            showOrderProducts(it, viewModel.order.currency)
-        })
-        viewModel.shipmentTrackings.observe(viewLifecycleOwner, Observer {
-            showShipmentTrackings(it)
-        })
-        viewModel.shippingLabels.observe(viewLifecycleOwner, Observer {
-            showShippingLabels(it, viewModel.order.currency)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> {
-                    if (event.args.isNotEmpty()) {
-                        uiMessageResolver.getSnack(event.message, *event.args).show()
-                    } else {
-                        uiMessageResolver.showSnack(event.message)
-                    }
-                }
-                is ShowUndoSnackbar -> {
-                    displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                }
-                is OrderNavigationTarget -> navigator.navigate(this, event)
-                else -> event.isHandled = false
+        viewModel.orderNotes.observe(
+            viewLifecycleOwner,
+            Observer {
+                showOrderNotes(it)
             }
-        })
+        )
+        viewModel.orderRefunds.observe(
+            viewLifecycleOwner,
+            Observer {
+                showOrderRefunds(it, viewModel.order)
+            }
+        )
+        viewModel.productList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showOrderProducts(it, viewModel.order.currency)
+            }
+        )
+        viewModel.shipmentTrackings.observe(
+            viewLifecycleOwner,
+            Observer {
+                showShipmentTrackings(it)
+            }
+        )
+        viewModel.shippingLabels.observe(
+            viewLifecycleOwner,
+            Observer {
+                showShippingLabels(it, viewModel.order.currency)
+            }
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> {
+                        if (event.args.isNotEmpty()) {
+                            uiMessageResolver.getSnack(event.message, *event.args).show()
+                        } else {
+                            uiMessageResolver.showSnack(event.message)
+                        }
+                    }
+                    is ShowUndoSnackbar -> {
+                        displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
+                    }
+                    is OrderNavigationTarget -> navigator.navigate(this, event)
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
         handleDialogResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT, R.id.orderDetailFragment) {
-            viewModel.onOrderStatusChanged(it)
+            viewModel.onOrderStatusChanged(it, OrderStatusUpdateSource.DIALOG)
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
             viewModel.onNewOrderNoteAdded(it)
@@ -215,7 +234,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             viewModel.onNewShipmentTrackingAdded(it)
         }
         handleResult<String>(OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT) {
-            viewModel.onOrderStatusChanged(it)
+            viewModel.onOrderStatusChanged(it, OrderStatusUpdateSource.FULFILL_SCREEN)
         }
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
@@ -238,7 +257,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
     }
 
-    private fun showOrderDetail(order: Order, isPaymentCollectableWithCardReader: Boolean) {
+    private fun showOrderDetail(
+        order: Order,
+        isPaymentCollectableWithCardReader: Boolean,
+        isReceiptButtonsVisible: Boolean
+    ) {
         binding.orderDetailOrderStatus.updateOrder(order)
         binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
         binding.orderDetailCustomerInfo.updateCustomerInfo(
@@ -248,13 +271,24 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+            isReceiptAvailable = isReceiptButtonsVisible,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
+            onSeeReceiptClickListener = {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
+                    viewModel.onSeeReceiptClicked()
+                }
+            },
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
                     cardReaderManager.let {
                         viewModel.onAcceptCardPresentPaymentClicked(it)
                     }
+                }
+            },
+            onPrintingInstructionsClickListener = {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
+                    viewModel.onPrintingInstructionsClicked()
                 }
             }
         )
@@ -357,7 +391,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             dateUtils = dateUtils,
             onDeleteShipmentTrackingClicked = {
                 viewModel.onDeleteShipmentTrackingClicked(it)
-            })
+            }
+        )
     }
 
     private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {
@@ -377,6 +412,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                         override fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel) {
                             viewModel.onPrintShippingLabelClicked(shippingLabel.id)
                         }
+
+                        override fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
+                            viewModel.onPrintCustomsFormClicked(shippingLabel)
+                        }
                     }
                 )
             }
@@ -388,10 +427,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private fun displayShippingLabelsWIPCard(show: Boolean, isReprintBanner: Boolean) {
         if (show && feedbackState != DISMISSED) {
             binding.orderDetailShippingLabelsWipCard.isVisible = true
-            val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner)
+            val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner) {
                 R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
-            else
+            } else {
                 R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m3_wip_message
+            }
 
             binding.orderDetailShippingLabelsWipCard.initView(
                 getString(wipCardTitleId),
@@ -403,16 +443,19 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun onGiveFeedbackClicked(isM1: Boolean) {
-        val context = if (isM1)
+        val context = if (isM1) {
             AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
-        else
+        } else {
             AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
+        }
 
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
-            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-        ))
+            FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
         registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.SHIPPING_LABELS)
@@ -420,16 +463,19 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun onDismissProductWIPNoticeCardClicked(isM1: Boolean) {
-        val context = if (isM1)
+        val context = if (isM1) {
             AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
-        else
+        } else {
             AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
+        }
 
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
-            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-        ))
+            FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
         registerFeedbackSetting(DISMISSED)
         displayShippingLabelsWIPCard(false, isM1)
     }

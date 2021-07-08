@@ -22,10 +22,10 @@ class ScrollChildSwipeRefreshLayout @JvmOverloads constructor(
     var scrollUpChild: View? = null
 
     override fun canChildScrollUp() =
-            scrollUpChild?.canScrollVertically(-1) ?: super.canChildScrollUp()
+        scrollUpChild?.canScrollVertically(-1) ?: super.canChildScrollUp()
 
     override fun onStartNestedScroll(child: View, target: View, nestedScrollAxes: Int): Boolean =
-            (child.canScrollVertically(1) && super.onStartNestedScroll(child, target, nestedScrollAxes))
+        (child.canScrollVertically(1) && super.onStartNestedScroll(child, target, nestedScrollAxes))
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

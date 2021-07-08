@@ -23,10 +23,12 @@ import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.RestrictionType
+import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsAdapter.PackageCustomsViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
@@ -125,11 +127,8 @@ class ShippingCustomsAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(uiState: CustomsPackageUiState) {
             val (customsPackage, validationState) = uiState
-            binding.packageId.text = context.getString(
-                R.string.orderdetail_shipping_label_item_header,
-                adapterPosition + 1
-            )
-            binding.packageName.text = "- ${customsPackage.box.title}"
+            binding.packageId.text = customsPackage.labelPackage.getTitle(context)
+            binding.packageName.text = "- ${customsPackage.labelPackage.selectedPackage!!.title}"
             binding.returnCheckbox.isChecked = customsPackage.returnToSender
 
             // Animate any potential change to visibility of the description fields
@@ -194,7 +193,7 @@ class ShippingCustomsLineAdapter(
     var parentItemPosition: Int = -1
 
     override fun getItemId(position: Int): Long {
-        return customsLines[position].first.itemId
+        return customsLines[position].first.productId
     }
 
     override fun getItemCount(): Int = customsLines.size
@@ -213,10 +212,12 @@ class ShippingCustomsLineAdapter(
             get() = binding.root.context
 
         init {
-            binding.expandIcon.setOnClickListener {
+            binding.titleLayout.setOnClickListener {
                 if (binding.expandIcon.rotation == 0f) {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
+                    // TODO update the expand() function an on animation ended callback
+                    binding.detailsLayout.postDelayed({ focusOnFirstInvalidField() }, 300)
                 } else {
                     binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
@@ -256,6 +257,16 @@ class ShippingCustomsLineAdapter(
             )
         }
 
+        private fun focusOnFirstInvalidField() {
+            binding.detailsLayout.children.filterIsInstance(WCMaterialOutlinedEditTextView::class.java)
+                .forEach {
+                    if (!it.error.isNullOrEmpty()) {
+                        it.requestFocus()
+                        return
+                    }
+                }
+        }
+
         fun bind(uiState: CustomsLineUiState) {
             val (customsLine, validationState) = uiState
             binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
@@ -273,6 +284,8 @@ class ShippingCustomsLineAdapter(
             binding.valueEditText.error = validationState.valueErrorMessage
 
             binding.countrySpinner.setText(customsLine.originCountry.name)
+
+            binding.errorView.isVisible = !validationState.isValid
         }
     }
 
@@ -285,7 +298,7 @@ class ShippingCustomsLineAdapter(
         override fun getNewListSize(): Int = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].first.itemId == newList[newItemPosition].first.itemId
+            return oldList[oldItemPosition].first.productId == newList[newItemPosition].first.productId
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

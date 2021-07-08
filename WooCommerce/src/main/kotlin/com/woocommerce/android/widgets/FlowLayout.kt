@@ -37,7 +37,7 @@ open class FlowLayout @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthSize = MeasureSpec.getSize(widthMeasureSpec) - ViewCompat.getPaddingEnd(this) -
-                ViewCompat.getPaddingStart(this)
+            ViewCompat.getPaddingStart(this)
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val growHeight = widthMode != MeasureSpec.UNSPECIFIED
         var width = 0
@@ -116,7 +116,8 @@ open class FlowLayout @JvmOverloads constructor(
             val a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout_LayoutParams)
             horizontalSpacing = try {
                 a.getDimensionPixelSize(
-                        R.styleable.FlowLayout_LayoutParams_layout_horizontalSpacing, -1)
+                    R.styleable.FlowLayout_LayoutParams_layout_horizontalSpacing, -1
+                )
             } finally {
                 a.recycle()
             }

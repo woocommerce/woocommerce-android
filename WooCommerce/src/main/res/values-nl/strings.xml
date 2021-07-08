@@ -1,11 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-26 16:54:59+0000
+Translation-Revision-Date: 2021-06-24 15:57:46+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="empty_order_list_message">Bekijk hoe je de verkoop van je winkel kunt verhogen.</string>
+    <string name="empty_product_message">Begin vandaag te verkopen door het eerste product aan de winkel toe te voegen.</string>
+    <string name="empty_product_add_product_button">Product toevoegen</string>
+    <string name="variable_product_attributes">Variatie-eigenschappen</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Zet de Bluetooth aan op je mobiele apparaat</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;Meer informatie&lt;/a&gt; over het aannemen van betalingen met je mobiele apparaat en het bestellen van kaartlezers</string>
+    <string name="card_reader_fetching_order_failed">Fout bij ophalen bestelling. De bestellingsstatus in de app kan verouderd zijn.</string>
+    <string name="card_reader_payment_email_client_not_found">Detectie van mailclient-app mislukt</string>
+    <string name="card_reader_payment_receipt_email_content">Bedankt voor je aankoop! Je kunt de kwitantie van je betaling vinden onder de volgende link: %s</string>
+    <string name="card_reader_payment_receipt_email_subject">Je kwitantie van %s</string>
+    <string name="card_reader_payment_description">Online betaling voor bestelling %s voor %s</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Bestelling aan het vernieuwen…</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Status in de app aan het bijwerken…</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Je klant heeft het volgende geselecteerd %1$s</string>
+    <string name="shipping_label_address_phone_invalid">Voor douaneformulieren is een tiencijferig telefoonnummer verplicht</string>
+    <string name="shipping_label_address_phone_required">Een telefoonnummer is verplicht omdat deze verzending een douaneformulier vereist</string>
+    <string name="shipping_label_create_customs_done">Douaneformulier ingevuld</string>
+    <string name="print_receipt_label_info_step_7">Als je problemen ervaart met afdrukken vanaf je apparaat, neem dan contact op met de klantenservice van uw printer.</string>
+    <string name="print_receipt_label_info_step_6">Als afdrukken niet beschikbaar is, kan je je kwitantie altijd opslaan als pdf en hem per e-mail versturen om hem op een ander apparaat af te drukken.</string>
+    <string name="print_receipt_label_info_step_5">Pas zo nodig het papierformaat aan en klik op ‘Afdrukken’ als je klaar bent om de kwitantie af te drukken.</string>
+    <string name="print_receipt_label_info_step_4">Koppel en verbind de printer met je mobiel als je hiervoor de opdracht krijgt.</string>
+    <string name="print_receipt_label_info_step_3">Wanneer je op ‘Kwitantie afdrukken’ klikt nadat je een betalingen hebt aangenomen, vervang ‘Opslaan als pdf’ dan door ‘Alle printers’ en zoek naar een nieuwe printer.</string>
+    <string name="print_receipt_label_info_step_2">Schakel de bluetooth- of wifiverbinding van je printer in.</string>
+    <string name="print_receipt_label_info_step_1">zorg ervoor dat de Printservice-plugin van je printer is geïnstalleerd.</string>
+    <string name="orderdetail_printing_instructions_button">Meer informatie over het afdrukken van kwitanties op uw apparaat</string>
+    <string name="product_create_attribute_helper">Om een variatie aan te maken moet je de eigenschappen (bv. \'kleur\', \'maat\') eerst instellen</string>
+    <string name="product_variation_single_count">1 variatie</string>
+    <string name="product_variation_multiple_count">%1$s Variaties</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s volgen</string>
+    <string name="card_reader_software_update_in_progress_title">De software van je lezer wordt bijgewerkt</string>
+    <string name="card_reader_software_update_title">Software-update</string>
+    <string name="card_reader_software_update_description">De software van je kaartlezer moet bijgewerkt worden om alles soepel te laten verlopen. Wil je nu bijwerken?</string>
+    <string name="card_reader_detail_connected_update_failed">De software-update van lezer is mislukt. Probeer later opnieuw</string>
+    <string name="card_reader_detail_connected_update_success">De software van de lezer is bijgewerkt</string>
+    <string name="card_reader_detail_connected_update_check_failed">De softwareversie-update is mislukt. Probeer later opnieuw</string>
+    <string name="card_reader_detail_connected_reader_unknown">NAAM KAARTLEZER ONBEKEND</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Lezer loskoppelen</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Werk de software van je lezer bij zodat je betalingen kunt blijven aannemen</string>
+    <string name="card_reader_detail_connected_update_software">De lezersoftware bijwerken</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% batterij</string>
+    <string name="card_reader_detail_connected_header">VERBONDEN LEZER</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Kaartlezer koppelen</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Zet de kaartlezer aan en plaats deze naast het mobiele apparaat</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Zorg ervoor dat de kaartlezer opgeladen is</string>
+    <string name="card_reader_detail_not_connected_header">Je kaartlezer koppelen</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kaart geweigerd</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kaart geweigerd. Probeer het opnieuw met een andere kaart.</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Er wordt verbinding gemaakt met lezer</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Aan het voorbereiden om betaling te innen</string>
+    <string name="shipping_label_customs_value_zero_error">De aangegeven waarde moet hoger zijn dan nul</string>
+    <string name="shipping_label_customs_weight_zero_error">Gewicht moet hoger zijn dan nul</string>
+    <string name="shipping_label_customs_required_field">Dit veld is verplicht</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Omschrijf welk soort beperkingen dit pakket moet hebben.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Omschrijf welk soort goederen dit pakket bevat.</string>
+    <string name="shipping_label_customs_weight_hint">Gewicht (%1$s per eenheid)</string>
+    <string name="shipping_label_customs_value_hint">Waarde (%1$s per eenheid)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s over HS Tariff-nummer</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s Over intern transactienummer</string>
+    <string name="shipping_label_customs_line_item">Aangepaste regel %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">Andere</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Sanitaire/fytosanitaire inspectie</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Quarantaine</string>
+    <string name="shipping_label_customs_restriction_type_none">Geen</string>
+    <string name="shipping_label_customs_contents_type_other">Andere</string>
+    <string name="shipping_label_customs_contents_type_sample">Monster</string>
+    <string name="shipping_label_customs_contents_type_gifts">Geschenken</string>
+    <string name="shipping_label_customs_contents_type_documents">Documenten</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Merchandise</string>
+    <string name="shipping_label_customs_origin_country_explanation">Land waarin het product is geproduceerd of samengesteld</string>
+    <string name="shipping_label_customs_origin_country_hint">Land van herkomst</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">De tariefcode moet uit 6 tekens bestaan</string>
+    <string name="shipping_label_customs_hs_tariff_hint">HS Tariff-nummer (optioneel)</string>
+    <string name="shipping_label_customs_item_description_hint">Beschrijving</string>
+    <string name="shipping_label_customs_package_content">Inhoud van het pakket</string>
+    <string name="shipping_label_customs_itn_required_country">ITN is vereist voor zendingen naar %1$s.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">ITN is vereist voor verzending van artikelen die meer dan $ 2500 waard zijn per tariefcode.</string>
+    <string name="shipping_label_customs_itn_invalid_format">Ongeldige indeling</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Registratiegegevens</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Inhoudsgegevens</string>
+    <string name="shipping_label_customs_restriction_type_hint">Soort beperking</string>
+    <string name="shipping_label_customs_contents_type_hint">Soort inhoud:</string>
+    <string name="shipping_label_customs_return_to_sender">Terugsturen naar afzender als het pakket niet kan worden geleverd</string>
+    <string name="shipping_label_rate_insurance_up_to">tot %s</string>
+    <string name="order_fulfill_email_info">Als je deze instelling hebt ingesteld, ontvangt de klant een bevestigingsmail zodra de bestelling is voltooid.</string>
+    <string name="order_fulfill_title">Bestelling bekijken</string>
+    <string name="order_fulfill_completed">🎉 Bestelling voltooid!</string>
+    <string name="user_access_verifying">Rol wordt geverifieerd …</string>
+    <string name="user_role_access_error_retry">Je hebt niet de juiste gebruikersrol</string>
+    <string name="user_role_access_error_link">Meer informatie over rollen en machtigingen</string>
+    <string name="user_role_access_error_msg">Deze app ondersteunt alleen de gebruikersrollen Beheerder en Winkelmanager. Neem contact op met je winkeleigenaar voor het upgraden van je rol.</string>
+    <string name="login_prologue_label_reviews">Volg en keur je productbeoordelingen goed</string>
+    <string name="login_prologue_label_products">Bewerk en voeg nieuwe producten toe ongeacht waar je bent</string>
+    <string name="login_prologue_label_orders">Beheer je winkelbestellingen onderweg</string>
+    <string name="login_prologue_label_analytics">Volg verkoopcijfers en goedpresterende producten</string>
+    <string name="skip">Overslaan</string>
     <string name="product_type_external_title">Extern product</string>
     <string name="product_type_grouped_title">Gegroepeerd product</string>
     <string name="product_type_variable_title">Variabel product</string>
@@ -30,7 +125,7 @@ Language: nl
     <string name="orderdetail_products_recreate_shipping_label_menu">Nieuw verzendlabel aanmaken</string>
     <string name="product_type_virtual_title">Eenvoudig virtueel product</string>
     <string name="variation_confirm_delete">Wil je deze variatie verwijderen?</string>
-    <string name="variation_create_dialog_title">Variatie wordt aangemaakt</string>
+    <string name="variation_create_dialog_title">Variatie aan het genereren</string>
     <string name="product_delete_dialog_title">Product verwijderen</string>
     <string name="card_reader_payment_send_receipt">Kwitantie verzenden</string>
     <string name="card_reader_payment_print_receipt">Kwitantie afdrukken</string>
@@ -78,14 +173,12 @@ Language: nl
     <string name="shipping_label_selected_rates_description">%s tarieven geselecteerd</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Geschikt voor gratis handtekeningvereiste</string>
     <string name="shipping_label_rate_included_options_free_pickup">Geschikt voor gratis afhalen</string>
-    <string name="shipping_label_rate_included_options_insurance">Verzekering (tot %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">Verzekering (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">volgen</string>
     <string name="shipping_label_rate_included_options">Inclusief %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Handtekening volwassene vereist (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Handtekening vereist (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">Gratis verzending</string>
-    <string name="shipping_label_shipping_method_local_pickup">Lokaal afhalen</string>
-    <string name="shipping_label_shipping_method_flat_rate">Vast tarief</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Klant heeft %1$s (%2$s) betaald aan verzendkosten</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Klant heeft %1$s van %2$s betaald aan verzendkosten</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Wanneer je verzendlabels koopt met WooCommerce, krijg je 5 tot 40% korting ten opzichte van de tarieven van postkantoren.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Wat houdt korting op WooCommerce  Services in?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Er is een fout opgetreden bij het laden van de verzendopties</string>
@@ -132,7 +225,7 @@ Language: nl
     <string name="shipping_label_single_package_total_weight">Totaal pakketgewicht: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Aangepaste pakketten</string>
     <string name="shipping_label_package_details_fetch_products_error">Producten kunnen niet opgehaald worden</string>
-    <string name="shipping_label_missing_data_snackbar_message">Bepaalde vereiste velden zijn leeg.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Bepaalde vereiste velden zijn leeg.</string>
     <string name="shipping_label_package_details_weight_error">Ongeldig gewicht</string>
     <string name="shipping_label_package_selector_title">Geselecteerd pakket</string>
     <string name="shipping_label_packages_loading_message">Een moment geduld…</string>
@@ -542,7 +635,6 @@ Language: nl
     <string name="empty_review_list_message">Krijg hoogwaardige productbeoordelingen voor je winkel</string>
     <string name="empty_review_list_title">Krijg je eerste beoordelingen</string>
     <string name="empty_order_list_all_processed">Alle bestellingen zijn voltooid</string>
-    <string name="empty_order_list_message">We laten het je weten als je een nieuwe bestelling krijgt. Bekijk ondertussen hoe je de verkoop van je winkel kunt verhogen.</string>
     <string name="empty_order_list_title">Wachten op je eerste bestelling</string>
     <string name="share_your_store_message">Deel je winkel op social media en via e-mail met je contacten</string>
     <string name="get_the_word_out">Maak jezelf bekend</string>
@@ -575,7 +667,7 @@ Language: nl
     <string name="order_refunds_select_quantity">Selecteer hoeveelheid</string>
     <string name="order_refunds_shipping_refund">Verzendkostenvergoeding</string>
     <string name="order_refunds_products_refund">Productvergoeding</string>
-    <string name="order_refunds_item_description">%d x %s per stuk</string>
+    <string name="order_refunds_item_description">%s x %s per stuk</string>
     <string name="order_refunds_items_selected">%d items geselecteerd</string>
     <string name="order_refunds_items_select_none">Niets selecteren</string>
     <string name="order_refunds_items_select_all">Alles selecteren</string>
@@ -1320,7 +1412,6 @@ Language: nl
     <string name="login_avatar_content_description">Je profielfoto</string>
     <string name="login_connected_store">Gekoppelde winkel</string>
     <string name="login_configure_link">Lees de %sconfiguratie-instructies%s.</string>
-    <string name="login_prologue_banner">Beheer bestellingen, houd de verkoop bij en bewaak de winkelactiviteit met waarschuwingen in real time.</string>
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Voer het adres van de WooCommerce-winkel die je wilt koppelen in.</string>

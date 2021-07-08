@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/readers_found_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:paddingTop="@dimen/major_75"
+    android:paddingBottom="@dimen/minor_100">
+
+    <TextView
+        android:id="@+id/readers_found_reader_connect_button"
+        style="@style/Woo.Button.TextButton.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:textSize="@dimen/text_minor_80"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Connect" />
+
+    <TextView
+        android:id="@+id/readers_found_reader_id"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/color_on_surface_high"
+        android:textSize="@dimen/text_minor_100"
+        app:layout_constraintBottom_toTopOf="@id/readers_found_reader_type"
+        app:layout_constraintEnd_toStartOf="@+id/readers_found_reader_connect_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/readers_found_reader_connect_button"
+        tools:text="CHB124817924121212481792412121248179241212" />
+
+    <TextView
+        android:id="@+id/readers_found_reader_type"
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="0dp"
+        android:layout_marginEnd="0dp"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        app:layout_constraintBottom_toBottomOf="@id/readers_found_reader_connect_button"
+        app:layout_constraintEnd_toStartOf="@+id/readers_found_reader_connect_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/readers_found_reader_id"
+        tools:text="BBPOS Chipper™ 2X BT" />
+</androidx.constraintlayout.widget.ConstraintLayout>

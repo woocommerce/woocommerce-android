@@ -6,8 +6,9 @@ import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import android.os.Bundle
 
-class ApplicationLifecycleMonitor(private val lifecycleListener: ApplicationLifecycleListener)
-    : Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
+class ApplicationLifecycleMonitor(
+    private val lifecycleListener: ApplicationLifecycleListener
+) : Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
     interface ApplicationLifecycleListener {
         fun onAppComesFromBackground()
         fun onFirstActivityResumed()

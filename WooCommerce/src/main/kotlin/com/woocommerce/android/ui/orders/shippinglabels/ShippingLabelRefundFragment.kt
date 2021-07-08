@@ -54,13 +54,16 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
-                is Exit -> navigateBackWithResult(KEY_REFUND_SHIPPING_LABEL_RESULT, true)
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                    is Exit -> navigateBackWithResult(KEY_REFUND_SHIPPING_LABEL_RESULT, true)
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun FragmentShippingLabelRefundBinding.showShippingLabelDetails(shippingLabel: ShippingLabel) {

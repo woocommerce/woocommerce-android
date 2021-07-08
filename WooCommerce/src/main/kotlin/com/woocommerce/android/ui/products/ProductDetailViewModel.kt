@@ -46,13 +46,14 @@ import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
@@ -71,6 +72,8 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -212,34 +215,45 @@ class ProductDetailViewModel @Inject constructor(
         get() = viewState.productDraft?.attributes ?: emptyList()
 
     val isProductPublished: Boolean
-        get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+        get() = viewState.productDraft?.status == PUBLISH
 
     /**
-     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
-     * */
-    private val isAddFlowEntryPoint: Boolean
-        get() = navArgs.isAddProduct
-
-    /**
-     * Validates if the view model was started for the **add** flow AND there is an already valid product id
-     * value to check.
-     *
-     * [isAddFlowEntryPoint] can be TRUE/FALSE
+     * Validates if the product exists at the Store or if it's currently defined only inside the app
      *
      * [viewState.productDraft.remoteId]
      * .can be [NULL] - no product draft available yet
      * .can be [DEFAULT_ADD_NEW_PRODUCT_ID] - navArgs.remoteProductId is set to default
      * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
-     * */
-    val isAddFlow: Boolean
-        get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
+     */
+    private val isProductStoredAtSite
+        get() = viewState.productDraft?.remoteId != DEFAULT_ADD_NEW_PRODUCT_ID
+
+    /**
+     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
+     */
+    val isAddFlowEntryPoint: Boolean
+        get() = navArgs.isAddProduct
+
+    /**
+     * Validates if the current product can be changed to DRAFT status.
+     */
+    val canBeStoredAsDraft
+        get() = isAddFlowEntryPoint and
+            isProductStoredAtSite.not() and
+            (viewState.productDraft?.status != DRAFT)
+
+    /**
+     * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
+     */
+    val isProductUnderCreation: Boolean
+        get() = isAddFlowEntryPoint and isProductStoredAtSite.not()
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
      * trash menu. Always returns false when we're in the add flow.
      */
     val isTrashEnabled: Boolean
-        get() = !isAddFlow && navArgs.isTrashEnabled
+        get() = !isProductUnderCreation && navArgs.isTrashEnabled
 
     init {
         start()
@@ -347,20 +361,30 @@ class ProductDetailViewModel @Inject constructor(
         updateProductBeforeEnteringFragment()
     }
 
-    fun onAttributeListDoneButtonClicked() {
-        saveAttributeChanges()
-        attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+    /**
+     * Called during the Add _first_ Variation flow. Uploads the pending attribute changes and generates the first
+     * variation for the variable product.
+     */
+    fun onGenerateVariationClicked() {
         launch {
-            viewState.productDraft?.let { draft ->
-                variationRepository.createEmptyVariation(draft)
-                    ?.let { updateProductDraft(numVariation = draft.numVariations + 1) }
-                    ?.let { triggerEvent(ExitProductAttributeList(variationCreated = true)) }
-                    ?: triggerEvent(ExitProductAttributeList())
-            }.also {
-                attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
-            }
+            createEmptyVariation()
+                ?.let { triggerEvent(ShowSnackbar(string.variation_created_title)) }
+                .also { triggerEvent(ExitAttributesAdded) }
         }
     }
+
+    private suspend fun createEmptyVariation() =
+        viewState.productDraft?.let { draft ->
+            saveAttributeChanges()
+            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+            variationRepository.createEmptyVariation(draft)
+                ?.let {
+                    productRepository.fetchProduct(draft.remoteId)
+                        ?.also { updateProductState(productToUpdateFrom = it) }
+                }
+        }.also {
+            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
+        }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
 
@@ -529,6 +553,10 @@ class ProductDetailViewModel @Inject constructor(
                 eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+            is ExitAttributesAdded -> {
+                eventName = Stat.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
+                hasChanges = hasAttributeChanges()
+            }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -552,11 +580,10 @@ class ProductDetailViewModel @Inject constructor(
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
             // button in the discard dialog
             @StringRes val neutralBtnId: Int?
-            val neutralAction = if (isAddFlow) {
+            val neutralAction = if (isProductUnderCreation) {
                 neutralBtnId = string.product_detail_save_as_draft
                 DialogInterface.OnClickListener { _, _ ->
-                    updateProductDraft(productStatus = DRAFT)
-                    startPublishProduct(exitWhenDone = true)
+                    startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
                 }
             } else {
                 neutralBtnId = null
@@ -573,13 +600,15 @@ class ProductDetailViewModel @Inject constructor(
         } else if (isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                messageId = string.discard_images_message,
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    ProductImagesService.cancel()
-                    triggerEvent(ExitProduct)
-                }
-            ))
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    messageId = string.discard_images_message,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        ProductImagesService.cancel()
+                        triggerEvent(ExitProduct)
+                    }
+                )
+            )
             return false
         } else {
             return true
@@ -591,7 +620,7 @@ class ProductDetailViewModel @Inject constructor(
      * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
-        when (isAddFlow) {
+        when (isProductUnderCreation) {
             true -> startPublishProduct()
             else -> startUpdateProduct()
         }
@@ -601,28 +630,59 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the "Save as draft" button is clicked in Product detail screen
      */
     fun onSaveAsDraftButtonClicked() {
-        updateProductDraft(productStatus = DRAFT)
-        startPublishProduct()
+        startPublishProduct(productStatus = DRAFT)
+    }
+
+    /**
+     * When creating a new Variable Product, if we're about to do changes
+     * at the Attributes and Variations section, we need the Product to be
+     * represented at the Site too since attributes/variations operations
+     * requires operations with a product remote ID.
+     *
+     * To be able to achieve that, this method silently pushes the new product
+     * to the site without the user noticing given that:
+     *
+     * 1. it doesn't have a valid remote ID yet
+     * 2. is of Variable type
+     * 3. is a Draft
+     */
+    fun saveAsDraftIfNewVariableProduct() = launch {
+        viewState.productDraft
+            ?.takeIf {
+                isProductStoredAtSite.not() and
+                    (it.type == VARIABLE.value) and
+                    (it.status == DRAFT)
+            }
+            ?.takeIf { addProduct(it) }
+            ?.let {
+                AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+            }
+            ?: AnalyticsTracker.track(ADD_PRODUCT_FAILED)
     }
 
     private fun startUpdateProduct() {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+        if (isAddFlowEntryPoint) updateProductDraft(productStatus = PUBLISH)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
         }
     }
 
-    private fun startPublishProduct(exitWhenDone: Boolean = false) {
+    private fun startPublishProduct(productStatus: ProductStatus = PUBLISH, exitWhenDone: Boolean = false) {
+        updateProductDraft(productStatus = productStatus)
+
         viewState.productDraft?.let {
             trackPublishing(it)
 
             viewState = viewState.copy(isProgressDialogShown = true)
+
             launch {
                 val isSuccess = addProduct(it)
+                val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
+                triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
-
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
                     }
@@ -632,6 +692,35 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * during a product creation flow flagged by [isAddFlowEntryPoint],
+     * we may have to POST the product before hand in order to operate
+     * some remotes properties of the Product.
+     * (e.g. Variable Product when editing the Attributes and Variations)
+     *
+     * To avoid user confusion around the product creation flow, when a product is posted before hand,
+     * the `PUBLISH` menu button will execute a update instead of repost the same product to the site
+     * so we also should handle the Snackbar text prompt to follow this rule
+     */
+    private fun pickProductUpdateSuccessText() =
+        if (isAddFlowEntryPoint) string.product_detail_publish_product_success
+        else string.product_detail_update_product_success
+
+    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
+        if (productWasAdded) {
+            if (requestedProductStatus == DRAFT) {
+                string.product_detail_publish_product_draft_success
+            } else {
+                string.product_detail_publish_product_success
+            }
+        } else {
+            if (requestedProductStatus == DRAFT) {
+                string.product_detail_publish_product_draft_error
+            } else {
+                string.product_detail_publish_product_error
+            }
+        }
 
     private fun trackPublishing(it: Product) {
         val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
@@ -776,57 +865,57 @@ class ProductDetailViewModel @Inject constructor(
     ) {
         viewState.productDraft?.let { product ->
             val updatedProduct = product.copy(
-                    description = description ?: product.description,
-                    shortDescription = shortDescription ?: product.shortDescription,
-                    name = title ?: product.name,
-                    sku = sku ?: product.sku,
-                    slug = slug ?: product.slug,
-                    isStockManaged = manageStock ?: product.isStockManaged,
-                    stockStatus = stockStatus ?: product.stockStatus,
-                    isSoldIndividually = soldIndividually ?: product.isSoldIndividually,
-                    backorderStatus = backorderStatus ?: product.backorderStatus,
-                    stockQuantity = stockQuantity ?: product.stockQuantity,
-                    images = images ?: product.images,
-                    regularPrice = regularPrice ?: product.regularPrice,
-                    salePrice = salePrice ?: product.salePrice,
-                    isVirtual = isVirtual ?: product.isVirtual,
-                    taxStatus = taxStatus ?: product.taxStatus,
-                    taxClass = taxClass ?: product.taxClass,
-                    length = length ?: product.length,
-                    width = width ?: product.width,
-                    height = height ?: product.height,
-                    weight = weight ?: product.weight,
-                    shippingClass = shippingClass ?: product.shippingClass,
-                    shippingClassId = shippingClassId ?: product.shippingClassId,
-                    isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    status = productStatus ?: product.status,
-                    catalogVisibility = catalogVisibility ?: product.catalogVisibility,
-                    isFeatured = isFeatured ?: product.isFeatured,
-                    reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
-                    purchaseNote = purchaseNote ?: product.purchaseNote,
-                    externalUrl = externalUrl ?: product.externalUrl,
-                    buttonText = buttonText ?: product.buttonText,
-                    menuOrder = menuOrder ?: product.menuOrder,
-                    categories = categories ?: product.categories,
-                    tags = tags ?: product.tags,
-                    type = type ?: product.type,
-                    groupedProductIds = groupedProductIds ?: product.groupedProductIds,
-                    upsellProductIds = upsellProductIds ?: product.upsellProductIds,
-                    crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
-                    saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
-                        saleEndDate
-                    } else {
-                        viewState.storedProduct?.saleEndDateGmt
-                    },
-                    saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
-                        saleStartDate ?: product.saleStartDateGmt
-                    } else viewState.storedProduct?.saleStartDateGmt,
-                    downloads = downloads ?: product.downloads,
-                    downloadLimit = downloadLimit ?: product.downloadLimit,
-                    downloadExpiry = downloadExpiry ?: product.downloadExpiry,
-                    isDownloadable = isDownloadable ?: product.isDownloadable,
-                    attributes = attributes ?: product.attributes,
-                    numVariations = numVariation ?: product.numVariations
+                description = description ?: product.description,
+                shortDescription = shortDescription ?: product.shortDescription,
+                name = title ?: product.name,
+                sku = sku ?: product.sku,
+                slug = slug ?: product.slug,
+                isStockManaged = manageStock ?: product.isStockManaged,
+                stockStatus = stockStatus ?: product.stockStatus,
+                isSoldIndividually = soldIndividually ?: product.isSoldIndividually,
+                backorderStatus = backorderStatus ?: product.backorderStatus,
+                stockQuantity = stockQuantity ?: product.stockQuantity,
+                images = images ?: product.images,
+                regularPrice = regularPrice ?: product.regularPrice,
+                salePrice = salePrice ?: product.salePrice,
+                isVirtual = isVirtual ?: product.isVirtual,
+                taxStatus = taxStatus ?: product.taxStatus,
+                taxClass = taxClass ?: product.taxClass,
+                length = length ?: product.length,
+                width = width ?: product.width,
+                height = height ?: product.height,
+                weight = weight ?: product.weight,
+                shippingClass = shippingClass ?: product.shippingClass,
+                shippingClassId = shippingClassId ?: product.shippingClassId,
+                isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                status = productStatus ?: product.status,
+                catalogVisibility = catalogVisibility ?: product.catalogVisibility,
+                isFeatured = isFeatured ?: product.isFeatured,
+                reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
+                purchaseNote = purchaseNote ?: product.purchaseNote,
+                externalUrl = externalUrl ?: product.externalUrl,
+                buttonText = buttonText ?: product.buttonText,
+                menuOrder = menuOrder ?: product.menuOrder,
+                categories = categories ?: product.categories,
+                tags = tags ?: product.tags,
+                type = type ?: product.type,
+                groupedProductIds = groupedProductIds ?: product.groupedProductIds,
+                upsellProductIds = upsellProductIds ?: product.upsellProductIds,
+                crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
+                saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
+                    saleEndDate
+                } else {
+                    viewState.storedProduct?.saleEndDateGmt
+                },
+                saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
+                    saleStartDate ?: product.saleStartDateGmt
+                } else viewState.storedProduct?.saleStartDateGmt,
+                downloads = downloads ?: product.downloads,
+                downloadLimit = downloadLimit ?: product.downloadLimit,
+                downloadExpiry = downloadExpiry ?: product.downloadExpiry,
+                isDownloadable = isDownloadable ?: product.isDownloadable,
+                attributes = attributes ?: product.attributes,
+                numVariations = numVariation ?: product.numVariations
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -1095,9 +1184,11 @@ class ProductDetailViewModel @Inject constructor(
 
         // create an updated list without this attribute and save it to the draft
         ArrayList<ProductAttribute>().also { updatedAttributes ->
-            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
-                attribute.id == attributeId && attribute.name == attributeName
-            })
+            updatedAttributes.addAll(
+                draftAttributes.filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == attributeName
+                }
+            )
 
             updateProductDraft(attributes = updatedAttributes)
             trackWithProductId(Stat.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
@@ -1150,9 +1241,11 @@ class ProductDetailViewModel @Inject constructor(
 
         ArrayList<ProductAttribute>().also { updatedAttributes ->
             // create a list of draft attributes without the old one
-            updatedAttributes.addAll(productDraftAttributes.filterNot { attribute ->
-                attribute.id == attributeId && attribute.name == oldAttributeName
-            })
+            updatedAttributes.addAll(
+                productDraftAttributes.filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == oldAttributeName
+                }
+            )
 
             // add the renamed attribute to the list and update the draft attributes
             updatedAttributes.add(newAttribute)
@@ -1194,9 +1287,11 @@ class ProductDetailViewModel @Inject constructor(
 
         // create an updated list without this attribute, then add a new one with the updated terms
         ArrayList<ProductAttribute>().also { updatedAttributes ->
-            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
-                attribute.id == attributeId && attribute.name == attributeName
-            })
+            updatedAttributes.addAll(
+                draftAttributes.filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == attributeName
+                }
+            )
 
             updatedAttributes.add(
                 ProductAttribute(
@@ -1233,9 +1328,11 @@ class ProductDetailViewModel @Inject constructor(
 
         // create an updated list without this attribute...
         val updatedAttributes = ArrayList<ProductAttribute>().also {
-            it.addAll(draftAttributes.filter { attribute ->
-                attribute.id != attributeId && attribute.name != attributeName
-            })
+            it.addAll(
+                draftAttributes.filter { attribute ->
+                    attribute.id != attributeId && attribute.name != attributeName
+                }
+            )
         }.also {
             // ...then add this attribute back with the updated list of terms unless there are none
             if (updatedTerms.isNotEmpty()) {
@@ -1400,12 +1497,12 @@ class ProductDetailViewModel @Inject constructor(
                     val password = viewState.draftPassword
                     if (productRepository.updateProductPassword(product.remoteId, password)) {
                         viewState = viewState.copy(storedPassword = password)
-                        triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                        triggerEvent(ShowSnackbar(pickProductUpdateSuccessText()))
                     } else {
                         triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
                     }
                 } else {
-                    triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                    triggerEvent(ShowSnackbar(pickProductUpdateSuccessText()))
                 }
                 viewState = viewState.copy(
                     productDraft = null,
@@ -1422,11 +1519,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     /**
-     * Returns true if the product draft has a status of DRAFT
-     */
-    fun isDraftProduct() = viewState.productDraft?.status?.let { it == DRAFT } ?: false
-
-    /**
      * Add a new product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed. Returns true only
      * if product successfully added
@@ -1434,22 +1526,9 @@ class ProductDetailViewModel @Inject constructor(
     private suspend fun addProduct(product: Product): Boolean {
         var isSuccess = false
         if (checkConnection()) {
-            @StringRes val successId = if (isDraftProduct()) {
-                string.product_detail_publish_product_draft_success
-            } else {
-                string.product_detail_publish_product_success
-            }
-
-            @StringRes val failId = if (isDraftProduct()) {
-                string.product_detail_publish_product_draft_error
-            } else {
-                string.product_detail_publish_product_error
-            }
-
             val result = productRepository.addProduct(product)
             isSuccess = result.first
             if (isSuccess) {
-                triggerEvent(ShowSnackbar(successId))
                 viewState = viewState.copy(
                     productDraft = null,
                     productBeforeEnteringFragment = getProduct().storedProduct,
@@ -1458,8 +1537,6 @@ class ProductDetailViewModel @Inject constructor(
                 val newProductRemoteId = result.second
                 loadRemoteProduct(newProductRemoteId)
                 triggerEvent(RefreshMenu)
-            } else {
-                triggerEvent(ShowSnackbar(failId))
             }
         }
         viewState = viewState.copy(isProgressDialogShown = false)
@@ -1485,8 +1562,8 @@ class ProductDetailViewModel @Inject constructor(
         loadProductTaxAndShippingClassDependencies(updatedDraft)
 
         viewState = viewState.copy(
-                productDraft = updatedDraft,
-                storedProduct = productToUpdateFrom
+            productDraft = updatedDraft,
+            storedProduct = productToUpdateFrom
         )
 
         if (viewState.productBeforeEnteringFragment == null) {
@@ -1532,7 +1609,7 @@ class ProductDetailViewModel @Inject constructor(
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            when (isAddFlow) {
+            when (isProductUnderCreation) {
                 true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
                 else -> loadRemoteProduct(event.id)
             }
@@ -1939,24 +2016,31 @@ class ProductDetailViewModel @Inject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
+
         class ExitProductAttributeList(
             shouldShowDiscardDialog: Boolean = true,
             val variationCreated: Boolean = false
         ) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
         class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+
+        object ExitAttributesAdded : ProductExitEvent(shouldShowDiscardDialog = false)
     }
 
     object RefreshMenu : Event()
+
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.

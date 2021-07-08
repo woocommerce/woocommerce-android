@@ -11,10 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginEmailHelpDialogFragment : DialogFragment() {
     companion object {
         const val TAG = "LoginEmailHelpDialogFragment"
@@ -36,25 +37,24 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
         val message = Html.fromHtml(getString(R.string.login_email_help_desc, "<b>", "</b>", "<b>", "</b>"))
 
         return MaterialAlertDialogBuilder(ContextThemeWrapper(requireActivity(), style.Theme_Woo_Dialog))
-                .setTitle(R.string.login_email_help_title)
-                .setMessage(message)
-                .setNeutralButton(R.string.login_site_address_more_help) { dialog, _ ->
-                    AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_NEED_MORE_HELP_LINK_TAPPED)
-                    analyticsListener.trackDismissDialog()
-                    listener?.onEmailNeedMoreHelpClicked()
-                    dialog.dismiss()
-                }
-                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                    AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_OK_BUTTON_TAPPED)
-                    analyticsListener.trackDismissDialog()
-                    dialog.dismiss()
-                }
-                .setCancelable(true)
-                .create()
+            .setTitle(R.string.login_email_help_title)
+            .setMessage(message)
+            .setNeutralButton(R.string.login_site_address_more_help) { dialog, _ ->
+                AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_NEED_MORE_HELP_LINK_TAPPED)
+                analyticsListener.trackDismissDialog()
+                listener?.onEmailNeedMoreHelpClicked()
+                dialog.dismiss()
+            }
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_OK_BUTTON_TAPPED)
+                analyticsListener.trackDismissDialog()
+                dialog.dismiss()
+            }
+            .setCancelable(true)
+            .create()
     }
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         if (context is Listener) {

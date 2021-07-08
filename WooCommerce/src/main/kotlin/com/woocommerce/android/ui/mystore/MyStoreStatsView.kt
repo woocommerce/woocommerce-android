@@ -107,9 +107,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val ordersValue
         get() = binding.root.findViewById<MaterialTextView>(R.id.orders_value)
 
-    val myStoreDateBar
-        get() = binding.myStoreDateBar
-
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         listener: MyStoreStatsListener,
@@ -128,8 +125,9 @@ class MyStoreStatsView @JvmOverloads constructor(
         lastUpdatedHandler = Handler()
         lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable,
-                    UPDATE_DELAY_TIME_MS
+            lastUpdatedHandler?.postDelayed(
+                lastUpdatedRunnable,
+                UPDATE_DELAY_TIME_MS
             )
         }
     }
@@ -142,8 +140,9 @@ class MyStoreStatsView @JvmOverloads constructor(
         this.activeGranularity = granularity
         // Track range change
         AnalyticsTracker.track(
-                Stat.DASHBOARD_MAIN_STATS_DATE,
-                mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase(Locale.ROOT)))
+            Stat.DASHBOARD_MAIN_STATS_DATE,
+            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase(Locale.ROOT))
+        )
 
         isRequestingStats = true
         listener?.onRequestLoadStats(granularity)
@@ -432,13 +431,12 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun getFormattedRevenueValue(revenue: Double) =
-            formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
+        formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
     private fun getFormattedVisitorValue(date: String) =
-            if (activeGranularity == StatsGranularity.DAYS) "" else
-                chartVisitorStats[date]?.toString() ?: "0"
+        if (activeGranularity == StatsGranularity.DAYS) "" else chartVisitorStats[date]?.toString() ?: "0"
 
     /**
      * Method to format the incoming visitor stats data
@@ -467,12 +465,15 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         // fade in the new value after fade out finishes
         val delay = duration.toMillis(context) + 100
-        fadeHandler.postDelayed({
-            val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
-            view.setTextColor(color)
-            view.text = value
-            WooAnimUtils.fadeIn(view, duration)
-        }, delay)
+        fadeHandler.postDelayed(
+            {
+                val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
+                view.setTextColor(color)
+                view.text = value
+                WooAnimUtils.fadeIn(view, duration)
+            },
+            delay
+        )
     }
 
     private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
@@ -508,8 +509,9 @@ class MyStoreStatsView @JvmOverloads constructor(
         lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
 
         if (lastUpdated != null) {
-            lastUpdatedHandler?.postDelayed(lastUpdatedRunnable,
-                    UPDATE_DELAY_TIME_MS
+            lastUpdatedHandler?.postDelayed(
+                lastUpdatedRunnable,
+                UPDATE_DELAY_TIME_MS
             )
         }
     }

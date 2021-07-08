@@ -81,10 +81,12 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
     }
 
     fun onCarrierClicked() {
-        triggerEvent(ViewShipmentTrackingProviders(
-            orderIdentifier = orderId,
-            selectedProvider = addOrderShipmentTrackingViewState.carrier.name
-        ))
+        triggerEvent(
+            ViewShipmentTrackingProviders(
+                orderIdentifier = orderId,
+                selectedProvider = addOrderShipmentTrackingViewState.carrier.name
+            )
+        )
     }
 
     fun onAddButtonTapped() {
@@ -137,16 +139,22 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
         }
     }
 
+    @Suppress("ComplexCondition")
     fun onBackButtonPressed(): Boolean {
         return if (addOrderShipmentTrackingViewState.carrier.name.isNotEmpty() ||
             addOrderShipmentTrackingViewState.trackingNumber.isNotEmpty() ||
-            (addOrderShipmentTrackingViewState.carrier.isCustom &&
-                addOrderShipmentTrackingViewState.trackingLink.isNotEmpty())) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                }
-            ))
+            (
+                addOrderShipmentTrackingViewState.carrier.isCustom &&
+                    addOrderShipmentTrackingViewState.trackingLink.isNotEmpty()
+                )
+        ) {
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(Exit)
+                    }
+                )
+            )
             false
         } else {
             true

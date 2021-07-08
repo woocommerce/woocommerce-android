@@ -5,8 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.ShippingRate.Option
@@ -80,13 +79,14 @@ class ShippingCarrierRatesViewModel @Inject constructor(
             arguments.order,
             arguments.originAddress,
             arguments.destinationAddress,
-            arguments.packages.toList()
+            arguments.packages.toList(),
+            arguments.customsPackages?.toList()
         )
 
         if (carrierRatesResult.isError) {
             viewState = viewState.copy(isEmptyViewVisible = true, isDoneButtonVisible = false)
             if (carrierRatesResult.error.original != NOT_FOUND) {
-                triggerEvent(ShowSnackbar(R.string.shipping_label_shipping_carrier_rates_generic_error))
+                triggerEvent(ShowSnackbar(string.shipping_label_shipping_carrier_rates_generic_error))
                 triggerEvent(Exit)
             }
         } else {
@@ -206,7 +206,7 @@ class ShippingCarrierRatesViewModel @Inject constructor(
 
             PackageRateListItem(
                 pkg.boxId,
-                itemCount = arguments.packages[i].items.size,
+                shippingPackage = arguments.packages[i],
                 rateOptions = shippingRates
             )
         }
@@ -251,8 +251,6 @@ class ShippingCarrierRatesViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SHIPPING_CARRIER_DONE_BUTTON_TAPPED)
-
         val selectedRates = shippingRates.value?.let { rates ->
             rates.map { it.selectedRate }
         }

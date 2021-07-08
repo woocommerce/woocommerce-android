@@ -40,9 +40,11 @@ class ObserveEncryptedLogsUploadResultTest {
     fun `should reset upload states on initialization`() {
         sut.invoke()
 
-        verify(eventBusDispatcher, times(1)).dispatch(argForWhich {
-            payload == null && type == RESET_UPLOAD_STATES
-        })
+        verify(eventBusDispatcher, times(1)).dispatch(
+            argForWhich {
+                payload == null && type == RESET_UPLOAD_STATES
+            }
+        )
     }
 
     @Test

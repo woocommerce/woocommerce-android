@@ -8,7 +8,7 @@ class BetaFeaturesScreen : Screen {
         const val PRODUCT_EDITING_SWITCH = R.id.switchProductsUI
     }
 
-    constructor(): super(PRODUCT_EDITING_SWITCH)
+    constructor() : super(PRODUCT_EDITING_SWITCH)
 
     fun enableProductEditing(): BetaFeaturesScreen {
         flipSwitchOn(R.id.switchSetting_switch, PRODUCT_EDITING_SWITCH)

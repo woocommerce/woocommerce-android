@@ -105,10 +105,10 @@ object ChromeCustomTabUtils {
 
     private fun createIntent(context: Context, tabSession: CustomTabsSession? = null): CustomTabsIntent {
         val intent = CustomTabsIntent.Builder(tabSession)
-                .setToolbarColor(ContextCompat.getColor(context, R.color.color_surface))
-                .addDefaultShareMenuItem()
-                .setShowTitle(true)
-                .build()
+            .setToolbarColor(ContextCompat.getColor(context, R.color.color_surface))
+            .addDefaultShareMenuItem()
+            .setShowTitle(true)
+            .build()
         intent.intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse("android-app://" + context.packageName))
         return intent
     }

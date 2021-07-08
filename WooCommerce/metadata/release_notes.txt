@@ -1,3 +1,1 @@
-Back by popular demand, the order fulfill screen now displays when you click the "Mark order complete" button!
-
-In addition, we fixed a bug that was breaking the product list screen and added an error message for unauthorized users who attempt to access your store. 
+Creating international shipping labels is a breeze! Merchants in the USA using WooCommerce Shipping & Tax in their store can now generate shipping labels and customs forms for international destinations. We’re continuing to build this feature – give it a whirl and let us know how it goes!

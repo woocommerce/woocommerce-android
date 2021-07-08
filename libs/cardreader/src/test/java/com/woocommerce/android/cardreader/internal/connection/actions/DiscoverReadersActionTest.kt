@@ -64,6 +64,39 @@ class DiscoverReadersActionTest {
     }
 
     @Test
+    fun `when new readers found, then FoundReaders is emitted`() = runBlockingTest {
+        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
+            onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
+            onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock(), mock()))
+            onSuccess(args = it.arguments)
+            mock<Cancelable>()
+        }
+
+        val events = action.discoverReaders(false)
+            .ignoreStartedEvent().toList()
+
+        assertThat(events[0]).isInstanceOf(FoundReaders::class.java)
+        assertThat(events[1]).isInstanceOf(FoundReaders::class.java)
+    }
+
+    @Test
+    fun `when already found readers found, then FoundReaders is NOT emitted`() = runBlockingTest {
+        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
+            val reader = mock<Reader>()
+            onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(reader))
+            onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(reader))
+            onSuccess(args = it.arguments)
+            mock<Cancelable>()
+        }
+
+        val events = action.discoverReaders(false)
+            .ignoreStartedEvent().toList()
+
+        assertThat(events[0]).isInstanceOf(FoundReaders::class.java)
+        assertThat(events[1]).isNotInstanceOf(FoundReaders::class.java)
+    }
+
+    @Test
     fun `when reader discover succeeds, then Success is emitted`() = runBlockingTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onSuccess(args = it.arguments)

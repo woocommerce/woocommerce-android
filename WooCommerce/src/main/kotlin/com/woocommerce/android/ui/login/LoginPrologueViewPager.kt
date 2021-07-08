@@ -44,8 +44,6 @@ class LoginPrologueViewPager : WCViewPager {
             )
         }
 
-        override fun getCount(): Int {
-            return NUM_PAGES
-        }
+        override fun getCount() = NUM_PAGES
     }
 }

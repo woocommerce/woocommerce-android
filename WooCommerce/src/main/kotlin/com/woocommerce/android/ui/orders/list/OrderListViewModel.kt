@@ -20,7 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
 import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -40,15 +40,13 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATION
-import org.wordpress.android.fluxc.action.NotificationAction.UPDATE_NOTIFICATION
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
-import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
@@ -71,7 +69,7 @@ class OrderListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val fetcher: OrderFetcher,
+    private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState), LifecycleOwner {
@@ -108,10 +106,11 @@ class OrderListViewModel @Inject constructor(
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData<EmptyViewType?>(
-                offset = EMPTY_VIEW_THROTTLE,
-                coroutineScope = this,
-                mainDispatcher = dispatchers.main,
-                backgroundDispatcher = dispatchers.computation)
+            offset = EMPTY_VIEW_THROTTLE,
+            coroutineScope = this,
+            mainDispatcher = dispatchers.main,
+            backgroundDispatcher = dispatchers.computation
+        )
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
@@ -145,17 +144,18 @@ class OrderListViewModel @Inject constructor(
         if (allPagedListWrapper == null) {
             val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = false)
             allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
-                    .also { it.fetchFirstPage() }
+                .also { it.fetchFirstPage() }
         }
 
         // "PROCESSING" tab
         if (processingPagedListWrapper == null) {
             val processingDescriptor = WCOrderListDescriptor(
-                    site = selectedSite.get(),
-                    statusFilter = CoreOrderStatus.PROCESSING.value,
-                    excludeFutureOrders = false)
+                site = selectedSite.get(),
+                statusFilter = CoreOrderStatus.PROCESSING.value,
+                excludeFutureOrders = false
+            )
             processingPagedListWrapper = listStore.getList(processingDescriptor, dataSource, lifecycle)
-                    .also { it.fetchFirstPage() }
+                .also { it.fetchFirstPage() }
         }
 
         // Fetch order dependencies such as order status list and payment gateways
@@ -283,11 +283,14 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.observe(this, Observer {
-            it?.let {
-                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+        pagedListWrapper.listError.observe(
+            this,
+            Observer {
+                it?.let {
+                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                }
             }
-        })
+        )
 
         this.activePagedListWrapper = pagedListWrapper
 
@@ -324,7 +327,7 @@ class OrderListViewModel @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun createAndPostEmptyViewType(wrapper: PagedListWrapper<OrderListItemUIType>) {
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
-                wrapper.data.value == null
+            wrapper.data.value == null
         val isListEmpty = wrapper.isEmpty.value ?: true
         val hasOrders = repository.hasCachedOrdersForSite()
         val isError = wrapper.listError.value != null
@@ -371,7 +374,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun isShowingProcessingOrders() = orderStatusFilter.isNotEmpty() &&
-            orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
+        orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
 
     private fun showOfflineSnack() {
         // Network is not connected
@@ -385,21 +388,6 @@ class OrderListViewModel @Inject constructor(
         dispatcher.unregister(this)
         repository.onCleanup()
         super.onCleared()
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onNotificationChanged(event: OnNotificationChanged) {
-        when (event.causeOfChange) {
-            FETCH_NOTIFICATION, UPDATE_NOTIFICATION -> {
-                // A notification was received by the device and the details have been fetched from the API.
-                // Refresh the orders list in case that notification was a new order notification.
-                if (!event.isError) {
-                    activePagedListWrapper?.invalidateData()
-                }
-            }
-            else -> {}
-        }
     }
 
     @Suppress("unused")
@@ -438,14 +426,9 @@ class OrderListViewModel @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationReceivedEvent) {
-        // a new order notification came in so refresh the active order list
-        if (event.channel == NEW_ORDER) {
-            if (isSearching) {
-                activePagedListWrapper?.fetchFirstPage()
-            }
-            allPagedListWrapper?.fetchFirstPage()
-            processingPagedListWrapper?.fetchFirstPage()
+    fun onNotificationReceived(event: NotificationReceivedEvent) {
+        if (event.channel == NotificationChannelType.NEW_ORDER && isSearching) {
+            activePagedListWrapper?.fetchFirstPage()
         }
     }
 
@@ -458,10 +441,13 @@ class OrderListViewModel @Inject constructor(
         }
 
         val totalDurationInSeconds = event.duration.toDouble() / 1_000
-        AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(
-            KEY_TOTAL_DURATION to totalDurationInSeconds,
-            KEY_STATUS to event.listDescriptor.statusFilter
-        ))
+        AnalyticsTracker.track(
+            Stat.ORDERS_LIST_LOADED,
+            mapOf(
+                KEY_TOTAL_DURATION to totalDurationInSeconds,
+                KEY_STATUS to event.listDescriptor.statusFilter
+            )
+        )
     }
 
     sealed class OrderListEvent : Event() {

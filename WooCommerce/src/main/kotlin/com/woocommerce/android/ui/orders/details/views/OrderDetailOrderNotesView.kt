@@ -58,7 +58,8 @@ class OrderDetailOrderNotesView @JvmOverloads constructor(
         return notes
             .groupBy(
                 { DateFormat.getMediumDateFormat(context).format(it.dateCreated) },
-                { Note(it) })
+                { Note(it) }
+            )
             .flatMap { listOf(Header(it.key)) + it.value }
     }
 

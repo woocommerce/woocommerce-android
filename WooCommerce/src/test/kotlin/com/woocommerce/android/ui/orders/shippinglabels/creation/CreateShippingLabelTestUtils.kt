@@ -1,8 +1,13 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.ContentsType
+import com.woocommerce.android.model.CustomsLine
+import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingLabelPackage.Item
 import com.woocommerce.android.model.ShippingPackage
@@ -34,15 +39,16 @@ object CreateShippingLabelTestUtils {
     }
 
     fun generateShippingLabelPackage(
-        id: String = "package1",
+        position: Int = 1,
         weight: Float = 10f,
-        selectedPackage: ShippingPackage? = null
+        selectedPackage: ShippingPackage? = null,
+        items: List<Item>? = null
     ): ShippingLabelPackage {
         return ShippingLabelPackage(
-            id,
+            position,
             selectedPackage ?: generatePackage(),
             weight,
-            listOf(Item(0L, "product", "", 10f))
+            items ?: listOf(Item(0L, "product", "", 2, 10f, BigDecimal.valueOf(10L)))
         )
     }
 
@@ -63,6 +69,29 @@ object CreateShippingLabelTestUtils {
             discount = BigDecimal.ZERO,
             formattedFee = "10 $",
             option = ShippingRate.Option.DEFAULT
+        )
+    }
+
+    fun generateCustomsPackage(packageId: String = "package1"): CustomsPackage {
+        return CustomsPackage(
+            id = packageId,
+            labelPackage = generateShippingLabelPackage(),
+            returnToSender = true,
+            contentsType = ContentsType.Merchandise,
+            contentsDescription = null,
+            restrictionType = RestrictionType.None,
+            itn = "",
+            lines = listOf(
+                CustomsLine(
+                    productId = 1L,
+                    itemDescription = "product",
+                    hsTariffNumber = "",
+                    quantity = 1,
+                    value = BigDecimal.valueOf(10),
+                    weight = 1f,
+                    originCountry = Location("US", "United States (US)")
+                )
+            )
         )
     }
 }

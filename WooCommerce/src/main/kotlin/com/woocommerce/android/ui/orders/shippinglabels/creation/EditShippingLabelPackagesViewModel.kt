@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -12,6 +10,8 @@ import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.MoveItemResult
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
@@ -24,12 +24,15 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
+import kotlin.math.ceil
 
 @HiltViewModel
+@Suppress("TooManyFunctions")
 class EditShippingLabelPackagesViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
@@ -57,14 +60,18 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     private fun initState() {
-        if (viewState.shippingLabelPackages.isNotEmpty()) return
+        if (viewState.packagesUiModels.isNotEmpty()) return
         launch {
             val packagesList = if (arguments.shippingLabelPackages.isEmpty()) {
                 createDefaultPackage()
             } else {
                 arguments.shippingLabelPackages.toList()
             }
-            viewState = ViewState(shippingLabelPackages = packagesList)
+            viewState = ViewState(
+                packagesUiModels = packagesList.mapIndexed { index, shippingLabelPackage ->
+                    ShippingLabelPackageUiModel(isExpanded = index == 0, data = shippingLabelPackage)
+                }
+            )
         }
     }
 
@@ -73,7 +80,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
         val shippingPackagesResult = shippingLabelRepository.getShippingPackages()
         if (shippingPackagesResult.isError) {
-            triggerEvent(ShowSnackbar(R.string.shipping_label_packages_loading_error))
+            triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
             triggerEvent(Exit)
             return emptyList()
         }
@@ -89,10 +96,10 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
         viewState = viewState.copy(showSkeletonView = false)
         val items = order.getShippableItems().map { it.toShippingItem() }
-        val totalWeight = items.sumByFloat { it.weight } + (lastUsedPackage?.boxWeight ?: 0f)
+        val totalWeight = items.sumByFloat { it.weight * it.quantity } + (lastUsedPackage?.boxWeight ?: 0f)
         return listOf(
             ShippingLabelPackage(
-                packageId = "package1",
+                position = 1,
                 selectedPackage = lastUsedPackage,
                 weight = if (totalWeight != 0f) totalWeight else Float.NaN,
                 items = items
@@ -108,6 +115,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
             return true
         }
+
         suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
             if (!fetchProductIfNeeded(productId)) return false
             if (variationDetailRepository.getVariation(productId, variationId) == null) {
@@ -125,7 +133,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
             if (!result) {
                 // If we fail to fetch a non deleted product, display an error
-                triggerEvent(ShowSnackbar(R.string.shipping_label_package_details_fetch_products_error))
+                triggerEvent(ShowSnackbar(string.shipping_label_package_details_fetch_products_error))
                 triggerEvent(Exit)
                 return
             }
@@ -133,23 +141,27 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onWeightEdited(position: Int, weight: Float) {
-        val packages = viewState.shippingLabelPackages.toMutableList()
-        packages[position] = packages[position].copy(weight = weight)
+        val packages = viewState.packagesUiModels.toMutableList()
+        packages[position] = packages[position].copy(data = packages[position].data.copy(weight = weight))
         viewState = viewState.copy(
-            shippingLabelPackages = packages,
-            packagesWithEditedWeight = viewState.packagesWithEditedWeight + packages[position].packageId
+            packagesUiModels = packages,
+            packagesWithEditedWeight = viewState.packagesWithEditedWeight + packages[position].data.packageId
         )
     }
 
-    fun onPackageSpinnerClicked(position: Int) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_PACKAGE_SPINNER_TAPPED)
+    fun onExpandedChanged(position: Int, isExpanded: Boolean) {
+        val packages = viewState.packagesUiModels.toMutableList()
+        packages[position] = packages[position].copy(isExpanded = isExpanded)
+        viewState = viewState.copy(packagesUiModels = packages)
+    }
 
+    fun onPackageSpinnerClicked(position: Int) {
         triggerEvent(OpenPackageSelectorEvent(position))
     }
 
     fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
-        val packages = viewState.shippingLabelPackages.toMutableList()
-        packages[position] = with(packages[position]) {
+        val packages = viewState.packagesUiModels.toMutableList()
+        val updatedPackage = with(packages[position].data) {
             val weight = if (!viewState.packagesWithEditedWeight.contains(packageId)) {
                 items.sumByFloat { it.weight } + selectedPackage.boxWeight
             } else {
@@ -157,13 +169,99 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
             copy(selectedPackage = selectedPackage, weight = weight)
         }
-        viewState = viewState.copy(shippingLabelPackages = packages)
+        packages[position] = packages[position].copy(data = updatedPackage)
+        viewState = viewState.copy(packagesUiModels = packages)
+    }
+
+    fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
+        triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
+    }
+
+    fun handleMoveItemResult(result: MoveItemResult) {
+        val packages = viewState.packagesUiModels.toMutableList()
+        val item = result.item
+        val currentPackage = result.currentPackage
+
+        fun removeItemFromCurrentPackage(): MutableList<ShippingLabelPackageUiModel> {
+            val updatedItems = if (item.quantity > 1) {
+                // if the item quantity is more than one, subtract 1 from it
+                val mutableItems = currentPackage.items.toMutableList()
+                val updatedItem = item.copy(quantity = item.quantity - 1)
+                mutableItems[mutableItems.indexOf(item)] = updatedItem
+                mutableItems
+            } else {
+                // otherwise remove it completely
+                currentPackage.items - item
+            }
+
+            val indexOfCurrentPackage = packages.indexOfFirst { it.data == currentPackage }
+            packages[indexOfCurrentPackage] = ShippingLabelPackageUiModel(
+                data = currentPackage.copy(items = updatedItems)
+            )
+            return packages
+        }
+
+        fun moveItemToNewPackage(): List<ShippingLabelPackageUiModel> {
+            val updatedPackages = removeItemFromCurrentPackage()
+            updatedPackages.add(
+                ShippingLabelPackageUiModel(
+                    data = ShippingLabelPackage(
+                        position = packages.size + 1,
+                        selectedPackage = currentPackage.selectedPackage,
+                        weight = item.weight + (currentPackage.selectedPackage?.boxWeight ?: 0f),
+                        items = listOf(item.copy(quantity = 1))
+                    )
+                )
+            )
+
+            return updatedPackages.mapIndexed { index, shippingLabelPackageUiModel ->
+                // Collapse all items except the added one
+                shippingLabelPackageUiModel.copy(isExpanded = index == packages.size - 1)
+            }
+        }
+
+        fun moveItemToExistingPackage(destination: ShippingLabelPackage): List<ShippingLabelPackageUiModel> {
+            val updatedPackages = removeItemFromCurrentPackage()
+            val updatedItemsOfDestination = destination.items.toMutableList().apply {
+                val existingItem = firstOrNull { it.isSameProduct(item) }
+                if (existingItem != null) {
+                    // If the existing package has same product, then just increase the quantity
+                    set(indexOf(existingItem), existingItem.copy(quantity = existingItem.quantity + 1))
+                } else {
+                    // Otherwise add a new item with quantity set to 1
+                    add(item.copy(quantity = 1))
+                }
+            }
+
+            val indexOfDestinationPackage = updatedPackages.indexOfFirst { it.data == destination }
+            updatedPackages[indexOfDestinationPackage] = ShippingLabelPackageUiModel(
+                data = currentPackage.copy(items = updatedItemsOfDestination)
+            )
+
+            return packages.mapIndexed { index, shippingLabelPackageUiModel ->
+                // Collapse all items except the destination one
+                shippingLabelPackageUiModel.copy(isExpanded = index == indexOfDestinationPackage)
+            }
+        }
+
+        viewState = viewState.copy(
+            packagesUiModels = when (result.destination) {
+                is DestinationPackage.ExistingPackage ->
+                    moveItemToExistingPackage(result.destination.destinationPackage)
+                DestinationPackage.NewPackage -> moveItemToNewPackage()
+                DestinationPackage.OriginalPackage -> TODO()
+            }.filter {
+                // Remove empty packages
+                it.data.items.isNotEmpty()
+            }.mapIndexed { index, model ->
+                // Recalculate positions
+                model.copy(data = model.data.copy(position = index + 1))
+            }
+        )
     }
 
     fun onDoneButtonClicked() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_DONE_BUTTON_TAPPED)
-
-        triggerEvent(ExitWithResult(viewState.shippingLabelPackages))
+        triggerEvent(ExitWithResult(viewState.packages))
     }
 
     fun onBackButtonClicked() {
@@ -188,25 +286,43 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         }
 
         return ShippingLabelPackage.Item(
-            productId = productId,
+            productId = uniqueId,
             name = name,
             attributesList = attributesList,
+            // for shipping purposes, consider portion quantities as complete values
+            quantity = ceil(quantity).toInt(),
+            value = price,
             weight = weight
         )
     }
 
     @Parcelize
     data class ViewState(
-        val shippingLabelPackages: List<ShippingLabelPackage> = emptyList(),
+        val packagesUiModels: List<ShippingLabelPackageUiModel> = emptyList(),
         val showSkeletonView: Boolean = false,
         val packagesWithEditedWeight: Set<String> = setOf()
     ) : Parcelable {
+        @IgnoredOnParcel
+        val packages: List<ShippingLabelPackage>
+            get() = packagesUiModels.map { it.data }
         val isDataValid: Boolean
-            get() = shippingLabelPackages.isNotEmpty() &&
-                shippingLabelPackages.all {
-                    !it.weight.isNaN() && it.weight > 0.0 && it.selectedPackage != null
+            get() = packagesUiModels.isNotEmpty() &&
+                packagesUiModels.all {
+                    !it.data.weight.isNaN() && it.data.weight > 0.0 && it.data.selectedPackage != null
                 }
     }
 
+    @Parcelize
+    data class ShippingLabelPackageUiModel(
+        val isExpanded: Boolean = false,
+        val data: ShippingLabelPackage
+    ) : Parcelable
+
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
+
+    data class ShowMoveItemDialog(
+        val item: ShippingLabelPackage.Item,
+        val currentPackage: ShippingLabelPackage,
+        val packagesList: List<ShippingLabelPackage>
+    ) : MultiLiveEvent.Event()
 }

@@ -6,8 +6,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPackagesBinding
@@ -20,6 +20,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShowMoveItemDialog
+import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.MoveItemResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -28,7 +30,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_shipping_label_packages),
+class EditShippingLabelPackagesFragment :
+    BaseFragment(R.layout.fragment_edit_shipping_label_packages),
     BackPressListener {
     companion object {
         const val EDIT_PACKAGES_CLOSED = "edit_packages_closed"
@@ -44,7 +47,9 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
         ShippingLabelPackagesAdapter(
             viewModel.weightUnit,
             viewModel::onWeightEdited,
-            viewModel::onPackageSpinnerClicked
+            viewModel::onExpandedChanged,
+            viewModel::onPackageSpinnerClicked,
+            viewModel::onMoveButtonClicked
         )
     }
 
@@ -83,6 +88,10 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
         with(binding.packagesList) {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = packagesAdapter
+            itemAnimator = DefaultItemAnimator().apply {
+                // Disable change animations to avoid duplicating viewholders
+                supportsChangeAnimations = false
+            }
         }
 
         setupObservers(binding)
@@ -93,12 +102,15 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
         handleResult<ShippingPackageSelectorResult>(ShippingPackageSelectorFragment.SELECTED_PACKAGE_RESULT) { result ->
             viewModel.onPackageSelected(result.position, result.selectedPackage)
         }
+        handleResult<MoveItemResult>(MoveShippingItemDialog.MOVE_ITEM_RESULT) { result ->
+            viewModel.handleMoveItemResult(result)
+        }
     }
 
     private fun setupObservers(binding: FragmentEditShippingLabelPackagesBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.shippingLabelPackages.takeIfNotEqualTo(old?.shippingLabelPackages) {
-                packagesAdapter.shippingLabelPackages = it
+            new.packagesUiModels.takeIfNotEqualTo(old?.packagesUiModels) {
+                packagesAdapter.uiModels = it
             }
 
             new.showSkeletonView.takeIfNotEqualTo(old?.showSkeletonView) {
@@ -117,6 +129,16 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
                     val action = EditShippingLabelPackagesFragmentDirections
                         .actionEditShippingLabelPackagesFragmentToShippingPackageSelectorFragment(
                             position = event.position
+                        )
+
+                    findNavController().navigateSafely(action)
+                }
+                is ShowMoveItemDialog -> {
+                    val action = EditShippingLabelPackagesFragmentDirections
+                        .actionEditShippingLabelPackagesFragmentToMoveShippingItemDialog(
+                            item = event.item,
+                            currentPackage = event.currentPackage,
+                            packagesList = event.packagesList.toTypedArray()
                         )
 
                     findNavController().navigateSafely(action)

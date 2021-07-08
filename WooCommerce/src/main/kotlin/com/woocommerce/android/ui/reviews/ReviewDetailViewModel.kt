@@ -48,7 +48,7 @@ class ReviewDetailViewModel @Inject constructor(
                 // post an event to tell the notification list to moderate this
                 // review, then close the fragment
                 val event = OnRequestModerateReviewEvent(
-                        ProductReviewModerationRequest(review, newStatus)
+                    ProductReviewModerationRequest(review, newStatus)
                 )
                 EventBus.getDefault().post(event)
 
@@ -76,8 +76,8 @@ class ReviewDetailViewModel @Inject constructor(
             val reviewInDb = repository.getCachedProductReview(remoteReviewId)
             if (reviewInDb != null) {
                 viewState = viewState.copy(
-                        productReview = reviewInDb,
-                        isSkeletonShown = false
+                    productReview = reviewInDb,
+                    isSkeletonShown = false
                 )
 
                 if (shouldFetch) {
@@ -97,8 +97,8 @@ class ReviewDetailViewModel @Inject constructor(
                     SUCCESS, NO_ACTION_NEEDED -> {
                         repository.getCachedProductReview(remoteReviewId)?.let { review ->
                             viewState = viewState.copy(
-                                    productReview = review,
-                                    isSkeletonShown = false
+                                productReview = review,
+                                isSkeletonShown = false
                             )
                         }
                     }
@@ -122,12 +122,12 @@ class ReviewDetailViewModel @Inject constructor(
             if (launchedFromNotification) {
                 // Send the track event that a product review notification was opened
                 AnalyticsTracker.track(
-                        Stat.NOTIFICATION_OPEN,
-                        mapOf(
-                            AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
-                            AnalyticsTracker.KEY_ALREADY_READ to it.read
-                        )
+                    Stat.NOTIFICATION_OPEN,
+                    mapOf(
+                        AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                        AnalyticsTracker.KEY_ALREADY_READ to it.read
                     )
+                )
             }
         }
     }

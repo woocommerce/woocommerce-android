@@ -123,43 +123,43 @@ object AppRatingDialog {
 
         val builder = MaterialAlertDialogBuilder(context)
         builder.setTitle(R.string.app_rating_title)
-                .setMessage(R.string.app_rating_message)
-                .setCancelable(true)
-                .setPositiveButton(R.string.app_rating_rate_now) { _, _ ->
-                    AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_RATED))
-                    ratingAccepted()
-                    val appPackage = context.packageName
-                    val url: String? = "market://details?id=$appPackage"
-                    try {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                    } catch (e: android.content.ActivityNotFoundException) {
-                        // play store app isn't on this device so open app's page in browser instead
-                        context.startActivity(
-                                Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("http://play.google.com/store/apps/details?id=" + context.packageName)
-                                )
+            .setMessage(R.string.app_rating_message)
+            .setCancelable(true)
+            .setPositiveButton(R.string.app_rating_rate_now) { _, _ ->
+                AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_RATED))
+                ratingAccepted()
+                val appPackage = context.packageName
+                val url: String? = "market://details?id=$appPackage"
+                try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                } catch (e: android.content.ActivityNotFoundException) {
+                    // play store app isn't on this device so open app's page in browser instead
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id=" + context.packageName)
                         )
-                    }
+                    )
+                }
 
-                    setOptOut(true)
-                }
-                .setNeutralButton(R.string.app_rating_rate_later) { _, _ ->
-                    AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_LATER))
-                    ratingPostponed()
-                    clearSharedPreferences()
-                    storeAskLaterDate()
-                }
-                .setNegativeButton(R.string.app_rating_rate_never) { _, _ ->
-                    AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_DECLINED))
-                    ratingDeclined()
-                    setOptOut(true)
-                }
-                .setOnCancelListener {
-                    clearSharedPreferences()
-                    storeAskLaterDate()
-                }
-                .setOnDismissListener { dialogRef?.clear() }
+                setOptOut(true)
+            }
+            .setNeutralButton(R.string.app_rating_rate_later) { _, _ ->
+                AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_LATER))
+                ratingPostponed()
+                clearSharedPreferences()
+                storeAskLaterDate()
+            }
+            .setNegativeButton(R.string.app_rating_rate_never) { _, _ ->
+                AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_DECLINED))
+                ratingDeclined()
+                setOptOut(true)
+            }
+            .setOnCancelListener {
+                clearSharedPreferences()
+                storeAskLaterDate()
+            }
+            .setOnDismissListener { dialogRef?.clear() }
         dialogRef = WeakReference(builder.show())
     }
 

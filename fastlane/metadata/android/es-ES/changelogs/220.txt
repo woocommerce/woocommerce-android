@@ -1,3 +1,0 @@
-6.7:
-Hemos oído que algunos pedidos necesitan varios envíos para completarse. Con esta actualización, podrás imprimir más de una etiqueta por pedido. También hemos solucionado algunos otros detalles para mejorar la experiencia.
-

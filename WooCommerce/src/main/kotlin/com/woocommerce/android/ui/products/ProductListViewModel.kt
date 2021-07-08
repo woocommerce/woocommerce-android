@@ -55,7 +55,7 @@ class ProductListViewModel @Inject constructor(
 
     private val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
         val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
-                ?: mutableMapOf()
+            ?: mutableMapOf()
         savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
         params
     }
@@ -105,7 +105,8 @@ class ProductListViewModel @Inject constructor(
     ) {
         if (stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
             productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
-            productType != productFilterOptions[ProductFilterOption.TYPE]) {
+            productType != productFilterOptions[ProductFilterOption.TYPE]
+        ) {
             productFilterOptions.clear()
             stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
             productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
@@ -170,8 +171,9 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSearchRequested() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_SEARCHED,
-                mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
+        AnalyticsTracker.track(
+            Stat.PRODUCT_LIST_SEARCHED,
+            mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
         )
         refreshProducts()
     }

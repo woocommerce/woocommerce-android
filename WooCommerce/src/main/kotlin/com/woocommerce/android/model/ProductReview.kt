@@ -23,13 +23,13 @@ data class ProductReview(
 
 fun WCProductReviewModel.toAppModel(): ProductReview {
     return ProductReview(
-            remoteId = this.remoteProductReviewId,
-            dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated),
-            review = this.review,
-            rating = this.rating,
-            reviewerName = this.reviewerName,
-            reviewerAvatarUrl = this.reviewerAvatarUrlBySize[SMALL],
-            remoteProductId = this.remoteProductId,
-            status = this.status
+        remoteId = this.remoteProductReviewId,
+        dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated),
+        review = this.review,
+        rating = this.rating,
+        reviewerName = this.reviewerName,
+        reviewerAvatarUrl = this.reviewerAvatarUrlBySize[SMALL],
+        remoteProductId = this.remoteProductId,
+        status = this.status
     )
 }

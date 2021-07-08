@@ -1,0 +1,2 @@
+6.9:
+Zum Abrufen von Attributen eines variablen Produkts musst du nun weniger oft tippen – du findest sie direkt in den Produktdetails! Es heißt doch so schön: Bilder sagen mehr als Worte. Deshalb haben wir einige Abbildungen in der App neu gestaltet. Außerdem haben wir ein paar Fehler behoben und ein bisschen mehr Schwung hineingebracht – hoffentlich macht sich das für dich bemerkbar!
