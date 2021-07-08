@@ -38,6 +38,17 @@ object CreateShippingLabelTestUtils {
         )
     }
 
+    fun generateIndividualPackage(): ShippingPackage {
+        return ShippingPackage(
+            id = ShippingPackage.INDIVIDUAL_PACKAGE,
+            title = ShippingPackage.INDIVIDUAL_PACKAGE,
+            category = ShippingPackage.INDIVIDUAL_PACKAGE,
+            isLetter = false,
+            dimensions = PackageDimensions(1.0f, 1.0f, 1.0f),
+            boxWeight = 0f
+        )
+    }
+
     fun generateShippingLabelPackage(
         position: Int = 1,
         weight: Float = 10f,

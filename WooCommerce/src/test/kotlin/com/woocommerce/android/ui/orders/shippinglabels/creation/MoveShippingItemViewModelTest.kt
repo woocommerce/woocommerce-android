@@ -64,7 +64,7 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the package has only a single item, when the UI loads, then display new package option`() {
+    fun `given the package has only a single item, when the UI loads, then hide new package option`() {
         val currentItem = defaultItem.copy(quantity = 1)
         val shippingLabelPackage =
             CreateShippingLabelTestUtils.generateShippingLabelPackage(items = listOf(currentItem))
@@ -94,6 +94,46 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.availableDestinations)
             .contains(MoveShippingItemViewModel.DestinationPackage.ExistingPackage(secondPackage))
+    }
+
+    @Test
+    fun `given there are individual packages, when the UI loads, then exclude them from existing packages list`() {
+        val firstPackage = CreateShippingLabelTestUtils.generateShippingLabelPackage(position = 1)
+        val secondPackage = CreateShippingLabelTestUtils.generateShippingLabelPackage(
+            position = 2,
+            selectedPackage = CreateShippingLabelTestUtils.generateIndividualPackage()
+        )
+        val args = MoveShippingItemDialogArgs(
+            item = firstPackage.items.first(),
+            currentPackage = firstPackage,
+            packagesList = listOf(firstPackage, secondPackage).toTypedArray()
+        )
+
+        setup(args)
+
+        assertThat(viewModel.availableDestinations)
+            .doesNotContain(MoveShippingItemViewModel.DestinationPackage.ExistingPackage(secondPackage))
+    }
+
+    @Test
+    fun `given item is in individual package, when the UI loads, then hide the original package option`() {
+        val currentItem = defaultItem.copy(quantity = 1)
+        val shippingLabelPackage =
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                items = listOf(currentItem),
+                selectedPackage = CreateShippingLabelTestUtils.generateIndividualPackage()
+            )
+
+        val args = MoveShippingItemDialogArgs(
+            item = currentItem,
+            currentPackage = shippingLabelPackage,
+            packagesList = listOf(shippingLabelPackage).toTypedArray()
+        )
+
+        setup(args)
+
+        assertThat(viewModel.availableDestinations)
+            .doesNotContain(MoveShippingItemViewModel.DestinationPackage.OriginalPackage)
     }
 
     @Test
