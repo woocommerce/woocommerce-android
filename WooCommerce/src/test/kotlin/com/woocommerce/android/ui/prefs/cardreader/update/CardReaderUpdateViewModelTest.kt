@@ -241,6 +241,66 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED)
         }
 
+    @Test
+    fun `given user presses back, when explanation state shown, then dialog dismissed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+
+            // WHEN
+            val backConsumed = viewModel.onBackPressed()
+
+            // THEN
+            assertThat(backConsumed).isFalse()
+        }
+
+    @Test
+    fun `given user presses back, when progress state shown, then dialog not dismissed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // WHEN
+            val backConsumed = viewModel.onBackPressed()
+
+            // THEN
+            assertThat(backConsumed).isTrue()
+        }
+
+    @Test
+    fun `given user presses back, when progress state shown, then cancel shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // WHEN
+            viewModel.onBackPressed()
+
+            // THEN
+            assertThat((viewModel.viewStateData.value as UpdatingState).cancelWarning).isNotNull
+            assertThat((viewModel.viewStateData.value as UpdatingState).secondaryButton).isNotNull
+        }
+
+    @Test
+    fun `when update progresses, then progress percentage updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val currentProgress = 0.2f
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Installing(currentProgress)))
+
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+
+            // THEN
+            assertThat((viewModel.viewStateData.value as UpdatingState).progress)
+                .isEqualTo((currentProgress * 100).toInt())
+        }
+
     private fun verifyExplanationState(viewModel: CardReaderUpdateViewModel, startedByUser: Boolean) {
         val state = viewModel.viewStateData.value as ExplanationState
         assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_title))
