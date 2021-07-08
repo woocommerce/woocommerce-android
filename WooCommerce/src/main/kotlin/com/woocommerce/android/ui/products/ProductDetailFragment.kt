@@ -432,26 +432,6 @@ class ProductDetailFragment :
         progressDialog?.isCancelable = false
     }
 
-    private fun getSubmitDetailProgressDialog(): CustomProgressDialog {
-        val title: Int
-        val message: Int
-        when (viewModel.isProductUnderCreation) {
-            true -> {
-                title = if (viewModel.isDraftProduct()) {
-                    R.string.product_publish_draft_dialog_title
-                } else {
-                    R.string.product_publish_dialog_title
-                }
-                message = R.string.product_publish_dialog_message
-            }
-            else -> {
-                title = R.string.product_update_dialog_title
-                message = R.string.product_update_dialog_message
-            }
-        }
-        return CustomProgressDialog.show(getString(title), getString(message))
-    }
-
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null

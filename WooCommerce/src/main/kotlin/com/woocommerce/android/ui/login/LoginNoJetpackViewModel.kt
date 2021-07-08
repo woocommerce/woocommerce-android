@@ -2,20 +2,17 @@ package com.woocommerce.android.ui.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
-import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
+import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginNoJetpackViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class LoginNoJetpackViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val loginNoJetpackRepository: LoginNoJetpackRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -34,7 +31,4 @@ class LoginNoJetpackViewModel @AssistedInject constructor(
         super.onCleared()
         loginNoJetpackRepository.onCleanup()
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<LoginNoJetpackViewModel>
 }

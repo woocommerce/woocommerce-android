@@ -46,7 +46,7 @@ class WCViewPagerIndicator @JvmOverloads constructor(
         })
     }
 
-    fun setSelectedIndicator(index: Int) {
+    private fun setSelectedIndicator(index: Int) {
         for (i in 0 until pageCount) {
             indicators[i].isSelected = i == index
         }
