@@ -11,10 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginEmailHelpDialogFragment : DialogFragment() {
     companion object {
         const val TAG = "LoginEmailHelpDialogFragment"
@@ -54,7 +55,6 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
     }
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         if (context is Listener) {

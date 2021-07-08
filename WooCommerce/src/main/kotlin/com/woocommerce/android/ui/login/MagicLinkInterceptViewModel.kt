@@ -2,27 +2,24 @@ package com.woocommerce.android.ui.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.RETRY
 import com.woocommerce.android.model.RequestResult.SUCCESS
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MagicLinkInterceptViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class MagicLinkInterceptViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val magicLinkInterceptRepository: MagicLinkInterceptRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -77,7 +74,4 @@ class MagicLinkInterceptViewModel @AssistedInject constructor(
         super.onCleared()
         magicLinkInterceptRepository.onCleanup()
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<MagicLinkInterceptViewModel>
 }
