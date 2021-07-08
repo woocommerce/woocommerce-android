@@ -116,11 +116,10 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        val currentState = viewState.value
-        return if (currentState is UpdatingState) {
-            showCancelButton(currentState)
-        } else {
-            triggerEvent(ExitWithResult(FAILED))
+        return when (val currentState = viewState.value) {
+            is UpdatingState -> showCancelButton(currentState)
+            is UpdatingCancelingState -> viewState.value = UpdatingState(currentState.progress)
+            else -> triggerEvent(ExitWithResult(FAILED))
         }
     }
 

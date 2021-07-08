@@ -65,7 +65,7 @@
         android:id="@+id/update_reader_progress_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="update_reader_progress_description_tv, update_reader_pb, update_reader_progress_warning_tv" />
+        app:constraint_referenced_ids="update_reader_progress_description_tv, update_reader_pb" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/update_reader_description_tv"

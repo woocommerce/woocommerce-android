@@ -298,6 +298,28 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given user presses back, when canceling state shown, then cancel hid`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(
+                flow {
+                    emit(Initializing)
+                    emit(Installing(0f))
+                }
+            )
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            viewModel.onBackPressed()
+
+            // WHEN
+            viewModel.onBackPressed()
+
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
+        }
+
+    @Test
     fun `given UpdatingState state shown, when update progresses, then progress percentage updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
