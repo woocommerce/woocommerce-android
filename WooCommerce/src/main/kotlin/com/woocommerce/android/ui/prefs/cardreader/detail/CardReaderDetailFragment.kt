@@ -85,6 +85,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     is ConnectedState -> {
                         with(binding.readerConnectedState) {
                             UiHelpers.setTextOrHide(enforcedUpdateTv, state.enforceReaderUpdate)
+                            enforcedUpdateDivider.visibility = enforcedUpdateTv.visibility
                             UiHelpers.setTextOrHide(readerNameTv, state.readerName)
                             UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
                             UiHelpers.setTextOrHide(primaryActionBtn, state.primaryButtonState?.text)
