@@ -141,20 +141,17 @@ class OrderDetailRepository @Inject constructor(
         return result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }?.map { it.toAppModel() } ?: emptyList()
     }
 
-    suspend fun updateOrderStatus(
-        localOrderId: Int,
-        remoteOrderId: Long,
-        newStatus: String
-    ): Boolean {
-        val result = continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+    suspend fun updateOrderStatus(localOrderId: Int, newStatus: String): ContinuationResult<Boolean> {
+        val order = OrderSqlUtils.getOrder(localOrderId)
+        return updateOrderStatus(order, newStatus)
+    }
+
+    suspend fun updateOrderStatus(order: WCOrderModel, newStatus: String): ContinuationResult<Boolean> {
+        return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = UpdateOrderStatusPayload(
-                localOrderId, remoteOrderId, selectedSite.get(), newStatus
+                order, selectedSite.get(), newStatus
             )
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
         }
     }
 

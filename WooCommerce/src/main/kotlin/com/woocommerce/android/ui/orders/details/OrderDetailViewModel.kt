@@ -447,11 +447,18 @@ class OrderDetailViewModel @Inject constructor(
     fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
-                    order = order.copy(status = Status.fromValue(newStatus))
-                } else {
-                    onOrderStatusChangeReverted()
-                    triggerEvent(ShowSnackbar(string.order_error_update_general))
+                val order = OrderSqlUtils.getOrder(orderIdSet.id)
+                val updateResult = orderDetailRepository.updateOrderStatus(order, newStatus)
+
+                when (updateResult) {
+                    is ContinuationWrapper.ContinuationResult.Cancellation -> {
+                        // no-op
+                    }
+                    is ContinuationWrapper.ContinuationResult.Success -> {
+                        if (!updateResult.value) {
+                            triggerEvent(ShowSnackbar(string.order_error_update_general))
+                        }
+                    }
                 }
             }
         } else {

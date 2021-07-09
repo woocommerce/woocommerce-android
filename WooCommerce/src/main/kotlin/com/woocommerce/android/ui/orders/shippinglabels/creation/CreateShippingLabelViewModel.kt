@@ -96,6 +96,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -499,14 +500,16 @@ class CreateShippingLabelViewModel @Inject constructor(
                 val orderIdSet = data.order.identifier.toIdSet()
                 val fulfillResult = orderDetailRepository.updateOrderStatus(
                     localOrderId = orderIdSet.id,
-                    remoteOrderId = orderIdSet.remoteOrderId,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 )
-                if (fulfillResult) {
-                    AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
-                } else {
-                    AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
-                    triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+                when (fulfillResult) {
+                    is ContinuationResult.Success -> {
+                        AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
+                    }
+                    is ContinuationResult.Cancellation -> {
+                        AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
+                        triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+                    }
                 }
             }
             AnalyticsTracker.track(
