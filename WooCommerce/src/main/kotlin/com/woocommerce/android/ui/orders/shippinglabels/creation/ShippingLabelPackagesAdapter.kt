@@ -13,16 +13,19 @@ import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBi
 import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShippingLabelPackageUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
-    val weightUnit: String,
+    val siteParameters: SiteParameters,
     val onWeightEdited: (Int, Float) -> Unit,
     val onExpandedChanged: (Int, Boolean) -> Unit,
     val onPackageSpinnerClicked: (Int) -> Unit,
@@ -34,6 +37,12 @@ class ShippingLabelPackagesAdapter(
             field = value
             diff.dispatchUpdatesTo(this)
         }
+
+    private val weightUnit
+        get() = siteParameters.weightUnit.orEmpty()
+
+    private val dimensionUnit
+        get() = siteParameters.dimensionUnit.orEmpty()
 
     init {
         setHasStableIds(true)
@@ -125,14 +134,35 @@ class ShippingLabelPackagesAdapter(
             binding.packageName.text = shippingLabelPackage.getTitle(context)
             binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
-                shippingLabelPackage.items.size,
-                shippingLabelPackage.items.size
+                shippingLabelPackage.itemsCount,
+                shippingLabelPackage.itemsCount
             )}"
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()
                 moveItemClickListener = { item -> onMoveItemClicked(item, shippingLabelPackage) }
             }
-            binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
+            if (shippingLabelPackage.selectedPackage?.isIndividual == true) {
+                binding.selectedPackageSpinner.isVisible = false
+                binding.individualPackageLayout.isVisible = true
+                binding.individualPackageDimensions.isVisible = true
+                binding.individualPackageDimensions.text = with(shippingLabelPackage.selectedPackage.dimensions) {
+                    "${length.formatToString()} $dimensionUnit x" +
+                        " ${width.formatToString()} $dimensionUnit x" +
+                        " ${height.formatToString()} $dimensionUnit"
+                }
+                if (!shippingLabelPackage.selectedPackage.dimensions.isValid) {
+                    binding.individualPackageDimensions.setTextColor(context.getColorCompat(R.color.color_error))
+                    binding.individualPackageError.isVisible = true
+                } else {
+                    binding.individualPackageDimensions
+                        .setTextColor(context.getColorCompat(R.color.color_on_surface_medium))
+                    binding.individualPackageError.isVisible = false
+                }
+            } else {
+                binding.selectedPackageSpinner.isVisible = true
+                binding.individualPackageLayout.isVisible = false
+                binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
+            }
             if (!shippingLabelPackage.weight.isNaN()) {
                 binding.weightEditText.setTextIfDifferent(shippingLabelPackage.weight.toString())
             }

@@ -23,13 +23,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     companion object {
         const val TAG = "LoginNoJetpackFragment"
@@ -82,9 +81,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
      * */
     private var mCheckJetpackAvailability: Boolean = false
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    private val viewModel: LoginNoJetpackViewModel by viewModels { viewModelFactory }
+    private val viewModel: LoginNoJetpackViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,6 +144,11 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             text = getString(R.string.login_no_jetpack, siteAddress)
         }
 
+        noStoresBinding.btnSecondaryAction.setOnClickListener {
+            AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED)
+            jetpackLoginListener?.showWhatIsJetpackDialog()
+        }
+
         with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_setup_instructions)
             setOnClickListener {
@@ -182,7 +184,6 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     }
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface

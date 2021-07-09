@@ -4,16 +4,14 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.sumByFloat
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingPackage
-import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.MoveItemResult
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -50,10 +48,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val weightUnit: String by lazy {
-        val parameters = parameterRepository.getParameters(KEY_PARAMETERS, savedState)
-        parameters.weightUnit ?: ""
-    }
+    val siteParameters: SiteParameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
 
     init {
         initState()
@@ -85,11 +80,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             return emptyList()
         }
 
-        val lastUsedPackage = shippingLabelRepository.getAccountSettings().let { result ->
-            if (result.isError) return@let null
-            val savedPackageId = result.model!!.lastUsedBoxId
-            shippingPackagesResult.model!!.find { it.id == savedPackageId }
-        }
+        val lastUsedPackage = shippingLabelRepository.getLastUsedPackage()
 
         val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
         loadProductsWeightsIfNeeded(order)
@@ -177,12 +168,14 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
+    // all the logic is inside local functions, so it should be OK, but detekt complains still
+    @Suppress("ComplexMethod")
     fun handleMoveItemResult(result: MoveItemResult) {
         val packages = viewState.packagesUiModels.toMutableList()
         val item = result.item
         val currentPackage = result.currentPackage
 
-        fun moveItemToNewPackage(): List<ShippingLabelPackageUiModel> {
+        fun removeItemFromCurrentPackage(): MutableList<ShippingLabelPackageUiModel> {
             val updatedItems = if (item.quantity > 1) {
                 // if the item quantity is more than one, subtract 1 from it
                 val mutableItems = currentPackage.items.toMutableList()
@@ -198,36 +191,99 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             packages[indexOfCurrentPackage] = ShippingLabelPackageUiModel(
                 data = currentPackage.copy(items = updatedItems)
             )
-            packages.add(
+            return packages
+        }
+
+        suspend fun moveItemToNewPackage(): List<ShippingLabelPackageUiModel> {
+            val updatedPackages = removeItemFromCurrentPackage()
+            val selectedPackage = currentPackage.selectedPackage?.takeIf { !it.isIndividual }
+                ?: shippingLabelRepository.getLastUsedPackage()
+            updatedPackages.add(
                 ShippingLabelPackageUiModel(
                     data = ShippingLabelPackage(
                         position = packages.size + 1,
-                        selectedPackage = currentPackage.selectedPackage,
-                        weight = item.weight + (currentPackage.selectedPackage?.boxWeight ?: 0f),
+                        selectedPackage = selectedPackage,
+                        weight = item.weight + (selectedPackage?.boxWeight ?: 0f),
                         items = listOf(item.copy(quantity = 1))
                     )
                 )
             )
 
-            return packages.mapIndexed { index, shippingLabelPackageUiModel ->
+            return updatedPackages.mapIndexed { index, shippingLabelPackageUiModel ->
                 // Collapse all items except the added one
                 shippingLabelPackageUiModel.copy(isExpanded = index == packages.size - 1)
             }
         }
 
-        viewState = viewState.copy(
-            packagesUiModels = when (result.destination) {
-                is DestinationPackage.ExistingPackage -> TODO()
-                DestinationPackage.NewPackage -> moveItemToNewPackage()
-                DestinationPackage.OriginalPackage -> TODO()
-            }.filter {
-                // Remove empty packages
-                it.data.items.isNotEmpty()
-            }.mapIndexed { index, model ->
-                // Recalculate positions
-                model.copy(data = model.data.copy(position = index + 1))
+        fun moveItemToExistingPackage(destination: ShippingLabelPackage): List<ShippingLabelPackageUiModel> {
+            val updatedPackages = removeItemFromCurrentPackage()
+            val updatedItemsOfDestination = destination.items.toMutableList().apply {
+                val existingItem = firstOrNull { it.isSameProduct(item) }
+                if (existingItem != null) {
+                    // If the existing package has same product, then just increase the quantity
+                    set(indexOf(existingItem), existingItem.copy(quantity = existingItem.quantity + 1))
+                } else {
+                    // Otherwise add a new item with quantity set to 1
+                    add(item.copy(quantity = 1))
+                }
             }
-        )
+
+            val indexOfDestinationPackage = updatedPackages.indexOfFirst { it.data == destination }
+            updatedPackages[indexOfDestinationPackage] = ShippingLabelPackageUiModel(
+                data = destination.copy(items = updatedItemsOfDestination)
+            )
+
+            return packages.mapIndexed { index, shippingLabelPackageUiModel ->
+                // Collapse all items except the destination one
+                shippingLabelPackageUiModel.copy(isExpanded = index == indexOfDestinationPackage)
+            }
+        }
+
+        fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
+            val updatedPackages = removeItemFromCurrentPackage()
+
+            // We fetch products when this screen is opened, so we can retrieve details from DB
+            val product: IProduct? = orderDetailRepository.getOrder(arguments.orderId)
+                ?.items
+                ?.find { it.uniqueId == item.productId }
+                ?.let {
+                    if (it.isVariation) variationDetailRepository.getVariation(it.productId, it.variationId)
+                    else productDetailRepository.getProduct(it.productId)
+                }
+
+            val individualPackage = item.createIndividualShippingPackage(product)
+            updatedPackages.add(
+                ShippingLabelPackageUiModel(
+                    data = ShippingLabelPackage(
+                        position = packages.size + 1,
+                        selectedPackage = individualPackage,
+                        weight = item.weight,
+                        items = listOf(item.copy(quantity = 1))
+                    )
+                )
+            )
+            return updatedPackages.mapIndexed { index, shippingLabelPackageUiModel ->
+                // Collapse all items except the added one
+                shippingLabelPackageUiModel.copy(isExpanded = index == packages.size - 1)
+            }
+        }
+
+        launch {
+            viewState = viewState.copy(
+                packagesUiModels = when (result.destination) {
+                    is DestinationPackage.ExistingPackage ->
+                        moveItemToExistingPackage(result.destination.destinationPackage)
+                    DestinationPackage.NewPackage -> moveItemToNewPackage()
+                    DestinationPackage.OriginalPackage -> moveItemToIndividualPackage()
+                }.filter {
+                    // Remove empty packages
+                    it.data.items.isNotEmpty()
+                }.mapIndexed { index, model ->
+                    // Recalculate positions
+                    model.copy(data = model.data.copy(position = index + 1))
+                }
+            )
+        }
     }
 
     fun onDoneButtonClicked() {
@@ -277,16 +333,21 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             get() = packagesUiModels.map { it.data }
         val isDataValid: Boolean
             get() = packagesUiModels.isNotEmpty() &&
-                packagesUiModels.all {
-                    !it.data.weight.isNaN() && it.data.weight > 0.0 && it.data.selectedPackage != null
-                }
+                packagesUiModels.all { it.isValid }
     }
 
     @Parcelize
     data class ShippingLabelPackageUiModel(
         val isExpanded: Boolean = false,
         val data: ShippingLabelPackage
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isValid: Boolean
+            get() = !data.weight.isNaN() &&
+                data.weight > 0.0 &&
+                data.selectedPackage != null &&
+                data.selectedPackage.dimensions.isValid
+    }
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
 
