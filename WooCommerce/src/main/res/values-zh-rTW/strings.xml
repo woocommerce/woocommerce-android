@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-23 13:54:03+0000
+Translation-Revision-Date: 2021-07-08 09:54:58+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_reader_detail_connected_update_failed">讀卡機軟體更新失敗</string>
+    <string name="card_reader_detail_connected_update_check_failed">軟體版本更新檢查失敗</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;接受行動支付及訂購讀卡機的資訊</string>
+    <string name="card_reader_connect_open_bluetooth_settings">開啟藍牙</string>
+    <string name="card_reader_connect_scanning_failed_header">找不到讀卡機</string>
+    <string name="card_reader_connect_failed_header">無法連線至讀卡機</string>
+    <string name="card_reader_connect_connect_button">連線</string>
+    <string name="card_reader_connect_multiple_readers_found_header">找到數個讀卡機</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">此訂單已付款</string>
+    <string name="card_reader_payment_receipt_email_content">感謝你的購買！ 點按下方連結即可查看付款收據。\n\n%s</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">付款失敗</string>
+    <string name="card_reader_payment_failed_card_declined_state">卡片遭到拒絕</string>
+    <string name="shipping_label_print_customs_form_download_failed">下載海關表格時發生錯誤</string>
+    <string name="shipping_label_print_customs_form_screen_title">列印海關發票</string>
+    <string name="shipping_label_print_customs_form">列印海關表格</string>
+    <string name="shipping_label_print_customs_explanation">此國際貨件須列印並附上海關表格</string>
+    <string name="shipping_label_customs_form">海關表格</string>
+    <string name="shipping_label_payment_method_added">已新增付款方式</string>
+    <string name="shipping_label_payments_add_first_credit_card">新增信用卡</string>
+    <string name="shipping_label_destination_address_phone_invalid">請輸入有效的電話號碼</string>
+    <string name="orderdetail_shipping_label_print_customs_form">列印海關表格</string>
     <string name="empty_order_list_message">探索如何增加商店銷售額</string>
     <string name="empty_product_message">為商店新增第一個產品，立即開始銷售。</string>
     <string name="empty_product_add_product_button">新增商品</string>
     <string name="variable_product_attributes">款式屬性</string>
     <string name="card_reader_detail_not_connected_third_hint_label">開啟行動裝置的藍牙</string>
-    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;瞭解更多&lt;/a&gt;有關使用行動裝置接受付款及訂購讀卡機的資訊</string>
-    <string name="card_reader_fetching_order_failed">擷取訂單時發生錯誤。 應用程式中的訂單狀態可能已過期。</string>
+    <string name="card_reader_refetching_order_failed">擷取訂單時發生錯誤。 應用程式中的訂單狀態可能已過期。</string>
     <string name="card_reader_payment_email_client_not_found">無法偵測電子郵件用戶端應用程式</string>
-    <string name="card_reader_payment_receipt_email_content">感謝你的購買！ 你可以在以下連結找到付款收據：%s</string>
     <string name="card_reader_payment_receipt_email_subject">你的 %s 收據</string>
     <string name="card_reader_payment_description">%s %s 訂單線上付款</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">正在重新整理訂單</string>
     <string name="card_reader_payment_fetch_order_loading_header">正在更新應用程式狀態</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">顧客已選取 %1$s</string>
-    <string name="shipping_label_address_phone_invalid">海關表格要求填寫 10 位數電話號碼</string>
+    <string name="shipping_label_origin_address_phone_invalid">海關表格要求填寫 10 位數電話號碼</string>
     <string name="shipping_label_address_phone_required">必須提供電話號碼，因為此貨件需要提交海關表格</string>
     <string name="shipping_label_create_customs_done">已填妥海關表格</string>
     <string name="print_receipt_label_info_step_7">如果從裝置列印時遇到問題，請聯絡印表機的客服人員。</string>
@@ -38,9 +57,7 @@ Language: zh_TW
     <string name="card_reader_software_update_in_progress_title">正在更新讀卡機軟體</string>
     <string name="card_reader_software_update_title">軟體更新</string>
     <string name="card_reader_software_update_description">你的讀卡機軟體需要更新才能正常執行功能。 是否要立即更新？</string>
-    <string name="card_reader_detail_connected_update_failed">讀卡機軟體更新失敗。 請稍後再試一次</string>
     <string name="card_reader_detail_connected_update_success">已更新讀卡機軟體。</string>
-    <string name="card_reader_detail_connected_update_check_failed">軟體版本更新檢查失敗。 請稍後再試一次</string>
     <string name="card_reader_detail_connected_reader_unknown">未知的讀卡機名稱</string>
     <string name="card_reader_detail_connected_disconnect_reader">中斷連結讀卡機</string>
     <string name="card_reader_detail_connected_enforced_update_software">請更新你的讀卡機軟體以接受付款</string>
@@ -52,7 +69,6 @@ Language: zh_TW
     <string name="card_reader_detail_not_connected_first_hint_label">請確認讀卡機已充電</string>
     <string name="card_reader_detail_not_connected_header">連接讀卡機</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">卡片遭到拒絕</string>
-    <string name="card_reader_payment_failed_card_declined_state">卡片遭到拒絕。 請改用其他卡片。</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">正在連線至讀卡機</string>
     <string name="card_reader_payment_collect_payment_loading_header">正在準備收取款項</string>
     <string name="shipping_label_customs_value_zero_error">申報價格必須大於零</string>
@@ -107,15 +123,12 @@ Language: zh_TW
     <string name="product_type_virtual_desc">獨特的數位產品，例如各式服務、可下載的書籍、音樂或影片</string>
     <string name="product_type_simple_desc">需要運送給顧客的獨特實體產品</string>
     <string name="product_type_simple_title">簡單的實體產品</string>
-    <string name="card_reader_connect_open_bluetooth_settings">開啟設定</string>
     <string name="card_reader_connect_open_location_settings">開啟設定</string>
     <string name="card_reader_connect_open_permission_settings">開啟設定</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">已停用藍牙</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">已停用位置</string>
-    <string name="card_reader_connect_missing_permissions_hint">缺少所需的位置權限</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">已停用藍牙</string>
+    <string name="card_reader_connect_location_provider_disabled_header">已停用定位</string>
+    <string name="card_reader_connect_missing_permissions_header">缺少所需定位權限</string>
     <string name="card_reader_connect_connecting_failed_hint">無法連線至閱讀器。</string>
-    <string name="card_reader_connect_scanning_failed_hint">找不到任何閱讀器。</string>
-    <string name="card_reader_connect_failed_header">連線至閱讀器失敗</string>
     <string name="card_reader_connect_connecting_header">正在連線至閱讀器</string>
     <string name="card_reader_connect_to_reader">連線至閱讀器</string>
     <string name="card_reader_connect_reader_found_header">你要連線至閱讀器 %s 嗎？</string>
@@ -129,7 +142,6 @@ Language: zh_TW
     <string name="product_delete_dialog_title">刪除產品</string>
     <string name="card_reader_payment_send_receipt">傳送收據</string>
     <string name="card_reader_payment_print_receipt">列印收據</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">付款失敗。 請再試一次。</string>
     <string name="card_reader_payment_capturing_payment_state">擷取付款</string>
     <string name="card_reader_payment_processing_payment_state">處理付款</string>
     <string name="card_reader_payment_collect_payment_state">閱讀器已準備就緒</string>
@@ -379,7 +391,7 @@ Language: zh_TW
     <string name="shipping_label_print_error_message">如果購買標籤時發生列印錯誤，可以重新列印。</string>
     <string name="orderdetail_shipping_label_wip_message">我們正努力讓你以更輕鬆的方式直接從你的裝置列印郵寄標籤！ 如果你已經使用 WooCommerce Shipping 在商店管理員中為此訂單建立了郵寄標籤，可以在此處的「訂單詳細資料」中列印。</string>
     <string name="orderdetail_shipping_label_wip_title">從你的裝置列印郵寄標籤！</string>
-    <string name="orderdetail_shipping_label_reprint">重新列印郵寄標籤</string>
+    <string name="orderdetail_shipping_label_print">列印郵寄標籤</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">已儲存商品草稿</string>
     <string name="product_detail_publish_product_draft_error">儲存商品草稿時發生錯誤</string>
