@@ -35,6 +35,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        viewModel.onViewCreated()
         return object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 viewModel.onBackPressed()

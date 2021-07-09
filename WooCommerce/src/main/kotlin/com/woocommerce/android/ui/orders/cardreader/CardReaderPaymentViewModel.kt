@@ -91,6 +91,12 @@ class CardReaderPaymentViewModel
         }
     }
 
+    fun onViewCreated() {
+        if (viewState.value is ViewState.PrintingReceiptState) {
+            startPrintingFlow()
+        }
+    }
+
     private fun initPaymentFlow(isRetry: Boolean) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
@@ -111,7 +117,7 @@ class CardReaderPaymentViewModel
                     order.total,
                     order.currency,
                     order.billingAddress.email,
-                    "$${order.total}"
+                    getAmountLabel(order)
                 )
             } ?: run {
                 tracker.track(
@@ -170,7 +176,7 @@ class CardReaderPaymentViewModel
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
                 tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
-                onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
+                onPaymentCompleted(paymentStatus, orderId)
             }
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
@@ -192,27 +198,23 @@ class CardReaderPaymentViewModel
 
     private fun onPaymentCompleted(
         paymentStatus: PaymentCompleted,
-        billingEmail: String,
         orderId: Long,
-        amountLabel: String
     ) {
-        viewState.postValue(
-            PaymentSuccessfulState(
-                amountLabel,
-                // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-                { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
-                { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
-            )
-        )
         storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        showPaymentSuccessfulState()
         reFetchOrder()
     }
 
     private fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
-        launch {
-            selectedSite.get().let {
-                appPrefsWrapper.setReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId, receiptUrl)
-            }
+        selectedSite.get().let {
+            appPrefsWrapper.setReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId, receiptUrl)
+        }
+    }
+
+    private fun getReceiptUrl(orderId: Long): String {
+        return selectedSite.get().let {
+            appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
+                ?: throw IllegalStateException("Receipt URL not available.")
         }
     }
 
@@ -238,15 +240,18 @@ class CardReaderPaymentViewModel
         viewState.postValue(FailedPaymentState(error.type.mapToUiError(), amountLabel, onRetryClicked))
     }
 
-    private fun onPrintReceiptClicked(receiptUrl: String, documentName: String) {
+    private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
         launch {
-            (viewState.value as? PaymentSuccessfulState)?.let {
-                viewState.value = it.copy(isProgressVisible = true)
-            }
+            viewState.value = ViewState.PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
             tracker.track(RECEIPT_PRINT_TAPPED)
-            // TODO cardreader show a progress dialog as url loading might take some time
-            triggerEvent(PrintReceipt(receiptUrl, documentName))
+            startPrintingFlow()
         }
+    }
+
+    private fun startPrintingFlow() {
+        val order = orderRepository.getOrder(arguments.orderIdentifier)
+            ?: throw IllegalStateException("Order URL not available.")
+        triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId), getReceiptDocumentName(order.remoteId)))
     }
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
@@ -274,9 +279,8 @@ class CardReaderPaymentViewModel
     }
 
     fun onPrintResult(result: PrintJobResult) {
-        (viewState.value as? PaymentSuccessfulState)?.let {
-            viewState.value = it.copy(isProgressVisible = false)
-        }
+        showPaymentSuccessfulState()
+
         tracker.track(
             when (result) {
                 CANCELLED -> RECEIPT_PRINT_CANCELED
@@ -284,6 +288,23 @@ class CardReaderPaymentViewModel
                 STARTED -> RECEIPT_PRINT_SUCCESS
             }
         )
+    }
+
+    private fun showPaymentSuccessfulState() {
+        launch {
+            val order = orderRepository.getOrder(arguments.orderIdentifier)
+                ?: throw IllegalStateException("Order URL not available.")
+            val amountLabel = getAmountLabel(order)
+            val receiptUrl = getReceiptUrl(order.remoteId)
+
+            viewState.postValue(
+                PaymentSuccessfulState(
+                    getAmountLabel(order),
+                    { onPrintReceiptClicked(amountLabel, receiptUrl, getReceiptDocumentName(order.remoteId)) },
+                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) }
+                )
+            )
+        }
     }
 
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
@@ -312,6 +333,10 @@ class CardReaderPaymentViewModel
             triggerEvent(Exit)
         }
     }
+
+    private fun getAmountLabel(order: Order) = "$${order.total}"
+
+    private fun getReceiptDocumentName(orderId: Long) = "receipt-order-$orderId"
 
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
@@ -375,14 +400,26 @@ class CardReaderPaymentViewModel
         data class PaymentSuccessfulState(
             override val amountWithCurrencyLabel: String,
             override val onPrimaryActionClicked: (() -> Unit),
-            override val onSecondaryActionClicked: (() -> Unit),
-            override val isProgressVisible: Boolean = false
+            override val onSecondaryActionClicked: (() -> Unit)
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_completed_payment_header,
-            illustration = if (isProgressVisible) null else R.drawable.img_celebration,
+            illustration = R.drawable.img_celebration,
             primaryActionLabel = R.string.card_reader_payment_print_receipt,
             secondaryActionLabel = R.string.card_reader_payment_send_receipt
         )
+
+        data class PrintingReceiptState(
+            override val amountWithCurrencyLabel: String,
+            val receiptUrl: String,
+            val documentName: String
+        ) : ViewState(
+            headerLabel = R.string.card_reader_payment_completed_payment_header,
+            illustration = null,
+            primaryActionLabel = null,
+            secondaryActionLabel = null,
+        ) {
+            override val isProgressVisible = true
+        }
 
         object ReFetchingOrderState : ViewState(
             headerLabel = R.string.card_reader_payment_fetch_order_loading_header,
