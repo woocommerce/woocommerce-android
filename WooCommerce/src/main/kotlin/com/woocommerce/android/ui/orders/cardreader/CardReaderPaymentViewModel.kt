@@ -322,7 +322,7 @@ class CardReaderPaymentViewModel
         )
 
     // TODO cardreader don't hardcode currency symbol ($)
-    private fun Order.getAmountLabel() = "$${netTotal}"
+    private fun Order.getAmountLabel() = "$$netTotal"
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 
