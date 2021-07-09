@@ -164,9 +164,12 @@ class EditShippingLabelAddressFragment :
                 binding.zip.updateFromField(field)
             }
             new.stateField.takeIfNotEqualTo(old?.stateField) { field ->
-                binding.state.updateFromField(field)
-                binding.stateSpinner.setText(field.content)
-                binding.stateSpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
+                if (new.isStateFieldSpinner == true) {
+                    binding.stateSpinner.setText(field.content)
+                    binding.stateSpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
+                } else {
+                    binding.state.updateFromField(field)
+                }
             }
             new.countryField.takeIfNotEqualTo(old?.countryField) { field ->
                 binding.countrySpinner.setText(field.content)
@@ -331,7 +334,9 @@ class EditShippingLabelAddressFragment :
 
     private fun WCMaterialOutlinedEditTextView.bindToField(field: Field) {
         setOnTextChangedListener {
-            viewModel.onFieldEdited(field, it?.toString().orEmpty())
+            // trigger event only if this view is visible, avoids issues when the field can have different field types
+            // like the state
+            if (this.isVisible) viewModel.onFieldEdited(field, it?.toString().orEmpty())
         }
     }
 
