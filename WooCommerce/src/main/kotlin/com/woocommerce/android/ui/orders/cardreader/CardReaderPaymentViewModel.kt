@@ -103,16 +103,7 @@ class CardReaderPaymentViewModel
                     triggerEvent(Exit)
                     return@launch
                 }
-                // TODO cardreader don't hardcode currency symbol ($)
-                collectPaymentFlow(
-                    cardReaderManager,
-                    order.getPaymentDescription(),
-                    order.remoteId,
-                    order.total,
-                    order.currency,
-                    order.billingAddress.email,
-                    getAmountLabel(order)
-                )
+                collectPaymentFlow(cardReaderManager, order)
             } ?: run {
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
@@ -142,18 +133,16 @@ class CardReaderPaymentViewModel
     }
 
     @Suppress("LongParameterList")
-    private suspend fun collectPaymentFlow(
-        cardReaderManager: CardReaderManager,
-        paymentDescription: String,
-        orderId: Long,
-        amount: BigDecimal,
-        currency: String,
-        billingEmail: String,
-        amountLabel: String
-    ) {
-        cardReaderManager.collectPayment(paymentDescription, orderId, amount, currency, billingEmail.ifEmpty { null })
-            .collect { paymentStatus ->
-                onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
+    private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
+        val customerEmail = order.billingAddress.email
+        cardReaderManager.collectPayment(
+            paymentDescription = order.getPaymentDescription(),
+            orderId = order.remoteId,
+            amount = order.total,
+            currency = order.currency,
+            customerEmail = customerEmail.ifEmpty { null }
+        ).collect { paymentStatus ->
+                onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, getAmountLabel(order))
             }
     }
 
@@ -334,6 +323,7 @@ class CardReaderPaymentViewModel
             selectedSite.get().name.orEmpty()
         )
 
+    // TODO cardreader don't hardcode currency symbol ($)
     private fun getAmountLabel(order: Order) = "$${order.total}"
 
     private fun getReceiptDocumentName(orderId: Long) = "receipt-order-$orderId"
