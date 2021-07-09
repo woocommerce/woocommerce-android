@@ -134,24 +134,15 @@
             android:nextFocusForward="@+id/city"
             app:errorEnabled="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/cityLayout"
-            style="@style/Woo.TextInputLayout"
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/shipping_label_edit_address_city"
-            app:errorEnabled="true"
-            tools:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/city"
-                style="@style/Woo.TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:nextFocusForward="@+id/state" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:inputType="text"
+            android:nextFocusForward="@+id/state"
+            app:errorEnabled="true"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/stateLayout"
@@ -185,24 +176,15 @@
             android:nextFocusForward="@+id/zip"
             android:textAppearance="@style/TextAppearance.Woo.Caption" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/zipLayout"
-            style="@style/Woo.TextInputLayout"
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/zip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:inputType="text"
             android:hint="@string/shipping_label_edit_address_zip"
-            app:errorEnabled="true"
-            tools:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/zip"
-                style="@style/Woo.TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:nextFocusForward="@+id/countrySpinner" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            android:nextFocusForward="@+id/countrySpinner"
+            app:errorEnabled="true"/>
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
             android:id="@+id/countrySpinner"

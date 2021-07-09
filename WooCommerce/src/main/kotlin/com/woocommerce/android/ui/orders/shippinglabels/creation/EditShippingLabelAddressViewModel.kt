@@ -187,8 +187,6 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     private fun clearErrors() {
         viewState = viewState.copy(
             bannerMessage = "",
-            cityError = 0,
-            zipError = 0
         )
     }
 
@@ -200,11 +198,6 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 null
             }
         }
-
-        viewState = viewState.copy(
-            cityError = getErrorOrClear(address.city),
-            zipError = getErrorOrClear(address.postcode)
-        )
     }
 
     fun updateAddress(address: Address) {
@@ -300,8 +293,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val phoneField: PhoneField,
         val address1Field: Address1Field,
         val address2Field: OptionalField,
-        @StringRes val cityError: Int? = null,
-        @StringRes val zipError: Int? = null,
+        val cityField: RequiredField,
+        val zipField: RequiredField,
         @StringRes val title: Int? = null
     ) : Parcelable {
         constructor(args: EditShippingLabelAddressFragmentArgs): this(
@@ -312,7 +305,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             companyField = OptionalField(content = args.address.company),
             address1Field = Address1Field(args.address.address1),
             address2Field = OptionalField(args.address.address2),
-            phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType)
+            phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType),
+            cityField = RequiredField(args.address.city),
+            zipField = RequiredField(args.address.postcode)
         )
 
         @IgnoredOnParcel
@@ -344,16 +339,22 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                     companyField = companyField.copy(content = content).validate(),
                     nameField = nameField.copy(companyContent = content).validate()
                 )
-                Field.Phone -> TODO()
+                Field.Phone -> copy(
+                    phoneField = phoneField.copy(content = content).validate()
+                )
                 Field.Address1 -> copy(
                     address1Field = address1Field.copy(content = content, validationError = null).validate()
                 )
                 Field.Address2 -> copy(
                     address2Field = address2Field.copy(content = content).validate()
                 )
-                Field.City -> TODO()
+                Field.City -> copy(
+                    cityField = cityField.copy(content = content).validate()
+                )
                 Field.State -> TODO()
-                Field.Zip -> TODO()
+                Field.Zip -> copy(
+                    zipField = zipField.copy(content = content).validate()
+                )
                 Field.Country -> TODO()
             }
         }

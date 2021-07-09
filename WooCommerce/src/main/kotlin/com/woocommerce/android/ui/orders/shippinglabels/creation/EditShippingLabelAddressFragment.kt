@@ -170,14 +170,14 @@ class EditShippingLabelAddressFragment :
             new.phoneField.takeIfNotEqualTo(old?.phoneField) {field ->
                 binding.phone.updateFromField(field)
             }
+            new.cityField.takeIfNotEqualTo(old?.cityField) { field ->
+                binding.city.updateFromField(field)
+            }
+            new.zipField.takeIfNotEqualTo(old?.zipField) {field ->
+                binding.zip.updateFromField(field)
+            }
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
-            }
-            new.cityError.takeIfNotEqualTo(old?.cityError) {
-                showErrorOrClear(binding.cityLayout, it)
-            }
-            new.zipError.takeIfNotEqualTo(old?.zipError) {
-                showErrorOrClear(binding.zipLayout, it)
             }
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
                 if (it.isBlank()) {
@@ -331,6 +331,8 @@ class EditShippingLabelAddressFragment :
         binding.address1.bindToField(Field.Address1)
         binding.address2.bindToField(Field.Address2)
         binding.phone.bindToField(Field.Phone)
+        binding.city.bindToField(Field.City)
+        binding.zip.bindToField(Field.Zip)
         binding.useAddressAsIsButton.onClick {
             viewModel.onUseAddressAsIsButtonClicked()
         }
@@ -376,9 +378,9 @@ class EditShippingLabelAddressFragment :
             phone = binding.phone.getText(),
             address1 = binding.address1.getText(),
             address2 = binding.address2.getText(),
-            postcode = binding.zip.text.toString(),
+            postcode = binding.zip.getText(),
             state = binding.stateSpinner.tag as String,
-            city = binding.city.text.toString(),
+            city = binding.city.getText(),
             country = binding.countrySpinner.tag as String,
             email = ""
         )
