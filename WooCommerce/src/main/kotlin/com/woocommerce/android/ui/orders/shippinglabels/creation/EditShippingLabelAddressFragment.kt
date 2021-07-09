@@ -123,7 +123,7 @@ class EditShippingLabelAddressFragment :
             viewModel.onCountrySelected(it)
         }
         handleResult<String>(SELECT_STATE_REQUEST) {
-            viewModel.onStateSelected(it)
+            viewModel.onFieldEdited(Field.State, it)
         }
         handleResult<Address>(SELECTED_ADDRESS_ACCEPTED) {
             viewModel.onAddressSelected(it)
@@ -176,6 +176,15 @@ class EditShippingLabelAddressFragment :
             new.zipField.takeIfNotEqualTo(old?.zipField) {field ->
                 binding.zip.updateFromField(field)
             }
+            new.stateField.takeIfNotEqualTo(old?.stateField) { field ->
+                binding.state.updateFromField(field)
+                binding.stateSpinner.setText(field.content)
+                binding.stateSpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
+            }
+            new.countryField.takeIfNotEqualTo(old?.countryField) { field ->
+                binding.countrySpinner.setText(field.content)
+                binding.countrySpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
+            }
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
             }
@@ -208,16 +217,9 @@ class EditShippingLabelAddressFragment :
                     hideProgressDialog()
                 }
             }
-            new.selectedCountryName?.takeIfNotEqualTo(old?.selectedCountryName) {
-                binding.countrySpinner.setText(it)
-            }
-            new.selectedStateName?.takeIfNotEqualTo(old?.selectedStateName) {
-                binding.stateSpinner.setText(it)
-                binding.state.setText(it)
-            }
             new.isStateFieldSpinner?.takeIfNotEqualTo(old?.isStateFieldSpinner) { isSpinner ->
                 binding.stateSpinner.isVisible = isSpinner
-                binding.stateLayout.isVisible = !isSpinner
+                binding.state.isVisible = !isSpinner
             }
             new.isContactCustomerButtonVisible.takeIfNotEqualTo(old?.isContactCustomerButtonVisible) { isVisible ->
                 binding.contactCustomerButton.isVisible = isVisible
@@ -243,7 +245,7 @@ class EditShippingLabelAddressFragment :
                     is ShowCountrySelector -> {
                         val action = EditShippingLabelAddressFragmentDirections
                             .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
-                                event.currentCountry,
+                                event.currentCountryCode,
                                 event.locations.map { it.name }.toTypedArray(),
                                 event.locations.map { it.code }.toTypedArray(),
                                 SELECT_COUNTRY_REQUEST,
@@ -254,7 +256,7 @@ class EditShippingLabelAddressFragment :
                     is ShowStateSelector -> {
                         val action = EditShippingLabelAddressFragmentDirections
                             .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
-                                event.currentState,
+                                event.currentStateCode,
                                 event.locations.map { it.name }.toTypedArray(),
                                 event.locations.map { it.code }.toTypedArray(),
                                 SELECT_STATE_REQUEST,
@@ -379,9 +381,9 @@ class EditShippingLabelAddressFragment :
             address1 = binding.address1.getText(),
             address2 = binding.address2.getText(),
             postcode = binding.zip.getText(),
-            state = binding.stateSpinner.tag as String,
+            state = binding.stateSpinner.getText(),
             city = binding.city.getText(),
-            country = binding.countrySpinner.tag as String,
+            country = binding.countrySpinner.getText(),
             email = ""
         )
     }

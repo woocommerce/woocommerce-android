@@ -1,11 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -31,13 +26,13 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     data class EditSelectedAddress(val address: Address) : CreateShippingLabelEvent()
 
     data class ShowCountrySelector(
-        val locations: List<WCLocationModel>,
-        val currentCountry: String?
+        val locations: List<Location>,
+        val currentCountryCode: String?
     ) : CreateShippingLabelEvent()
 
     data class ShowStateSelector(
-        val locations: List<WCLocationModel>,
-        val currentState: String?
+        val locations: List<Location>,
+        val currentStateCode: String?
     ) : CreateShippingLabelEvent()
 
     data class OpenMapWithAddress(

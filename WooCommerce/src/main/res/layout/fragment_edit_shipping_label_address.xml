@@ -144,24 +144,15 @@
             android:nextFocusForward="@+id/state"
             app:errorEnabled="true"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/stateLayout"
-            style="@style/Woo.TextInputLayout"
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/shipping_label_edit_address_state"
-            app:errorEnabled="true"
-            tools:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/state"
-                style="@style/Woo.TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:nextFocusForward="@+id/zip" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:inputType="text"
+            android:nextFocusForward="@+id/zip"
+            app:errorEnabled="true"/>
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
             android:id="@+id/stateSpinner"
