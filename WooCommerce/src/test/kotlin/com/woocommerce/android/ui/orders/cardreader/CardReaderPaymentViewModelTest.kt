@@ -68,7 +68,7 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
 
-private val DUMMY_TOTAL = BigDecimal(10.72)
+private val DUMMY_NET_TOTAL = BigDecimal(10.72)
 private const val DUMMY_ORDER_NUMBER = "123"
 
 @InternalCoroutinesApi
@@ -87,6 +87,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val mockedOrder = mock<Order>()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
@@ -106,8 +107,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             appPrefsWrapper = appPrefsWrapper
         )
 
-        val mockedOrder = mock<Order>()
-        whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
+        whenever(mockedOrder.getNetTotal()).thenReturn(DUMMY_NET_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
         val address = mock<Address>()
         whenever(mockedOrder.billingAddress).thenReturn(address)
@@ -388,7 +388,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$$DUMMY_NET_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
@@ -427,7 +427,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$$DUMMY_NET_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
@@ -466,7 +466,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$$DUMMY_NET_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
@@ -504,7 +504,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_payment_failed_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$$DUMMY_NET_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
@@ -583,7 +583,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_completed_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$$DUMMY_NET_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_celebration)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
@@ -814,6 +814,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.reFetchOrder()
 
             assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
+        }
+
+    @Test
+    fun `given order partially refunded, when payment started, then net total is used`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val expectedAmount = BigDecimal(123456789)
+            whenever(mockedOrder.getNetTotal()).thenReturn(expectedAmount)
+
+            val amountCaptor = argumentCaptor<BigDecimal>()
+
+            viewModel.start()
+
+            verify(cardReaderManager).collectPayment(any(), any(), amountCaptor.capture(), any(), any())
+            assertThat(amountCaptor.firstValue).isEqualTo(expectedAmount)
         }
 
     private fun simulateFetchOrderJobState(inProgress: Boolean) {
