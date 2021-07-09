@@ -45,6 +45,7 @@
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
+    <string name="cancel_anyway">Cancel anyway</string>
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn more</string>
@@ -744,10 +745,11 @@
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
-    <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
+    <string name="card_reader_payment_failed_no_network_state">No internet connection</string>
+    <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">The payment did not succeed</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
@@ -810,6 +812,8 @@
     <string name="card_reader_software_update_title">Software update</string>
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
 
     <!--
         Notifications

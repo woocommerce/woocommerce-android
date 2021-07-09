@@ -25,6 +25,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.SERVER_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
@@ -545,6 +546,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_card_declined_state)
+        }
+
+    @Test
+    fun `when payment fails with server error, then correct paymentStateLabel is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentFailed(SERVER_ERROR, null, "")) }
+            }
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_failed_server_error_state)
         }
 
     @Test
