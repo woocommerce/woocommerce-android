@@ -8,11 +8,9 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -70,13 +68,13 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         }
 
     private val states: List<WCLocationModel>
-        get() = viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
+        get() = emptyList() // TODO viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
 
     private val selectedCountry: String?
-        get() = countries.firstOrNull { it.code == viewState.address?.country }?.name
+        get() = "" // TODO countries.firstOrNull { it.code == viewState.address?.country }?.name
 
     private val selectedState: String
-        get() = states.firstOrNull { it.code == viewState.address?.state }?.name ?: ""
+        get() = ""// TODO states.firstOrNull { it.code == viewState.address?.state }?.name ?: ""
 
     init {
         viewState = viewState.copy(
@@ -89,8 +87,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
         arguments.validationResult?.let {
             if (it is ValidationResult.Invalid) {
+                val validationErrorMessage = getAddressErrorStringRes(it.message)
                 viewState = viewState.copy(
-                    addressError = getAddressErrorStringRes(it.message),
+                    address1Field = viewState.address1Field.copy(validationError = validationErrorMessage).validate(),
                     bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
                 )
             } else if (it is ValidationResult.NotFound) {
@@ -108,7 +107,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         validateFields(address)
         if (viewState.areAllRequiredFieldsValid) {
             launch {
-                viewState = viewState.copy(address = address, isValidationProgressDialogVisible = true)
+                viewState = viewState.copy(isValidationProgressDialogVisible = true)
                 val result = addressValidator.validateAddress(
                     address,
                     arguments.addressType,
@@ -131,7 +130,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             viewState = viewState.copy(
                 isValidationProgressDialogVisible = false,
                 selectedCountryName = selectedCountry,
-                selectedStateName = if (selectedState.isBlank()) viewState.address?.state else selectedState,
+                //selectedStateName = if (selectedState.isBlank()) viewState.address?.state else selectedState,
                 isStateFieldSpinner = states.isNotEmpty()
             )
         }
@@ -140,9 +139,12 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     private fun handleValidationResult(address: Address, result: ValidationResult) {
         when (result) {
             ValidationResult.Valid -> triggerEvent(ExitWithResult(address))
-            is ValidationResult.Invalid -> viewState = viewState.copy(
-                addressError = getAddressErrorStringRes(result.message)
-            )
+            is ValidationResult.Invalid -> {
+                val validationErrorMessage = getAddressErrorStringRes(result.message)
+                viewState = viewState.copy(
+                    address1Field = viewState.address1Field.copy(validationError = validationErrorMessage).validate(),
+                )
+            }
             is ValidationResult.SuggestedChanges -> {
                 triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
             }
@@ -160,7 +162,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             )
             is NameMissing -> {
                 viewState = viewState.copy(
-                    nameError = R.string.shipping_label_error_required_field
+                    nameField = viewState.nameField.validate()
                 )
                 triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
             }
@@ -176,8 +178,6 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     private fun clearErrors() {
         viewState = viewState.copy(
             bannerMessage = "",
-            nameError = 0,
-            addressError = 0,
             cityError = 0,
             zipError = 0
         )
@@ -193,8 +193,6 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(
-            nameError = getErrorOrClear(address.firstName + address.lastName + address.company),
-            addressError = getErrorOrClear(address.address1),
             phoneError = validatePhone(address),
             cityError = getErrorOrClear(address.city),
             zipError = getErrorOrClear(address.postcode)
@@ -215,57 +213,57 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun updateAddress(address: Address) {
-        viewState = viewState.copy(address = address)
+        // TODO viewState = viewState.copy(address = address)
     }
 
     fun onUseAddressAsIsButtonClicked() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
-        viewState.address?.let {
-            validateFields(it)
-        }
-        if (viewState.areAllRequiredFieldsValid) {
-            triggerEvent(ExitWithResult(viewState.address))
-        } else {
-            triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
-        }
+//        viewState.address?.let {
+//            validateFields(it)
+//        }
+//        if (viewState.areAllRequiredFieldsValid) {
+//            triggerEvent(ExitWithResult(viewState.address))
+//        } else {
+//            triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+//        }
     }
 
     fun onCountrySpinnerTapped() {
-        triggerEvent(ShowCountrySelector(countries, viewState.address?.country))
+        // triggerEvent(ShowCountrySelector(countries, viewState.address?.country))
     }
 
     fun onStateSpinnerTapped() {
-        triggerEvent(ShowStateSelector(states, viewState.address?.state))
+        // triggerEvent(ShowStateSelector(states, viewState.address?.state))
     }
 
     fun onOpenMapTapped() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED)
 
-        viewState.address?.let { address ->
-            triggerEvent(OpenMapWithAddress(address))
-        }
+//        viewState.address?.let { address ->
+//            triggerEvent(OpenMapWithAddress(address))
+//        }
     }
 
     fun onContactCustomerTapped() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED)
 
-        viewState.address?.phone?.let {
-            triggerEvent(DialPhoneNumber(it))
-        }
+//        viewState.address?.phone?.let {
+//            triggerEvent(DialPhoneNumber(it))
+//        }
     }
 
     fun onCountrySelected(country: String) {
-        viewState = viewState.copy(address = viewState.address?.copy(country = country))
-        viewState = viewState.copy(
-            selectedCountryName = selectedCountry,
-            selectedStateName = selectedState,
-            isStateFieldSpinner = states.isNotEmpty()
-        )
+//        viewState = viewState.copy(address = viewState.address?.copy(country = country))
+//        viewState = viewState.copy(
+//            selectedCountryName = selectedCountry,
+//            selectedStateName = selectedState,
+//            isStateFieldSpinner = states.isNotEmpty()
+//        )
     }
 
     fun onStateSelected(state: String) {
-        viewState = viewState.copy(address = viewState.address?.copy(state = state))
-        viewState = viewState.copy(selectedStateName = selectedState)
+//        viewState = viewState.copy(address = viewState.address?.copy(state = state))
+//        viewState = viewState.copy(selectedStateName = selectedState)
     }
 
     fun onAddressSelected(address: Address) {
@@ -274,6 +272,10 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     fun onEditRequested(address: Address) {
         updateAddress(address)
+    }
+
+    fun onFieldEdited(field: Field, content: String) {
+        viewState = viewState.updateAndValidateField(field, content)
     }
 
     fun onExit() {
@@ -292,26 +294,170 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val address: Address? = null,
         val bannerMessage: String? = null,
         val isValidationProgressDialogVisible: Boolean? = null,
         val isLoadingProgressDialogVisible: Boolean? = null,
         val isStateFieldSpinner: Boolean? = null,
         val selectedCountryName: String? = null,
         val selectedStateName: String? = null,
-        @StringRes val nameError: Int? = null,
-        @StringRes val addressError: Int? = null,
+        val nameField: NameField,
+        val companyField: OptionalField,
+        val address1Field: Address1Field,
+        val address2Field: OptionalField,
         @StringRes val phoneError: Int? = null,
         @StringRes val cityError: Int? = null,
         @StringRes val zipError: Int? = null,
         @StringRes val title: Int? = null
     ) : Parcelable {
+        constructor(address: Address): this(
+            nameField = NameField(
+                content = "${address.firstName} ${address.lastName}".trim(),
+                companyContent = address.company
+            ),
+            companyField = OptionalField(
+                content = address.company
+            ),
+            address1Field = Address1Field(address.address1),
+            address2Field = OptionalField(address.address2)
+        )
+
         @IgnoredOnParcel
-        val isContactCustomerButtonVisible = !address?.phone.isNullOrBlank()
+        val isContactCustomerButtonVisible = false//!address?.phone.isNullOrBlank()
 
         @IgnoredOnParcel
         val areAllRequiredFieldsValid
-            get() = nameError == null && addressError == null && phoneError == null &&
-                cityError == null && zipError == null
+            get() = true//Field.values().all { get(it).isValid }
+
+        operator fun get(field: Field): InputField<*> {
+            return when (field) {
+                Field.Name -> nameField
+                Field.Company -> companyField
+                Field.Phone -> TODO()
+                Field.Address1 -> address1Field
+                Field.Address2 -> address2Field
+                Field.City -> TODO()
+                Field.State -> TODO()
+                Field.Zip -> TODO()
+                Field.Country -> TODO()
+            }
+        }
+
+        fun updateAndValidateField(field: Field, content: String): ViewState {
+            return when (field) {
+                Field.Name -> copy(
+                    nameField = nameField.copy(content = content).validate())
+                Field.Company -> copy(
+                    companyField = companyField.copy(content = content).validate(),
+                    nameField = nameField.copy(companyContent = content).validate()
+                )
+                Field.Phone -> TODO()
+                Field.Address1 -> copy(
+                    address1Field = address1Field.copy(content = content, validationError = null).validate()
+                )
+                Field.Address2 -> copy(
+                    address2Field = address2Field.copy(content = content).validate()
+                )
+                Field.City -> TODO()
+                Field.State -> TODO()
+                Field.Zip -> TODO()
+                Field.Country -> TODO()
+            }
+        }
+
+        fun validateAllFields(): ViewState {
+            return copy(
+                nameField = nameField.validate()
+            )
+        }
+    }
+
+    @Parcelize
+    data class NameField(
+        override val content: String,
+        val companyContent: String
+    ): InputField<NameField>(content) {
+        override fun validateInternal(): UiString? {
+            return if(content.isNotBlank() || companyContent.isNotBlank())  null
+            else UiStringRes(R.string.shipping_label_error_required_field)
+        }
+    }
+
+    @Parcelize
+    data class Address1Field(
+        override val content: String,
+        @StringRes val validationError: Int? = null
+    ): InputField<Address1Field>(content) {
+        override fun validateInternal(): UiString? {
+            return when {
+                validationError != null -> UiStringRes(validationError)
+                content.isBlank() -> UiStringRes(R.string.shipping_label_error_required_field)
+                else -> null
+            }
+        }
+    }
+
+    enum class Field {
+        Name, Company, Phone, Address1, Address2, City, State, Zip, Country
+    }
+
+    abstract class InputField<T: InputField<T>>(open val content: String): Parcelable {
+        var error: UiString? = null
+        private var hasBeenValidated: Boolean = false
+        val isValid: Boolean
+            get() {
+                return if(!hasBeenValidated) validateInternal() == null
+                else error == null
+            }
+
+        fun validate(): T {
+            error = validateInternal()
+            hasBeenValidated = true
+            return this as T
+        }
+
+        final override fun hashCode(): Int {
+            return content.hashCode() + error.hashCode() + hasBeenValidated.hashCode()
+        }
+
+        final override fun equals(other: Any?): Boolean {
+            if (other !is InputField<*>) return false
+            return content == other.content &&
+                error == other.error &&
+                hasBeenValidated == other.hasBeenValidated
+        }
+
+        /**
+         * Perform specific field's validation
+         * @return [UiString] holding the error to be displayed or null if it's valid
+         */
+        protected abstract fun validateInternal(): UiString?
+    }
+
+    @Parcelize
+    data class RequiredField(
+        override val content: String
+    ) : InputField<RequiredField>(content) {
+        override fun validateInternal(): UiString? {
+            return if (content.isBlank()) UiStringRes(R.string.shipping_label_error_required_field)
+            else null
+        }
+    }
+
+    @Parcelize
+    data class CustomField(
+        override val content: String,
+        val validateInput: (String) -> Boolean
+    ): InputField<CustomField>(content) {
+        override fun validateInternal(): UiString? {
+            return if (validateInput(content)) null
+            else UiStringRes(R.string.shipping_label_error_required_field)
+        }
+    }
+
+    @Parcelize
+    data class OptionalField(
+        override val content: String
+    ) : InputField<OptionalField>(content) {
+        override fun validateInternal(): UiString? = null
     }
 }

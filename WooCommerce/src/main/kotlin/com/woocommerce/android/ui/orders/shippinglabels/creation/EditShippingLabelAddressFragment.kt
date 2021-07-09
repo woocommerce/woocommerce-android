@@ -35,12 +35,16 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.Field
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.InputField
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
+import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -151,28 +155,23 @@ class EditShippingLabelAddressFragment :
     @SuppressLint("SetTextI18n")
     private fun subscribeObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.address?.takeIfNotEqualTo(old?.address) {
-                binding.company.setText(it.company)
-                binding.name.setText("${it.firstName} ${it.lastName}".trim())
-                binding.phone.setText(it.phone)
-                binding.address1.setText(it.address1)
-                binding.address2.setText(it.address2)
-                binding.zip.setText(it.postcode)
-                binding.city.setText(it.city)
-                binding.countrySpinner.tag = it.country
-                binding.stateSpinner.tag = it.state
+            new.nameField.takeIfNotEqualTo(old?.nameField) { field ->
+                binding.name.updateFromField(field)
+            }
+            new.companyField.takeIfNotEqualTo(old?.nameField) { field ->
+                binding.company.updateFromField(field)
+            }
+            new.address1Field.takeIfNotEqualTo(old?.address1Field) { field ->
+                binding.address1
+            }
+            new.address2Field.takeIfNotEqualTo(old?.address1Field) { field ->
+                binding.address2
             }
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
             }
-            new.addressError.takeIfNotEqualTo(old?.addressError) {
-                showErrorOrClear(binding.address1Layout, it)
-            }
             new.phoneError.takeIfNotEqualTo(old?.phoneError) {
                 showErrorOrClear(binding.phoneLayout, it)
-            }
-            new.nameError.takeIfNotEqualTo(old?.nameError) {
-                showErrorOrClear(binding.nameLayout, it)
             }
             new.cityError.takeIfNotEqualTo(old?.cityError) {
                 showErrorOrClear(binding.cityLayout, it)
@@ -279,6 +278,11 @@ class EditShippingLabelAddressFragment :
         }
     }
 
+    private fun WCMaterialOutlinedEditTextView.updateFromField(field: InputField<*>) {
+        setTextIfDifferent(field.content)
+        error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
+    }
+
     private fun showProgressDialog(title: String, message: String) {
         hideProgressDialog()
         progressDialog = CustomProgressDialog.show(
@@ -322,6 +326,18 @@ class EditShippingLabelAddressFragment :
     }
 
     private fun initializeViews() {
+        binding.name.setOnTextChangedListener {
+            viewModel.onFieldEdited(Field.Name, it?.toString().orEmpty())
+        }
+        binding.company.setOnTextChangedListener {
+            viewModel.onFieldEdited(Field.Company, it?.toString().orEmpty())
+        }
+        binding.address1.setOnTextChangedListener {
+            viewModel.onFieldEdited(Field.Address1, it?.toString().orEmpty())
+        }
+        binding.address2.setOnTextChangedListener {
+            viewModel.onFieldEdited(Field.Address2, it?.toString().orEmpty())
+        }
         binding.useAddressAsIsButton.onClick {
             viewModel.onUseAddressAsIsButtonClicked()
         }
@@ -355,12 +371,12 @@ class EditShippingLabelAddressFragment :
 
     private fun gatherData(): Address {
         return Address(
-            company = binding.company.text.toString(),
-            firstName = binding.name.text.toString(),
+            company = binding.company.getText(),
+            firstName = binding.name.getText(),
             lastName = "",
             phone = binding.phone.text.toString(),
-            address1 = binding.address1.text.toString(),
-            address2 = binding.address2.text.toString(),
+            address1 = binding.address1.toString(),
+            address2 = binding.address2.toString(),
             postcode = binding.zip.text.toString(),
             state = binding.stateSpinner.tag as String,
             city = binding.city.text.toString(),
