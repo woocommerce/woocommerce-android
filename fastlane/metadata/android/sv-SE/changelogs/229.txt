@@ -1,0 +1,2 @@
+7.0:
+Det är enkelt att skapa internationella fraktetiketter! Handlare i USA som använder WooCommerce Shipping & Tax i sin butik kan nu generera fraktetiketter och tullformulär för internationella destinationer. Vi fortsätter att utveckla den här funktionen – prova den och berätta vad du tycker!

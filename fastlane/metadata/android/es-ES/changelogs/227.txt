@@ -1,2 +1,0 @@
-6.9:
-Ahora, ya no tendrás que hacer tantos toques para llegar a los atributos de un producto variable, ya que aparece una lista directamente en los detalles del producto. Dicen que una imagen vale más que mil palabras, así que hemos actualizado algunas ilustraciones en la aplicación. También hemos corregido errores y hemos hecho que todo vaya un poco más rápido, ¡esperamos que lo notes!

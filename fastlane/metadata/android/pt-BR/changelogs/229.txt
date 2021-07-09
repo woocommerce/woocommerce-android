@@ -1,0 +1,2 @@
+7.0:
+Criar etiquetas de envio internacional é muito simples! Agora comerciantes nos EUA usando o WooCommerce Shipping & Tax em suas lojas podem gerar etiquetas de envio e declarações aduaneiras para destinos internacionais. Ainda estamos aperfeiçoando essa funcionalidade, então experimente-a e diga-nos o que achou!
