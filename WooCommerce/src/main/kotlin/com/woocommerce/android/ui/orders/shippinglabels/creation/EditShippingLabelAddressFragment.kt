@@ -145,7 +145,7 @@ class EditShippingLabelAddressFragment :
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(gatherData())
+                viewModel.onDoneButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -335,6 +335,7 @@ class EditShippingLabelAddressFragment :
         binding.phone.bindToField(Field.Phone)
         binding.city.bindToField(Field.City)
         binding.zip.bindToField(Field.Zip)
+        binding.state.bindToField(Field.State)
         binding.useAddressAsIsButton.onClick {
             viewModel.onUseAddressAsIsButtonClicked()
         }
@@ -360,32 +361,14 @@ class EditShippingLabelAddressFragment :
 
     private fun WCMaterialOutlinedSpinnerView.onClick(onClick: () -> Unit) {
         this.setClickListener {
-            viewModel.updateAddress(gatherData())
             onClick()
         }
     }
 
     private fun Button.onClick(onButtonClick: () -> Unit) {
         setOnClickListener {
-            viewModel.updateAddress(gatherData())
             onButtonClick()
         }
-    }
-
-    private fun gatherData(): Address {
-        return Address(
-            company = binding.company.getText(),
-            firstName = binding.name.getText(),
-            lastName = "",
-            phone = binding.phone.getText(),
-            address1 = binding.address1.getText(),
-            address2 = binding.address2.getText(),
-            postcode = binding.zip.getText(),
-            state = binding.stateSpinner.getText(),
-            city = binding.city.getText(),
-            country = binding.countrySpinner.getText(),
-            email = ""
-        )
     }
 
     // Let the ViewModel know the user is attempting to close the screen

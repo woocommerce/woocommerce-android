@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
@@ -84,43 +83,27 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             }
         )
 
-        arguments.validationResult?.let {
-            if (it is ValidationResult.Invalid) {
-                val validationErrorMessage = getAddressErrorStringRes(it.message)
-                viewState = viewState.copy(
-                    address1Field = viewState.address1Field.copy(validationError = validationErrorMessage).validate(),
-                    bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
-                )
-            } else if (it is ValidationResult.NotFound) {
-                viewState = viewState.copy(
-                    bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
-                )
-            } else if (it is NameMissing) {
-                viewState = viewState.copy(
-                    nameField = viewState.nameField.validate()
-                )
-            } else if (it is PhoneInvalid) {
-                viewState = viewState.copy(
-                    phoneField = viewState.phoneField.validate()
-                )
-            }
-        }
-
         loadCountriesAndStates()
+        arguments.validationResult?.let {
+            handleValidationResult(arguments.address, it, showToastErrors = false)
+        }
     }
 
-    fun onDoneButtonClicked(address: Address) {
+    fun onDoneButtonClicked() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED)
-        validateFields(address)
+        viewState = viewState.validateAllFields()
+        val address = viewState.getAddress()
         if (viewState.areAllRequiredFieldsValid) {
             launch {
-                viewState = viewState.copy(isValidationProgressDialogVisible = true)
+                viewState = viewState.copy(
+                    isValidationProgressDialogVisible = true,
+                    bannerMessage = null
+                )
                 val result = addressValidator.validateAddress(
                     address,
                     arguments.addressType,
                     arguments.requiresPhoneNumber
                 )
-                clearErrors()
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
             }
@@ -150,7 +133,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         }
     }
 
-    private fun handleValidationResult(address: Address, result: ValidationResult) {
+    private fun handleValidationResult(address: Address, result: ValidationResult, showToastErrors: Boolean = true) {
         when (result) {
             ValidationResult.Valid -> triggerEvent(ExitWithResult(address))
             is ValidationResult.Invalid -> {
@@ -169,38 +152,28 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                         resourceProvider.getString(getAddressErrorStringRes(result.message))
                     )
                 )
-                triggerEvent(ShowSnackbar(getAddressErrorStringRes(result.message)))
+                if (showToastErrors) {
+                    triggerEvent(ShowSnackbar(getAddressErrorStringRes(result.message)))
+                }
             }
-            is ValidationResult.Error -> triggerEvent(
-                ShowSnackbar(R.string.shipping_label_edit_address_validation_error)
-            )
+            is ValidationResult.Error -> if (showToastErrors) {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_edit_address_validation_error))
+            }
             is NameMissing -> {
                 viewState = viewState.copy(
                     nameField = viewState.nameField.validate()
                 )
-                triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+                if (showToastErrors) {
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+                }
             }
             is PhoneInvalid -> {
                 viewState = viewState.copy(
                     phoneField = viewState.phoneField.validate()
                 )
-                triggerEvent(ShowSnackbar(string.shipping_label_address_data_invalid_snackbar_message))
-            }
-        }
-    }
-
-    private fun clearErrors() {
-        viewState = viewState.copy(
-            bannerMessage = "",
-        )
-    }
-
-    private fun validateFields(address: Address) {
-        fun getErrorOrClear(field: String): Int? {
-            return if (field.isBlank()) {
-                R.string.shipping_label_error_required_field
-            } else {
-                null
+                if (showToastErrors) {
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+                }
             }
         }
     }
@@ -211,22 +184,20 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     fun onUseAddressAsIsButtonClicked() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
-//        viewState.address?.let {
-//            validateFields(it)
-//        }
-//        if (viewState.areAllRequiredFieldsValid) {
-//            triggerEvent(ExitWithResult(viewState.address))
-//        } else {
-//            triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
-//        }
+        viewState = viewState.validateAllFields()
+        if (viewState.areAllRequiredFieldsValid) {
+            triggerEvent(ExitWithResult(viewState.getAddress()))
+        } else {
+            triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+        }
     }
 
     fun onCountrySpinnerTapped() {
-         triggerEvent(ShowCountrySelector(countries, viewState.countryField.location.code))
+        triggerEvent(ShowCountrySelector(countries, viewState.countryField.location.code))
     }
 
     fun onStateSpinnerTapped() {
-         triggerEvent(ShowStateSelector(states, viewState.stateField.location.code))
+        triggerEvent(ShowStateSelector(states, viewState.stateField.location.code))
     }
 
     fun onOpenMapTapped() {
@@ -347,7 +318,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val countryField: LocationField,
         @StringRes val title: Int? = null
     ) : Parcelable {
-        constructor(args: EditShippingLabelAddressFragmentArgs): this(
+        constructor(args: EditShippingLabelAddressFragmentArgs) : this(
             nameField = NameField(
                 content = "${args.address.firstName} ${args.address.lastName}".trim(),
                 companyContent = args.address.company
@@ -367,7 +338,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
         @IgnoredOnParcel
         val areAllRequiredFieldsValid
-            get() = true//Field.values().all { get(it).isValid }
+            get() = Field.values().all { get(it).isValid }
 
         operator fun get(field: Field): InputField<*> {
             return when (field) {
@@ -383,9 +354,31 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             }
         }
 
-        fun validateAllFields(): ViewState {
-            return copy(
-                nameField = nameField.validate()
+        fun validateAllFields(): ViewState = copy(
+            nameField = nameField.validate(),
+            companyField = companyField.validate(),
+            address1Field = address1Field.validate(),
+            address2Field = address2Field.validate(),
+            phoneField = phoneField.validate(),
+            cityField = cityField.validate(),
+            zipField = zipField.validate(),
+            stateField = stateField.validate(),
+            countryField = countryField.validate(),
+        )
+
+        fun getAddress(): Address {
+            return Address(
+                firstName = nameField.content,
+                lastName = "",
+                company = companyField.content,
+                phone = phoneField.content,
+                address1 = address1Field.content,
+                address2 = address2Field.content,
+                city = cityField.content,
+                state = stateField.location.code,
+                country = countryField.location.code,
+                postcode = zipField.content,
+                email = ""
             )
         }
     }
@@ -394,9 +387,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     data class NameField(
         override val content: String,
         val companyContent: String
-    ): InputField<NameField>(content) {
+    ) : InputField<NameField>(content) {
         override fun validateInternal(): UiString? {
-            return if(content.isNotBlank() || companyContent.isNotBlank())  null
+            return if (content.isNotBlank() || companyContent.isNotBlank()) null
             else UiStringRes(R.string.shipping_label_error_required_field)
         }
     }
@@ -405,7 +398,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     data class Address1Field(
         override val content: String,
         @StringRes val validationError: Int? = null
-    ): InputField<Address1Field>(content) {
+    ) : InputField<Address1Field>(content) {
         override fun validateInternal(): UiString? {
             return when {
                 validationError != null -> UiStringRes(validationError)
@@ -420,7 +413,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         override val content: String,
         val needsValidation: Boolean,
         val addressType: AddressType
-    ): InputField<PhoneField>(content) {
+    ) : InputField<PhoneField>(content) {
         override fun validateInternal(): UiString? {
             if (!needsValidation) return null
             return when {
@@ -438,7 +431,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     data class LocationField(
         val location: Location,
         val isRequired: Boolean = false
-    ): InputField<LocationField>(location?.name.orEmpty()) {
+    ) : InputField<LocationField>(location.name) {
         override fun validateInternal(): UiString? {
             return if (isRequired && content.isBlank()) UiStringRes(R.string.shipping_label_error_required_field)
             else null
