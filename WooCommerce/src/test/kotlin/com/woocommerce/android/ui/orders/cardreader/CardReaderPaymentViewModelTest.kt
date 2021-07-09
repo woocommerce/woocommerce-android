@@ -124,7 +124,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
         whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
-        whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(),anyOrNull(),anyOrNull(),anyOrNull())).thenReturn("test url")
+        whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenReturn("test url")
     }
 
     @Test

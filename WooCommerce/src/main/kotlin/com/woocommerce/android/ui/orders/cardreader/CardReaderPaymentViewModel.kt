@@ -58,7 +58,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -142,8 +141,8 @@ class CardReaderPaymentViewModel
             currency = order.currency,
             customerEmail = customerEmail.ifEmpty { null }
         ).collect { paymentStatus ->
-                onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, getAmountLabel(order))
-            }
+            onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, getAmountLabel(order))
+        }
     }
 
     private fun onPaymentStatusChanged(
