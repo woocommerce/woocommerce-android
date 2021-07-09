@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 
@@ -19,10 +18,6 @@ class WCViewPagerIndicator @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes) {
     private val indicators = ArrayList<ImageView>()
     private var pageCount: Int = 0
-
-    fun setupFromViewPager(viewPager: ViewPager) {
-        // TODO
-    }
 
     fun setupFromViewPager(viewPager: ViewPager2) {
         pageCount = viewPager.adapter?.itemCount ?: 0
