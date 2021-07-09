@@ -19,6 +19,7 @@ import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -32,7 +33,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -125,7 +125,12 @@ class OrderFulfillViewModel @Inject constructor(
 
     fun onMarkOrderCompleteButtonClicked() {
         if (networkStatus.isConnected()) {
-            triggerEvent(ExitWithResult(CoreOrderStatus.COMPLETED.value, key = KEY_ORDER_FULFILL_RESULT))
+            triggerEvent(
+                ExitWithResult(
+                    data = OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen,
+                    key = KEY_ORDER_FULFILL_RESULT
+                )
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }

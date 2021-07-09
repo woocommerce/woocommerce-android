@@ -6,8 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.Callback
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -21,7 +21,6 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -48,8 +47,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.DIALOG
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.FULFILL_SCREEN
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -341,47 +339,38 @@ class OrderDetailViewModel @Inject constructor(
         launch { fetchOrder(false) }
     }
 
-    fun onOrderStatusChanged(newStatus: String, updateSource: OrderStatusUpdateSource) {
+    fun onOrderStatusChanged(updateSource: OrderStatusUpdateSource) {
         AnalyticsTracker.track(
             Stat.ORDER_STATUS_CHANGE,
             mapOf(
                 AnalyticsTracker.KEY_ID to order.remoteId,
                 AnalyticsTracker.KEY_FROM to order.status.value,
-                AnalyticsTracker.KEY_TO to newStatus
+                AnalyticsTracker.KEY_TO to updateSource.newStatus
             )
         )
 
-        val message = when (updateSource) {
-            FULFILL_SCREEN -> {
-                resourceProvider.getString(string.order_fulfill_completed)
+        when (updateSource) {
+            is OrderStatusUpdateSource.Dialog -> {
+                val message = resourceProvider.getString(string.order_status_updated)
+                triggerEvent(
+                    ShowUndoSnackbar(
+                        message = message,
+                        undoAction = {
+                            updateOrderStatus(updateSource.oldStatus)
+                        },
+                    )
+                )
             }
-            DIALOG -> {
-                resourceProvider.getString(string.order_status_updated)
+            is OrderStatusUpdateSource.FullFillScreen -> {
+                triggerEvent(
+                    ShowSnackbar(
+                        message = R.string.order_fulfill_completed,
+                    )
+                )
             }
         }
 
-        // display undo snackbar
-        triggerEvent(
-            ShowUndoSnackbar(
-                message = message,
-                undoAction = { onOrderStatusChangeReverted() },
-                dismissAction = object : Callback() {
-                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                        super.onDismissed(transientBottomBar, event)
-                        if (event != DISMISS_EVENT_ACTION) {
-                            // update the order only if user has not clicked on the undo snackbar
-                            updateOrderStatus(newStatus)
-                        }
-                    }
-                }
-            )
-        )
-
-        // change the order status
-        val newOrderStatus = orderDetailRepository.getOrderStatus(newStatus)
-        viewState = viewState.copy(
-            orderStatus = newOrderStatus
-        )
+        updateOrderStatus(updateSource.newStatus)
     }
 
     fun onNewOrderNoteAdded(orderNote: OrderNote) {
@@ -464,12 +453,6 @@ class OrderDetailViewModel @Inject constructor(
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
-    }
-
-    fun onOrderStatusChangeReverted() {
-        viewState = viewState.copy(
-            orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
-        )
     }
 
     fun onShippingLabelNoticeTapped() {
@@ -667,9 +650,13 @@ class OrderDetailViewModel @Inject constructor(
         val isReceiptButtonsVisible: Boolean = false
     ) : Parcelable
 
-    data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+    sealed class OrderStatusUpdateSource(open val newStatus: String) : Parcelable {
+        @Parcelize
+        object FullFillScreen : OrderStatusUpdateSource(CoreOrderStatus.COMPLETED.value)
 
-    enum class OrderStatusUpdateSource {
-        FULFILL_SCREEN, DIALOG
+        @Parcelize
+        data class Dialog(val oldStatus: String, override val newStatus: String) : OrderStatusUpdateSource(newStatus)
     }
+
+    data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }
