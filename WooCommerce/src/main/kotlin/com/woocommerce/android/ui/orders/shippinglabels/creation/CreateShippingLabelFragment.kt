@@ -22,6 +22,7 @@ import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCustomsForm
@@ -89,9 +90,10 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         initializeViews(binding)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         progressDialog?.dismiss()
+        WooDialog.onCleared()
     }
 
     private fun initializeViewModel(binding: FragmentCreateShippingLabelBinding) {
