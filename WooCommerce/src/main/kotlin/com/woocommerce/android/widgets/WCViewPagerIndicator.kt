@@ -47,7 +47,6 @@ class WCViewPagerIndicator @JvmOverloads constructor(
         val listener = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 setSelectedIndicator(position)
-                super.onPageSelected(position)
             }
         }
         viewPager.registerOnPageChangeCallback(listener)
