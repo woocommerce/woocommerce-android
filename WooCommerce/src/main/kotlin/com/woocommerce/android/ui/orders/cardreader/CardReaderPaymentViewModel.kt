@@ -91,12 +91,6 @@ class CardReaderPaymentViewModel
         }
     }
 
-    fun onViewCreated() {
-        if (viewState.value is ViewState.PrintingReceiptState) {
-            startPrintingFlow()
-        }
-    }
-
     private fun initPaymentFlow(isRetry: Boolean) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
@@ -205,19 +199,6 @@ class CardReaderPaymentViewModel
         reFetchOrder()
     }
 
-    private fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
-        selectedSite.get().let {
-            appPrefsWrapper.setReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId, receiptUrl)
-        }
-    }
-
-    private fun getReceiptUrl(orderId: Long): String {
-        return selectedSite.get().let {
-            appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
-                ?: throw IllegalStateException("Receipt URL not available.")
-        }
-    }
-
     @VisibleForTesting
     fun reFetchOrder() {
         refetchOrderJob = launch {
@@ -240,10 +221,33 @@ class CardReaderPaymentViewModel
         viewState.postValue(FailedPaymentState(error.type.mapToUiError(), amountLabel, onRetryClicked))
     }
 
+    private fun showPaymentSuccessfulState() {
+        launch {
+            val order = orderRepository.getOrder(arguments.orderIdentifier)
+                ?: throw IllegalStateException("Order URL not available.")
+            val amountLabel = getAmountLabel(order)
+            val receiptUrl = getReceiptUrl(order.remoteId)
+
+            viewState.postValue(
+                PaymentSuccessfulState(
+                    getAmountLabel(order),
+                    { onPrintReceiptClicked(amountLabel, receiptUrl, getReceiptDocumentName(order.remoteId)) },
+                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) }
+                )
+            )
+        }
+    }
+
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
         launch {
             viewState.value = ViewState.PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
             tracker.track(RECEIPT_PRINT_TAPPED)
+            startPrintingFlow()
+        }
+    }
+
+    fun onViewCreated() {
+        if (viewState.value is ViewState.PrintingReceiptState) {
             startPrintingFlow()
         }
     }
@@ -290,35 +294,11 @@ class CardReaderPaymentViewModel
         )
     }
 
-    private fun showPaymentSuccessfulState() {
-        launch {
-            val order = orderRepository.getOrder(arguments.orderIdentifier)
-                ?: throw IllegalStateException("Order URL not available.")
-            val amountLabel = getAmountLabel(order)
-            val receiptUrl = getReceiptUrl(order.remoteId)
-
-            viewState.postValue(
-                PaymentSuccessfulState(
-                    getAmountLabel(order),
-                    { onPrintReceiptClicked(amountLabel, receiptUrl, getReceiptDocumentName(order.remoteId)) },
-                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) }
-                )
-            )
-        }
-    }
-
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
     override fun onCleared() {
         super.onCleared()
         orderRepository.onCleanup()
     }
-
-    private fun Order.getPaymentDescription(): String =
-        resourceProvider.getString(
-            R.string.card_reader_payment_description,
-            this.number,
-            selectedSite.get().name.orEmpty()
-        )
 
     fun onBackPressed() {
         if (refetchOrderJob?.isActive == true) {
@@ -333,6 +313,26 @@ class CardReaderPaymentViewModel
             triggerEvent(Exit)
         }
     }
+
+    private fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
+        selectedSite.get().let {
+            appPrefsWrapper.setReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId, receiptUrl)
+        }
+    }
+
+    private fun getReceiptUrl(orderId: Long): String {
+        return selectedSite.get().let {
+            appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
+                ?: throw IllegalStateException("Receipt URL not available.")
+        }
+    }
+
+    private fun Order.getPaymentDescription(): String =
+        resourceProvider.getString(
+            R.string.card_reader_payment_description,
+            this.number,
+            selectedSite.get().name.orEmpty()
+        )
 
     private fun getAmountLabel(order: Order) = "$${order.total}"
 
