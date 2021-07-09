@@ -179,10 +179,6 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         }
     }
 
-    fun updateAddress(address: Address) {
-        // TODO viewState = viewState.copy(address = address)
-    }
-
     fun onUseAddressAsIsButtonClicked() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
         viewState = viewState.validateAllFields()
@@ -234,7 +230,21 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onEditRequested(address: Address) {
-        updateAddress(address)
+        val country = countries.first { it.code == address.country }
+        val state = dataStore.getStates(address.country).firstOrNull { it.code == address.state }?.toAppModel()
+            ?: Location(code = address.state, name = address.state)
+        viewState = with(viewState) {
+            copy(
+                nameField = nameField.copy(content = "${address.firstName} ${address.lastName}"),
+                companyField = companyField.copy(content = address.company),
+                phoneField = phoneField.copy(content = address.phone),
+                address1Field = address1Field.copy(content = address.address1),
+                address2Field = address2Field.copy(content = address.address2),
+                cityField = cityField.copy(content = address.city),
+                stateField = stateField.copy(location = state),
+                countryField = countryField.copy(location = country)
+            )
+        }
     }
 
     fun onFieldEdited(field: Field, content: String) {
