@@ -29,6 +29,7 @@ import javax.inject.Singleton
 
 @OpenClassOnDebug
 @Singleton
+@Suppress("TooManyFunctions")
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
@@ -142,6 +143,16 @@ class ShippingLabelRepository @Inject constructor(
                 accountSettings = result.model!!.toAppModel()
                 WooResult(accountSettings)
             }
+    }
+
+    /**
+     * Returns the last used package.
+     * Please note that this will ignore all errors, and return null for those cases
+     */
+    suspend fun getLastUsedPackage(): ShippingPackage? {
+        return getAccountSettings().model?.lastUsedBoxId?.let { id ->
+            getShippingPackages().model?.firstOrNull { it.id == id }
+        }
     }
 
     suspend fun updatePaymentSettings(selectedPaymentMethodId: Int, emailReceipts: Boolean): WooResult<Unit> {

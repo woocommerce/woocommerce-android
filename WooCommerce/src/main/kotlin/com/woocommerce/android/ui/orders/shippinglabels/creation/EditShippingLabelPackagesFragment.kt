@@ -45,7 +45,7 @@ class EditShippingLabelPackagesFragment :
 
     private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
         ShippingLabelPackagesAdapter(
-            viewModel.weightUnit,
+            viewModel.siteParameters,
             viewModel::onWeightEdited,
             viewModel::onExpandedChanged,
             viewModel::onPackageSpinnerClicked,
