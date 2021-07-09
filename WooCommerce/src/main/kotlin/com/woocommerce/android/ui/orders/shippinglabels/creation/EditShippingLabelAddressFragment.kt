@@ -162,16 +162,16 @@ class EditShippingLabelAddressFragment :
                 binding.company.updateFromField(field)
             }
             new.address1Field.takeIfNotEqualTo(old?.address1Field) { field ->
-                binding.address1
+                binding.address1.updateFromField(field)
             }
             new.address2Field.takeIfNotEqualTo(old?.address1Field) { field ->
-                binding.address2
+                binding.address2.updateFromField(field)
+            }
+            new.phoneField.takeIfNotEqualTo(old?.phoneField) {field ->
+                binding.phone.updateFromField(field)
             }
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
-            }
-            new.phoneError.takeIfNotEqualTo(old?.phoneError) {
-                showErrorOrClear(binding.phoneLayout, it)
             }
             new.cityError.takeIfNotEqualTo(old?.cityError) {
                 showErrorOrClear(binding.cityLayout, it)
@@ -326,18 +326,11 @@ class EditShippingLabelAddressFragment :
     }
 
     private fun initializeViews() {
-        binding.name.setOnTextChangedListener {
-            viewModel.onFieldEdited(Field.Name, it?.toString().orEmpty())
-        }
-        binding.company.setOnTextChangedListener {
-            viewModel.onFieldEdited(Field.Company, it?.toString().orEmpty())
-        }
-        binding.address1.setOnTextChangedListener {
-            viewModel.onFieldEdited(Field.Address1, it?.toString().orEmpty())
-        }
-        binding.address2.setOnTextChangedListener {
-            viewModel.onFieldEdited(Field.Address2, it?.toString().orEmpty())
-        }
+        binding.name.bindToField(Field.Name)
+        binding.company.bindToField(Field.Company)
+        binding.address1.bindToField(Field.Address1)
+        binding.address2.bindToField(Field.Address2)
+        binding.phone.bindToField(Field.Phone)
         binding.useAddressAsIsButton.onClick {
             viewModel.onUseAddressAsIsButtonClicked()
         }
@@ -352,6 +345,12 @@ class EditShippingLabelAddressFragment :
         }
         binding.contactCustomerButton.onClick {
             viewModel.onContactCustomerTapped()
+        }
+    }
+
+    private fun WCMaterialOutlinedEditTextView.bindToField(field: Field) {
+        setOnTextChangedListener {
+            viewModel.onFieldEdited(field, it?.toString().orEmpty())
         }
     }
 
@@ -374,9 +373,9 @@ class EditShippingLabelAddressFragment :
             company = binding.company.getText(),
             firstName = binding.name.getText(),
             lastName = "",
-            phone = binding.phone.text.toString(),
-            address1 = binding.address1.toString(),
-            address2 = binding.address2.toString(),
+            phone = binding.phone.getText(),
+            address1 = binding.address1.getText(),
+            address2 = binding.address2.getText(),
             postcode = binding.zip.text.toString(),
             state = binding.stateSpinner.tag as String,
             city = binding.city.text.toString(),

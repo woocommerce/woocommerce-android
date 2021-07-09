@@ -12,6 +12,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
@@ -56,7 +57,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     private val arguments: EditShippingLabelAddressFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
+    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments))
     private var viewState by viewStateData
 
     private val countries: List<WCLocationModel>
@@ -95,6 +96,14 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             } else if (it is ValidationResult.NotFound) {
                 viewState = viewState.copy(
                     bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
+                )
+            } else if (it is NameMissing) {
+                viewState = viewState.copy(
+                    nameField = viewState.nameField.validate()
+                )
+            } else if (it is PhoneInvalid) {
+                viewState = viewState.copy(
+                    phoneField = viewState.phoneField.validate()
                 )
             }
         }
@@ -168,7 +177,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             }
             is PhoneInvalid -> {
                 viewState = viewState.copy(
-                    phoneError = validatePhone(address)
+                    phoneField = viewState.phoneField.validate()
                 )
                 triggerEvent(ShowSnackbar(string.shipping_label_address_data_invalid_snackbar_message))
             }
@@ -193,23 +202,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(
-            phoneError = validatePhone(address),
             cityError = getErrorOrClear(address.city),
             zipError = getErrorOrClear(address.postcode)
         )
-    }
-
-    private fun validatePhone(address: Address): Int? {
-        if (!arguments.requiresPhoneNumber) return null
-        val addressType = arguments.addressType
-        return when {
-            address.phone.isBlank() -> R.string.shipping_label_address_phone_required
-            addressType == ORIGIN && !address.hasValidPhoneNumber(addressType) ->
-                R.string.shipping_label_origin_address_phone_invalid
-            addressType == DESTINATION && !address.hasValidPhoneNumber(addressType) ->
-                R.string.shipping_label_destination_address_phone_invalid
-            else -> null
-        }
     }
 
     fun updateAddress(address: Address) {
@@ -302,27 +297,26 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val selectedStateName: String? = null,
         val nameField: NameField,
         val companyField: OptionalField,
+        val phoneField: PhoneField,
         val address1Field: Address1Field,
         val address2Field: OptionalField,
-        @StringRes val phoneError: Int? = null,
         @StringRes val cityError: Int? = null,
         @StringRes val zipError: Int? = null,
         @StringRes val title: Int? = null
     ) : Parcelable {
-        constructor(address: Address): this(
+        constructor(args: EditShippingLabelAddressFragmentArgs): this(
             nameField = NameField(
-                content = "${address.firstName} ${address.lastName}".trim(),
-                companyContent = address.company
+                content = "${args.address.firstName} ${args.address.lastName}".trim(),
+                companyContent = args.address.company
             ),
-            companyField = OptionalField(
-                content = address.company
-            ),
-            address1Field = Address1Field(address.address1),
-            address2Field = OptionalField(address.address2)
+            companyField = OptionalField(content = args.address.company),
+            address1Field = Address1Field(args.address.address1),
+            address2Field = OptionalField(args.address.address2),
+            phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType)
         )
 
         @IgnoredOnParcel
-        val isContactCustomerButtonVisible = false//!address?.phone.isNullOrBlank()
+        val isContactCustomerButtonVisible = phoneField.content.isNotBlank()
 
         @IgnoredOnParcel
         val areAllRequiredFieldsValid
@@ -391,6 +385,25 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             return when {
                 validationError != null -> UiStringRes(validationError)
                 content.isBlank() -> UiStringRes(R.string.shipping_label_error_required_field)
+                else -> null
+            }
+        }
+    }
+
+    @Parcelize
+    data class PhoneField(
+        override val content: String,
+        val needsValidation: Boolean,
+        val addressType: AddressType
+    ): InputField<PhoneField>(content) {
+        override fun validateInternal(): UiString? {
+            if (!needsValidation) return null
+            return when {
+                content.isBlank() -> UiStringRes(R.string.shipping_label_address_phone_required)
+                addressType == ORIGIN && !content.isValidPhoneNumber(addressType) ->
+                    UiStringRes(R.string.shipping_label_origin_address_phone_invalid)
+                addressType == DESTINATION && !content.isValidPhoneNumber(addressType) ->
+                    UiStringRes(R.string.shipping_label_destination_address_phone_invalid)
                 else -> null
             }
         }
