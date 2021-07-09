@@ -99,8 +99,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         // Populate or hide refund section
         if (order.refundTotal > BigDecimal.ZERO) {
             binding.paymentInfoRefundSection.show()
-            val newTotal = order.total - order.refundTotal
-            binding.paymentInfoNewTotal.text = formatCurrencyForDisplay(newTotal)
+            binding.paymentInfoNewTotal.text = formatCurrencyForDisplay(order.getNetTotal())
         } else {
             binding.paymentInfoRefundSection.hide()
         }

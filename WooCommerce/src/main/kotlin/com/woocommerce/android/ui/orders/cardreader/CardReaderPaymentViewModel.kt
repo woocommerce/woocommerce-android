@@ -108,10 +108,10 @@ class CardReaderPaymentViewModel
                     cardReaderManager,
                     order.getPaymentDescription(),
                     order.remoteId,
-                    order.total,
+                    order.getNetTotal(),
                     order.currency,
                     order.billingAddress.email,
-                    "$${order.total}"
+                    "$${order.getNetTotal()}"
                 )
             } ?: run {
                 tracker.track(
