@@ -12,9 +12,10 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.common.InputField
+import com.woocommerce.android.ui.common.OptionalField
+import com.woocommerce.android.ui.common.RequiredField
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -203,17 +204,13 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     fun onOpenMapTapped() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED)
 
-//        viewState.address?.let { address ->
-//            triggerEvent(OpenMapWithAddress(address))
-//        }
+        triggerEvent(OpenMapWithAddress(viewState.getAddress()))
     }
 
     fun onContactCustomerTapped() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED)
 
-//        viewState.address?.phone?.let {
-//            triggerEvent(DialPhoneNumber(it))
-//        }
+        triggerEvent(DialPhoneNumber(viewState.phoneField.content))
     }
 
     fun onCountrySelected(countryCode: String) {
@@ -440,68 +437,5 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     enum class Field {
         Name, Company, Phone, Address1, Address2, City, State, Zip, Country
-    }
-
-    abstract class InputField<T: InputField<T>>(open val content: String): Parcelable, Cloneable {
-        var error: UiString? = null
-            private set
-        private var hasBeenValidated: Boolean = false
-        val isValid: Boolean
-            get() {
-                return if(!hasBeenValidated) validateInternal() == null
-                else error == null
-            }
-
-        fun validate(): T {
-            val clone = this.clone() as T
-            clone.error = validateInternal()
-            clone.hasBeenValidated = true
-            return clone
-        }
-
-        final override fun hashCode(): Int {
-            return content.hashCode() + error.hashCode() + hasBeenValidated.hashCode()
-        }
-
-        final override fun equals(other: Any?): Boolean {
-            if (other !is InputField<*>) return false
-            return content == other.content &&
-                error == other.error &&
-                hasBeenValidated == other.hasBeenValidated
-        }
-
-        /**
-         * Perform specific field's validation
-         * @return [UiString] holding the error to be displayed or null if it's valid
-         */
-        protected abstract fun validateInternal(): UiString?
-    }
-
-    @Parcelize
-    data class RequiredField(
-        override val content: String
-    ) : InputField<RequiredField>(content) {
-        override fun validateInternal(): UiString? {
-            return if (content.isBlank()) UiStringRes(R.string.shipping_label_error_required_field)
-            else null
-        }
-    }
-
-    @Parcelize
-    data class CustomField(
-        override val content: String,
-        val validateInput: (String) -> Boolean
-    ) : InputField<CustomField>(content) {
-        override fun validateInternal(): UiString? {
-            return if (validateInput(content)) null
-            else UiStringRes(R.string.shipping_label_error_required_field)
-        }
-    }
-
-    @Parcelize
-    data class OptionalField(
-        override val content: String
-    ) : InputField<OptionalField>(content) {
-        override fun validateInternal(): UiString? = null
     }
 }
