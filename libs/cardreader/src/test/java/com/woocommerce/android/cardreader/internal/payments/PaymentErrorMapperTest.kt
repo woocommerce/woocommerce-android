@@ -10,6 +10,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErr
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.SERVER_ERROR
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -118,9 +119,9 @@ class PaymentErrorMapperTest {
     }
 
     @Test
-    fun `when SERVER_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
+    fun `when SERVER_ERROR capture payment exception thrown, then SERVER_ERROR type returned`() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.ServerError)
 
-        assertThat(result.type).isEqualTo(GENERIC_ERROR)
+        assertThat(result.type).isEqualTo(SERVER_ERROR)
     }
 }
