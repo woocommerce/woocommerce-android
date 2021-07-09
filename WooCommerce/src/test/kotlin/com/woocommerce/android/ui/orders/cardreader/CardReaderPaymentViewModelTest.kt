@@ -853,7 +853,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given order partially refunded, when payment started, then net total is used`() =
+    fun `given order partially refunded, when payment started, then only the unpaid amount is charged`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val expectedAmount = BigDecimal(123456789)
             whenever(mockedOrder.getNetTotal()).thenReturn(expectedAmount)
