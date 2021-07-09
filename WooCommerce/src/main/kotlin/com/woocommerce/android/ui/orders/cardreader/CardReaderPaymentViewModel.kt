@@ -131,7 +131,6 @@ class CardReaderPaymentViewModel
         }
     }
 
-    @Suppress("LongParameterList")
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
         cardReaderManager.collectPayment(
