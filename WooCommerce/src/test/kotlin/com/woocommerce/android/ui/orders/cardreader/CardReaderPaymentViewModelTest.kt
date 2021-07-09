@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PrintingReceiptState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
@@ -106,6 +107,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         )
 
         val mockedOrder = mock<Order>()
+        whenever(orderRepository.getOrder(any())).thenReturn(mockedOrder)
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
         val address = mock<Address>()
@@ -122,6 +124,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
         whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
+        whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(),anyOrNull(),anyOrNull(),anyOrNull())).thenReturn("test url")
     }
 
     @Test
@@ -610,7 +613,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when user clicks on print receipt button, then progress shown`() =
+    fun `when user clicks on print receipt button, then printing receipt state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -619,11 +622,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
-            assertThat((viewModel.viewStateData.value as PaymentSuccessfulState).isProgressVisible).isTrue()
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(PrintingReceiptState::class.java)
         }
 
     @Test
-    fun `when print result received, then progress hidden`() =
+    fun `when print result received, then payment successful state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -633,7 +637,36 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onPrintResult(mock())
 
-            assertThat((viewModel.viewStateData.value as PaymentSuccessfulState).isProgressVisible).isFalse()
+            assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
+        }
+
+    @Test
+    fun `given in printing receipt state, when view recreated, then PrintReceipt event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            viewModel.onViewCreated()
+
+            assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
+        }
+
+    @Test
+    fun `given not in printing receipt state, when view recreated, then state not changed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow<CardPaymentStatus> {}
+            }
+            viewModel.start()
+            val originalState = viewModel.viewStateData.value
+            assertThat(originalState).isNotInstanceOf(PrintingReceiptState::class.java)
+
+            viewModel.onViewCreated()
+
+            assertThat(viewModel.viewStateData.value).isEqualTo(originalState)
         }
 
     @Test
