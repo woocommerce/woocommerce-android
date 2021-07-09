@@ -826,7 +826,7 @@
     <string name="card_reader_tutorial_reconnect_label">Automattic reconnection</string>
     <string name="card_reader_tutorial_reconnect_detail">Your reader will go to sleep after 10 min of inactivity. Simply press the power button to reconnect it.</string>
     <string name="card_reader_tutorial_charged_label">Keep your reader charged</string>
-    <string name="card_reader_tutorial_charged_detail">Your reader can stay on for approximately 3 hours without charging</string>
+    <string name="card_reader_tutorial_charged_detail">Your reader takes about three hours to fully charge</string>
 
     <!--
         Notifications
