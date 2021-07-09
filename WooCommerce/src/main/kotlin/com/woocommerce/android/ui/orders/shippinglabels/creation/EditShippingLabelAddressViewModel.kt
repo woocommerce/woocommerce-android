@@ -442,8 +442,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         Name, Company, Phone, Address1, Address2, City, State, Zip, Country
     }
 
-    abstract class InputField<T: InputField<T>>(open val content: String): Parcelable {
+    abstract class InputField<T: InputField<T>>(open val content: String): Parcelable, Cloneable {
         var error: UiString? = null
+            private set
         private var hasBeenValidated: Boolean = false
         val isValid: Boolean
             get() {
@@ -452,9 +453,10 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             }
 
         fun validate(): T {
-            error = validateInternal()
-            hasBeenValidated = true
-            return this as T
+            val clone = this.clone() as T
+            clone.error = validateInternal()
+            clone.hasBeenValidated = true
+            return clone
         }
 
         final override fun hashCode(): Int {
@@ -489,7 +491,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     data class CustomField(
         override val content: String,
         val validateInput: (String) -> Boolean
-    ): InputField<CustomField>(content) {
+    ) : InputField<CustomField>(content) {
         override fun validateInternal(): UiString? {
             return if (validateInput(content)) null
             else UiStringRes(R.string.shipping_label_error_required_field)
