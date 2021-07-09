@@ -63,18 +63,22 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.OrderSqlUtils
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
 class OrderDetailViewModel @Inject constructor(
+    private val dispatcher: Dispatcher,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
@@ -136,7 +140,7 @@ class OrderDetailViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         orderDetailRepository.onCleanup()
-        EventBus.getDefault().unregister(this)
+        dispatcher.unregister(this)
     }
 
     init {
@@ -144,7 +148,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     final fun start() {
-        EventBus.getDefault().register(this)
+        dispatcher.register(this)
 
         val orderInDb = orderDetailRepository.getOrder(navArgs.orderId)
         val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
@@ -604,6 +608,14 @@ class OrderDetailViewModel @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductImageChanged(event: OnProductImageChanged) {
         viewState = viewState.copy(refreshedProductId = event.remoteProductId)
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onOrderChanged(event: WCOrderStore.OnOrderChanged) {
+        if (event.causeOfChange == WCOrderAction.UPDATED_ORDER_STATUS) {
+            reloadOrderDetails()
+        }
     }
 
     fun onCardReaderPaymentCompleted() {
