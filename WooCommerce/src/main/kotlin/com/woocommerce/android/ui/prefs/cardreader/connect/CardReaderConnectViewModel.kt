@@ -247,7 +247,7 @@ class CardReaderConnectViewModel @Inject constructor(
             } else {
                 tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
                 WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
-                viewState.value = ConnectingFailedState({ onConnectToReaderClicked(cardReader) }, ::onCancelClicked)
+                viewState.value = ConnectingFailedState({ startFlow() }, ::onCancelClicked)
             }
         }
     }
