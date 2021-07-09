@@ -61,7 +61,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             viewLifecycleOwner,
             Observer { event ->
                 when (event) {
-                    is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                    is ShowSnackbar -> uiMessageResolver.getSnack(event.message, event.args).show()
                     is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
                     is ShowRefundConfirmation -> {
                         val action =

@@ -126,7 +126,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
                     triggerEvent(
                         ShowSnackbar(
                             message = string.shipping_label_create_custom_package_api_failure,
-                            args = arrayOf(errorMsg as String)
+                            args = listOf(errorMsg.orEmpty())
                         )
                     )
                 }

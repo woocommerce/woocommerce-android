@@ -205,7 +205,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 when (event) {
                     is ShowSnackbar -> {
                         if (event.args.isNotEmpty()) {
-                            uiMessageResolver.getSnack(event.message, *event.args).show()
+                            uiMessageResolver.getSnack(event.message, event.args).show()
                         } else {
                             uiMessageResolver.showSnack(event.message)
                         }

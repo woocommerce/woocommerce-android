@@ -109,8 +109,8 @@ interface UIMessageResolver {
      * @param [stringResId] The string resource id of the base message
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
-    fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
-        snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), BaseTransientBottomBar.LENGTH_LONG
+    fun getSnack(@StringRes stringResId: Int, stringArgs: List<String> = emptyList()) = Snackbar.make(
+        snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs.toTypedArray()), BaseTransientBottomBar.LENGTH_LONG
     )
 
     /**

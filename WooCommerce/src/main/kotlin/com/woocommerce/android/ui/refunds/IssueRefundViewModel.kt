@@ -357,7 +357,7 @@ class IssueRefundViewModel @Inject constructor(
                     triggerEvent(
                         ShowSnackbar(
                             R.string.order_refunds_amount_refund_progress_message,
-                            arrayOf(formatCurrency(commonState.refundTotal))
+                            listOf(formatCurrency(commonState.refundTotal))
                         )
                     )
 

@@ -58,7 +58,7 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
             viewLifecycleOwner,
             Observer { event ->
                 when (event) {
-                    is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                    is ShowSnackbar -> uiMessageResolver.getSnack(event.message, event.args).show()
                     is Exit -> navigateBackWithResult(KEY_REFUND_SHIPPING_LABEL_RESULT, true)
                     else -> event.isHandled = false
                 }

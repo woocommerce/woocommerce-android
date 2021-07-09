@@ -23,7 +23,7 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
         triggerEvent(
             ShowSnackbar(
                 message = R.string.shipping_label_create_custom_package_success_message,
-                args = arrayOf(madePackage.title)
+                args = listOf(madePackage.title)
             )
         )
 
