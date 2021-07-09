@@ -71,6 +71,9 @@ data class Order(
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
 
+    @IgnoredOnParcel
+    val netTotal: BigDecimal = total - refundTotal
+
     @Parcelize
     data class ShippingMethod(
         val id: String,
@@ -141,8 +144,6 @@ data class Order(
     }
 
     fun getProductIds() = items.map { it.productId }
-
-    fun getNetTotal(): BigDecimal = total - refundTotal
 
     sealed class Status(val value: String) : Parcelable {
         companion object {

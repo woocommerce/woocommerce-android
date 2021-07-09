@@ -69,7 +69,8 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
 
-private val DUMMY_NET_TOTAL = BigDecimal(10.72)
+private val DUMMY_TOTAL = BigDecimal(10.72)
+private val DUMMY_NET_TOTAL = BigDecimal(7.01)
 private const val DUMMY_ORDER_NUMBER = "123"
 
 @Suppress("LargeClass")
@@ -89,7 +90,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val mockedOrder = mock<Order>()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
@@ -111,7 +111,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
         val mockedOrder = mock<Order>()
         whenever(orderRepository.getOrder(any())).thenReturn(mockedOrder)
-        whenever(mockedOrder.getNetTotal()).thenReturn(DUMMY_NET_TOTAL)
+        whenever(mockedOrder.netTotal).thenReturn(DUMMY_NET_TOTAL)
+        whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("USD")
         val address = mock<Address>()
         whenever(mockedOrder.billingAddress).thenReturn(address)
@@ -855,15 +856,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given order partially refunded, when payment started, then only the unpaid amount is charged`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val expectedAmount = BigDecimal(123456789)
-            whenever(mockedOrder.getNetTotal()).thenReturn(expectedAmount)
-
             val amountCaptor = argumentCaptor<BigDecimal>()
 
             viewModel.start()
 
             verify(cardReaderManager).collectPayment(any(), any(), amountCaptor.capture(), any(), any())
-            assertThat(amountCaptor.firstValue).isEqualTo(expectedAmount)
+            assertThat(amountCaptor.firstValue).isEqualTo(DUMMY_NET_TOTAL)
         }
 
     private fun simulateFetchOrderJobState(inProgress: Boolean) {

@@ -136,7 +136,7 @@ class CardReaderPaymentViewModel
         cardReaderManager.collectPayment(
             paymentDescription = order.getPaymentDescription(),
             orderId = order.remoteId,
-            amount = order.getNetTotal(),
+            amount = order.netTotal,
             currency = order.currency,
             customerEmail = customerEmail.ifEmpty { null }
         ).collect { paymentStatus ->
@@ -322,7 +322,7 @@ class CardReaderPaymentViewModel
         )
 
     // TODO cardreader don't hardcode currency symbol ($)
-    private fun Order.getAmountLabel() = "$${getNetTotal()}"
+    private fun Order.getAmountLabel() = "$${netTotal}"
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 
