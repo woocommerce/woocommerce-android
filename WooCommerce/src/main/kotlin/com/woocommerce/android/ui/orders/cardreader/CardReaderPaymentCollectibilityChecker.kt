@@ -16,7 +16,7 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
                 !isOrderPaid &&
                 // TODO cardreader remove the following check when the backend issue is fixed
                 // https://github.com/Automattic/woocommerce-payments/issues/2390
-                order.refundTotal == BigDecimal.ZERO &&
+                BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
                 // Empty payment method explanation:
                 // https://github.com/woocommerce/woocommerce/issues/29471
                 (paymentMethod == CASH_ON_DELIVERY_PAYMENT_TYPE || paymentMethod.isEmpty()) &&
