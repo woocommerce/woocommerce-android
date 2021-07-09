@@ -140,7 +140,7 @@ class CardReaderPaymentViewModel
             currency = order.currency,
             customerEmail = customerEmail.ifEmpty { null }
         ).collect { paymentStatus ->
-            onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, getAmountLabel(order))
+            onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
         }
     }
 
@@ -212,13 +212,13 @@ class CardReaderPaymentViewModel
         launch {
             val order = orderRepository.getOrder(arguments.orderIdentifier)
                 ?: throw IllegalStateException("Order URL not available.")
-            val amountLabel = getAmountLabel(order)
+            val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.remoteId)
 
             viewState.postValue(
                 PaymentSuccessfulState(
-                    getAmountLabel(order),
-                    { onPrintReceiptClicked(amountLabel, receiptUrl, getReceiptDocumentName(order.remoteId)) },
+                    order.getAmountLabel(),
+                    { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
                     { onSendReceiptClicked(receiptUrl, order.billingAddress.email) }
                 )
             )
@@ -242,7 +242,7 @@ class CardReaderPaymentViewModel
     private fun startPrintingFlow() {
         val order = orderRepository.getOrder(arguments.orderIdentifier)
             ?: throw IllegalStateException("Order URL not available.")
-        triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId), getReceiptDocumentName(order.remoteId)))
+        triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId), order.getReceiptDocumentName()))
     }
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
@@ -322,9 +322,9 @@ class CardReaderPaymentViewModel
         )
 
     // TODO cardreader don't hardcode currency symbol ($)
-    private fun getAmountLabel(order: Order) = "$${order.total}"
+    private fun Order.getAmountLabel() = "$${total}"
 
-    private fun getReceiptDocumentName(orderId: Long) = "receipt-order-$orderId"
+    private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
