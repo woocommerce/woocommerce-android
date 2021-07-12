@@ -72,7 +72,6 @@ import java.math.BigDecimal
 private val DUMMY_TOTAL = BigDecimal(10.72)
 private const val DUMMY_ORDER_NUMBER = "123"
 
-@Suppress("LargeClass")
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
