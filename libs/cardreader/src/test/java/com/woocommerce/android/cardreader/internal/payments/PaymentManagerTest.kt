@@ -26,6 +26,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
@@ -72,6 +73,7 @@ class PaymentManagerTest {
     private val createPaymentAction: CreatePaymentAction = mock()
     private val collectPaymentAction: CollectPaymentAction = mock()
     private val processPaymentAction: ProcessPaymentAction = mock()
+    private val cancelPaymentAction: CancelPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
 
     private val expectedSequence = listOf(
@@ -90,6 +92,7 @@ class PaymentManagerTest {
             createPaymentAction,
             collectPaymentAction,
             processPaymentAction,
+            cancelPaymentAction,
             paymentErrorMapper
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
@@ -553,6 +556,41 @@ class PaymentManagerTest {
             assertThat(result).isInstanceOf(CapturingPayment::class.java)
         }
     // END - Retry
+
+    // BEGIN - Cancel
+    @Test
+    fun `given PaymentStatus REQUIRES_PAYMENT_METHOD, when canceling payment, then payment intent canceled`() =
+        runBlockingTest {
+            val paymentIntent = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            manager.cancelPayment(paymentData)
+
+            verify(cancelPaymentAction).cancelPayment(paymentIntent)
+        }
+
+    @Test
+    fun `given PaymentStatus REQUIRES_CONFIRMATION, when canceling payment, then payment intent canceled`() =
+        runBlockingTest {
+            val paymentIntent = createPaymentIntent(REQUIRES_CONFIRMATION)
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            manager.cancelPayment(paymentData)
+
+            verify(cancelPaymentAction).cancelPayment(paymentIntent)
+        }
+
+    @Test
+    fun `given PaymentStatus REQUIRES_CAPTURE, when canceling payment, then payment intent NOT canceled`() =
+        runBlockingTest {
+            val paymentIntent = createPaymentIntent(REQUIRES_CAPTURE)
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            manager.cancelPayment(paymentData)
+
+            verify(cancelPaymentAction, never()).cancelPayment(paymentIntent)
+        }
+    // END - Cancel
 
     private fun createPaymentIntent(status: PaymentIntentStatus, receiptUrl: String? = "test url"): PaymentIntent =
         mock<PaymentIntent>().also {

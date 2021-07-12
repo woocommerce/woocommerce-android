@@ -4,18 +4,12 @@ import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardPaymentStatus
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
-import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
@@ -42,6 +36,7 @@ internal class PaymentManager(
     private val createPaymentAction: CreatePaymentAction,
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction,
+    private val cancelPaymentAction: CancelPaymentAction,
     private val errorMapper: PaymentErrorMapper
 ) {
     suspend fun acceptPayment(
@@ -79,6 +74,17 @@ internal class PaymentManager(
 
     fun retryPayment(orderId: Long, paymentData: PaymentData) =
         processPaymentIntent(orderId, (paymentData as PaymentDataImpl).paymentIntent)
+
+    fun cancelPayment(paymentData: PaymentData) {
+        val paymentIntent = (paymentData as PaymentDataImpl).paymentIntent
+        /* If the paymentIntent is in REQUIRES_CAPTURE state the app should not cancel the payment intent as it
+        doesn't know if it was already captured or not during one of the previous attempts to capture it. */
+        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD ||
+            paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION
+        ) {
+            cancelPaymentAction.cancelPayment(paymentIntent)
+        }
+    }
 
     private fun processPaymentIntent(orderId: Long, data: PaymentIntent) = flow {
         var paymentIntent = data
