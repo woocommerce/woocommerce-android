@@ -142,6 +142,7 @@ class ShippingLabelAddressValidator @Inject constructor(
  * and that's similar to what the web client does.
  * Source: https://github.com/Automattic/woocommerce-services/issues/1351
  */
+@Suppress("MagicNumber")
 fun String.isValidPhoneNumber(addressType: AddressType): Boolean {
     return when (addressType) {
         ORIGIN -> replace(Regex("^1|[^\\d]"), "").length == 10

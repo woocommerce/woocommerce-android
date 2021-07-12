@@ -4,7 +4,6 @@ import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {

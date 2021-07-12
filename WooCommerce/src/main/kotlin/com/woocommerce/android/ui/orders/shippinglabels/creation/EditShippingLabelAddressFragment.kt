@@ -101,7 +101,8 @@ class EditShippingLabelAddressFragment :
     }
 
     private fun initializeViewModel() {
-        subscribeObservers()
+        observeEvents()
+        observeViewState()
         setupResultHandlers()
     }
 
@@ -139,8 +140,8 @@ class EditShippingLabelAddressFragment :
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun subscribeObservers() {
+    @Suppress("LongMethod")
+    private fun observeViewState() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.nameField.takeIfNotEqualTo(old?.nameField) { field ->
                 binding.name.updateFromField(field)
@@ -154,13 +155,13 @@ class EditShippingLabelAddressFragment :
             new.address2Field.takeIfNotEqualTo(old?.address1Field) { field ->
                 binding.address2.updateFromField(field)
             }
-            new.phoneField.takeIfNotEqualTo(old?.phoneField) {field ->
+            new.phoneField.takeIfNotEqualTo(old?.phoneField) { field ->
                 binding.phone.updateFromField(field)
             }
             new.cityField.takeIfNotEqualTo(old?.cityField) { field ->
                 binding.city.updateFromField(field)
             }
-            new.zipField.takeIfNotEqualTo(old?.zipField) {field ->
+            new.zipField.takeIfNotEqualTo(old?.zipField) { field ->
                 binding.zip.updateFromField(field)
             }
             new.stateField.takeIfNotEqualTo(old?.stateField) { field ->
@@ -215,7 +216,10 @@ class EditShippingLabelAddressFragment :
                 binding.contactCustomerButton.isVisible = isVisible
             }
         }
+    }
 
+    @SuppressLint("SetTextI18n")
+    private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
