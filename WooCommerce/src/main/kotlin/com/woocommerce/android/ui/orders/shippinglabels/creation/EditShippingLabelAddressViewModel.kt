@@ -397,7 +397,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     ) : InputField<NameField>(content) {
         override fun validateInternal(): UiString? {
             return if (content.isNotBlank() || companyContent.isNotBlank()) null
-            else UiStringRes(R.string.shipping_label_error_required_field)
+            else UiStringRes(R.string.error_required_field)
         }
     }
 
@@ -409,7 +409,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         override fun validateInternal(): UiString? {
             return when {
                 validationError != null -> UiStringRes(validationError)
-                content.isBlank() -> UiStringRes(R.string.shipping_label_error_required_field)
+                content.isBlank() -> UiStringRes(R.string.error_required_field)
                 else -> null
             }
         }
@@ -440,7 +440,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val isRequired: Boolean = false
     ) : InputField<LocationField>(location.name) {
         override fun validateInternal(): UiString? {
-            return if (isRequired && content.isBlank()) UiStringRes(R.string.shipping_label_error_required_field)
+            return if (isRequired && content.isBlank()) UiStringRes(R.string.error_required_field)
             else null
         }
     }

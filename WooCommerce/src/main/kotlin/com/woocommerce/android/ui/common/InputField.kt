@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.common
 
 import android.os.Parcelable
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import kotlinx.parcelize.Parcelize
@@ -55,7 +55,7 @@ data class RequiredField(
     override val content: String
 ) : InputField<RequiredField>(content) {
     override fun validateInternal(): UiString? {
-        return if (content.isBlank()) UiStringRes(string.shipping_label_error_required_field)
+        return if (content.isBlank()) UiStringRes(R.string.error_required_field)
         else null
     }
 }
