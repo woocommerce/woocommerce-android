@@ -67,7 +67,7 @@ class CardReaderConnectViewModel @Inject constructor(
      * as MultiLiveEvent.pending field gets set to false when the first events is handled and all the other events
      * are ignored.
      * Example: Imagine VM sends CheckPermissions event -> the view layer synchronously checks the permissions and
-     * invokes vm.permissionChecked(true), the vm sendsF CheckBluetoothEvent, but this event is never observed by the
+     * invokes vm.permissionChecked(true), the vm sends CheckBluetoothEvent, but this event is never observed by the
      * view layer, since `MultiLiveEvent.pending` was set to false by the previous event.
      * Since this VM doesn't need to have support for MultiLiveEvent, it overrides _event from the parent
      * with SingleLiveEvent.
