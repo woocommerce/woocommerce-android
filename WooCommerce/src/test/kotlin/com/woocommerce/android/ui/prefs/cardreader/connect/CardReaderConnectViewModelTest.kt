@@ -7,11 +7,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.eq
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.MULTIPLE_READERS_FOUND
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,6 +62,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
+    private val appPrefs: AppPrefs = mock()
+    private val reconnectionFeatureFlag: FeatureFlag.CardReaderReconnectionWrapper = mock {
+        on { isEnabled() }.thenReturn(true)
+    }
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
 
@@ -69,7 +74,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         viewModel = CardReaderConnectViewModel(
             SavedStateHandle(),
             coroutinesTestRule.testDispatchers,
-            tracker
+            tracker,
+            appPrefs,
+            reconnectionFeatureFlag
         )
     }
 
@@ -426,6 +433,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when app successfully connects to reader, then reader id stored`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(connectingSucceeds = true)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(appPrefs).setLastConnectedCardReaderId("Dummy1")
+        }
+
+    @Test
     fun `when connecting to reader succeeds, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = true)
@@ -738,7 +755,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
         whenever(cardReaderManager.discoverReaders(anyBoolean())).thenAnswer {
-            flow<CardReaderDiscoveryEvents> {
+            flow {
                 when (scanState) {
                     SCANNING -> { // no-op
                     }
