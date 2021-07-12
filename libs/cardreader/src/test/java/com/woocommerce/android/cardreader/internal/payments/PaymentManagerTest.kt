@@ -2,7 +2,6 @@ package com.woocommerce.android.cardreader.internal.payments
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
@@ -75,6 +74,7 @@ class PaymentManagerTest {
     private val processPaymentAction: ProcessPaymentAction = mock()
     private val cancelPaymentAction: CancelPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
+    private val paymentUtils: PaymentUtils = mock()
 
     private val expectedSequence = listOf(
         InitializingPayment::class,
@@ -93,6 +93,7 @@ class PaymentManagerTest {
             collectPaymentAction,
             processPaymentAction,
             cancelPaymentAction,
+            paymentUtils,
             paymentErrorMapper
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
@@ -117,11 +118,14 @@ class PaymentManagerTest {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<String>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
+        whenever(paymentUtils.convertBigDecimalInDollarsToIntegerInCents(any())).thenReturn(1)
+        whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
     }
 
     // BEGIN - Arguments validation and conversion
     @Test
-    fun `when currency not USD, then error emitted`() = runBlockingTest {
+    fun `when currency not supported, then error emitted`() = runBlockingTest {
+        whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(false)
         val result = manager.acceptPayment(
             DUMMY_PAYMENT_DESCRIPTION,
             DUMMY_ORDER_ID,
@@ -134,7 +138,8 @@ class PaymentManagerTest {
     }
 
     @Test
-    fun `when currency is USD, then flow initiated`() = runBlockingTest {
+    fun `when currency supported, then flow initiated`() = runBlockingTest {
+        whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
         val result = manager.acceptPayment(
             DUMMY_PAYMENT_DESCRIPTION,
             DUMMY_ORDER_ID,
@@ -149,46 +154,11 @@ class PaymentManagerTest {
 
     @Test
     fun `when payment flow started, then dollar amount converted to cents`() = runBlockingTest {
-        val captor = argumentCaptor<Int>()
-
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1), USD_CURRENCY, DUMMY_EMAIL)
+        val amount = BigDecimal(1)
+        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, amount, USD_CURRENCY, DUMMY_EMAIL)
             .toList()
 
-        verify(createPaymentAction).createPaymentIntent(anyString(), captor.capture(), anyString(), anyString())
-        assertThat(captor.firstValue).isEqualTo(100)
-    }
-
-    @Test
-    fun `when amount $1 ¢005, then it gets rounded down to ¢100`() = runBlockingTest {
-        val captor = argumentCaptor<Int>()
-
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.005), USD_CURRENCY, DUMMY_EMAIL)
-            .toList()
-
-        verify(createPaymentAction).createPaymentIntent(anyString(), captor.capture(), anyString(), anyString())
-        assertThat(captor.firstValue).isEqualTo(100)
-    }
-
-    @Test
-    fun `when amount $1 ¢006, then it gets rounded up to ¢101`() = runBlockingTest {
-        val captor = argumentCaptor<Int>()
-
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.006), USD_CURRENCY, DUMMY_EMAIL)
-            .toList()
-
-        verify(createPaymentAction).createPaymentIntent(anyString(), captor.capture(), anyString(), anyString())
-        assertThat(captor.firstValue).isEqualTo(101)
-    }
-
-    @Test
-    fun `when amount $1 ¢99, then it gets converted to ¢199`() = runBlockingTest {
-        val captor = argumentCaptor<Int>()
-
-        manager.acceptPayment(DUMMY_PAYMENT_DESCRIPTION, DUMMY_ORDER_ID, BigDecimal(1.99), USD_CURRENCY, DUMMY_EMAIL)
-            .toList()
-
-        verify(createPaymentAction).createPaymentIntent(anyString(), captor.capture(), anyString(), anyString())
-        assertThat(captor.firstValue).isEqualTo(199)
+        verify(paymentUtils).convertBigDecimalInDollarsToIntegerInCents(amount)
     }
 
     @Test

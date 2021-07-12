@@ -25,12 +25,8 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
-import java.math.RoundingMode.HALF_UP
 
-internal const val USD_TO_CENTS_DECIMAL_PLACES = 2
-private const val USD_CURRENCY = "usd"
-
-@Suppress("TooManyFunctions", "LongParameterList")
+@Suppress("LongParameterList")
 internal class PaymentManager(
     private val terminalWrapper: TerminalWrapper,
     private val cardReaderStore: CardReaderStore,
@@ -38,6 +34,7 @@ internal class PaymentManager(
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction,
     private val cancelPaymentAction: CancelPaymentAction,
+    private val paymentUtils: PaymentUtils,
     private val errorMapper: PaymentErrorMapper
 ) {
     suspend fun acceptPayment(
@@ -47,12 +44,12 @@ internal class PaymentManager(
         currency: String,
         customerEmail: String?
     ): Flow<CardPaymentStatus> = flow {
-        if (!isSupportedCurrency(currency)) {
+        if (!paymentUtils.isSupportedCurrency(currency)) {
             emit(errorMapper.mapError(errorMessage = "Unsupported currency: $currency"))
             return@flow
         }
         val amountInSmallestCurrencyUnit = try {
-            convertBigDecimalInDollarsToIntegerInCents(amount)
+            paymentUtils.convertBigDecimalInDollarsToIntegerInCents(amount)
         } catch (e: ArithmeticException) {
             emit(errorMapper.mapError(errorMessage = "BigDecimal amount doesn't fit into an Integer: $amount"))
             return@flow
@@ -182,19 +179,6 @@ internal class PaymentManager(
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }
-
-    // TODO cardreader Add support for other currencies
-    private fun convertBigDecimalInDollarsToIntegerInCents(amount: BigDecimal): Int {
-        return amount
-            // round to USD_TO_CENTS_DECIMAL_PLACES decimal places
-            .setScale(USD_TO_CENTS_DECIMAL_PLACES, HALF_UP)
-            // convert dollars to cents
-            .movePointRight(USD_TO_CENTS_DECIMAL_PLACES)
-            .intValueExact()
-    }
-
-    // TODO Add Support for other currencies
-    private fun isSupportedCurrency(currency: String): Boolean = currency.equals(USD_CURRENCY, ignoreCase = true)
 }
 
 data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData
