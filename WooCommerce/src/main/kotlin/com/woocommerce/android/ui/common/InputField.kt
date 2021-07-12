@@ -6,6 +6,15 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Base class for representing an input field, it allows holding the current content, to allow prefilling
+ * and restoring it.
+ * And allows representing [error] message that can be displayed if the input is not valid, the [error] is not
+ * calculated until [validate] is called.
+ * [isValid] will return the current validation status independently of whether an error is displayed or not.
+ *
+ * Child classes will have to implement the validation logic.
+ */
 abstract class InputField<T : InputField<T>>(open val content: String) : Parcelable, Cloneable {
     var error: UiString? = null
         private set
