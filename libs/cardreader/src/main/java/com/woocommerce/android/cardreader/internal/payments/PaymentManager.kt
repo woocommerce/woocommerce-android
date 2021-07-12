@@ -30,6 +30,7 @@ import java.math.RoundingMode.HALF_UP
 internal const val USD_TO_CENTS_DECIMAL_PLACES = 2
 private const val USD_CURRENCY = "usd"
 
+@Suppress("TooManyFunctions", "LongParameterList")
 internal class PaymentManager(
     private val terminalWrapper: TerminalWrapper,
     private val cardReaderStore: CardReaderStore,
