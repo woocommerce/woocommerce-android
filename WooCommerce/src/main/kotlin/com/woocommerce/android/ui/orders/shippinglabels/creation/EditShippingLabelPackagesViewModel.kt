@@ -50,24 +50,25 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     val siteParameters: SiteParameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
 
-    private var shippingPackages: List<ShippingPackage>? = null
+    private var createdPackages: List<ShippingPackage>? = null
 
     init {
         initState()
+    }
+
+    private fun initState() {
+        if (viewState.packagesUiModels.isNotEmpty()) return
+
         launch {
+            viewState = viewState.copy(showSkeletonView = true)
             val shippingPackagesResult = shippingLabelRepository.getShippingPackages()
             if (shippingPackagesResult.isError) {
                 triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
                 triggerEvent(Exit)
             } else {
-                shippingPackages = shippingPackagesResult.model
+                createdPackages = shippingPackagesResult.model
             }
-        }
-    }
 
-    private fun initState() {
-        if (viewState.packagesUiModels.isNotEmpty()) return
-        launch {
             val packagesList = if (arguments.shippingLabelPackages.isEmpty()) {
                 createDefaultPackage()
             } else {
@@ -78,18 +79,15 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                     ShippingLabelPackageUiModel(isExpanded = index == 0, data = shippingLabelPackage)
                 }
             )
+            viewState = viewState.copy(showSkeletonView = false)
         }
     }
 
     private suspend fun createDefaultPackage(): List<ShippingLabelPackage> {
-        viewState = viewState.copy(showSkeletonView = true)
-
         val lastUsedPackage = shippingLabelRepository.getLastUsedPackage()
-
         val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
         loadProductsWeightsIfNeeded(order)
 
-        viewState = viewState.copy(showSkeletonView = false)
         val items = order.getShippableItems().map { it.toShippingItem() }
         val totalWeight = items.sumByFloat { it.weight * it.quantity } + (lastUsedPackage?.boxWeight ?: 0f)
         return listOf(
@@ -151,7 +149,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onPackageSpinnerClicked(position: Int) {
-        shippingPackages?.let {
+        createdPackages?.let {
             if (it.isNotEmpty()) {
                 triggerEvent(OpenPackageSelectorEvent(position))
             } else {
@@ -161,6 +159,10 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
+        if (createdPackages.isNullOrEmpty()) {
+            createdPackages = listOf(selectedPackage)
+        }
+
         val packages = viewState.packagesUiModels.toMutableList()
         val updatedPackage = with(packages[position].data) {
             val weight = if (!viewState.packagesWithEditedWeight.contains(packageId)) {
