@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-24 15:59:19+0000
+Translation-Revision-Date: 2021-07-08 09:55:08+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_reader_detail_connected_update_failed">Reader のソフトウェアを更新できませんでした</string>
+    <string name="card_reader_detail_connected_update_check_failed">ソフトウェアのバージョンの更新チェックができませんでした。</string>
+    <string name="card_reader_detail_learn_more">モバイルでの支払いと注文用カードリーダーの承認について&lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Bluetooth をオンにする</string>
+    <string name="card_reader_connect_scanning_failed_header">Reader が見つかりません</string>
+    <string name="card_reader_connect_failed_header">Reader に接続できませんでした</string>
+    <string name="card_reader_connect_connect_button">連携</string>
+    <string name="card_reader_connect_multiple_readers_found_header">複数の Reader が見つかりました</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">この注文のお支払いは完了しています</string>
+    <string name="card_reader_payment_receipt_email_content">ご購入ありがとうございます。 以下のリンクをクリックしてお支払いのレシートをご確認ください。\n\n%s</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">お支払いが完了しませんでした</string>
+    <string name="card_reader_payment_failed_card_declined_state">カードが拒否されました</string>
+    <string name="shipping_label_print_customs_form_download_failed">税関申告書をダウンロードする際にエラーが発生しました</string>
+    <string name="shipping_label_print_customs_form_screen_title">税関送り状を印刷</string>
+    <string name="shipping_label_print_customs_form">税関申告書を印刷</string>
+    <string name="shipping_label_print_customs_explanation">この国外配送では税関申告書を印刷して添付する必要があります</string>
+    <string name="shipping_label_customs_form">税関申告書</string>
+    <string name="shipping_label_payment_method_added">支払い方法が追加されました</string>
+    <string name="shipping_label_payments_add_first_credit_card">クレジットカードを追加</string>
+    <string name="shipping_label_destination_address_phone_invalid">有効な電話番号を入力してください</string>
+    <string name="orderdetail_shipping_label_print_customs_form">税関申告書を印刷</string>
     <string name="empty_order_list_message">ストアの売り上げを伸ばす方法を見つけましょう。</string>
     <string name="empty_product_message">今すぐ販売を開始するには、最初の商品をストアに追加してください。</string>
     <string name="empty_product_add_product_button">商品を追加</string>
     <string name="variable_product_attributes">バリエーション属性</string>
     <string name="card_reader_detail_not_connected_third_hint_label">モバイルデバイスの Bluetooth をオンにする</string>
-    <string name="card_reader_detail_learn_more">モバイルデバイスや注文用カードリーダーでの支払いの受領方法について&lt;a href=\"https://woocommerce.com/payments/\"&gt;さらに詳しく&lt;/a&gt;</string>
-    <string name="card_reader_fetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
+    <string name="card_reader_refetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
     <string name="card_reader_payment_email_client_not_found">メールクライアントアプリを検出できません</string>
-    <string name="card_reader_payment_receipt_email_content">ご購入ありがとうございます。 お支払いのレシートは次のリンクで確認できます: %s</string>
     <string name="card_reader_payment_receipt_email_subject">%s のレシート</string>
     <string name="card_reader_payment_description">%s の %s のオンライン支払い</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">注文を更新する</string>
     <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
-    <string name="shipping_label_address_phone_invalid">カスタムフォームには、10桁の電話番号を入力してください</string>
+    <string name="shipping_label_origin_address_phone_invalid">カスタムフォームには、10桁の電話番号を入力してください</string>
     <string name="shipping_label_address_phone_required">この配送にはカスタムフォームが必要なため、電話番号が必須です</string>
     <string name="shipping_label_create_customs_done">カスタムフォームの入力が完了しました</string>
     <string name="print_receipt_label_info_step_7">デバイスからの印刷で問題が生じている場合は、プリンターのカスタマーサポートにお問い合わせください。</string>
@@ -38,9 +57,7 @@ Language: ja_JP
     <string name="card_reader_software_update_in_progress_title">Reader のソフトウェアを更新しています</string>
     <string name="card_reader_software_update_title">ソフトウェア更新</string>
     <string name="card_reader_software_update_description">カードリーダーのソフトウェアを更新して順調な稼働が続くようにする必要があります。 今すぐ更新しますか ? </string>
-    <string name="card_reader_detail_connected_update_failed">Reader のソフトウェア更新が失敗しました。 後ほど、もう一度お試しください</string>
     <string name="card_reader_detail_connected_update_success">Reader のソフトウェアが更新されました</string>
-    <string name="card_reader_detail_connected_update_check_failed">ソフトウェアのバージョン更新チェックが失敗しました。 後ほど、もう一度お試しください</string>
     <string name="card_reader_detail_connected_reader_unknown">不明なカードリーダー名</string>
     <string name="card_reader_detail_connected_disconnect_reader">Reader の接続を解除</string>
     <string name="card_reader_detail_connected_enforced_update_software">引き続き支払いを受け入れるには、Reader のソフトウェアを更新してください</string>
@@ -52,7 +69,6 @@ Language: ja_JP
     <string name="card_reader_detail_not_connected_first_hint_label">カードリーダーが充電されていることを確認する</string>
     <string name="card_reader_detail_not_connected_header">カードリーダーを接続</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">カードが拒否されました</string>
-    <string name="card_reader_payment_failed_card_declined_state">カードが拒否されました。 別のカードで再度お試しください。</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Reader に接続しています</string>
     <string name="card_reader_payment_collect_payment_loading_header">支払いを受け取る準備をしています</string>
     <string name="shipping_label_customs_value_zero_error">申告額はゼロよりも大きくする必要があります</string>
@@ -107,15 +123,12 @@ Language: ja_JP
     <string name="product_type_virtual_desc">サービス、ダウンロードできる書籍、音楽、動画などの独自のデジタル製品</string>
     <string name="product_type_simple_desc">顧客に配送する必要がある可能性のある独自の物理的製品</string>
     <string name="product_type_simple_title">シンプルな物理的製品</string>
-    <string name="card_reader_connect_open_bluetooth_settings">設定を開く</string>
     <string name="card_reader_connect_open_location_settings">設定を開く</string>
     <string name="card_reader_connect_open_permission_settings">設定を開く</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth が無効になっています</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">位置情報が無効になっています</string>
-    <string name="card_reader_connect_missing_permissions_hint">必要な位置情報の許可がありません</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth が無効になっています</string>
+    <string name="card_reader_connect_location_provider_disabled_header">位置情報が無効になっています</string>
+    <string name="card_reader_connect_missing_permissions_header">必要な位置情報の許可がありません</string>
     <string name="card_reader_connect_connecting_failed_hint">Reader に接続できませんでした。</string>
-    <string name="card_reader_connect_scanning_failed_hint">Reader が見つかりませんでした。</string>
-    <string name="card_reader_connect_failed_header">Reader に接続できませんでした</string>
     <string name="card_reader_connect_connecting_header">Reader に接続しています</string>
     <string name="card_reader_connect_to_reader">Reader に接続する</string>
     <string name="card_reader_connect_reader_found_header">Reader に接続しますか %s?</string>
@@ -129,7 +142,6 @@ Language: ja_JP
     <string name="product_delete_dialog_title">製品を削除しています</string>
     <string name="card_reader_payment_send_receipt">レシートを送信</string>
     <string name="card_reader_payment_print_receipt">レシートを印刷</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">支払いに失敗しました。 もう一度お試しください。</string>
     <string name="card_reader_payment_capturing_payment_state">支払いをキャプチャーしています</string>
     <string name="card_reader_payment_processing_payment_state">支払いを処理しています</string>
     <string name="card_reader_payment_collect_payment_state">リブログの準備ができています</string>
@@ -379,7 +391,7 @@ Language: ja_JP
     <string name="shipping_label_print_error_message">購入したラベルで印刷エラーが発生した場合は、そのラベルをもう一度印刷できます。</string>
     <string name="orderdetail_shipping_label_wip_message">お使いの端末から配送ラベルをより簡単に直接印刷できるよう、改善を重ねているところです ! 現時点では、WooCommerce Shipping のストア管理からこの注文用に配送ラベルを作成した場合、こちらの「注文詳細」から印刷できます。</string>
     <string name="orderdetail_shipping_label_wip_title">お手元の端末から配送ラベルを印刷しましょう !</string>
-    <string name="orderdetail_shipping_label_reprint">配送ラベルを再印刷</string>
+    <string name="orderdetail_shipping_label_print">配送ラベルを印刷</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">商品の下書きを保存しました</string>
     <string name="product_detail_publish_product_draft_error">商品の下書きの保存中にエラーが発生しました</string>
