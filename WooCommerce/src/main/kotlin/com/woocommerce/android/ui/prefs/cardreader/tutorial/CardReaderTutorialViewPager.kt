@@ -9,10 +9,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.widgets.WCViewPager
 
 class CardReaderTutorialViewPager : WCViewPager {
-    companion object {
-        const val NUM_PAGES = 3
-    }
-
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -54,5 +50,9 @@ class CardReaderTutorialViewPager : WCViewPager {
         }
 
         override fun getCount() = NUM_PAGES
+    }
+
+    companion object {
+        const val NUM_PAGES = 3
     }
 }
