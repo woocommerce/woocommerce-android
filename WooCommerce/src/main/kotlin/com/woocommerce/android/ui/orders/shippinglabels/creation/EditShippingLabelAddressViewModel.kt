@@ -118,16 +118,17 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 dataStore.fetchCountriesAndStates(site.get())
                 viewState = viewState.copy(isLoadingProgressDialogVisible = false)
             }
+            val isStateFieldSpinner = states.isNotEmpty()
             val countryField = countries.firstOrNull { it.code == viewState.countryField.location.code }?.let {
                 viewState.countryField.copy(location = it)
             } ?: viewState.countryField
             val stateField = states.firstOrNull { it.code == viewState.stateField.location.code }?.let {
-                viewState.stateField.copy(location = it)
-            } ?: viewState.stateField
+                viewState.stateField.copy(location = it, isRequired = isStateFieldSpinner)
+            } ?: viewState.stateField.copy(isRequired = isStateFieldSpinner)
 
             viewState = viewState.copy(
                 isValidationProgressDialogVisible = false,
-                isStateFieldSpinner = states.isNotEmpty(),
+                isStateFieldSpinner = isStateFieldSpinner,
                 countryField = countryField,
                 stateField = stateField
             )
@@ -141,6 +142,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 val validationErrorMessage = getAddressErrorStringRes(result.message)
                 viewState = viewState.copy(
                     address1Field = viewState.address1Field.copy(validationError = validationErrorMessage).validate(),
+                    bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
                 )
             }
             is ValidationResult.SuggestedChanges -> {
@@ -221,7 +223,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         }
         viewState = viewState.copy(
             stateField = stateField,
-            isStateFieldSpinner = states.isNotEmpty()
+            isStateFieldSpinner = isStateFieldSpinner
         )
     }
 
@@ -272,7 +274,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 Field.State -> {
                     val state = states.firstOrNull { it.code == content } ?: Location(code = content, name = content)
                     copy(
-                        stateField = stateField.copy(location = state)
+                        stateField = stateField.copy(location = state).validate()
                     )
                 }
                 Field.Zip -> copy(
