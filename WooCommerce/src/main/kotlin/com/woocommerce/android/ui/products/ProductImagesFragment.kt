@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -42,6 +43,7 @@ import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
@@ -66,6 +68,7 @@ class ProductImagesFragment :
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
+    private var detailSnackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -181,6 +184,7 @@ class ProductImagesFragment :
             Observer { event ->
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                     is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
                     is ShowDialog -> event.showDialog()
                     ShowImageSourceDialog -> showImageSourceDialog()
@@ -201,6 +205,22 @@ class ProductImagesFragment :
             onPositiveButton = { viewModel.onDeleteImageConfirmed(image) },
             onNegativeButton = { /* no-op */ }
         ).show()
+    }
+
+    private fun displayProductImageUploadErrorSnackBar(
+        message: String,
+        actionListener: View.OnClickListener
+    ) {
+        if (detailSnackbar == null) {
+            detailSnackbar = uiMessageResolver.getActionSnack(
+                message = message,
+                actionText = getString(R.string.details),
+                actionListener = actionListener
+            )
+        } else {
+            detailSnackbar?.setText(message)
+        }
+        detailSnackbar?.show()
     }
 
     private fun updateImages(images: List<Image>, uris: List<Uri>?) {

@@ -18,6 +18,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.util.swap
@@ -26,6 +27,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,6 +41,7 @@ import javax.inject.Inject
 class ProductImagesViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    private val mediaFileUploadHandler: MediaFileUploadHandler,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
@@ -242,7 +245,10 @@ class ProductImagesViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
-            triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
+            val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteId)
+            triggerEvent(ShowActionSnackbar(errorMsg, action = {
+                // TODO: will be taken care of in another commit
+            }))
         } else {
             event.media?.let { media ->
                 viewState = if (isMultiSelectionAllowed) {
