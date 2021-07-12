@@ -2,6 +2,7 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
+import javax.inject.Inject
 
 /**
  * "Feature flags" are used to hide in-progress features from release versions
@@ -22,5 +23,9 @@ enum class FeatureFlag {
             CARD_READER -> CardPresentEligibleFeatureChecker.isCardPresentEligible.get()
             CARD_READER_RECONNECTION -> CARD_READER.isEnabled() && PackageUtils.isDebugBuild()
         }
+    }
+
+    class CardReaderReconnectionWrapper @Inject constructor() {
+        fun isEnabled() = CARD_READER_RECONNECTION.isEnabled()
     }
 }

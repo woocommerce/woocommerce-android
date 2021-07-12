@@ -12,7 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -26,7 +25,6 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
@@ -42,6 +40,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.MULTIPLE_READERS_FOUND
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,9 +62,12 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
+    private val appPrefs: AppPrefs = mock()
+    private val reconnectionFeatureFlag: FeatureFlag.CardReaderReconnectionWrapper = mock {
+        on { isEnabled() }.thenReturn(true)
+    }
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
-    private val appPrefsWrapper: AppPrefs = mock()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -73,7 +75,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             coroutinesTestRule.testDispatchers,
             tracker,
-            appPrefsWrapper
+            appPrefs,
+            reconnectionFeatureFlag
         )
     }
 
@@ -430,30 +433,22 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when app successfully connects to reader, then reader id stored`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(connectingSucceeds = true)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(appPrefs).setLastConnectedCardReaderId("Dummy1")
+        }
+
+    @Test
     fun `when connecting to reader succeeds, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = true)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
-        }
-
-    @Test
-    fun `when connecting to reader for the first time, then the tutorial shows`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(appPrefsWrapper.getShowCardReaderConnectedTutorial()).thenReturn(true)
-            init(connectingSucceeds = true)
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-            assertThat(viewModel.event.value).isInstanceOf(ShowCardReaderTutorial::class.java)
-        }
-
-    @Test
-    fun `when connecting to reader not for the first time, then the tutorial doesn't show`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(appPrefsWrapper.getShowCardReaderConnectedTutorial()).thenReturn(false)
-            init(connectingSucceeds = true)
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(true))
         }
 
     @Test
@@ -760,7 +755,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
         whenever(cardReaderManager.discoverReaders(anyBoolean())).thenAnswer {
-            flow<CardReaderDiscoveryEvents> {
+            flow {
                 when (scanState) {
                     SCANNING -> { // no-op
                     }
