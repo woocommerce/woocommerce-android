@@ -33,7 +33,10 @@ abstract class InputField<T : InputField<T>>(open val content: String) : Parcela
     }
 
     final override fun hashCode(): Int {
-        return content.hashCode() + error.hashCode() + hasBeenValidated.hashCode()
+        var result = content.hashCode()
+        result = 31 * result + (error?.hashCode() ?: 0)
+        result = 31 * result + hasBeenValidated.hashCode()
+        return result
     }
 
     final override fun equals(other: Any?): Boolean {
