@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -29,6 +30,7 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SKIPPED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -42,6 +44,8 @@ import kotlin.math.roundToInt
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
     private val tracker: AnalyticsTrackerWrapper,
+    private val appPrefs: AppPrefs,
+    private val reconnectionFeatureFlag: FeatureFlag.CardReaderReconnectionWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(Loading)
@@ -118,6 +122,7 @@ class CardReaderDetailViewModel @Inject constructor(
     private fun onDisconnectClicked() {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         launch {
+            clearLastKnowReader()
             val disconnectionResult = cardReaderManager.disconnectReader()
             if (!disconnectionResult) {
                 WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
@@ -137,6 +142,12 @@ class CardReaderDetailViewModel @Inject constructor(
                 triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
             }
         }.exhaustive
+    }
+
+    private fun clearLastKnowReader() {
+        if (reconnectionFeatureFlag.isEnabled()) {
+            appPrefs.removeLastConnectedCardReaderId()
+        }
     }
 
     private fun CardReader.getReadersName(): UiString {
