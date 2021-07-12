@@ -52,8 +52,6 @@ class EditShippingLabelAddressFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
-    private var _binding: FragmentEditShippingLabelAddressBinding? = null
-    private val binding get() = _binding!!
 
     val viewModel: EditShippingLabelAddressViewModel by viewModels()
 
@@ -86,23 +84,18 @@ class EditShippingLabelAddressFragment :
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentEditShippingLabelAddressBinding.bind(view)
+        val binding = FragmentEditShippingLabelAddressBinding.bind(view)
 
-        initializeViewModel()
-        initializeViews()
+        initializeViewModel(binding)
+        initializeViews(binding)
     }
 
-    private fun initializeViewModel() {
+    private fun initializeViewModel(binding: FragmentEditShippingLabelAddressBinding) {
+        observeViewState(binding)
         observeEvents()
-        observeViewState()
         setupResultHandlers()
     }
 
@@ -141,7 +134,7 @@ class EditShippingLabelAddressFragment :
     }
 
     @Suppress("LongMethod")
-    private fun observeViewState() {
+    private fun observeViewState(binding: FragmentEditShippingLabelAddressBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.nameField.takeIfNotEqualTo(old?.nameField) { field ->
                 binding.name.updateFromField(field)
@@ -310,7 +303,7 @@ class EditShippingLabelAddressFragment :
         }
     }
 
-    private fun initializeViews() {
+    private fun initializeViews(binding: FragmentEditShippingLabelAddressBinding) {
         binding.name.bindToField(Field.Name)
         binding.company.bindToField(Field.Company)
         binding.address1.bindToField(Field.Address1)
