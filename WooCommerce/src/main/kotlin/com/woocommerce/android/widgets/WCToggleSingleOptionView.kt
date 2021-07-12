@@ -45,9 +45,9 @@ class WCToggleSingleOptionView @JvmOverloads constructor(
 
                 // Set the summary and switch state
                 binding.switchSettingSwitch.isChecked =
-                        a.getBoolean(R.styleable.WCToggleSingleOptionView_switchChecked, false)
+                    a.getBoolean(R.styleable.WCToggleSingleOptionView_switchChecked, false)
                 binding.switchSettingSwitch.text =
-                        a.getString(R.styleable.WCToggleSingleOptionView_switchSummary).orEmpty()
+                    a.getString(R.styleable.WCToggleSingleOptionView_switchSummary).orEmpty()
 
                 // Set the component state text to something meaningful - this text is announced to the user after
                 // the content description.

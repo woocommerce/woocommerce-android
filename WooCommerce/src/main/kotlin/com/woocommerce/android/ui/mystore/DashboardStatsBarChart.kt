@@ -15,8 +15,8 @@ import kotlin.math.abs
  * https://github.com/woocommerce/woocommerce-android/issues/1048
  */
 class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
-        context,
-        attrs
+    context,
+    attrs
 ) {
     init {
         val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.DashboardStatsBarChart, 0, 0)
@@ -32,8 +32,7 @@ class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
     // Overriding this method from the Chart.java: line 719
     override fun drawMarkers(canvas: Canvas?) {
         // if there is no marker view or drawing marker is disabled
-        if (mMarker == null || !isDrawMarkersEnabled || !valuesToHighlight())
-            return
+        if (mMarker == null || !isDrawMarkersEnabled || !valuesToHighlight()) return
 
         for (i in mIndicesToHighlight.indices) {
             val highlight = mIndicesToHighlight[i]
@@ -51,8 +50,7 @@ class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
 
             val pos = getMarkerPosition(highlight)
             // check bounds
-            if (!mViewPortHandler.isInBounds(pos[0], pos[1]))
-                continue
+            if (!mViewPortHandler.isInBounds(pos[0], pos[1])) continue
 
             // callbacks to update the content
             mMarker.refreshContent(e, highlight)
@@ -75,8 +73,8 @@ class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val movement = Point(
-                            abs(event.x.toInt() - startTouchPoint.x),
-                            abs(event.y.toInt() - startTouchPoint.y)
+                        abs(event.x.toInt() - startTouchPoint.x),
+                        abs(event.y.toInt() - startTouchPoint.y)
                     )
                     // swallow the event if this is a horizontal scrub, which we determine by
                     // checking if the vertical motion is less than the horizontal motion

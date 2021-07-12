@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-23 11:54:04+0000
+Translation-Revision-Date: 2021-07-07 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="card_reader_detail_connected_update_failed">Pembaruan perangkat lunak pembaca gagal</string>
+    <string name="card_reader_detail_connected_update_check_failed">Pemeriksaan pembaruan versi perangkat lunak gagal</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Pelajari lebih lanjut&lt;/a&gt; tentang menerima pembayaran dengan perangkat seluler dan memesan pembaca kartu</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Aktifkan Bluetooth</string>
+    <string name="card_reader_connect_scanning_failed_header">Pembaca tidak ditemukan</string>
+    <string name="card_reader_connect_failed_header">Tidak dapat menyambungkan pembaca</string>
+    <string name="card_reader_connect_connect_button">Hubungkan</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Ditemukan beberapa pembaca</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">Pesanan sudah dibayar</string>
+    <string name="card_reader_payment_receipt_email_content">Terima kasih atas pembelian Anda! Klik tautan di bawah untuk melihat tanda terima pembayaran Anda.\n\n%s</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Pembayaran tidak berhasil</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kartu ditolak</string>
+    <string name="shipping_label_print_customs_form_download_failed">Terjadi error saat mengunduh formulir bea cukai</string>
+    <string name="shipping_label_print_customs_form_screen_title">Cetak faktur bea cukai</string>
+    <string name="shipping_label_print_customs_form">Cetak formulir bea cukai</string>
+    <string name="shipping_label_print_customs_explanation">Formulir bea cukai harus dicetak dan disertakan pada pengiriman internasional ini</string>
+    <string name="shipping_label_customs_form">Formulir bea cukai</string>
+    <string name="shipping_label_payment_method_added">Metode pembayaran ditambahkan</string>
+    <string name="shipping_label_payments_add_first_credit_card">Tambahkan kartu kredit</string>
+    <string name="shipping_label_destination_address_phone_invalid">Masukkan nomor telepon yang valid</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Cetak formulir bea cukai</string>
     <string name="empty_order_list_message">Cari tahu bagaimana Anda dapat meningkatkan penjualan toko Anda.</string>
     <string name="empty_product_message">Mulai berjualan hari ini dengan menambahkan produk pertama ke toko Anda.</string>
     <string name="empty_product_add_product_button">Tambahkan produk</string>
     <string name="variable_product_attributes">Atribut variasi</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Aktifkan bluetooth perangkat seluler</string>
-    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;Pelajari lebih lanjut&lt;/a&gt; tentang penerimaan pembayaran dengan perangkat seluler Anda dan pemesanan pembaca kartu</string>
-    <string name="card_reader_fetching_order_failed">Terjadi error saat mengambil pesanan. Status pesanan pada aplikasi mungkin telah usang.</string>
+    <string name="card_reader_refetching_order_failed">Terjadi error saat mengambil pesanan. Status pesanan pada aplikasi mungkin telah usang.</string>
     <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi klien email Anda</string>
-    <string name="card_reader_payment_receipt_email_content">Terima kasih atas pembelian Anda! Anda dapat menemukan tanda terima pembayaran Anda di tautan berikut: %s</string>
     <string name="card_reader_payment_receipt_email_subject">Tanda terima Anda dari %s</string>
     <string name="card_reader_payment_description">Pembayaran online untuk pesanan %s untuk %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Menyegarkan pesanan</string>
     <string name="card_reader_payment_fetch_order_loading_header">Memperbarui status aplikasi</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Pelanggan Anda memilih %1$s</string>
-    <string name="shipping_label_address_phone_invalid">Formulir bea-cukai memerlukan nomor telepon 10 digit</string>
+    <string name="shipping_label_origin_address_phone_invalid">Formulir bea cukai wajib menyertakan nomor telepon 10 digit</string>
     <string name="shipping_label_address_phone_required">Nomor telepon diwajibkan karena pengiriman ini memerlukan formulir bea-cukai</string>
     <string name="shipping_label_create_customs_done">Formulir bea-cukai diisi</string>
     <string name="print_receipt_label_info_step_7">Jika mengalami masalah pencetakan dari perangkat Anda, hubungi dukungan pelanggan untuk mesin cetak Anda.</string>
@@ -38,9 +57,7 @@ Language: id
     <string name="card_reader_software_update_in_progress_title">Memperbarui perangkat lunak pembaca Anda</string>
     <string name="card_reader_software_update_title">Pembaruan perangkat lunak</string>
     <string name="card_reader_software_update_description">Perangkat lunak pembaca kartu Anda perlu diperbarui agar dapat berfungsi normal. Apakah Anda ingin memperbaruinya sekarang?</string>
-    <string name="card_reader_detail_connected_update_failed">Pembaruan perangkat lunak pembaca gagal. Nanti silakan dicoba lagi</string>
     <string name="card_reader_detail_connected_update_success">Perangkat lunak pembaca diperbarui</string>
-    <string name="card_reader_detail_connected_update_check_failed">Pemeriksaan pembaruan versi perangkat lunak gagal. Nanti silakan dicoba lagi</string>
     <string name="card_reader_detail_connected_reader_unknown">NAMA PEMBACA KARTU TIDAK DIKENALI</string>
     <string name="card_reader_detail_connected_disconnect_reader">Putus sambungan pembaca</string>
     <string name="card_reader_detail_connected_enforced_update_software">Harap perbarui perangkat lunak pembaca Anda untuk dapat terus menerima pembayaran</string>
@@ -52,7 +69,6 @@ Language: id
     <string name="card_reader_detail_not_connected_first_hint_label">Pastikan pembaca kartu telah terisi daya</string>
     <string name="card_reader_detail_not_connected_header">Hubungkan pembaca kartu Anda</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kartu ditolak</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kartu ditolak. Coba ulangi dengan kartu yang lain.</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Menyambungkan ke pembaca</string>
     <string name="card_reader_payment_collect_payment_loading_header">Bersiap untuk menerima pembayaran</string>
     <string name="shipping_label_customs_value_zero_error">Nilai yang ditentukan harus lebih besar dari nol</string>
@@ -107,15 +123,12 @@ Language: id
     <string name="product_type_virtual_desc">Produk digital unik, seperti layanan atau buku, musik, dan video yang dapat diunduh</string>
     <string name="product_type_simple_desc">Produk fisik unik yang mungkin perlu dikirimkan kepada pelanggan</string>
     <string name="product_type_simple_title">Produk fisik sederhana</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Buka pengaturan</string>
     <string name="card_reader_connect_open_location_settings">Buka pengaturan</string>
     <string name="card_reader_connect_open_permission_settings">Buka pengaturan</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth dinonaktifkan</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Lokasi dinonaktifkan</string>
-    <string name="card_reader_connect_missing_permissions_hint">Izin lokasi wajib yang belum disetujui</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth dinonaktifkan</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Lokasi dinonaktifkan</string>
+    <string name="card_reader_connect_missing_permissions_header">Izin lokasi wajib yang belum disetujui</string>
     <string name="card_reader_connect_connecting_failed_hint">Tidak dapat menyambungkan ke pembaca.</string>
-    <string name="card_reader_connect_scanning_failed_hint">Tidak dapat menemukan pembaca.</string>
-    <string name="card_reader_connect_failed_header">Sambungan ke pembaca gagal</string>
     <string name="card_reader_connect_connecting_header">Menyambungkan ke pembaca</string>
     <string name="card_reader_connect_to_reader">Sambungkan ke pembaca</string>
     <string name="card_reader_connect_reader_found_header">Anda ingin menyambungkan pembaca %s?</string>
@@ -129,7 +142,6 @@ Language: id
     <string name="product_delete_dialog_title">Menghapus produk</string>
     <string name="card_reader_payment_send_receipt">Kirimkan tanda terima</string>
     <string name="card_reader_payment_print_receipt">Cetak tanda terima</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Pembayaran gagal. Harap coba lagi.</string>
     <string name="card_reader_payment_capturing_payment_state">Mengambil pembayaran</string>
     <string name="card_reader_payment_processing_payment_state">Memproses pembayaran</string>
     <string name="card_reader_payment_collect_payment_state">Pembaca sudah siap</string>
@@ -379,7 +391,7 @@ Language: id
     <string name="shipping_label_print_error_message">Jika terjadi kesalahan mencetak saat Anda membeli label, Anda dapat mencetaknya kembali.</string>
     <string name="orderdetail_shipping_label_wip_message">Kami berusaha mempermudah Anda agar dapat mencetak label pengiriman langsung dari perangkat Anda! Untuk saat ini, jika telah membuat label pengiriman untuk pesanan ini di admin toko Anda dengan Pengiriman WooCommerce, Anda dapat mencetaknya di Detail Pesanan di sini.</string>
     <string name="orderdetail_shipping_label_wip_title">Cetak label pengiriman dari perangkat Anda!</string>
-    <string name="orderdetail_shipping_label_reprint">Cetak ulang label pengiriman</string>
+    <string name="orderdetail_shipping_label_print">Cetak label pengiriman</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Draf produk disimpan</string>
     <string name="product_detail_publish_product_draft_error">Kesalahan saat menyimpan draf produk</string>

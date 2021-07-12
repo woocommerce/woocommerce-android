@@ -29,9 +29,11 @@ class ShippingPackagesAdapter(
         items = packages.groupBy { it.category }.flatMap { entry ->
             val list = mutableListOf<ListItem>()
             list.add(ListItem.Header(entry.key))
-            list.addAll(entry.value.map { shippingPackage ->
-                ListItem.Package(shippingPackage)
-            })
+            list.addAll(
+                entry.value.map { shippingPackage ->
+                    ListItem.Package(shippingPackage)
+                }
+            )
             list
         }
     }

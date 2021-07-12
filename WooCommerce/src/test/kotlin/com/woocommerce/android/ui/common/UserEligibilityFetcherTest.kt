@@ -54,7 +54,8 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
                 appPrefsWrapper,
                 userStore,
                 selectedSite
-            ))
+            )
+        )
 
         clearInvocations(
             appPrefsWrapper,

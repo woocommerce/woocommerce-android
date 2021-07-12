@@ -148,10 +148,11 @@ object StringUtils {
      */
     fun formatCountDecimal(number: Double, forInput: Boolean = false): String {
         return if (number.isInteger()) {
-            if (forInput)
+            if (forInput) {
                 number.toInt().toString()
-            else
+            } else {
                 FormatUtils.formatInt(number.toInt())
+            }
         } else {
             number.toString()
         }
@@ -178,9 +179,9 @@ object StringUtils {
             storeCountry?.let {
                 val countryCode = it.split(":")[0]
                 val resourceId = context.resources.getIdentifier(
-                        "country_mapping_$countryCode",
-                        "string",
-                        context.packageName
+                    "country_mapping_$countryCode",
+                    "string",
+                    context.packageName
                 )
                 return context.getString(resourceId)
             }
@@ -211,7 +212,7 @@ object StringUtils {
      * double spaces with a single space (just in case)
      */
     fun getRawTextFromHtml(htmlStr: String) =
-            Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
+        Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
 
     /**
      * Helper method for using the appropriate `Html.fromHtml()` for the build version.

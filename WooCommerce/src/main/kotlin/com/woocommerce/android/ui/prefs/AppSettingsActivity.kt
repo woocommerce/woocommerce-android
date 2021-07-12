@@ -28,9 +28,10 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AppSettingsActivity : AppCompatActivity(),
-        AppSettingsListener,
-        AppSettingsContract.View {
+class AppSettingsActivity :
+    AppCompatActivity(),
+    AppSettingsListener,
+    AppSettingsContract.View {
     companion object {
         private const val KEY_SITE_CHANGED = "key_site_changed"
         const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
@@ -58,7 +59,7 @@ class AppSettingsActivity : AppCompatActivity(),
 
         presenter.takeView(this)
 
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -106,8 +107,6 @@ class AppSettingsActivity : AppCompatActivity(),
      * User switched sites from the main settings fragment, set the result code so the calling activity
      * will know the site changed
      */
-    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-    @Suppress("WrongConstant")
     override fun onSiteChanged() {
         if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
         siteChanged = true
@@ -118,9 +117,9 @@ class AppSettingsActivity : AppCompatActivity(),
         // for the current store.
         selectedSite.getIfExists()?.let {
             Snackbar.make(
-                    binding.mainContent,
-                    getString(R.string.settings_switch_site_notifs_msg, it.name),
-                    BaseTransientBottomBar.LENGTH_LONG
+                binding.mainContent,
+                getString(R.string.settings_switch_site_notifs_msg, it.name),
+                BaseTransientBottomBar.LENGTH_LONG
             ).show()
         }
 
@@ -157,26 +156,34 @@ class AppSettingsActivity : AppCompatActivity(),
 
     override fun confirmLogout() {
         val message = String.format(
-                Locale.getDefault(),
-                getString(R.string.settings_confirm_logout),
-                presenter.getAccountDisplayName()
+            Locale.getDefault(),
+            getString(R.string.settings_confirm_logout),
+            presenter.getAccountDisplayName()
         )
         MaterialAlertDialogBuilder(this)
-                .setMessage(message)
-                .setPositiveButton(R.string.signout) { _, _ ->
-                    AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
-                            AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)))
+            .setMessage(message)
+            .setPositiveButton(R.string.signout) { _, _ ->
+                AnalyticsTracker.track(
+                    Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+                    mapOf(
+                        AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)
+                    )
+                )
 
-                    if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
-                    presenter.logout()
-                }
-                .setNegativeButton(R.string.back) { _, _ ->
-                    AnalyticsTracker.track(Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT, mapOf(
-                            AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(false)))
-                }
-                .setCancelable(true)
-                .create()
-                .show()
+                if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
+                presenter.logout()
+            }
+            .setNegativeButton(R.string.back) { _, _ ->
+                AnalyticsTracker.track(
+                    Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+                    mapOf(
+                        AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(false)
+                    )
+                )
+            }
+            .setCancelable(true)
+            .create()
+            .show()
     }
 
     override fun clearNotificationPreferences() {

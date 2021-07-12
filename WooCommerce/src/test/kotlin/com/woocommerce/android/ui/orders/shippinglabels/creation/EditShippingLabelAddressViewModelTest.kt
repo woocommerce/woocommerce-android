@@ -91,7 +91,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
             address = address,
             addressType = ORIGIN,
             validationResult = validationResult,
-            isInternational = false
+            requiresPhoneNumber = false
         ).initSavedStateHandle()
 
     private lateinit var viewModel: EditShippingLabelAddressViewModel
@@ -303,12 +303,14 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onCountrySelected("VI")
 
-        assertThat(viewState).isEqualTo(initialViewState.copy(
-            address.copy(country = "VI"),
-            selectedCountryName = "Virgin Islands (US)",
-            selectedStateName = "",
-            isStateFieldSpinner = false
-        ))
+        assertThat(viewState).isEqualTo(
+            initialViewState.copy(
+                address.copy(country = "VI"),
+                selectedCountryName = "Virgin Islands (US)",
+                selectedStateName = "",
+                isStateFieldSpinner = false
+            )
+        )
     }
 
     @Test

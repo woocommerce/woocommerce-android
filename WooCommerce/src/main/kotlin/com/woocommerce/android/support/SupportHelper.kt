@@ -33,13 +33,13 @@ class SupportHelper {
         emailAndNameSelected: (String, String) -> Unit
     ) {
         val (layout, emailEditText, nameEditText) =
-                supportIdentityInputDialogLayout(context, isNameInputHidden, email, name)
+            supportIdentityInputDialogLayout(context, isNameInputHidden, email, name)
 
         val dialog = MaterialAlertDialogBuilder(context)
-                .setView(layout)
-                .setPositiveButton(android.R.string.ok, null)
-                .setNegativeButton(android.R.string.cancel, null)
-                .create()
+            .setView(layout)
+            .setPositiveButton(android.R.string.ok, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
         dialog.setOnShowListener {
             val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
@@ -103,7 +103,7 @@ private fun supportIdentityInputDialogLayout(
     messageText.setText(message)
 
     val emailEditText = layout.findViewById<WCMaterialOutlinedEditTextView>(
-            R.id.support_identity_input_dialog_email_edit_text
+        R.id.support_identity_input_dialog_email_edit_text
     )
     emailSuggestion?.let {
         emailEditText.setText(it)
@@ -111,7 +111,7 @@ private fun supportIdentityInputDialogLayout(
     }
 
     val nameEditText = layout.findViewById<WCMaterialOutlinedEditTextView>(
-            R.id.support_identity_input_dialog_name_edit_text
+        R.id.support_identity_input_dialog_name_edit_text
     )
     nameSuggestion?.let {
         nameEditText.setText(it)

@@ -19,7 +19,7 @@ import kotlin.math.roundToInt
  * communicate unread items (such as unread product reviews)
  */
 class UnreadItemDecoration(context: Context, private val decorListener: ItemDecorationListener) :
-        DividerItemDecoration(context, VERTICAL) {
+    DividerItemDecoration(context, VERTICAL) {
     interface ItemDecorationListener {
         fun getItemTypeAtPosition(position: Int): ItemType
     }
@@ -38,7 +38,7 @@ class UnreadItemDecoration(context: Context, private val decorListener: ItemDeco
         for (i in 0 until parent.childCount - 1) {
             val child = parent.getChildAt(i)
             val position = child?.let { parent.getChildAdapterPosition(it) }
-                    ?: SectionedRecyclerViewAdapter.INVALID_POSITION
+                ?: SectionedRecyclerViewAdapter.INVALID_POSITION
             if (position != SectionedRecyclerViewAdapter.INVALID_POSITION) {
                 /*
                  * note that we have to draw the indicator for all items rather than just unread ones

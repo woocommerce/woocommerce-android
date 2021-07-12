@@ -5,7 +5,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
@@ -193,7 +192,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowAddressEditor -> {
@@ -202,7 +201,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             address = event.address,
                             addressType = event.type,
                             validationResult = event.validationResult,
-                            isInternational = event.isInternational
+                            requiresPhoneNumber = event.requiresPhoneNumber
                         )
                     findNavController().navigateSafely(action)
                 }
@@ -268,7 +267,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                 }
                 else -> event.isHandled = false
             }
-        })
+        }
     }
 
     private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {

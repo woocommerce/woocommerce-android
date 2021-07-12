@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
@@ -114,6 +115,22 @@ class OrderNavigator @Inject constructor() {
             is ViewShippingLabelFormatOptions -> {
                 val action = PrintShippingLabelFragmentDirections
                     .actionPrintShippingLabelFragmentToLabelFormatOptionsFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+            is ViewPrintCustomsForm -> {
+                val action = if (target.isReprint) {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToPrintShippingLabelCustomsFormFragment(
+                            url = target.invoiceUrl,
+                            isReprint = target.isReprint
+                        )
+                } else {
+                    PrintShippingLabelFragmentDirections
+                        .actionPrintShippingLabelFragmentToPrintShippingLabelCustomsFormFragment(
+                            url = target.invoiceUrl,
+                            isReprint = target.isReprint
+                        )
+                }
                 fragment.findNavController().navigateSafely(action)
             }
             is StartShippingLabelCreationFlow -> {

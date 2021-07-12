@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-24 15:58:11+0000
+Translation-Revision-Date: 2021-07-08 12:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_reader_detail_connected_update_failed">Okuyucu\'nun yazılım güncellemesi başarısız oldu</string>
+    <string name="card_reader_detail_connected_update_check_failed">Yazılım sürümü güncelleme kontrolü başarısız oldu</string>
+    <string name="card_reader_detail_learn_more">Mobil ödemeleri kabul etme ve kart okuyucuları sipariş etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin&lt;/a&gt;</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Bluetooth\'u aç</string>
+    <string name="card_reader_connect_scanning_failed_header">Okuyucu bulunamadı</string>
+    <string name="card_reader_connect_failed_header">Okuyucunuza bağlanılamadı</string>
+    <string name="card_reader_connect_connect_button">Bağlan</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Birkaç okuyucu bulundu</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">Siparişin ücreti zaten ödendi</string>
+    <string name="card_reader_payment_receipt_email_content">Alışverişiniz için teşekkürler! Ödeme makbuzunuz için aşağıdaki bağlantıya tıklayın.\n\n%s</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Ödeme başarılı olmadı</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kart reddedildi</string>
+    <string name="shipping_label_print_customs_form_download_failed">Gümrük formu indirilirken hata oluştu</string>
+    <string name="shipping_label_print_customs_form_screen_title">Gümrük faturası yazdır</string>
+    <string name="shipping_label_print_customs_form">Gümrük formu yazdır</string>
+    <string name="shipping_label_print_customs_explanation">Bu uluslararası gönderiye bir gümrük formu yazdırılmalı ve eklenmelidir.</string>
+    <string name="shipping_label_customs_form">Gümrük formu</string>
+    <string name="shipping_label_payment_method_added">Ödeme yöntemi eklendi</string>
+    <string name="shipping_label_payments_add_first_credit_card">Kredi kartı ekle</string>
+    <string name="shipping_label_destination_address_phone_invalid">Lütfen geçerli bir telefon numarası girin</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Gümrük formu yazdır</string>
     <string name="empty_order_list_message">Mağaza satışlarınızı nasıl artırabileceğinizi keşfedin.</string>
     <string name="empty_product_message">Mağazanıza ilk ürünü ekleyerek hemen bugün satışa başlayın.</string>
     <string name="empty_product_add_product_button">Ürün ekle</string>
     <string name="variable_product_attributes">Varyasyon nitelikleri.</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Mobil cihazda Bluetooth\'u açın</string>
-    <string name="card_reader_detail_learn_more">Mobil cihazınızla ödeme kabul etme ve kart okuyucu sipariş etme hakkında &lt;a href=\"https://woocommerce.com/payments/\"&gt;daha fazla bilgi edinin &lt;/a&gt;</string>
-    <string name="card_reader_fetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
+    <string name="card_reader_refetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
     <string name="card_reader_payment_email_client_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
-    <string name="card_reader_payment_receipt_email_content">Alışverişiniz için teşekkürler! Ödemenizin makbuzunu şu bağlantıda bulabilirsiniz: %s</string>
     <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
     <string name="card_reader_payment_description">%s (%s) siparişi için çevrimiçi ödeme</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Müşteriniz seçildi %1$s</string>
-    <string name="shipping_label_address_phone_invalid">Gümrük formları 10 haneli bir telefon numarası gerektirir</string>
+    <string name="shipping_label_origin_address_phone_invalid">Gümrük formları 10 haneli bir telefon numarası gerektirir</string>
     <string name="shipping_label_address_phone_required">Bu gönderi bir gümrük formu gerektirdiğinden telefon numarası gerekir</string>
     <string name="shipping_label_create_customs_done">Gümrük formu tamamlandı</string>
     <string name="print_receipt_label_info_step_7">Cihazınızdan yazdırma ile ilgili sorun yaşıyorsanız, yazıcınızın müşteri desteği ile iletişime geçin.</string>
@@ -38,9 +57,7 @@ Language: tr
     <string name="card_reader_software_update_in_progress_title">Okuyucunuzun yazılımını güncelleme</string>
     <string name="card_reader_software_update_title">Yazılım güncellemesi</string>
     <string name="card_reader_software_update_description">Sorunsuz çalışmaya devam etmesi için kart okuyucunuzun yazılımının güncellenmesi gerekir. Şimdi güncellemek istiyor musunuz?</string>
-    <string name="card_reader_detail_connected_update_failed">Okuyucu yazılımı güncelleme işlemi başarısız oldu. Lütfen daha sonra tekrar deneyin</string>
     <string name="card_reader_detail_connected_update_success">Okuyucu yazılımı güncellendi</string>
-    <string name="card_reader_detail_connected_update_check_failed">Yazılım sürümü güncelleme denetimi başarısız oldu. Lütfen daha sonra tekrar deneyin</string>
     <string name="card_reader_detail_connected_reader_unknown">BİLİNMEYEN KART OKUYUCU ADI</string>
     <string name="card_reader_detail_connected_disconnect_reader">Okuyucunun bağlantısını kes</string>
     <string name="card_reader_detail_connected_enforced_update_software">Ödemeleri kabul etmeye devam edebilmek için lütfen okuyucu yazılımınızı güncelleyin</string>
@@ -52,7 +69,6 @@ Language: tr
     <string name="card_reader_detail_not_connected_first_hint_label">Kart okuyucunun şarjlı olduğundan emin olun</string>
     <string name="card_reader_detail_not_connected_header">Kart okuyucunuzu bağlayın</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kart reddedildi</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kart reddedildi. Lütfen farklı bir kartla tekrar deneyin.</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Okuyucuya bağlanılıyor</string>
     <string name="card_reader_payment_collect_payment_loading_header">Ödeme almaya hazırlanıyor</string>
     <string name="shipping_label_customs_value_zero_error">Bildirilen değer sıfırdan büyük olmalıdır</string>
@@ -107,15 +123,12 @@ Language: tr
     <string name="product_type_virtual_desc">Hizmetler, indirilebilir kitaplar, müzik veya videolar gibi benzersiz bir dijital ürün</string>
     <string name="product_type_simple_desc">Müşteriye göndermeniz gerekebilecek benzersiz bir fiziksel ürün</string>
     <string name="product_type_simple_title">Basit fiziksel ürün</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Ayarları aç</string>
     <string name="card_reader_connect_open_location_settings">Ayarları aç</string>
     <string name="card_reader_connect_open_permission_settings">Ayarları aç</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth devre dışı</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Konum devre dışı</string>
-    <string name="card_reader_connect_missing_permissions_hint">Gerekli konum izni eksik</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth devre dışı</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Konum devre dışı</string>
+    <string name="card_reader_connect_missing_permissions_header">Gerekli konum izni eksik</string>
     <string name="card_reader_connect_connecting_failed_hint">Okuyucuya bağlanılamadı.</string>
-    <string name="card_reader_connect_scanning_failed_hint">Herhangi bir okuyucu bulunamadı.</string>
-    <string name="card_reader_connect_failed_header">Okuyucuya bağlanılamadı</string>
     <string name="card_reader_connect_connecting_header">Okuyucuya bağlanılıyor</string>
     <string name="card_reader_connect_to_reader">Okuyucuya bağlan</string>
     <string name="card_reader_connect_reader_found_header">%s okuyucusunu bağlamak istiyor musunuz?</string>
@@ -129,7 +142,6 @@ Language: tr
     <string name="product_delete_dialog_title">Ürün siliniyor</string>
     <string name="card_reader_payment_send_receipt">Makbuz gönder</string>
     <string name="card_reader_payment_print_receipt">Makbuz yazdır</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Ödeme başarısız. Lütfen yeniden deneyin.</string>
     <string name="card_reader_payment_capturing_payment_state">Ödeme yakalanıyor</string>
     <string name="card_reader_payment_processing_payment_state">Ödeme işleniyor</string>
     <string name="card_reader_payment_collect_payment_state">Okuyucu hazır</string>
@@ -379,7 +391,7 @@ Language: tr
     <string name="shipping_label_print_error_message">Etiketi satın aldığınızda bir yazdırma hatası olduysa tekrar yazdırabilirsiniz.</string>
     <string name="orderdetail_shipping_label_wip_message">Kargo etiketlerini doğrudan cihazınızdan yazdırmayı kolaylaştırmak için çalışıyoruz! Mağaza yöneticinizde WooCommerce Shipping ile bu sipariş için kargo etiketleri oluşturduysanız, şimdilik bunları burada, yani Sipariş Detayları bölümünüzde yazdırabilirsiniz.</string>
     <string name="orderdetail_shipping_label_wip_title">Cihazınızdan kargo etiketleri yazdırın!</string>
-    <string name="orderdetail_shipping_label_reprint">Kargo etiketini tekrar yazdır</string>
+    <string name="orderdetail_shipping_label_print">Kargo etiketini yazdır</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Ürün taslağı kaydedildi</string>
     <string name="product_detail_publish_product_draft_error">Ürün taslağı kaydedilirken hata oluştu</string>

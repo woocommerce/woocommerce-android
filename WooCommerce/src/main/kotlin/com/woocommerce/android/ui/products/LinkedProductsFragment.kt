@@ -43,17 +43,22 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        AnalyticsTracker.track(Stat.LINKED_PRODUCTS,
-            mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.SHOWN.value))
+        AnalyticsTracker.track(
+            Stat.LINKED_PRODUCTS,
+            mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.SHOWN.value)
+        )
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitLinkedProducts -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitLinkedProducts -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
         handleResult<List<Long>>(UPSELLS.resultKey) {
             viewModel.updateProductDraft(upsellProductIds = it)

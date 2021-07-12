@@ -102,35 +102,45 @@ class MagicLinkInterceptFragment : Fragment() {
         authToken?.let { viewModel.updateMagicLinkAuthToken(it) }
     }
 
-    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-    @Suppress("WrongConstant")
     private fun setupObservers() {
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            showProgressDialog(it)
-        })
-
-        viewModel.isAuthTokenUpdated.observe(viewLifecycleOwner, Observer { authTokenUpdated ->
-            if (authTokenUpdated) {
-                showSitePickerScreen()
-            } else showLoginScreen()
-        })
-
-        viewModel.showSnackbarMessage.observe(viewLifecycleOwner, Observer { messageId ->
-            view?.let {
-                Snackbar.make(it, getString(messageId), BaseTransientBottomBar.LENGTH_LONG).show()
+        viewModel.isLoading.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProgressDialog(it)
             }
-        })
+        )
 
-        viewModel.showRetryOption.observe(viewLifecycleOwner, Observer {
-            showRetryScreen(it)
-        })
+        viewModel.isAuthTokenUpdated.observe(
+            viewLifecycleOwner,
+            Observer { authTokenUpdated ->
+                if (authTokenUpdated) {
+                    showSitePickerScreen()
+                } else showLoginScreen()
+            }
+        )
+
+        viewModel.showSnackbarMessage.observe(
+            viewLifecycleOwner,
+            Observer { messageId ->
+                view?.let {
+                    Snackbar.make(it, getString(messageId), BaseTransientBottomBar.LENGTH_LONG).show()
+                }
+            }
+        )
+
+        viewModel.showRetryOption.observe(
+            viewLifecycleOwner,
+            Observer {
+                showRetryScreen(it)
+            }
+        )
     }
 
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
             progressDialog = ProgressDialog.show(
-                    activity, "", getString(R.string.login_magic_link_token_updating), true
+                activity, "", getString(R.string.login_magic_link_token_updating), true
             )
             progressDialog?.setCancelable(false)
         } else {

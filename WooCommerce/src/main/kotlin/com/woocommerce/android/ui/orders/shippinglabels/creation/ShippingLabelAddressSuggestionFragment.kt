@@ -26,8 +26,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ShippingLabelAddressSuggestionFragment
-    : BaseFragment(R.layout.fragment_shipping_label_address_suggestion), BackPressListener {
+class ShippingLabelAddressSuggestionFragment :
+    BaseFragment(
+        R.layout.fragment_shipping_label_address_suggestion
+    ),
+    BackPressListener {
     companion object {
         const val SUGGESTED_ADDRESS_DISCARDED = "key_suggested_address_dialog_closed"
         const val SELECTED_ADDRESS_ACCEPTED = "key_selected_address_accepted"
@@ -94,16 +97,19 @@ class ShippingLabelAddressSuggestionFragment
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.data)
-                is Exit -> navigateBackWithNotice(SUGGESTED_ADDRESS_DISCARDED)
-                is EditSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_TO_BE_EDITED, event.address)
-                is UseSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.address)
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.data)
+                    is Exit -> navigateBackWithNotice(SUGGESTED_ADDRESS_DISCARDED)
+                    is EditSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_TO_BE_EDITED, event.address)
+                    is UseSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.address)
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun Address.toStringMarkingDifferences(other: Address?): String {

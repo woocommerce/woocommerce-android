@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus.Connected
@@ -39,6 +41,7 @@ import kotlin.math.roundToInt
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
+    private val tracker: AnalyticsTrackerWrapper,
     private val appLogWrapper: AppLogWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -108,6 +111,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onConnectBtnClicked() {
+        tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_TAPPED)
         triggerEvent(CardReaderConnectScreen)
     }
 
@@ -116,6 +120,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onDisconnectClicked() {
+        tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         launch {
             val disconnectionResult = cardReaderManager.disconnectReader()
             if (!disconnectionResult) {
@@ -136,9 +141,11 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun CardReader.getReadersName(): UiString {
         return with(id) {
-            if (isNullOrEmpty())
+            if (isNullOrEmpty()) {
                 UiStringRes(R.string.card_reader_detail_connected_reader_unknown)
-            else UiStringText(this)
+            } else {
+                UiStringText(this)
+            }
         }
     }
 

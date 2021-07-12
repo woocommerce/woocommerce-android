@@ -21,7 +21,8 @@ import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
 @AndroidEntryPoint
-class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
+class AztecEditorFragment :
+    BaseFragment(R.layout.fragment_aztec_editor),
     IAztecToolbarClickListener,
     BackPressListener,
     IHistoryListener {

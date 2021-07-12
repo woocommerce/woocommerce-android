@@ -12,5 +12,5 @@ abstract class MainSettingsModule {
     @FragmentScoped
     @Binds
     abstract fun provideMainSettingsPresenter(mainSettingsPresenter: MainSettingsPresenter):
-            MainSettingsContract.Presenter
+        MainSettingsContract.Presenter
 }

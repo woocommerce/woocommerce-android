@@ -140,7 +140,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-        /* We hide the Add Product FAB and use the empty view's button instead. */
+    /* We hide the Add Product FAB and use the empty view's button instead. */
     fun `Hides add product button when list of products is empty`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // when

@@ -28,27 +28,36 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
         data class FoundReaders(val readers: List<Reader>) : DiscoverReadersStatus()
         data class Failure(val exception: TerminalException) : DiscoverReadersStatus()
     }
+
     fun discoverReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> {
         return callbackFlow {
             this.sendBlocking(Started)
             val config = DiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, CHIPPER_2X, isSimulated)
             var cancelable: Cancelable? = null
+            var foundReaders: List<Reader>? = null
             try {
-                cancelable = terminal.discoverReaders(config, object : DiscoveryListener {
-                    override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
-                        this@callbackFlow.sendBlocking(FoundReaders(readers))
-                    }
-                }, object : Callback {
-                    override fun onFailure(e: TerminalException) {
-                        this@callbackFlow.sendBlocking(Failure(e))
-                        this@callbackFlow.close()
-                    }
+                cancelable = terminal.discoverReaders(
+                    config,
+                    object : DiscoveryListener {
+                        override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
+                            if (readers != foundReaders) {
+                                foundReaders = readers
+                                this@callbackFlow.sendBlocking(FoundReaders(readers))
+                            }
+                        }
+                    },
+                    object : Callback {
+                        override fun onFailure(e: TerminalException) {
+                            this@callbackFlow.sendBlocking(Failure(e))
+                            this@callbackFlow.close()
+                        }
 
-                    override fun onSuccess() {
-                        this@callbackFlow.sendBlocking(Success)
-                        this@callbackFlow.close()
+                        override fun onSuccess() {
+                            this@callbackFlow.sendBlocking(Success)
+                            this@callbackFlow.close()
+                        }
                     }
-                })
+                )
                 awaitClose()
             } finally {
                 cancelable?.takeIf { !it.isCompleted }?.cancel(noopCallback)

@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -22,6 +19,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -47,7 +45,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
 
     override fun getFragmentTitle(): String {
         return if (navArgs.isReprint) {
-            getString(R.string.orderdetail_shipping_label_reprint)
+            getString(R.string.orderdetail_shipping_label_print)
         } else {
             getString(R.string.shipping_label_print_screen_title)
         }
@@ -93,14 +91,17 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
             new.tempFile?.takeIfNotEqualTo(old?.tempFile) { openShippingLabelPreview(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> displayError(event.message)
-                is OrderNavigationTarget -> navigator.navigate(this, event)
-                is ExitWithResult<*> -> navigateBackAndNotifyOrderDetails()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> displayError(event.message)
+                    is OrderNavigationTarget -> navigator.navigate(this, event)
+                    is ExitWithResult<*> -> navigateBackAndNotifyOrderDetails()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     private fun setupResultHandlers(viewModel: PrintShippingLabelViewModel) {
@@ -141,22 +142,8 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     }
 
     private fun openShippingLabelPreview(file: File) {
-        val context = requireContext()
-        val pdfUri = FileProvider.getUriForFile(
-            context, "${context.packageName}.provider", file
-        )
-
-        try {
-            val sendIntent = Intent(Intent.ACTION_VIEW)
-            sendIntent.setDataAndType(pdfUri, "application/pdf")
-            sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            startActivity(sendIntent)
-
-            viewModel.onPreviewLabelCompleted()
-        } catch (exception: ActivityNotFoundException) {
-            displayError(R.string.shipping_label_preview_pdf_app_missing)
-        }
+        ActivityUtils.previewPDFFile(requireActivity(), file)
+        viewModel.onPreviewLabelCompleted()
     }
 
     override fun onRequestAllowBackPress(): Boolean {

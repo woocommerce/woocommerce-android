@@ -33,10 +33,11 @@ class RefundProductListAdapter(
     private var items = mutableListOf<ProductRefundListItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
-        return if (isProductDetailList)
+        return if (isProductDetailList) {
             RefundDetailViewHolder(parent, formatCurrency, imageMap)
-        else
+        } else {
             IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageMap)
+        }
     }
 
     override fun onBindViewHolder(holder: RefundViewHolder, position: Int) {
@@ -52,7 +53,7 @@ class RefundProductListAdapter(
     }
 
     abstract class RefundViewHolder(parent: ViewGroup, @LayoutRes layout: Int) : RecyclerView.ViewHolder(
-            LayoutInflater.from(parent.context).inflate(layout, parent, false)
+        LayoutInflater.from(parent.context).inflate(layout, parent, false)
     ) {
         abstract fun bind(item: ProductRefundListItem)
     }
@@ -82,10 +83,10 @@ class RefundProductListAdapter(
             val totalRefund = formatCurrency(item.orderItem.price.times(item.quantity.toBigDecimal()))
             if (item.quantity > 1) {
                 descriptionTextView.text = itemView.context.getString(
-                        R.string.order_refunds_detail_item_description,
-                        totalRefund,
-                        formatCurrency(item.orderItem.price),
-                        item.quantity
+                    R.string.order_refunds_detail_item_description,
+                    totalRefund,
+                    formatCurrency(item.orderItem.price),
+                    item.quantity
                 )
             } else {
                 descriptionTextView.text = totalRefund
@@ -97,9 +98,9 @@ class RefundProductListAdapter(
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_product)
-                        .into(productImageView)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
         }
     }
@@ -120,9 +121,9 @@ class RefundProductListAdapter(
             nameTextView.text = item.orderItem.name
 
             descriptionTextView.text = itemView.context.getString(
-                    R.string.order_refunds_item_description,
-                    item.maxQuantity,
-                    formatCurrency(item.orderItem.price)
+                R.string.order_refunds_item_description,
+                item.maxQuantity,
+                formatCurrency(item.orderItem.price)
             )
 
             quantityTextView.text = item.quantity.toString()
@@ -134,9 +135,9 @@ class RefundProductListAdapter(
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_product)
-                        .into(productImageView)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
         }
     }
@@ -149,11 +150,11 @@ class RefundProductListAdapter(
     ) : Parcelable {
         fun toDataModel(): WCRefundItem {
             return WCRefundItem(
-                    orderItem.itemId,
-                    quantity,
-                    quantity.toBigDecimal().times(orderItem.price),
-                    orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
-                            .times(quantity.toBigDecimal())
+                orderItem.itemId,
+                quantity,
+                quantity.toBigDecimal().times(orderItem.price),
+                orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
+                    .times(quantity.toBigDecimal())
             )
         }
     }
@@ -174,10 +175,10 @@ class RefundProductListAdapter(
             val old = oldList[oldItemPosition]
             val new = newList[newItemPosition]
             return old.orderItem.name == old.orderItem.name &&
-                    old.orderItem.price isEqualTo new.orderItem.price &&
-                    old.orderItem.quantity == new.orderItem.quantity &&
-                    old.quantity == new.quantity &&
-                    old.maxQuantity == new.maxQuantity
+                old.orderItem.price isEqualTo new.orderItem.price &&
+                old.orderItem.quantity == new.orderItem.quantity &&
+                old.quantity == new.quantity &&
+                old.maxQuantity == new.maxQuantity
         }
     }
 }

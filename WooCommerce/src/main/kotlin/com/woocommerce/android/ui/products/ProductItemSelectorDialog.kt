@@ -66,10 +66,10 @@ class ProductItemSelectorDialog : DialogFragment() {
 
         val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle(dialogTitle)
-                .setSingleChoiceItems(listItemMap?.values?.toTypedArray(), selectedIndex) { dialog, which ->
-                    listener?.onProductItemSelected(resultCode, listItemMap?.keys?.toTypedArray()?.get(which))
-                    dialog.dismiss()
-                }
+            .setSingleChoiceItems(listItemMap?.values?.toTypedArray(), selectedIndex) { dialog, which ->
+                listener?.onProductItemSelected(resultCode, listItemMap?.keys?.toTypedArray()?.get(which))
+                dialog.dismiss()
+            }
         return builder.create()
     }
 

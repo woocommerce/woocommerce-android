@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-22 17:54:04+0000
+Translation-Revision-Date: 2021-07-07 15:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="card_reader_detail_connected_update_failed">فشل تحديث برنامج القارئ.</string>
+    <string name="card_reader_detail_connected_update_check_failed">فشل التحقُّق من تحديث إصدار البرنامج</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام الهاتف المحمول وطلب قارئ البطاقات</string>
+    <string name="card_reader_connect_open_bluetooth_settings">تشغيل البلوتوث</string>
+    <string name="card_reader_connect_scanning_failed_header">لم يتم العثور على أي قارئ</string>
+    <string name="card_reader_connect_failed_header">تعذر علينا الربط بقارئك</string>
+    <string name="card_reader_connect_connect_button">اتصال</string>
+    <string name="card_reader_connect_multiple_readers_found_header">تم العثور على عدة قراء</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">تم دفع الطلب بالفعل</string>
+    <string name="card_reader_payment_receipt_email_content">شكراً لك على شرائك! انقر على الرابط الوارد أدناه للحصول على إيصال عملية الدفع الخاصة بك.\n\n%s</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">لم تنجح عملية الدفع</string>
+    <string name="card_reader_payment_failed_card_declined_state">تم رفض البطاقة</string>
+    <string name="shipping_label_print_customs_form_download_failed">حدث خطأ في أثناء تنزيل نموذج الجمارك</string>
+    <string name="shipping_label_print_customs_form_screen_title">طباعة فاتورة الجمارك</string>
+    <string name="shipping_label_print_customs_form">طباعة نموذج الجمارك</string>
+    <string name="shipping_label_print_customs_explanation">تجب طباعة نموذج الجمارك وتضمينه في هذه الشحنة الدولية</string>
+    <string name="shipping_label_customs_form">نموذج الجمارك</string>
+    <string name="shipping_label_payment_method_added">تمت إضافة طريقة الدفع</string>
+    <string name="shipping_label_payments_add_first_credit_card">إضافة بطاقة ائتمان</string>
+    <string name="shipping_label_destination_address_phone_invalid">يُرجى إدخال رقم هاتف صالح</string>
+    <string name="orderdetail_shipping_label_print_customs_form">طباعة نموذج الجمارك</string>
     <string name="empty_order_list_message">استكشف كيف يمكنك زيادة مبيعات مخزنك.</string>
     <string name="empty_product_message">ابدأ بالبيع اليوم عن طريق إضافة منتجك الأول إلى المخزن.</string>
     <string name="empty_product_add_product_button">إضافة منتج</string>
     <string name="variable_product_attributes">سمات المجموعات</string>
     <string name="card_reader_detail_not_connected_third_hint_label">تشغيل بلوتوث الجهاز المحمول</string>
-    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;معرفة المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام جهازك المحمول وطلب قارئ البطاقات</string>
-    <string name="card_reader_fetching_order_failed">حدث خطأ في أثناء إحضار الطلب. قد تكون حالة الطلب الموجودة في التطبيق قديمة.</string>
+    <string name="card_reader_refetching_order_failed">حدث خطأ في أثناء إحضار الطلب. قد تكون حالة الطلب الموجودة في التطبيق قديمة.</string>
     <string name="card_reader_payment_email_client_not_found">لا يمكن اكتشاف تطبيق عميل البريد الإلكتروني الخاص بك</string>
-    <string name="card_reader_payment_receipt_email_content">شكراً لك على شرائك! يمكنك العثور على إيصال عملية الدفع الخاصة بك على الرابط الآتي: %s</string>
     <string name="card_reader_payment_receipt_email_subject">إيصالك من %s</string>
     <string name="card_reader_payment_description">عملية الدفع عبر الإنترنت للطلب %s مقابل %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">تحديث الطلب</string>
     <string name="card_reader_payment_fetch_order_loading_header">تحديث حالة التطبيق</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">قام عميلك بتحديد ⁦%1$s⁩</string>
-    <string name="shipping_label_address_phone_invalid">تتطلب النماذج الجمركية رقم هاتف مكوَّنًا من 10 أرقام</string>
+    <string name="shipping_label_origin_address_phone_invalid">تتطلب النماذج الجمركية رقم هاتف مكوَّنًا من 10 أرقام</string>
     <string name="shipping_label_address_phone_required">يلزم رقم هاتف، نظرًا إلى أن هذه الشحنة تتطلب نموذجًا جمركيًا</string>
     <string name="shipping_label_create_customs_done">تم الانتهاء من النموذج الجمركي</string>
     <string name="print_receipt_label_info_step_7">إذا كنت تواجه مشكلات في الطباعة من جهازك، فاتصل بدعم العملاء بشأن طابعتك.</string>
@@ -38,9 +57,7 @@ Language: ar
     <string name="card_reader_software_update_in_progress_title">تحديث برنامج قارئك</string>
     <string name="card_reader_software_update_title">تحديث برنامج</string>
     <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يعمل بسلاسة. هل ترغب في تحديثه الآن؟</string>
-    <string name="card_reader_detail_connected_update_failed">فشل تحديث برنامج القارئ. يرجى المحاولة مجددًا في وقت لاحق</string>
     <string name="card_reader_detail_connected_update_success">تم تحديث برنامج القارئ</string>
-    <string name="card_reader_detail_connected_update_check_failed">فشل التحقُّق من تحديث إصدار البرنامج. يرجى المحاولة مجددًا في وقت لاحق</string>
     <string name="card_reader_detail_connected_reader_unknown">اسم قارئ بطاقة غير معروف</string>
     <string name="card_reader_detail_connected_disconnect_reader">فصل القارئ</string>
     <string name="card_reader_detail_connected_enforced_update_software">يرجى تحديث برنامج القارئ الخاص بك ليستمر في قبول المدفوعات</string>
@@ -52,7 +69,6 @@ Language: ar
     <string name="card_reader_detail_not_connected_first_hint_label">تأكَّد من أنه تم شحن قارئ البطاقة</string>
     <string name="card_reader_detail_not_connected_header">توصيل قارئ البطاقة الخاص بك</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">تم رفض البطاقة</string>
-    <string name="card_reader_payment_failed_card_declined_state">تم رفض البطاقة. يرجى إعادة المحاولة باستخدام بطاقة مختلفة.</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">الربط بالقارئ</string>
     <string name="card_reader_payment_collect_payment_loading_header">الاستعداد لجمع المدفوعات</string>
     <string name="shipping_label_customs_value_zero_error">يجب أن تكون القيمة المعلنة أكبر من صفر</string>
@@ -107,15 +123,12 @@ Language: ar
     <string name="product_type_virtual_desc">منتج رقمي فريد، مثل الخدمات، أو الكتب أو الموسيقى أو مقاطع الفيديو القابلة للتنزيل</string>
     <string name="product_type_simple_desc">منتج مادي فريد قد تضطر إلى شحنه إلى العميل</string>
     <string name="product_type_simple_title">منتج مادي بسيط</string>
-    <string name="card_reader_connect_open_bluetooth_settings">فتح الإعدادات</string>
     <string name="card_reader_connect_open_location_settings">فتح الإعدادات</string>
     <string name="card_reader_connect_open_permission_settings">فتح الإعدادات</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">تم تعطيل البلوتوث</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">تم تعطيل الموقع</string>
-    <string name="card_reader_connect_missing_permissions_hint">صلاحية الموقع المطلوب مفقودة</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">تم تعطيل البلوتوث</string>
+    <string name="card_reader_connect_location_provider_disabled_header">تم تعطيل الموقع</string>
+    <string name="card_reader_connect_missing_permissions_header">صلاحية الموقع المطلوب مفقودة</string>
     <string name="card_reader_connect_connecting_failed_hint">تعذر علينا الربط بالقارئ.</string>
-    <string name="card_reader_connect_scanning_failed_hint">تعذر علينا العثور على أي قارئ.</string>
-    <string name="card_reader_connect_failed_header">فشل الربط بالقارئ</string>
     <string name="card_reader_connect_connecting_header">الربط بالقارئ</string>
     <string name="card_reader_connect_to_reader">الربط بالقارئ</string>
     <string name="card_reader_connect_reader_found_header">هل ترغب في ربط القارئ %s؟</string>
@@ -129,7 +142,6 @@ Language: ar
     <string name="product_delete_dialog_title">حذف منتج</string>
     <string name="card_reader_payment_send_receipt">إرسال إيصال</string>
     <string name="card_reader_payment_print_receipt">طباعة إيصال</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">فشلت عملية الدفع. يُرجى المحاولة مرة أخرى.</string>
     <string name="card_reader_payment_capturing_payment_state">تسجيل الدفع</string>
     <string name="card_reader_payment_processing_payment_state">معالجة الدفع</string>
     <string name="card_reader_payment_collect_payment_state">القارئ جاهز</string>
@@ -379,7 +391,7 @@ Language: ar
     <string name="shipping_label_print_error_message">إذا كان ثمَّة خطأ في الطباعة عند شراء الملصق، فيمكنك طباعته مجددًا.</string>
     <string name="orderdetail_shipping_label_wip_message">إننا نعمل على تسهيل طباعة ملصقات الشحن مباشرة من جهازك!  في الوقت الحالي، إذا أنشأتَ ملصقات الشحن لهذا الطلب في مسؤول مخزنك باستخدام WooCommerce Shipping، فيمكنك طباعتها في تفاصيل طلبك هنا.</string>
     <string name="orderdetail_shipping_label_wip_title">طباعة ملصقات الشحن من جهازك!</string>
-    <string name="orderdetail_shipping_label_reprint">إعادة طباعة ملصق الشحن</string>
+    <string name="orderdetail_shipping_label_print">طباعة ملصق الشحن</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">تم حفظ مسودة المنتج</string>
     <string name="product_detail_publish_product_draft_error">خطأ في أثناء حفظ مسودة المنتج</string>

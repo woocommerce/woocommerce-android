@@ -15,7 +15,7 @@ internal abstract class SitePickerModule {
     @ActivityScoped
     @Binds
     abstract fun provideSitePickerPresenter(sitePickerPresenter: SitePickerPresenter):
-            SitePickerContract.Presenter
+        SitePickerContract.Presenter
 
     @FragmentScope
     @ContributesAndroidInjector

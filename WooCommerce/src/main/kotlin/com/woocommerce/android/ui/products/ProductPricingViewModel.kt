@@ -121,9 +121,9 @@ class ProductPricingViewModel @Inject constructor(
         val regularPrice = pricingData.regularPrice ?: BigDecimal.ZERO
         viewState = if (inputValue > regularPrice) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else if (pricingData.isSaleScheduled == true && inputValue.isNotSet())
+        } else if (pricingData.isSaleScheduled == true && inputValue.isNotSet()) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_scheduled_sale_price_error)
-        else {
+        } else {
             viewState.copy(salePriceErrorMessage = 0)
         }
     }
@@ -194,12 +194,12 @@ class ProductPricingViewModel @Inject constructor(
             val data = other as? PricingData
             return data?.let {
                 taxClass == it.taxClass &&
-                taxStatus == it.taxStatus &&
-                isSaleScheduled == it.isSaleScheduled &&
-                saleStartDate == it.saleStartDate &&
-                saleEndDate == it.saleEndDate &&
-                regularPrice isEquivalentTo it.regularPrice &&
-                salePrice isEquivalentTo it.salePrice
+                    taxStatus == it.taxStatus &&
+                    isSaleScheduled == it.isSaleScheduled &&
+                    saleStartDate == it.saleStartDate &&
+                    saleEndDate == it.saleEndDate &&
+                    regularPrice isEquivalentTo it.regularPrice &&
+                    salePrice isEquivalentTo it.salePrice
             } ?: false
         }
 

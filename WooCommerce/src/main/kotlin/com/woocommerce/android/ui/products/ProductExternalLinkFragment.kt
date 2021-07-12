@@ -51,12 +51,15 @@ class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_produc
     override fun getFragmentTitle() = getString(R.string.product_external_link)
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitExternalLink -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitExternalLink -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
         updateProductView(viewModel.getProduct())
     }
 

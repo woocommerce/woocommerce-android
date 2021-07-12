@@ -38,21 +38,22 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
 
         if (attrs != null) {
             val a = context
-                    .obtainStyledAttributes(attrs, R.styleable.WCSettingsOptionValueView, defStyleAttr, defStyleRes)
+                .obtainStyledAttributes(attrs, R.styleable.WCSettingsOptionValueView, defStyleAttr, defStyleRes)
             try {
                 // Set the view title and style
                 binding.optionTitle.text = StyleAttrUtils.getString(
-                        a,
-                        isInEditMode,
-                        R.styleable.WCSettingsOptionValueView_optionTitle,
-                        R.styleable.WCSettingsOptionValueView_tools_optionTitle)
+                    a,
+                    isInEditMode,
+                    R.styleable.WCSettingsOptionValueView_optionTitle,
+                    R.styleable.WCSettingsOptionValueView_tools_optionTitle
+                )
 
                 // Set the active option
                 StyleAttrUtils.getString(
-                        a,
-                        isInEditMode,
-                        R.styleable.WCSettingsOptionValueView_optionValue,
-                        R.styleable.WCSettingsOptionValueView_tools_optionValue
+                    a,
+                    isInEditMode,
+                    R.styleable.WCSettingsOptionValueView_optionValue,
+                    R.styleable.WCSettingsOptionValueView_tools_optionValue
                 )?.let {
                     binding.optionValue.visibility = View.VISIBLE
                     binding.optionValue.text = it
@@ -61,11 +62,11 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
                 // Set max lines
                 if (a.hasValue(R.styleable.WCSettingsOptionValueView_optionValueMaxLines)) {
                     binding.optionValue.maxLines = StyleAttrUtils.getInt(
-                            a,
-                            isInEditMode,
-                            R.styleable.WCSettingsOptionValueView_optionValueMaxLines,
-                            R.styleable.WCSettingsOptionValueView_tools_optionValueMaxLines,
-                            2
+                        a,
+                        isInEditMode,
+                        R.styleable.WCSettingsOptionValueView_optionValueMaxLines,
+                        R.styleable.WCSettingsOptionValueView_tools_optionValueMaxLines,
+                        2
                     )
                 }
             } finally {

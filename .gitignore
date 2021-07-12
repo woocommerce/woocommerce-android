@@ -25,6 +25,7 @@ gradle.properties
 
 # Crash Logging Configuration
 fabric.properties
+# Sentry
 sentry.properties
 
 # Local configuration file (sdk path, etc)
@@ -36,19 +37,21 @@ local.properties
 *.iws
 /.idea/*
 
+# IntelliJ/Android Studio
+/.idea/vcs.xml
+/.idea/codeStyles/
+# Enforce plugins
+/.idea/externalDependencies.xml
+# Checkstyle configuration
+/.idea/checkstyle-idea.xml
+/.idea/codeStyleSettings.xml
+
 # IntelliJ/Android Studio exceptions
-!/.idea/vcs.xml
-!/.idea/codeStyles/
 !/.idea/fileTemplates/
 !/.idea/inspectionProfiles/
 !/.idea/scopes/
-!/.idea/codeStyleSettings.xml
 !/.idea/encodings.xml
 !/.idea/copyright/
-# Enforce plugins
-!/.idea/externalDependencies.xml
-# Checkstyle configuration
-!/.idea/checkstyle-idea.xml
 
 # Log Files
 *.log
@@ -91,9 +94,6 @@ google-upload-credentials.json
 
 # Ruby Dependencies
 /vendor
-
-# Sentry
-sentry.properties
 
 # Markdown Extensions
 .markdownlint.json

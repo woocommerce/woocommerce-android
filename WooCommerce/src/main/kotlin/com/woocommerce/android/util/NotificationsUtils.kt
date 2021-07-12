@@ -29,9 +29,10 @@ object NotificationsUtils {
     fun buildNotificationModelFromBundle(data: Bundle): NotificationModel? {
         return data.getString(NotificationHandler.PUSH_ARG_NOTE_FULL_DATA)?.let {
             getNotificationJsonFromBase64EncodedData(it)?.let { json ->
-            val apiResponse = Gson().fromJson(json.toString(), NotificationApiResponse::class.java)
-            NotificationApiResponse.notificationResponseToNotificationModel(apiResponse)
-        } }
+                val apiResponse = Gson().fromJson(json.toString(), NotificationApiResponse::class.java)
+                NotificationApiResponse.notificationResponseToNotificationModel(apiResponse)
+            }
+        }
     }
 
     /**

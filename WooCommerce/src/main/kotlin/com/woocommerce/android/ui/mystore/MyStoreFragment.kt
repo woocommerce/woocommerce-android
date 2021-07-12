@@ -15,6 +15,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
+import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
@@ -42,7 +43,8 @@ import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
+class MyStoreFragment :
+    TopLevelFragment(R.layout.fragment_my_store),
     MyStoreContract.View,
     MyStoreStatsListener {
     companion object {
@@ -87,7 +89,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         get() = activity as? MainNavigationRouter
 
     private val myStoreDateBar
-        get() = binding.myStoreStats.myStoreDateBar
+        get() = binding.myStoreDateBar
 
     private var isEmptyViewVisible: Boolean = false
 
@@ -108,8 +110,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        _tabLayout = TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
-        addTabLayoutToAppBar()
+        initTabLayout()
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -173,6 +174,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
         refreshMyStoreStats(forced = this.isRefreshPending)
+    }
+
+    private fun initTabLayout() {
+        _tabLayout = TabLayout(requireContext(), null, attr.scrollableTabStyle)
+        addTabLayoutToAppBar()
     }
 
     override fun onResume() {
@@ -283,16 +289,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         }
     }
 
-    override fun getFragmentTitle(): String {
-        selectedSite.getIfExists()?.let { site ->
-            if (!site.displayName.isNullOrBlank()) {
-                return site.displayName
-            } else if (!site.name.isNullOrBlank()) {
-                return site.name
-            }
-        }
-        return getString(R.string.my_store)
-    }
+    override fun getFragmentTitle() = getString(R.string.my_store)
+
+    override fun getFragmentSubtitle(): String = presenter.getSelectedSiteName() ?: ""
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)

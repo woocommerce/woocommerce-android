@@ -40,8 +40,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test has the correct init state`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         var state: ProductDownloadDetailsViewState? = null
@@ -57,8 +57,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         val savedState = ProductDownloadDetailsFragmentArgs(isEditing = true, productFile = file)
             .initSavedStateHandle()
         viewModel = ProductDownloadDetailsViewModel(
-                savedState,
-                resourceProvider
+            savedState,
+            resourceProvider
         )
 
         val title = viewModel.screenTitle
@@ -69,8 +69,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test file name edit`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         val newName = "new name"
@@ -86,8 +86,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test file url edit`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         val newUrl = "new url"
@@ -103,8 +103,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test dispatch update event when editing`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         val newUrl = "http://url.com"
@@ -124,8 +124,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test dispatch add event when adding file`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForAdding,
-                resourceProvider
+            savedStateForAdding,
+            resourceProvider
         )
 
         val newUrl = "http://url.com"
@@ -145,8 +145,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test delete file`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         val events = mutableListOf<Event>()
@@ -162,8 +162,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test field validation when url empty`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         viewModel.onFileUrlChanged("")
@@ -178,8 +178,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test field validation when url invalid`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         viewModel.onFileUrlChanged("invalid_url")
@@ -194,8 +194,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test field validation when url without path and name empty`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         viewModel.onFileUrlChanged("http://testurl.com/")
@@ -211,8 +211,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `test field validation when url with path and name empty`() {
         viewModel = ProductDownloadDetailsViewModel(
-                savedStateForEditing,
-                resourceProvider
+            savedStateForEditing,
+            resourceProvider
         )
 
         viewModel.onFileUrlChanged("http://testurl.com/path/file.jpg")

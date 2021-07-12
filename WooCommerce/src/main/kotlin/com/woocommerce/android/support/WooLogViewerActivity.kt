@@ -43,8 +43,10 @@ class WooLogViewerActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val divider = AlignedDividerDecoration(this,
-                androidx.recyclerview.widget.DividerItemDecoration.VERTICAL, 0, clipToMargin = false)
+        val divider = AlignedDividerDecoration(
+            this,
+            androidx.recyclerview.widget.DividerItemDecoration.VERTICAL, 0, clipToMargin = false
+        )
         ContextCompat.getDrawable(this, R.drawable.list_divider)?.let { drawable ->
             divider.setDrawable(drawable)
         }
@@ -80,13 +82,17 @@ class WooLogViewerActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
 
-        val mnuCopy = menu.add(Menu.NONE,
-                ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy)
+        val mnuCopy = menu.add(
+            Menu.NONE,
+            ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy
+        )
         mnuCopy.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         mnuCopy.setIcon(R.drawable.ic_copy_white_24dp)
 
-        val mnuShare = menu.add(Menu.NONE,
-                ID_SHARE, Menu.NONE, R.string.share)
+        val mnuShare = menu.add(
+            Menu.NONE,
+            ID_SHARE, Menu.NONE, R.string.share
+        )
         mnuShare.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         mnuShare.setIcon(R.drawable.ic_share_white_24dp)
 
@@ -113,7 +119,7 @@ class WooLogViewerActivity : AppCompatActivity() {
 
     private inner class LogAdapter constructor(context: Context) : RecyclerView.Adapter<LogViewHolder>() {
         private val entries: ArrayList<String> =
-                WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity))
+            WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity))
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 
         override fun getItemCount() = entries.size

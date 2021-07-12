@@ -55,7 +55,8 @@ data class Order(
     val shippingAddress: Address,
     val shippingMethods: List<ShippingMethod>,
     val items: List<Item>,
-    val shippingLines: List<ShippingLine>
+    val shippingLines: List<ShippingLine>,
+    val metaData: List<MetaData<String>>
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = paymentMethodTitle.isEmpty() && datePaid == null
@@ -192,94 +193,95 @@ data class Order(
 
 fun WCOrderModel.toAppModel(): Order {
     return Order(
-            identifier = OrderIdentifier(this),
-            remoteId = this.remoteOrderId,
-            number = this.number,
-            localSiteId = this.localSiteId,
-            dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
-            dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
-            datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
-            status = Status.fromValue(status),
-            total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
-            totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            shippingTotal = this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
-            feesTotal = this.getFeeLineList()
-                    .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
-            currency = this.currency,
-            customerNote = this.customerNote,
-            discountCodes = this.discountCodes,
-            paymentMethod = this.paymentMethod,
-            paymentMethodTitle = this.paymentMethodTitle,
-            isCashPayment = CASH_PAYMENTS.contains(this.paymentMethod),
-            pricesIncludeTax = this.pricesIncludeTax,
-            multiShippingLinesAvailable = this.isMultiShippingLinesAvailable(),
-            billingAddress = this.getBillingAddress().let {
-                Address(
-                        it.company,
-                        it.firstName,
-                        it.lastName,
-                        this.billingPhone,
-                        it.country,
-                        it.state,
-                        it.address1,
-                        it.address2,
-                        it.city,
-                        it.postcode,
-                        this.billingEmail
-                )
-            },
-            shippingAddress = this.getShippingAddress().let {
-                Address(
-                        it.company,
-                        it.firstName,
-                        it.lastName,
-                        "",
-                        it.country,
-                        it.state,
-                        it.address1,
-                        it.address2,
-                        it.city,
-                        it.postcode,
-                        ""
-                )
-            },
-            shippingMethods = getShippingLineList().filter { it.methodId != null && it.methodTitle != null }.map {
-                ShippingMethod(
-                    it.methodId!!,
-                    it.methodTitle!!,
-                    it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                    it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-                )
-            },
-            items = getLineItemList()
-                    .filter { it.productId != null && it.id != null }
-                    .map {
-                        Item(
-                                it.id!!,
-                                it.productId!!,
-                                it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
-                                it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.sku ?: "",
-                                it.quantity?.toInt() ?: 0,
-                                it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.variationId ?: 0,
-                                it.getAttributesAsString()
-                        )
-                    },
-            shippingLines = getShippingLineList().map {
-                ShippingLine(
+        identifier = OrderIdentifier(this),
+        remoteId = this.remoteOrderId,
+        number = this.number,
+        localSiteId = this.localSiteId,
+        dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
+        dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
+        datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
+        status = Status.fromValue(status),
+        total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+        productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
+        totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+        shippingTotal = this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+        discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+        refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
+        feesTotal = this.getFeeLineList()
+            .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
+        currency = this.currency,
+        customerNote = this.customerNote,
+        discountCodes = this.discountCodes,
+        paymentMethod = this.paymentMethod,
+        paymentMethodTitle = this.paymentMethodTitle,
+        isCashPayment = CASH_PAYMENTS.contains(this.paymentMethod),
+        pricesIncludeTax = this.pricesIncludeTax,
+        multiShippingLinesAvailable = this.isMultiShippingLinesAvailable(),
+        billingAddress = this.getBillingAddress().let {
+            Address(
+                it.company,
+                it.firstName,
+                it.lastName,
+                this.billingPhone,
+                it.country,
+                it.state,
+                it.address1,
+                it.address2,
+                it.city,
+                it.postcode,
+                this.billingEmail
+            )
+        },
+        shippingAddress = this.getShippingAddress().let {
+            Address(
+                it.company,
+                it.firstName,
+                it.lastName,
+                "",
+                it.country,
+                it.state,
+                it.address1,
+                it.address2,
+                it.city,
+                it.postcode,
+                ""
+            )
+        },
+        shippingMethods = getShippingLineList().filter { it.methodId != null && it.methodTitle != null }.map {
+            ShippingMethod(
+                it.methodId!!,
+                it.methodTitle!!,
+                it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            )
+        },
+        items = getLineItemList()
+            .filter { it.productId != null && it.id != null }
+            .map {
+                Item(
                     it.id!!,
-                    it.methodId ?: StringUtils.EMPTY,
-                    it.methodTitle ?: StringUtils.EMPTY,
+                    it.productId!!,
+                    it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
+                    it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                    it.sku ?: "",
+                    it.quantity?.toInt() ?: 0,
+                    it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                     it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+                    it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                    it.variationId ?: 0,
+                    it.getAttributesAsString()
                 )
-            }
+            },
+        shippingLines = getShippingLineList().map {
+            ShippingLine(
+                it.id!!,
+                it.methodId ?: StringUtils.EMPTY,
+                it.methodTitle ?: StringUtils.EMPTY,
+                it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+            )
+        },
+        metaData = getMetaDataList().mapNotNull { it.toAppModel() }
     )
 }
 

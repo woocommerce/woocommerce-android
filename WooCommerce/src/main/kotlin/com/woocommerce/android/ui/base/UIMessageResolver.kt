@@ -15,8 +15,6 @@ import com.woocommerce.android.R
  *
  * @see com.woocommerce.android.ui.main.MainUIMessageResolver
  */
-// BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-@Suppress("WrongConstant")
 interface UIMessageResolver {
     /**
      * Set by the implementing class. This is the root view the snackbar should be attached to. To enable
@@ -38,10 +36,11 @@ interface UIMessageResolver {
         actionListener: View.OnClickListener
     ): Snackbar {
         return getIndefiniteSnackbarWithAction(
-                snackbarRoot,
-                snackbarRoot.context.getString(stringResId, *stringArgs),
-                snackbarRoot.context.getString(R.string.install),
-                actionListener)
+            snackbarRoot,
+            snackbarRoot.context.getString(stringResId, *stringArgs),
+            snackbarRoot.context.getString(R.string.install),
+            actionListener
+        )
     }
 
     /**
@@ -57,10 +56,11 @@ interface UIMessageResolver {
         actionListener: View.OnClickListener
     ): Snackbar {
         return getSnackbarWithAction(
-                snackbarRoot,
-                snackbarRoot.context.getString(stringResId, *stringArgs),
-                snackbarRoot.context.getString(R.string.undo),
-                actionListener)
+            snackbarRoot,
+            snackbarRoot.context.getString(stringResId, *stringArgs),
+            snackbarRoot.context.getString(R.string.undo),
+            actionListener
+        )
     }
 
     /**
@@ -76,10 +76,11 @@ interface UIMessageResolver {
         actionListener: View.OnClickListener
     ): Snackbar {
         return getSnackbarWithAction(
-                snackbarRoot,
-                String.format(message, *stringArgs),
-                snackbarRoot.context.getString(R.string.undo),
-                actionListener)
+            snackbarRoot,
+            String.format(message, *stringArgs),
+            snackbarRoot.context.getString(R.string.undo),
+            actionListener
+        )
     }
 
     /**
@@ -95,10 +96,11 @@ interface UIMessageResolver {
         actionListener: View.OnClickListener
     ): Snackbar {
         return getIndefiniteSnackbarWithAction(
-                snackbarRoot,
-                snackbarRoot.context.getString(stringResId, *stringArgs),
-                snackbarRoot.context.getString(R.string.retry),
-                actionListener)
+            snackbarRoot,
+            snackbarRoot.context.getString(stringResId, *stringArgs),
+            snackbarRoot.context.getString(R.string.retry),
+            actionListener
+        )
     }
 
     /**
@@ -108,7 +110,8 @@ interface UIMessageResolver {
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
     fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
-            snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), BaseTransientBottomBar.LENGTH_LONG)
+        snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), BaseTransientBottomBar.LENGTH_LONG
+    )
 
     /**
      * Display a snackbar with the provided message.
@@ -128,9 +131,9 @@ interface UIMessageResolver {
      * Display a generic offline message.
      */
     fun showOfflineSnack() = Snackbar.make(
-            snackbarRoot,
-            snackbarRoot.context.getString(R.string.offline_error),
-            BaseTransientBottomBar.LENGTH_LONG
+        snackbarRoot,
+        snackbarRoot.context.getString(R.string.offline_error),
+        BaseTransientBottomBar.LENGTH_LONG
     ).show()
 
     private fun getIndefiniteSnackbarWithAction(

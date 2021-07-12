@@ -21,9 +21,10 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 
-abstract class AppUpgradeActivity : AppCompatActivity(),
-        AppUpgradeActivityView,
-        InstallStateUpdatedListener {
+abstract class AppUpgradeActivity :
+    AppCompatActivity(),
+    AppUpgradeActivityView,
+    InstallStateUpdatedListener {
     private lateinit var appUpdateManager: AppUpdateManager
 
     /**
@@ -154,11 +155,11 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
                     // in order to install the update. This is only true for FLEXIBLE updates so we need to check
                     // if the AppUpdateType is FLEXIBLE before proceeding
                     if (isAppUpdateFlexible() && appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
-                            handleFlexibleUpdateSuccess()
-                        }
+                        handleFlexibleUpdateSuccess()
                     }
                 }
             }
+        }
     }
 
     /**

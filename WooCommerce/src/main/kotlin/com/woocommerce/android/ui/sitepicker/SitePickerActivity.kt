@@ -56,8 +56,12 @@ import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener,
-        LoginEmailHelpDialogFragment.Listener, HasAndroidInjector {
+class SitePickerActivity :
+    AppCompatActivity(),
+    SitePickerContract.View,
+    OnSiteClickListener,
+    LoginEmailHelpDialogFragment.Listener,
+    HasAndroidInjector {
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
@@ -120,7 +124,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         currentSite = selectedSite.getIfExists()
 
         calledFromLogin = savedInstanceState?.getBoolean(KEY_CALLED_FROM_LOGIN)
-                ?: intent.getBooleanExtra(KEY_CALLED_FROM_LOGIN, false)
+            ?: intent.getBooleanExtra(KEY_CALLED_FROM_LOGIN, false)
 
         if (calledFromLogin) {
             binding.toolbar.toolbar.visibility = View.GONE
@@ -351,8 +355,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         AnalyticsTracker.track(
-                Stat.SITE_PICKER_STORES_SHOWN,
-                mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
+            Stat.SITE_PICKER_STORES_SHOWN,
+            mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
         )
 
         binding.sitePickerRoot.visibility = View.VISIBLE
@@ -408,12 +412,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         if (isAutoLogin) {
             AnalyticsTracker.track(
-                    Stat.SITE_PICKER_AUTO_LOGIN_SUBMITTED,
-                    mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
+                Stat.SITE_PICKER_AUTO_LOGIN_SUBMITTED,
+                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
+            )
         } else {
             AnalyticsTracker.track(
-                    Stat.SITE_PICKER_CONTINUE_TAPPED,
-                    mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id))
+                Stat.SITE_PICKER_CONTINUE_TAPPED,
+                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
+            )
         }
 
         showProgressDialog(R.string.login_verifying_site)
@@ -481,16 +487,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
 
-    // BaseTransientBottomBar.LENGTH_LONG is pointing to Snackabr.LENGTH_LONG which confuses checkstyle
-    @Suppress("WrongConstant")
     override fun siteVerificationError(site: SiteModel) {
         hideProgressDialog()
 
         val siteName = if (!TextUtils.isEmpty(site.name)) site.name else getString(R.string.untitled)
         Snackbar.make(
-                binding.sitePickerRoot as ViewGroup,
-                getString(R.string.login_verifying_site_error, siteName),
-                BaseTransientBottomBar.LENGTH_LONG
+            binding.sitePickerRoot as ViewGroup,
+            getString(R.string.login_verifying_site_error, siteName),
+            BaseTransientBottomBar.LENGTH_LONG
         ).show()
     }
 
@@ -612,8 +616,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     override fun showSiteNotConnectedAccountView(url: String) {
         AnalyticsTracker.track(
-                Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-                mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
+            Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
+            mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores)
+        )
 
         if (calledFromLogin) {
             unifiedLoginTracker.track(step = Step.WRONG_WP_ACCOUNT)
@@ -669,8 +674,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun showSiteNotConnectedJetpackView(url: String) {
         AnalyticsTracker.track(
-                Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
-                mapOf(AnalyticsTracker.KEY_URL to url))
+            Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
+            mapOf(AnalyticsTracker.KEY_URL to url)
+        )
 
         if (calledFromLogin) {
             unifiedLoginTracker.track(step = Step.JETPACK_NOT_CONNECTED)
@@ -684,25 +690,26 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         with(binding.noStoresView.noStoresViewText) {
             val refreshAppText = getString(R.string.login_refresh_app_continue)
             val notConnectedText = getString(
-                    R.string.login_not_connected_jetpack,
-                    url,
-                    refreshAppText
+                R.string.login_not_connected_jetpack,
+                url,
+                refreshAppText
             )
 
             val spannable = SpannableString(notConnectedText)
             spannable.setSpan(
-                    WooClickableSpan {
-                        AnalyticsTracker.track(Stat.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
-                        showProgressDialog(R.string.login_refresh_app_progress_jetpack)
+                WooClickableSpan {
+                    AnalyticsTracker.track(Stat.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
+                    showProgressDialog(R.string.login_refresh_app_progress_jetpack)
 
-                        // Tell the presenter to fetch a fresh list of
-                        // sites from the API. When the results come back the login
-                        // process will restart again.
-                        presenter.fetchSitesFromAPI()
-                    },
-                    (notConnectedText.length - refreshAppText.length),
-                    notConnectedText.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    // Tell the presenter to fetch a fresh list of
+                    // sites from the API. When the results come back the login
+                    // process will restart again.
+                    presenter.fetchSitesFromAPI()
+                },
+                (notConnectedText.length - refreshAppText.length),
+                notConnectedText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
 
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
@@ -751,11 +758,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * SignIn M1: The user the user submitted during login belongs
      * to a site that does not have WooCommerce installed.
      */
+    @Suppress("LongMethod")
     override fun showSiteNotWooStore(site: SiteModel) {
         AnalyticsTracker.track(
-                Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
-                mapOf(AnalyticsTracker.KEY_URL to site.url,
-                        AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
+            Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
+            mapOf(
+                AnalyticsTracker.KEY_URL to site.url,
+                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores
+            )
+        )
 
         if (calledFromLogin) {
             unifiedLoginTracker.track(step = Step.NOT_WOO_STORE)
@@ -776,16 +787,17 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             val spannable = SpannableString(notWooMessage)
             spannable.setSpan(
-                    WooClickableSpan {
-                        AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
-                        unifiedLoginTracker.trackClick(Click.REFRESH_APP)
+                WooClickableSpan {
+                    AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
+                    unifiedLoginTracker.trackClick(Click.REFRESH_APP)
 
-                        showProgressDialog(R.string.login_refresh_app_progress)
-                        presenter.fetchUpdatedSiteFromAPI(site)
-                    },
-                    (notWooMessage.length - refreshAppText.length),
-                    notWooMessage.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    showProgressDialog(R.string.login_refresh_app_progress)
+                    presenter.fetchUpdatedSiteFromAPI(site)
+                },
+                (notWooMessage.length - refreshAppText.length),
+                notWooMessage.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
 
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()

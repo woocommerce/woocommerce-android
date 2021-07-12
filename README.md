@@ -13,7 +13,7 @@ it on [Google Play][woo-app]. If you're a developer wanting to contribute, read 
   * [OAuth2 Authentication](#oauth2-authentication)
   * [Configuration Files](#configuration-files)
   * [Setting up Checkstyle](#setting-up-checkstyle)
-  * [Using ktlint](#using-ktlint)
+  * [Using detekt](#using-detekt)
   * [Google Configuration](#google-configuration)
 * [Security](#security)
 * [Help & Support](#help--support)
@@ -116,7 +116,9 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
 ### Setting up Checkstyle
 
-The woocommerce-android project uses [Checkstyle][checkstyle]. You can run checkstyle using `./gradlew checkstyle`. You can also view errors and warnings in realtime with the Checkstyle plugin.  When importing the project into Android Studio, Checkstyle should be set up automatically. If it is not, follow the steps below.
+The woocommerce-android project uses [Checkstyle][checkstyle]. You can run checkstyle using `./gradlew checkstyle`.
+
+Optionally, you can also view errors and warnings in realtime with the Checkstyle plugin. Follow the steps below if needed.
 
 You can install the CheckStyle-IDEA plugin in Android Studio here:
 
@@ -128,9 +130,23 @@ Once installed, you can configure the plugin here:
 
 From there, add and enable the configuration file for woocommerce-android, located at [config/checkstyle.xml](https://github.com/woocommerce/woocommerce-android/blob/develop/config/checkstyle.xml).
 
-### Using ktlint
+### Using detekt
 
-The woocommerce-android project uses [ktlint][ktlint] for Kotlin linting. You can run ktlint using `./gradlew ktlint`, and you can also run `./gradlew ktlintFormat` for auto-formatting. There is no IDEA plugin (like Checkstyle's) at this time.
+The woocommerce-android project uses [detekt][detekt] for Kotlin linting and code style check.
+
+You can run detekt using `./gradlew detekt`.
+
+You can also view errors and warnings in realtime with the Detekt plugin.
+
+You can install the detekt plugin in Android Studio here:
+
+`Android Studio > Preferences... > Plugins > detekt`
+
+Once installed, you can configure the plugin here:
+
+`Android Studio > Preferences... > Tools > Detekt`
+
+From there, add and enable the custom configuration file, located at [config/detekt/detekt.yml](https://github.com/wordpress-mobile/WordPress-Android/blob/develop/config/detekt/detekt.yml).
 
 ### Google Configuration
 
@@ -174,7 +190,7 @@ be covered by a different license compatible with the GPLv2.
 [checkstyle]: https://checkstyle.sourceforge.io/
 [google-ident]: https://developers.google.com/identity/
 [jetpack]: https://jetpack.com/
-[ktlint]: https://github.com/shyiko/ktlint
+[detekt]: https://github.com/detekt/detekt
 [login-lib]: https://github.com/wordpress-mobile/WordPress-Login-Flow-Android
 [oauth]: https://developer.wordpress.com/docs/oauth2/
 [blog-mobile]: https://mobile.blog/

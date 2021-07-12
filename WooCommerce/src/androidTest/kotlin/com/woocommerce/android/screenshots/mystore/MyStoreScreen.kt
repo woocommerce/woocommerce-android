@@ -17,7 +17,7 @@ class MyStoreScreen : Screen {
     val tabBar = TabNavComponent()
     val stats = StatsComponent()
 
-    constructor(): super(MY_STORE)
+    constructor() : super(MY_STORE)
 
     fun openSettingsPane(): SettingsScreen {
         onView(withId(SETTINGS_BUTTON)).perform(click())

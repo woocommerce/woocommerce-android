@@ -85,11 +85,13 @@ class ProductDownloadDetailsViewModel @Inject constructor(
 
     fun onBackButtonClicked(): Boolean {
         return if (showDoneButton) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                }
-            ))
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(Exit)
+                    }
+                )
+            )
             false
         } else true
     }

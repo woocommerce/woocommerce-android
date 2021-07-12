@@ -65,16 +65,22 @@ class RefundByAmountFragment : BaseFragment(R.layout.fragment_refund_by_amount) 
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowValidationError -> binding.issueRefundRefundAmount.error = event.message
-                is HideValidationError -> binding.issueRefundRefundAmount.error = null
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowValidationError -> binding.issueRefundRefundAmount.error = event.message
+                    is HideValidationError -> binding.issueRefundRefundAmount.error = null
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
-        binding.issueRefundRefundAmount.value.observe(viewLifecycleOwner, Observer {
-            viewModel.onManualRefundAmountChanged(it)
-        })
+        binding.issueRefundRefundAmount.value.observe(
+            viewLifecycleOwner,
+            Observer {
+                viewModel.onManualRefundAmountChanged(it)
+            }
+        )
     }
 }

@@ -46,10 +46,15 @@ object ProductImagesUtils {
         }
 
         // optimize the image if the setting is enabled
+        @Suppress("TooGenericExceptionCaught")
         if (AppPrefs.getImageOptimizationEnabled()) {
-            getOptimizedImagePath(context, path)?.let {
-                path = it
-            } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image")
+            try {
+                getOptimizedImagePath(context, path)?.let {
+                    path = it
+                } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image")
+            } catch (e: Exception) {
+                WooLog.e(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image", e)
+            }
         }
 
         val file = File(path)
@@ -79,7 +84,7 @@ object ProductImagesUtils {
 
         media.fileName = filename
         media.title = filename
-        media.filePath = fetchedUri.path
+        media.filePath = path
         media.localSiteId = localSiteId
         media.fileExtension = fileExtension
         media.mimeType = mimeType
@@ -122,9 +127,9 @@ object ProductImagesUtils {
         val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return try {
             File.createTempFile(
-                    "JPEG_${timeStamp}_",
-                    ".jpg",
-                    storageDir
+                "JPEG_${timeStamp}_",
+                ".jpg",
+                storageDir
             )
         } catch (ex: IOException) {
             WooLog.e(T.MEDIA, ex)
@@ -133,7 +138,7 @@ object ProductImagesUtils {
     }
 
     private fun hasCamera(context: Context): Boolean =
-            context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 
     /**
      * Create an intent for capturing a device photo
@@ -150,9 +155,9 @@ object ProductImagesUtils {
                     // capturedPhotoPath = file.absolutePath
                     val authority = context.applicationContext.packageName + ".provider"
                     val imageUri = FileProvider.getUriForFile(
-                            context,
-                            authority,
-                            file
+                        context,
+                        authority,
+                        file
                     )
                     intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri)
                     return intent
