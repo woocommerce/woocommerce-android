@@ -34,7 +34,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -146,10 +145,6 @@ class OrderDetailRepository @Inject constructor(
 
     suspend fun updateOrderStatus(localOrderId: Int, newStatus: String): ContinuationResult<Boolean> {
         val order = OrderSqlUtils.getOrder(localOrderId)
-        return updateOrderStatus(order, newStatus)
-    }
-
-    suspend fun updateOrderStatus(order: WCOrderModel, newStatus: String): ContinuationResult<Boolean> {
         return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = UpdateOrderStatusPayload(
                 order, selectedSite.get(), newStatus

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -70,7 +69,6 @@ import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
@@ -436,14 +434,10 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    @VisibleForTesting
-    fun updateOrderStatus(newStatus: String) {
+    private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                val order = OrderSqlUtils.getOrder(orderIdSet.id)
-                val updateResult = orderDetailRepository.updateOrderStatus(order, newStatus)
-
-                when (updateResult) {
+                when (val updateResult = orderDetailRepository.updateOrderStatus(orderIdSet.id, newStatus)) {
                     is ContinuationWrapper.ContinuationResult.Cancellation -> {
                         // no-op
                     }
