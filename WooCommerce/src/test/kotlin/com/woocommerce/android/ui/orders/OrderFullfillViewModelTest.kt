@@ -17,6 +17,7 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragmentArgs
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel.ViewState
@@ -32,7 +33,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import kotlin.test.assertNotNull
@@ -221,7 +221,8 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         assertThat(exit).isEqualTo(
             ExitWithResult(
-                CoreOrderStatus.COMPLETED.value, OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
+                OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen,
+                OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
             )
         )
         assertNull(snackBar)
