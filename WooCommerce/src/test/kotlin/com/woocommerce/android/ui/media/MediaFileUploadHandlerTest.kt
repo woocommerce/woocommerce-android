@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.media
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -36,5 +37,8 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
 
         mediaFileUploadHandler.handleMediaUploadFailure(testMediaModel, testMediaModelError)
         assertThat(mediaFileUploadHandler.getMediaUploadErrorCount(testMediaModel.postId)).isEqualTo(1)
+        assertThat(mediaFileUploadHandler.getMediaUploadErrorMessage(testMediaModel.postId)).isEqualTo(
+            resources.getString(R.string.product_image_service_error_uploading_single)
+        )
     }
 }
