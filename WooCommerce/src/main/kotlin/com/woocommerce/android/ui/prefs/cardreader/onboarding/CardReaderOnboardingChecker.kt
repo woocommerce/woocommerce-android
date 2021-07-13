@@ -4,13 +4,55 @@ import javax.inject.Inject
 
 class CardReaderOnboardingChecker @Inject constructor() {
     suspend fun getOnboardingState(): CardReaderOnboardingState {
-        return CardReaderOnboardingState.ONBOARDING_COMPLETED
+        return when {
+            !isCountrySupported() -> CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED
+            !isWCPayInstalled() -> CardReaderOnboardingState.WCPAY_NOT_INSTALLED
+            !isWCPayVersionSupported() -> CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION
+            !isWCPayActivated() -> CardReaderOnboardingState.WCPAY_NOT_ACTIVATED
+            !isWCPaySetupCompleted() -> CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED
+            isWCPayInTestModeWithLiveStripeAccount() -> CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
+            isStripeAccountUnderReview() -> CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW
+            isStripeAccountPendingRequirements() -> CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT
+            isStripeAccountOverdueRequirements() -> CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
+            isStripeAccountRejected() -> CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED
+            else -> CardReaderOnboardingState.ONBOARDING_COMPLETED
+        }
     }
 
+    // TODO cardreader Implement
+    private fun isCountrySupported(): Boolean = true
+
+    // TODO cardreader Implement
+    private fun isWCPayInstalled(): Boolean = true
+
+    // TODO cardreader Implement
+    private fun isWCPayVersionSupported(): Boolean = true
+
+    // TODO cardreader Implement
+    private fun isWCPayActivated(): Boolean = true
+
+    // TODO cardreader Implement
+    private fun isWCPaySetupCompleted(): Boolean = true
+
+    // TODO cardreader Implement
+    private fun isWCPayInTestModeWithLiveStripeAccount(): Boolean = false
+
+    // TODO cardreader Implement
+    private fun isStripeAccountUnderReview(): Boolean = false
+
+    // TODO cardreader Implement
+    private fun isStripeAccountPendingRequirements(): Boolean = false
+
+    // TODO cardreader Implement
+    private fun isStripeAccountOverdueRequirements(): Boolean = false
+
+    // TODO cardreader Implement
+    private fun isStripeAccountRejected(): Boolean = false
 }
 
 enum class CardReaderOnboardingState {
     ONBOARDING_COMPLETED,
+
     /**
      * Store is not located in one of the supported countries.
      */
