@@ -119,6 +119,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderDetailFragment)
         }
 
+        binding.optionCardReaderPayments.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderOnboardingFragment)
+        }
+
         binding.optionHelpAndSupport.setOnClickListener {
             AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
             startActivity(HelpActivity.createIntent(requireActivity(), Origin.SETTINGS, null))
