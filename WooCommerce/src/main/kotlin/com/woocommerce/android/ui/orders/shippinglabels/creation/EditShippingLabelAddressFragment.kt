@@ -145,7 +145,7 @@ class EditShippingLabelAddressFragment :
             new.address1Field.takeIfNotEqualTo(old?.address1Field) { field ->
                 binding.address1.updateFromField(field)
             }
-            new.address2Field.takeIfNotEqualTo(old?.address1Field) { field ->
+            new.address2Field.takeIfNotEqualTo(old?.address2Field) { field ->
                 binding.address2.updateFromField(field)
             }
             new.phoneField.takeIfNotEqualTo(old?.phoneField) { field ->
