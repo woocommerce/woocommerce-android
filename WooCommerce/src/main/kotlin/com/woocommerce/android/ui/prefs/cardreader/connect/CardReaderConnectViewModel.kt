@@ -207,6 +207,7 @@ class CardReaderConnectViewModel @Inject constructor(
         val availableReaders = discoveryEvent.list.filter { it.id != null }
         val lastKnownReader = findLastKnowReader(availableReaders)
         if (lastKnownReader != null) {
+            tracker.track(AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED)
             connectToReader(lastKnownReader)
         } else {
             viewState.value = when {
