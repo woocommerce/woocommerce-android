@@ -1,2 +1,0 @@
-6.9:
-Artık değişken bir ürünün özelliklerine daha az dokunuşla ulaşabilirsiniz. Bunlar ürün ayrntılarında listelenmiştir. Görüntü kelimelerden daha fazla şey anlatır, biz de bu yüzden uygulama genelinde bazı çizimleri yeniledik. Ayrıca birkaç hatayı düzelttik ve işleri biraz daha hızlı hale getirdik. Fark edeceğinizi umuyoruz.

@@ -81,7 +81,10 @@ class CardReaderPaymentViewModel
     val viewStateData: LiveData<ViewState> = viewState
 
     private var paymentFlowJob: Job? = null
-    @VisibleForTesting var refetchOrderJob: Job? = null
+    private var paymentDataForRetry: PaymentData? = null
+
+    @VisibleForTesting
+    var refetchOrderJob: Job? = null
 
     fun start() {
         // TODO cardreader Make sure a reader is connected
@@ -150,6 +153,7 @@ class CardReaderPaymentViewModel
         paymentStatus: CardPaymentStatus,
         amountLabel: String
     ) {
+        paymentDataForRetry = null
         when (paymentStatus) {
             InitializingPayment -> viewState.postValue(LoadingDataState)
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
@@ -166,6 +170,7 @@ class CardReaderPaymentViewModel
                 // TODO cardreader prompt the user to tap/insert a card
             }
             is PaymentFailed -> {
+                paymentDataForRetry = paymentStatus.paymentDataForRetry
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
                     this@CardReaderPaymentViewModel.javaClass.simpleName,
@@ -282,9 +287,13 @@ class CardReaderPaymentViewModel
     }
 
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
-    override fun onCleared() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public override fun onCleared() {
         super.onCleared()
         orderRepository.onCleanup()
+        paymentDataForRetry?.let {
+            cardReaderManager.cancelPayment(it)
+        }
     }
 
     fun onBackPressed() {

@@ -1,0 +1,2 @@
+7.0 :
+Créer des étiquettes d’expédition internationales est un jeu d’enfant ! Les marchands aux États-Unis qui utilisent WooCommerce Shipping & Tax dans leur boutique peuvent désormais générer des étiquettes d’expédition et des formulaires douaniers pour les destinations internationales. Nous continuons de développer cette fonctionnalité, alors testez-la et donnez-nous votre avis !
