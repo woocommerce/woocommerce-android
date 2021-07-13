@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
@@ -10,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
         android:background="?attr/selectableItemBackground"
-        android:paddingHorizontal="@dimen/major_100"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:layout_marginStart="@dimen/major_100"
             android:textColor="@color/color_on_surface_high"
             android:textStyle="bold"
             tools:text="Package 1" />
@@ -33,10 +34,17 @@
             tools:text="- Small Package" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/expand_icon"
+            android:id="@+id/error_view"
             android:layout_width="@dimen/image_minor_50"
             android:layout_height="@dimen/image_minor_50"
-            android:layout_gravity="end|center_vertical"
+            app:srcCompat="@drawable/mtrl_ic_error"
+            app:tint="@color/woo_red_50" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/expand_icon"
+            android:layout_width="@dimen/image_major_50"
+            android:layout_height="@dimen/image_major_50"
+            android:padding="@dimen/major_75"
             android:src="@drawable/ic_arrow_down"
             android:tint="@color/color_on_surface_high" />
     </LinearLayout>

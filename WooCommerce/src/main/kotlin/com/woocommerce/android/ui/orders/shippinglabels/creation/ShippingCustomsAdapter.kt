@@ -148,6 +148,7 @@ class ShippingCustomsAdapter(
             val (customsPackage, validationState) = uiState
             binding.packageId.text = customsPackage.labelPackage.getTitle(context)
             binding.packageName.text = "- ${customsPackage.labelPackage.selectedPackage!!.title}"
+            binding.errorView.isVisible = !validationState.isValid
             binding.returnCheckbox.isChecked = customsPackage.returnToSender
 
             // Animate any potential change to visibility of the description fields
