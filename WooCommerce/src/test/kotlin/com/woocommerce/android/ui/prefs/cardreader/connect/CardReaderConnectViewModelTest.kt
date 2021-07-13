@@ -259,7 +259,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when cardReaderManager gets initilized, then scan is started`() =
+    fun `when cardReaderManager gets initialized, then scan is started`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
 
@@ -325,6 +325,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = READER_FOUND)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is matching, when reader found, then auto reconnection event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
+
+            init(scanState = READER_FOUND)
+
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED)
         }
 
     @Test
