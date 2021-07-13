@@ -50,7 +50,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     val siteParameters: SiteParameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
 
-    private var createdPackages: List<ShippingPackage>? = null
+    private var availablePackages: List<ShippingPackage>? = null
 
     init {
         initState()
@@ -66,7 +66,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
                 triggerEvent(Exit)
             } else {
-                createdPackages = shippingPackagesResult.model
+                availablePackages = shippingPackagesResult.model
             }
 
             val packagesList = if (arguments.shippingLabelPackages.isEmpty()) {
@@ -149,7 +149,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onPackageSpinnerClicked(position: Int) {
-        createdPackages?.let {
+        availablePackages?.let {
             if (it.isNotEmpty()) {
                 triggerEvent(OpenPackageSelectorEvent(position))
             } else {
@@ -159,8 +159,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
-        if (createdPackages.isNullOrEmpty()) {
-            createdPackages = listOf(selectedPackage)
+        launch {
+            availablePackages = shippingLabelRepository.getShippingPackages().model ?: listOf(selectedPackage)
         }
 
         val packages = viewState.packagesUiModels.toMutableList()
