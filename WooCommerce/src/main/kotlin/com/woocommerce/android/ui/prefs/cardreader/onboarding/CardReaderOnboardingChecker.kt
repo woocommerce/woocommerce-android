@@ -3,10 +3,14 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 import javax.inject.Inject
 
 class CardReaderOnboardingChecker @Inject constructor() {
+    suspend fun getOnboardingState(): CardReaderOnboardingState {
+        return CardReaderOnboardingState.ONBOARDING_COMPLETED
+    }
 
 }
 
 enum class CardReaderOnboardingState {
+    ONBOARDING_COMPLETED,
     /**
      * Store is not located in one of the supported countries.
      */
