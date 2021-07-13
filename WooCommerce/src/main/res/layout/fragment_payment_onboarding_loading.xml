@@ -3,17 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    android:paddingHorizontal="@dimen/major_200"
-    android:paddingVertical="@dimen/major_200">
+    android:layout_height="match_parent">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textHeader"
         style="@style/Woo.TextView.Headline6"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/major_125"
         android:gravity="center_horizontal"
         android:text="@string/payment_onboarding_loading"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,23 +20,22 @@
         android:id="@+id/illustration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_175"
         android:contentDescription="@null"
+        app:layout_constraintBottom_toTopOf="@+id/cancelButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textHeader"
         app:srcCompat="@drawable/img_payment_onboarding_loading" />
 
-
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="@dimen/progress_bar_large"
         android:layout_height="@dimen/progress_bar_large"
-        android:layout_marginTop="@dimen/major_175"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/illustration"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton

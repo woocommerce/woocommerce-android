@@ -29,7 +29,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             }
         })
 
-        // if there are existing views we need to fade them out then start the fade-in animation,
+        // if there are existing views we need to fade them out, remove them, then start the fade-in animation,
         // otherwise we just start the fade-in animation which will inflate the layout
         if (binding.container.childCount > 0) {
             val fadeOutAnim = WooAnimUtils.getFadeOutAnim(binding.container, duration)
