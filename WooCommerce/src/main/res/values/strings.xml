@@ -818,6 +818,7 @@
     <!--
         Card Reader Onboarding
     -->
+    <string name="payment_onboarding_title">In-person payments</string>
     <string name="payment_onboarding_loading">Connecting to your account</string>
 
     <!--
