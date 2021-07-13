@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_200"
             android:gravity="start"
             android:text="@string/shipping_label_customs_origin_country_explanation"
             android:textAppearance="?attr/textAppearanceCaption" />
