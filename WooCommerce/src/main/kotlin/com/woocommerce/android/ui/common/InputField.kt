@@ -14,6 +14,8 @@ import kotlinx.parcelize.Parcelize
  * [isValid] will return the current validation status independently of whether an error is displayed or not.
  *
  * Child classes will have to implement the validation logic.
+ *
+ * This class is using a reverse generic type to allow returning the exact type of the class in [validate] function.
  */
 abstract class InputField<T : InputField<T>>(open val content: String) : Parcelable, Cloneable {
     var error: UiString? = null
@@ -32,6 +34,10 @@ abstract class InputField<T : InputField<T>>(open val content: String) : Parcela
         return clone
     }
 
+    /**
+     * Marking the implementation as final to avoid overriding it by Kotlin's data classes, as the generated one
+     * doesn't check the parent class's fields, and would skip important details.
+     */
     final override fun hashCode(): Int {
         var result = content.hashCode()
         result = 31 * result + (error?.hashCode() ?: 0)
@@ -39,6 +45,10 @@ abstract class InputField<T : InputField<T>>(open val content: String) : Parcela
         return result
     }
 
+    /**
+     * Marking the implementation as final to avoid overriding it by Kotlin's data classes, as the generated one
+     * doesn't check the parent class's fields, and would skip important details.
+     */
     final override fun equals(other: Any?): Boolean {
         if (other !is InputField<*>) return false
         return content == other.content &&
