@@ -99,6 +99,8 @@ internal class CardReaderManagerImpl(
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
         paymentManager.retryPayment(orderId, paymentData)
 
+    override fun cancelPayment(paymentData: PaymentData) = paymentManager.cancelPayment(paymentData)
+
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
     }

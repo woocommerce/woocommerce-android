@@ -1,2 +1,0 @@
-6.9:
-Färre tryck behövs för att komma till attribut för en variabel produkt – de listas direkt i produktinformationen! De säger att bilder säger mer än ord, så vi har uppdaterat vissa illustrationer i hela appen. Vi har också korrigerat några fel och gjort saker och ting lite fiffigare – vi hoppas att du märker skillnaden!
