@@ -18,6 +18,8 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         showOnboardingLayout(binding, R.layout.fragment_payment_onboarding_loading)
     }
 
+    // TODO: This is just a placeholder for noew - ideally we'd remove this and use the child fragment manager
+    // to inflate the correct layout
     private fun showOnboardingLayout(binding: FragmentCardReaderOnboardingBinding, @LayoutRes layoutRes: Int) {
         val duration = WooAnimUtils.Duration.LONG
 
