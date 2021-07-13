@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustoms
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WooClickableSpan
 
@@ -77,6 +78,9 @@ class ShippingCustomsAdapter(
         private val context
             get() = binding.root.context
 
+        private val isExpanded
+            get() = binding.expandIcon.rotation == 180f
+
         init {
             binding.itemsList.apply {
                 itemAnimator = null
@@ -122,6 +126,21 @@ class ShippingCustomsAdapter(
             binding.itnEditText.setOnTextChangedListener {
                 it?.let { listener.onItnChanged(adapterPosition, it.toString()) }
             }
+            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
+                binding.expandIcon.isVisible = false
+            } else {
+                binding.titleLayout.setOnClickListener {
+                    if (isExpanded) {
+                        binding.expandIcon.animate().rotation(0f).start()
+                        binding.detailsLayout.collapse()
+                        listener.onPackageExpandedChanged(adapterPosition, false)
+                    } else {
+                        binding.expandIcon.animate().rotation(180f).start()
+                        binding.detailsLayout.expand()
+                        listener.onPackageExpandedChanged(adapterPosition, true)
+                    }
+                }
+            }
         }
 
         @SuppressLint("SetTextI18n")
@@ -152,6 +171,14 @@ class ShippingCustomsAdapter(
 
             linesAdapter.parentItemPosition = adapterPosition
             linesAdapter.customsLines = uiState.customsLinesUiState
+
+            if (uiState.isExpanded) {
+                binding.expandIcon.rotation = 180f
+                binding.detailsLayout.isVisible = true
+            } else {
+                binding.expandIcon.rotation = 0f
+                binding.detailsLayout.isVisible = false
+            }
         }
     }
 
