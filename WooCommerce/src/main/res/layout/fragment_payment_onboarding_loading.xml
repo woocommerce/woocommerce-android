@@ -27,17 +27,6 @@
         app:layout_constraintTop_toBottomOf="@+id/textHeader"
         app:srcCompat="@drawable/img_payment_onboarding_loading" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="@dimen/progress_bar_large"
-        android:layout_height="@dimen/progress_bar_large"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/cancelButton"
         style="@style/Woo.Button.Outlined"
