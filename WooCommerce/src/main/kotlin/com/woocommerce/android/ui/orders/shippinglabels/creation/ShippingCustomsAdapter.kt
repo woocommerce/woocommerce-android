@@ -66,6 +66,7 @@ class ShippingCustomsAdapter(
         return customsPackages[position].data.id.hashCode().toLong()
     }
 
+    @Suppress("MagicNumber")
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy {
             ShippingCustomsLineAdapter(
