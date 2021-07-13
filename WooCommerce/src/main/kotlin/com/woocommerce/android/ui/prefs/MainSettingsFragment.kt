@@ -39,7 +39,7 @@ import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
-import com.woocommerce.android.util.ThemeOption
+import com.woocommerce.android.util.FeatureFlag.CARD_READER_ONBOARDING
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -247,7 +247,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     private fun updateStoreSettings() {
-        binding.storeSettingsContainer.visibility = if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+        binding.storeSettingsContainer.visibility =
+            if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+        binding.optionCardReaderPayments.visibility =
+            if (CARD_READER_ONBOARDING.isEnabled()) View.VISIBLE else View.GONE
     }
 
     /**
