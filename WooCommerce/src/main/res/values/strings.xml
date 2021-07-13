@@ -816,6 +816,11 @@
     <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
 
     <!--
+        Card Reader Onboarding
+    -->
+    <string name="payment_onboarding_loading">Connecting to your account</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
