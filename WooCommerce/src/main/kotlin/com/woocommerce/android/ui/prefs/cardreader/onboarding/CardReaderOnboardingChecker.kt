@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 class CardReaderOnboardingChecker @Inject constructor() {
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         return when {
@@ -10,7 +11,8 @@ class CardReaderOnboardingChecker @Inject constructor() {
             !isWCPayVersionSupported() -> CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION
             !isWCPayActivated() -> CardReaderOnboardingState.WCPAY_NOT_ACTIVATED
             !isWCPaySetupCompleted() -> CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED
-            isWCPayInTestModeWithLiveStripeAccount() -> CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
+            isWCPayInTestModeWithLiveStripeAccount() ->
+                CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
             isStripeAccountUnderReview() -> CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW
             isStripeAccountPendingRequirements() -> CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT
             isStripeAccountOverdueRequirements() -> CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
@@ -20,33 +22,43 @@ class CardReaderOnboardingChecker @Inject constructor() {
     }
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isCountrySupported(): Boolean = true
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPayInstalled(): Boolean = true
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPayVersionSupported(): Boolean = true
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPayActivated(): Boolean = true
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPaySetupCompleted(): Boolean = true
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPayInTestModeWithLiveStripeAccount(): Boolean = false
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isStripeAccountUnderReview(): Boolean = false
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isStripeAccountPendingRequirements(): Boolean = false
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isStripeAccountOverdueRequirements(): Boolean = false
 
     // TODO cardreader Implement
+    @Suppress("FunctionOnlyReturningConstant")
     private fun isStripeAccountRejected(): Boolean = false
 }
 
@@ -98,7 +110,8 @@ enum class CardReaderOnboardingState {
     STRIPE_ACCOUNT_PENDING_REQUIREMENT,
 
     /**
-     * There are some overdue requirements on the connected Stripe account. In-person payments don't work in this state.
+     * There are some overdue requirements on the connected Stripe account. Connecting to a reader or accepting
+     * payments is not supported in this state.
      */
     STRIPE_ACCOUNT_OVERDUE_REQUIREMENT,
 
