@@ -44,6 +44,7 @@ sealed class ProductNavigationTarget : Event() {
         val showChooser: Boolean = false,
         val selectedImage: Image? = null
     ) : ProductNavigationTarget()
+    data class ViewMediaUploadErrors(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()
     data class ViewProductCatalogVisibility(val catalogVisibility: ProductCatalogVisibility?, val isFeatured: Boolean) :
