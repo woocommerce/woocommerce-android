@@ -3,7 +3,7 @@ build:
 
 complexity:
   LargeClass:
-    excludes: ['**/test/**', '**/androidTest/**']
+    excludes: ['**/test/**']
   LongParameterList:
     ignoreDefaultParameters: true
     ignoreAnnotated: ['Inject']
