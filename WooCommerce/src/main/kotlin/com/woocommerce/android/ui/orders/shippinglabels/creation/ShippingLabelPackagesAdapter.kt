@@ -137,6 +137,7 @@ class ShippingLabelPackagesAdapter(
                 shippingLabelPackage.itemsCount,
                 shippingLabelPackage.itemsCount
             )}"
+            binding.errorView.isVisible = !uiModel.isValid
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()
                 moveItemClickListener = { item -> onMoveItemClicked(item, shippingLabelPackage) }
