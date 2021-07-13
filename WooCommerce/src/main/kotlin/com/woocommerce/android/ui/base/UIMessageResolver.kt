@@ -149,15 +149,6 @@ interface UIMessageResolver {
      */
     fun showSnack(@StringRes msgId: Int) = Snackbar.make(snackbarRoot, msgId, BaseTransientBottomBar.LENGTH_LONG).show()
 
-    /**
-     * Display a generic offline message.
-     */
-    fun showOfflineSnack() = Snackbar.make(
-        snackbarRoot,
-        snackbarRoot.context.getString(R.string.offline_error),
-        BaseTransientBottomBar.LENGTH_LONG
-    ).show()
-
     private fun getIndefiniteSnackbarWithAction(
         view: View,
         msg: String,

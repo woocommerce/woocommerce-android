@@ -161,11 +161,13 @@ class ProductImagesService : JobIntentService() {
 
             if (currentMediaUpload == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
-                handleFailure(MediaModel(),
-                    MediaError(
+                handleFailure(
+                    mediaModel = MediaModel(),
+                    mediaUploadError = MediaError(
                         MediaErrorType.NULL_MEDIA_ARG,
                         resources.getString(R.string.product_image_service_error_media_null)
-                    ))
+                    )
+                )
             } else {
                 currentMediaUpload!!.postId = id
                 currentMediaUpload!!.setUploadState(MediaModel.MediaUploadState.UPLOADING)
