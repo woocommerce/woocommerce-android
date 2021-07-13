@@ -308,6 +308,7 @@ class ShippingCustomsLineAdapter(
 }
 
 interface ShippingCustomsFormListener {
+    fun onPackageExpandedChanged(position: Int, isExpanded: Boolean)
     fun onReturnToSenderChanged(position: Int, returnToSender: Boolean)
     fun onContentsTypeChanged(position: Int, contentsType: ContentsType)
     fun onContentsDescriptionChanged(position: Int, contentsDescription: String)
