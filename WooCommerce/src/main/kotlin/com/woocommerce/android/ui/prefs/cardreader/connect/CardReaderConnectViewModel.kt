@@ -205,11 +205,16 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReadersFound(discoveryEvent: ReadersFound) {
         if (viewState.value is ConnectingState) return
         val availableReaders = discoveryEvent.list.filter { it.id != null }
-        viewState.value = when {
-            availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
-            availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
-            availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
-            else -> throw IllegalStateException("Unreachable code")
+        val lastKnownReader = findLastKnowReader(availableReaders)
+        if (lastKnownReader != null) {
+            connectToReader(lastKnownReader)
+        } else {
+            viewState.value = when {
+                availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
+                availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
+                availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
+                else -> throw IllegalStateException("Unreachable code")
+            }
         }
     }
 
@@ -239,6 +244,10 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
+        connectToReader(cardReader)
+    }
+
+    private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
             val success = cardReaderManager.connectToReader(cardReader)
@@ -284,6 +293,12 @@ class CardReaderConnectViewModel @Inject constructor(
         if (reconnectionFeatureFlag.isEnabled()) {
             cardReader.id?.let { id -> appPrefs.setLastConnectedCardReaderId(id) }
         }
+    }
+
+    private fun findLastKnowReader(readers: List<CardReader>): CardReader? {
+        return if (reconnectionFeatureFlag.isEnabled()) readers.find {
+            it.id == appPrefs.getLastConnectedCardReaderId()
+        } else null
     }
 
     fun onScreenResumed() {

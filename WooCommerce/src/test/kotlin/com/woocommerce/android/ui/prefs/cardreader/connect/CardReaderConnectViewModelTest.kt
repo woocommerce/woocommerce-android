@@ -308,6 +308,36 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given last connected reader is null, when reader found, then reader found state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn(null)
+
+            init(scanState = READER_FOUND)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
+
+            init(scanState = READER_FOUND)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is not matching, when reader found, then reader found state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy2")
+
+            init(scanState = READER_FOUND)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+        }
+
+    @Test
     fun `given reader id is null, when reader found, then reader is ignored`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(reader.id).thenReturn(null)
