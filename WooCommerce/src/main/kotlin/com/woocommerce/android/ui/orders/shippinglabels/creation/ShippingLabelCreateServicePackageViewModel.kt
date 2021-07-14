@@ -20,7 +20,6 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val shippingLabelRepository: ShippingLabelRepository
 ) : ScopedViewModel(savedState) {
-
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
