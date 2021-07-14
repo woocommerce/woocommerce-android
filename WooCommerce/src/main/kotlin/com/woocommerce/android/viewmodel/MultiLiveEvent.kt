@@ -114,21 +114,6 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             val message: String,
             val action: View.OnClickListener
         ) : Event() {
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (other !is ShowActionSnackbar) return false
-
-                if (message != other.message) return false
-                if (action != other.action) return false
-
-                return true
-            }
-
-            override fun hashCode(): Int {
-                var result = message.hashCode()
-                result = 31 * result + action.hashCode()
-                return result
-            }
         }
 
         object Logout : Event()
