@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -68,11 +67,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                 triggerEvent(Exit)
             } else {
                 availablePackages = shippingPackagesResult.model
-
-                if (availablePackages.isNullOrEmpty() && !FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                    triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
-                    triggerEvent(Exit)
-                }
             }
 
             val packagesList = if (arguments.shippingLabelPackages.isEmpty()) {
