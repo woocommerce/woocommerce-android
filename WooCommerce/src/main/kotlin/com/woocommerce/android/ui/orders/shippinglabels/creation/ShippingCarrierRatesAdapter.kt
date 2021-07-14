@@ -13,9 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.databinding.ShippingRateListBinding
 import com.woocommerce.android.databinding.ShippingRateListItemBinding
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.ShippingRate.Option
@@ -33,6 +31,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.Date
@@ -61,10 +60,30 @@ class ShippingCarrierRatesAdapter(
     }
 
     inner class RateListViewHolder(private val binding: ShippingRateListBinding) : ViewHolder(binding.root) {
+        private val isExpanded
+            get() = binding.expandIcon.rotation == 180f
+
         init {
             binding.rateOptions.apply {
                 adapter = RateListAdapter()
                 layoutManager = LinearLayoutManager(context)
+            }
+
+            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
+                binding.expandIcon.isVisible = false
+            } else {
+                // expand items by default
+                binding.expandIcon.rotation = 180f
+                binding.rateOptions.isVisible = true
+                binding.titleLayout.setOnClickListener {
+                    if (isExpanded) {
+                        binding.expandIcon.animate().rotation(0f).start()
+                        binding.rateOptions.collapse()
+                    } else {
+                        binding.expandIcon.animate().rotation(180f).start()
+                        binding.rateOptions.expand()
+                    }
+                }
             }
         }
         @SuppressLint("SetTextI18n")
