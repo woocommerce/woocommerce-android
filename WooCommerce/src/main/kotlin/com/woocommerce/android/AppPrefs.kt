@@ -50,7 +50,8 @@ object AppPrefs {
         UNIFIED_LOGIN_LAST_ACTIVE_FLOW,
         IS_USER_ELIGIBLE,
         USER_EMAIL,
-        RECEIPT_PREFIX
+        RECEIPT_PREFIX,
+        IS_CARD_PRESENT_ELIGIBLE
     }
 
     /**
@@ -382,6 +383,14 @@ object AppPrefs {
 
     fun setTrackingExtensionAvailable(isAvailable: Boolean) {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
+    }
+
+    fun setIsCardPresentEligible(isEligible: Boolean) {
+        setBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, isEligible)
+    }
+
+    fun isCardPresentEligible(): Boolean {
+        return getBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, false)
     }
 
     /**
