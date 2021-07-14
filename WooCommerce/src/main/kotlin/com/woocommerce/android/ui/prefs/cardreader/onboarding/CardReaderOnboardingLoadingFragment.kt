@@ -12,6 +12,8 @@ class CardReaderOnboardingLoadingFragment : BaseOnboardingFragment(R.layout.frag
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
         illustration = binding.illustration
 
+        binding.progress.visibility = View.VISIBLE
+
         binding.cancelButton.setOnClickListener {
             onCancel()
         }
