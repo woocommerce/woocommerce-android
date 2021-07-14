@@ -135,6 +135,9 @@ class ProductImagesViewModel @Inject constructor(
     fun onImageSourceButtonClicked() {
         AnalyticsTracker.track(PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
         triggerEvent(ShowImageSourceDialog)
+
+        // clear existing image upload errors from the backlog
+        mediaFileUploadHandler.onCleanup()
     }
 
     fun onGalleryImageClicked(image: Image) {
