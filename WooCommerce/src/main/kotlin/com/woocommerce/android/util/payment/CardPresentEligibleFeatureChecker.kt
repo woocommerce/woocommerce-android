@@ -16,7 +16,6 @@ class CardPresentEligibleFeatureChecker @Inject constructor(
 
         val result = wcPayStore.loadAccount(selectedSite)
         if (!result.isError) AppPrefs.setIsCardPresentEligible(result.model?.isCardPresentEligible ?: false)
-        else AppPrefs.setIsCardPresentEligible(false)
     }
 
     companion object {
