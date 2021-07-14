@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
-import android.os.Bundle
-import android.view.View
 import android.widget.ImageView
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
@@ -18,8 +16,8 @@ abstract class BaseOnboardingFragment : Fragment {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onStart() {
+        super.onStart()
 
         // hide the illustration in landscape unless the device is a tablet
         val isLandscape = DisplayUtils.isLandscape(context)
