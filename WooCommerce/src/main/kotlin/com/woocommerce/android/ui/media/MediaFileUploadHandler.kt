@@ -22,13 +22,18 @@ class MediaFileUploadHandler @Inject constructor(
 
     fun getMediaUploadErrors(remoteProductId: Long) = currentUploadErrors.get(remoteProductId)
 
+    fun onCleanup() {
+        currentUploadErrors.clear()
+    }
+
     fun handleMediaUploadFailure(
         mediaModel: MediaModel,
         mediaUploadError: MediaStore.MediaError
     ) {
-        val newErrors = currentUploadErrors.get(mediaModel.postId, mutableListOf()) +
+        val remoteProductId = mediaModel.postId
+        val newErrors = currentUploadErrors.get(remoteProductId, mutableListOf()) +
             ProductImageUploadUiModel(mediaModel, mediaUploadError.type, mediaUploadError.message)
-        currentUploadErrors.put(mediaModel.postId, newErrors)
+        currentUploadErrors.put(remoteProductId, newErrors)
     }
 
     fun getMediaUploadErrorMessage(remoteProductId: Long): String {
