@@ -63,6 +63,10 @@ class ShippingCarrierRatesAdapter(
             binding.rateOptions.apply {
                 adapter = RateListAdapter()
                 layoutManager = LinearLayoutManager(context)
+                itemAnimator = DefaultItemAnimator().apply {
+                    // Disable change animations to avoid flashing items when data changes
+                    supportsChangeAnimations = false
+                }
             }
 
             if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
