@@ -14,6 +14,8 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     }
 
     private fun showOnboardingFragment(binding: FragmentCardReaderOnboardingBinding) {
+        // TODO: this is hard-coded for now but will be changed as we add more onboarding fragments
+        // to navigate to the desired fragment
         val fragment = CardReaderOnboardingLoadingFragment.newInstance()
         parentFragmentManager.beginTransaction()
             .replace(binding.container.id, fragment)
