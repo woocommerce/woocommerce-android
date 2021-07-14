@@ -188,10 +188,10 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
             SHIPPING_LABEL_CARRIER_RATES -> {
                 isTitleBold = false
-                title = context.getString(R.string.shipping_label_shipping_carrier_rates_unavailable)
-                message = null
+                title = context.getString(R.string.shipping_label_shipping_carrier_rates_unavailable_title)
+                message = context.getString(R.string.shipping_label_shipping_carrier_rates_unavailable_message)
                 buttonText = null
-                drawableId = R.drawable.img_empty_orders_all_fulfilled
+                drawableId = R.drawable.img_products_error
             }
         }
 
