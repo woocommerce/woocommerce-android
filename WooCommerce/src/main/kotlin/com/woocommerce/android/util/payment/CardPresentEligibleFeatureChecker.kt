@@ -1,8 +1,8 @@
 package com.woocommerce.android.util.payment
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.WCPayStore
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,12 +15,12 @@ class CardPresentEligibleFeatureChecker @Inject constructor(
         val selectedSite = selectedSite.getIfExists() ?: return
 
         val result = wcPayStore.loadAccount(selectedSite)
-        if (!result.isError) isCardPresentEligible.set(result.model?.isCardPresentEligible ?: false)
-        else isCardPresentEligible.set(false)
+        if (!result.isError) AppPrefs.setIsCardPresentEligible(result.model?.isCardPresentEligible ?: false)
+        else AppPrefs.setIsCardPresentEligible(false)
     }
 
     companion object {
-        val isCardPresentEligible = AtomicBoolean(false)
+        val isCardPresentEligible = AppPrefs.isCardPresentEligible()
 
         const val CACHE_VALIDITY_TIME_S = 60 * 10 // 10 minutes
     }
