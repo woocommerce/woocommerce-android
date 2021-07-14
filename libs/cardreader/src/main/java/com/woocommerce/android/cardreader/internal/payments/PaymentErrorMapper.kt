@@ -6,12 +6,10 @@ import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorC
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.SERVER_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
-import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.CaptureError
-import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.GenericError
-import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.MissingOrder
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.ServerError
 
@@ -41,10 +39,8 @@ class PaymentErrorMapper {
         val message = "Capturing payment failed: $capturePaymentResponse"
         val type = when (capturePaymentResponse) {
             NetworkError -> NO_NETWORK
-            GenericError,
-            MissingOrder,
-            CaptureError,
-            ServerError -> GENERIC_ERROR
+            ServerError -> SERVER_ERROR
+            else -> GENERIC_ERROR
         }
         return PaymentFailed(type, paymentData, message)
     }

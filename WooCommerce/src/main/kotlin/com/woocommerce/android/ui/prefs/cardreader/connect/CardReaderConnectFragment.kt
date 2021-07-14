@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
@@ -65,7 +66,10 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog?.let {
+            it.setCanceledOnTouchOutside(false)
+            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

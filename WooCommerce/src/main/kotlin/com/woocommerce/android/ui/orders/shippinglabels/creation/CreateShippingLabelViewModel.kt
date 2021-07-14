@@ -55,7 +55,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PackagesLoadingError
@@ -99,11 +99,14 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -117,6 +120,7 @@ import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class CreateShippingLabelViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -687,6 +691,21 @@ class CreateShippingLabelViewModel @Inject constructor(
             FlowStep.PAYMENT -> Event.PaymentSelectionStarted
         }.also { event ->
             event.let { stateMachine.handleEvent(it) }
+        }
+    }
+
+    fun onBackButtonClicked() {
+        val stepsState = stateMachine.transitions.value.state.data?.stepsState
+        if (stepsState?.any { it.status == StepStatus.DONE } == true) {
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = { _, _ ->
+                        triggerEvent(Exit)
+                    }
+                )
+            )
+        } else {
+            triggerEvent(Exit)
         }
     }
 

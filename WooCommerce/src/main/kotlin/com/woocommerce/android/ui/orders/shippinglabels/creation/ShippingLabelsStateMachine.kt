@@ -612,13 +612,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
 
         private fun updateForInternationalRequirements(): StepsState {
-            val originAddressStep = if (isInternational && !originAddressStep.data.hasValidPhoneNumber(ORIGIN)) {
+            val originAddressStep = if (isInternational && !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN)) {
                 originAddressStep.copy(status = READY)
             } else originAddressStep
 
             val shippingAddressStep = if (isInternational &&
                 carrierStep.requiresDestinationPhoneNumber &&
-                !shippingAddressStep.data.hasValidPhoneNumber(DESTINATION)
+                !shippingAddressStep.data.phone.isValidPhoneNumber(DESTINATION)
             ) {
                 shippingAddressStep.copy(status = READY)
             } else shippingAddressStep
@@ -694,6 +694,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
     }
 
     sealed class State : Parcelable {
+        open val data: StateMachineData? = null
+
         @Parcelize
         object Idle : State()
 
@@ -704,40 +706,40 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class DataLoading(val orderId: String) : State()
 
         @Parcelize
-        data class WaitingForInput(val data: StateMachineData) : State()
+        data class WaitingForInput(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class OriginAddressValidation(val data: StateMachineData) : State()
+        data class OriginAddressValidation(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class OriginAddressSuggestion(val data: StateMachineData) : State()
+        data class OriginAddressSuggestion(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class OriginAddressEditing(val data: StateMachineData) : State()
+        data class OriginAddressEditing(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class ShippingAddressValidation(val data: StateMachineData) : State()
+        data class ShippingAddressValidation(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class ShippingAddressSuggestion(val data: StateMachineData) : State()
+        data class ShippingAddressSuggestion(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class ShippingAddressEditing(val data: StateMachineData) : State()
+        data class ShippingAddressEditing(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class PackageSelection(val data: StateMachineData) : State()
+        data class PackageSelection(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class CustomsDeclaration(val data: StateMachineData) : State()
+        data class CustomsDeclaration(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class ShippingCarrierSelection(val data: StateMachineData) : State()
+        data class ShippingCarrierSelection(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class PaymentSelection(val data: StateMachineData) : State()
+        data class PaymentSelection(override val data: StateMachineData) : State()
 
         @Parcelize
-        data class PurchaseLabels(val data: StateMachineData, val fulfillOrder: Boolean) : State()
+        data class PurchaseLabels(override val data: StateMachineData, val fulfillOrder: Boolean) : State()
     }
 
     sealed class Event {

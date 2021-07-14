@@ -10,37 +10,28 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditShippingLabelAddressBinding
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.InputField
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.Field
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
+import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -61,8 +52,6 @@ class EditShippingLabelAddressFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
-    private var _binding: FragmentEditShippingLabelAddressBinding? = null
-    private val binding get() = _binding!!
 
     val viewModel: EditShippingLabelAddressViewModel by viewModels()
 
@@ -95,22 +84,18 @@ class EditShippingLabelAddressFragment :
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentEditShippingLabelAddressBinding.bind(view)
+        val binding = FragmentEditShippingLabelAddressBinding.bind(view)
 
-        initializeViewModel()
-        initializeViews()
+        initializeViewModel(binding)
+        initializeViews(binding)
     }
 
-    private fun initializeViewModel() {
-        subscribeObservers()
+    private fun initializeViewModel(binding: FragmentEditShippingLabelAddressBinding) {
+        observeViewState(binding)
+        observeEvents()
         setupResultHandlers()
     }
 
@@ -119,7 +104,7 @@ class EditShippingLabelAddressFragment :
             viewModel.onCountrySelected(it)
         }
         handleResult<String>(SELECT_STATE_REQUEST) {
-            viewModel.onStateSelected(it)
+            viewModel.onFieldEdited(Field.State, it)
         }
         handleResult<Address>(SELECTED_ADDRESS_ACCEPTED) {
             viewModel.onAddressSelected(it)
@@ -141,44 +126,51 @@ class EditShippingLabelAddressFragment :
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(gatherData())
+                viewModel.onDoneButtonClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun subscribeObservers() {
+    @Suppress("LongMethod")
+    private fun observeViewState(binding: FragmentEditShippingLabelAddressBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.address?.takeIfNotEqualTo(old?.address) {
-                binding.company.setText(it.company)
-                binding.name.setText("${it.firstName} ${it.lastName}".trim())
-                binding.phone.setText(it.phone)
-                binding.address1.setText(it.address1)
-                binding.address2.setText(it.address2)
-                binding.zip.setText(it.postcode)
-                binding.city.setText(it.city)
-                binding.countrySpinner.tag = it.country
-                binding.stateSpinner.tag = it.state
+            new.nameField.takeIfNotEqualTo(old?.nameField) { field ->
+                binding.name.updateFromField(field)
+            }
+            new.companyField.takeIfNotEqualTo(old?.nameField) { field ->
+                binding.company.updateFromField(field)
+            }
+            new.address1Field.takeIfNotEqualTo(old?.address1Field) { field ->
+                binding.address1.updateFromField(field)
+            }
+            new.address2Field.takeIfNotEqualTo(old?.address2Field) { field ->
+                binding.address2.updateFromField(field)
+            }
+            new.phoneField.takeIfNotEqualTo(old?.phoneField) { field ->
+                binding.phone.updateFromField(field)
+            }
+            new.cityField.takeIfNotEqualTo(old?.cityField) { field ->
+                binding.city.updateFromField(field)
+            }
+            new.zipField.takeIfNotEqualTo(old?.zipField) { field ->
+                binding.zip.updateFromField(field)
+            }
+            new.stateField.takeIfNotEqualTo(old?.stateField) { field ->
+                if (new.isStateFieldSpinner == true) {
+                    binding.stateSpinner.setText(field.content)
+                    binding.stateSpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
+                } else {
+                    binding.state.updateFromField(field)
+                }
+            }
+            new.countryField.takeIfNotEqualTo(old?.countryField) { field ->
+                binding.countrySpinner.setText(field.content)
+                binding.countrySpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
             }
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
-            }
-            new.addressError.takeIfNotEqualTo(old?.addressError) {
-                showErrorOrClear(binding.address1Layout, it)
-            }
-            new.phoneError.takeIfNotEqualTo(old?.phoneError) {
-                showErrorOrClear(binding.phoneLayout, it)
-            }
-            new.nameError.takeIfNotEqualTo(old?.nameError) {
-                showErrorOrClear(binding.nameLayout, it)
-            }
-            new.cityError.takeIfNotEqualTo(old?.cityError) {
-                showErrorOrClear(binding.cityLayout, it)
-            }
-            new.zipError.takeIfNotEqualTo(old?.zipError) {
-                showErrorOrClear(binding.zipLayout, it)
             }
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
                 if (it.isBlank()) {
@@ -209,74 +201,64 @@ class EditShippingLabelAddressFragment :
                     hideProgressDialog()
                 }
             }
-            new.selectedCountryName?.takeIfNotEqualTo(old?.selectedCountryName) {
-                binding.countrySpinner.setText(it)
-            }
-            new.selectedStateName?.takeIfNotEqualTo(old?.selectedStateName) {
-                binding.stateSpinner.setText(it)
-                binding.state.setText(it)
-            }
             new.isStateFieldSpinner?.takeIfNotEqualTo(old?.isStateFieldSpinner) { isSpinner ->
                 binding.stateSpinner.isVisible = isSpinner
-                binding.stateLayout.isVisible = !isSpinner
+                binding.state.isVisible = !isSpinner
             }
             new.isContactCustomerButtonVisible.takeIfNotEqualTo(old?.isContactCustomerButtonVisible) { isVisible ->
                 binding.contactCustomerButton.isVisible = isVisible
             }
         }
-
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> navigateBackWithResult(EDIT_ADDRESS_RESULT, event.data)
-                    is Exit -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
-                    is ShowSuggestedAddress -> {
-                        val action = EditShippingLabelAddressFragmentDirections
-                            .actionEditShippingLabelAddressFragmentToShippingLabelAddressSuggestionFragment(
-                                event.originalAddress,
-                                event.suggestedAddress,
-                                event.type
-                            )
-                        findNavController().navigateSafely(action)
-                    }
-                    is ShowCountrySelector -> {
-                        val action = EditShippingLabelAddressFragmentDirections
-                            .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
-                                event.currentCountry,
-                                event.locations.map { it.name }.toTypedArray(),
-                                event.locations.map { it.code }.toTypedArray(),
-                                SELECT_COUNTRY_REQUEST,
-                                getString(R.string.shipping_label_edit_address_country)
-                            )
-                        findNavController().navigateSafely(action)
-                    }
-                    is ShowStateSelector -> {
-                        val action = EditShippingLabelAddressFragmentDirections
-                            .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
-                                event.currentState,
-                                event.locations.map { it.name }.toTypedArray(),
-                                event.locations.map { it.code }.toTypedArray(),
-                                SELECT_STATE_REQUEST,
-                                getString(R.string.shipping_label_edit_address_state)
-                            )
-                        findNavController().navigateSafely(action)
-                    }
-                    is OpenMapWithAddress -> launchMapsWithAddress(event.address)
-                    is DialPhoneNumber -> dialPhoneNumber(event.phoneNumber)
-                    else -> event.isHandled = false
-                }
-            }
-        )
     }
 
-    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int?) {
-        if (message == null || message == 0) {
-            inputLayout.error = null
-        } else {
-            inputLayout.error = resources.getString(message)
+    @SuppressLint("SetTextI18n")
+    private fun observeEvents() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithResult(EDIT_ADDRESS_RESULT, event.data)
+                is Exit -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
+                is ShowSuggestedAddress -> {
+                    val action = EditShippingLabelAddressFragmentDirections
+                        .actionEditShippingLabelAddressFragmentToShippingLabelAddressSuggestionFragment(
+                            event.originalAddress,
+                            event.suggestedAddress,
+                            event.type
+                        )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowCountrySelector -> {
+                    val action = EditShippingLabelAddressFragmentDirections
+                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
+                            event.currentCountryCode,
+                            event.locations.map { it.name }.toTypedArray(),
+                            event.locations.map { it.code }.toTypedArray(),
+                            SELECT_COUNTRY_REQUEST,
+                            getString(R.string.shipping_label_edit_address_country)
+                        )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowStateSelector -> {
+                    val action = EditShippingLabelAddressFragmentDirections
+                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
+                            event.currentStateCode,
+                            event.locations.map { it.name }.toTypedArray(),
+                            event.locations.map { it.code }.toTypedArray(),
+                            SELECT_STATE_REQUEST,
+                            getString(R.string.shipping_label_edit_address_state)
+                        )
+                    findNavController().navigateSafely(action)
+                }
+                is OpenMapWithAddress -> launchMapsWithAddress(event.address)
+                is DialPhoneNumber -> dialPhoneNumber(event.phoneNumber)
+                else -> event.isHandled = false
+            }
         }
+    }
+
+    private fun WCMaterialOutlinedEditTextView.updateFromField(field: InputField<*>) {
+        setTextIfDifferent(field.content)
+        error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
     }
 
     private fun showProgressDialog(title: String, message: String) {
@@ -321,7 +303,15 @@ class EditShippingLabelAddressFragment :
         }
     }
 
-    private fun initializeViews() {
+    private fun initializeViews(binding: FragmentEditShippingLabelAddressBinding) {
+        binding.name.bindToField(Field.Name)
+        binding.company.bindToField(Field.Company)
+        binding.address1.bindToField(Field.Address1)
+        binding.address2.bindToField(Field.Address2)
+        binding.phone.bindToField(Field.Phone)
+        binding.city.bindToField(Field.City)
+        binding.zip.bindToField(Field.Zip)
+        binding.state.bindToField(Field.State)
         binding.useAddressAsIsButton.onClick {
             viewModel.onUseAddressAsIsButtonClicked()
         }
@@ -339,34 +329,24 @@ class EditShippingLabelAddressFragment :
         }
     }
 
+    private fun WCMaterialOutlinedEditTextView.bindToField(field: Field) {
+        setOnTextChangedListener {
+            // trigger event only if this view is visible, avoids issues when the field can have different field types
+            // like the state
+            if (this.isVisible) viewModel.onFieldEdited(field, it?.toString().orEmpty())
+        }
+    }
+
     private fun WCMaterialOutlinedSpinnerView.onClick(onClick: () -> Unit) {
         this.setClickListener {
-            viewModel.updateAddress(gatherData())
             onClick()
         }
     }
 
     private fun Button.onClick(onButtonClick: () -> Unit) {
         setOnClickListener {
-            viewModel.updateAddress(gatherData())
             onButtonClick()
         }
-    }
-
-    private fun gatherData(): Address {
-        return Address(
-            company = binding.company.text.toString(),
-            firstName = binding.name.text.toString(),
-            lastName = "",
-            phone = binding.phone.text.toString(),
-            address1 = binding.address1.text.toString(),
-            address2 = binding.address2.text.toString(),
-            postcode = binding.zip.text.toString(),
-            state = binding.stateSpinner.tag as String,
-            city = binding.city.text.toString(),
-            country = binding.countrySpinner.tag as String,
-            email = ""
-        )
     }
 
     // Let the ViewModel know the user is attempting to close the screen
