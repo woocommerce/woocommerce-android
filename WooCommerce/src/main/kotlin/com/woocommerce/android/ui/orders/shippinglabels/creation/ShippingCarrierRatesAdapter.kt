@@ -59,6 +59,7 @@ class ShippingCarrierRatesAdapter(
         holder.bind(items[position])
     }
 
+    @Suppress("MagicNumber")
     inner class RateListViewHolder(private val binding: ShippingRateListBinding) : ViewHolder(binding.root) {
         private val isExpanded
             get() = binding.expandIcon.rotation == 180f
