@@ -289,6 +289,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun exitFlow(connected: Boolean) {
+        appPrefs.setShowCardReaderConnectedTutorial(true) // TODO remove
         triggerEvent(ExitWithResult(connected))
     }
 
