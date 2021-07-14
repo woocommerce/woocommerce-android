@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateServicePackageBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -19,9 +20,14 @@ class ShippingLabelCreateServicePackageFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentShippingLabelCreateServicePackageBinding.bind(view)
-        val adapter = ShippingLabelCreateServicePackageAdapter()
+        val packagesAdapter = ShippingLabelCreateServicePackageAdapter()
 
-        setupObservers(binding, adapter)
+        with(binding.servicePackagesList) {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = packagesAdapter
+        }
+
+        setupObservers(binding, packagesAdapter)
     }
 
     private fun setupObservers(
