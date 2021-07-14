@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,20 +22,14 @@ import com.woocommerce.android.model.ShippingRate.Option.ADULT_SIGNATURE
 import com.woocommerce.android.model.ShippingRate.Option.DEFAULT
 import com.woocommerce.android.model.ShippingRate.Option.SIGNATURE
 import com.woocommerce.android.model.getTitle
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateItemDiffUtil.ChangePayload
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateItemDiffUtil.ChangePayload.SELECTED_OPTION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateListAdapter.RateViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateListViewHolder
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.DHL
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.FEDEX
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UNKNOWN
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.*
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import java.util.Date
+import java.util.*
 
 class ShippingCarrierRatesAdapter(
     private val onRateSelected: (ShippingRate) -> Unit,
@@ -124,48 +119,41 @@ class ShippingCarrierRatesAdapter(
         }
 
         override fun onBindViewHolder(holder: RateViewHolder, position: Int) {
-            onBindViewHolder(holder, position, listOf())
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        override fun onBindViewHolder(holder: RateViewHolder, position: Int, payloads: List<Any>) {
-            holder.bind(items[position], payloads as List<ChangePayload>)
+            holder.bind(items[position])
         }
 
         private inner class RateViewHolder(
             private val binding: ShippingRateListItemBinding
         ) : ViewHolder(binding.root) {
             @SuppressLint("SetTextI18n")
-            fun bind(rateItem: ShippingRateItem, payloads: List<ChangePayload>) {
-                if (!payloads.contains(SELECTED_OPTION)) {
-                    binding.carrierServiceName.text = rateItem.title
+            fun bind(rateItem: ShippingRateItem) {
+                binding.carrierServiceName.text = rateItem.title
 
-                    if (rateItem.deliveryDate != null) {
-                        binding.deliveryTime.text = dateUtils.getShortMonthDayString(
-                            dateUtils.getYearMonthDayStringFromDate(rateItem.deliveryDate)
-                        )
-                    } else {
-                        binding.deliveryTime.text = binding.root.resources.getQuantityString(
-                            R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
-                            rateItem.deliveryEstimate,
-                            rateItem.deliveryEstimate
-                        )
-                    }
-
-                    binding.servicePrice.text = rateItem.options[DEFAULT]?.formattedFee
-                    binding.carrierImage.setImageResource(
-                        when (rateItem.carrier) {
-                            FEDEX -> R.drawable.fedex_logo
-                            USPS -> R.drawable.usps_logo
-                            UPS -> R.drawable.ups_logo
-                            DHL -> R.drawable.dhl_logo
-                            UNKNOWN -> 0
-                        }
+                if (rateItem.deliveryDate != null) {
+                    binding.deliveryTime.text = dateUtils.getShortMonthDayString(
+                        dateUtils.getYearMonthDayStringFromDate(rateItem.deliveryDate)
                     )
+                } else {
+                    binding.deliveryTime.text = binding.root.resources.getQuantityString(
+                        R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
+                        rateItem.deliveryEstimate,
+                        rateItem.deliveryEstimate
+                    )
+                }
 
-                    binding.root.setOnClickListener {
-                        onRateSelected(getSelectedRate(rateItem))
+                binding.servicePrice.text = rateItem.options[rateItem.selectedOption ?: DEFAULT]?.formattedPrice
+                binding.carrierImage.setImageResource(
+                    when (rateItem.carrier) {
+                        FEDEX -> R.drawable.fedex_logo
+                        USPS -> R.drawable.usps_logo
+                        UPS -> R.drawable.ups_logo
+                        DHL -> R.drawable.dhl_logo
+                        UNKNOWN -> 0
                     }
+                )
+
+                binding.root.setOnClickListener {
+                    onRateSelected(getSelectedRate(rateItem))
                 }
 
                 val isExpanded = rateItem.selectedOption != null
@@ -301,16 +289,6 @@ class ShippingCarrierRatesAdapter(
             val oldItem = oldItems[oldItemPosition]
             val newItem = newItems[newItemPosition]
             return oldItem == newItem
-        }
-
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            return if (oldItems[oldItemPosition].selectedOption != newItems[newItemPosition].selectedOption) {
-                SELECTED_OPTION
-            } else null
-        }
-
-        enum class ChangePayload {
-            SELECTED_OPTION
         }
     }
 
