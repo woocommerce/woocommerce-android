@@ -247,9 +247,7 @@ class ProductImagesViewModel @Inject constructor(
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
             val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteId)
-            triggerEvent(ShowActionSnackbar(errorMsg, action = {
-                triggerEvent(ViewMediaUploadErrors(navArgs.remoteId))
-            }))
+            triggerEvent(ShowActionSnackbar(errorMsg, { triggerEvent(ViewMediaUploadErrors(navArgs.remoteId)) }))
         } else {
             event.media?.let { media ->
                 viewState = if (isMultiSelectionAllowed) {
