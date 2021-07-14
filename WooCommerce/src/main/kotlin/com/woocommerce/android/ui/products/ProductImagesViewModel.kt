@@ -76,6 +76,7 @@ class ProductImagesViewModel @Inject constructor(
         EventBus.getDefault().register(this)
 
         if (navArgs.showChooser) {
+            clearImageUploadErrors()
             triggerEvent(ShowImageSourceDialog)
         } else {
             navArgs.selectedImage?.let {
@@ -133,11 +134,9 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun onImageSourceButtonClicked() {
+        clearImageUploadErrors()
         AnalyticsTracker.track(PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
         triggerEvent(ShowImageSourceDialog)
-
-        // clear existing image upload errors from the backlog
-        mediaFileUploadHandler.onCleanup()
     }
 
     fun onGalleryImageClicked(image: Image) {
@@ -198,6 +197,11 @@ class ProductImagesViewModel @Inject constructor(
         viewState = viewState.copy(
             isDragDropDescriptionVisible = viewState.productImagesState is Dragging || images.size > 1
         )
+    }
+
+    private fun clearImageUploadErrors() {
+        // clear existing image upload errors from the backlog
+        mediaFileUploadHandler.onCleanup()
     }
 
     /**
