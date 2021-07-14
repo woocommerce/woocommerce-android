@@ -260,7 +260,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when cardReaderManager gets initilized, then scan is started`() =
+    fun `when cardReaderManager gets initialized, then scan is started`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
 
@@ -304,6 +304,46 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = READER_FOUND)
 
             (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is null, when reader found, then reader found state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn(null)
+
+            init(scanState = READER_FOUND)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
+
+            init(scanState = READER_FOUND)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is matching, when reader found, then auto reconnection event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
+
+            init(scanState = READER_FOUND)
+
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED)
+        }
+
+    @Test
+    fun `given last connected reader is not matching, when reader found, then reader found state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy2")
+
+            init(scanState = READER_FOUND)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
         }
