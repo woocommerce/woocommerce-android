@@ -12,16 +12,13 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.databinding.FragmentVariationDetailBinding
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.show
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
@@ -36,16 +33,13 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,6 +66,7 @@ class VariationDetailFragment :
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
+    private var detailSnackbar: Snackbar? = null
 
     private val viewModel: VariationDetailViewModel by viewModels()
 
@@ -247,6 +242,7 @@ class VariationDetailFragment :
             Observer { event ->
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                     is VariationNavigationTarget -> {
                         navigator.navigate(this, event)
                     }
@@ -318,6 +314,22 @@ class VariationDetailFragment :
         val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(cards)
         binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    private fun displayProductImageUploadErrorSnackBar(
+        message: String,
+        actionListener: View.OnClickListener
+    ) {
+        if (detailSnackbar == null) {
+            detailSnackbar = uiMessageResolver.getActionSnack(
+                message = message,
+                actionText = getString(R.string.details),
+                actionListener = actionListener
+            )
+        } else {
+            detailSnackbar?.setText(message)
+        }
+        detailSnackbar?.show()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
