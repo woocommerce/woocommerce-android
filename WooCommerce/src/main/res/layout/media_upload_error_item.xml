@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:id="@+id/mediaFrame"
+        android:layout_width="@dimen/image_minor_100"
+        android:layout_height="@dimen/image_minor_100"
+        android:layout_margin="@dimen/major_100"
+        android:background="@drawable/picture_frame"
+        android:padding="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.50">
+
+        <ImageView
+            android:id="@+id/productImage"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_gravity="center"
+            android:background="@drawable/picture_corners"
+            android:contentDescription="@string/product_image_content_description"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_product" />
+    </FrameLayout>
+
+    <!--
+        LinearLayout is necessary to ensure the contents will always center properly in the
+        view, even when the mediaFileErrorText is hidden, or if mediaFileName takes up
+        two lines.
+    -->
+    <LinearLayout
+        android:id="@+id/mediaInfoContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
+        android:orientation="vertical"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toStartOf="@+id/uploadError_btnRetry"
+        app:layout_constraintStart_toEndOf="@+id/mediaFrame"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.50">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/mediaFileName"
+            style="@style/Woo.ListItem.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="2"
+            tools:text="Awesome Sauce and all that jazz is all I gotta tell you how do we go " />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/mediaFileErrorText"
+            style="@style/Woo.ListItem.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            tools:text="Out of stock this is a really long version to see what happens when we move o"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/uploadError_btnRetry"
+        style="@style/Woo.ImageButton.Close"
+        android:layout_margin="@dimen/minor_100"
+        android:contentDescription="@string/grouped_product_btn_delete"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/minor_00"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/mediaInfoContainer" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
