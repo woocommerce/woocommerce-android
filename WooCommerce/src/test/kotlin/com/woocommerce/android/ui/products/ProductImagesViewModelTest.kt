@@ -5,6 +5,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductImagesList
@@ -22,6 +23,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     lateinit var viewModel: ProductImagesViewModel
 
     private val networkStatus: NetworkStatus = mock()
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
 
@@ -37,6 +39,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel = ProductImagesViewModel(
             networkStatus,
             productImagesServiceWrapper,
+            mediaFileUploadHandler,
             savedState(productImages)
         ).apply {
             viewStateData.observeForever { _, _ -> }
