@@ -19,6 +19,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -78,6 +79,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private val savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).initSavedStateHandle()
@@ -225,6 +227,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 productTagsRepository,
                 mediaFilesRepository,
                 variationRepository,
+                mediaFileUploadHandler,
                 prefs
             )
         )
@@ -623,7 +626,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             clearInvocations(productRepository)
 
             // Precondition
-            assertThat(productData?.productDraft?.numVariations).isZero
+            assertThat(productData?.productDraft?.numVariations).isZero()
 
             doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
             doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))
