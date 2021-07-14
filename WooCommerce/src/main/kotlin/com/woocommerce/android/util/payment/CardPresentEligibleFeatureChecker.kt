@@ -20,7 +20,7 @@ class CardPresentEligibleFeatureChecker @Inject constructor(
     }
 
     companion object {
-        val isCardPresentEligible = AppPrefs.isCardPresentEligible()
+        val isCardPresentEligible get() = AppPrefs.isCardPresentEligible()
 
         const val CACHE_VALIDITY_TIME_S = 60 * 10 // 10 minutes
     }
