@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 import android.widget.ImageView
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import org.wordpress.android.util.DisplayUtils
@@ -27,5 +28,9 @@ abstract class BaseOnboardingFragment : Fragment {
         } else {
             illustration?.show()
         }
+    }
+
+    fun onCancel() {
+        findNavController().navigateUp()
     }
 }
