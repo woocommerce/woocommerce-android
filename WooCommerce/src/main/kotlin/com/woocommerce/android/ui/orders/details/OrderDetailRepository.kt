@@ -144,7 +144,7 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(localOrderId: Int, newStatus: String): ContinuationResult<Boolean> {
-        val order = OrderSqlUtils.getOrder(localOrderId)
+        val order = OrderSqlUtils.getOrderByLocalId(localOrderId)
         return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = UpdateOrderStatusPayload(
                 order, selectedSite.get(), newStatus

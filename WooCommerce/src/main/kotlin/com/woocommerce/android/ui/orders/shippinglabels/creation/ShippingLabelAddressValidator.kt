@@ -6,6 +6,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -29,7 +32,7 @@ class ShippingLabelAddressValidator @Inject constructor(
     ): ValidationResult {
         return when {
             isNameMissing(address) -> ValidationResult.NameMissing
-            requiresPhoneNumber && !address.hasValidPhoneNumber(type) -> ValidationResult.PhoneInvalid
+            requiresPhoneNumber && !address.phone.isValidPhoneNumber(type) -> ValidationResult.PhoneInvalid
             else -> verifyAddress(address, type)
         }
     }
@@ -126,5 +129,23 @@ class ShippingLabelAddressValidator @Inject constructor(
                 DESTINATION -> Type.DESTINATION
             }
         }
+    }
+}
+
+/**
+ * Checks whether the phone number is valid or not, depending on the [addressType], the check is:
+ * - [ORIGIN]: Checks whether the phone number contains 10 digits exactly after deleting an optional 1 as
+ *             the area code.
+ * - [DESTINATION]: Checks whether the phone has any digits.
+ *
+ * As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
+ * and that's similar to what the web client does.
+ * Source: https://github.com/Automattic/woocommerce-services/issues/1351
+ */
+@Suppress("MagicNumber")
+fun String.isValidPhoneNumber(addressType: AddressType): Boolean {
+    return when (addressType) {
+        ORIGIN -> replace(Regex("^1|[^\\d]"), "").length == 10
+        DESTINATION -> contains(Regex("\\d"))
     }
 }
