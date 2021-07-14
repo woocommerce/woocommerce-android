@@ -5,6 +5,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.model.ShippingPackage
 
 class ShippingLabelCreateServicePackageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var items: List<ListItem> = emptyList()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         TODO("Not yet implemented")
     }
@@ -17,7 +23,21 @@ class ShippingLabelCreateServicePackageAdapter : RecyclerView.Adapter<RecyclerVi
         TODO("Not yet implemented")
     }
 
-    fun updatePackages(list: List<ShippingPackage>) {
-        TODO("Not yet implemented")
+    fun updatePackages(selectablePackages: List<ShippingPackage>) {
+        items = selectablePackages.groupBy { it.category }.flatMap { entry ->
+            val list = mutableListOf<ListItem>()
+            list.add(ListItem.Header(entry.key))
+            list.addAll(
+                entry.value.map { shippingPackage ->
+                    ListItem.Package(shippingPackage)
+                }
+            )
+            list
+        }
+    }
+
+    private sealed class ListItem {
+        data class Header(val title: String) : ListItem()
+        data class Package(val data: ShippingPackage) : ListItem()
     }
 }
