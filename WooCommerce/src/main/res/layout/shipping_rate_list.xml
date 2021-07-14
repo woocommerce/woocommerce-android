@@ -22,8 +22,6 @@
             android:textAppearance="?attr/textAppearanceSubtitle1"
             android:textColor="@color/color_on_surface_high"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:text="Package 1" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -33,8 +31,6 @@
             android:layout_marginStart="@dimen/minor_50"
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.Woo.Body1"
-            app:layout_constraintBaseline_toBaselineOf="@id/package_name"
-            app:layout_constraintStart_toEndOf="@id/package_name"
             tools:text="- 10 items" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -43,25 +39,17 @@
             android:layout_height="@dimen/image_major_50"
             android:padding="@dimen/major_75"
             android:src="@drawable/ic_arrow_down"
-            android:tint="@color/color_on_surface_high"
-            app:layout_constraintBottom_toBottomOf="@id/package_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/package_name" />
+            android:tint="@color/color_on_surface_high" />
     </LinearLayout>
 
     <View
         android:id="@+id/divider_1"
-        style="@style/Woo.Divider"
-        android:layout_marginTop="@dimen/major_75"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/package_name" />
+        style="@style/Woo.Divider" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rate_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/divider_1"
         tools:itemCount="5"
         tools:listitem="@layout/shipping_rate_list_item" />
-
 </LinearLayout>
