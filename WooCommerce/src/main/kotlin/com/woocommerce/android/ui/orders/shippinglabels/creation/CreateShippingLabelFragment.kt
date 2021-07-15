@@ -18,11 +18,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.PaymentMethod
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -371,13 +367,14 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
         // Individual packages prices
         individualPackagesPricesLayout.removeAllViews()
-        state.individualPackagesPrices.forEach { (title, price) ->
+        individualPackagesPricesLayout.isVisible = state.individualPackagesPrices.isNotEmpty()
+        state.individualPackagesPrices.forEach { (labelPackage, price) ->
             val binding = ViewShippingLabelOrderPackagePriceBinding.inflate(
-                LayoutInflater.from(context),
+                LayoutInflater.from(requireContext()),
                 individualPackagesPricesLayout,
                 true
             )
-            binding.packageTitle.text = title
+            binding.packageTitle.text = labelPackage.getTitle(requireContext())
             binding.packagePrice.text = PriceUtils.formatCurrency(price, state.currency, currencyFormatter)
         }
 
