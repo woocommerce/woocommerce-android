@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SKIPPED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,7 +44,6 @@ class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
     private val tracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
-    private val reconnectionFeatureFlag: FeatureFlag.CardReaderReconnectionWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(Loading)
@@ -145,9 +143,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun clearLastKnowReader() {
-        if (reconnectionFeatureFlag.isEnabled()) {
-            appPrefs.removeLastConnectedCardReaderId()
-        }
+        appPrefs.removeLastConnectedCardReaderId()
     }
 
     private fun CardReader.getReadersName(): UiString {
@@ -198,6 +194,7 @@ class CardReaderDetailViewModel @Inject constructor(
             val secondaryButtonState: ButtonState?
         ) : ViewState() {
             val learnMoreLabel = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true)
+
             data class ButtonState(
                 val onActionClicked: (() -> Unit),
                 val text: UiString
