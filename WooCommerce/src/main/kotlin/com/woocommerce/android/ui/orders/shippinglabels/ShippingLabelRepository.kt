@@ -87,6 +87,16 @@ class ShippingLabelRepository @Inject constructor(
             }
     }
 
+    suspend fun getSelectableServicePackages(): WooResult<List<ShippingPackage>> {
+        return shippingLabelStore.getAllPredefinedOptions(selectedSite.get())
+            .let { result ->
+                if (result.isError) return@let WooResult<List<ShippingPackage>>(error = result.error)
+
+                val allServicePackages = result.model!!.flatMap { it.toAppModel() }
+                availablePackages?.let { WooResult(allServicePackages.minus(it)) } ?: WooResult(allServicePackages)
+            }
+    }
+
     suspend fun getShippingRates(
         order: Order,
         origin: Address,
