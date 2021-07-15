@@ -744,6 +744,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     @Parcelize
     data class OrderSummaryState(
         val isVisible: Boolean = false,
+        val individualPackagesPrices: Map<String, BigDecimal> = emptyMap(),
         val price: BigDecimal = BigDecimal.ZERO,
         val discount: BigDecimal = BigDecimal.ZERO,
         val currency: String? = null

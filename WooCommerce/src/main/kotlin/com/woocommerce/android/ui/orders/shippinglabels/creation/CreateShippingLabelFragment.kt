@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
@@ -9,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreateShippingLabelBinding
+import com.woocommerce.android.databinding.ViewShippingLabelOrderPackagePriceBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderSummaryBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
@@ -72,8 +75,11 @@ import javax.inject.Inject
 class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label), BackPressListener {
     private var progressDialog: CustomProgressDialog? = null
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: CreateShippingLabelViewModel by viewModels()
 
@@ -362,8 +368,31 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             return
         }
         root.isVisible = true
-        subtotalPrice.text = PriceUtils.formatCurrency(state.price + state.discount, state.currency, currencyFormatter)
 
+        // Individual packages prices
+        individualPackagesPricesLayout.removeAllViews()
+        state.individualPackagesPrices.forEach { (title, price) ->
+            val binding = ViewShippingLabelOrderPackagePriceBinding.inflate(
+                LayoutInflater.from(context),
+                individualPackagesPricesLayout,
+                true
+            )
+            binding.packageTitle.text = title
+            binding.packagePrice.text = PriceUtils.formatCurrency(price, state.currency, currencyFormatter)
+        }
+
+        // Subtotal
+        subtotalPrice.text = PriceUtils.formatCurrency(state.price + state.discount, state.currency, currencyFormatter)
+        subtotalPrice.setTypeface(
+            subtotalPrice.typeface,
+            if (state.individualPackagesPrices.isEmpty()) Typeface.NORMAL else Typeface.BOLD
+        )
+        subtotalLabel.setTypeface(
+            subtotalLabel.typeface,
+            if (state.individualPackagesPrices.isEmpty()) Typeface.NORMAL else Typeface.BOLD
+        )
+
+        // Discount
         if (state.discount.isNotEqualTo(BigDecimal.ZERO)) {
             discountGroup.isVisible = true
             discountPrice.text = PriceUtils.formatCurrency(state.discount, state.currency, currencyFormatter)
@@ -371,6 +400,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             discountGroup.isVisible = false
         }
 
+        // Total price
         val totalPriceValue = state.price
         totalPrice.text = PriceUtils.formatCurrency(totalPriceValue, state.currency, currencyFormatter)
     }
