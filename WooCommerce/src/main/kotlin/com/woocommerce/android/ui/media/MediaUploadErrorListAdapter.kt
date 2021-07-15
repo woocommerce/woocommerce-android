@@ -13,13 +13,8 @@ import java.io.File
 class MediaUploadErrorListAdapter : RecyclerView.Adapter<MediaUploadErrorListItemViewHolder>() {
     var mediaErrorList: List<ProductImageUploadUiModel> = ArrayList()
         set(value) {
-            val diffResult = DiffUtil.calculateDiff(
-                MediaUploadErrorDiffUtil(
-                    field,
-                    value
-                ),
-                true
-            )
+            val diffUtil = MediaUploadErrorDiffUtil(field, value)
+            val diffResult = DiffUtil.calculateDiff(diffUtil, true)
             field = value
 
             diffResult.dispatchUpdatesTo(this)
