@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
@@ -283,6 +284,17 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReaderConnected(cardReader: CardReader) {
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)
+
+        // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
+        if (appPrefs.getShowCardReaderConnectedTutorial()) {
+            triggerEvent(ShowCardReaderTutorial)
+            appPrefs.setShowCardReaderConnectedTutorial(false)
+        } else {
+            exitFlow(connected = true)
+        }
+    }
+
+    fun onTutorialClosed() {
         exitFlow(connected = true)
     }
 
@@ -327,6 +339,8 @@ class CardReaderConnectViewModel @Inject constructor(
         object OpenPermissionsSettings : CardReaderConnectEvent()
 
         data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
+
+        object ShowCardReaderTutorial : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")
