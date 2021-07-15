@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingVertical="@dimen/minor_50"
+    android:paddingBottom="@dimen/minor_50"
     tools:showIn="@layout/view_shipping_label_order_summary">
 
     <com.google.android.material.textview.MaterialTextView
