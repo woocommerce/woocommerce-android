@@ -38,16 +38,28 @@
         android:layout_marginTop="@dimen/major_75"
         app:layout_constraintTop_toBottomOf="@id/title" />
 
+    <LinearLayout
+        android:id="@+id/individual_packages_prices_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        tools:visibility="visible" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subtotal_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
         android:text="@string/shipping_label_create_price_subtotal"
         android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="@color/color_on_surface_high"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/divider" />
+        app:layout_constraintTop_toBottomOf="@id/individual_packages_prices_layout"
+        app:layout_goneMarginTop="@dimen/major_100" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subtotal_price"
@@ -134,8 +146,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_100"
         android:layout_marginTop="@dimen/major_100"
-        android:paddingStart="@dimen/major_75"
         android:gravity="top"
+        android:paddingStart="@dimen/major_75"
         android:text="@string/shipping_label_create_mark_order_complete"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
         app:layout_constraintStart_toStartOf="parent"
@@ -150,9 +162,9 @@
         android:layout_marginTop="@dimen/minor_100"
         android:layout_marginBottom="@dimen/major_100"
         android:text="@string/shipping_label_create_purchase"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mark_order_complete_checkbox" />
 
 </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
