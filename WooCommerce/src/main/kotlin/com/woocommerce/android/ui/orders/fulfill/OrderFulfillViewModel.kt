@@ -127,7 +127,7 @@ class OrderFulfillViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             triggerEvent(
                 ExitWithResult(
-                    data = OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen,
+                    data = OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen(oldStatus = order.status.value),
                     key = KEY_ORDER_FULFILL_RESULT
                 )
             )

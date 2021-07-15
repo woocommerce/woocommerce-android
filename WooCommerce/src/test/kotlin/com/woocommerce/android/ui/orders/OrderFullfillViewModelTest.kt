@@ -221,7 +221,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         assertThat(exit).isEqualTo(
             ExitWithResult(
-                OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen,
+                OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen(order.status.value),
                 OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
             )
         )

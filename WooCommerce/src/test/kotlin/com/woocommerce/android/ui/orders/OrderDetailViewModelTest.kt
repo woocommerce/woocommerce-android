@@ -901,15 +901,15 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrder(any(), any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
-            var snackbar: ShowSnackbar? = null
+            var snackbar: ShowUndoSnackbar? = null
             viewModel.event.observeForever {
-                if (it is ShowSnackbar) snackbar = it
+                if (it is ShowUndoSnackbar) snackbar = it
             }
 
             viewModel.start()
-            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen)
+            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
 
-            assertThat(snackbar?.message).isEqualTo(string.order_fulfill_completed)
+            assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_fulfill_completed))
         }
 
     @Test

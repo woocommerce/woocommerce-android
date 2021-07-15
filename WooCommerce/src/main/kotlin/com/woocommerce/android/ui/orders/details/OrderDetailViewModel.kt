@@ -351,26 +351,19 @@ class OrderDetailViewModel @Inject constructor(
             )
         )
 
-        when (updateSource) {
-            is OrderStatusUpdateSource.Dialog -> {
-                val message = resourceProvider.getString(string.order_status_updated)
-                triggerEvent(
-                    ShowUndoSnackbar(
-                        message = message,
-                        undoAction = {
-                            updateOrderStatus(updateSource.oldStatus)
-                        },
-                    )
-                )
-            }
-            is OrderStatusUpdateSource.FullFillScreen -> {
-                triggerEvent(
-                    ShowSnackbar(
-                        message = R.string.order_fulfill_completed,
-                    )
-                )
-            }
+        val snackbarMessage = when (updateSource) {
+            is OrderStatusUpdateSource.Dialog -> R.string.order_status_updated
+            is OrderStatusUpdateSource.FullFillScreen -> R.string.order_fulfill_completed
         }
+
+        triggerEvent(
+            ShowUndoSnackbar(
+                message = resourceProvider.getString(snackbarMessage),
+                undoAction = {
+                    updateOrderStatus(updateSource.oldStatus)
+                },
+            )
+        )
 
         updateOrderStatus(updateSource.newStatus)
     }
@@ -656,12 +649,18 @@ class OrderDetailViewModel @Inject constructor(
         val isReceiptButtonsVisible: Boolean = false
     ) : Parcelable
 
-    sealed class OrderStatusUpdateSource(open val newStatus: String) : Parcelable {
+    sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {
         @Parcelize
-        object FullFillScreen : OrderStatusUpdateSource(CoreOrderStatus.COMPLETED.value)
+        data class FullFillScreen(override val oldStatus: String) : OrderStatusUpdateSource(
+            oldStatus = oldStatus,
+            newStatus = CoreOrderStatus.COMPLETED.value
+        )
 
         @Parcelize
-        data class Dialog(val oldStatus: String, override val newStatus: String) : OrderStatusUpdateSource(newStatus)
+        data class Dialog(
+            override val oldStatus: String,
+            override val newStatus: String
+        ) : OrderStatusUpdateSource(oldStatus, newStatus)
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
