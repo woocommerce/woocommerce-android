@@ -37,13 +37,32 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(R.string.shipping_label_packages_loading_error))
                 return@launch
             }
-            viewState = viewState.copy(isLoading = false, selectablePackages = result.model!!)
+
+            val uiModels = result.model!!.map { it -> ServicePackageUiModel(it) }
+            viewState = viewState.copy(isLoading = false, uiModels = uiModels)
         }
+    }
+
+    fun onPackageSelected(id: String) {
+        val newList = viewState.uiModels.map {
+            ServicePackageUiModel(
+                data = it.data,
+                isChecked = id == it.data.id
+            )
+        }
+
+        viewState = viewState.copy(uiModels = newList)
     }
 
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
-        val selectablePackages: List<ShippingPackage> = emptyList()
+        val uiModels: List<ServicePackageUiModel> = emptyList()
+    ) : Parcelable
+
+    @Parcelize
+    data class ServicePackageUiModel(
+        val data: ShippingPackage,
+        val isChecked: Boolean = false
     ) : Parcelable
 }

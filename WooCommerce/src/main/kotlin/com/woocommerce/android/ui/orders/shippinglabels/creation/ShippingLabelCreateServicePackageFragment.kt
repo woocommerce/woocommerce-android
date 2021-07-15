@@ -20,7 +20,9 @@ class ShippingLabelCreateServicePackageFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentShippingLabelCreateServicePackageBinding.bind(view)
-        val packagesAdapter = ShippingLabelCreateServicePackageAdapter()
+        val packagesAdapter = ShippingLabelCreateServicePackageAdapter(
+            viewModel::onPackageSelected
+        )
 
         with(binding.servicePackagesList) {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -35,8 +37,8 @@ class ShippingLabelCreateServicePackageFragment :
         adapter: ShippingLabelCreateServicePackageAdapter
     ) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.selectablePackages.takeIfNotEqualTo(old?.selectablePackages) { list ->
-                adapter.updatePackages(list)
+            new.uiModels.takeIfNotEqualTo(old?.uiModels) { uiModels ->
+                adapter.updateData(uiModels)
             }
         }
     }
