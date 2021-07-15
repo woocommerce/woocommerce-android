@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.databinding.ShippingPackageListHeaderBinding
 import com.woocommerce.android.databinding.ShippingPackageSelectableListItemBinding
-import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.ServicePackageUiModel
 
 class ShippingLabelCreateServicePackageAdapter(
@@ -46,7 +45,7 @@ class ShippingLabelCreateServicePackageAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (val item = items[position]) {
             is ListItem.Header -> (holder as HeaderViewHolder).bind(item.title)
-            is ListItem.Package -> (holder as PackageViewHolder).bind(item)
+            is ListItem.Package -> (holder as PackageViewHolder).bind(item.uiModel)
         }
     }
 
@@ -69,33 +68,32 @@ class ShippingLabelCreateServicePackageAdapter(
     private inner class PackageViewHolder(private val binding: ShippingPackageSelectableListItemBinding) :
         ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: ListItem.Package) {
-            binding.title.text = item.data.title
-            val dimensions = item.data.dimensions
+        fun bind(uiModel: ServicePackageUiModel) {
+            binding.title.text = uiModel.data.title
+            val dimensions = uiModel.data.dimensions
             binding.dimensions.text = "${dimensions.length} x ${dimensions.width} x ${dimensions.height}"
             binding.packageRadioButton.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
-                    onChecked(item.data.id)
+                    onChecked(uiModel.data.id)
                 }
             }
-            binding.packageRadioButton.isChecked = item.isChecked
+            binding.packageRadioButton.isChecked = uiModel.isChecked
         }
     }
 
     fun updateData(uiModels: List<ServicePackageUiModel>) {
-        val modelAsListItemPackage = uiModels.map { ListItem.Package(it.data, it.isChecked) }
-        items = modelAsListItemPackage
+        items = uiModels
             .groupBy { it.data.category }
             .flatMap { entry ->
                 val list = mutableListOf<ListItem>()
                 list.add(ListItem.Header(entry.key))
-                list.addAll(entry.value.map { it })
+                list.addAll(entry.value.map { ListItem.Package(it) })
                 list
             }
     }
 
     private sealed class ListItem {
         data class Header(val title: String) : ListItem()
-        data class Package(val data: ShippingPackage, val isChecked: Boolean = false) : ListItem()
+        data class Package(val uiModel: ServicePackageUiModel) : ListItem()
     }
 }
