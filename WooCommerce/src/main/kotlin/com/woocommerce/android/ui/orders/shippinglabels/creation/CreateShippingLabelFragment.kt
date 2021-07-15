@@ -71,11 +71,9 @@ import javax.inject.Inject
 class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label), BackPressListener {
     private var progressDialog: CustomProgressDialog? = null
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: CreateShippingLabelViewModel by viewModels()
 
