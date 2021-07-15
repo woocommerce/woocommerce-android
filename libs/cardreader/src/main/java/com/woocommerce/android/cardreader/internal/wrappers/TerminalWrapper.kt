@@ -61,6 +61,9 @@ internal class TerminalWrapper {
     fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().processPayment(paymentIntent, callback)
 
+    fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
+        Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
+
     fun checkForUpdate(callback: ReaderSoftwareUpdateCallback) = Terminal.getInstance().checkForUpdate(callback)
     fun installSoftwareUpdate(
         updateData: ReaderSoftwareUpdate,

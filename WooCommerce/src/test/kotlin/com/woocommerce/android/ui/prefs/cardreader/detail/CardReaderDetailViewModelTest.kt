@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewMo
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,9 +38,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val appPrefs: AppPrefs = mock()
-    private val reconnectionFeatureFlag: FeatureFlag.CardReaderReconnectionWrapper = mock {
-        on { isEnabled() }.thenReturn(true)
-    }
 
     @Test
     fun `when view model init with connected state should emit loading view state`() {
@@ -453,7 +449,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         cardReaderManager,
         tracker,
         appPrefs,
-        reconnectionFeatureFlag,
         SavedStateHandle(),
     )
 

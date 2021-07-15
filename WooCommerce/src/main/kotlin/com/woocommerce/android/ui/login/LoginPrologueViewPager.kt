@@ -10,7 +10,7 @@ import com.woocommerce.android.widgets.WCViewPager
 
 class LoginPrologueViewPager : WCViewPager {
     companion object {
-        const val NUM_PAGES = 4
+        private const val NUM_PAGES = 4
     }
 
     constructor(context: Context) : super(context)

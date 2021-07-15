@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
@@ -41,7 +42,6 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -59,7 +59,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val tracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
-    private val reconnectionFeatureFlag: FeatureFlag.CardReaderReconnectionWrapper
 ) : ScopedViewModel(savedState) {
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
@@ -205,11 +204,17 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReadersFound(discoveryEvent: ReadersFound) {
         if (viewState.value is ConnectingState) return
         val availableReaders = discoveryEvent.list.filter { it.id != null }
-        viewState.value = when {
-            availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
-            availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
-            availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
-            else -> throw IllegalStateException("Unreachable code")
+        val lastKnownReader = findLastKnowReader(availableReaders)
+        if (lastKnownReader != null) {
+            tracker.track(AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED)
+            connectToReader(lastKnownReader)
+        } else {
+            viewState.value = when {
+                availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
+                availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
+                availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
+                else -> throw IllegalStateException("Unreachable code")
+            }
         }
     }
 
@@ -239,6 +244,10 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
+        connectToReader(cardReader)
+    }
+
+    private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
             val success = cardReaderManager.connectToReader(cardReader)
@@ -273,6 +282,17 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReaderConnected(cardReader: CardReader) {
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)
+
+        // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
+        if (appPrefs.getShowCardReaderConnectedTutorial()) {
+            triggerEvent(ShowCardReaderTutorial)
+            appPrefs.setShowCardReaderConnectedTutorial(false)
+        } else {
+            exitFlow(connected = true)
+        }
+    }
+
+    fun onTutorialClosed() {
         exitFlow(connected = true)
     }
 
@@ -281,9 +301,11 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {
-        if (reconnectionFeatureFlag.isEnabled()) {
-            cardReader.id?.let { id -> appPrefs.setLastConnectedCardReaderId(id) }
-        }
+        cardReader.id?.let { id -> appPrefs.setLastConnectedCardReaderId(id) }
+    }
+
+    private fun findLastKnowReader(readers: List<CardReader>): CardReader? {
+        return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
     }
 
     fun onScreenResumed() {
@@ -311,6 +333,8 @@ class CardReaderConnectViewModel @Inject constructor(
         object OpenPermissionsSettings : CardReaderConnectEvent()
 
         data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
+
+        object ShowCardReaderTutorial : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")

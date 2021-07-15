@@ -63,13 +63,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
             android:hint="@string/shipping_label_customs_item_description_hint"
+            app:errorEnabled="true"
             android:inputType="text" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/hs_tariff_number_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
             android:hint="@string/shipping_label_customs_hs_tariff_hint"
             android:inputType="number"
             android:maxLength="6" />
@@ -86,6 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
+            app:errorEnabled="true"
             android:inputType="numberDecimal"
             tools:hint="Weight (oz per unit)" />
 
@@ -93,7 +94,7 @@
             android:id="@+id/value_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
+            app:errorEnabled="true"
             android:inputType="numberDecimal"
             tools:hint="Value ($ per unit)" />
 
@@ -101,7 +102,6 @@
             android:id="@+id/country_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
             android:hint="@string/shipping_label_customs_origin_country_hint" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_200"
             android:gravity="start"
             android:text="@string/shipping_label_customs_origin_country_explanation"
             android:textAppearance="?attr/textAppearanceCaption" />
