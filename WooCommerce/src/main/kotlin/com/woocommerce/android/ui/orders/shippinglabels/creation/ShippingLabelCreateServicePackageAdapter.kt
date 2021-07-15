@@ -83,18 +83,13 @@ class ShippingLabelCreateServicePackageAdapter(
     }
 
     fun updateData(uiModels: List<ServicePackageUiModel>) {
-        items = uiModels
-            .map { it.data }
-            .groupBy { it.category }
+        val modelAsListItemPackage = uiModels.map { ListItem.Package(it.data, it.isChecked) }
+        items = modelAsListItemPackage
+            .groupBy { it.data.category }
             .flatMap { entry ->
                 val list = mutableListOf<ListItem>()
                 list.add(ListItem.Header(entry.key))
-                list.addAll(
-                    entry.value.map { shippingPackage ->
-                        val isSelected = uiModels.first { it.data == shippingPackage }.isChecked
-                        ListItem.Package(shippingPackage, isSelected)
-                    }
-                )
+                list.addAll(entry.value.map { it })
                 list
             }
     }
