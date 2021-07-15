@@ -107,6 +107,7 @@ fun List<Refund>.getNonRefundedProducts(
         .filter { leftoverProducts.contains(it.itemId) }
         .map {
             val newQuantity = leftoverProducts[it.itemId]
+            if (newQuantity == it.quantity) return@map it
             val quantity = it.quantity.toBigDecimal()
             val totalTax = if (quantity > BigDecimal.ZERO) {
                 it.totalTax.divide(quantity, 2, HALF_UP)
