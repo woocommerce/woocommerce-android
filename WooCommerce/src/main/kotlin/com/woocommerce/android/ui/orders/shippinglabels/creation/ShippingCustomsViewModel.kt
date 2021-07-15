@@ -78,7 +78,9 @@ class ShippingCustomsViewModel @Inject constructor(
             if (!loadCountriesIfNeeded()) return@launch
             val packagesUiStates = args.customsPackages.toList().ifEmpty {
                 createDefaultCustomPackages()
-            }.map { CustomsPackageUiState(it, it.validate()) }
+            }.mapIndexed { index, item ->
+                CustomsPackageUiState(item, item.validate(), isExpanded = index == 0)
+            }
             viewState = viewState.copy(
                 isProgressViewShown = false,
                 customsPackages = packagesUiStates
@@ -130,6 +132,12 @@ class ShippingCustomsViewModel @Inject constructor(
 
     fun onBackButtonClicked() {
         triggerEvent(Exit)
+    }
+
+    override fun onPackageExpandedChanged(position: Int, isExpanded: Boolean) {
+        val customsPackages = viewState.customsPackages.toMutableList()
+        customsPackages[position] = customsPackages[position].copy(isExpanded = isExpanded)
+        viewState = viewState.copy(customsPackages = customsPackages)
     }
 
     override fun onReturnToSenderChanged(position: Int, returnToSender: Boolean) {
@@ -203,7 +211,7 @@ class ShippingCustomsViewModel @Inject constructor(
         if (viewState.customsPackages[position].data == item) return
 
         val customsPackages = viewState.customsPackages.toMutableList()
-        customsPackages[position] = CustomsPackageUiState(item, item.validate())
+        customsPackages[position] = customsPackages[position].copy(data = item, validationState = item.validate())
         viewState = viewState.copy(customsPackages = customsPackages)
     }
 
@@ -322,7 +330,8 @@ class ShippingCustomsViewModel @Inject constructor(
     @Parcelize
     data class CustomsPackageUiState(
         val data: CustomsPackage,
-        val validationState: PackageValidationState
+        val validationState: PackageValidationState,
+        val isExpanded: Boolean
     ) : Parcelable {
         val customsLinesUiState: List<CustomsLineUiState>
             get() = data.lines.mapIndexed { index, customsLine ->
