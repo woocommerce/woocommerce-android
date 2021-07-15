@@ -109,14 +109,14 @@ fun List<Refund>.getNonRefundedProducts(
             val newQuantity = leftoverProducts[it.itemId]
             if (newQuantity == it.quantity) return@map it
             val quantity = it.quantity.toBigDecimal()
-            val totalTax = if (quantity > BigDecimal.ZERO) {
+            val individualProductTax = if (quantity > BigDecimal.ZERO) {
                 it.totalTax.divide(quantity, 2, HALF_UP)
             } else BigDecimal.ZERO
 
             it.copy(
                 quantity = newQuantity ?: error("Missing product"),
                 total = it.price.times(newQuantity.toBigDecimal()),
-                totalTax = totalTax
+                totalTax = individualProductTax.times(newQuantity.toBigDecimal())
             )
         }
 }
