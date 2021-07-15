@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -340,14 +341,14 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
-        whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
-            .thenReturn(true)
+        whenever(orderDetailRepository.updateOrderStatus(any(), any()))
+            .thenReturn(ContinuationWrapper.ContinuationResult.Success(true))
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = true)
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.identifier.toIdSet().id, doneData.order.remoteId, CoreOrderStatus.COMPLETED.value
+            doneData.order.identifier.toIdSet().id, CoreOrderStatus.COMPLETED.value
         )
     }
 
@@ -361,8 +362,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             )
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))
-            whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
-                .thenReturn(false)
+            whenever(orderDetailRepository.updateOrderStatus(any(), any()))
+                .thenReturn(ContinuationWrapper.ContinuationResult.Success(false))
 
             var event: MultiLiveEvent.Event? = null
             viewModel.event.observeForever {
