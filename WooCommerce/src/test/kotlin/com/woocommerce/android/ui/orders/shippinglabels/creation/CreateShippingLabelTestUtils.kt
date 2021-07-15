@@ -77,6 +77,7 @@ object CreateShippingLabelTestUtils {
             serviceName = "service",
             deliveryDays = 10,
             price = BigDecimal.TEN,
+            formattedPrice = "10 $",
             discount = BigDecimal.ZERO,
             formattedFee = "10 $",
             option = ShippingRate.Option.DEFAULT

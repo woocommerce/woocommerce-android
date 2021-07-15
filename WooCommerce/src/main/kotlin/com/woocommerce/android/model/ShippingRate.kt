@@ -14,6 +14,7 @@ data class ShippingRate(
     val serviceName: String,
     val deliveryDays: Int,
     val price: BigDecimal,
+    val formattedPrice: String,
     val discount: BigDecimal,
     val formattedFee: String,
     val option: Option

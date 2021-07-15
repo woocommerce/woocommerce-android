@@ -121,7 +121,7 @@ class ShippingLabelRepository @Inject constructor(
             carrierRates.model == null || carrierRates.model!!.packageRates.isEmpty() -> {
                 WooResult(WooError(INVALID_RESPONSE, GenericErrorType.PARSE_ERROR, "Empty response"))
             }
-            carrierRates.model!!.packageRates.all { pack ->
+            carrierRates.model!!.packageRates.any { pack ->
                 pack.shippingOptions.isEmpty() || pack.shippingOptions.all { option ->
                     option.rates.isEmpty()
                 }
