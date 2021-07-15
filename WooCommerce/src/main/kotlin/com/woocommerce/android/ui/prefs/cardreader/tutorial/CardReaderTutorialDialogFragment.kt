@@ -10,7 +10,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogCardReaderTutorialBinding
-import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,7 +44,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
         binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
 
         binding.buttonSkip.setOnClickListener {
-            navigateBackWithResult(KEY_READER_TUTORIAL_RESULT, true)
+            navigateBackWithNotice(KEY_READER_TUTORIAL_RESULT)
         }
     }
 

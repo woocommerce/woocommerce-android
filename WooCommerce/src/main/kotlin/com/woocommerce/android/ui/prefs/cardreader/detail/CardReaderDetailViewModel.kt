@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -42,6 +43,7 @@ import kotlin.math.roundToInt
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
     private val tracker: AnalyticsTrackerWrapper,
+    private val appPrefs: AppPrefs,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(Loading)
@@ -118,6 +120,7 @@ class CardReaderDetailViewModel @Inject constructor(
     private fun onDisconnectClicked() {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         launch {
+            clearLastKnowReader()
             val disconnectionResult = cardReaderManager.disconnectReader()
             if (!disconnectionResult) {
                 WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
@@ -137,6 +140,10 @@ class CardReaderDetailViewModel @Inject constructor(
                 triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
             }
         }.exhaustive
+    }
+
+    private fun clearLastKnowReader() {
+        appPrefs.removeLastConnectedCardReaderId()
     }
 
     private fun CardReader.getReadersName(): UiString {
@@ -187,6 +194,7 @@ class CardReaderDetailViewModel @Inject constructor(
             val secondaryButtonState: ButtonState?
         ) : ViewState() {
             val learnMoreLabel = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true)
+
             data class ButtonState(
                 val onActionClicked: (() -> Unit),
                 val text: UiString

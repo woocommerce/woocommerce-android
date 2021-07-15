@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.math.BigDecimal
 import java.util.Date
 
 class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
@@ -235,11 +236,27 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             assertThat(isCollectable).isFalse()
         }
 
+    @Test
+    // TODO cardreader remove the following test when the backend issue is fixed
+    // https://github.com/Automattic/woocommerce-payments/issues/2390
+    fun `when order has been refunded, then hide collect button `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val order = getOrder(refundTotal = 99)
+
+            // WHEN
+            val isCollectable = checker.isCollectable(order)
+
+            // THEN
+            assertThat(isCollectable).isFalse()
+        }
+
     private fun getOrder(
         currency: String = "USD",
         paymentStatus: Order.Status = Order.Status.Processing,
         paymentMethod: String = "cod",
         paymentMethodTitle: String = "title",
+        refundTotal: Int = 0,
         datePaid: Date? = null
     ): Order {
         return generatedOrder.copy(
@@ -247,7 +264,8 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             paymentMethod = paymentMethod,
             paymentMethodTitle = paymentMethodTitle,
             datePaid = datePaid,
-            status = paymentStatus
+            status = paymentStatus,
+            refundTotal = BigDecimal(refundTotal)
         )
     }
 }

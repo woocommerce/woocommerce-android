@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
@@ -24,7 +25,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
-import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
@@ -70,7 +71,10 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog?.let {
+            it.setCanceledOnTouchOutside(false)
+            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -111,7 +115,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     }
 
     private fun setupResultHandlers(viewModel: CardReaderConnectViewModel) {
-        handleResult<Boolean>(CardReaderTutorialDialogFragment.KEY_READER_TUTORIAL_RESULT) {
+        handleNotice(CardReaderTutorialDialogFragment.KEY_READER_TUTORIAL_RESULT) {
             viewModel.onTutorialClosed()
         }
     }

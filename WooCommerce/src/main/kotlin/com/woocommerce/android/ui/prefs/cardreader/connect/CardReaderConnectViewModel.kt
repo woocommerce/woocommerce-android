@@ -58,7 +58,7 @@ class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val tracker: AnalyticsTrackerWrapper,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
 ) : ScopedViewModel(savedState) {
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
@@ -204,11 +204,17 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReadersFound(discoveryEvent: ReadersFound) {
         if (viewState.value is ConnectingState) return
         val availableReaders = discoveryEvent.list.filter { it.id != null }
-        viewState.value = when {
-            availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
-            availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
-            availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
-            else -> throw IllegalStateException("Unreachable code")
+        val lastKnownReader = findLastKnowReader(availableReaders)
+        if (lastKnownReader != null) {
+            tracker.track(AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED)
+            connectToReader(lastKnownReader)
+        } else {
+            viewState.value = when {
+                availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
+                availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
+                availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
+                else -> throw IllegalStateException("Unreachable code")
+            }
         }
     }
 
@@ -238,12 +244,16 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
+        connectToReader(cardReader)
+    }
+
+    private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
                 tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
-                onReaderConnected()
+                onReaderConnected(cardReader)
             } else {
                 tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
                 WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
@@ -269,24 +279,34 @@ class CardReaderConnectViewModel @Inject constructor(
         exitFlow(connected = false)
     }
 
-    private fun onReaderConnected() {
+    private fun onReaderConnected(cardReader: CardReader) {
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
+        storeConnectedReader(cardReader)
+
         // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
         if (appPrefs.getShowCardReaderConnectedTutorial()) {
             triggerEvent(ShowCardReaderTutorial)
+            appPrefs.setShowCardReaderConnectedTutorial(false)
         } else {
             exitFlow(connected = true)
         }
     }
 
     fun onTutorialClosed() {
-        appPrefs.setShowCardReaderConnectedTutorial(false)
         exitFlow(connected = true)
     }
 
     private fun exitFlow(connected: Boolean) {
         appPrefs.setShowCardReaderConnectedTutorial(true) // TODO
         triggerEvent(ExitWithResult(connected))
+    }
+
+    private fun storeConnectedReader(cardReader: CardReader) {
+        cardReader.id?.let { id -> appPrefs.setLastConnectedCardReaderId(id) }
+    }
+
+    private fun findLastKnowReader(readers: List<CardReader>): CardReader? {
+        return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
     }
 
     fun onScreenResumed() {

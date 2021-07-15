@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
@@ -30,7 +31,10 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog?.let {
+            it.setCanceledOnTouchOutside(false)
+            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

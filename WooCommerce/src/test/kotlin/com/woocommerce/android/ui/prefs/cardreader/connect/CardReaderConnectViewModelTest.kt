@@ -1,18 +1,17 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import androidx.lifecycle.SavedStateHandle
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.argThat
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.eq
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -63,9 +62,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
+    private val appPrefs: AppPrefs = mock()
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
-    private val appPrefsWrapper: AppPrefs = mock()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -73,7 +72,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             coroutinesTestRule.testDispatchers,
             tracker,
-            appPrefsWrapper
+            appPrefs,
         )
     }
 
@@ -256,7 +255,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when cardReaderManager gets initilized, then scan is started`() =
+    fun `when cardReaderManager gets initialized, then scan is started`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
 
@@ -300,6 +299,46 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = READER_FOUND)
 
             (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is null, when reader found, then reader found state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn(null)
+
+            init(scanState = READER_FOUND)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
+
+            init(scanState = READER_FOUND)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+        }
+
+    @Test
+    fun `given last connected reader is matching, when reader found, then auto reconnection event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
+
+            init(scanState = READER_FOUND)
+
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED)
+        }
+
+    @Test
+    fun `given last connected reader is not matching, when reader found, then reader found state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy2")
+
+            init(scanState = READER_FOUND)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
         }
@@ -430,6 +469,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when app successfully connects to reader, then reader id stored`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(connectingSucceeds = true)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(appPrefs).setLastConnectedCardReaderId("Dummy1")
+        }
+
+    @Test
     fun `when connecting to reader succeeds, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(connectingSucceeds = true)
@@ -441,7 +490,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when connecting to reader for the first time, then the tutorial shows`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(appPrefsWrapper.getShowCardReaderConnectedTutorial()).thenReturn(true)
+            whenever(appPrefs.getShowCardReaderConnectedTutorial()).thenReturn(true)
             init(connectingSucceeds = true)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             assertThat(viewModel.event.value).isInstanceOf(ShowCardReaderTutorial::class.java)
@@ -450,7 +499,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when connecting to reader not for the first time, then the tutorial doesn't show`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(appPrefsWrapper.getShowCardReaderConnectedTutorial()).thenReturn(false)
+            whenever(appPrefs.getShowCardReaderConnectedTutorial()).thenReturn(false)
             init(connectingSucceeds = true)
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(true))
@@ -760,7 +809,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
         whenever(cardReaderManager.discoverReaders(anyBoolean())).thenAnswer {
-            flow<CardReaderDiscoveryEvents> {
+            flow {
                 when (scanState) {
                     SCANNING -> { // no-op
                     }

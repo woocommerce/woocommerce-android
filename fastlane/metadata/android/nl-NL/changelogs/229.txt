@@ -1,0 +1,2 @@
+7.0:
+Het aanmaken van internationale verzendlabels is een fluitje van een cent! Verkopers in de VS die WooCommerce Shipping en Tax voor hun winkel gebruiken, kunnen nu verzendlabels en aangepaste formulieren voor internationale bestemmingen genereren. We zullen deze functionaliteit blijven doorontwikkelen, maar probeer 'm eens uit en laat ons dan weten of alles werkte!

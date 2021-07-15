@@ -118,6 +118,7 @@
     <string name="free">free</string>
     <string name="and">and</string>
     <string name="generic_string" translatable="false">%s</string>
+    <string name="error_required_field">Required field</string>
     <!--
         Date/Time Labels
     -->
@@ -472,7 +473,6 @@
     <string name="shipping_label_error_address_not_found">Address was not found</string>
     <string name="shipping_label_error_address_house_number_missing">House number missing</string>
     <string name="shipping_label_error_address_invalid_street">Invalid street</string>
-    <string name="shipping_label_error_required_field">Required field</string>
     <string name="shipping_label_validation_error_template">Validation failed: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
     <string name="shipping_label_validation_view_map">Open Map</string>
@@ -510,7 +510,7 @@
     <string name="shipping_label_packages_custom_section_title">Custom packages</string>
     <string name="shipping_label_single_package_total_weight">Total package weight: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d items in %2$d packages</string>
-    <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">Total packages weight: %1$s %2$s</string>
     <string name="shipping_label_create_new_package_button">Create new package</string>
     <!--
     Shipping label package creation labels
@@ -1179,6 +1179,7 @@
     <string name="settings_selected_store">Selected store</string>
     <string name="settings_store">Store settings</string>
     <string name="settings_card_reader">Manage card reader</string>
+    <string name="settings_card_reader_payments">In-person payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
