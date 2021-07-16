@@ -44,11 +44,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     private val binding get() = _binding!!
 
     override fun getFragmentTitle(): String {
-        return if (navArgs.isReprint) {
-            getString(R.string.orderdetail_shipping_label_print)
-        } else {
-            getString(R.string.shipping_label_print_screen_title)
-        }
+        return getString(viewModel.screenTitle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

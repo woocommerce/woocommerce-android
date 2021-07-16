@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.media.FileUtils
@@ -55,6 +55,13 @@ class PrintShippingLabelViewModel @Inject constructor(
     )
     private var viewState by viewStateData
 
+    val screenTitle: Int
+        get() = if (labels.size > 1) {
+            R.string.shipping_label_print_multiple_screen_title
+        } else {
+            R.string.shipping_label_print_screen_title
+        }
+
     fun onPrintShippingLabelInfoSelected() {
         triggerEvent(ViewPrintShippingLabelInfo)
     }
@@ -86,13 +93,13 @@ class PrintShippingLabelViewModel @Inject constructor(
 
                 viewState = viewState.copy(isProgressDialogShown = false)
                 if (requestResult.isError) {
-                    triggerEvent(ShowSnackbar(string.shipping_label_preview_error))
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_preview_error))
                 } else {
                     viewState = viewState.copy(previewShippingLabel = requestResult.model)
                 }
             }
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
     }
 
@@ -129,7 +136,7 @@ class PrintShippingLabelViewModel @Inject constructor(
 
     private suspend fun handlePreviewError() {
         withContext(dispatchers.main) {
-            triggerEvent(ShowSnackbar(string.shipping_label_preview_error))
+            triggerEvent(ShowSnackbar(R.string.shipping_label_preview_error))
         }
     }
 
