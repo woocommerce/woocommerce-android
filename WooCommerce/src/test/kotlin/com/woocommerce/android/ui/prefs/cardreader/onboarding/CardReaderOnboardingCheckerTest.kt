@@ -55,4 +55,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isNotEqualTo(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
         }
+
+    @Test
+    fun `when country code is not found, then COUNTRY_NOT_SUPPORTED returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn(null)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
+        }
 }

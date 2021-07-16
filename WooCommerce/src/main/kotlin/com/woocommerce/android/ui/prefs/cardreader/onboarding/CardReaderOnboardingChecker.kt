@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -33,8 +34,9 @@ class CardReaderOnboardingChecker @Inject constructor(
 
     private suspend fun isCountrySupported(): Boolean {
         return withContext(dispatchers.io) {
-            val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
-            SUPPORTED_COUNTRIES.any { it.equals(storeCountryCode, ignoreCase = true) }
+            wooStore.getStoreCountryCode(selectedSite.get())?.let { storeCountryCode ->
+                SUPPORTED_COUNTRIES.any { it.equals(storeCountryCode, ignoreCase = true) }
+            } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
         }
     }
 
