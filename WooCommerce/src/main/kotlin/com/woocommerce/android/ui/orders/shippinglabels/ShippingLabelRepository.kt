@@ -126,6 +126,7 @@ class ShippingLabelRepository @Inject constructor(
                     option.rates.isEmpty()
                 }
             } -> {
+                // if any of the packages doesn't have any rates, show the empty state screen
                 WooResult(WooError(GENERIC_ERROR, NOT_FOUND, "Empty result"))
             }
             else -> {
