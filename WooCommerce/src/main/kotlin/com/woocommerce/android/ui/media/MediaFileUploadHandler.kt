@@ -20,6 +20,8 @@ class MediaFileUploadHandler @Inject constructor(
 
     fun getMediaUploadErrorCount(remoteProductId: Long) = currentUploadErrors.get(remoteProductId)?.size ?: 0
 
+    fun getMediaUploadErrors(remoteProductId: Long) = currentUploadErrors.get(remoteProductId)
+
     fun onCleanup() {
         currentUploadErrors.clear()
     }

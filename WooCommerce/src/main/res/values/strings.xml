@@ -1123,6 +1123,7 @@
     <string name="product_image_service_error_media_null">Media could not be found</string>
     <string name="product_image_service_error_uploading_single">%d file couldn\'t be uploaded</string>
     <string name="product_image_service_error_uploading_multiple">%d files couldn\'t be uploaded</string>
+    <string name="product_images_error_detail_title">Upload details (%d)</string>
 
     <!--
         Empty list messages
