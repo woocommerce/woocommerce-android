@@ -24,7 +24,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private val site = SiteModel()
 
-
     @Before
     fun setUp() = testBlocking {
         checker = CardReaderOnboardingChecker(selectedSite, wooStore, wcPayStore, coroutinesTestRule.testDispatchers)
