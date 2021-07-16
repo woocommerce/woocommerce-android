@@ -131,7 +131,7 @@ class ProductImageViewerFragment :
 
         val position = pagerAdapter.indexOfImageId(remoteMediaId)
         if (position > -1) {
-            binding.viewPager.currentItem = position
+            binding.viewPager.setCurrentItem(position, false)
         }
     }
 
