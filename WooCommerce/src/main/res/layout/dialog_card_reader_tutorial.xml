@@ -12,7 +12,7 @@
         android:layout_marginTop="@dimen/major_200"
         android:gravity="center_horizontal">
 
-        <com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialViewPager
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="wrap_content"
             android:layout_height="0dp"

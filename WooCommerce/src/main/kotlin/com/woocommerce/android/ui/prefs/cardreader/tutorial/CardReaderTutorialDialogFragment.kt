@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogCardReaderTutorialBinding
@@ -34,14 +34,14 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
 
         val binding = DialogCardReaderTutorialBinding.bind(view)
 
-        binding.viewPager.initViewPager(childFragmentManager)
-        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
-        binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+        binding.viewPager.adapter = CardReaderTutorialAdapter(this)
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                val lastPosition = CardReaderTutorialViewPager.NUM_PAGES - 1
+                val lastPosition = CardReaderTutorialAdapter.NUM_PAGES - 1
                 binding.buttonSkip.setText(if (position == lastPosition) R.string.close else R.string.skip)
             }
         })
+        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
 
         binding.buttonSkip.setOnClickListener {
             navigateBackWithNotice(KEY_READER_TUTORIAL_RESULT)
