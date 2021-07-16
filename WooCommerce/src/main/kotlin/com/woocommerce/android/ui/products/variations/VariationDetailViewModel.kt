@@ -23,22 +23,19 @@ import com.woocommerce.android.model.ProductVariation.Option
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductBackorderStatus
-import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.*
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.*
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.navArgs
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -58,6 +55,7 @@ class VariationDetailViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val parameterRepository: ParameterRepository,
+    private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val resources: ResourceProvider
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -427,7 +425,10 @@ class VariationDetailViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
-            triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
+            val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteVariationId)
+            triggerEvent(
+                ShowActionSnackbar(errorMsg, { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) })
+            )
         } else {
             event.media?.let { media ->
                 viewState.variation?.let {

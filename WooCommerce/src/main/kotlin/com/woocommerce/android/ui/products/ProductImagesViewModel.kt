@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -21,14 +20,13 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.swap
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -158,27 +156,7 @@ class ProductImagesViewModel @Inject constructor(
                 )
             }
             Browsing -> {
-                onExit()
-            }
-        }
-    }
-
-    private fun onExit() {
-        when {
-            ProductImagesService.isUploadingForProduct(navArgs.remoteId) -> {
-                triggerEvent(
-                    ShowDialog(
-                        messageId = string.discard_images_message,
-                        positiveButtonId = string.discard,
-                        positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                            ProductImagesService.cancel()
-                            triggerEvent(ExitWithResult(originalImages))
-                        }
-                    )
-                )
-            }
-            else -> {
-                triggerEvent(ExitWithResult(images))
+                triggerEvent(Exit)
             }
         }
     }

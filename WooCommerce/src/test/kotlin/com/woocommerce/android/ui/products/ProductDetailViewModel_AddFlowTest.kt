@@ -18,6 +18,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -70,6 +71,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
+
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private val savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
@@ -163,6 +166,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 productTagsRepository,
                 mediaFilesRepository,
                 variationRepository,
+                mediaFileUploadHandler,
                 prefs
             )
         )
@@ -248,8 +252,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onUpdateButtonClicked()
 
         // then
-        assertThat(successSnackbarShown).isTrue
-        assertThat(productData?.isProgressDialogShown).isFalse
+        assertThat(successSnackbarShown).isTrue()
+        assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
     @Test

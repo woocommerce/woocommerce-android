@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -46,6 +47,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Var
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -79,6 +81,7 @@ class ProductDetailFragment :
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
     private var updateMenuItem: MenuItem? = null
+    private var detailSnackbar: Snackbar? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val updateTitleId = R.string.update
@@ -178,7 +181,7 @@ class ProductDetailFragment :
             )
             changesMade()
         }
-        handleResult<List<Product.Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
+        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 images = it
             )
@@ -262,6 +265,7 @@ class ProductDetailFragment :
                             }
                         )
                     }
+                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                     else -> event.isHandled = false
                 }
             }
@@ -305,6 +309,22 @@ class ProductDetailFragment :
         return if (viewModel.isProductUnderCreation && product.name.isEmpty()) {
             getString(R.string.product_add_tool_bar_title)
         } else product.name.fastStripHtml()
+    }
+
+    private fun displayProductImageUploadErrorSnackBar(
+        message: String,
+        actionListener: View.OnClickListener
+    ) {
+        if (detailSnackbar == null) {
+            detailSnackbar = uiMessageResolver.getActionSnack(
+                message = message,
+                actionText = getString(R.string.details),
+                actionListener = actionListener
+            )
+        } else {
+            detailSnackbar?.setText(message)
+        }
+        detailSnackbar?.show()
     }
 
     private fun startAddImageContainer() {
@@ -462,7 +482,7 @@ class ProductDetailFragment :
         return viewModel.onBackButtonClickedProductDetail()
     }
 
-    override fun onGalleryImageClicked(image: Product.Image) {
+    override fun onGalleryImageClicked(image: Image) {
         viewModel.onImageClicked(image)
     }
 

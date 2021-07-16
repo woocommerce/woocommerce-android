@@ -17,8 +17,7 @@ sealed class VariationNavigationTarget : Event() {
     data class ViewPricing(val pricingData: PricingData) : VariationNavigationTarget()
     data class ViewShipping(val shippingData: ShippingData) : VariationNavigationTarget()
     data class ViewDescriptionEditor(val description: String, val title: String) : VariationNavigationTarget()
-    data class ViewMenuOrder(val menuOrder: Int) : VariationNavigationTarget()
-    data class ViewBottomSheet(val remoteId: Long) : VariationNavigationTarget()
+    data class ViewMediaUploadErrors(val remoteId: Long) : VariationNavigationTarget()
     data class ViewAttributes(
         val remoteProductId: Long,
         val remoteVariationId: Long

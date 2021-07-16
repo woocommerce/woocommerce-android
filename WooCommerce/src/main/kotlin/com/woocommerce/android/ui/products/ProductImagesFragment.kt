@@ -46,6 +46,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -186,6 +187,7 @@ class ProductImagesFragment :
             viewLifecycleOwner,
             Observer { event ->
                 when (event) {
+                    is Exit -> findNavController().navigateUp()
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                     is ProductNavigationTarget -> navigator.navigate(this, event)

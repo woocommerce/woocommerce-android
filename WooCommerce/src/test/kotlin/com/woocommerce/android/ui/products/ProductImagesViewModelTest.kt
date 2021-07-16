@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImag
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductImagesList
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
@@ -65,7 +65,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel.onNavigateBackButtonClicked()
 
         observeEvents { event ->
-            assertThat(event).isEqualTo(ExitWithResult(images))
+            assertThat(event).isEqualTo(Exit)
         }
     }
 
