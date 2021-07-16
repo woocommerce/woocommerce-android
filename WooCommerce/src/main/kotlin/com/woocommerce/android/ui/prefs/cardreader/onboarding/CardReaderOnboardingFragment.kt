@@ -15,22 +15,8 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentCardReaderOnboardingBinding.bind(view)
-        // showOnboardingFragment(binding)
         showOnboardingLayout(binding, R.layout.fragment_card_reader_onboarding_loading)
     }
-
-    /*private fun showOnboardingFragment(binding: FragmentCardReaderOnboardingBinding) {
-        val fragment = CardReaderOnboardingLoadingFragment.newInstance()
-        parentFragmentManager.beginTransaction()
-            .setCustomAnimations(
-                R.anim.activity_fade_in,
-                R.anim.activity_fade_out,
-                R.anim.activity_fade_in,
-                R.anim.activity_fade_out
-            )
-            .replace(binding.container.id, fragment)
-            .commitAllowingStateLoss()
-    }*/
 
     private fun showOnboardingLayout(binding: FragmentCardReaderOnboardingBinding, @LayoutRes layoutRes: Int) {
         val duration = WooAnimUtils.Duration.LONG
