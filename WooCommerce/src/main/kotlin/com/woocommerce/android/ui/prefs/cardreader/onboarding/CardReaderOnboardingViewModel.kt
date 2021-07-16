@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,8 +44,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
     sealed class ViewState(
         val onboardingState: CardReaderOnboardingState
     ) {
-        @LayoutRes fun getLayoutRes(): Int {
-            return when(onboardingState) {
+        @LayoutRes
+        fun getLayoutRes(): Int {
+            return when (onboardingState) {
                 else -> R.layout.fragment_card_reader_onboarding_loading
             }
         }
