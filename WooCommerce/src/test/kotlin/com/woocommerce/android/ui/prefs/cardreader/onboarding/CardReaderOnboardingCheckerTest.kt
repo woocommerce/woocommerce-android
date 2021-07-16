@@ -70,13 +70,117 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             assertThat(result).isEqualTo(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
         }
 
+    @Test
+    fun `when stripe account not connected, then WCPAY_SETUP_NOT_COMPLETED returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.NO_ACCOUNT
+            ))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED)
+        }
+
+    @Test
+    fun `when stripe account under review, then WCPAY_SETUP_NOT_COMPLETED returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                hasPendingRequirements = false,
+                hadOverdueRequirements = false
+            ))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW)
+        }
+
+    @Test
+    fun `when stripe account pending requirements, then STRIPE_ACCOUNT_PENDING_REQUIREMENT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                hasPendingRequirements = true,
+                hadOverdueRequirements = false
+            ))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT)
+        }
+
+    @Test
+    fun `when stripe account has overdue requirements, then STRIPE_ACCOUNT_OVERDUE_REQUIREMENT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                hasPendingRequirements = false,
+                hadOverdueRequirements = true
+            ))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT)
+        }
+
+    @Test
+    fun `when stripe account marked as fraud, then STRIPE_ACCOUNT_REJECTED returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_FRAUD,
+            ))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+        }
+
+    @Test
+    fun `when stripe account listed, then STRIPE_ACCOUNT_REJECTED returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_LISTED,
+            ))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+        }
+
+    @Test
+    fun `when stripe account violates terms of service, then STRIPE_ACCOUNT_REJECTED returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+            ))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+        }
+
+    @Test
+    fun `when stripe account rejected for other reasons, then STRIPE_ACCOUNT_REJECTED returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_OTHER,
+            ))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+        }
+
     private fun buildPaymentAccountResult(
-        status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE
+        status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE,
+        hasPendingRequirements: Boolean = false,
+        hadOverdueRequirements: Boolean = false
     ) = WooResult(
         WCPaymentAccountResult(
             status,
-            hasPendingRequirements = false,
-            hasOverdueRequirements = false,
+            hasPendingRequirements = hasPendingRequirements,
+            hasOverdueRequirements = hadOverdueRequirements,
             currentDeadline = null,
             statementDescriptor = "",
             storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
