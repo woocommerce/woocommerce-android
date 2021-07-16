@@ -390,7 +390,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         // Discount
         if (state.discount.isNotEqualTo(BigDecimal.ZERO)) {
             discountGroup.isVisible = true
-            discountPrice.text = PriceUtils.formatCurrency(state.discount, state.currency, currencyFormatter)
+            discountPrice.text = PriceUtils.formatCurrency(-state.discount, state.currency, currencyFormatter)
         } else {
             discountGroup.isVisible = false
         }
