@@ -4,6 +4,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
+import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -13,21 +15,26 @@ private val SUPPORTED_COUNTRIES = listOf("US")
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooStore: WooCommerceStore,
+    private val wcPayStore: WCPayStore,
     private val dispatchers: CoroutineDispatchers
 ) {
     suspend fun getOnboardingState(): CardReaderOnboardingState {
+        val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model
+            ?: return CardReaderOnboardingState.GENERIC_ERROR
+
         return when {
             !isCountrySupported() -> CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED
             !isWCPayInstalled() -> CardReaderOnboardingState.WCPAY_NOT_INSTALLED
             !isWCPayVersionSupported() -> CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION
             !isWCPayActivated() -> CardReaderOnboardingState.WCPAY_NOT_ACTIVATED
-            !isWCPaySetupCompleted() -> CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED
+            !isWCPaySetupCompleted(paymentAccount) -> CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED
             isWCPayInTestModeWithLiveStripeAccount() ->
                 CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
-            isStripeAccountUnderReview() -> CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW
-            isStripeAccountPendingRequirements() -> CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT
-            isStripeAccountOverdueRequirements() -> CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
-            isStripeAccountRejected() -> CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED
+            isStripeAccountUnderReview(paymentAccount) -> CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW
+            isStripeAccountPendingRequirements(paymentAccount) -> CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT
+            isStripeAccountOverdueRequirements(paymentAccount) -> CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
+            isStripeAccountRejected(paymentAccount) -> CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED
+            isInUndefinedState(paymentAccount) -> CardReaderOnboardingState.GENERIC_ERROR
             else -> CardReaderOnboardingState.ONBOARDING_COMPLETED
         }
     }
@@ -52,30 +59,36 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPayActivated(): Boolean = true
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPaySetupCompleted(): Boolean = true
+    private fun isWCPaySetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status != WCPaymentAccountResult.WCPayAccountStatusEnum.NO_ACCOUNT
 
     // TODO cardreader Implement
     @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPayInTestModeWithLiveStripeAccount(): Boolean = false
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isStripeAccountUnderReview(): Boolean = false
+    private fun isStripeAccountUnderReview(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
+            !paymentAccount.hasPendingRequirements &&
+            !paymentAccount.hasOverdueRequirements
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isStripeAccountPendingRequirements(): Boolean = false
+    private fun isStripeAccountPendingRequirements(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
+            paymentAccount.hasPendingRequirements
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isStripeAccountOverdueRequirements(): Boolean = false
+    private fun isStripeAccountOverdueRequirements(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
+            paymentAccount.hasOverdueRequirements
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isStripeAccountRejected(): Boolean = false
+    private fun isStripeAccountRejected(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_FRAUD &&
+            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_LISTED &&
+            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE &&
+            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_OTHER
+
 }
+
+private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
+    paymentAccount.status != WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE
 
 enum class CardReaderOnboardingState {
     ONBOARDING_COMPLETED,
