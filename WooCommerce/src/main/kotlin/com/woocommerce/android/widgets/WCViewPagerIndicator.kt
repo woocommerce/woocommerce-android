@@ -34,7 +34,7 @@ class WCViewPagerIndicator @JvmOverloads constructor(
                 indicators.add(imageView)
 
                 imageView.setOnClickListener {
-                    viewPager.currentItem = page
+                    viewPager.setCurrentItem(page, true)
                 }
             }
         }
