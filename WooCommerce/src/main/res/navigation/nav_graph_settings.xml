@@ -16,6 +16,13 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
+            android:id="@+id/action_mainSettingsFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
             android:id="@+id/action_mainSettingsFragment_to_privacySettingsFragment"
             app:destination="@id/privacySettingsFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
@@ -55,7 +62,13 @@
     <dialog
         android:id="@+id/cardReaderConnectFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
-        android:label="CardReaderConnectFragment" />
+        android:label="CardReaderConnectFragment">
+        <action
+            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"
+            app:destination="@id/cardReaderTutorialDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </dialog>
     <dialog
         android:id="@+id/cardReaderUpdateDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
@@ -65,6 +78,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
+    <dialog
+        android:id="@+id/cardReaderTutorialDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
+        android:label="CardReaderTutorialDialogFragment" />
     <fragment
         android:id="@+id/cardReaderDetailFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailFragment"
@@ -80,6 +97,10 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
+    <fragment
+        android:id="@+id/cardReaderOnboardingFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
+        android:label="CardReaderOnboardingFragment" />
     <fragment
         android:id="@+id/privacySettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.PrivacySettingsFragment"

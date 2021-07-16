@@ -1,19 +1,13 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.atLeastOnce
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.Field
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
@@ -23,11 +17,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.invocation.InvocationOnMock
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
@@ -42,16 +36,14 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     private val site = mock<SelectedSite>()
 
     private val address = CreateShippingLabelTestUtils.generateAddress()
-    private var validationResult: ValidationResult = ValidationResult.Valid
-
-    private val initialViewState = ViewState(
-        address = address,
-        title = string.orderdetail_shipping_label_item_shipfrom,
-        isValidationProgressDialogVisible = false,
-        isStateFieldSpinner = true,
-        selectedStateName = "Kentucky",
-        selectedCountryName = "USA"
+    private val adjustedAddress = address.copy(
+        firstName = "${address.firstName} ${address.lastName}",
+        lastName = "",
+        email = ""
     )
+
+    private var validationResult: ValidationResult = ValidationResult.Valid
+    private var isPhoneRequired = false
 
     private val countries = listOf(
         WCLocationModel().also {
@@ -91,7 +83,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
             address = address,
             addressType = ORIGIN,
             validationResult = validationResult,
-            requiresPhoneNumber = false
+            requiresPhoneNumber = isPhoneRequired
         ).initSavedStateHandle()
 
     private lateinit var viewModel: EditShippingLabelAddressViewModel
@@ -101,7 +93,9 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(countries)
         whenever(dataStore.getStates("US")).thenReturn(states)
         whenever(dataStore.getStates("VI")).thenReturn(emptyList())
-        whenever(resourceProvider.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
+        val resourceProviderAnswer = { i: InvocationOnMock -> i.arguments[0].toString() }
+        whenever(resourceProvider.getString(any())).thenAnswer(resourceProviderAnswer)
+        whenever(resourceProvider.getString(any(), anyVararg())).thenAnswer(resourceProviderAnswer)
 
         createViewModel()
     }
@@ -117,15 +111,22 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays entered and suggested address correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when the screen loads, then prefill the fields with the passed address`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        assertThat(viewState).isEqualTo(initialViewState)
+        assertThat(viewState?.nameField?.content).isEqualTo("${address.firstName} ${address.lastName}")
+        assertThat(viewState?.companyField?.content).isEqualTo(address.company)
+        assertThat(viewState?.phoneField?.content).isEqualTo(address.phone)
+        assertThat(viewState?.address1Field?.content).isEqualTo(address.address1)
+        assertThat(viewState?.address2Field?.content).isEqualTo(address.address2)
+        assertThat(viewState?.cityField?.content).isEqualTo(address.city)
+        assertThat(viewState?.stateField?.location?.code).isEqualTo(address.state)
+        assertThat(viewState?.countryField?.location?.code).isEqualTo(address.country)
     }
 
     @Test
-    fun `Shows address error for invalid address`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `given the address is invalid, when the screen loads, then display an error`() = testBlocking {
         validationResult = ValidationResult.Invalid("House number is missing")
 
         createViewModel()
@@ -133,16 +134,13 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        val invalidViewState = initialViewState.copy(
-            bannerMessage = string.shipping_label_edit_address_error_warning.toString(),
-            addressError = string.shipping_label_error_address_house_number_missing
-        )
-
-        assertThat(viewState).isEqualTo(invalidViewState)
+        assertThat(viewState?.bannerMessage).isEqualTo(string.shipping_label_edit_address_error_warning.toString())
+        assertThat(viewState?.address1Field?.error)
+            .isEqualTo(UiStringRes(string.shipping_label_error_address_house_number_missing))
     }
 
     @Test
-    fun `Shows address error for address not found`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `given the address is not found, when the screen loads, then display an error`() = testBlocking {
         validationResult = ValidationResult.NotFound("Address not found")
 
         createViewModel()
@@ -150,96 +148,84 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        val invalidViewState = initialViewState.copy(
-            bannerMessage = string.shipping_label_edit_address_error_warning.toString()
-        )
-
-        assertThat(viewState).isEqualTo(invalidViewState)
+        assertThat(viewState?.bannerMessage)
+            .isEqualTo(string.shipping_label_validation_error_template.toString())
     }
 
     @Test
-    fun `Shows a snackbar on validation error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when validation fails, then display a snackbar`() = testBlocking {
         whenever(addressValidator.validateAddress(any(), any(), any()))
             .thenReturn(ValidationResult.Error(GENERIC_ERROR))
 
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
-        viewModel.onDoneButtonClicked(address)
+        viewModel.onDoneButtonClicked()
 
         assertThat(event).isEqualTo(ShowSnackbar(string.shipping_label_edit_address_validation_error))
     }
 
     @Test
-    fun `Shows the right error for an invalid street`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when the address has an invalid stree, then display an error`() = testBlocking {
         whenever(addressValidator.validateAddress(any(), any(), any()))
             .thenReturn(ValidationResult.Invalid("Street is invalid"))
 
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        val invalidViewState = initialViewState.copy(
-            nameError = 0,
-            zipError = 0,
-            cityError = 0,
-            bannerMessage = "",
-            addressError = string.shipping_label_error_address_invalid_street
-        )
+        viewModel.onDoneButtonClicked()
 
-        viewModel.onDoneButtonClicked(address)
-
-        assertThat(viewState).isEqualTo(invalidViewState)
+        assertThat(viewState?.address1Field?.error)
+            .isEqualTo(UiStringRes(string.shipping_label_error_address_invalid_street))
     }
 
     @Test
-    fun `Returns unvalidated address when tapped on use as is`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when use as is is clicked, then skip address remote validation`() = testBlocking {
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
         viewModel.onUseAddressAsIsButtonClicked()
 
         verify(addressValidator, never()).validateAddress(any(), any(), any())
-
-        assertThat(event).isEqualTo(ExitWithResult(address))
+        assertThat(event).isEqualTo(ExitWithResult(adjustedAddress))
     }
 
     @Test
-    fun `Dial phone number event triggered on contact customer tapped`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            var event: Event? = null
-            viewModel.event.observeForever { event = it }
+    fun `when contact customer tapped, then dial phone number`() = testBlocking {
+        var event: Event? = null
+        viewModel.event.observeForever { event = it }
 
-            viewModel.onContactCustomerTapped()
+        viewModel.onContactCustomerTapped()
 
-            assertThat(event).isEqualTo(DialPhoneNumber(address.phone))
-        }
+        assertThat(event).isEqualTo(DialPhoneNumber(address.phone))
+    }
 
     @Test
-    fun `Open map event triggered on contact customer tapped`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when open map is tapped, then trigger event to open it`() = testBlocking {
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
         viewModel.onOpenMapTapped()
 
-        assertThat(event).isEqualTo(OpenMapWithAddress(address))
+        assertThat(event).isEqualTo(OpenMapWithAddress(adjustedAddress))
     }
 
     @Test
-    fun `Address validated and returned if valid`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `given address is valid, when done is clicked, then return it`() = testBlocking {
         whenever(addressValidator.validateAddress(any(), any(), any())).thenReturn(ValidationResult.Valid)
 
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
-        viewModel.onDoneButtonClicked(address)
+        viewModel.onDoneButtonClicked()
 
         verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
 
-        assertThat(event).isEqualTo(ExitWithResult(address))
+        assertThat(event).isEqualTo(ExitWithResult(adjustedAddress))
     }
 
     @Test
-    fun `Address valid but changes suggested`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `given there are suggestions to improve address, when done is clicked, then display them`() = testBlocking {
         val suggestedAddress = address.copy(address1 = "Suggested street")
         whenever(addressValidator.validateAddress(any(), any(), any()))
             .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress))
@@ -247,85 +233,85 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
-        viewModel.onDoneButtonClicked(address)
+        viewModel.onDoneButtonClicked()
 
         verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
 
-        assertThat(event).isEqualTo(ShowSuggestedAddress(address, suggestedAddress, ORIGIN))
+        assertThat(event).isEqualTo(ShowSuggestedAddress(adjustedAddress, suggestedAddress, ORIGIN))
     }
 
     @Test
-    fun `Show the selector when spinner tapped`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when country spinner is tapped, then display country selector`() = testBlocking {
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
         viewModel.onCountrySpinnerTapped()
 
-        assertThat(event).isEqualTo(ShowCountrySelector(countries, initialViewState.address?.country))
+        assertThat(event).isEqualTo(ShowCountrySelector(countries.map { it.toAppModel() }, address.country))
+    }
+
+    @Test
+    fun `when state spinner is tapped, then display state selector`() = testBlocking {
+        var event: Event? = null
+        viewModel.event.observeForever { event = it }
 
         viewModel.onStateSpinnerTapped()
 
-        assertThat(event).isEqualTo(ShowStateSelector(states, initialViewState.address?.state))
+        assertThat(event).isEqualTo(ShowStateSelector(states.map { it.toAppModel() }, address.state))
     }
 
     @Test
-    fun `Shows the errors for the missing required values`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> viewState = new }
-
-        val emptyAddress = address.copy(
-            company = "",
-            firstName = "",
-            lastName = "",
-            address1 = "",
-            city = "",
-            postcode = ""
-        )
-
-        val invalidViewState = initialViewState.copy(
-            nameError = string.shipping_label_error_required_field,
-            zipError = string.shipping_label_error_required_field,
-            cityError = string.shipping_label_error_required_field,
-            addressError = string.shipping_label_error_required_field,
-            address = emptyAddress
-        )
-
-        viewModel.updateAddress(emptyAddress)
-        viewModel.onUseAddressAsIsButtonClicked()
-
-        assertThat(viewState).isEqualTo(invalidViewState)
-    }
-
-    @Test
-    fun `Hides the spinner for a country without states`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when country doesn't have states, then hide state spinner`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
         viewModel.onCountrySelected("VI")
 
-        assertThat(viewState).isEqualTo(
-            initialViewState.copy(
-                address.copy(country = "VI"),
-                selectedCountryName = "Virgin Islands (US)",
-                selectedStateName = "",
-                isStateFieldSpinner = false
-            )
-        )
+        assertThat(viewState?.isStateFieldSpinner).isEqualTo(false)
     }
 
     @Test
-    fun `Shows the correct state name when state changed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when state is changed, then display its correct name`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        viewModel.onStateSelected("NY")
+        viewModel.onFieldEdited(Field.State, "NY")
 
-        assertThat(viewState).isEqualTo(
-            initialViewState.copy(
-                address.copy(state = "NY"),
-                selectedCountryName = "USA",
-                selectedStateName = "New York"
-            )
-        )
+        assertThat(viewState?.stateField?.content).isEqualTo("New York")
+    }
+
+    @Test
+    fun `when name and company are missing, then display an error`() = testBlocking {
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.onFieldEdited(Field.Name, "")
+        viewModel.onFieldEdited(Field.Company, "")
+
+        assertThat(viewState?.nameField?.error).isEqualTo(UiStringRes(string.error_required_field))
+    }
+
+    @Test
+    fun `given country has states, when state is missing, then display an error`() = testBlocking {
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.onCountrySelected("US")
+        viewModel.onFieldEdited(Field.State, "")
+
+        assertThat(viewState?.stateField?.error).isEqualTo(UiStringRes(string.error_required_field))
+    }
+
+    @Test
+    fun `given phone is required, when it is missing, then display an error`() = testBlocking {
+        isPhoneRequired = true
+        createViewModel()
+
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.onFieldEdited(Field.Phone, "")
+
+        assertThat(viewState?.phoneField?.error).isEqualTo(UiStringRes(string.shipping_label_address_phone_required))
     }
 }

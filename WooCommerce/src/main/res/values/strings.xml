@@ -92,6 +92,7 @@
     <string name="clear">Clear</string>
     <string name="done">Done</string>
     <string name="back">Back</string>
+    <string name="close">Close</string>
     <string name="button_update_instructions">Update instructions</string>
     <string name="dismiss">Dismiss</string>
     <string name="no_thanks">No thanks</string>
@@ -117,6 +118,7 @@
     <string name="free">free</string>
     <string name="and">and</string>
     <string name="generic_string" translatable="false">%s</string>
+    <string name="error_required_field">Required field</string>
     <!--
         Date/Time Labels
     -->
@@ -471,7 +473,6 @@
     <string name="shipping_label_error_address_not_found">Address was not found</string>
     <string name="shipping_label_error_address_house_number_missing">House number missing</string>
     <string name="shipping_label_error_address_invalid_street">Invalid street</string>
-    <string name="shipping_label_error_required_field">Required field</string>
     <string name="shipping_label_validation_error_template">Validation failed: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
     <string name="shipping_label_validation_view_map">Open Map</string>
@@ -509,7 +510,7 @@
     <string name="shipping_label_packages_custom_section_title">Custom packages</string>
     <string name="shipping_label_single_package_total_weight">Total package weight: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d items in %2$d packages</string>
-    <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">Total packages weight: %1$s %2$s</string>
     <string name="shipping_label_create_new_package_button">Create new package</string>
     <!--
     Shipping label package creation labels
@@ -814,6 +815,18 @@
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
     <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+
+    <!--
+        Card reader tutorial
+    -->
+    <string name="card_reader_tutorial_connected_label">Reader connected</string>
+    <string name="card_reader_tutorial_connected_detail">Congrats, you are now able to accept debit and credit card payments!</string>
+    <string name="card_reader_tutorial_collect_label">Swipe, tap or insert card</string>
+    <string name="card_reader_tutorial_collect_detail">To collect payments, simply swipe, tap or insert card on reader</string>
+    <string name="card_reader_tutorial_reconnect_label">Automattic reconnection</string>
+    <string name="card_reader_tutorial_reconnect_detail">Your reader will go to sleep after 10 min of inactivity. Simply press the power button to reconnect it.</string>
+    <string name="card_reader_tutorial_charged_label">Keep your reader charged</string>
+    <string name="card_reader_tutorial_charged_detail">Your reader takes about three hours to fully charge</string>
 
     <!--
         Notifications
@@ -1166,6 +1179,7 @@
     <string name="settings_selected_store">Selected store</string>
     <string name="settings_store">Store settings</string>
     <string name="settings_card_reader">Manage card reader</string>
+    <string name="settings_card_reader_payments">In-person payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>

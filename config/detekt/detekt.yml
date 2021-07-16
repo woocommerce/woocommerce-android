@@ -2,6 +2,8 @@ build:
   maxIssues: 0
 
 complexity:
+  LargeClass:
+    excludes: ['**/test/**']
   LongParameterList:
     ignoreDefaultParameters: true
     ignoreAnnotated: ['Inject']

@@ -1,15 +1,7 @@
 package com.woocommerce.android.ui.orders.cardreader
 
 import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.clearInvocations
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -72,7 +64,6 @@ import java.math.BigDecimal
 private val DUMMY_TOTAL = BigDecimal(10.72)
 private const val DUMMY_ORDER_NUMBER = "123"
 
-@Suppress("LargeClass")
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -849,6 +840,36 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.reFetchOrder()
 
             assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
+        }
+
+    @Test
+    fun `given user leaves the screen, when payment fails, then payment canceled`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any())).thenAnswer {
+                flow { emit(paymentFailedWithValidDataForRetry) }
+            }
+            viewModel.start()
+
+            viewModel.onCleared()
+
+            verify(cardReaderManager).cancelPayment(any())
+        }
+
+    @Test
+    fun `given user leaves the screen, when payment succeeded on retry, then payment NOT canceled`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any(), any(), any(), any(), any()))
+                .thenAnswer {
+                    flow {
+                        emit(paymentFailedWithValidDataForRetry)
+                        emit(PaymentCompleted(""))
+                    }
+                }
+            viewModel.start()
+
+            viewModel.onCleared()
+
+            verify(cardReaderManager, never()).cancelPayment(any())
         }
 
     private fun simulateFetchOrderJobState(inProgress: Boolean) {

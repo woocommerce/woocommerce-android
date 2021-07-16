@@ -526,10 +526,9 @@ class CreateShippingLabelViewModel @Inject constructor(
                 val firstLine = if (data.size == 1) {
                     data.first().selectedPackage!!.title
                 } else {
-                    // TODO properly test this during M3
                     resourceProvider.getString(
                         string.shipping_label_multi_packages_items_count,
-                        data.sumBy { it.items.size },
+                        data.sumBy { it.itemsCount },
                         data.size
                     )
                 }
