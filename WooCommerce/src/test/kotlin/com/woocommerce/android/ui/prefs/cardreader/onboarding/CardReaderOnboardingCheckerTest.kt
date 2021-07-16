@@ -9,6 +9,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -17,15 +20,17 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
+    private val wcPayStore: WCPayStore = mock()
 
     private val site = SiteModel()
 
 
     @Before
-    fun setUp() {
-        checker = CardReaderOnboardingChecker(selectedSite, wooStore, coroutinesTestRule.testDispatchers)
+    fun setUp() = testBlocking {
+        checker = CardReaderOnboardingChecker(selectedSite, wooStore, wcPayStore, coroutinesTestRule.testDispatchers)
         whenever(selectedSite.get()).thenReturn(site)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
+        whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult())
     }
 
     @Test
@@ -65,4 +70,19 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
         }
+
+    private fun buildPaymentAccountResult(
+        status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE
+    ) = WooResult(
+        WCPaymentAccountResult(
+            status,
+            hasPendingRequirements = false,
+            hasOverdueRequirements = false,
+            currentDeadline = null,
+            statementDescriptor = "",
+            storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
+            country = "US",
+            isCardPresentEligible = true
+        )
+    )
 }
