@@ -1,12 +1,11 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
+import androidx.annotation.LayoutRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -16,15 +15,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CardReaderOnboardingViewModel @Inject constructor(
-    savedState: SavedStateHandle,
-    private val dispatchers: CoroutineDispatchers,
-    private val tracker: AnalyticsTrackerWrapper,
-    private val appPrefs: AppPrefs,
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
 
-    private lateinit var cardReaderManager: CardReaderManager
     private lateinit var cardReaderChecker: CardReaderOnboardingChecker
 
     private val viewState = MutableLiveData<ViewState>()
@@ -50,7 +45,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
     sealed class ViewState(
         val onboardingState: CardReaderOnboardingState
     ) {
-        open val onPrimaryActionClicked: (() -> Unit)? = null
-        open val onSecondaryActionClicked: (() -> Unit)? = null
+        @LayoutRes fun getLayoutRes(): Int {
+            return when(onboardingState) {
+                else -> R.layout.fragment_card_reader_onboarding_loading
+            }
+        }
     }
 }
