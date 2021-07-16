@@ -20,7 +20,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private val site = SiteModel()
 
-
     @Before
     fun setUp() {
         checker = CardReaderOnboardingChecker(selectedSite, wooStore, coroutinesTestRule.testDispatchers)
