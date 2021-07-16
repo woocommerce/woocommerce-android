@@ -1,9 +1,20 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
+private val SUPPORTED_COUNTRIES = listOf("US")
+
 @Suppress("TooManyFunctions")
-class CardReaderOnboardingChecker @Inject constructor() {
+class CardReaderOnboardingChecker @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val wooStore: WooCommerceStore,
+    private val dispatchers: CoroutineDispatchers
+) {
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         return when {
             !isCountrySupported() -> CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED
@@ -21,9 +32,13 @@ class CardReaderOnboardingChecker @Inject constructor() {
         }
     }
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isCountrySupported(): Boolean = true
+    private suspend fun isCountrySupported(): Boolean {
+        return withContext(dispatchers.io) {
+            wooStore.getStoreCountryCode(selectedSite.get())?.let { storeCountryCode ->
+                SUPPORTED_COUNTRIES.any { it.equals(storeCountryCode, ignoreCase = true) }
+            } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
+        }
+    }
 
     // TODO cardreader Implement
     @Suppress("FunctionOnlyReturningConstant")

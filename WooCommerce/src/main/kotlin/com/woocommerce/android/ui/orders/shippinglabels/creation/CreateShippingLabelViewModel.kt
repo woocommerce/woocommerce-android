@@ -30,13 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.PaymentMethod
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -392,9 +386,17 @@ class CreateShippingLabelViewModel @Inject constructor(
             with(stateMachineData.stepsState.carrierStep.data) {
                 val price = sumByBigDecimal { it.price }
                 val discount = sumByBigDecimal { it.discount }
+                val individualPackagesPrices = if (size > 1) {
+                    map { rate ->
+                        val labelPackage = stateMachineData.stepsState.packagingStep.data
+                            .first { it.packageId == rate.packageId }
+                        Pair(labelPackage, rate.price)
+                    }.toMap()
+                } else emptyMap()
 
                 return OrderSummaryState(
                     isVisible = true,
+                    individualPackagesPrices = individualPackagesPrices,
                     price = price,
                     discount = discount,
                     // TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use
@@ -744,6 +746,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     @Parcelize
     data class OrderSummaryState(
         val isVisible: Boolean = false,
+        val individualPackagesPrices: Map<ShippingLabelPackage, BigDecimal> = emptyMap(),
         val price: BigDecimal = BigDecimal.ZERO,
         val discount: BigDecimal = BigDecimal.ZERO,
         val currency: String? = null
