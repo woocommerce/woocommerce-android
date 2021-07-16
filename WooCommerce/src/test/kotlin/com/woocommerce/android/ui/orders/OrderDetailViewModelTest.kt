@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -55,6 +56,7 @@ import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
+import java.util.concurrent.CancellationException
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -910,6 +912,61 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
 
             assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_fulfill_completed))
+        }
+
+    @Test
+    fun `show error changing order snackbar if updating status failed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(ContinuationWrapper.ContinuationResult.Success(false)).whenever(repository)
+                .updateOrderStatus(any(), any())
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
+
+            assertThat(snackbar?.message).isEqualTo(string.order_error_update_general)
+        }
+
+    @Test
+    fun `do not show error changing order snackbar if updating status failed because of cancellation`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(ContinuationWrapper.ContinuationResult.Cancellation<Boolean>(CancellationException())).whenever(
+                repository
+            ).updateOrderStatus(any(), any())
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
+
+            assertThat(snackbar?.message).isNotEqualTo(string.order_error_update_general)
+        }
+
+    @Test
+    fun `do not show error changing order snackbar if updating status did not fail`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(ContinuationWrapper.ContinuationResult.Success<Boolean>(true)).whenever(repository)
+                .updateOrderStatus(any(), any())
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
+
+            assertThat(snackbar?.message).isNotEqualTo(string.order_error_update_general)
         }
 
     @Test
