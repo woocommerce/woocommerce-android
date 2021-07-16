@@ -59,6 +59,5 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
     }
 
-
     override fun getFragmentTitle() = resources.getString(R.string.payment_onboarding_title)
 }
