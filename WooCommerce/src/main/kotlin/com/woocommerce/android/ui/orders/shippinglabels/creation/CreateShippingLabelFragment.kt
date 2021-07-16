@@ -251,11 +251,10 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                     }
                 }
                 is ShowPrintShippingLabels -> {
-                    // TODO update the argument to accept multiple labels in M4
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToPrintShippingLabelFragment(
                             orderId = event.orderId,
-                            shippingLabelId = event.labels.first().id,
+                            shippingLabelIds = event.labels.map { it.id }.toLongArray(),
                             isReprint = false
                         )
                     findNavController().navigateSafely(action)

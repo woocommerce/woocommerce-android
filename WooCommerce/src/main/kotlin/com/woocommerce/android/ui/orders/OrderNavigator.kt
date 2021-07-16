@@ -86,7 +86,7 @@ class OrderNavigator @Inject constructor() {
             is PrintShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintShippingLabelFragment(
-                        target.remoteOrderId, target.shippingLabelId, isReprint = true
+                        target.remoteOrderId, longArrayOf(target.shippingLabelId), isReprint = true
                     )
                 fragment.findNavController().navigateSafely(action)
             }

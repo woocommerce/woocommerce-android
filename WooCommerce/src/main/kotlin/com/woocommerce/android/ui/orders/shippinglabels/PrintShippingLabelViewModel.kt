@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
@@ -24,8 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import java.io.File
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,17 +36,21 @@ class PrintShippingLabelViewModel @Inject constructor(
     private val base64Decoder: Base64Decoder
 ) : ScopedViewModel(savedState) {
     private val arguments: PrintShippingLabelFragmentArgs by savedState.navArgs()
-    private val label
-        get() = repository.getShippingLabelByOrderIdAndLabelId(
-            orderId = arguments.orderId,
-            shippingLabelId = arguments.shippingLabelId
-        )
+    private val labels by lazy {
+        arguments.shippingLabelIds.map {
+            repository.getShippingLabelByOrderIdAndLabelId(
+                orderId = arguments.orderId,
+                shippingLabelId = it
+            )
+        }
+    }
 
     val viewStateData = LiveDataDelegate(
         savedState,
         PrintShippingLabelViewState(
-            isLabelExpired = label?.isAnonymized == true ||
-                label?.expiryDate?.let { Date().after(it) } ?: false
+            // the case of expiring is possible only during reprinting, and when reprinting we will pass only one label
+            isLabelExpired = labels.first()?.isAnonymized == true ||
+                labels.first()?.expiryDate?.let { Date().after(it) } ?: false
         )
     )
     private var viewState by viewStateData
@@ -78,8 +80,8 @@ class PrintShippingLabelViewModel @Inject constructor(
             AnalyticsTracker.track(Stat.SHIPPING_LABEL_PRINT_REQUESTED)
             viewState = viewState.copy(isProgressDialogShown = true)
             launch {
-                val requestResult = repository.printShippingLabel(
-                    viewState.paperSize.name.toLowerCase(Locale.US), arguments.shippingLabelId
+                val requestResult = repository.printShippingLabels(
+                    viewState.paperSize.name.toLowerCase(Locale.US), arguments.shippingLabelIds.toList()
                 )
 
                 viewState = viewState.copy(isProgressDialogShown = false)
@@ -117,11 +119,12 @@ class PrintShippingLabelViewModel @Inject constructor(
 
     fun onPreviewLabelCompleted() {
         viewState = viewState.copy(tempFile = null, previewShippingLabel = null)
-        label?.let {
-            if (it.hasCommercialInvoice) {
-                triggerEvent(ViewPrintCustomsForm(it.commercialInvoiceUrl!!, arguments.isReprint))
-            }
-        }
+        // TODO
+        // label?.let {
+        //     if (it.hasCommercialInvoice) {
+        //         triggerEvent(ViewPrintCustomsForm(it.commercialInvoiceUrl!!, arguments.isReprint))
+        //     }
+        // }
     }
 
     private suspend fun handlePreviewError() {
