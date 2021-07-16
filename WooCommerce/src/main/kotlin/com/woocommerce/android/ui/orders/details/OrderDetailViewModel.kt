@@ -430,16 +430,10 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                when (val updateResult = orderDetailRepository.updateOrderStatus(orderIdSet.id, newStatus)) {
-                    is ContinuationWrapper.ContinuationResult.Cancellation -> {
-                        // no-op
-                    }
-                    is ContinuationWrapper.ContinuationResult.Success -> {
-                        if (!updateResult.value) {
-                            triggerEvent(ShowSnackbar(string.order_error_update_general))
-                        }
-                    }
-                }
+                orderDetailRepository.updateOrderStatus(orderIdSet.id, newStatus)
+                    .let { it as? ContinuationWrapper.ContinuationResult.Success }
+                    ?.takeIf { it.value.not() }
+                    ?.let { triggerEvent(ShowSnackbar(string.order_error_update_general)) }
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
