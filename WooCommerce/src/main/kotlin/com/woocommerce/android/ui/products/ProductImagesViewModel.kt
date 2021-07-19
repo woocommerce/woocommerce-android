@@ -79,10 +79,8 @@ class ProductImagesViewModel @Inject constructor(
         if (navArgs.showChooser) {
             clearImageUploadErrors()
             triggerEvent(ShowImageSourceDialog)
-        } else {
-            navArgs.selectedImage.let {
-                triggerEvent(ShowImageDetail(it, true))
-            }
+        } else if (navArgs.selectedImage != null) {
+            triggerEvent(ShowImageDetail(navArgs.selectedImage!!, true))
         }
     }
 

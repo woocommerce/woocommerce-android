@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductTestUtils.generateProductImage
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
@@ -66,6 +67,19 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
         observeEvents { event ->
             assertThat(event).isEqualTo(Exit)
+        }
+    }
+
+    @Test
+    fun `Trigger exitWithResult event on back button clicked when in browsing state`() {
+        initialize()
+
+        val images = generateProductImagesList()
+        viewModel.onDeleteImageConfirmed(images[0])
+        viewModel.onNavigateBackButtonClicked()
+
+        observeEvents { event ->
+            assertThat(event).isEqualTo(ExitWithResult(images - images[0]))
         }
     }
 
