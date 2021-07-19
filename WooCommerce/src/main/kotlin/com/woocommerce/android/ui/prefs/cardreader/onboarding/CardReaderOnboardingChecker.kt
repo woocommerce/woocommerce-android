@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
 import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
 
 private val SUPPORTED_COUNTRIES = listOf("US")
 
@@ -18,35 +19,24 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val wcPayStore: WCPayStore,
     private val dispatchers: CoroutineDispatchers
 ) {
+    @Suppress("ReturnCount")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
-        if (!isCountrySupported())
-            return CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED
-        if (!isWCPayInstalled())
-            return CardReaderOnboardingState.WCPAY_NOT_INSTALLED
-        if (!isWCPayVersionSupported())
-            return CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION
-        if (!isWCPayActivated())
-            return CardReaderOnboardingState.WCPAY_NOT_ACTIVATED
+        if (!isCountrySupported()) return COUNTRY_NOT_SUPPORTED
+        if (!isWCPayInstalled()) return WCPAY_NOT_INSTALLED
+        if (!isWCPayVersionSupported()) return WCPAY_UNSUPPORTED_VERSION
+        if (!isWCPayActivated()) return WCPAY_NOT_ACTIVATED
 
-        val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model
-            ?: return CardReaderOnboardingState.GENERIC_ERROR
+        val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GENERIC_ERROR
 
-        if (!isWCPaySetupCompleted(paymentAccount))
-            return CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED
-        if (isWCPayInTestModeWithLiveStripeAccount())
-            return CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
-        if (isStripeAccountUnderReview(paymentAccount))
-            return CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW
-        if (isStripeAccountPendingRequirements(paymentAccount))
-            return CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT
-        if (isStripeAccountOverdueRequirements(paymentAccount))
-            return CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
-        if (isStripeAccountRejected(paymentAccount))
-            return CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED
-        if (isInUndefinedState(paymentAccount))
-            return CardReaderOnboardingState.GENERIC_ERROR
+        if (!isWCPaySetupCompleted(paymentAccount)) return WCPAY_SETUP_NOT_COMPLETED
+        if (isWCPayInTestModeWithLiveStripeAccount()) return WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
+        if (isStripeAccountUnderReview(paymentAccount)) return STRIPE_ACCOUNT_UNDER_REVIEW
+        if (isStripeAccountPendingRequirements(paymentAccount)) return STRIPE_ACCOUNT_PENDING_REQUIREMENT
+        if (isStripeAccountOverdueRequirements(paymentAccount)) return STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
+        if (isStripeAccountRejected(paymentAccount)) return STRIPE_ACCOUNT_REJECTED
+        if (isInUndefinedState(paymentAccount)) return GENERIC_ERROR
 
-        return CardReaderOnboardingState.ONBOARDING_COMPLETED
+        return ONBOARDING_COMPLETED
     }
 
     private suspend fun isCountrySupported(): Boolean {
