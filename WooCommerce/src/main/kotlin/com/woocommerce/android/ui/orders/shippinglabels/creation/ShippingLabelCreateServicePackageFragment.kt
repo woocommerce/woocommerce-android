@@ -16,14 +16,16 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.PackageSuccessfullyMadeEvent
+import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShippingLabelCreateServicePackageFragment :
     BaseFragment(R.layout.fragment_shipping_label_create_service_package) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    private val parentViewModel: ShippingLabelCreatePackageViewModel by viewModels({ requireParentFragment() })
+    private val skeletonView: SkeletonView = SkeletonView()
 
+    private val parentViewModel: ShippingLabelCreatePackageViewModel by viewModels({ requireParentFragment() })
     val viewModel: ShippingLabelCreateServicePackageViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +62,10 @@ class ShippingLabelCreateServicePackageFragment :
             new.uiModels.takeIfNotEqualTo(old?.uiModels) { uiModels ->
                 adapter.updateData(uiModels)
             }
+
+            new.isLoading.takeIfNotEqualTo(old?.isLoading) {
+                showSkeleton(it, binding)
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -82,6 +88,18 @@ class ShippingLabelCreateServicePackageFragment :
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun showSkeleton(show: Boolean, binding: FragmentShippingLabelCreateServicePackageBinding) {
+        if (show) {
+            skeletonView.show(
+                binding.servicePackagesList,
+                R.layout.skeleton_shipping_label_service_package_list,
+                delayed = false
+            )
+        } else {
+            skeletonView.hide()
         }
     }
 }
