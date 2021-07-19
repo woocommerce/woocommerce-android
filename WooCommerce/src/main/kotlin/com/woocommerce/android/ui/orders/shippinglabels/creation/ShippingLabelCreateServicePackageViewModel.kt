@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -54,6 +55,43 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
         viewState = viewState.copy(uiModels = newList)
     }
 
+    fun onCustomFormDoneMenuClicked() {
+        if (viewState.uiModels.none { it.isChecked }) {
+            triggerEvent(ShowSnackbar(R.string.shipping_label_create_service_package_nothing_selected))
+        } else {
+            val packageToCreate = viewState.uiModels.first { it.isChecked }.data
+            launch {
+                val result = shippingLabelRepository.activateServicePackage(packageToCreate)
+                when {
+                    result.isError -> {
+                        val errorMsg = if (result.error.message != null) {
+                            result.error.message
+                        } else {
+                            resourceProvider.getString(
+                                R.string.shipping_label_create_custom_package_api_unknown_failure
+                            )
+                        }
+
+                        triggerEvent(
+                            ShowSnackbar(
+                                message = R.string.shipping_label_create_custom_package_api_failure,
+                                args = arrayOf(errorMsg as String)
+                            )
+                        )
+                    }
+                    result.model == true -> {
+                        triggerEvent(PackageSuccessfullyMadeEvent(packageToCreate))
+                    }
+                    else -> triggerEvent(
+                        ShowSnackbar(
+                            R.string.shipping_label_create_custom_package_api_unknown_failure
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
@@ -65,4 +103,6 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
         val data: ShippingPackage,
         val isChecked: Boolean = false
     ) : Parcelable
+
+    data class PackageSuccessfullyMadeEvent(val madePackage: ShippingPackage) : MultiLiveEvent.Event()
 }
