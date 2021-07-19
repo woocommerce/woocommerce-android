@@ -321,7 +321,7 @@ class VariationDetailFragment :
         actionListener: View.OnClickListener
     ) {
         if (detailSnackbar == null) {
-            detailSnackbar = uiMessageResolver.getActionSnack(
+            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
                 actionText = getString(R.string.details),
                 actionListener = actionListener
