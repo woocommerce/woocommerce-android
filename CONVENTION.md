@@ -4,8 +4,25 @@
 * [Code organization](#code-organization)
 
 ## Naming
-* ##### Layouts
-    _todo_
+* ##### Layouts (files)
+    ***feature_name*** _ ***layout_type***
+
+    **Examples**
+    * feedback_survey_activity
+    * shipping_label_package_details_list_item
+    * product_tag_list_item
+    * product_download_details_fragment
+    * feedback_survey_fragment
+
+* ##### View IDs
+    ***goal*** ***ViewType***
+
+    **Examples**
+    * doneButton
+    * headingTextView
+    * choice1RadioButton
+    * userNameEditText
+    * successImageView
 * ##### Drawables
     _todo_
 * ##### Dimensions
