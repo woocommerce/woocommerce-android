@@ -82,6 +82,8 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
 - Quality & Testing
     - [Beta Testing](https://woocommercehalo.wordpress.com/setup/join-android-beta/)
     - [Issue Triage](docs/issue-triage.md)
+- Features
+    - [Feature Flags](docs/feature_flags.md)
 
 ## 👏 Contributing
 
