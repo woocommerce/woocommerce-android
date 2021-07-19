@@ -44,6 +44,28 @@ interface UIMessageResolver {
     }
 
     /**
+     * Create and return a snackbar displaying the provided message and a generic action button.
+     *
+     * @param [message] The message string
+     * @param [message] The action string
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [actionListener] Listener to handle the undo button click event
+     */
+    fun getActionSnack(
+        message: String,
+        vararg stringArgs: String = arrayOf(),
+        actionText: String,
+        actionListener: View.OnClickListener
+    ): Snackbar {
+        return getSnackbarWithAction(
+            snackbarRoot,
+            String.format(message, *stringArgs),
+            actionText,
+            actionListener
+        )
+    }
+
+    /**
      * Create and return a snackbar displaying the provided message and a RETRY button.
      *
      * @param [stringResId] The string resource id of the base message
@@ -126,15 +148,6 @@ interface UIMessageResolver {
      * @param [msgId] The resource ID of the message to display in the snackbar
      */
     fun showSnack(@StringRes msgId: Int) = Snackbar.make(snackbarRoot, msgId, BaseTransientBottomBar.LENGTH_LONG).show()
-
-    /**
-     * Display a generic offline message.
-     */
-    fun showOfflineSnack() = Snackbar.make(
-        snackbarRoot,
-        snackbarRoot.context.getString(R.string.offline_error),
-        BaseTransientBottomBar.LENGTH_LONG
-    ).show()
 
     private fun getIndefiniteSnackbarWithAction(
         view: View,

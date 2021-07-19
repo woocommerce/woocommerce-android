@@ -4,11 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import androidx.collection.LongSparseArray
 import androidx.core.app.JobIntentService
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_UPLOAD_FAILED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +21,8 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
+import org.wordpress.android.fluxc.store.MediaStore.MediaError
 import org.wordpress.android.fluxc.store.MediaStore.CancelMediaPayload
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
@@ -97,6 +101,7 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var networkStatus: NetworkStatus
+    @Inject lateinit var mediaFileUploadHandler: MediaFileUploadHandler
 
     private var doneSignal: CountDownLatch? = null
     private var currentMediaUpload: MediaModel? = null
@@ -156,7 +161,13 @@ class ProductImagesService : JobIntentService() {
 
             if (currentMediaUpload == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
-                handleFailure()
+                handleFailure(
+                    mediaModel = MediaModel(),
+                    mediaUploadError = MediaError(
+                        MediaErrorType.NULL_MEDIA_ARG,
+                        resources.getString(R.string.product_image_service_error_media_null)
+                    )
+                )
             } else {
                 currentMediaUpload!!.postId = id
                 currentMediaUpload!!.setUploadState(MediaModel.MediaUploadState.UPLOADING)
@@ -224,7 +235,7 @@ class ProductImagesService : JobIntentService() {
                         AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
                     )
                 )
-                handleFailure()
+                handleFailure(event.media, event.error)
             }
             event.canceled -> {
                 WooLog.d(T.MEDIA, "productImagesService > upload media cancelled")
@@ -247,8 +258,12 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(OnProductImageUploaded(uploadedMedia))
     }
 
-    private fun handleFailure() {
+    private fun handleFailure(
+        mediaModel: MediaModel,
+        mediaUploadError: MediaError
+    ) {
         countDown()
+        mediaFileUploadHandler.handleMediaUploadFailure(mediaModel, mediaUploadError)
         EventBus.getDefault().post(OnProductImageUploaded(isError = true))
     }
 
