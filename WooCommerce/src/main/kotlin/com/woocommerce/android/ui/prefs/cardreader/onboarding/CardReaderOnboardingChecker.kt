@@ -94,7 +94,6 @@ class CardReaderOnboardingChecker @Inject constructor(
             paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_LISTED ||
             paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE ||
             paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_OTHER
-
 }
 
 private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
