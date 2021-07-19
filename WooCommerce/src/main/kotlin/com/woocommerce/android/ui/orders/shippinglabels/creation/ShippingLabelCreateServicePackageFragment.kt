@@ -20,7 +20,7 @@ class ShippingLabelCreateServicePackageFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentShippingLabelCreateServicePackageBinding.bind(view)
-        val packagesAdapter = ShippingLabelCreateServicePackageAdapter(
+        val packagesAdapter = ShippingLabelServicePackageAdapter(
             viewModel::onPackageSelected
         )
 
@@ -34,7 +34,7 @@ class ShippingLabelCreateServicePackageFragment :
 
     private fun setupObservers(
         binding: FragmentShippingLabelCreateServicePackageBinding,
-        adapter: ShippingLabelCreateServicePackageAdapter
+        adapter: ShippingLabelServicePackageAdapter
     ) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.uiModels.takeIfNotEqualTo(old?.uiModels) { uiModels ->

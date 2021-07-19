@@ -38,7 +38,7 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
                 return@launch
             }
 
-            val uiModels = result.model!!.map { it -> ServicePackageUiModel(it) }
+            val uiModels = result.model!!.map { ServicePackageUiModel(it) }
             viewState = viewState.copy(isLoading = false, uiModels = uiModels)
         }
     }
