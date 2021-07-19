@@ -36,6 +36,7 @@ class ShippingLabelRepository @Inject constructor(
 ) {
     private var accountSettings: ShippingAccountSettings? = null
     private var availablePackages: List<ShippingPackage>? = null
+    private var selectableServicePackages: List<ShippingPackage>? = null
 
     suspend fun refundShippingLabel(orderId: Long, shippingLabelId: Long): WooResult<Boolean> {
         return withContext(Dispatchers.IO) {
@@ -82,18 +83,21 @@ class ShippingLabelRepository @Inject constructor(
                 }
 
                 availablePackages = list
-
                 WooResult(availablePackages)
             }
     }
 
     suspend fun getSelectableServicePackages(): WooResult<List<ShippingPackage>> {
-        return shippingLabelStore.getAllPredefinedOptions(selectedSite.get())
+        return selectableServicePackages?.let { WooResult(it) } ?: shippingLabelStore.getAllPredefinedOptions(
+            selectedSite.get()
+        )
             .let { result ->
                 if (result.isError) return@let WooResult<List<ShippingPackage>>(error = result.error)
 
-                val allServicePackages = result.model!!.flatMap { it.toAppModel() }
-                availablePackages?.let { WooResult(allServicePackages.minus(it)) } ?: WooResult(allServicePackages)
+                selectableServicePackages = result.model!!.flatMap { it.toAppModel() }
+                availablePackages?.let { list ->
+                    WooResult(selectableServicePackages?.minus(list))
+                } ?: WooResult(selectableServicePackages)
             }
     }
 
@@ -247,11 +251,12 @@ class ShippingLabelRepository @Inject constructor(
         return shippingLabelStore.createPackages(
             site = selectedSite.get(),
             customPackages = emptyList(),
-            predefinedPackages = listOf(packageToCreate.toServicePackageDataModel())
+            predefinedPackages = listOf(packageToCreate.toPredefinedOptionDataModel())
         ).let { result ->
             when {
                 result.model == true -> {
                     availablePackages = availablePackages?.let { it + packageToCreate }
+                    selectableServicePackages = selectableServicePackages?.let { it - packageToCreate }
                     WooResult(true)
                 }
                 result.isError -> WooResult(result.error)

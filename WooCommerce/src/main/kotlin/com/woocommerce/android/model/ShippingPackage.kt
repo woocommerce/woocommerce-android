@@ -18,7 +18,7 @@ data class ShippingPackage(
     val category: String,
     val dimensions: PackageDimensions,
     val boxWeight: Float,
-    val carrierId: String? = null
+    val carrierId: String = "" /* Can be empty, only needed by predefined packages */
 ) : Parcelable {
     companion object {
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
@@ -38,18 +38,19 @@ data class ShippingPackage(
         )
     }
 
-    fun toServicePackageDataModel(): PredefinedOption {
-        val servicePackage = PredefinedPackage(
-            id = id,
-            title = title,
-            isLetter = isLetter,
-            dimensions = dimensions.toString(),
-            boxWeight = boxWeight
-        )
+    fun toPredefinedOptionDataModel(): PredefinedOption {
         return PredefinedOption(
             title = category,
-            carrier = category,
-            predefinedPackages = listOf(servicePackage)
+            carrier = carrierId,
+            predefinedPackages = listOf(
+                PredefinedPackage(
+                    id = id,
+                    title = title,
+                    isLetter = isLetter,
+                    dimensions = dimensions.toString(),
+                    boxWeight = boxWeight
+                )
+            )
         )
     }
 }
