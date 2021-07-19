@@ -279,7 +279,7 @@ class OrderDetailRepository @Inject constructor(
         .map { it.toAppModel() }
 
     fun getWooServicesPluginInfo(): WooPlugin {
-        val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
+        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
         return WooPlugin(info != null, info?.active ?: false, info?.version)
     }
 
