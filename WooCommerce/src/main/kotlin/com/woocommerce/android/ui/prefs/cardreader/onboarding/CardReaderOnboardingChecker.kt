@@ -1,16 +1,22 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
+import androidx.annotation.VisibleForTesting
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
+import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
 import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
 
 private val SUPPORTED_COUNTRIES = listOf("US")
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+const val SUPPORTED_WCPAY_VERSION = "2.5.0"
 
 @Suppress("TooManyFunctions")
 class CardReaderOnboardingChecker @Inject constructor(
@@ -22,9 +28,14 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!isCountrySupported()) return COUNTRY_NOT_SUPPORTED
-        if (!isWCPayInstalled()) return WCPAY_NOT_INSTALLED
-        if (!isWCPayVersionSupported()) return WCPAY_UNSUPPORTED_VERSION
-        if (!isWCPayActivated()) return WCPAY_NOT_ACTIVATED
+
+        val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
+        if (fetchSitePluginsResult.isError) return GENERIC_ERROR
+        val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
+
+        if (!isWCPayInstalled(pluginInfo)) return WCPAY_NOT_INSTALLED
+        if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WCPAY_UNSUPPORTED_VERSION
+        if (!isWCPayActivated(pluginInfo)) return WCPAY_NOT_ACTIVATED
 
         val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GENERIC_ERROR
 
@@ -47,17 +58,12 @@ class CardReaderOnboardingChecker @Inject constructor(
         }
     }
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPayInstalled(): Boolean = true
+    private fun isWCPayInstalled(pluginInfo: WCPluginSqlUtils.WCPluginModel?): Boolean = pluginInfo != null
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPayVersionSupported(): Boolean = true
+    private fun isWCPayVersionSupported(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean =
+        (pluginInfo.version).semverCompareTo(SUPPORTED_WCPAY_VERSION) >= 0
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPayActivated(): Boolean = true
+    private fun isWCPayActivated(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean = pluginInfo.active
 
     private fun isWCPaySetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != WCPaymentAccountResult.WCPayAccountStatusEnum.NO_ACCOUNT
