@@ -71,10 +71,12 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
     - [Setting up Checkstyle](docs/project_overview.md#using-detekt)
     - [Google Configuration](docs/project_overview.md#google-configuration)
 - Development Practices
-    - [Coding Style](docs/coding-style-guide.md)
+    - [Coding Style Practices](docs/coding-style-guide.md)
+    - [Pull Request Guidelines](docs/pull-request-guidelines.md)
+    - [Material Theme Designs](docs/material-theme-designs.md)
     - [Using Android Resources](docs/using-android-resources.md)
     - [Localization](docs/localization.md)
-    - [Themes & Styling Practices](docs/theming_styling_best_practices.md)
+    - [Themes & Styling Practices](docs/theming-styling-best-practices.md)
     - [Subtree'd Library Projects](docs/subtreed-library-projects.md)
 - Accessibility
     - [Accessibility Guidelines](docs/accessibility-guidelines.md)
