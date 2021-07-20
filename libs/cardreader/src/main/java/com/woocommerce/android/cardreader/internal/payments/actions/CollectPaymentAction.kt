@@ -1,11 +1,11 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.stripe.stripeterminal.callable.PaymentIntentCallback
-import com.stripe.stripeterminal.callable.ReaderDisplayListener
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage
-import com.stripe.stripeterminal.model.external.ReaderInputOptions
-import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.external.callable.ReaderDisplayListener
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
+import com.stripe.stripeterminal.external.models.ReaderInputOptions
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.ReaderInputRequested

@@ -2,10 +2,10 @@ package com.woocommerce.android.cardreader.internal.payments
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.TerminalException
-import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode
-import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode.PAYMENT_DECLINED_BY_READER
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.PAYMENT_DECLINED_BY_READER
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK

@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateCallback
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
+import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.Failed
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.UpToDate
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.UpdateAvailable

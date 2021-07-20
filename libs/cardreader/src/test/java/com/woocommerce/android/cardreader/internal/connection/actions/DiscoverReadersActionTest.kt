@@ -8,7 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.DiscoveryListener
-import com.stripe.stripeterminal.model.external.Reader
+import com.stripe.stripeterminal.external.models.Reader
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started

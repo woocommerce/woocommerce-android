@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.firmware.actions
 
-import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateCallback
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
-import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.external.callable.ReaderSoftwareUpdateCallback
+import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.Failed
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.UpToDate
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.UpdateAvailable

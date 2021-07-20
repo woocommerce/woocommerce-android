@@ -8,7 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
+import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success

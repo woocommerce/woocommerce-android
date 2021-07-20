@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader
 
-import com.stripe.stripeterminal.model.external.Reader
+import com.stripe.stripeterminal.external.models.Reader
 
 class CardReaderImpl(val cardReader: Reader) : CardReader {
     override val id: String?

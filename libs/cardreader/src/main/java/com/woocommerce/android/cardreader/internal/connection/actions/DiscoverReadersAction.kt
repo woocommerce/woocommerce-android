@@ -1,12 +1,12 @@
 package com.woocommerce.android.cardreader.internal.connection.actions
 
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.Cancelable
-import com.stripe.stripeterminal.callable.DiscoveryListener
-import com.stripe.stripeterminal.model.external.DeviceType.CHIPPER_2X
-import com.stripe.stripeterminal.model.external.DiscoveryConfiguration
-import com.stripe.stripeterminal.model.external.Reader
-import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.Cancelable
+import com.stripe.stripeterminal.external.callable.DiscoveryListener
+import com.stripe.stripeterminal.external.models.DeviceType.CHIPPER_2X
+import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started

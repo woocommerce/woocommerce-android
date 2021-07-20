@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.callable.ReaderDisplayListener
-import com.stripe.stripeterminal.model.external.PaymentIntent
+import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.ReaderInputRequested
