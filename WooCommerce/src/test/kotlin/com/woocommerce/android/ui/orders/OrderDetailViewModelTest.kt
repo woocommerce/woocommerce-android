@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.argumentCaptor
@@ -132,6 +134,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             networkStatus,
             resources
         )
+
+        val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+        val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
+        mock<Context> {
+            whenever(it.applicationContext).thenReturn(it)
+            whenever(it.getSharedPreferences(any(), any())).thenReturn(preferences)
+            AppPrefs.init(it)
+        }
     }
 
     @Test

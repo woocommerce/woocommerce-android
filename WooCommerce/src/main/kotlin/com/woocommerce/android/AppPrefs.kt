@@ -50,7 +50,8 @@ object AppPrefs {
         UNIFIED_LOGIN_LAST_ACTIVE_FLOW,
         IS_USER_ELIGIBLE,
         USER_EMAIL,
-        RECEIPT_PREFIX
+        RECEIPT_PREFIX,
+        IS_CARD_PRESENT_ELIGIBLE
     }
 
     /**
@@ -93,7 +94,10 @@ object AppPrefs {
         APP_INSTALATION_DATE,
 
         // last connected card reader's id
-        LAST_CONNECTED_CARD_READER_ID
+        LAST_CONNECTED_CARD_READER_ID,
+
+        // show card reader tutorial after a reader is connected
+        SHOW_CARD_READER_CONNECTED_TUTORIAL,
     }
 
     fun init(context: Context) {
@@ -211,6 +215,11 @@ object AppPrefs {
         PreferenceUtils.getString(getPreferences(), UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID.toString(), null)
 
     fun removeLastConnectedCardReaderId() = remove(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID)
+
+    fun getShowCardReaderConnectedTutorial() = getBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, true)
+
+    fun setShowCardReaderConnectedTutorial(show: Boolean) =
+        setBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, show)
 
     /**
      * Flag to check products features are enabled
@@ -382,6 +391,14 @@ object AppPrefs {
 
     fun setTrackingExtensionAvailable(isAvailable: Boolean) {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
+    }
+
+    fun setIsCardPresentEligible(isEligible: Boolean) {
+        setBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, isEligible)
+    }
+
+    fun isCardPresentEligible(): Boolean {
+        return getBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, false)
     }
 
     /**

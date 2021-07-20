@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustoms
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WooClickableSpan
 
@@ -65,6 +66,7 @@ class ShippingCustomsAdapter(
         return customsPackages[position].data.id.hashCode().toLong()
     }
 
+    @Suppress("MagicNumber")
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy {
             ShippingCustomsLineAdapter(
@@ -76,6 +78,9 @@ class ShippingCustomsAdapter(
         }
         private val context
             get() = binding.root.context
+
+        private val isExpanded
+            get() = binding.expandIcon.rotation == 180f
 
         init {
             binding.itemsList.apply {
@@ -122,6 +127,21 @@ class ShippingCustomsAdapter(
             binding.itnEditText.setOnTextChangedListener {
                 it?.let { listener.onItnChanged(adapterPosition, it.toString()) }
             }
+            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
+                binding.expandIcon.isVisible = false
+            } else {
+                binding.titleLayout.setOnClickListener {
+                    if (isExpanded) {
+                        binding.expandIcon.animate().rotation(0f).start()
+                        binding.detailsLayout.collapse()
+                        listener.onPackageExpandedChanged(adapterPosition, false)
+                    } else {
+                        binding.expandIcon.animate().rotation(180f).start()
+                        binding.detailsLayout.expand()
+                        listener.onPackageExpandedChanged(adapterPosition, true)
+                    }
+                }
+            }
         }
 
         @SuppressLint("SetTextI18n")
@@ -129,6 +149,7 @@ class ShippingCustomsAdapter(
             val (customsPackage, validationState) = uiState
             binding.packageId.text = customsPackage.labelPackage.getTitle(context)
             binding.packageName.text = "- ${customsPackage.labelPackage.selectedPackage!!.title}"
+            binding.errorView.isVisible = !validationState.isValid
             binding.returnCheckbox.isChecked = customsPackage.returnToSender
 
             // Animate any potential change to visibility of the description fields
@@ -152,6 +173,14 @@ class ShippingCustomsAdapter(
 
             linesAdapter.parentItemPosition = adapterPosition
             linesAdapter.customsLines = uiState.customsLinesUiState
+
+            if (uiState.isExpanded) {
+                binding.expandIcon.rotation = 180f
+                binding.detailsLayout.isVisible = true
+            } else {
+                binding.expandIcon.rotation = 0f
+                binding.detailsLayout.isVisible = false
+            }
         }
     }
 
@@ -308,6 +337,7 @@ class ShippingCustomsLineAdapter(
 }
 
 interface ShippingCustomsFormListener {
+    fun onPackageExpandedChanged(position: Int, isExpanded: Boolean)
     fun onReturnToSenderChanged(position: Int, returnToSender: Boolean)
     fun onContentsTypeChanged(position: Int, contentsType: ContentsType)
     fun onContentsDescriptionChanged(position: Int, contentsDescription: String)

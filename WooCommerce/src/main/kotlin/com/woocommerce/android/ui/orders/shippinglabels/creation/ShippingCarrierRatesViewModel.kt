@@ -145,8 +145,9 @@ class ShippingCarrierRatesViewModel @Inject constructor(
                         default.title,
                         default.deliveryDays,
                         default.rate,
-                        defaultDiscount,
                         default.rate.format(),
+                        defaultDiscount,
+                        "",
                         DEFAULT
                     ),
                     SIGNATURE to signature?.let { option ->
@@ -159,6 +160,7 @@ class ShippingCarrierRatesViewModel @Inject constructor(
                             option.title,
                             default.deliveryDays,
                             option.rate,
+                            option.rate.format(),
                             signatureDiscount,
                             signatureFee.format(),
                             SIGNATURE
@@ -174,6 +176,7 @@ class ShippingCarrierRatesViewModel @Inject constructor(
                             option.title,
                             default.deliveryDays,
                             option.rate,
+                            option.rate.format(),
                             adultSignatureDiscount,
                             adultSignatureFee.format(),
                             ADULT_SIGNATURE

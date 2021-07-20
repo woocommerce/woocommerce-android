@@ -62,7 +62,13 @@
     <dialog
         android:id="@+id/cardReaderConnectFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
-        android:label="CardReaderConnectFragment" />
+        android:label="CardReaderConnectFragment">
+        <action
+            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"
+            app:destination="@id/cardReaderTutorialDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </dialog>
     <dialog
         android:id="@+id/cardReaderUpdateDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
@@ -72,6 +78,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
+    <dialog
+        android:id="@+id/cardReaderTutorialDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
+        android:label="CardReaderTutorialDialogFragment" />
     <fragment
         android:id="@+id/cardReaderDetailFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailFragment"

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 
 /**
@@ -19,8 +19,8 @@ class WCViewPagerIndicator @JvmOverloads constructor(
     private val indicators = ArrayList<ImageView>()
     private var pageCount: Int = 0
 
-    fun setupFromViewPager(viewPager: ViewPager) {
-        pageCount = viewPager.adapter?.count ?: 0
+    fun setupFromViewPager(viewPager: ViewPager2) {
+        pageCount = viewPager.adapter?.itemCount ?: 0
 
         orientation = HORIZONTAL
         val padding = context.resources.getDimensionPixelSize(R.dimen.margin_small)
@@ -34,16 +34,17 @@ class WCViewPagerIndicator @JvmOverloads constructor(
                 indicators.add(imageView)
 
                 imageView.setOnClickListener {
-                    viewPager.currentItem = page
+                    viewPager.setCurrentItem(page, true)
                 }
             }
         }
 
-        viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+        val listener = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 setSelectedIndicator(position)
             }
-        })
+        }
+        viewPager.registerOnPageChangeCallback(listener)
     }
 
     private fun setSelectedIndicator(index: Int) {
