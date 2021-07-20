@@ -10,6 +10,7 @@ import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
 import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -29,6 +30,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(selectedSite.get()).thenReturn(site)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
         whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult())
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo())
     }
 
     @Test
@@ -77,6 +81,41 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             checker.getOnboardingState()
 
             verify(wcPayStore, never()).loadAccount(anyOrNull())
+        }
+
+    @Test
+    fun `when woocommerce payments plugin not installed, then WCPAY_NOT_INSTALLED returned`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WCPAY_NOT_INSTALLED)
+        }
+
+    @Test
+    fun `when woocommerce payments plugin outdated, then WCPAY_UNSUPPORTED_VERSION returned`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(version = "2.4.0"))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION)
+        }
+
+    @Test
+    fun `when woocommerce payments plugin not active, then WCPAY_NOT_ACTIVATED returned`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = false))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WCPAY_NOT_ACTIVATED)
         }
 
     @Test
@@ -213,4 +252,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             isCardPresentEligible = true
         )
     )
+
+    private fun buildWCPayPluginInfo(
+        isActive: Boolean = true,
+        version: String = SUPPORTED_WCPAY_VERSION
+    ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
 }
