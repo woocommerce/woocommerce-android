@@ -97,7 +97,6 @@ class PaymentManagerTest {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<String>()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
-        whenever(paymentUtils.convertBigDecimalInDollarsToIntegerInCents(any())).thenReturn(1)
         whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
     }
 
