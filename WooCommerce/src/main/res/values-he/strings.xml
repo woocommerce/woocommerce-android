@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-23 11:54:04+0000
+Translation-Revision-Date: 2021-07-07 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="card_reader_detail_connected_update_failed">העדכון של תוכנת הקורא נכשל</string>
+    <string name="card_reader_detail_connected_update_check_failed">הבדיקה של עדכון גרסת התוכנה נכשלה</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;למידע נוסף&lt;/a&gt; על קבלת תשלומים באמצעות המכשיר נייד והזמנת קוראי כרטיסים</string>
+    <string name="card_reader_connect_open_bluetooth_settings">יש להפעיל את חיבור ה-Bluetooth</string>
+    <string name="card_reader_connect_scanning_failed_header">לא נמצא Reader</string>
+    <string name="card_reader_connect_failed_header">לא הצלחנו להתחבר לקורא</string>
+    <string name="card_reader_connect_connect_button">להתחבר</string>
+    <string name="card_reader_connect_multiple_readers_found_header">נמצאו כמה קוראים</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">ההזמנה כבר שולמה</string>
+    <string name="card_reader_payment_receipt_email_content">תודה שרכשת אצלנו! ניתן ללחוץ על הקישור שלמטה כדי לקבל את התשלום.\n\n%s</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">התשלום נכשל</string>
+    <string name="card_reader_payment_failed_card_declined_state">הכרטיס נדחה</string>
+    <string name="shipping_label_print_customs_form_download_failed">שגיאה בהורדת טופס המכס</string>
+    <string name="shipping_label_print_customs_form_screen_title">הדפסת חשבונית מכס</string>
+    <string name="shipping_label_print_customs_form">הדפסת טופס מכס</string>
+    <string name="shipping_label_print_customs_explanation">יש להדפיס את טופס המכס ולצרף אותו למשלוח בינלאומי זה</string>
+    <string name="shipping_label_customs_form">טופס מכס</string>
+    <string name="shipping_label_payment_method_added">אמצעי התשלום נוסף</string>
+    <string name="shipping_label_payments_add_first_credit_card">הוספת כרטיס אשראי</string>
+    <string name="shipping_label_destination_address_phone_invalid">יש להזין מספר טלפון תקף</string>
+    <string name="orderdetail_shipping_label_print_customs_form">הדפסת טופס מכס</string>
     <string name="empty_order_list_message">כדאי לראות איך אפשר להגדיל את המכירות בחנות שלך.</string>
     <string name="empty_product_message">אפשר להתחיל למכור היום על ידי הוספה של המוצר הראשון לחנות שלך.</string>
     <string name="empty_product_add_product_button">להוסיף מוצר</string>
     <string name="variable_product_attributes">מאפייני סוגים</string>
     <string name="card_reader_detail_not_connected_third_hint_label">יש להפעיל את חיבור ה-Bluetooth של המכשיר הנייד</string>
-    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;למידע נוסף&lt;/a&gt; על קבלת תשלומים באמצעות המכשיר הנייד והזמנה של קוראי כרטיסים</string>
-    <string name="card_reader_fetching_order_failed">שגיאה בהבאת ההזמנה. ייתכן שמצב ההזמנה באפליקציה לא מעודכן.</string>
+    <string name="card_reader_refetching_order_failed">שגיאה בהבאת ההזמנה. ייתכן שמצב ההזמנה באפליקציה לא מעודכן.</string>
     <string name="card_reader_payment_email_client_not_found">לא ניתן לאתר את האפליקציה של שירות האימייל שלך</string>
-    <string name="card_reader_payment_receipt_email_content">תודה שרכשת אצלנו! אפשר למצור את הקבלה עבור התשלום בקישור הבא: %s</string>
     <string name="card_reader_payment_receipt_email_subject">הקבלה שלך מאת %s</string>
     <string name="card_reader_payment_description">תשלום מקוון להזמנה %s עבור %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">מרענן את ההזמנה</string>
     <string name="card_reader_payment_fetch_order_loading_header">מעדכן את מצב האפליקציה</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">הלקוח בחר את ⁦%1$s⁩</string>
-    <string name="shipping_label_address_phone_invalid">לטופסי מכס נדרש מספר טלפון בן 10 ספרות</string>
+    <string name="shipping_label_origin_address_phone_invalid">לטופסי מכס נדרש מספר טלפון בן 10 ספרות</string>
     <string name="shipping_label_address_phone_required">מספר טלפון נדרש מאחר שלמשלוח נדרש טופס מכס</string>
     <string name="shipping_label_create_customs_done">טופס המכס הושלם</string>
     <string name="print_receipt_label_info_step_7">אם יש לך בעיה בהדפסה מהמכשיר, יש ליצור קשר עם שירות התמיכה של המדפסת.</string>
@@ -38,9 +57,7 @@ Language: he_IL
     <string name="card_reader_software_update_in_progress_title">מעדכן את התוכנה של הקורא שלך</string>
     <string name="card_reader_software_update_title">עדכון תוכנה</string>
     <string name="card_reader_software_update_description">עליך לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח את הפעילות התקינה שלה. האם ברצונך לעדכן כעת?</string>
-    <string name="card_reader_detail_connected_update_failed">העדכון של תוכנת הקורא נכשל. יש לנסות שוב מאוחר יותר</string>
     <string name="card_reader_detail_connected_update_success">עדכון תוכנה של הקורא</string>
-    <string name="card_reader_detail_connected_update_check_failed">נכשלה הבדיקה של עדכון הגרסה של התוכנה. יש לנסות שוב מאוחר יותר</string>
     <string name="card_reader_detail_connected_reader_unknown">שם לא מזוהה לקורא הכרטיסים</string>
     <string name="card_reader_detail_connected_disconnect_reader">לנתק את הקורא</string>
     <string name="card_reader_detail_connected_enforced_update_software">עליך לעדכן את התוכנה של הקורא כדי להמשיך לקבל תשלומים</string>
@@ -52,7 +69,6 @@ Language: he_IL
     <string name="card_reader_detail_not_connected_first_hint_label">יש לוודא שקורא הכרטיסים הוטען</string>
     <string name="card_reader_detail_not_connected_header">לחבר את קורא הכרטיסים שלך</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">הכרטיס נדחה</string>
-    <string name="card_reader_payment_failed_card_declined_state">הכרטיס נדחה. יש לנסות שוב עם כרטיס שונה.</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">מתחבר אל הקורא</string>
     <string name="card_reader_payment_collect_payment_loading_header">מתכונן לגביית התשלום</string>
     <string name="shipping_label_customs_value_zero_error">הסכום המוצהר חייב להיות מעל אפס (0)</string>
@@ -107,15 +123,12 @@ Language: he_IL
     <string name="product_type_virtual_desc">מוצר דיגיטלי ייחודי כגון שירותים, ספרים שניתנים להורדה, מוזיקה או סרטונים</string>
     <string name="product_type_simple_desc">מוצר פיזי ייחודי שצריך לשלוח ללקוח</string>
     <string name="product_type_simple_title">מוצר פיזי פשוט</string>
-    <string name="card_reader_connect_open_bluetooth_settings">לפתוח את ההגדרות</string>
     <string name="card_reader_connect_open_location_settings">לפתוח את ההגדרות</string>
     <string name="card_reader_connect_open_permission_settings">לפתוח את ההגדרות</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth מושבת</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">המיקום מושבת</string>
-    <string name="card_reader_connect_missing_permissions_hint">חסרה הרשאה שנדרשת למיקום</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth מושבת</string>
+    <string name="card_reader_connect_location_provider_disabled_header">המיקום מושבת</string>
+    <string name="card_reader_connect_missing_permissions_header">חסרה הרשאה שנדרשת למיקום</string>
     <string name="card_reader_connect_connecting_failed_hint">לא הצלחנו להתחבר אל Reader.</string>
-    <string name="card_reader_connect_scanning_failed_hint">לא הצלחנו למצוא פריטים של Reader.</string>
-    <string name="card_reader_connect_failed_header">החיבור אל Reader נכשל</string>
     <string name="card_reader_connect_connecting_header">מתחבר אל Reader</string>
     <string name="card_reader_connect_to_reader">יש להתחבר אל Reader</string>
     <string name="card_reader_connect_reader_found_header">האם ברצונך לחבר את Reader %s?</string>
@@ -129,7 +142,6 @@ Language: he_IL
     <string name="product_delete_dialog_title">מוחק מוצר</string>
     <string name="card_reader_payment_send_receipt">לשלוח קבלה</string>
     <string name="card_reader_payment_print_receipt">להדפיס קבלה</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">התשלום נכשל. יש לנסות שוב.</string>
     <string name="card_reader_payment_capturing_payment_state">לוכד תשלום</string>
     <string name="card_reader_payment_processing_payment_state">מעבד תשלום</string>
     <string name="card_reader_payment_collect_payment_state">ה-Reader מוכן</string>
@@ -379,7 +391,7 @@ Language: he_IL
     <string name="shipping_label_print_error_message">אם אירעה שגיאת הדפסה כשרכשת את התווית, אפשר להדפיס אותה שוב.</string>
     <string name="orderdetail_shipping_label_wip_message">אנחנו פועלים כדי ליצור תהליך הדפסה קל יותר לתוויות משלוח ישירות מהמכשיר שלך! בינתיים, אם יצרת תוויות משלוח עבור הזמנה זו במנהל החנות שלך באמצעות WooCommerce Shipping, אפשר להדפיס אותן בפרטי ההזמנה שלך כאן.</string>
     <string name="orderdetail_shipping_label_wip_title">אפשר להדפיס תווית משלוח מהמכשיר שלך!</string>
-    <string name="orderdetail_shipping_label_reprint">להדפיס שוב תווית משלוח</string>
+    <string name="orderdetail_shipping_label_print">להדפיס תווית משלוח</string>
     <string name="orderdetail_customer_note">‎\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">הטיוטה של המוצר נשמרה</string>
     <string name="product_detail_publish_product_draft_error">שגיאה בשמירה של טיוטת המוצר</string>

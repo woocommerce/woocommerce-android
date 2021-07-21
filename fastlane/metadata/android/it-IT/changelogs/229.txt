@@ -1,0 +1,2 @@
+7.0:
+Creare etichette di spedizione internazionale è un gioco da ragazzi! I commercianti che utilizzano WooCommerce Shipping & Tax nel proprio negozio negli Stati Uniti possono ora generare etichette di spedizione e moduli doganali per destinazioni internazionali. Stiamo continuando a migliorare questa funzionalità: provala e facci sapere come va.

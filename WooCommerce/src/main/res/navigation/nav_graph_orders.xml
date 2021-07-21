@@ -411,6 +411,13 @@
         <action
             android:id="@+id/action_editShippingLabelPackagesFragment_to_moveShippingItemDialog"
             app:destination="@id/moveShippingItemDialog" />
+        <action
+            android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingLabelCreatePackageFragment"
+            app:destination="@id/shippingLabelCreatePackageFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/shippingPackageSelectorFragment"

@@ -20,6 +20,7 @@ import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFeatures
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
@@ -38,6 +39,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
+import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
@@ -141,20 +143,13 @@ class OrderDetailRepository @Inject constructor(
         return result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }?.map { it.toAppModel() } ?: emptyList()
     }
 
-    suspend fun updateOrderStatus(
-        localOrderId: Int,
-        remoteOrderId: Long,
-        newStatus: String
-    ): Boolean {
-        val result = continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+    suspend fun updateOrderStatus(localOrderId: Int, newStatus: String): ContinuationResult<Boolean> {
+        val order = OrderSqlUtils.getOrderByLocalId(localOrderId)
+        return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = UpdateOrderStatusPayload(
-                localOrderId, remoteOrderId, selectedSite.get(), newStatus
+                order, selectedSite.get(), newStatus
             )
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
         }
     }
 
@@ -279,7 +274,7 @@ class OrderDetailRepository @Inject constructor(
         .map { it.toAppModel() }
 
     fun getWooServicesPluginInfo(): WooPlugin {
-        val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
+        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
         return WooPlugin(info != null, info?.active ?: false, info?.version)
     }
 

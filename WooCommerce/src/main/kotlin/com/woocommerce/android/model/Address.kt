@@ -5,14 +5,11 @@ import com.google.i18n.addressinput.common.AddressData
 import com.google.i18n.addressinput.common.FormOptions
 import com.google.i18n.addressinput.common.FormatInterpreter
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
-import java.util.Locale
+import java.util.*
 
 @Parcelize
 data class Address(
@@ -82,23 +79,6 @@ data class Address(
             address1.isNotEmpty() || country.isNotEmpty() ||
             phone.isNotEmpty() || email.isNotEmpty() ||
             state.isNotEmpty() || city.isNotEmpty()
-    }
-
-    /**
-     * Checks whether the phone number is valid or not, depending on the [addressType], the check is:
-     * - [ORIGIN]: Checks whether the phone number contains 10 digits exactly after deleting an optional 1 as
-     *             the area code.
-     * - [DESTINATION]: Checks whether the phone has any digits.
-     *
-     * As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
-     * and that's similar to what the web client does.
-     * Source: https://github.com/Automattic/woocommerce-services/issues/1351
-     */
-    fun hasValidPhoneNumber(addressType: AddressType): Boolean {
-        return when (addressType) {
-            ORIGIN -> phone.replace(Regex("^1|[^\\d]"), "").length == 10
-            DESTINATION -> phone.contains(Regex("\\d"))
-        }
     }
 
     fun toShippingLabelModel(): ShippingLabelAddress {

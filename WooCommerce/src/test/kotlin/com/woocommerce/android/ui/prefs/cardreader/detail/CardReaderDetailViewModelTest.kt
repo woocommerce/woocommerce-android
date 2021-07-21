@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -36,6 +37,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val appPrefs: AppPrefs = mock()
 
     @Test
     fun `when view model init with connected state should emit loading view state`() {
@@ -446,7 +448,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     private fun createViewModel() = CardReaderDetailViewModel(
         cardReaderManager,
         tracker,
-        SavedStateHandle()
+        appPrefs,
+        SavedStateHandle(),
     )
 
     private companion object {

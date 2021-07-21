@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageCreatorEvent
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShowMoveItemDialog
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.MoveItemResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -133,6 +134,15 @@ class EditShippingLabelPackagesFragment :
 
                     findNavController().navigateSafely(action)
                 }
+                is OpenPackageCreatorEvent -> {
+                    val action = EditShippingLabelPackagesFragmentDirections
+                        .actionEditShippingLabelPackagesFragmentToShippingLabelCreatePackageFragment(
+                            position = event.position
+                        )
+
+                    findNavController().navigateSafely(action)
+                }
+
                 is ShowMoveItemDialog -> {
                     val action = EditShippingLabelPackagesFragmentDirections
                         .actionEditShippingLabelPackagesFragmentToMoveShippingItemDialog(
