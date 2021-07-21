@@ -1,13 +1,11 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentParameters
+import com.woocommerce.android.cardreader.PaymentInfo
+import com.woocommerce.android.cardreader.internal.payments.*
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -20,6 +18,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -27,11 +26,12 @@ internal class CreatePaymentActionTest {
     private lateinit var action: CreatePaymentAction
     private val paymentIntentParametersFactory = mock<PaymentIntentParametersFactory>()
     private val terminal: TerminalWrapper = mock()
+    private val paymentUtils: PaymentUtils = PaymentUtils()
     private val intentParametersBuilder = mock<PaymentIntentParameters.Builder>()
 
     @Before
     fun setUp() {
-        action = CreatePaymentAction(paymentIntentParametersFactory, terminal, mock())
+        action = CreatePaymentAction(paymentIntentParametersFactory, terminal, paymentUtils, mock())
         whenever(paymentIntentParametersFactory.createBuilder()).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setAmount(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setCurrency(any())).thenReturn(intentParametersBuilder)
@@ -46,7 +46,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        val result = action.createPaymentIntent("", 0, "", "").first()
+        val result = action.createPaymentIntent(createPaymentInfo()).first()
 
         assertThat(result).isExactlyInstanceOf(CreatePaymentStatus.Success::class.java)
     }
@@ -57,7 +57,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        val result = action.createPaymentIntent("", 0, "", "").first()
+        val result = action.createPaymentIntent(createPaymentInfo()).first()
 
         assertThat(result).isExactlyInstanceOf(CreatePaymentStatus.Failure::class.java)
     }
@@ -69,7 +69,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
         }
 
-        val result = action.createPaymentIntent("", 0, "", "").first()
+        val result = action.createPaymentIntent(createPaymentInfo()).first()
 
         assertThat((result as CreatePaymentStatus.Success).paymentIntent).isEqualTo(updatedPaymentIntent)
     }
@@ -80,7 +80,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        val result = action.createPaymentIntent("", 0, "", "").toList()
+        val result = action.createPaymentIntent(createPaymentInfo()).toList()
 
         assertThat(result.size).isEqualTo(1)
     }
@@ -91,7 +91,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        val result = action.createPaymentIntent("", 0, "", "").toList()
+        val result = action.createPaymentIntent(createPaymentInfo()).toList()
 
         assertThat(result.size).isEqualTo(1)
     }
@@ -103,7 +103,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        action.createPaymentIntent("", 0, "", expectedEmail).toList()
+        action.createPaymentIntent(createPaymentInfo(customerEmail = expectedEmail)).toList()
 
         verify(intentParametersBuilder).setReceiptEmail(expectedEmail)
     }
@@ -114,7 +114,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        action.createPaymentIntent("", 0, "", null).toList()
+        action.createPaymentIntent(createPaymentInfo(customerEmail = null)).toList()
 
         verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }
@@ -125,7 +125,7 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
 
-        action.createPaymentIntent("", 0, "", "").toList()
+        action.createPaymentIntent(createPaymentInfo()).toList()
 
         verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }
@@ -137,8 +137,41 @@ internal class CreatePaymentActionTest {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
 
-        action.createPaymentIntent(expectedDescription, 0, "", "").toList()
+        action.createPaymentIntent(createPaymentInfo(paymentDescription = expectedDescription)).toList()
 
         verify(intentParametersBuilder).setDescription(expectedDescription)
     }
+
+    @Test
+    fun `when creating payment intent, then dollar amount converted to cents`() = runBlockingTest {
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+        val amount = BigDecimal(1)
+
+        action.createPaymentIntent(createPaymentInfo(amount = amount)).toList()
+
+        verify(intentParametersBuilder).setAmount(100)
+    }
+
+    private fun createPaymentInfo(
+        paymentDescription: String = "",
+        orderId: Long = 1L,
+        amount: BigDecimal = BigDecimal(0),
+        currency: String = "USD",
+        customerEmail: String? = "",
+        customerName: String? = "",
+        storeName: String? = "",
+        siteUrl: String? = ""
+    ): PaymentInfo =
+        PaymentInfo(
+            paymentDescription = paymentDescription,
+            orderId = orderId,
+            amount = amount,
+            currency = currency,
+            customerEmail = customerEmail,
+            customerName = customerName,
+            storeName = storeName,
+            siteUrl = siteUrl,
+        )
 }

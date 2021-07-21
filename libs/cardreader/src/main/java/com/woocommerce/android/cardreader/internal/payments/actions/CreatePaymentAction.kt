@@ -4,6 +4,8 @@ import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentParameters
 import com.stripe.stripeterminal.model.external.TerminalException
+import com.woocommerce.android.cardreader.PaymentInfo
+import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.callbackFlow
 internal class CreatePaymentAction(
     private val paymentIntentParametersFactory: PaymentIntentParametersFactory,
     private val terminal: TerminalWrapper,
+    private val paymentUtils: PaymentUtils,
     private val logWrapper: LogWrapper
 ) {
     sealed class CreatePaymentStatus {
@@ -24,15 +27,10 @@ internal class CreatePaymentAction(
         data class Failure(val exception: TerminalException) : CreatePaymentStatus()
     }
 
-    fun createPaymentIntent(
-        paymentDescription: String,
-        amount: Int,
-        currency: String,
-        customerEmail: String?
-    ): Flow<CreatePaymentStatus> {
+    fun createPaymentIntent(paymentInfo: PaymentInfo): Flow<CreatePaymentStatus> {
         return callbackFlow {
             terminal.createPaymentIntent(
-                createParams(paymentDescription, amount, currency, customerEmail),
+                createParams(paymentInfo),
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         logWrapper.d("CardReader", "Creating payment intent succeeded")
@@ -51,17 +49,13 @@ internal class CreatePaymentAction(
         }
     }
 
-    private fun createParams(
-        paymentDescription: String,
-        amount: Int,
-        currency: String,
-        email: String?
-    ): PaymentIntentParameters {
+    private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
+        val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToIntegerInCents(paymentInfo.amount)
         val builder = paymentIntentParametersFactory.createBuilder()
-            .setDescription(paymentDescription)
-            .setAmount(amount)
-            .setCurrency(currency)
-        email?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
+            .setDescription(paymentInfo.paymentDescription)
+            .setAmount(amountInSmallestCurrencyUnit)
+            .setCurrency(paymentInfo.currency)
+        paymentInfo.customerEmail?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
         return builder.build()
     }
 }
