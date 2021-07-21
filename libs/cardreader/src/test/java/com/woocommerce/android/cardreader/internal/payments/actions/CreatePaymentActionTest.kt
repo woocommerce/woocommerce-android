@@ -37,6 +37,7 @@ internal class CreatePaymentActionTest {
         whenever(intentParametersBuilder.setCurrency(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
+        whenever(intentParametersBuilder.setMetadata(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
 
         whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
@@ -124,12 +125,95 @@ internal class CreatePaymentActionTest {
     }
 
     @Test
-    fun `when creating payment intent, then sets payment description`() = runBlockingTest {
+    fun `when creating payment intent, then payment description set`() = runBlockingTest {
         val expectedDescription = "test description"
 
         action.createPaymentIntent(createPaymentInfo(paymentDescription = expectedDescription)).toList()
 
         verify(intentParametersBuilder).setDescription(expectedDescription)
+    }
+
+    @Test
+    fun `when creating payment intent, then store name set`() = runBlockingTest {
+        val expected = "dummy store name"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+        val captor = argumentCaptor<Map<String, String>>()
+
+        action.createPaymentIntent(createPaymentInfo(storeName = expected)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.STORE.key]).isEqualTo(expected)
+    }
+
+    @Test
+    fun `when creating payment intent, then customer name set`() = runBlockingTest {
+        val expected = "dummy customer name"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+        val captor = argumentCaptor<Map<String, String>>()
+
+        action.createPaymentIntent(createPaymentInfo(customerName = expected)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.CUSTOMER_NAME.key]).isEqualTo(expected)
+    }
+
+    @Test
+    fun `when creating payment intent, then customer email set`() = runBlockingTest {
+        val expected = "dummy customer email"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+        val captor = argumentCaptor<Map<String, String>>()
+
+        action.createPaymentIntent(createPaymentInfo(customerEmail = expected)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.CUSTOMER_EMAIL.key]).isEqualTo(expected)
+    }
+
+    @Test
+    fun `when creating payment intent, then site url set`() = runBlockingTest {
+        val expected = "dummy site url"
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+        val captor = argumentCaptor<Map<String, String>>()
+
+        action.createPaymentIntent(createPaymentInfo(siteUrl = expected)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.SITE_URL.key]).isEqualTo(expected)
+    }
+
+    @Test
+    fun `when creating payment intent, then order id set`() = runBlockingTest {
+        val expected = 99L
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+        val captor = argumentCaptor<Map<String, String>>()
+
+        action.createPaymentIntent(createPaymentInfo(orderId = expected)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.ORDER_ID.key]).isEqualTo(expected.toString())
+    }
+
+    @Test
+    fun `when creating payment intent, then payment type set`() = runBlockingTest {
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+        val captor = argumentCaptor<Map<String, String>>()
+
+        action.createPaymentIntent(createPaymentInfo()).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.PAYMENT_TYPE.key]).isEqualTo(MetaDataKeys.PaymentTypes.SINGLE.key)
     }
 
     @Test

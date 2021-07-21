@@ -5,6 +5,7 @@ import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentParameters
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.PaymentInfo
+import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
@@ -55,7 +56,19 @@ internal class CreatePaymentAction(
             .setDescription(paymentInfo.paymentDescription)
             .setAmount(amountInSmallestCurrencyUnit)
             .setCurrency(paymentInfo.currency)
+            .setMetadata(createMetaData(paymentInfo))
         paymentInfo.customerEmail?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
         return builder.build()
     }
+
+    private fun createMetaData(paymentInfo: PaymentInfo): Map<String, String> =
+        mapOf(
+            MetaDataKeys.STORE.key to paymentInfo.storeName.orEmpty(),
+            MetaDataKeys.CUSTOMER_NAME.key to paymentInfo.customerName.orEmpty(),
+            MetaDataKeys.CUSTOMER_EMAIL.key to paymentInfo.customerEmail.orEmpty(),
+            MetaDataKeys.SITE_URL.key to paymentInfo.siteUrl.orEmpty(),
+            MetaDataKeys.ORDER_ID.key to paymentInfo.orderId.toString(),
+            // TODO cardreader Needs to be fixed when we add support for recurring payments
+            MetaDataKeys.PAYMENT_TYPE.key to MetaDataKeys.PaymentTypes.SINGLE.key,
+        )
 }
