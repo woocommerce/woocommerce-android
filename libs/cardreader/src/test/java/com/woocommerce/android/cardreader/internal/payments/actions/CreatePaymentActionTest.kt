@@ -38,6 +38,10 @@ internal class CreatePaymentActionTest {
         whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
+
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
     }
 
     @Test
@@ -99,9 +103,6 @@ internal class CreatePaymentActionTest {
     @Test
     fun `when customer email not empty, then PaymentIntent setReceiptEmail invoked`() = runBlockingTest {
         val expectedEmail = "test@test.cz"
-        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
-            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
-        }
 
         action.createPaymentIntent(createPaymentInfo(customerEmail = expectedEmail)).toList()
 
@@ -110,10 +111,6 @@ internal class CreatePaymentActionTest {
 
     @Test
     fun `when customer email is null, then PaymentIntent setReceiptEmail not invoked`() = runBlockingTest {
-        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
-            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
-        }
-
         action.createPaymentIntent(createPaymentInfo(customerEmail = null)).toList()
 
         verify(intentParametersBuilder, never()).setReceiptEmail(any())
@@ -121,21 +118,14 @@ internal class CreatePaymentActionTest {
 
     @Test
     fun `when customer email is empty, then PaymentIntent setReceiptEmail not invoked`() = runBlockingTest {
-        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
-            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
-        }
-
         action.createPaymentIntent(createPaymentInfo()).toList()
 
         verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }
 
     @Test
-    fun `sets payment description on payment intent`() = runBlockingTest {
+    fun `when creating payment intent, then sets payment description`() = runBlockingTest {
         val expectedDescription = "test description"
-        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
-            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
-        }
 
         action.createPaymentIntent(createPaymentInfo(paymentDescription = expectedDescription)).toList()
 
