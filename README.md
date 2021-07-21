@@ -134,7 +134,7 @@ From there, add and enable the configuration file for woocommerce-android, locat
 
 The woocommerce-android project uses [detekt][detekt] for Kotlin linting and code style check.
 
-You can run detekt using `./gradlew detekt`.
+You can run detekt using `./gradlew detektAll`.
 
 You can also view errors and warnings in realtime with the Detekt plugin.
 
