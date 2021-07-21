@@ -71,7 +71,9 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
         } else {
             val packageToCreate = viewState.uiModels.first { it.isChecked }.data
             launch {
+                viewState = viewState.copy(isSavingProgressDialogVisible = true)
                 val result = shippingLabelRepository.activateServicePackage(packageToCreate)
+                viewState = viewState.copy(isSavingProgressDialogVisible = false)
                 when {
                     result.isError -> {
                         val errorMsg = if (result.error.message != null) {
@@ -105,6 +107,7 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
+        val isSavingProgressDialogVisible: Boolean? = null,
         val uiModels: List<ServicePackageUiModel> = emptyList()
     ) : Parcelable
 

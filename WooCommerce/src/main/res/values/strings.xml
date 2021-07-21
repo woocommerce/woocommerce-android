@@ -534,12 +534,13 @@
     <string name="shipping_label_create_custom_package_field_empty_hint">This field is required.</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Invalid value.</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Creating new package</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Please wait…</string>
+    <string name="shipping_label_create_package_saving_progress_message">Please wait…</string>
     <string name="shipping_label_create_custom_package_api_failure">Package creation failed: %1$s</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Package creation failed: unknown API issue.</string>
     <string name="shipping_label_create_custom_package_generic_failure">Package creation failed. Please try again.</string>
     <string name="shipping_label_create_custom_package_success_message">\"%1$s\" saved</string>
     <string name="shipping_label_create_service_package_nothing_selected">Select a package to activate.</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Activating package</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
     <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>

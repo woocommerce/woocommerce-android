@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -16,6 +17,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.PackageSuccessfullyMadeEvent
+import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
@@ -24,6 +26,7 @@ class ShippingLabelCreateServicePackageFragment :
     BaseFragment(R.layout.fragment_shipping_label_create_service_package) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val skeletonView: SkeletonView = SkeletonView()
+    private var progressDialog: CustomProgressDialog? = null
 
     private val parentViewModel: ShippingLabelCreatePackageViewModel by viewModels({ requireParentFragment() })
     val viewModel: ShippingLabelCreateServicePackageViewModel by viewModels()
@@ -67,6 +70,16 @@ class ShippingLabelCreateServicePackageFragment :
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 showSkeleton(it, binding)
             }
+            new.isSavingProgressDialogVisible?.takeIfNotEqualTo(old?.isSavingProgressDialogVisible) { isVisible ->
+                if (isVisible) {
+                    showProgressDialog(
+                        title = R.string.shipping_label_activate_service_package_saving_progress_title,
+                        message = R.string.shipping_label_create_package_saving_progress_message
+                    )
+                } else {
+                    hideProgressDialog()
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -92,7 +105,7 @@ class ShippingLabelCreateServicePackageFragment :
         }
     }
 
-    fun showSkeleton(show: Boolean, binding: FragmentShippingLabelCreateServicePackageBinding) {
+    private fun showSkeleton(show: Boolean, binding: FragmentShippingLabelCreateServicePackageBinding) {
         if (show) {
             skeletonView.show(
                 binding.servicePackagesList,
@@ -102,5 +115,18 @@ class ShippingLabelCreateServicePackageFragment :
         } else {
             skeletonView.hide()
         }
+    }
+
+    private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(title),
+            getString(message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 }
