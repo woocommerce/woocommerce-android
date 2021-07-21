@@ -207,9 +207,6 @@ internal class CreatePaymentActionTest {
     @Test
     fun `when creating payment intent, then reader id set`() = runBlockingTest {
         val readerId = "SM12345678"
-        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
-            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
-        }
         val captor = argumentCaptor<Map<String, String>>()
 
         action.createPaymentIntent(createPaymentInfo(readerId = readerId)).toList()
