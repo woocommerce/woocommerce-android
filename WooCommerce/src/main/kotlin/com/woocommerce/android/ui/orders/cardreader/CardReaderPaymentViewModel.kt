@@ -137,6 +137,10 @@ class CardReaderPaymentViewModel
 
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
+        val readerId = cardReaderManager.getConnectedReader()?.id
+        if (readerId == null) {
+            WooLog.e(WooLog.T.CARD_READER, "collecting payment with reader without serial number")
+        }
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
@@ -146,7 +150,8 @@ class CardReaderPaymentViewModel
                 customerEmail = customerEmail.ifEmpty { null },
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
-                siteUrl = selectedSite.get().url.ifEmpty { null }
+                siteUrl = selectedSite.get().url.ifEmpty { null },
+                readerId = readerId ?: ""
             )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
@@ -212,7 +217,7 @@ class CardReaderPaymentViewModel
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
-        WooLog.e(WooLog.T.ORDERS, error.errorMessage)
+        WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }

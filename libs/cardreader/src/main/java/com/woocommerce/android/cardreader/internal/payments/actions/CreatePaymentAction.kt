@@ -70,5 +70,6 @@ internal class CreatePaymentAction(
             MetaDataKeys.ORDER_ID.key to paymentInfo.orderId.toString(),
             // TODO cardreader Needs to be fixed when we add support for recurring payments
             MetaDataKeys.PAYMENT_TYPE.key to MetaDataKeys.PaymentTypes.SINGLE.key,
+            MetaDataKeys.READER_SERIAL_NUMBER.key to paymentInfo.readerId,
         )
 }

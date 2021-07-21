@@ -7,11 +7,14 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * Interface for consumers who want to start accepting POC card payments.
  */
+@Suppress("TooManyFunctions")
 interface CardReaderManager {
     val isInitialized: Boolean
     val readerStatus: StateFlow<CardReaderStatus>
     fun initialize(app: Application)
     fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
+    fun getConnectedReader(): CardReader?
+
     suspend fun connectToReader(cardReader: CardReader): Boolean
     suspend fun disconnectReader(): Boolean
 

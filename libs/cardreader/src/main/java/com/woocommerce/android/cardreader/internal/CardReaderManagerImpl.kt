@@ -72,6 +72,8 @@ internal class CardReaderManagerImpl(
         return connectionManager.connectToReader(cardReader)
     }
 
+    override fun getConnectedReader() = terminal.getConnectedReader()
+
     override suspend fun disconnectReader(): Boolean {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         if (terminal.getConnectedReader() == null) return false

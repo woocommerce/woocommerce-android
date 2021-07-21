@@ -39,7 +39,12 @@ internal enum class MetaDataKeys(val key: String) {
      * See also PaymentIntent.PaymentTypes
      * This key is also used by the plugin when it creates payment intents.
      */
-    PAYMENT_TYPE("payment_type");
+    PAYMENT_TYPE("payment_type"),
+
+    /**
+     * Serial number of a reader which used to collect the payment
+     */
+    READER_SERIAL_NUMBER("reader_serial_number");
 
     enum class PaymentTypes(val key: String) {
         /**

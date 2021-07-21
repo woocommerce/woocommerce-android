@@ -10,5 +10,6 @@ data class PaymentInfo(
     val customerEmail: String?,
     val customerName: String?,
     val storeName: String?,
-    val siteUrl: String?
+    val siteUrl: String?,
+    val readerId: String,
 )
