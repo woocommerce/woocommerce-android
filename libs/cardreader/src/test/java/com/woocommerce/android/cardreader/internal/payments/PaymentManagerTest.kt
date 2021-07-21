@@ -41,6 +41,7 @@ private const val DUMMY_EMAIL = "test@test.test"
 private const val DUMMY_CUSTOMER_NAME = "Tester"
 private const val DUMMY_SITE_URL = "www.test.test/test"
 private const val DUMMY_STORE_NAME = "Test store"
+private const val DUMMY_READER_ID = "CM123456789"
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -508,7 +509,8 @@ class PaymentManagerTest {
         customerEmail: String? = DUMMY_EMAIL,
         customerName: String? = DUMMY_CUSTOMER_NAME,
         storeName: String? = DUMMY_STORE_NAME,
-        siteUrl: String? = DUMMY_SITE_URL
+        siteUrl: String? = DUMMY_SITE_URL,
+        readerId: String = DUMMY_READER_ID
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -519,5 +521,6 @@ class PaymentManagerTest {
             customerName = customerName,
             storeName = storeName,
             siteUrl = siteUrl,
+            readerId = readerId
         )
 }
