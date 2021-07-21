@@ -520,7 +520,7 @@
         <item>Service package</item>
     </string-array>
     <string name="shipping_label_create_package_title">Add new package</string>
-    <string name="shipping_label_create_custom_package_field_info">Set up the package you\'ll be using to ship your products. We\'ll save it for future orders.</string>
+    <string name="shipping_label_create_package_field_info">Set up the package you\'ll be using to ship your products. We\'ll save it for future orders.</string>
     <string name="shipping_label_create_custom_package_field_type">Package type</string>
     <string name="shipping_label_create_custom_package_field_type_info">Choose package type</string>
     <string name="shipping_label_create_custom_package_field_type_box">Box</string>

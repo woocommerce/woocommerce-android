@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/color_surface"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="@dimen/major_75">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -106,6 +107,5 @@
     <View style="@style/Woo.Divider"/>
     <include layout="@layout/skeleton_shipping_label_service_package"/>
     <View style="@style/Woo.Divider"/>
-
 
 </LinearLayout>
