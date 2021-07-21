@@ -12,7 +12,6 @@ import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.math.BigDecimal
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.

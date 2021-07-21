@@ -3,7 +3,6 @@ package com.woocommerce.android.cardreader
 import android.app.Application
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import java.math.BigDecimal
 
 /**
  * Interface for consumers who want to start accepting POC card payments.

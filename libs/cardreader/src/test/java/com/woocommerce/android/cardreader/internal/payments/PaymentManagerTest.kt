@@ -1,28 +1,12 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.stripe.stripeterminal.model.external.Charge
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CAPTURE
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CONFIRMATION
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
+import com.stripe.stripeterminal.model.external.PaymentIntentStatus.*
 import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
-import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
+import com.woocommerce.android.cardreader.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.PaymentInfo
@@ -35,22 +19,13 @@ import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPayme
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.flow.withIndex
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.junit.MockitoJUnitRunner
 import java.math.BigDecimal
@@ -58,15 +33,14 @@ import kotlin.reflect.KClass
 
 private const val TIMEOUT = 1000L
 private val DUMMY_AMOUNT = BigDecimal(0)
-private val DUMMY_PAYMENT_DESCRIPTION = "test description"
-private val DUMMY_ORDER_ID = 5L
-private val USD_CURRENCY = "USD"
-private val NONE_USD_CURRENCY = "CZK"
-private val DUMMY_EMAIL = "test@test.test"
-private val DUMMY_CUSTOMER_NAME = "Tester"
-private val DUMMY_SITE_URL = "www.test.test/test"
-private val DUMMY_STORE_NAME = "Test store"
-
+private const val DUMMY_PAYMENT_DESCRIPTION = "test description"
+private const val DUMMY_ORDER_ID = 5L
+private const val USD_CURRENCY = "USD"
+private const val NONE_USD_CURRENCY = "CZK"
+private const val DUMMY_EMAIL = "test@test.test"
+private const val DUMMY_CUSTOMER_NAME = "Tester"
+private const val DUMMY_SITE_URL = "www.test.test/test"
+private const val DUMMY_STORE_NAME = "Test store"
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
