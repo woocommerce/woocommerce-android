@@ -7,7 +7,7 @@ import javax.inject.Inject
 private const val USD_CURRENCY = "usd"
 internal const val USD_TO_CENTS_DECIMAL_PLACES = 2
 
-class PaymentUtils @Inject constructor() {
+internal class PaymentUtils @Inject constructor() {
     // TODO cardreader Add support for other currencies
     fun convertBigDecimalInDollarsToIntegerInCents(amount: BigDecimal): Int {
         return amount

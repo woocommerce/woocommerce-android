@@ -29,6 +29,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -137,11 +138,16 @@ class CardReaderPaymentViewModel
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
         cardReaderManager.collectPayment(
-            paymentDescription = order.getPaymentDescription(),
-            orderId = order.remoteId,
-            amount = order.total,
-            currency = order.currency,
-            customerEmail = customerEmail.ifEmpty { null }
+            PaymentInfo(
+                paymentDescription = order.getPaymentDescription(),
+                orderId = order.remoteId,
+                amount = order.total,
+                currency = order.currency,
+                customerEmail = customerEmail.ifEmpty { null },
+                customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
+                storeName = selectedSite.get().name.ifEmpty { null },
+                siteUrl = selectedSite.get().url.ifEmpty { null }
+            )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
         }
