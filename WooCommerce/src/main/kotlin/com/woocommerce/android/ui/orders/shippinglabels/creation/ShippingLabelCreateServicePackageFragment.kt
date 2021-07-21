@@ -43,7 +43,8 @@ class ShippingLabelCreateServicePackageFragment :
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentShippingLabelCreateServicePackageBinding.bind(view)
         val packagesAdapter = ShippingLabelServicePackageAdapter(
-            viewModel::onPackageSelected
+            viewModel::onPackageSelected,
+            viewModel.dimensionUnit
         )
 
         with(binding.servicePackagesList) {

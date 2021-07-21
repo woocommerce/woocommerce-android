@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -19,10 +20,19 @@ import javax.inject.Inject
 class ShippingLabelCreateServicePackageViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
-    private val shippingLabelRepository: ShippingLabelRepository
+    private val shippingLabelRepository: ShippingLabelRepository,
+    parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
+    companion object {
+        private const val KEY_PARAMETERS = "key_parameters"
+    }
+
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    val dimensionUnit: String by lazy {
+        parameterRepository.getParameters(KEY_PARAMETERS, savedState).dimensionUnit ?: ""
+    }
 
     init {
         launch {

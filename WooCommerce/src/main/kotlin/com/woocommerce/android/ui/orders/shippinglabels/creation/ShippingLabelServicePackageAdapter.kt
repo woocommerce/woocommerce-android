@@ -11,7 +11,8 @@ import com.woocommerce.android.databinding.ShippingPackageSelectableListItemBind
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.ServicePackageUiModel
 
 class ShippingLabelServicePackageAdapter(
-    val onChecked: (String) -> Unit
+    private val onChecked: (String) -> Unit,
+    private val dimensionUnit: String
 ) :
     ListAdapter<ShippingLabelServicePackageAdapter.ListItem, RecyclerView.ViewHolder>(DiffCallback()) {
     companion object {
@@ -78,7 +79,7 @@ class ShippingLabelServicePackageAdapter(
         fun bind(uiModel: ServicePackageUiModel) {
             binding.title.text = uiModel.data.title
             val dimensions = uiModel.data.dimensions
-            binding.dimensions.text = "${dimensions.length} x ${dimensions.width} x ${dimensions.height}"
+            binding.dimensions.text = "${dimensions.length} x ${dimensions.width} x ${dimensions.height} $dimensionUnit"
             binding.packageRadioButton.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) onChecked(uiModel.data.id)
             }
