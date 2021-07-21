@@ -16,15 +16,8 @@ interface CardReaderManager {
     suspend fun connectToReader(cardReader: CardReader): Boolean
     suspend fun disconnectReader(): Boolean
 
-    // TODO cardreader Stripe accepts only Int, is that ok?
-    // TODO cardreader wrap payment params with a data class
-    suspend fun collectPayment(
-        paymentDescription: String,
-        orderId: Long,
-        amount: BigDecimal,
-        currency: String,
-        customerEmail: String?
-    ): Flow<CardPaymentStatus>
+    // TODO cardreader Stripe accepts only Int, is that ok? (v2.0 of the SDK uses Long)
+    suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus>
 
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
     fun cancelPayment(paymentData: PaymentData)

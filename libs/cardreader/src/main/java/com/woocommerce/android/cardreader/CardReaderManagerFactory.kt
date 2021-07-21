@@ -28,7 +28,7 @@ object CardReaderManagerFactory {
             PaymentManager(
                 terminal,
                 cardReaderStore,
-                CreatePaymentAction(PaymentIntentParametersFactory(), terminal, logWrapper),
+                CreatePaymentAction(PaymentIntentParametersFactory(), terminal, PaymentUtils(), logWrapper),
                 CollectPaymentAction(terminal, logWrapper),
                 ProcessPaymentAction(terminal, logWrapper),
                 CancelPaymentAction(terminal),
