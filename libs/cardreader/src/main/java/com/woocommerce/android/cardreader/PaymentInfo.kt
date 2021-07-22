@@ -11,5 +11,4 @@ data class PaymentInfo(
     val customerName: String?,
     val storeName: String?,
     val siteUrl: String?,
-    val readerId: String,
 )
