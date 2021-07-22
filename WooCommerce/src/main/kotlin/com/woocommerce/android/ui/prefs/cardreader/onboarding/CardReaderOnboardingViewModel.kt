@@ -23,7 +23,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
 
-
     private val viewState = MutableLiveData<OnboardingViewState>()
     val viewStateData: LiveData<OnboardingViewState> = viewState
 
@@ -46,8 +45,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value = OnboardingViewState.WCPayNotActivatedState(::refreshState)
                 CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED ->
                     viewState.value = OnboardingViewState.WCPayNotSetupState(::refreshState)
-                CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT -> viewState.value =
-                    OnboardingViewState.WCPayInTestModeWithLiveAccountState
+                CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT ->
+                    viewState.value = OnboardingViewState.WCPayInTestModeWithLiveAccountState
                 CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW ->
                     viewState.value = OnboardingViewState.WCPayAccountUnderReviewState
                 // TODO cardreader Pass due date to the state

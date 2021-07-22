@@ -106,7 +106,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayAccountRejectedState::class.java)
         }
 
-
     @Test
     fun `when account pending requirements, then account pending requirements state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
