@@ -51,6 +51,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import javax.inject.Inject
 
 @HiltViewModel
@@ -286,14 +287,19 @@ class CardReaderConnectViewModel @Inject constructor(
         // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
         if (appPrefs.getShowCardReaderConnectedTutorial()) {
             triggerEvent(ShowCardReaderTutorial)
-//            appPrefs.setShowCardReaderConnectedTutorial(false)
+            appPrefs.setShowCardReaderConnectedTutorial(false)
         } else {
             exitFlow(connected = true)
         }
     }
 
     fun onTutorialClosed() {
-        exitFlow(connected = true)
+        launch {
+            // this workaround needs to be here since the navigation component hasn't finished the previous
+            // transaction when a result is received
+            yield()
+            exitFlow(connected = true)
+        }
     }
 
     private fun exitFlow(connected: Boolean) {
