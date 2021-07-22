@@ -95,9 +95,8 @@ class ShippingLabelRepository @Inject constructor(
                 if (result.isError) return@let WooResult<List<ShippingPackage>>(error = result.error)
 
                 selectableServicePackages = result.model!!.flatMap { it.toAppModel() }
-                availablePackages?.let { list ->
-                    WooResult(selectableServicePackages?.minus(list))
-                } ?: WooResult(selectableServicePackages)
+                availablePackages?.let { selectableServicePackages = selectableServicePackages?.minus(it) }
+                return WooResult(selectableServicePackages)
             }
     }
 
@@ -256,8 +255,8 @@ class ShippingLabelRepository @Inject constructor(
         ).let { result ->
             when {
                 result.model == true -> {
-                    availablePackages = availablePackages?.let { it + packageToCreate }
-                    selectableServicePackages = selectableServicePackages?.let { it - packageToCreate }
+                    availablePackages = availablePackages?.plus(packageToCreate)
+                    selectableServicePackages = selectableServicePackages?.minus(packageToCreate)
                     WooResult(true)
                 }
                 result.isError -> WooResult(result.error)
