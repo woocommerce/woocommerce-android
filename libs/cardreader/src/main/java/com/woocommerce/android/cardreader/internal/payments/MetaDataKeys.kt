@@ -44,7 +44,7 @@ internal enum class MetaDataKeys(val key: String) {
     /**
      * Serial number of a reader which is used to collect the payment
      */
-    READER_SERIAL_NUMBER("reader_serial_number");
+    READER_ID("reader_ID");
 
     enum class PaymentTypes(val key: String) {
         /**

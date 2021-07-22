@@ -212,7 +212,7 @@ internal class CreatePaymentActionTest {
         action.createPaymentIntent(createPaymentInfo(readerId = readerId)).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
-        assertThat(captor.firstValue[MetaDataKeys.READER_SERIAL_NUMBER.key]).isEqualTo(readerId)
+        assertThat(captor.firstValue[MetaDataKeys.READER_ID.key]).isEqualTo(readerId)
     }
 
     @Test
