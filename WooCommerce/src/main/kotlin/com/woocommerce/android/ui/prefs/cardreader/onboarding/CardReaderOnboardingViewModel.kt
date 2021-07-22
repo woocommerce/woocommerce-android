@@ -12,26 +12,57 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CardReaderOnboardingViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val cardReaderChecker: CardReaderOnboardingChecker
 ) : ScopedViewModel(savedState) {
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
 
-    private lateinit var cardReaderChecker: CardReaderOnboardingChecker
 
     private val viewState = MutableLiveData<OnboardingViewState>()
     val viewStateData: LiveData<OnboardingViewState> = viewState
 
     init {
-        startFlow()
+        refreshState()
     }
 
-    private fun startFlow() {
-        // TODO
+    private fun refreshState() {
+        launch {
+            viewState.value = OnboardingViewState.LoadingState
+            when (cardReaderChecker.getOnboardingState()) {
+                CardReaderOnboardingState.ONBOARDING_COMPLETED -> exitFlow()
+                CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED ->
+                    viewState.value = OnboardingViewState.UnsupportedCountryState
+                CardReaderOnboardingState.WCPAY_NOT_INSTALLED ->
+                    viewState.value = OnboardingViewState.WCPayNotInstalledState(::refreshState)
+                CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION ->
+                    viewState.value = OnboardingViewState.WCPayUnsupportedVersionState(::refreshState)
+                CardReaderOnboardingState.WCPAY_NOT_ACTIVATED ->
+                    viewState.value = OnboardingViewState.WCPayNotActivatedState(::refreshState)
+                CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED ->
+                    viewState.value = OnboardingViewState.WCPayNotSetupState(::refreshState)
+                CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT -> viewState.value =
+                    OnboardingViewState.WCPayInTestModeWithLiveAccountState
+                CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW ->
+                    viewState.value = OnboardingViewState.WCPayAccountUnderReviewState
+                // TODO cardreader Pass due date to the state
+                CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT ->
+                    viewState.value = OnboardingViewState.WCPayAccountPendingRequirementsState("", ::exitFlow)
+                CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT ->
+                    viewState.value = OnboardingViewState.WCPayAccountOverdueRequirementsState
+                CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED ->
+                    viewState.value = OnboardingViewState.WCPayAccountRejectedState
+                CardReaderOnboardingState.GENERIC_ERROR ->
+                    viewState.value = OnboardingViewState.GenericErrorState
+                CardReaderOnboardingState.NO_CONNECTION_ERROR ->
+                    viewState.value = OnboardingViewState.NoConnectionErrorState
+            }
+        }
     }
 
     private fun onCancelClicked() {
@@ -43,7 +74,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         triggerEvent(Event.Exit)
     }
 
-    sealed class OnboardingViewState(@LayoutRes layoutRes: Int) {
+    sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
         object LoadingState : OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
             val headerLabel: UiString =
                 UiString.UiStringRes(R.string.payment_onboarding_loading)
