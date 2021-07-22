@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton
 
