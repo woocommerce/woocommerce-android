@@ -4,8 +4,10 @@ import com.nhaarman.mockitokotlin2.*
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentParameters
+import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.PaymentInfo
-import com.woocommerce.android.cardreader.internal.payments.*
+import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
+import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -204,6 +206,19 @@ internal class CreatePaymentActionTest {
     }
 
     @Test
+    fun `when creating payment intent, then reader id set`() = runBlockingTest {
+        val readerId = "SM12345678"
+        val captor = argumentCaptor<Map<String, String>>()
+        val reader = mock<CardReader> { on { id }.thenReturn(readerId) }
+        whenever(terminal.getConnectedReader()).thenReturn(reader)
+
+        action.createPaymentIntent(createPaymentInfo()).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.READER_ID.key]).isEqualTo(readerId)
+    }
+
+    @Test
     fun `when creating payment intent, then payment type set`() = runBlockingTest {
         whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
@@ -236,7 +251,7 @@ internal class CreatePaymentActionTest {
         customerEmail: String? = "",
         customerName: String? = "",
         storeName: String? = "",
-        siteUrl: String? = ""
+        siteUrl: String? = "",
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -246,6 +261,6 @@ internal class CreatePaymentActionTest {
             customerEmail = customerEmail,
             customerName = customerName,
             storeName = storeName,
-            siteUrl = siteUrl,
+            siteUrl = siteUrl
         )
 }

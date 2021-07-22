@@ -508,7 +508,7 @@ class PaymentManagerTest {
         customerEmail: String? = DUMMY_EMAIL,
         customerName: String? = DUMMY_CUSTOMER_NAME,
         storeName: String? = DUMMY_STORE_NAME,
-        siteUrl: String? = DUMMY_SITE_URL
+        siteUrl: String? = DUMMY_SITE_URL,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -518,6 +518,6 @@ class PaymentManagerTest {
             customerEmail = customerEmail,
             customerName = customerName,
             storeName = storeName,
-            siteUrl = siteUrl,
+            siteUrl = siteUrl
         )
 }

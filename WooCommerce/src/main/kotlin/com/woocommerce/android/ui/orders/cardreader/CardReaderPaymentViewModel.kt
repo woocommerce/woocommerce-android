@@ -146,7 +146,7 @@ class CardReaderPaymentViewModel
                 customerEmail = customerEmail.ifEmpty { null },
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
-                siteUrl = selectedSite.get().url.ifEmpty { null }
+                siteUrl = selectedSite.get().url.ifEmpty { null },
             )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
@@ -212,7 +212,7 @@ class CardReaderPaymentViewModel
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
-        WooLog.e(WooLog.T.ORDERS, error.errorMessage)
+        WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
