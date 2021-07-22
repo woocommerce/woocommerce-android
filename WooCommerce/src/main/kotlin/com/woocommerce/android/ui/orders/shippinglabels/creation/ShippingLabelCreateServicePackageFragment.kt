@@ -6,12 +6,11 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateServicePackageBinding
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -30,6 +29,7 @@ class ShippingLabelCreateServicePackageFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val skeletonView: SkeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
+    private lateinit var doneMenuItem: MenuItem
 
     private val parentViewModel: ShippingLabelCreatePackageViewModel by viewModels({ requireParentFragment() })
     val viewModel: ShippingLabelCreateServicePackageViewModel by viewModels()
@@ -43,6 +43,10 @@ class ShippingLabelCreateServicePackageFragment :
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        if (viewModel.viewStateData.liveData.value?.isEmpty == true) {
+            doneMenuItem.isVisible = false
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,10 +75,13 @@ class ShippingLabelCreateServicePackageFragment :
                     binding.errorView.show(
                         type = WCEmptyView.EmptyViewType.SHIPPING_LABEL_SERVICE_PACKAGE_LIST
                     )
-                    binding.servicePackagesListContainer.hide()
                 } else {
                     binding.errorView.hide()
-                    binding.servicePackagesListContainer.show()
+                }
+
+                binding.servicePackagesListContainer.isVisible = !isEmpty
+                if (::doneMenuItem.isInitialized) {
+                    doneMenuItem.isVisible = !isEmpty
                 }
             }
             new.uiModels.takeIfNotEqualTo(old?.uiModels) { uiModels ->
