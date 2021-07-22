@@ -61,15 +61,23 @@ internal class CreatePaymentAction(
         return builder.build()
     }
 
-    private fun createMetaData(paymentInfo: PaymentInfo): Map<String, String> =
-        mapOf(
-            MetaDataKeys.STORE.key to paymentInfo.storeName.orEmpty(),
-            MetaDataKeys.CUSTOMER_NAME.key to paymentInfo.customerName.orEmpty(),
-            MetaDataKeys.CUSTOMER_EMAIL.key to paymentInfo.customerEmail.orEmpty(),
-            MetaDataKeys.SITE_URL.key to paymentInfo.siteUrl.orEmpty(),
-            MetaDataKeys.ORDER_ID.key to paymentInfo.orderId.toString(),
-            // TODO cardreader Needs to be fixed when we add support for recurring payments
-            MetaDataKeys.PAYMENT_TYPE.key to MetaDataKeys.PaymentTypes.SINGLE.key,
-            MetaDataKeys.READER_ID.key to paymentInfo.readerId,
-        )
+    private fun createMetaData(paymentInfo: PaymentInfo): Map<String, String> {
+        val map = mutableMapOf<String, String>()
+        paymentInfo.storeName.takeUnless { it.isNullOrBlank() }
+            ?.let { map[MetaDataKeys.STORE.key] = it }
+
+        paymentInfo.customerName.takeUnless { it.isNullOrBlank() }
+            ?.let { map[MetaDataKeys.CUSTOMER_NAME.key] = it }
+
+        paymentInfo.customerEmail.takeUnless { it.isNullOrBlank() }
+            ?.let { map[MetaDataKeys.CUSTOMER_EMAIL.key] = it }
+
+        paymentInfo.siteUrl.takeUnless { it.isNullOrBlank() }
+            ?.let { map[MetaDataKeys.SITE_URL.key] = it }
+
+        map[MetaDataKeys.ORDER_ID.key] = paymentInfo.orderId.toString()
+        // TODO cardreader Needs to be fixed when we add support for recurring payments
+        map[MetaDataKeys.PAYMENT_TYPE.key] = MetaDataKeys.PaymentTypes.SINGLE.key
+        return map
+    }
 }
