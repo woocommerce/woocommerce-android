@@ -48,6 +48,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -297,7 +298,7 @@ class CardReaderConnectViewModel @Inject constructor(
         launch {
             // this workaround needs to be here since the navigation component hasn't finished the previous
             // transaction when a result is received
-            yield()
+            delay(1)
             exitFlow(connected = true)
         }
     }
