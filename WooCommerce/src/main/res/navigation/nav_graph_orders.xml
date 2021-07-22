@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_orders"
     app:startDestination="@id/orderDetailFragment">
+
+    <include app:graph="@navigation/nav_reader_connection" />
+
     <dialog
         android:id="@+id/itemSelectorDialog"
         android:name="com.woocommerce.android.ui.ItemSelectorDialog"
@@ -245,11 +248,6 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderDetailFragment_to_cardReaderConnectDialog"
-            app:destination="@id/cardReaderConnectDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_orderDetailFragment_to_receiptPreviewFragment"
             app:destination="@id/receiptPreviewFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
@@ -269,7 +267,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -478,11 +476,6 @@
             android:name="orderIdentifier"
             app:argType="string" />
     </dialog>
-    <dialog
-        android:id="@+id/cardReaderConnectDialog"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
-        android:label="CardReaderConnectDialog">
-    </dialog>
     <fragment
         android:id="@+id/receiptPreviewFragment"
         android:name="com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewFragment"
@@ -507,8 +500,7 @@
         android:id="@+id/printingInstructionsFragment"
         android:name="com.woocommerce.android.ui.orders.details.PrintingInstructionsFragment"
         android:label="PrintingInstructionsFragment"
-        tools:layout="@layout/fragment_printing_instructions">
-    </fragment>
+        tools:layout="@layout/fragment_printing_instructions"/>
     <fragment
         android:id="@+id/shippingCustomsFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment"

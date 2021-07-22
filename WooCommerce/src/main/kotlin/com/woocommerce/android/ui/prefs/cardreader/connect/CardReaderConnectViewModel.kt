@@ -286,7 +286,7 @@ class CardReaderConnectViewModel @Inject constructor(
         // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
         if (appPrefs.getShowCardReaderConnectedTutorial()) {
             triggerEvent(ShowCardReaderTutorial)
-            appPrefs.setShowCardReaderConnectedTutorial(false)
+//            appPrefs.setShowCardReaderConnectedTutorial(false)
         } else {
             exitFlow(connected = true)
         }

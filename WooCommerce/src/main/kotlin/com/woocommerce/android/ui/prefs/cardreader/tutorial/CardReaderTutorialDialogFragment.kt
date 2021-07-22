@@ -15,10 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_reader_tutorial) {
-    companion object {
-        const val KEY_READER_TUTORIAL_RESULT = "key_reader_tutorial_result"
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.let {
             it.setCancelable(false)
@@ -51,5 +47,9 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    companion object {
+        const val KEY_READER_TUTORIAL_RESULT = "key_reader_tutorial_result"
     }
 }

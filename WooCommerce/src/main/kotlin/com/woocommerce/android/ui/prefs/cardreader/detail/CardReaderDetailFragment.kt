@@ -56,8 +56,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
             { event ->
                 when (event) {
                     is CardReaderConnectScreen ->
-                        findNavController()
-                            .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderConnectFragment)
+                        findNavController().navigateSafely(R.id.action_global_cardReaderConnectDialog)
                     is CardReaderUpdateScreen ->
                         findNavController().navigateSafely(
                             CardReaderDetailFragmentDirections
