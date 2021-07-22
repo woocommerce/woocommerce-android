@@ -34,6 +34,12 @@ class CardReaderEligibilityFragment : BaseFragment(R.layout.fragment_card_reader
                         UiHelpers.setTextOrHide(binding.eligibilityHint, state.hintLabel)
                         UiHelpers.setTextOrHide(binding.eligibilityHelp, state.contactSupportLabel)
                         UiHelpers.setTextOrHide(binding.eligibilityLearnMore, state.learnMoreLabel)
+                        binding.eligibilityHelp.setOnClickListener {
+                            state.onContactSupportActionClicked?.invoke()
+                        }
+                        binding.eligibilityLearnMore.setOnClickListener {
+                            state.onLearnMoreActionClicked?.invoke()
+                        }
                     }
                 }
             }
