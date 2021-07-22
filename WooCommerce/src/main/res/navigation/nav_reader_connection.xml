@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_reader_connection"
+    android:id="@+id/nav_graph_reader_connection"
     app:startDestination="@id/cardReaderConnectDialog">
     <dialog
         android:id="@+id/cardReaderConnectDialog"
@@ -18,10 +18,4 @@
         android:id="@+id/cardReaderTutorialDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
         android:label="CardReaderTutorialDialogFragment" />
-
-    <action
-        android:id="@+id/action_global_cardReaderConnectDialog"
-        app:destination="@id/cardReaderConnectDialog"
-        app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
 </navigation>

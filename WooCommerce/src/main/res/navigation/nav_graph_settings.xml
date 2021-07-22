@@ -124,4 +124,11 @@
             android:name="surveyType"
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
     </fragment>
+
+    <include app:graph="@navigation/nav_reader_connection" />
+    <action
+        android:id="@+id/action_global_cardReaderConnectDialog"
+        app:destination="@id/nav_graph_reader_connection"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
 </navigation>

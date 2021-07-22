@@ -197,7 +197,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.dialog_card_reader_con
                 }
                 is ShowCardReaderTutorial -> {
                     findNavController()
-                        .navigateSafely(R.id.action_global_cardReaderConnectDialog)
+                        .navigateSafely(R.id.action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment)
                 }
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_CONNECT_TO_READER_RESULT, event.data as Boolean)

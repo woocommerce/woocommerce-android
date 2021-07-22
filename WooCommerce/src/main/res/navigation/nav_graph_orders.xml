@@ -5,8 +5,6 @@
     android:id="@+id/nav_graph_orders"
     app:startDestination="@id/orderDetailFragment">
 
-    <include app:graph="@navigation/nav_reader_connection" />
-
     <dialog
         android:id="@+id/itemSelectorDialog"
         android:name="com.woocommerce.android.ui.ItemSelectorDialog"
@@ -541,4 +539,11 @@
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
+
+    <include app:graph="@navigation/nav_reader_connection" />
+    <action
+        android:id="@+id/action_global_cardReaderConnectDialog"
+        app:destination="@id/nav_graph_reader_connection"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
 </navigation>
