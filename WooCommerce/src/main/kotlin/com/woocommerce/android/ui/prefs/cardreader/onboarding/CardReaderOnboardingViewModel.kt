@@ -169,12 +169,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         // TODO cardreader Update layout resource
-        object WCPayAccountRestrictedState :
+        object WCPayAccountRejectedState :
             OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
             val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_restricted_header)
+                UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header)
             val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_restricted_hint)
+                UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
             val contactSupportLabel: UiString =
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =

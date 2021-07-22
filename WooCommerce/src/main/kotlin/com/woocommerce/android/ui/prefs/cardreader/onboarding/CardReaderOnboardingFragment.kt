@@ -38,7 +38,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         viewModel.viewStateData.observe(
             viewLifecycleOwner,
             { state ->
-                showOnboardingLayout(binding, state.getLayoutRes())
+                showOnboardingLayout(binding, state.layoutRes)
             }
         )
     }

@@ -838,8 +838,8 @@
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
 
-    <string name="card_reader_onboarding_account_restricted_header">In-Person Payments isn\’t available for this store</string>
-    <string name="card_reader_onboarding_account_restricted_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
+    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
+    <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
 
     <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
