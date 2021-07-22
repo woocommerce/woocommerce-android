@@ -10,6 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateServicePackageBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -19,6 +21,7 @@ import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.PackageSuccessfullyMadeEvent
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -63,6 +66,17 @@ class ShippingLabelCreateServicePackageFragment :
         adapter: ShippingLabelServicePackageAdapter
     ) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isEmpty.takeIfNotEqualTo(old?.isEmpty) { isEmpty ->
+                if (isEmpty) {
+                    binding.errorView.show(
+                        type = WCEmptyView.EmptyViewType.SHIPPING_LABEL_SERVICE_PACKAGE_LIST
+                    )
+                    binding.servicePackagesListContainer.hide()
+                } else {
+                    binding.errorView.hide()
+                    binding.servicePackagesListContainer.show()
+                }
+            }
             new.uiModels.takeIfNotEqualTo(old?.uiModels) { uiModels ->
                 adapter.updateData(uiModels)
             }
@@ -125,6 +139,7 @@ class ShippingLabelCreateServicePackageFragment :
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
     }
+
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
