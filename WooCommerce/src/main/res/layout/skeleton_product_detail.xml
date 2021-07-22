@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -41,19 +40,19 @@
                 android:id="@+id/divider"
                 style="@style/Woo.Divider"
                 android:layout_marginTop="@dimen/major_100"
-                app:layout_constraintTop_toBottomOf="@+id/view_image_1"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/view_image_1" />
 
             <View
                 android:id="@+id/view_title"
                 android:layout_width="120dp"
                 android:layout_height="@dimen/skeleton_text_height_150"
-                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 android:background="@drawable/skeleton_background"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider"/>
+                app:layout_constraintTop_toBottomOf="@+id/divider" />
 
             <!-- divider -->
             <View
@@ -61,31 +60,31 @@
                 style="@style/Woo.Divider"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
-                app:layout_constraintTop_toBottomOf="@+id/view_title"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/view_title" />
 
             <View
                 android:id="@+id/view_description_label"
                 android:layout_width="150dp"
                 android:layout_height="@dimen/skeleton_text_height_100"
-                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 android:background="@drawable/skeleton_background"
-                app:layout_constraintTop_toBottomOf="@+id/divider1"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider1" />
 
             <View
                 android:id="@+id/view_description"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/skeleton_text_height_75"
-                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:background="@drawable/skeleton_background"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/view_description_label"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/view_description_label" />
 
             <!-- divider -->
             <View
@@ -93,19 +92,19 @@
                 style="@style/Woo.Divider"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
-                app:layout_constraintTop_toBottomOf="@+id/view_description"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/view_description" />
 
             <View
                 android:id="@+id/view_orders_label"
                 android:layout_width="140dp"
                 android:layout_height="@dimen/skeleton_text_height_100"
-                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 android:background="@drawable/skeleton_background"
-                app:layout_constraintTop_toBottomOf="@+id/divider2"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
             <View
                 android:id="@+id/view_orders_total"
@@ -126,19 +125,19 @@
                 style="@style/Woo.Divider"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
-                app:layout_constraintTop_toBottomOf="@+id/view_orders_label"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/view_orders_label" />
 
             <View
                 android:id="@+id/view_reviews_label"
                 android:layout_width="120dp"
                 android:layout_height="@dimen/skeleton_text_height_100"
-                android:layout_marginTop="@dimen/major_100"
                 android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 android:background="@drawable/skeleton_background"
-                app:layout_constraintTop_toBottomOf="@+id/divider3"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
             <View
                 android:id="@+id/view_reviews_count"
@@ -159,9 +158,9 @@
                 style="@style/Woo.Divider"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
-                app:layout_constraintTop_toBottomOf="@+id/view_reviews_label"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/view_reviews_label" />
 
             <View
                 android:id="@+id/view_product_external"
@@ -180,11 +179,11 @@
                 android:layout_height="@dimen/skeleton_text_button_height"
                 android:layout_margin="@dimen/major_100"
                 android:background="@drawable/skeleton_background"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/view_reviews_label"
-                app:layout_constraintTop_toBottomOf="@+id/divider4"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/divider4" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -199,7 +198,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/skeleton_product_secondary_card"/>
+            <include layout="@layout/skeleton_product_secondary_card" />
 
             <!-- divider -->
             <View
@@ -207,7 +206,7 @@
                 android:layout_marginStart="@dimen/margin_app_title_aligned"
                 android:layout_marginTop="@dimen/minor_00" />
 
-            <include layout="@layout/skeleton_product_secondary_card"/>
+            <include layout="@layout/skeleton_product_secondary_card" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

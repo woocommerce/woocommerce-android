@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
@@ -9,7 +10,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -51,6 +54,7 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
+import org.w3c.dom.Text
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -96,6 +100,7 @@ class ProductDetailFragment :
 
         initializeViews(savedInstanceState)
         initializeViewModel()
+
     }
 
     override fun onDestroyView() {
@@ -320,6 +325,14 @@ class ProductDetailFragment :
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
         updateMenuItem = menu.findItem(R.id.menu_done)
 
+//        menu?.apply {
+//            for(index in 0 until this.size()){
+//                val item = this.getItem(index)
+//                val s = SpannableString(item.title)
+//                s.setSpan(ForegroundColorSpan(Color.MAGENTA),0,s.length,0)
+//                item.title = s
+//            }
+//        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
