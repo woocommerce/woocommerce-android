@@ -13,7 +13,9 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_onboarding) {
     val viewModel: CardReaderOnboardingViewModel by viewModels()
 
