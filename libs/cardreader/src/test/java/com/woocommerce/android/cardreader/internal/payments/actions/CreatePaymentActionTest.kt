@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.*
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentParameters
+import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.PaymentInfo
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
@@ -208,8 +209,10 @@ internal class CreatePaymentActionTest {
     fun `when creating payment intent, then reader id set`() = runBlockingTest {
         val readerId = "SM12345678"
         val captor = argumentCaptor<Map<String, String>>()
+        val reader = mock<CardReader> { on { id }.thenReturn(readerId) }
+        whenever(terminal.getConnectedReader()).thenReturn(reader)
 
-        action.createPaymentIntent(createPaymentInfo(readerId = readerId)).toList()
+        action.createPaymentIntent(createPaymentInfo()).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
         assertThat(captor.firstValue[MetaDataKeys.READER_ID.key]).isEqualTo(readerId)
@@ -249,7 +252,6 @@ internal class CreatePaymentActionTest {
         customerName: String? = "",
         storeName: String? = "",
         siteUrl: String? = "",
-        readerId: String = ""
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -259,7 +261,6 @@ internal class CreatePaymentActionTest {
             customerEmail = customerEmail,
             customerName = customerName,
             storeName = storeName,
-            siteUrl = siteUrl,
-            readerId = readerId
+            siteUrl = siteUrl
         )
 }
