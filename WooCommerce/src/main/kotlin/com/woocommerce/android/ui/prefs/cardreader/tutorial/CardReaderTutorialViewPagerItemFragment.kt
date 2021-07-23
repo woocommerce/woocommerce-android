@@ -25,22 +25,24 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
             val isLandscape = DisplayUtils.isLandscape(context)
             val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
 
-            // hide images in landscape unless this device is a tablet
-            if (isLandscape && !isTablet) {
+            // hide images in landscape
+            if (isLandscape) {
                 binding.imageView.hide()
             } else {
                 binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             }
 
-            // adjust the view sizes based on orientation
-            val ratio = if (isLandscape) {
-                (DisplayUtils.getDisplayPixelWidth() * RATIO_LANDSCAPE).toInt()
-            } else {
-                (DisplayUtils.getDisplayPixelWidth() * RATIO_PORTRAIT).toInt()
+            // adjust the view sizes based on orientation (skipped for tablets)
+            if (!isTablet) {
+                val ratio = if (isLandscape) {
+                    (DisplayUtils.getDisplayPixelWidth() * RATIO_LANDSCAPE).toInt()
+                } else {
+                    (DisplayUtils.getDisplayPixelWidth() * RATIO_PORTRAIT).toInt()
+                }
+                binding.labelTextView.layoutParams.width = ratio
+                binding.detailTextView.layoutParams.width = ratio
+                binding.imageView.layoutParams.width = ratio
             }
-            binding.labelTextView.layoutParams.width = ratio
-            binding.detailTextView.layoutParams.width = ratio
-            binding.imageView.layoutParams.width = ratio
         }
     }
 
