@@ -595,7 +595,7 @@ class ProductDetailCardBuilder(
             ComplexProperty(
                 string.product_tags,
                 tags,
-                drawable.ic_gridicons_tag,
+                drawable.ic_gridicon_circle_plus,
                 maxLines = 5
             ) {
                 viewModel.onEditProductCardClicked(
