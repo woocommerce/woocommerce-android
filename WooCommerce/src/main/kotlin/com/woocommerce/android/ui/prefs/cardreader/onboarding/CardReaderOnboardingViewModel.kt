@@ -106,7 +106,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woocommerce_payments
+            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
             val refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
         }
@@ -120,7 +120,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woocommerce_payments
+            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
             val refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
         }
@@ -134,7 +134,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woocommerce_payments
+            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
             val refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
         }
@@ -148,7 +148,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woocommerce_payments
+            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
             val refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
         }
