@@ -1,22 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-08 09:54:58+0000
+Translation-Revision-Date: 2021-07-23 13:10:27+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="variation_created_title">已建立款式</string>
+    <string name="variation_list_generate_new_variation">產生新款式</string>
+    <string name="product_wip_message_variations">現在你可以建立和管理產品款式！</string>
+    <string name="product_attributes_created_generate_action_text">產生款式</string>
+    <string name="product_attributes_created_description">現在你已新增屬性，可以建立第一個款式了！</string>
+    <string name="product_attributes_created_title">已建立屬性</string>
+    <string name="card_reader_software_update_progress_cancel_warning">不建議取消正在進行的軟體更新</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">抱歉，無法處理此付款</string>
+    <string name="card_reader_payment_failed_server_error_state">未連線至伺服器</string>
+    <string name="card_reader_payment_failed_no_network_state">沒有網際網路連線</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">以原包裝出貨</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">加入新包裹</string>
+    <string name="shipping_label_move_item_dialog_description">該項目現在在 %s。 你想移到哪裡？</string>
+    <string name="shipping_label_move_item_dialog_cancel">取消</string>
+    <string name="shipping_label_move_item_dialog_move">移動</string>
+    <string name="shipping_label_move_item_dialog_title">移動項目</string>
+    <string name="shipping_label_create_custom_package_success_message">已儲存「%1$s」</string>
+    <string name="shipping_label_create_custom_package_generic_failure">包裹建立失敗。 請再試一次。</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">包裹建立失敗：未知的 API 問題。</string>
+    <string name="shipping_label_create_custom_package_api_failure">包裹建立失敗：%1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">請稍候…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">正在建立新包裹</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">無效值。</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">此欄位為必填。</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">空包裹重量</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">空包裹重量 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">高度 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">寬度 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">長度 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">包裹名稱</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">信封</string>
+    <string name="shipping_label_create_custom_package_field_type_box">便利箱</string>
+    <string name="shipping_label_create_custom_package_field_type_info">選擇包裹類型</string>
+    <string name="shipping_label_create_custom_package_field_type">包裹類型</string>
+    <string name="shipping_label_create_custom_package_field_info">設定要用於產品出貨的包裹。 我們會儲存設定以便用於日後的訂單。</string>
+    <string name="shipping_label_create_package_title">新增包裹</string>
+    <string name="shipping_label_create_new_package_button">建立新包裹</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">包裹尺寸必須大於零。 請在產品頁面的「出貨」部分更新產品尺寸以繼續操作。</string>
+    <string name="shipping_label_package_details_individual_package_title">原包裝</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">項目尺寸</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">個別出貨項目</string>
+    <string name="order_status_updated">已更新訂單狀態</string>
+    <string name="receipt_preview_send_menu_item">傳送</string>
+    <string name="receipt_preview_print_menu_item">列印</string>
+    <string name="orderdetail_see_receipt_button">查看收據</string>
+    <string name="cancel_anyway">仍然要取消</string>
     <string name="card_reader_detail_connected_update_failed">讀卡機軟體更新失敗</string>
     <string name="card_reader_detail_connected_update_check_failed">軟體版本更新檢查失敗</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;接受行動支付及訂購讀卡機的資訊</string>
     <string name="card_reader_connect_open_bluetooth_settings">開啟藍牙</string>
-    <string name="card_reader_connect_scanning_failed_header">找不到讀卡機</string>
+    <string name="card_reader_connect_scanning_failed_header">沒有連接的讀取器</string>
     <string name="card_reader_connect_failed_header">無法連線至讀卡機</string>
     <string name="card_reader_connect_connect_button">連線</string>
     <string name="card_reader_connect_multiple_readers_found_header">找到數個讀卡機</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">此訂單已付款</string>
     <string name="card_reader_payment_receipt_email_content">感謝你的購買！ 點按下方連結即可查看付款收據。\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">付款失敗</string>
     <string name="card_reader_payment_failed_card_declined_state">卡片遭到拒絕</string>
     <string name="shipping_label_print_customs_form_download_failed">下載海關表格時發生錯誤</string>
     <string name="shipping_label_print_customs_form_screen_title">列印海關發票</string>
@@ -257,7 +302,6 @@ Language: zh_TW
     <string name="shipping_label_address_suggestion_use_selected_address">使用所選地址</string>
     <string name="shipping_label_edit_address_loading_progress_title">正在載入地址資料</string>
     <string name="product_wip_title_m5">現已推出新功能！</string>
-    <string name="product_wip_message_m5">你現在可將可下載檔案新增到產品，並連結追加銷售和交叉銷售產品。 不再需要某個產品了嗎？ 移至垃圾桶！</string>
     <string name="shipping_label_validation_view_map">開啟地圖</string>
     <string name="shipping_label_validation_contact_customer">聯絡客戶</string>
     <string name="shipping_label_validation_error_template">驗證失敗：%s</string>
@@ -341,7 +385,6 @@ Language: zh_TW
     <string name="product_downloadable_files_add">新增檔案</string>
     <string name="product_downloadable_files_value_single">1 個檔案</string>
     <string name="product_downloadable_files_value_multiple">%1$d 個檔案</string>
-    <string name="product_wip_message_m4">你現在可以透過 Woo 應用程式隨時隨地新增簡單、連結和組合產品。尚未建立完成嗎？ 將它們儲存為草稿！</string>
     <string name="print_shipping_label_info_step_4">你可能必須&lt;b&gt;在印表機上直接設定 WiFi 列印。&lt;/b&gt;請確認已更新印表機韌體，並參閱印表機文件以取得指示。</string>
     <string name="print_shipping_label_info_step_3">你可以選擇裝置的&lt;b&gt;預設列印服務&lt;/b&gt;或安裝&lt;b&gt;印表機的品牌應用程式&lt;/b&gt; (應顯示為建議選項)</string>
     <string name="print_shipping_label_info_step_1">請確認你的印表機和裝置已連接到&lt;b&gt;同樣的 WiFi 網路&lt;/b&gt;</string>
@@ -679,7 +722,7 @@ Language: zh_TW
     <string name="order_refunds_select_quantity">選取數量</string>
     <string name="order_refunds_shipping_refund">運費退款</string>
     <string name="order_refunds_products_refund">產品退款</string>
-    <string name="order_refunds_item_description">%s x %s (每個)</string>
+    <string name="order_refunds_item_description">每個 %s x %s</string>
     <string name="order_refunds_items_selected">已選取 %d 個項目</string>
     <string name="order_refunds_items_select_none">全部不選</string>
     <string name="order_refunds_items_select_all">全部選取</string>
@@ -1153,7 +1196,6 @@ Language: zh_TW
     <string name="site_picker_title">挑選商店</string>
     <string name="settings_signout">登出</string>
     <string name="orderstatus_select_status">變更訂單狀態</string>
-    <string name="order_status_changed_to">訂單狀態已變更為「%s」</string>
     <string name="orderdetail_change_order_status">按一下即可變更訂單狀態</string>
     <string name="apply">套用</string>
     <string name="app_rating_rate_never">不用了，謝謝</string>
@@ -1475,5 +1517,9 @@ Language: zh_TW
     <string-array name="order_list_tabs">
         <item>處理中</item>
         <item>全部訂單</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>自訂包裹</item>
+        <item>服務包裹</item>
     </string-array>
 </resources>
