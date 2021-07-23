@@ -1,13 +1,11 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect.onboarding
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -16,17 +14,22 @@ import javax.inject.Inject
 class CardReaderEligibilityViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val viewState = MutableLiveData<ViewState>(ViewState.CountryNotSupportedState("US",
-        ::onContactSupportClicked,
-        ::onLearnMoreClicked))
+    private val viewState = MutableLiveData<ViewState>(
+        ViewState.CountryNotSupportedState(
+            "US",
+            ::onContactSupportClicked,
+            ::onLearnMoreClicked
+        )
+    )
+
     val viewStateData: LiveData<ViewState> = viewState
 
     private fun onContactSupportClicked() {
-
+        // TODO()
     }
 
     private fun onLearnMoreClicked() {
-
+        // TODO()
     }
 
     sealed class ViewState(
@@ -50,7 +53,7 @@ class CardReaderEligibilityViewModel @Inject constructor(
             ),
             illustration = R.drawable.img_products_error,
             hintLabel = UiString.UiStringRes(
-               stringRes = R.string.card_reader_eligibility_country_not_supported_hint
+                stringRes = R.string.card_reader_eligibility_country_not_supported_hint
             ),
             contactSupportLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_eligibility_country_not_supported_contact_support,
