@@ -541,6 +541,7 @@
     <string name="shipping_label_create_custom_package_success_message">\"%1$s\" saved</string>
     <string name="shipping_label_create_service_package_nothing_selected">Select a package to activate.</string>
     <string name="shipping_label_activate_service_package_saving_progress_title">Activating package</string>
+    <string name="shipping_label_activate_service_package_empty_title">All available packages have been activated</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
     <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>

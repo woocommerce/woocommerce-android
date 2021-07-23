@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -19,6 +20,7 @@ import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.PackageSuccessfullyMadeEvent
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -27,6 +29,7 @@ class ShippingLabelCreateServicePackageFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val skeletonView: SkeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
+    private lateinit var doneMenuItem: MenuItem
 
     private val parentViewModel: ShippingLabelCreatePackageViewModel by viewModels({ requireParentFragment() })
     val viewModel: ShippingLabelCreateServicePackageViewModel by viewModels()
@@ -40,6 +43,8 @@ class ShippingLabelCreateServicePackageFragment :
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,6 +68,23 @@ class ShippingLabelCreateServicePackageFragment :
         adapter: ShippingLabelServicePackageAdapter
     ) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isEmpty.takeIfNotEqualTo(old?.isEmpty) { isEmpty ->
+                if (isEmpty) {
+                    binding.errorView.show(
+                        type = WCEmptyView.EmptyViewType.SHIPPING_LABEL_SERVICE_PACKAGE_LIST
+                    )
+                } else {
+                    binding.errorView.hide()
+                }
+            }
+
+            new.canSave.takeIfNotEqualTo(old?.canSave) {
+                binding.servicePackagesListContainer.isVisible = it
+                if (::doneMenuItem.isInitialized) {
+                    doneMenuItem.isVisible = it
+                }
+            }
+
             new.uiModels.takeIfNotEqualTo(old?.uiModels) { uiModels ->
                 adapter.updateData(uiModels)
             }
@@ -125,6 +147,7 @@ class ShippingLabelCreateServicePackageFragment :
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
     }
+
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null

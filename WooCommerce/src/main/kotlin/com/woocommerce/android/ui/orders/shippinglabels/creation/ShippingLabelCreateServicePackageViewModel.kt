@@ -50,7 +50,7 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
             }
 
             val uiModels = result.model!!.map { ServicePackageUiModel(it) }
-            viewState = viewState.copy(isLoading = false, uiModels = uiModels)
+            viewState = viewState.copy(isLoading = false, uiModels = uiModels, isEmpty = uiModels.isEmpty())
         }
     }
 
@@ -106,10 +106,14 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        val isEmpty: Boolean = false,
         val isLoading: Boolean = false,
         val isSavingProgressDialogVisible: Boolean? = null,
         val uiModels: List<ServicePackageUiModel> = emptyList()
-    ) : Parcelable
+    ) : Parcelable {
+        val canSave: Boolean
+            get() = !isEmpty
+    }
 
     @Parcelize
     data class ServicePackageUiModel(
