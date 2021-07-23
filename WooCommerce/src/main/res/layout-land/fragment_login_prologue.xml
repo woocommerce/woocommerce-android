@@ -33,7 +33,7 @@
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:srcCompat="@drawable/img_prologue_bg" />
 
-    <com.woocommerce.android.ui.login.LoginPrologueViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="0dp"
         android:layout_height="0dp"

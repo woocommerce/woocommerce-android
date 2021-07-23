@@ -45,6 +45,7 @@
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
     <string name="cancel">Cancel</string>
+    <string name="cancel_anyway">Cancel anyway</string>
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn more</string>
@@ -313,6 +314,7 @@
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="orderdetail_collect_payment_button">Collect Payment</string>
+    <string name="orderdetail_see_receipt_button">See receipt</string>
     <string name="orderdetail_printing_instructions_button">Learn more about printing receipts with your device</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Create new shipping label</string>
     <string name="orderdetail_shipping_label_item_header">Package %d</string>
@@ -339,11 +341,13 @@
     <string name="orderdetail_shipping_label_m3_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on "Create shipping label" to try our beta feature!</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your phone</string>
+    <string name="receipt_preview_print_menu_item">Print</string>
+    <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_fulfill_completed">🎉 Order completed!</string>
-    <string name="order_status_changed_to">Order status changed to %s</string>
+    <string name="order_status_updated">Order status updated</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
@@ -491,6 +495,10 @@
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
     </plurals>
+    <string name="shipping_label_package_details_individual_package_subtitle">Individually Shipped Item</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Item Dimensions</string>
+    <string name="shipping_label_package_details_individual_package_title">Original packaging</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Package dimensions must be greater than zero. Please update your item’s dimensions in the Shipping section of your product page to continue.</string>
     <string name="shipping_label_items_count_placeholder">Items count</string>
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
@@ -502,6 +510,34 @@
     <string name="shipping_label_single_package_total_weight">Total package weight: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d items in %2$d packages</string>
     <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
+    <string name="shipping_label_create_new_package_button">Create new package</string>
+    <!--
+    Shipping label package creation labels
+    -->
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Custom package</item>
+        <item>Service package</item>
+    </string-array>
+    <string name="shipping_label_create_package_title">Add new package</string>
+    <string name="shipping_label_create_custom_package_field_info">Set up the package you\'ll be using to ship your products. We\'ll save it for future orders.</string>
+    <string name="shipping_label_create_custom_package_field_type">Package type</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Choose package type</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Box</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Envelope</string>
+    <string name="shipping_label_create_custom_package_field_name">Package name</string>
+    <string name="shipping_label_create_custom_package_field_length">Length (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Width (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Height (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Empty package weight (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Weight of empty package</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">This field is required.</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Invalid value.</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Creating new package</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Please wait…</string>
+    <string name="shipping_label_create_custom_package_api_failure">Package creation failed: %1$s</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Package creation failed: unknown API issue.</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Package creation failed. Please try again.</string>
+    <string name="shipping_label_create_custom_package_success_message">\"%1$s\" saved</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
     <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>
@@ -574,6 +610,12 @@
     <string name="shipping_label_print_customs_form">Print customs form</string>
     <string name="shipping_label_print_customs_form_screen_title">Print customs invoice</string>
     <string name="shipping_label_print_customs_form_download_failed">Error downloading the customs form</string>
+    <string name="shipping_label_move_item_dialog_title">Move item</string>
+    <string name="shipping_label_move_item_dialog_move">Move</string>
+    <string name="shipping_label_move_item_dialog_cancel">Cancel</string>
+    <string name="shipping_label_move_item_dialog_description">This item is currently in %s. Where would you like to move it?</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Add to new package</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Ship in original packaging</string>
     <!--
             Refunds
         -->
@@ -603,7 +645,7 @@
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_select_none">Select none</string>
     <string name="order_refunds_items_selected">%d items selected</string>
-    <string name="order_refunds_item_description">%d x %s each</string>
+    <string name="order_refunds_item_description">%s x %s each</string>
     <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
@@ -703,10 +745,11 @@
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
-    <string name="card_reader_payment_failed_no_network_state" translatable="false">@string/error_generic_network</string>
+    <string name="card_reader_payment_failed_no_network_state">No internet connection</string>
+    <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">The payment did not succeed</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
@@ -730,7 +773,7 @@
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
-    <string name="card_reader_connect_scanning_failed_header">No reader found</string>
+    <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
@@ -769,6 +812,8 @@
     <string name="card_reader_software_update_title">Software update</string>
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
 
     <!--
         Notifications
@@ -819,6 +864,9 @@
     <string name="product_price_empty">Add price</string>
     <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
+    <string name="product_attributes_created_title">Attributes created</string>
+    <string name="product_attributes_created_description">Now that you\'ve added attributes, you can create your first variation!</string>
+    <string name="product_attributes_created_generate_action_text">Generate Variation</string>
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
@@ -903,8 +951,7 @@
     <string name="product_limited_editing_title">Limited editing available</string>
     <string name="product_limited_editing_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
     <string name="product_adding_wip_title">Create products from the app!</string>
-    <string name="product_wip_message_m4">It\'s now possible to create new simple, linked and grouped products on the go from the Woo app. Not ready yet? Save them as a draft!</string>
-    <string name="product_wip_message_m5">You can now add downloadable files to a product and link upsell &amp; cross-sell products. No longer want a product? Trash it!</string>
+    <string name="product_wip_message_variations">You can now create and manage product variations!</string>
     <string name="product_wip_title">New editing options available</string>
     <string name="product_wip_title_m5">New features available!</string>
     <string name="product_wip_message_m2">We\'ve added more editing functionalities to products! You can now update images, see previews and share your products.</string>
@@ -1042,6 +1089,8 @@
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
+    <string name="variation_list_generate_new_variation">Generate new variation</string>
+    <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
 

@@ -91,3 +91,10 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
         data class Cancellation<T>(val exception: CancellationException) : ContinuationResult<T>()
     }
 }
+
+fun ContinuationWrapper.ContinuationResult<Boolean>.isSuccessful(): Boolean {
+    return when (this) {
+        is Success -> value
+        is Cancellation -> false
+    }
+}

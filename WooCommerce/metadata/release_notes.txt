@@ -1,1 +1,3 @@
-Creating international shipping labels is a breeze! Merchants in the USA using WooCommerce Shipping & Tax in their store can now generate shipping labels and customs forms for international destinations. We’re continuing to build this feature – give it a whirl and let us know how it goes!
+Some merchants in the USA using the WooCommerce Shipping & Tax extension saw a bug when creating labels for orders with decimal product quantities. It’s fixed!
+
+Want to give label creation a try? Install and activate the WooCommerce Shipping & Tax extension in your store. Right now, we support merchants in the USA shipping worldwide. We welcome your feedback!

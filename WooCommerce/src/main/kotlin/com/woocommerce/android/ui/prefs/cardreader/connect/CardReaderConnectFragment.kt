@@ -18,13 +18,16 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
@@ -33,8 +36,10 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
+import com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.WooAnimUtils
@@ -96,6 +101,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     private fun initObservers(binding: FragmentCardReaderConnectBinding) {
         observeEvents()
         observeState(binding)
+        setupResultHandlers(viewModel)
     }
 
     private fun observeState(binding: FragmentCardReaderConnectBinding) {
@@ -105,6 +111,12 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
             } else {
                 moveToState(binding, viewState)
             }
+        }
+    }
+
+    private fun setupResultHandlers(viewModel: CardReaderConnectViewModel) {
+        handleNotice(CardReaderTutorialDialogFragment.KEY_READER_TUTORIAL_RESULT) {
+            viewModel.onTutorialClosed()
         }
     }
 
@@ -182,6 +194,10 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
                         it.initialize(requireActivity().application)
                         event.onCardManagerInitialized(it)
                     }
+                }
+                is ShowCardReaderTutorial -> {
+                    findNavController()
+                        .navigateSafely(R.id.action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment)
                 }
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_CONNECT_TO_READER_RESULT, event.data as Boolean)

@@ -1,66 +1,99 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
+import androidx.annotation.VisibleForTesting
+import com.woocommerce.android.extensions.semverCompareTo
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
+import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
+import org.wordpress.android.fluxc.store.WCPayStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
+private val SUPPORTED_COUNTRIES = listOf("US")
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+const val SUPPORTED_WCPAY_VERSION = "2.5.0"
+
 @Suppress("TooManyFunctions")
-class CardReaderOnboardingChecker @Inject constructor() {
+class CardReaderOnboardingChecker @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val wooStore: WooCommerceStore,
+    private val wcPayStore: WCPayStore,
+    private val dispatchers: CoroutineDispatchers
+) {
+    @Suppress("ReturnCount")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
-        return when {
-            !isCountrySupported() -> CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED
-            !isWCPayInstalled() -> CardReaderOnboardingState.WCPAY_NOT_INSTALLED
-            !isWCPayVersionSupported() -> CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION
-            !isWCPayActivated() -> CardReaderOnboardingState.WCPAY_NOT_ACTIVATED
-            !isWCPaySetupCompleted() -> CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED
-            isWCPayInTestModeWithLiveStripeAccount() ->
-                CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
-            isStripeAccountUnderReview() -> CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW
-            isStripeAccountPendingRequirements() -> CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT
-            isStripeAccountOverdueRequirements() -> CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
-            isStripeAccountRejected() -> CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED
-            else -> CardReaderOnboardingState.ONBOARDING_COMPLETED
+        if (!isCountrySupported()) return COUNTRY_NOT_SUPPORTED
+
+        val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
+        if (fetchSitePluginsResult.isError) return GENERIC_ERROR
+        val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
+
+        if (!isWCPayInstalled(pluginInfo)) return WCPAY_NOT_INSTALLED
+        if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WCPAY_UNSUPPORTED_VERSION
+        if (!isWCPayActivated(pluginInfo)) return WCPAY_NOT_ACTIVATED
+
+        val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GENERIC_ERROR
+
+        if (!isWCPaySetupCompleted(paymentAccount)) return WCPAY_SETUP_NOT_COMPLETED
+        if (isWCPayInTestModeWithLiveStripeAccount()) return WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
+        if (isStripeAccountUnderReview(paymentAccount)) return STRIPE_ACCOUNT_UNDER_REVIEW
+        if (isStripeAccountPendingRequirements(paymentAccount)) return STRIPE_ACCOUNT_PENDING_REQUIREMENT
+        if (isStripeAccountOverdueRequirements(paymentAccount)) return STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
+        if (isStripeAccountRejected(paymentAccount)) return STRIPE_ACCOUNT_REJECTED
+        if (isInUndefinedState(paymentAccount)) return GENERIC_ERROR
+
+        return ONBOARDING_COMPLETED
+    }
+
+    private suspend fun isCountrySupported(): Boolean {
+        return withContext(dispatchers.io) {
+            wooStore.getStoreCountryCode(selectedSite.get())?.let { storeCountryCode ->
+                SUPPORTED_COUNTRIES.any { it.equals(storeCountryCode, ignoreCase = true) }
+            } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
         }
     }
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isCountrySupported(): Boolean = true
+    private fun isWCPayInstalled(pluginInfo: WCPluginSqlUtils.WCPluginModel?): Boolean = pluginInfo != null
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPayInstalled(): Boolean = true
+    private fun isWCPayVersionSupported(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean =
+        (pluginInfo.version).semverCompareTo(SUPPORTED_WCPAY_VERSION) >= 0
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPayVersionSupported(): Boolean = true
+    private fun isWCPayActivated(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean = pluginInfo.active
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPayActivated(): Boolean = true
-
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPaySetupCompleted(): Boolean = true
+    private fun isWCPaySetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status != WCPaymentAccountResult.WCPayAccountStatusEnum.NO_ACCOUNT
 
     // TODO cardreader Implement
     @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPayInTestModeWithLiveStripeAccount(): Boolean = false
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isStripeAccountUnderReview(): Boolean = false
+    private fun isStripeAccountUnderReview(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
+            !paymentAccount.hasPendingRequirements &&
+            !paymentAccount.hasOverdueRequirements
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isStripeAccountPendingRequirements(): Boolean = false
+    private fun isStripeAccountPendingRequirements(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
+            paymentAccount.hasPendingRequirements
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isStripeAccountOverdueRequirements(): Boolean = false
+    private fun isStripeAccountOverdueRequirements(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
+            paymentAccount.hasOverdueRequirements
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isStripeAccountRejected(): Boolean = false
+    private fun isStripeAccountRejected(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_FRAUD ||
+            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_LISTED ||
+            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE ||
+            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_OTHER
 }
+
+private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
+    paymentAccount.status != WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE
 
 enum class CardReaderOnboardingState {
     ONBOARDING_COMPLETED,

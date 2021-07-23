@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/service_packages_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/custom_package_form_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/minor_50"
+            android:text="@string/shipping_label_create_package_field_info"
+            android:textAppearance="@style/TextAppearance.Woo.Body1" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:paddingTop="@dimen/major_100"
+            android:id="@+id/service_packages_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/shipping_package_selectable_list_item"/>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
