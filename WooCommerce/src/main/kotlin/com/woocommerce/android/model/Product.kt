@@ -20,7 +20,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date

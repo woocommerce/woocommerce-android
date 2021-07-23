@@ -615,7 +615,7 @@ class ProductDetailCardBuilder(
                 icon = drawable.ic_gridicon_circle_plus,
                 showTitle = false,
                 onClick = {
-                    //TODO call Product add-ons view
+                    // TODO call Product add-ons view
                 }
             )
         }
