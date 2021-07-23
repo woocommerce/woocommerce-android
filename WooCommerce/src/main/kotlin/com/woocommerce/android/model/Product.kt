@@ -545,7 +545,7 @@ fun WCProductModel.toAppModel(): Product {
         groupedProductIds = this.getGroupedProductIdList(),
         crossSellProductIds = this.getCrossSellProductIdList(),
         upsellProductIds = this.getUpsellProductIdList(),
-        addons = this.addons.map { it.toAppModel() }
+        addons = this.addons?.map { it.toAppModel() } ?: emptyList()
     )
 }
 
