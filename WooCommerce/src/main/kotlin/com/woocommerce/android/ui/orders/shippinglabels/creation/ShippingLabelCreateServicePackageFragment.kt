@@ -44,9 +44,7 @@ class ShippingLabelCreateServicePackageFragment :
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
-        if (viewModel.viewStateData.liveData.value?.isEmpty == true) {
-            doneMenuItem.isVisible = false
-        }
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,12 +76,15 @@ class ShippingLabelCreateServicePackageFragment :
                 } else {
                     binding.errorView.hide()
                 }
+            }
 
-                binding.servicePackagesListContainer.isVisible = !isEmpty
+            new.canSave.takeIfNotEqualTo(old?.canSave) {
+                binding.servicePackagesListContainer.isVisible = it
                 if (::doneMenuItem.isInitialized) {
-                    doneMenuItem.isVisible = !isEmpty
+                    doneMenuItem.isVisible = it
                 }
             }
+
             new.uiModels.takeIfNotEqualTo(old?.uiModels) { uiModels ->
                 adapter.updateData(uiModels)
             }

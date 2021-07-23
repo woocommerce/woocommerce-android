@@ -110,7 +110,10 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
         val isLoading: Boolean = false,
         val isSavingProgressDialogVisible: Boolean? = null,
         val uiModels: List<ServicePackageUiModel> = emptyList()
-    ) : Parcelable
+    ) : Parcelable {
+        val canSave: Boolean
+            get() = !isEmpty
+    }
 
     @Parcelize
     data class ServicePackageUiModel(
