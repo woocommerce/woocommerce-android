@@ -12,14 +12,14 @@ import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnTitleFo
 @Parcelize
 data class ProductAddon(
     val name: String,
+    val required: Boolean,
     val description: String,
-    val descriptionEnabled: String,
+    val descriptionEnabled: Boolean,
     val max: String,
     val min: String,
     val position: String,
     val price: String,
     val adjustPrice: String,
-    val required: String,
     val restrictions: String,
     val titleFormat: AddOnTitleFormat?,
     val restrictionsType: AddOnRestrictionsType?,
@@ -39,28 +39,30 @@ data class ProductAddonOption(
 
 fun WCProductAddonModel.toAppModel() =
     ProductAddon(
-        name = this.name ?: "",
-        description = this.description ?: "",
-        descriptionEnabled = this.descriptionEnabled ?: "",
-        max = this.max ?: "",
-        min = this.min ?: "",
-        position = this.position ?: "",
-        price = this.price ?: "",
-        adjustPrice = this.adjustPrice ?: "",
-        required = this.required ?: "",
-        restrictions = this.restrictions ?: "",
-        titleFormat = this.titleFormat,
-        restrictionsType = this.restrictionsType,
-        priceType = this.priceType,
-        type = this.type,
-        display = this.display,
-        options = this.options?.map { it.toAppModel() } ?: emptyList()
+        name = name ?: "",
+        description = description ?: "",
+        descriptionEnabled = descriptionEnabled?.toIntOrNull().toBoolean(),
+        max = max ?: "",
+        min = min ?: "",
+        position = position ?: "",
+        price = price ?: "",
+        adjustPrice = adjustPrice ?: "",
+        required = required?.toIntOrNull().toBoolean(),
+        restrictions = restrictions ?: "",
+        titleFormat = titleFormat,
+        restrictionsType = restrictionsType,
+        priceType = priceType,
+        type = type,
+        display = display,
+        options = options?.map { it.toAppModel() } ?: emptyList()
     )
 
 fun WCProductAddonModel.ProductAddonOption.toAppModel() =
     ProductAddonOption(
-        priceType = this.priceType,
-        label = this.label ?: "",
-        price = this.price ?: "",
-        image = this.image ?: ""
+        priceType = priceType,
+        label = label ?: "",
+        price = price ?: "",
+        image = image ?: ""
     )
+
+private fun Int?.toBoolean() = this == 1
