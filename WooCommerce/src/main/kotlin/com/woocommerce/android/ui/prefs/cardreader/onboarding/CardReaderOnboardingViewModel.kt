@@ -76,7 +76,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
         object LoadingState : OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
             val headerLabel: UiString =
-                UiString.UiStringRes(R.string.payment_onboarding_loading)
+                UiString.UiStringRes(R.string.card_reader_onboarding_loading)
             val hintLabel: UiString =
                 UiString.UiStringRes(R.string.please_wait)
             @DrawableRes val illustration: Int = R.drawable.img_payment_onboarding_loading

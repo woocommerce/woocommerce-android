@@ -46,7 +46,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         LayoutInflater.from(requireActivity()).inflate(layoutRes, binding.container, true)
     }
 
-    override fun getFragmentTitle() = resources.getString(R.string.payment_onboarding_title)
+    override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
 
     companion object {
         const val KEY_READER_ONBOARDING_RESULT = "key_reader_onboarding_result"
