@@ -8,6 +8,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.CustomPackage
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.PredefinedOption
+import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.PredefinedOption.PredefinedPackage
 
 @Parcelize
 data class ShippingPackage(
@@ -16,7 +17,8 @@ data class ShippingPackage(
     val isLetter: Boolean,
     val category: String,
     val dimensions: PackageDimensions,
-    val boxWeight: Float
+    val boxWeight: Float,
+    val carrierId: String = "" /* Can be empty, only needed by predefined packages */
 ) : Parcelable {
     companion object {
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
@@ -33,6 +35,22 @@ data class ShippingPackage(
             isLetter = isLetter,
             dimensions = dimensions.toString(),
             boxWeight = boxWeight
+        )
+    }
+
+    fun toPredefinedOptionDataModel(): PredefinedOption {
+        return PredefinedOption(
+            title = category,
+            carrier = carrierId,
+            predefinedPackages = listOf(
+                PredefinedPackage(
+                    id = id,
+                    title = title,
+                    isLetter = isLetter,
+                    dimensions = dimensions.toString(),
+                    boxWeight = boxWeight
+                )
+            )
         )
     }
 }
@@ -81,7 +99,8 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
                 height = dimensionsParts[2].trim().toFloat()
             ),
             boxWeight = it.boxWeight,
-            category = this.title
+            category = this.title,
+            carrierId = this.carrier
         )
     }
 }
