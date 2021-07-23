@@ -595,7 +595,7 @@ class ProductDetailCardBuilder(
             ComplexProperty(
                 string.product_tags,
                 tags,
-                drawable.ic_gridicon_circle_plus,
+                drawable.ic_gridicons_tag,
                 maxLines = 5
             ) {
                 viewModel.onEditProductCardClicked(
@@ -612,7 +612,7 @@ class ProductDetailCardBuilder(
         takeIf { addons.isNotEmpty() && FeatureFlag.PRODUCT_ADD_ONS.isEnabled() }?.let {
             ComplexProperty(
                 value = resources.getString(string.product_add_ons_card_button_title),
-                icon = drawable.ic_add,
+                icon = drawable.ic_gridicon_circle_plus,
                 showTitle = false,
                 onClick = {
                     //TODO call Product add-ons view
