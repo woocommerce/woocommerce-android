@@ -7,6 +7,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_FAILED
@@ -29,15 +30,9 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.CANCELLED
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.FAILED
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.STARTED
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
@@ -45,9 +40,14 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
+import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -58,7 +58,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -71,6 +70,7 @@ class CardReaderPaymentViewModel
     private val orderRepository: OrderDetailRepository,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
@@ -102,16 +102,7 @@ class CardReaderPaymentViewModel
                     triggerEvent(Exit)
                     return@launch
                 }
-                // TODO cardreader don't hardcode currency symbol ($)
-                collectPaymentFlow(
-                    cardReaderManager,
-                    order.getPaymentDescription(),
-                    order.remoteId,
-                    order.total,
-                    order.currency,
-                    order.billingAddress.email,
-                    "$${order.total}"
-                )
+                collectPaymentFlow(cardReaderManager, order)
             } ?: run {
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
@@ -140,20 +131,17 @@ class CardReaderPaymentViewModel
         }
     }
 
-    @Suppress("LongParameterList")
-    private suspend fun collectPaymentFlow(
-        cardReaderManager: CardReaderManager,
-        paymentDescription: String,
-        orderId: Long,
-        amount: BigDecimal,
-        currency: String,
-        billingEmail: String,
-        amountLabel: String
-    ) {
-        cardReaderManager.collectPayment(paymentDescription, orderId, amount, currency, billingEmail.ifEmpty { null })
-            .collect { paymentStatus ->
-                onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
-            }
+    private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
+        val customerEmail = order.billingAddress.email
+        cardReaderManager.collectPayment(
+            paymentDescription = order.getPaymentDescription(),
+            orderId = order.remoteId,
+            amount = order.total,
+            currency = order.currency,
+            customerEmail = customerEmail.ifEmpty { null }
+        ).collect { paymentStatus ->
+            onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
+        }
     }
 
     private fun onPaymentStatusChanged(
@@ -167,10 +155,9 @@ class CardReaderPaymentViewModel
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
-            // TODO cardreader store receipt data into a persistent storage
             is PaymentCompleted -> {
                 tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
-                onPaymentCompleted(paymentStatus, billingEmail, orderId, amountLabel)
+                onPaymentCompleted(paymentStatus, orderId)
             }
             ShowAdditionalInfo -> {
                 // TODO cardreader prompt the user to take certain action eg. Remove card
@@ -192,18 +179,10 @@ class CardReaderPaymentViewModel
 
     private fun onPaymentCompleted(
         paymentStatus: PaymentCompleted,
-        billingEmail: String,
         orderId: Long,
-        amountLabel: String
     ) {
-        viewState.postValue(
-            PaymentSuccessfulState(
-                amountLabel,
-                // TODO cardreader this breaks equals of PaymentSuccessfulState - consider if it is ok
-                { onPrintReceiptClicked(paymentStatus.receiptUrl, "receipt-order-$orderId") },
-                { onSendReceiptClicked(paymentStatus.receiptUrl, billingEmail) }
-            )
-        )
+        storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        showPaymentSuccessfulState()
         reFetchOrder()
     }
 
@@ -229,12 +208,41 @@ class CardReaderPaymentViewModel
         viewState.postValue(FailedPaymentState(error.type.mapToUiError(), amountLabel, onRetryClicked))
     }
 
-    private fun onPrintReceiptClicked(receiptUrl: String, documentName: String) {
+    private fun showPaymentSuccessfulState() {
         launch {
-            tracker.track(RECEIPT_PRINT_TAPPED)
-            // TODO cardreader show a progress dialog as url loading might take some time
-            triggerEvent(PrintReceipt(receiptUrl, documentName))
+            val order = orderRepository.getOrder(arguments.orderIdentifier)
+                ?: throw IllegalStateException("Order URL not available.")
+            val amountLabel = order.getAmountLabel()
+            val receiptUrl = getReceiptUrl(order.remoteId)
+
+            viewState.postValue(
+                PaymentSuccessfulState(
+                    order.getAmountLabel(),
+                    { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
+                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) }
+                )
+            )
         }
+    }
+
+    private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
+        launch {
+            viewState.value = ViewState.PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
+            tracker.track(RECEIPT_PRINT_TAPPED)
+            startPrintingFlow()
+        }
+    }
+
+    fun onViewCreated() {
+        if (viewState.value is ViewState.PrintingReceiptState) {
+            startPrintingFlow()
+        }
+    }
+
+    private fun startPrintingFlow() {
+        val order = orderRepository.getOrder(arguments.orderIdentifier)
+            ?: throw IllegalStateException("Order URL not available.")
+        triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId), order.getReceiptDocumentName()))
     }
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
@@ -262,6 +270,8 @@ class CardReaderPaymentViewModel
     }
 
     fun onPrintResult(result: PrintJobResult) {
+        showPaymentSuccessfulState()
+
         tracker.track(
             when (result) {
                 CANCELLED -> RECEIPT_PRINT_CANCELED
@@ -275,19 +285,6 @@ class CardReaderPaymentViewModel
     override fun onCleared() {
         super.onCleared()
         orderRepository.onCleanup()
-    }
-
-    private fun Order.getPaymentDescription(): String =
-        resourceProvider.getString(
-            R.string.card_reader_payment_description,
-            this.number,
-            selectedSite.get().name.orEmpty()
-        )
-
-    sealed class CardReaderPaymentEvent : Event() {
-        data class PrintReceipt(val receiptUrl: String, val documentName: String) : CardReaderPaymentEvent()
-        data class SendReceipt(val content: UiString, val subject: UiString, val address: String) :
-            CardReaderPaymentEvent()
     }
 
     fun onBackPressed() {
@@ -304,6 +301,31 @@ class CardReaderPaymentViewModel
         }
     }
 
+    private fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
+        selectedSite.get().let {
+            appPrefsWrapper.setReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId, receiptUrl)
+        }
+    }
+
+    private fun getReceiptUrl(orderId: Long): String {
+        return selectedSite.get().let {
+            appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
+                ?: throw IllegalStateException("Receipt URL not available.")
+        }
+    }
+
+    private fun Order.getPaymentDescription(): String =
+        resourceProvider.getString(
+            R.string.card_reader_payment_description,
+            this.number,
+            selectedSite.get().name.orEmpty()
+        )
+
+    // TODO cardreader don't hardcode currency symbol ($)
+    private fun Order.getAmountLabel() = "$$total"
+
+    private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
+
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
         @StringRes val headerLabel: Int? = null,
@@ -311,7 +333,7 @@ class CardReaderPaymentViewModel
         @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
         @DrawableRes val illustration: Int? = null,
         // TODO cardreader add tests
-        val isProgressVisible: Boolean = false,
+        open val isProgressVisible: Boolean = false,
         val primaryActionLabel: Int? = null,
         val secondaryActionLabel: Int? = null
     ) {
@@ -374,6 +396,19 @@ class CardReaderPaymentViewModel
             secondaryActionLabel = R.string.card_reader_payment_send_receipt
         )
 
+        data class PrintingReceiptState(
+            override val amountWithCurrencyLabel: String,
+            val receiptUrl: String,
+            val documentName: String
+        ) : ViewState(
+            headerLabel = R.string.card_reader_payment_completed_payment_header,
+            illustration = null,
+            primaryActionLabel = null,
+            secondaryActionLabel = null,
+        ) {
+            override val isProgressVisible = true
+        }
+
         object ReFetchingOrderState : ViewState(
             headerLabel = R.string.card_reader_payment_fetch_order_loading_header,
             hintLabel = R.string.card_reader_payment_fetch_order_loading_hint,
@@ -385,6 +420,7 @@ class CardReaderPaymentViewModel
     enum class PaymentFlowError(val message: Int) {
         FETCHING_ORDER_FAILED(R.string.order_error_fetch_generic),
         NO_NETWORK(R.string.card_reader_payment_failed_no_network_state),
+        SERVER_ERROR(R.string.card_reader_payment_failed_server_error_state),
         PAYMENT_DECLINED(R.string.card_reader_payment_failed_card_declined_state),
         GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state)
     }
@@ -395,9 +431,6 @@ class CardReaderPaymentViewModel
             CardPaymentStatusErrorType.PAYMENT_DECLINED -> PaymentFlowError.PAYMENT_DECLINED
             CardPaymentStatusErrorType.CARD_READ_TIMED_OUT,
             CardPaymentStatusErrorType.GENERIC_ERROR -> PaymentFlowError.GENERIC_ERROR
+            CardPaymentStatusErrorType.SERVER_ERROR -> PaymentFlowError.SERVER_ERROR
         }
-
-    enum class PrintJobResult {
-        CANCELLED, STARTED, FAILED
-    }
 }

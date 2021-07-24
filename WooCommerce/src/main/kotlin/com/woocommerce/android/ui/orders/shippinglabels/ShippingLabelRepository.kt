@@ -29,6 +29,7 @@ import javax.inject.Singleton
 
 @OpenClassOnDebug
 @Singleton
+@Suppress("TooManyFunctions")
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
@@ -144,6 +145,16 @@ class ShippingLabelRepository @Inject constructor(
             }
     }
 
+    /**
+     * Returns the last used package.
+     * Please note that this will ignore all errors, and return null for those cases
+     */
+    suspend fun getLastUsedPackage(): ShippingPackage? {
+        return getAccountSettings().model?.lastUsedBoxId?.let { id ->
+            getShippingPackages().model?.firstOrNull { it.id == id }
+        }
+    }
+
     suspend fun updatePaymentSettings(selectedPaymentMethodId: Int, emailReceipts: Boolean): WooResult<Unit> {
         return shippingLabelStore.updateAccountSettings(
             site = selectedSite.get(),
@@ -179,7 +190,8 @@ class ShippingLabelRepository @Inject constructor(
                 serviceId = rate.serviceId,
                 serviceName = rate.serviceName,
                 carrierId = rate.carrierId,
-                products = labelPackage.items.map { it.productId }
+                // duplicate items according to their quantities
+                products = labelPackage.items.map { item -> List(item.quantity) { item.productId } }.flatten()
             )
         }
         // Retrieve account settings, normally they should be cached at this point, and the response would be
@@ -199,6 +211,23 @@ class ShippingLabelRepository @Inject constructor(
             when {
                 result.isError -> WooResult(result.error)
                 result.model != null -> WooResult(result.model!!.map { it.toAppModel() })
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    suspend fun createCustomPackage(packageToCreate: ShippingPackage): WooResult<Boolean> {
+        return shippingLabelStore.createPackages(
+            site = selectedSite.get(),
+            customPackages = listOf(packageToCreate.toCustomPackageDataModel()),
+            predefinedPackages = emptyList()
+        ).let { result ->
+            when {
+                result.model == true -> {
+                    availablePackages = availablePackages?.let { it + packageToCreate }
+                    WooResult(true)
+                }
+                result.isError -> WooResult(result.error)
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }

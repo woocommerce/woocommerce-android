@@ -148,6 +148,8 @@ Once installed, you can configure the plugin here:
 
 From there, add and enable the custom configuration file, located at [config/detekt/detekt.yml](https://github.com/wordpress-mobile/WordPress-Android/blob/develop/config/detekt/detekt.yml).
 
+If you want to use the **AutoCorrect** feature of the plugin, make sure that the option `Enable formatting (ktlint) rules` is enabled in the above settings, then you will be able to reformat any file according to detekt's rules using the refactor menu `AutoCorrect by Detekt Rules`
+
 ### Google Configuration
 
 Google Sign-In is only available for WordPress.com accounts through the [official app][woo-app].

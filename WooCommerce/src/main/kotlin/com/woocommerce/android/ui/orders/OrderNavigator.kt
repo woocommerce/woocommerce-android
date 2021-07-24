@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
@@ -151,6 +152,15 @@ class OrderNavigator @Inject constructor() {
             is ViewPrintingInstructions -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintingInstructionsFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+            is PreviewReceipt -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToReceiptPreviewFragment(
+                        receiptUrl = target.receiptUrl,
+                        billingEmail = target.billingEmail,
+                        orderId = target.orderId
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
         }

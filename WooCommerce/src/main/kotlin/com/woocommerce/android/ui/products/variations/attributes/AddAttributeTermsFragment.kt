@@ -213,6 +213,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
+        if (navArgs.isNewAttribute and assignedTermsAdapter.isEmpty()) {
+            viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
+        }
         saveChangesAndReturn()
         return false
     }
@@ -226,6 +229,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        binding.termEditText.showKeyboard(selectAll = true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

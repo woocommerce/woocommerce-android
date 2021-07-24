@@ -1,22 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-07 11:54:04+0000
+Translation-Revision-Date: 2021-07-23 13:12:23+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="variation_created_title">변형 생성됨</string>
+    <string name="variation_list_generate_new_variation">새 변형 생성</string>
+    <string name="product_wip_message_variations">이제 상품 변형을 만들고 관리할 수 있습니다.</string>
+    <string name="product_attributes_created_generate_action_text">변형 생성</string>
+    <string name="product_attributes_created_description">이제 속성을 추가했으니 첫 번째 변형을 만드실 수 있습니다!</string>
+    <string name="product_attributes_created_title">속성 생성됨</string>
+    <string name="card_reader_software_update_progress_cancel_warning">진행 중인 소프트웨어 업데이트는 취소하지 않는 것이 좋습니다.</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">죄송합니다. 이 결제는 처리할 수 없습니다.</string>
+    <string name="card_reader_payment_failed_server_error_state">서버에 연결되지 않음</string>
+    <string name="card_reader_payment_failed_no_network_state">인터넷에 연결되지 않음</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">원래 포장으로 배송</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">새 패키지에 추가</string>
+    <string name="shipping_label_move_item_dialog_description">이 아이템은 현재 %s에 있습니다. 해당 아이템을 어디로 이동하시겠어요?</string>
+    <string name="shipping_label_move_item_dialog_cancel">취소</string>
+    <string name="shipping_label_move_item_dialog_move">이동</string>
+    <string name="shipping_label_move_item_dialog_title">아이템 이동</string>
+    <string name="shipping_label_create_custom_package_success_message">\"%1$s\" 저장됨</string>
+    <string name="shipping_label_create_custom_package_generic_failure">패키지를 생성하지 못했습니다. 다시 시도하세요.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">패키지 생성 실패: 알 수 없는 API 문제가 발생했습니다.</string>
+    <string name="shipping_label_create_custom_package_api_failure">패키지 생성 실패: %1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">기다려주세요…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">새 패키지 생성하기</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">값이 유효하지 않습니다.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">필수 필드입니다.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">빈 패키지의 무게</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">빈 패키지 무게(%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">높이(%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">폭(%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">길이(%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">패키지 이름</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">봉투</string>
+    <string name="shipping_label_create_custom_package_field_type_box">상자</string>
+    <string name="shipping_label_create_custom_package_field_type_info">패키지 유형 선택</string>
+    <string name="shipping_label_create_custom_package_field_type">패키지 유형</string>
+    <string name="shipping_label_create_custom_package_field_info">상품 배송에 사용할 패키지를 설정하세요. 향후 주문을 위해 저장됩니다.</string>
+    <string name="shipping_label_create_package_title">새 패키지 추가</string>
+    <string name="shipping_label_create_new_package_button">새 패키지 생성</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">패키지 규격은 0보다 커야 합니다. 계속하려면 상품 페이지의 배송 섹션에서 아이템의 규격을 업데이트하세요.</string>
+    <string name="shipping_label_package_details_individual_package_title">원래 포장</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">아이템 규격</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">개별적으로 배송한 아이템</string>
+    <string name="order_status_updated">주문 상태 업데이트됨</string>
+    <string name="receipt_preview_send_menu_item">보내기</string>
+    <string name="receipt_preview_print_menu_item">인쇄</string>
+    <string name="orderdetail_see_receipt_button">영수증 참조</string>
+    <string name="cancel_anyway">강제 취소</string>
     <string name="card_reader_detail_connected_update_failed">리더의 소프트웨어를 업데이트하지 못했음</string>
     <string name="card_reader_detail_connected_update_check_failed">소프트웨어 버전 업데이트를 확인하지 못했음</string>
     <string name="card_reader_detail_learn_more">모바일 결제 수락 및 카드 리더 주문에 대해 &lt;a href=\'\'&gt;더 알아보기&lt;/a&gt;</string>
     <string name="card_reader_connect_open_bluetooth_settings">블루투스 켜기</string>
-    <string name="card_reader_connect_scanning_failed_header">리더를 찾을 수 없음</string>
+    <string name="card_reader_connect_scanning_failed_header">연결된 리더 없음</string>
     <string name="card_reader_connect_failed_header">리더를 연결할 수 없음</string>
     <string name="card_reader_connect_connect_button">연결</string>
     <string name="card_reader_connect_multiple_readers_found_header">리더를 몇 개 찾음</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">주문이 이미 결제되었음</string>
     <string name="card_reader_payment_receipt_email_content">구매해 주셔서 감사합니다! 결제 영수증이 필요하면 아래 링크를 클릭하세요.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">결제에 성공하지 않았음</string>
     <string name="card_reader_payment_failed_card_declined_state">카드 거부됨</string>
     <string name="shipping_label_print_customs_form_download_failed">세관 양식 다운로드 중 오류 발생</string>
     <string name="shipping_label_print_customs_form_screen_title">세관 송장 인쇄</string>
@@ -257,7 +302,6 @@ Language: ko_KR
     <string name="shipping_label_address_suggestion_use_selected_address">선택한 주소 사용</string>
     <string name="shipping_label_edit_address_loading_progress_title">주소 데이터 로드 중</string>
     <string name="product_wip_title_m5">새 기능을 사용할 수 있습니다!</string>
-    <string name="product_wip_message_m5">이제 다운로드 가능한 파일을 제품에 추가하고 상향 판매 및 교차 판매 제품을 연결할 수 있습니다. 더는 제품을 원하지 않나요? 휴지통에 버리세요!</string>
     <string name="shipping_label_validation_view_map">지도 열기</string>
     <string name="shipping_label_validation_contact_customer">고객에게 문의</string>
     <string name="shipping_label_validation_error_template">유효성 검사 실패: %s</string>
@@ -341,7 +385,6 @@ Language: ko_KR
     <string name="product_downloadable_files_add">파일 추가하기</string>
     <string name="product_downloadable_files_value_single">1개 파일</string>
     <string name="product_downloadable_files_value_multiple">%1$d 파일</string>
-    <string name="product_wip_message_m4">이제 이동 중에 Woo 앱에서 간단하고 연결되고 그룹화된 새 제품을 생성할 수 있습니다. 아직 준비되지 않으셨나요? 임시글로 저장하세요!</string>
     <string name="print_shipping_label_info_step_4">&lt;b&gt;프린터 자체에서 직접 WiFi 인쇄를 구성&lt;/b&gt;해야 할 수도 있습니다. 프린터 펌웨어가 업데이트되어 있는지 확인하고 프린터 설명서의 지침을 참조하세요.</string>
     <string name="print_shipping_label_info_step_3">기기의 &lt;b&gt;기본 인쇄 서비스&lt;/b&gt; 선택 또는 &lt;b&gt;프린터의 브랜드 앱&lt;/b&gt; 설치(권장 옵션으로 표시된 경우) 가능</string>
     <string name="print_shipping_label_info_step_1">프린터와 기기가 &lt;b&gt;같은 WiFi 네트워크&lt;/b&gt;에 연결되었는지 확인</string>
@@ -679,7 +722,7 @@ Language: ko_KR
     <string name="order_refunds_select_quantity">수량 선택</string>
     <string name="order_refunds_shipping_refund">배송비 환불</string>
     <string name="order_refunds_products_refund">제품 환불</string>
-    <string name="order_refunds_item_description">각각 %d x %s</string>
+    <string name="order_refunds_item_description">각각 %s x %s</string>
     <string name="order_refunds_items_selected">%d개 항목 선택됨</string>
     <string name="order_refunds_items_select_none">아무것도 선택하지 않음</string>
     <string name="order_refunds_items_select_all">모두 선택</string>
@@ -1153,7 +1196,6 @@ Language: ko_KR
     <string name="site_picker_title">스토어 선택</string>
     <string name="settings_signout">로그아웃</string>
     <string name="orderstatus_select_status">주문 상태 변경</string>
-    <string name="order_status_changed_to">주문 상태가 %s(으)로 변경되었습니다.</string>
     <string name="orderdetail_change_order_status">클릭하여 주문 상태 변경</string>
     <string name="apply">적용</string>
     <string name="app_rating_rate_never">안 함</string>
@@ -1475,5 +1517,9 @@ Language: ko_KR
     <string-array name="order_list_tabs">
         <item>처리 중</item>
         <item>모든 주문</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>사용자 정의 패키지</item>
+        <item>서비스 패키지</item>
     </string-array>
 </resources>

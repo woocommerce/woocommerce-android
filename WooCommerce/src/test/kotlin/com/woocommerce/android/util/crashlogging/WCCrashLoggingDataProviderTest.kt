@@ -3,6 +3,7 @@ package com.woocommerce.android.util.crashlogging
 import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.EventLevel.INFO
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
@@ -10,6 +11,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.DEBUG_RELEASE_NAME
 import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.EXTRA_UUID
 import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_ID_KEY
 import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_URL_KEY
@@ -35,6 +38,9 @@ class WCCrashLoggingDataProviderTest {
     private val appPrefs: AppPrefs = mock()
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs = mock()
     private val uuidGenerator: UuidGenerator = mock()
+    private val buildConfig: BuildConfigWrapper = mock {
+        on { versionName } doReturn "test version name"
+    }
 
     @Before
     fun setUp() {
@@ -44,8 +50,13 @@ class WCCrashLoggingDataProviderTest {
             selectedSite = selectedSite,
             appPrefs = appPrefs,
             enqueueSendingEncryptedLogs = enqueueSendingEncryptedLogs,
-            uuidGenerator = uuidGenerator
+            uuidGenerator = uuidGenerator,
+            buildConfig = buildConfig
         )
+    }
+
+    private fun reinitialize() {
+        setUp()
     }
 
     @Test
@@ -157,6 +168,24 @@ class WCCrashLoggingDataProviderTest {
 
         verify(enqueueSendingEncryptedLogs, times(1)).invoke(generatedUuid, FATAL)
         assertThat(extras).containsValue(generatedUuid)
+    }
+
+    @Test
+    fun `should provide version name for release name for not debug build`() {
+        whenever(buildConfig.debug).thenReturn(false)
+
+        reinitialize()
+
+        assertThat(sut.releaseName).isEqualTo(buildConfig.versionName)
+    }
+
+    @Test
+    fun `should provide debug name for release name for debug build`() {
+        whenever(buildConfig.debug).thenReturn(true)
+
+        reinitialize()
+
+        assertThat(sut.releaseName).isEqualTo(DEBUG_RELEASE_NAME)
     }
 
     companion object {

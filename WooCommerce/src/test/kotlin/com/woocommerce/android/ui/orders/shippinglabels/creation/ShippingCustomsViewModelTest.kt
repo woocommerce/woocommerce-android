@@ -22,6 +22,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
+import kotlin.math.ceil
 
 @RunWith(RobolectricTestRunner::class)
 class ShippingCustomsViewModelTest : BaseUnitTest() {
@@ -81,7 +82,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                     attributesList = it.attributesList,
                     weight = 0f,
                     value = it.price,
-                    quantity = it.quantity.toFloat()
+                    quantity = ceil(it.quantity).toInt()
                 )
             }
         )
@@ -100,7 +101,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
         assertThat(viewStatePackages[0].data.contentsType).isEqualTo(ContentsType.Merchandise)
         assertThat(viewStatePackages[0].data.restrictionType).isEqualTo(RestrictionType.None)
         assertThat(viewStatePackages[0].data.returnToSender).isEqualTo(true)
-        assertThat(viewStatePackages[0].data.box).isEqualTo(shippingPackage.selectedPackage)
+        assertThat(viewStatePackages[0].data.labelPackage).isEqualTo(shippingPackage)
         assertThat(viewStatePackages[0].data.lines).hasSize(shippingPackage.items.size)
         assertThat(viewStatePackages[0].data.lines[0].itemDescription).isEqualTo(shippingPackage.items[0].name)
         assertThat(viewStatePackages[0].data.lines[0].value).isEqualTo(shippingPackage.items[0].value)

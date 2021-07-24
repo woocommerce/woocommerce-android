@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.RestrictionType
+import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsAdapter.PackageCustomsViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
@@ -126,11 +127,8 @@ class ShippingCustomsAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(uiState: CustomsPackageUiState) {
             val (customsPackage, validationState) = uiState
-            binding.packageId.text = context.getString(
-                R.string.orderdetail_shipping_label_item_header,
-                adapterPosition + 1
-            )
-            binding.packageName.text = "- ${customsPackage.box.title}"
+            binding.packageId.text = customsPackage.labelPackage.getTitle(context)
+            binding.packageName.text = "- ${customsPackage.labelPackage.selectedPackage!!.title}"
             binding.returnCheckbox.isChecked = customsPackage.returnToSender
 
             // Animate any potential change to visibility of the description fields

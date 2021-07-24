@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -19,6 +20,7 @@ import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewMo
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,6 +38,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val appPrefs: AppPrefs = mock()
+    private val reconnectionFeatureFlag: FeatureFlag.CardReaderReconnectionWrapper = mock {
+        on { isEnabled() }.thenReturn(true)
+    }
 
     @Test
     fun `when view model init with connected state should emit loading view state`() {
@@ -235,6 +241,70 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given up to date software, when on update result successful, then connected state without update emitted`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            initConnectedState()
+
+            // WHEN
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+        }
+    }
+
+    @Test
+    fun `given software update available, when on update result successful, then connected without update emitted`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+
+            // WHEN
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+        }
+    }
+
+    @Test
+    fun `given software update check failed, when on update result successful, then connected state with snackbar`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
+
+            // WHEN
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
+
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                updateAvailable = false
+            )
+            assertThat(events[0])
+                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+        }
+    }
+
+    @Test
     fun `when on update result with failed should send snackbar event with failed text`() {
         // GIVEN
         val viewModel = createViewModel()
@@ -382,8 +452,9 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     private fun createViewModel() = CardReaderDetailViewModel(
         cardReaderManager,
         tracker,
-        mock(),
-        SavedStateHandle()
+        appPrefs,
+        reconnectionFeatureFlag,
+        SavedStateHandle(),
     )
 
     private companion object {

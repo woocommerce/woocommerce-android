@@ -1,22 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-08 12:54:04+0000
+Translation-Revision-Date: 2021-07-23 13:10:00+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="variation_created_title">Varyasyon Oluşturuldu</string>
+    <string name="variation_list_generate_new_variation">Yeni varyasyon oluştur</string>
+    <string name="product_wip_message_variations">Artık ürün çeşitleri oluşturabilir ve yönetebilirsiniz!</string>
+    <string name="product_attributes_created_generate_action_text">Varyasyon Oluştur</string>
+    <string name="product_attributes_created_description">Nitelikleri eklediğinize göre ilk varyasyonunuzu oluşturabilirsiniz!</string>
+    <string name="product_attributes_created_title">Nitelikler oluşturuldu</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Sürmekte olan bir yazılım güncellemesini iptal etmeniz önerilmez</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Üzgünüz, ödemeniz işleme alınamadı</string>
+    <string name="card_reader_payment_failed_server_error_state">Sunucu ile bağlantı kurulamadı</string>
+    <string name="card_reader_payment_failed_no_network_state">İnternet bağlantısı yok</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Orijinal paketinde gönder</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Yeni pakete ekle</string>
+    <string name="shipping_label_move_item_dialog_description">Bu öğe şu anda şurada bulunuyor: %s Bunu nereye taşımak istersiniz?</string>
+    <string name="shipping_label_move_item_dialog_cancel">İptal</string>
+    <string name="shipping_label_move_item_dialog_move">Taşı</string>
+    <string name="shipping_label_move_item_dialog_title">Öğeyi taşı</string>
+    <string name="shipping_label_create_custom_package_success_message">\"%1$s\" kaydedildi</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Paket oluşturma işlemi başarısız oldu. Lütfen yeniden deneyin.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Paket oluşturma başarısız oldu: bilinmeyen API sorunu.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Paket oluşturma başarısız oldu: %1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Yeni paket oluşturuluyor</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Geçersiz değer.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Bu alan zorunludur.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Boş paketin ağırlığı</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Bap paketin ağırlığı (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Yükseklik (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Genişlik (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Uzunluk (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Paket adı</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Zarf</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Kutu</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Paket tipini seçin</string>
+    <string name="shipping_label_create_custom_package_field_type">Paket tipi</string>
+    <string name="shipping_label_create_custom_package_field_info">Ürünlerinizi göndereceğiniz paket tipini ayarlayın. Gelecekte aldığınız siparişler için bu seçiminizi hatırlayacağız.</string>
+    <string name="shipping_label_create_package_title">Yeni paket ekle</string>
+    <string name="shipping_label_create_new_package_button">Yeni paket oluştur</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Paket boyutları sıfırdan büyük olmalıdır. Devam etmek için lütfen ürün sayfanızın Gönderim kısmındaki öğenizin ölçülerini güncelleyin.</string>
+    <string name="shipping_label_package_details_individual_package_title">Orijinal paket</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Öğe Ölçüleri</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Tek Başına Gönderilen öğe</string>
+    <string name="order_status_updated">Sipariş durumu güncellendi</string>
+    <string name="receipt_preview_send_menu_item">Gönder</string>
+    <string name="receipt_preview_print_menu_item">Yazdır</string>
+    <string name="orderdetail_see_receipt_button">Makbuzu gör</string>
+    <string name="cancel_anyway">Yine de iptal et</string>
     <string name="card_reader_detail_connected_update_failed">Okuyucu\'nun yazılım güncellemesi başarısız oldu</string>
     <string name="card_reader_detail_connected_update_check_failed">Yazılım sürümü güncelleme kontrolü başarısız oldu</string>
     <string name="card_reader_detail_learn_more">Mobil ödemeleri kabul etme ve kart okuyucuları sipariş etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin&lt;/a&gt;</string>
     <string name="card_reader_connect_open_bluetooth_settings">Bluetooth\'u aç</string>
-    <string name="card_reader_connect_scanning_failed_header">Okuyucu bulunamadı</string>
+    <string name="card_reader_connect_scanning_failed_header">Okuyucu bağlanmadı</string>
     <string name="card_reader_connect_failed_header">Okuyucunuza bağlanılamadı</string>
     <string name="card_reader_connect_connect_button">Bağlan</string>
     <string name="card_reader_connect_multiple_readers_found_header">Birkaç okuyucu bulundu</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Siparişin ücreti zaten ödendi</string>
     <string name="card_reader_payment_receipt_email_content">Alışverişiniz için teşekkürler! Ödeme makbuzunuz için aşağıdaki bağlantıya tıklayın.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Ödeme başarılı olmadı</string>
     <string name="card_reader_payment_failed_card_declined_state">Kart reddedildi</string>
     <string name="shipping_label_print_customs_form_download_failed">Gümrük formu indirilirken hata oluştu</string>
     <string name="shipping_label_print_customs_form_screen_title">Gümrük faturası yazdır</string>
@@ -257,7 +302,6 @@ Language: tr
     <string name="shipping_label_address_suggestion_use_selected_address">Seçilen adresi kullan</string>
     <string name="shipping_label_edit_address_loading_progress_title">Adres verileri yükleniyor</string>
     <string name="product_wip_title_m5">Yeni özellikler mevcut.</string>
-    <string name="product_wip_message_m5">Artık bir ürüne indirilebilir dosyalar ekleyebilir ve daha yüksek satış ve çapraz satış ürünleri arasında bağlantı oluşturabilirsiniz. Bir ürünü artık istemiyor musunuz? Çöpe atın.</string>
     <string name="shipping_label_validation_view_map">Haritayı Aç</string>
     <string name="shipping_label_validation_contact_customer">Müşteri İle İletişime Geç</string>
     <string name="shipping_label_validation_error_template">Doğrulama başarısız: %s</string>
@@ -341,7 +385,6 @@ Language: tr
     <string name="product_downloadable_files_add">Dosya ekle</string>
     <string name="product_downloadable_files_value_single">1 dosya</string>
     <string name="product_downloadable_files_value_multiple">%1$d dosya</string>
-    <string name="product_wip_message_m4">Artık hareket halindeyken Woo uygulamasından basit, bağlantılı ve gruplandırılmış ürünler oluşturmak mümkün. Henüz hazır değil misiniz? O halde taslak olarak kaydedin!</string>
     <string name="print_shipping_label_info_step_4">WiFi yazdırmayı &lt;b&gt;doğrudan yazıcıdan yapılandırmanız gerekebilir.&lt;/b&gt; Yazıcı ürün yazılımının güncellendiğinden emin olun ve talimatlar için yazıcınızın belgelerine bakın.</string>
     <string name="print_shipping_label_info_step_3">Cihazınızın &lt;b&gt;varsayılan yazdırma hizmetini&lt;/b&gt; seçebilir veya &lt;b&gt;yazıcınızın markasını taşıyan uygulamayı&lt;/b&gt; yükleyebilirsiniz (bu önerilen seçenek olarak görünmelidir)</string>
     <string name="print_shipping_label_info_step_1">Yazıcınızın ve cihazınızın &lt;b&gt;aynı WiFi ağlarına&lt;/b&gt; bağlı olduğundan emin olun</string>
@@ -679,7 +722,7 @@ Language: tr
     <string name="order_refunds_select_quantity">Miktar seçin</string>
     <string name="order_refunds_shipping_refund">Gönderim para iadesi</string>
     <string name="order_refunds_products_refund">Ürün para iadesi</string>
-    <string name="order_refunds_item_description">Her biri %d x %s</string>
+    <string name="order_refunds_item_description">Her biri %s x %s</string>
     <string name="order_refunds_items_selected">%d öge seçildi</string>
     <string name="order_refunds_items_select_none">Hiçbirini seçme</string>
     <string name="order_refunds_items_select_all">Tümünü seç</string>
@@ -1153,7 +1196,6 @@ Language: tr
     <string name="site_picker_title">Mağaza seçin</string>
     <string name="settings_signout">Oturumu kapat</string>
     <string name="orderstatus_select_status">Sipariş durumunu değiştir</string>
-    <string name="order_status_changed_to">Sipariş durumu %s olarak ayarlandı</string>
     <string name="orderdetail_change_order_status">Sipariş durumunu değiştirmek için tıklayın</string>
     <string name="apply">Uygula</string>
     <string name="app_rating_rate_never">Hayır, teşekkürler</string>
@@ -1475,5 +1517,9 @@ Language: tr
     <string-array name="order_list_tabs">
         <item>İşlemde</item>
         <item>Tüm Siparişler</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Özelleştirilmiş paket</item>
+        <item>Hizmet paketi</item>
     </string-array>
 </resources>

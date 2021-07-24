@@ -96,6 +96,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED(siteless = true),
         LOGIN_NO_JETPACK_TRY_AGAIN_TAPPED(siteless = true),
         LOGIN_NO_JETPACK_MENU_HELP_TAPPED(siteless = true),
+        LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED(siteless = true),
         LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED(siteless = true),
@@ -406,6 +407,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
         PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED,
         PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED,
+        PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED,
 
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
@@ -716,7 +718,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_CANCELED = "canceled"
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
-        const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
+        const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
         const val VALUE_SHIPPING_LABELS_M2_FEEDBACK = "shipping_labels_m2"
 

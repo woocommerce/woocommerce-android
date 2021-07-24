@@ -1,13 +1,11 @@
 package com.woocommerce.android.ui.orders.cardreader
 
 import android.app.Dialog
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
@@ -16,11 +14,9 @@ import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.CANCELLED
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PrintJobResult.FAILED
+import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -35,11 +31,15 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog?.let {
+            it.setCanceledOnTouchOutside(false)
+            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        viewModel.onViewCreated()
         return object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 viewModel.onBackPressed()
@@ -110,38 +110,20 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
         )
     }
 
+    private fun composeEmail(address: String, subject: UiString, content: UiString) {
+        val success = ActivityUtils.composeEmail(requireActivity(), address, subject, content)
+        if (!success) viewModel.onEmailActivityNotFound()
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        handlePrintResultIfAvailable()
-    }
-
-    private fun handlePrintResultIfAvailable() {
-        printHtmlHelper.getAndClearPrintJob()?.let {
-            val result = when {
-                it.isCancelled -> CANCELLED
-                it.isFailed -> FAILED
-                else -> PrintJobResult.STARTED
-            }
-            viewModel.onPrintResult(result)
+        printHtmlHelper.getAndClearPrintJobResult()?.let {
+            viewModel.onPrintResult(it)
         }
     }
 
     companion object {
         const val KEY_CARD_PAYMENT_RESULT = "key_card_payment_result"
-    }
-
-    private fun composeEmail(billingEmail: String, subject: UiString, content: UiString) {
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:") // only email apps should handle this
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(billingEmail))
-            putExtra(Intent.EXTRA_SUBJECT, UiHelpers.getTextOfUiString(requireContext(), subject))
-            putExtra(Intent.EXTRA_TEXT, UiHelpers.getTextOfUiString(requireContext(), content))
-        }
-        try {
-            startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            viewModel.onEmailActivityNotFound()
-        }
     }
 }

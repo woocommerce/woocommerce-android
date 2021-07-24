@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundViewHolder
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.util.PhotonUtils
@@ -122,7 +124,7 @@ class RefundProductListAdapter(
 
             descriptionTextView.text = itemView.context.getString(
                 R.string.order_refunds_item_description,
-                item.maxQuantity,
+                item.maxQuantity.formatToString(),
                 formatCurrency(item.orderItem.price)
             )
 
@@ -145,9 +147,12 @@ class RefundProductListAdapter(
     @Parcelize
     data class ProductRefundListItem(
         val orderItem: Order.Item,
-        val maxQuantity: Int = 0,
+        val maxQuantity: Float = 0f,
         val quantity: Int = 0
     ) : Parcelable {
+        @IgnoredOnParcel
+        val availableRefundQuantity
+            get() = maxQuantity.toInt()
         fun toDataModel(): WCRefundItem {
             return WCRefundItem(
                 orderItem.itemId,

@@ -1,6 +1,10 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
+import com.woocommerce.android.model.ShippingPackage.Companion.INDIVIDUAL_PACKAGE
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.CustomPackage
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.PredefinedOption
@@ -16,6 +20,20 @@ data class ShippingPackage(
 ) : Parcelable {
     companion object {
         const val CUSTOM_PACKAGE_CATEGORY = "custom"
+        const val INDIVIDUAL_PACKAGE = "individual"
+    }
+
+    @IgnoredOnParcel
+    val isIndividual
+        get() = id == INDIVIDUAL_PACKAGE
+
+    fun toCustomPackageDataModel(): CustomPackage {
+        return CustomPackage(
+            title = title,
+            isLetter = isLetter,
+            dimensions = dimensions.toString(),
+            boxWeight = boxWeight
+        )
     }
 }
 
@@ -24,7 +42,15 @@ data class PackageDimensions(
     val length: Float,
     val width: Float,
     val height: Float
-) : Parcelable
+) : Parcelable {
+    @IgnoredOnParcel
+    val isValid
+        get() = length > 0f && width > 0f && height > 0f
+
+    override fun toString(): String {
+        return "$length x $width x $height" // This formatting mirrors how it's done in core.
+    }
+}
 
 fun CustomPackage.toAppModel(): ShippingPackage {
     val dimensionsParts = dimensions.split("x")
@@ -58,4 +84,24 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
             category = this.title
         )
     }
+}
+
+enum class CustomPackageType(@StringRes val stringRes: Int) {
+    BOX(R.string.shipping_label_create_custom_package_field_type_box),
+    ENVELOPE(R.string.shipping_label_create_custom_package_field_type_envelope)
+}
+
+fun ShippingLabelPackage.Item.createIndividualShippingPackage(product: IProduct?): ShippingPackage {
+    return ShippingPackage(
+        id = INDIVIDUAL_PACKAGE,
+        title = name,
+        isLetter = false,
+        dimensions = PackageDimensions(
+            length = product?.length ?: 0f,
+            width = product?.width ?: 0f,
+            height = product?.height ?: 0f
+        ),
+        boxWeight = 0f,
+        category = INDIVIDUAL_PACKAGE
+    )
 }

@@ -19,7 +19,7 @@ object PreferenceUtils {
         setString(preferences, key, value.toString())
     }
 
-    fun getString(preferences: SharedPreferences, key: String, defaultValue: String = ""): String? {
+    fun getString(preferences: SharedPreferences, key: String, defaultValue: String? = ""): String? {
         return preferences.getString(key, defaultValue)
     }
 

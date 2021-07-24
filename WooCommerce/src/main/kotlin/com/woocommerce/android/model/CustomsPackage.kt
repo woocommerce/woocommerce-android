@@ -14,7 +14,7 @@ import java.math.BigDecimal
 @Parcelize
 data class CustomsPackage(
     val id: String,
-    val box: ShippingPackage,
+    val labelPackage: ShippingLabelPackage,
     val returnToSender: Boolean,
     val contentsType: ContentsType,
     val contentsDescription: String? = null,
@@ -42,7 +42,7 @@ data class CustomsLine(
     val productId: Long,
     val itemDescription: String,
     val hsTariffNumber: String,
-    val quantity: Float,
+    val quantity: Int,
     val weight: Float?,
     val value: BigDecimal?,
     val originCountry: Location

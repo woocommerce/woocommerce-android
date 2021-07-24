@@ -250,6 +250,13 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
+            android:id="@+id/action_orderDetailFragment_to_receiptPreviewFragment"
+            app:destination="@id/receiptPreviewFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
             android:id="@+id/action_orderDetailFragment_to_printingInstructionsFragment"
             app:destination="@id/printingInstructionsFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
@@ -401,12 +408,27 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_editShippingLabelPackagesFragment_to_moveShippingItemDialog"
+            app:destination="@id/moveShippingItemDialog" />
     </fragment>
     <fragment
         android:id="@+id/shippingPackageSelectorFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment"
         android:label="ShippingPackageSelectorFragment"
         tools:layout="@layout/fragment_shipping_packages_selector">
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_shippingPackageSelectorFragment_to_shippingLabelCreatePackageFragment"
+            app:destination="@id/shippingLabelCreatePackageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/shippingLabelCreatePackageFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageFragment"
+        android:label="ShippingLabelCreatePackageFragment"
+        tools:layout="@layout/fragment_shipping_label_create_package">
         <argument
             android:name="position"
             app:argType="integer" />
@@ -455,6 +477,26 @@
         android:label="CardReaderConnectDialog">
     </dialog>
     <fragment
+        android:id="@+id/receiptPreviewFragment"
+        android:name="com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewFragment"
+        android:label="ReceiptPreviewFragment"
+        tools:layout="@layout/fragment_receipt_preview">
+        <argument
+            android:name="receiptUrl"
+            app:argType="string"
+            app:nullable="false" />
+
+        <argument
+            android:name="billingEmail"
+            app:argType="string"
+            app:nullable="false" />
+
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            app:nullable="false" />
+    </fragment>
+    <fragment
         android:id="@+id/printingInstructionsFragment"
         android:name="com.woocommerce.android.ui.orders.details.PrintingInstructionsFragment"
         android:label="PrintingInstructionsFragment"
@@ -478,6 +520,21 @@
             android:name="customsPackages"
             app:argType="com.woocommerce.android.model.CustomsPackage[]" />
     </fragment>
+    <dialog
+        android:id="@+id/moveShippingItemDialog"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemDialog"
+        android:label="MoveShippingItemDialog"
+        tools:layout="@layout/dialog_move_shipping_item">
+        <argument
+            android:name="item"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage$Item" />
+        <argument
+            android:name="currentPackage"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage" />
+        <argument
+            android:name="packagesList"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
+    </dialog>
     <action
         android:id="@+id/action_global_addOrderShipmentTrackingFragment"
         app:destination="@id/addOrderShipmentTrackingFragment"

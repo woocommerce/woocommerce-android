@@ -1,22 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-07 11:54:03+0000
+Translation-Revision-Date: 2021-07-23 13:15:17+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="variation_created_title">Variante créée</string>
+    <string name="variation_list_generate_new_variation">Générer une nouvelle variante</string>
+    <string name="product_wip_message_variations">Vous pouvez désormais créer et gérer des variantes de produit !</string>
+    <string name="product_attributes_created_generate_action_text">Générer une variante</string>
+    <string name="product_attributes_created_description">Maintenant que vous avez ajouté des attributs, vous pouvez créer votre première variante !</string>
+    <string name="product_attributes_created_title">Attributs créés</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Il n’est pas recommandé d’annuler une mise à jour logicielle en cours</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Désolé, impossible de traiter ce paiement</string>
+    <string name="card_reader_payment_failed_server_error_state">Aucune connexion au serveur</string>
+    <string name="card_reader_payment_failed_no_network_state">Aucune connexion internet.</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Livrer dans l\'emballage d\'origine</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Ajouter au nouveau colis</string>
+    <string name="shipping_label_move_item_dialog_description">Cet élément est actuellement dans %s. Où souhaitez-vous le déplacer ?</string>
+    <string name="shipping_label_move_item_dialog_cancel">Annuler</string>
+    <string name="shipping_label_move_item_dialog_move">Déplacer</string>
+    <string name="shipping_label_move_item_dialog_title">Déplacer l\'élément</string>
+    <string name="shipping_label_create_custom_package_success_message">« %1$s » enregistré</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Échec de création du colis. Veuillez réessayer.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Échec de création du colis : problème d’API inconnue.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Échec de création du colis : %1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Veuillez patienter…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Création d’un nouveau colis</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Valeur non valide.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Champ obligatoire.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Poids du colis vide</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Poids du colis vide (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Hauteur (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Largeur (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Longueur (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Nom du colis</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Enveloppe</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Boîte</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Choisir un type de colis</string>
+    <string name="shipping_label_create_custom_package_field_type">Type de colis</string>
+    <string name="shipping_label_create_custom_package_field_info">Définissez le colis que vous utiliserez pour expédier vos produits. Nous l’enregistrerons pour vos commandes à venir.</string>
+    <string name="shipping_label_create_package_title">Ajouter un nouveau colis</string>
+    <string name="shipping_label_create_new_package_button">Créer un nouveau colis</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Les dimensions du colis doivent être supérieures à zéro. Veuillez mettre à jour les dimensions de votre article dans la section Expédition de la page de votre produit pour continuer.</string>
+    <string name="shipping_label_package_details_individual_package_title">Emballage d’origine</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Dimensions de l\'élément</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Élément livré individuellement</string>
+    <string name="order_status_updated">État de la commande mis à jour</string>
+    <string name="receipt_preview_send_menu_item">Envoyer</string>
+    <string name="receipt_preview_print_menu_item">Imprimer</string>
+    <string name="orderdetail_see_receipt_button">Voir le reçu</string>
+    <string name="cancel_anyway">Annuler quand même</string>
     <string name="card_reader_detail_connected_update_failed">La mise à jour du logiciel du lecteur a échoué</string>
     <string name="card_reader_detail_connected_update_check_failed">La vérification de la mise à jour de la version du logiciel a échoué</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements mobiles et la commande de lecteurs de carte</string>
     <string name="card_reader_connect_open_bluetooth_settings">Activer le Bluetooth</string>
-    <string name="card_reader_connect_scanning_failed_header">Aucun lecteur trouvé</string>
+    <string name="card_reader_connect_scanning_failed_header">Aucun lecteur connecté</string>
     <string name="card_reader_connect_failed_header">Nous n’avons pas pu connecter votre lecteur</string>
     <string name="card_reader_connect_connect_button">Connecter</string>
     <string name="card_reader_connect_multiple_readers_found_header">Plusieurs lecteurs trouvés</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">La commande est déjà payée</string>
     <string name="card_reader_payment_receipt_email_content">Merci pour votre achat ! Cliquez sur le lien ci-dessous pour votre reçu de paiement.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Échec du paiement</string>
     <string name="card_reader_payment_failed_card_declined_state">Carte refusée</string>
     <string name="shipping_label_print_customs_form_download_failed">Erreur lors du téléchargement du formulaire douanier</string>
     <string name="shipping_label_print_customs_form_screen_title">Imprimer la facture de douane</string>
@@ -257,7 +302,6 @@ Language: fr
     <string name="shipping_label_address_suggestion_use_selected_address">Utiliser l\'adresse sélectionnée</string>
     <string name="shipping_label_edit_address_loading_progress_title">Données d’adresse en cours de chargement</string>
     <string name="product_wip_title_m5">Nouvelles fonctionnalités disponibles !</string>
-    <string name="product_wip_message_m5">Vous pouvez désormais ajouter des fichiers téléchargeables à un produit et associer des produits suggérés et des ventes croisées. Vous ne voulez plus d’un produit ? Déplacez-le vers la corbeille !</string>
     <string name="shipping_label_validation_view_map">Ouvrir une carte</string>
     <string name="shipping_label_validation_contact_customer">Contacter le client</string>
     <string name="shipping_label_validation_error_template">Échec de la validation : %s</string>
@@ -341,7 +385,6 @@ Language: fr
     <string name="product_downloadable_files_add">Ajouter un fichier</string>
     <string name="product_downloadable_files_value_single">1 fichier</string>
     <string name="product_downloadable_files_value_multiple">%1$d fichiers</string>
-    <string name="product_wip_message_m4">Il est désormais possible de créer à la volée de nouveaux produits simples, liés et groupés, à partir de l’application Woo. Vous n’êtes pas encore prêt ? Enregistrez-les comme brouillon !</string>
     <string name="print_shipping_label_info_step_4">Il se peut que vous deviez &lt;b&gt;configurer l’impression Wi-Fi directement depuis l’imprimante.&lt;/b&gt; Assurez-vous que le micrologiciel de l’imprimante est mis à jour et consultez la documentation de votre imprimante pour obtenir des instructions.</string>
     <string name="print_shipping_label_info_step_3">Vous pouvez sélectionner le &lt;b&gt;service d’impression par défaut&lt;/b&gt; de votre appareil ou installer l’&lt;b&gt;application de la marque de votre imprimante&lt;/b&gt; (celle-ci devrait s’afficher comme option recommandée)</string>
     <string name="print_shipping_label_info_step_1">Vérifiez que votre imprimante et votre appareil sont connectés au &lt;b&gt;même réseau Wi-Fi&lt;/b&gt;</string>
@@ -679,7 +722,7 @@ Language: fr
     <string name="order_refunds_select_quantity">Sélectionner une quantité</string>
     <string name="order_refunds_shipping_refund">Remboursement des frais d’expédition</string>
     <string name="order_refunds_products_refund">Remboursement des produits</string>
-    <string name="order_refunds_item_description">%d x %s chacun</string>
+    <string name="order_refunds_item_description">%s x %s chacun</string>
     <string name="order_refunds_items_selected">%d articles sélectionnés</string>
     <string name="order_refunds_items_select_none">Ne rien sélectionner</string>
     <string name="order_refunds_items_select_all">Sélectionner tout</string>
@@ -1153,7 +1196,6 @@ Language: fr
     <string name="site_picker_title">Sélectionner la boutique</string>
     <string name="settings_signout">Se déconnecter</string>
     <string name="orderstatus_select_status">Modifier l\'état des commandes</string>
-    <string name="order_status_changed_to">État des commandes basculé sur %s</string>
     <string name="orderdetail_change_order_status">Cliquer pour modifier l\'état des commandes</string>
     <string name="apply">Appliquer</string>
     <string name="app_rating_rate_never">Non merci</string>
@@ -1475,5 +1517,9 @@ Language: fr
     <string-array name="order_list_tabs">
         <item>En cours</item>
         <item>Toutes les commandes</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Colis personnalisé</item>
+        <item>Ensemble de services</item>
     </string-array>
 </resources>
