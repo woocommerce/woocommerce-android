@@ -1,68 +1,96 @@
-<ar>
-7.0:
-يُعد إنشاء ملصقات شحن دولية أمرًا سهلاً! يمكن الآن للتجار في الولايات المتحدة الأمريكية الذين يستخدمون شحن وضرائب WooCommerce في مخزنهم إنشاء ملصقات شحن ونماذج مخصصة لجهات الوصول الدولية. مستمرون في إنشاء هذه الميزة – يمكنك تجربتها وأخبرنا كيف تسير الأمور!
-</ar>
 <de-DE>
-7.0:
-Das Erstellen internationaler Versandetiketten ist ein Kinderspiel! Verkäufer in den USA, die WooCommerce Shipping & Tax in ihrem Store verwenden, können nun Versandetiketten und Zollformulare für internationale Empfänger erstellen. Wir werden diese Funktion weiter ausbauen – Probiere sie aus und teile uns mit, was du davon hältst!
+7.1:
+Einige Verkäufer in den USA, die WooCommerce Shipping & Tax in ihrem Store verwenden, haben einen Fehler beim Erstellen von Etiketten für Bestellungen von Produktmengen mit Dezimalstellen entdeckt. Diesen haben wir behoben!
+
+Möchtest du versuchen, ein Etikett zu erstellen? Installiere und aktiviere die Erweiterung „WooCommerce Shipping & Tax“ in deinem Store. Derzeit unterstützen wir den weltweiten Versand für Verkäufer in den USA. Wir wissen dein Feedback zu schätzen!
 </de-DE>
 <es-ES>
-7.0:
-Crear etiquetas para envíos internacionales es muy fácil. En Estados Unidos, los vendedores que utilizan WooCommerce Shipping & Tax en su tienda ya pueden generar etiquetas de envío y formularios de aduanas para destinos internacionales. Seguimos desarrollando esta función, así que pruébala y cuéntanos que te parece.
+7.1:
+Algunos vendedores de Estados Unidos que usan la extensión WooCommerce Shipping & Tax descubrieron un error al crear etiquetas para pedidos con cantidades de producto con decimales. ¡Ya está arreglado!
+
+¿Quieres probar a crear etiquetas? Instala y activa la extensión WooCommerce Shipping & Tax en tu tienda. Actualmente, está disponible para vendedores en Estados Unidos que hacen envíos internacionales. ¡Agradecemos tu opinión!
 </es-ES>
 <fr-FR>
-7.0 :
-Créer des étiquettes d’expédition internationales est un jeu d’enfant ! Les marchands aux États-Unis qui utilisent WooCommerce Shipping & Tax dans leur boutique peuvent désormais générer des étiquettes d’expédition et des formulaires douaniers pour les destinations internationales. Nous continuons de développer cette fonctionnalité, alors testez-la et donnez-nous votre avis !
+7.1:
+Certains commerçants aux États-Unis qui utilisent l’extension WooCommerce Shipping & Tax ont rencontré un bug lors de la création d’étiquettes pour les commandes dont les quantités de produits incluent des valeurs décimales. Ce problème est résolu !
+
+Voulez-vous essayer de créer des étiquettes ? Installez et activez l’extension WooCommerce Shipping & Tax depuis votre boutique. Nous soutenons désormais les commerçants américains qui livrent le monde entier N’hésitez pas à donner votre avis !
 </fr-FR>
 <iw-IL>
-7.0:
-יצירת תוויות משלוח בינלאומי היא פעולה קלה ביותר! סוחרים בארה"ב שמשתמשים במשלוחים ובמיסים של WooCommerce בחנות שלהם יכולים כעת לאחסן תוויות משלוח וטופסי מכס ליעדים בינלאומיים. אנחנו ממשיכים לבנות את הכלי הזה - נסו אותו וספרו לנו על ההתנסות שלכם!
+7.1:
+חלק מהסוחרים בארה"ב שהשתמשו בהרחבת WooCommerce Shipping & Tax נתקלו בבאגים בזמן יצירת תוויות להזמנות עם כמויות מוצר דצימליות. תיקנו את השגיאה!
+
+רוצה לנסות את אפשרות יצירת תווית? התקן והפעל את הרחבת WooCommerce Shipping & Tax בחנות שלך. בשלב זה אנחנו תומכים בסוחרים בארה"ב המבצעים משלוחים לכל העולם. נשמח לשמוע מה דעתך!
 </iw-IL>
 <id>
-7.0:
-Membuat label pengiriman internasional kini menjadi mudah! Penjual di Amerika Serikat yang menggunakan WooCommerce Shipping & Tax di tokonya sekarang bisa membuat label pengiriman dan formulir bea cukai untuk tujuan pengiriman internasional. Kami terus mengembangkan fitur ini, jadi silakan dicoba dan sampaikan pengalaman Anda!
+7.1:
+Sebagian penjual di Amerika Serikat yang menggunakan ekstensi WooCommerce Shipping & Tax menemukan bug saat membuat label untuk pesanan dengan jumlah produk desimal. Ini sudah teratasi.
+
+Ingin coba membuat label pesanan? Instal dan aktifkan ekstensi WooCommerce Shipping & Tax di toko Anda. Saat ini, kami mendukung penjual di Amerika Serikat yang ingin mengirim produk ke seluruh dunia. Kami pasti mendengar masukan Anda.
 </id>
 <it-IT>
-7.0:
-Creare etichette di spedizione internazionale è un gioco da ragazzi! I commercianti che utilizzano WooCommerce Shipping & Tax nel proprio negozio negli Stati Uniti possono ora generare etichette di spedizione e moduli doganali per destinazioni internazionali. Stiamo continuando a migliorare questa funzionalità: provala e facci sapere come va.
+7.1:
+Alcuni venditori negli USA che utilizzano l'estensione WooCommerce Shipping & Tax hanno visualizzato un bug durante la creazione di etichette per ordini con quantità di prodotto decimali.  È stato risolto.
+
+Vuoi provare la creazione di etichette? Installa e attiva l'estensione WooCommerce Shipping & Tax nel tuo negozio. In questo momento, supportiamo i commercianti negli USA che spediscono in tutto il mondo. Accogliamo volentieri il tuo feedback.
 </it-IT>
 <ja-JP>
-7.0:
-海外向けの配送ラベルを簡単に作成できます。 WooCommerce Shipping & Tax をストアで使用している米国のマーチャントは、海外向けの配送ラベルや税関申告書を作成できるようになりました。 こちらは現在開発中の機能ですので、お試しいただき、ご意見をいただけますと幸いです。
+7.1:
+WooCommerce Shipping & Tax 拡張機能を使用している米国の一部のマーチャントで、小数点のある商品数量の注文にラベルを作成する際にバグが発生していました。 この問題を修正しました。
+
+ラベルの作成を試す場合は、 WooCommerce Shipping & Tax 拡張機能をストアにインストールして有効化します。 現在、世界中に配送する米国のマーチャントに対応しています。 フィードバックをお待ちしております。
 </ja-JP>
 <ko-KR>
-7.0:
-국제 배송 레이블을 간편하게 만드세요! 스토어에서 WooCommerce 배송 및 세금을 사용하는 미국의 판매자는 이제 해외 목적지에 대한 배송 레이블과 세관 양식을 생성할 수 있습니다. 이 기능을 계속 구축하고 있습니다. 사용해 보고 소감을 말씀해 주세요!
+7.1:
+WooCommerce 배송 및 세금 확장 기능을 사용하는 미국의 일부 판매자가 주문에 대한 레이블을 생성할 때 제품 수량에 소수점을 사용하면 버그가 발생했습니다. 해당 버그를 수정했습니다!
+
+레이블을 생성해 보시겠어요? 스토어에 WooCommerce 배송 및 세금 확장 기능을 설치하고 활성화하세요. 미국 내 판매자의 전 세계 배송이 곧바로 지원됩니다. 피드백을 보내주세요!
 </ko-KR>
 <nl-NL>
-7.0:
-Het aanmaken van internationale verzendlabels is een fluitje van een cent! Verkopers in de VS die WooCommerce Shipping en Tax voor hun winkel gebruiken, kunnen nu verzendlabels en aangepaste formulieren voor internationale bestemmingen genereren. We zullen deze functionaliteit blijven doorontwikkelen, maar probeer 'm eens uit en laat ons dan weten of alles werkte!
+7.1:
+Enkele verkopers in de VS die gebruikmaakten van de extensie WooCommerce Shipping en Tax liepen tegen een bug aan bij het aanmaken van labels voor bestellingen met productaantallen in decimalen. Dat is nu verholpen!
+
+Wil je labels aanmaken? Installeer en activeer de extensie WooCommerce Shipping en Tax in je winkel. Op dit moment ondersteunen we verkopers in de VS die wereldwijd verzenden. We horen graag je feedback!
 </nl-NL>
 <pt-BR>
-7.0:
-Criar etiquetas de envio internacional é muito simples! Agora comerciantes nos EUA usando o WooCommerce Shipping & Tax em suas lojas podem gerar etiquetas de envio e declarações aduaneiras para destinos internacionais. Ainda estamos aperfeiçoando essa funcionalidade, então experimente-a e diga-nos o que achou!
+7.1:
+Alguns comerciantes nos EUA que usam a extensão WooCommerce Shipping & Tax perceberam um bug ao criar etiquetas para pedidos com quantidades decimais de produtos. Já foi corrigido!
+
+Quer experimentar a criação de etiquetas? Instale e ative a extensão WooCommerce Shipping & Tax na sua loja. No momento, oferecemos suporte a comerciantes nos EUA que enviam produtos para todo o mundo. Adoraríamos receber seu feedback!
 </pt-BR>
 <ru-RU>
-7.0:
-Моментальное создание международных транспортных этикеток! Продавцы из США, использующие в своих магазинах WooCommerce Shipping & Tax, теперь могут создавать транспортные этикетки и настраиваемые формы для международной пересылки. Мы продолжим работу над этой функцией, а пока можете попробовать ее и оставить отзыв.
+7.1:
+Некоторые продавцы в США, пользующиеся расширением WooCommerce Shipping & Tax, сталкивались с ошибкой при создании этикеток для заказов, количество товара в которых было выражено дробным числом. Эта ошибка исправлена.
+
+Хотите попробовать создать этикетку? Установите и активируйте расширение WooCommerce Shipping & Tax в своём магазине. В настоящее время мы поддерживаем продавцов из США, осуществляющих доставку по всему миру. Ждем ваших отзывов!
 </ru-RU>
 <sv-SE>
-7.0:
-Det är enkelt att skapa internationella fraktetiketter! Handlare i USA som använder WooCommerce Shipping & Tax i sin butik kan nu generera fraktetiketter och tullformulär för internationella destinationer. Vi fortsätter att utveckla den här funktionen – prova den och berätta vad du tycker!
+7.1:
+Vissa handlare i USA som använde WooCommerce Shipping & Tax-utökningen noterade ett fel när de skapade etiketter för beställningar med produktkvantiteter innehållande decimaler. Detta har åtgärdats!
+
+Vill du prova att skapa etiketter? Installera och aktivera WooCommerce Shipping & Tax-utökningen i din butik. För tillfället stöder vi handlare i USA med frakt över hela världen. Vi välkomnar din feedback!
 </sv-SE>
 <tr-TR>
-7.0:
-Uluslararası kargo etiketleri oluşturmak çok kolay! ABD'deki satıcılar, mağazalarında WooCommerce Shipping & Tax'i kullanarak artık uluslararası destinasyonlar için kargo etiketleri ve gümrük formları oluşturabilir. Bu özelliği geliştirmeye devam ediyoruz. Deneyin ve nasıl çalıştığını bize bildirin!
+7,1:
+WooCommerce Shipping & Tax uzantısını kullanan ABD'deki bazı satıcılar, ürün sayıları ondalık işaretli olan siparişler için etiket oluştururken bir hata ile karşılaşıyordu. Ve bu hata giderildi!
+
+Etiket oluşturmayı denemek ister misiniz? Dükkanınızda WooCommerce Shipping & Tax uzantısını indirerek etkinleştirin.  Şu anda, ABD'den tüm dünyaya satış yapan satıcıları destekliyoruz. Geri bildirimleriniz bizim için değerli!
 </tr-TR>
 <zh-CN>
-7.0：
-制作国际配送标签简直不费吹灰之力！ 现在，在商店中使用 WooCommerce Shipping & Tax 的美国商家可以为国际目的地生成配送标签和报关单。 我们会继续开发这个功能 – 试试吧，看看怎么样！
+7.1:
+一些美国商家发现，在使用 WooCommerce Shipping & Tax 扩展程序创建订单时，如果商品数量带有小数，会遇到错误。 我们修复了这个问题！
+
+想试试标签创建功能吗？ 只要在您的商店中下载并激活 WooCommerce Shipping & Tax 扩展程序就可以了。 目前，我们支持美国商家发货到全球地址。 欢迎大家积极提供反馈！
 </zh-CN>
 <zh-TW>
-7.0：
-輕鬆建立國際郵寄標籤！ 在商店中使用 WooCommerce Shipping & Tax 的美國商家現在可為國際貨件產生郵寄標籤和海關表格。 我們正在持續改善此功能，歡迎試用並與我們分享心得！
+7.1:
+部分美國商家在使用 WooCommerce Shipping & Tax 擴充功能為產品數量有小數點的訂單建立標籤時發現了一個錯誤。 問題現在已經解決！
+
+想要試用標籤建立功能嗎？ 請在你的商店安裝並啟用 WooCommerce Shipping & Tax 擴充功能。 我們現在支援美國商家出貨到世界各地。 歡迎你提供寶貴意見！
 </zh-TW>
 <en-US>
-7.0:
-Creating international shipping labels is a breeze! Merchants in the USA using WooCommerce Shipping & Tax in their store can now generate shipping labels and customs forms for international destinations. We’re continuing to build this feature – give it a whirl and let us know how it goes!
+7.1:
+Some merchants in the USA using the WooCommerce Shipping & Tax extension saw a bug when creating labels for orders with decimal product quantities. It’s fixed!
+
+Want to give label creation a try? Install and activate the WooCommerce Shipping & Tax extension in your store. Right now, we support merchants in the USA shipping worldwide. We welcome your feedback!
 </en-US>
