@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 These dimensions are calculated starting with a baseline, then defined as a percentage of
 that baseline. The percentage doesn't have to be exact, it's main purpose it to describe
 the relationship of the dimension to the baseline. So < 100 would be smaller and > 100 would
