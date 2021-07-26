@@ -23,11 +23,12 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/shippingLabelPrint_errorMessage"
         style="@style/Woo.Card.Title"
-        android:layout_width="2dp"
-        android:layout_height="5dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:paddingBottom="@dimen/major_100"
         android:text="@string/shipping_label_print_error_message"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/expiration_warning_banner" />
 
     <ImageView
