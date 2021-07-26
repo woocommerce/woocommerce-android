@@ -40,9 +40,6 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
 
     private var progressDialog: CustomProgressDialog? = null
 
-    private var _binding: FragmentPrintShippingLabelBinding? = null
-    private val binding get() = _binding!!
-
     override fun getFragmentTitle(): String {
         return getString(viewModel.screenTitle)
     }
@@ -50,14 +47,14 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentPrintShippingLabelBinding.bind(view)
+        val binding = FragmentPrintShippingLabelBinding.bind(view)
 
-        initUi()
-        setupObservers(viewModel)
+        initUi(binding)
+        setupObservers(viewModel, binding)
         setupResultHandlers(viewModel)
     }
 
-    private fun initUi() {
+    private fun initUi(binding: FragmentPrintShippingLabelBinding) {
         binding.reprintGroup.isVisible = navArgs.isReprint
         binding.purchaseGroup.isVisible = !navArgs.isReprint
 
@@ -78,12 +75,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         binding.saveForLaterButton.setOnClickListener { viewModel.onSaveForLaterClicked() }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setupObservers(viewModel: PrintShippingLabelViewModel) {
+    private fun setupObservers(viewModel: PrintShippingLabelViewModel, binding: FragmentPrintShippingLabelBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.paperSize.takeIfNotEqualTo(old?.paperSize) {
                 binding.shippingLabelPrintPaperSize.setText(getString(it.stringResource))
