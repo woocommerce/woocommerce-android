@@ -36,7 +36,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
             when (cardReaderChecker.getOnboardingState()) {
                 CardReaderOnboardingState.ONBOARDING_COMPLETED -> exitFlow()
                 CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED ->
-                    viewState.value = OnboardingViewState.UnsupportedCountryState
+                    // todo cardreader add country display name
+                    viewState.value = OnboardingViewState.UnsupportedCountryState(
+                        "HC: United States",
+                        ::onContactSupportClicked,
+                        ::onLearnMoreClicked
+                    )
                 CardReaderOnboardingState.WCPAY_NOT_INSTALLED ->
                     viewState.value = OnboardingViewState.WCPayNotInstalledState(::refreshState)
                 CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION ->
@@ -69,6 +74,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
         exitFlow()
     }
 
+    private fun onContactSupportClicked() {
+        // TODO cardreader not implemented
+    }
+
+    private fun onLearnMoreClicked() {
+        // TODO cardreader not implemented
+    }
+
     private fun exitFlow() {
         triggerEvent(Event.Exit)
     }
@@ -93,8 +106,27 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         // TODO cardreader Update layout resource
-        object UnsupportedCountryState : OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            // TODO cardreader implement unsupported country state - !already in progress!
+        class UnsupportedCountryState(
+            val countryDisplayName: String,
+            val onContactSupportActionClicked: (() -> Unit)? = null,
+            val onLearnMoreActionClicked: (() -> Unit)? = null
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported_country) {
+            val headerLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_header,
+                params = listOf(UiString.UiStringText(countryDisplayName))
+            )
+            val illustration = R.drawable.img_products_error
+            val hintLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_hint
+            )
+            val contactSupportLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
+                containsHtml = true
+            )
+            val learnMoreLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
+                containsHtml = true
+            )
         }
 
         // TODO cardreader Update layout resource
