@@ -290,7 +290,9 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductAddonsDetails -> {
-
+                ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductAddonsFragment()
+                    .apply { fragment.findNavController().navigate(this) }
             }
 
             is AddProductDownloadableFile -> {
