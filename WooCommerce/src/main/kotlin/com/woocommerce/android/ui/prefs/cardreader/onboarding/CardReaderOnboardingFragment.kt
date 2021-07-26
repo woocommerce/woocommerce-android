@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedCountryBinding
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.UiHelpers
@@ -66,7 +67,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotInstalledState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotSetupState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayUnsupportedVersionState -> TODO()
-        }
+        }.exhaustive
     }
 
     private fun showLoadingState(
