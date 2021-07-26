@@ -23,13 +23,6 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
-            android:id="@+id/action_mainSettingsFragment_to_cardReaderEligibilityFragment"
-            app:destination="@id/cardReaderEligibilityFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
             android:id="@+id/action_mainSettingsFragment_to_privacySettingsFragment"
             app:destination="@id/privacySettingsFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
@@ -103,11 +96,6 @@
             app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
-    </fragment>
-    <fragment
-        android:id="@+id/cardReaderEligibilityFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.onboarding.CardReaderEligibilityFragment"
-        android:label="CardReaderEligibilityFragment" >
     </fragment>
     <fragment
         android:id="@+id/cardReaderOnboardingFragment"

@@ -1231,7 +1231,6 @@
     <string name="settings_selected_store">Selected store</string>
     <string name="settings_store">Store settings</string>
     <string name="settings_card_reader">Manage card reader</string>
-    <string name="settings_card_reader_eligibility">Card reader eligibility</string>
     <string name="settings_card_reader_payments">In-person payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
     <string name="settings_notifs">Notifications</string>
