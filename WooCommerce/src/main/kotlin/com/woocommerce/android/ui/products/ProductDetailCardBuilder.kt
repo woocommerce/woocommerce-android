@@ -17,6 +17,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAddonsDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -614,9 +615,7 @@ class ProductDetailCardBuilder(
                 value = resources.getString(string.product_add_ons_card_button_title),
                 icon = drawable.ic_gridicon_circle_plus,
                 showTitle = false,
-                onClick = {
-                    // TODO call Product add-ons view
-                }
+                onClick = { viewModel.onEditProductCardClicked(ViewProductAddonsDetails) }
             )
         }
 }

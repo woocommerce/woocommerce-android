@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAddonsDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
@@ -286,6 +287,10 @@ class ProductNavigator @Inject constructor() {
                 val action = NavGraphProductsDirections
                     .actionGlobalProductDownloadDetailsFragment(target.isEditing, target.file)
                 fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductAddonsDetails -> {
+
             }
 
             is AddProductDownloadableFile -> {
