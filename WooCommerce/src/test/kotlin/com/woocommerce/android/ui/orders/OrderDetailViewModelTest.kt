@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
@@ -36,6 +40,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -47,12 +52,14 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
+import java.util.concurrent.CancellationException
 
-@Suppress("LargeClass")
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class OrderDetailViewModelTest : BaseUnitTest() {
@@ -71,6 +78,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
+    private val dispatcher: Dispatcher = mock()
 
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
 
@@ -108,6 +116,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel = spy(
             OrderDetailViewModel(
+                dispatcher,
                 savedState,
                 appPrefsWrapper,
                 networkStatus,
@@ -125,6 +134,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             networkStatus,
             resources
         )
+
+        val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+        val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
+        mock<Context> {
+            whenever(it.applicationContext).thenReturn(it)
+            whenever(it.getSharedPreferences(any(), any())).thenReturn(preferences)
+            AppPrefs.init(it)
+        }
     }
 
     @Test
@@ -607,20 +624,24 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { orderStatusList.add(it) }
         }
 
+        val statusChangeCaptor = argumentCaptor<String>()
+
         viewModel.start()
 
-        val oldStatus = order.status
+        val initialStatus = order.status.value
         val newStatus = CoreOrderStatus.PROCESSING.value
-        viewModel.onOrderStatusChanged(newStatus, OrderStatusUpdateSource.DIALOG)
 
+        viewModel.onOrderStatusChanged(OrderStatusUpdateSource.Dialog(initialStatus, newStatus))
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
         // simulate undo click event
-        viewModel.onOrderStatusChangeReverted()
-        assertThat(orderStatusList).containsExactly(
-            OrderStatus(statusKey = oldStatus.value, label = oldStatus.value),
-            OrderStatus(statusKey = newStatus, label = newStatus),
-            OrderStatus(statusKey = oldStatus.value, label = oldStatus.value)
+        snackbar?.undoAction?.onClick(mock())
+        assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
+
+        verify(repository, times(2)).updateOrderStatus(eq(order.identifier.toIdSet().id), statusChangeCaptor.capture())
+
+        assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
+            initialStatus, newStatus, initialStatus
         )
     }
 
@@ -650,7 +671,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
+        viewModel.onOrderStatusChanged(
+            OrderStatusUpdateSource.Dialog(
+                oldStatus = newOrder!!.status.value,
+                newStatus = CoreOrderStatus.PROCESSING.value
+            )
+        )
 
         assertThat(newOrder?.status).isEqualTo(order.status)
     }
@@ -667,10 +693,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.order = order
         viewModel.start()
-        viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
-        viewModel.updateOrderStatus(CoreOrderStatus.PROCESSING.value)
+        viewModel.onOrderStatusChanged(
+            OrderStatusUpdateSource.Dialog(
+                oldStatus = order.status.value,
+                newStatus = CoreOrderStatus.PROCESSING.value
+            )
+        )
 
-        verify(repository, times(0)).updateOrderStatus(any(), any(), any())
+        verify(repository, never()).updateOrderStatus(any(), any())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
@@ -847,7 +877,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-            viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value, OrderStatusUpdateSource.DIALOG)
+            viewModel.onOrderStatusChanged(
+                OrderStatusUpdateSource.Dialog(
+                    oldStatus = order.status.value,
+                    newStatus = CoreOrderStatus.PROCESSING.value
+                )
+            )
 
             assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
         }
@@ -863,7 +898,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusUpdateSource.DIALOG)
+            viewModel.onOrderStatusChanged(
+                OrderStatusUpdateSource.Dialog(
+                    oldStatus = order.status.value,
+                    newStatus = CoreOrderStatus.COMPLETED.value
+                )
+            )
 
             assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
         }
@@ -879,9 +919,64 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value, OrderStatusUpdateSource.FULFILL_SCREEN)
+            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
 
             assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_fulfill_completed))
+        }
+
+    @Test
+    fun `show error changing order snackbar if updating status failed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(ContinuationWrapper.ContinuationResult.Success(false)).whenever(repository)
+                .updateOrderStatus(any(), any())
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
+
+            assertThat(snackbar?.message).isEqualTo(string.order_error_update_general)
+        }
+
+    @Test
+    fun `do not show error changing order snackbar if updating status failed because of cancellation`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(ContinuationWrapper.ContinuationResult.Cancellation<Boolean>(CancellationException())).whenever(
+                repository
+            ).updateOrderStatus(any(), any())
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
+
+            assertThat(snackbar?.message).isNotEqualTo(string.order_error_update_general)
+        }
+
+    @Test
+    fun `do not show error changing order snackbar if updating status did not fail`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).fetchOrder(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(ContinuationWrapper.ContinuationResult.Success<Boolean>(true)).whenever(repository)
+                .updateOrderStatus(any(), any())
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.start()
+            viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
+
+            assertThat(snackbar?.message).isNotEqualTo(string.order_error_update_general)
         }
 
     @Test

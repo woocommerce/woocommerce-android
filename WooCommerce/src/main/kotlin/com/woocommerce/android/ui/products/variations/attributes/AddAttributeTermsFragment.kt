@@ -229,6 +229,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        binding.termEditText.showKeyboard(selectAll = true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

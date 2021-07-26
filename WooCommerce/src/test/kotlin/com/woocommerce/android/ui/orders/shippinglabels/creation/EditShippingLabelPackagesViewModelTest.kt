@@ -1,14 +1,8 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -28,6 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -41,18 +36,6 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         CreateShippingLabelTestUtils.generatePackage("id2", "provider2")
     )
 
-    private val shippingAccountSettings = ShippingAccountSettings(
-        canEditSettings = true,
-        canManagePayments = true,
-        paymentMethods = emptyList(),
-        selectedPaymentId = null,
-        lastUsedBoxId = "id1",
-        storeOwnerDetails = StoreOwnerDetails(
-            "email", "username", "username", "name"
-        ),
-        isEmailReceiptEnabled = true
-    )
-
     private val testOrder = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val testProduct = ProductTestUtils.generateProduct()
 
@@ -61,6 +44,14 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private val variationDetailRepository: VariationDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val parameterRepository: ParameterRepository = mock()
+    private val defaultItem = ShippingLabelPackage.Item(
+        productId = 15,
+        name = "test",
+        quantity = 1,
+        attributesList = "",
+        weight = 1f,
+        value = BigDecimal.TEN
+    )
 
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
@@ -81,14 +72,14 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `test first opening of the screen`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
         verify(orderDetailRepository).getOrder(any())
-        verify(shippingLabelRepository).getAccountSettings()
+        verify(shippingLabelRepository).getLastUsedPackage()
         assertThat(viewState!!.packagesUiModels.size).isEqualTo(1)
         assertThat(viewState!!.packages.first().selectedPackage).isEqualTo(availablePackages.first())
     }
@@ -111,20 +102,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `no last used package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val shippingAccountSettings = shippingAccountSettings.copy(lastUsedBoxId = null)
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
-
-        setup(emptyArray())
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new -> viewState = new }
-
-        assertThat(viewState!!.packages.first().selectedPackage).isNull()
-    }
-
-    @Test
-    fun `last used package deleted`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val shippingAccountSettings = shippingAccountSettings.copy(lastUsedBoxId = "missingId")
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(null)
 
         setup(emptyArray())
         var viewState: ViewState? = null
@@ -135,7 +113,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `edit weight of package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var viewState: ViewState? = null
@@ -148,7 +126,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `select a package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var viewState: ViewState? = null
@@ -161,7 +139,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `exit without saving changes`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var event: MultiLiveEvent.Event? = null
@@ -174,7 +152,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     @Suppress("UNCHECKED_CAST")
     @Test
     fun `save changes and exit`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var event: MultiLiveEvent.Event? = null
@@ -187,5 +165,140 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         val createdShippingPackages = (event as ExitWithResult<List<ShippingLabelPackage>>).data
         assertThat(createdShippingPackages.size).isEqualTo(1)
         assertThat(createdShippingPackages.first().weight).isEqualTo(10.0f)
+    }
+
+    @Test
+    fun `given item's quantity bigger than 1, when the item is moved, then decrease the quantity`() = testBlocking {
+        val item = defaultItem.copy(quantity = 2)
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                items = listOf(item)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(item, currentShippingPackages.first())
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                item,
+                currentShippingPackages.first(),
+                MoveShippingItemViewModel.DestinationPackage.NewPackage
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(2)
+        assertThat(newPackages[0].items.first().quantity).isEqualTo(1)
+        assertThat(newPackages[1].items).isEqualTo(listOf(item.copy(quantity = 1)))
+    }
+
+    @Test
+    fun `given item's quantity equals 1, when the item is moved, then remove it from the package`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                items = listOf(defaultItem, defaultItem.copy(productId = 16))
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(defaultItem, currentShippingPackages.first())
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                defaultItem,
+                currentShippingPackages.first(),
+                MoveShippingItemViewModel.DestinationPackage.NewPackage
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(2)
+        assertThat(newPackages[0].items).doesNotContain(defaultItem)
+        assertThat(newPackages[1].items).isEqualTo(listOf(defaultItem))
+    }
+
+    @Test
+    fun `given package has same product, when item is moved to this package, then increase quantity`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem)
+            ),
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 2,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(defaultItem, currentShippingPackages[1])
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                defaultItem,
+                currentShippingPackages[1],
+                MoveShippingItemViewModel.DestinationPackage.ExistingPackage(currentShippingPackages[0])
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].items.first().quantity).isEqualTo(2)
+    }
+
+    @Test
+    fun `given package hasn't same product, when item is moved to this package, then add new item`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem.copy(productId = 16))
+            ),
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 2,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(defaultItem, currentShippingPackages[1])
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                defaultItem,
+                currentShippingPackages[1],
+                MoveShippingItemViewModel.DestinationPackage.ExistingPackage(currentShippingPackages[0])
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].items.size).isEqualTo(2)
+        assertThat(newPackages[0].items).contains(defaultItem)
+    }
+
+    @Test
+    fun `when item is moved to original packaging, then add correct package to the list`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onMoveButtonClicked(defaultItem, currentShippingPackages[0])
+        viewModel.handleMoveItemResult(
+            MoveShippingItemViewModel.MoveItemResult(
+                defaultItem,
+                currentShippingPackages[0],
+                MoveShippingItemViewModel.DestinationPackage.OriginalPackage
+            )
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].selectedPackage!!.isIndividual).isTrue
+        with(newPackages[0].selectedPackage!!.dimensions) {
+            assertThat(width).isEqualTo(testProduct.width)
+            assertThat(length).isEqualTo(testProduct.length)
+            assertThat(height).isEqualTo(testProduct.height)
+        }
     }
 }

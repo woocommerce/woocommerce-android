@@ -29,12 +29,14 @@ import javax.inject.Singleton
 
 @OpenClassOnDebug
 @Singleton
+@Suppress("TooManyFunctions")
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
 ) {
     private var accountSettings: ShippingAccountSettings? = null
     private var availablePackages: List<ShippingPackage>? = null
+    private var selectableServicePackages: List<ShippingPackage>? = null
 
     suspend fun refundShippingLabel(orderId: Long, shippingLabelId: Long): WooResult<Boolean> {
         return withContext(Dispatchers.IO) {
@@ -81,8 +83,20 @@ class ShippingLabelRepository @Inject constructor(
                 }
 
                 availablePackages = list
-
                 WooResult(availablePackages)
+            }
+    }
+
+    suspend fun getSelectableServicePackages(): WooResult<List<ShippingPackage>> {
+        return selectableServicePackages?.let { WooResult(it) } ?: shippingLabelStore.getAllPredefinedOptions(
+            selectedSite.get()
+        )
+            .let { result ->
+                if (result.isError) return@let WooResult<List<ShippingPackage>>(error = result.error)
+
+                selectableServicePackages = result.model!!.flatMap { it.toAppModel() }
+                availablePackages?.let { selectableServicePackages = selectableServicePackages?.minus(it) }
+                return WooResult(selectableServicePackages)
             }
     }
 
@@ -120,11 +134,12 @@ class ShippingLabelRepository @Inject constructor(
             carrierRates.model == null || carrierRates.model!!.packageRates.isEmpty() -> {
                 WooResult(WooError(INVALID_RESPONSE, GenericErrorType.PARSE_ERROR, "Empty response"))
             }
-            carrierRates.model!!.packageRates.all { pack ->
+            carrierRates.model!!.packageRates.any { pack ->
                 pack.shippingOptions.isEmpty() || pack.shippingOptions.all { option ->
                     option.rates.isEmpty()
                 }
             } -> {
+                // if any of the packages doesn't have any rates, show the empty state screen
                 WooResult(WooError(GENERIC_ERROR, NOT_FOUND, "Empty result"))
             }
             else -> {
@@ -142,6 +157,16 @@ class ShippingLabelRepository @Inject constructor(
                 accountSettings = result.model!!.toAppModel()
                 WooResult(accountSettings)
             }
+    }
+
+    /**
+     * Returns the last used package.
+     * Please note that this will ignore all errors, and return null for those cases
+     */
+    suspend fun getLastUsedPackage(): ShippingPackage? {
+        return getAccountSettings().model?.lastUsedBoxId?.let { id ->
+            getShippingPackages().model?.firstOrNull { it.id == id }
+        }
     }
 
     suspend fun updatePaymentSettings(selectedPaymentMethodId: Int, emailReceipts: Boolean): WooResult<Unit> {
@@ -214,6 +239,24 @@ class ShippingLabelRepository @Inject constructor(
             when {
                 result.model == true -> {
                     availablePackages = availablePackages?.let { it + packageToCreate }
+                    WooResult(true)
+                }
+                result.isError -> WooResult(result.error)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    suspend fun activateServicePackage(packageToCreate: ShippingPackage): WooResult<Boolean> {
+        return shippingLabelStore.createPackages(
+            site = selectedSite.get(),
+            customPackages = emptyList(),
+            predefinedPackages = listOf(packageToCreate.toPredefinedOptionDataModel())
+        ).let { result ->
+            when {
+                result.model == true -> {
+                    availablePackages = availablePackages?.plus(packageToCreate)
+                    selectableServicePackages = selectableServicePackages?.minus(packageToCreate)
                     WooResult(true)
                 }
                 result.isError -> WooResult(result.error)

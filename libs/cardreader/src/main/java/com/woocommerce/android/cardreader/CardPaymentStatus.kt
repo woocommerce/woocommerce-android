@@ -18,6 +18,7 @@ sealed class CardPaymentStatus {
     enum class CardPaymentStatusErrorType {
         CARD_READ_TIMED_OUT,
         NO_NETWORK,
+        SERVER_ERROR,
         PAYMENT_DECLINED,
         GENERIC_ERROR
     }

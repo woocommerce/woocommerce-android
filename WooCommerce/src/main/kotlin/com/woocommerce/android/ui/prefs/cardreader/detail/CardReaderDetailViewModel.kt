@@ -4,12 +4,14 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.CheckForUpdatesFailed
 import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.Initializing
 import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.UpToDate
@@ -41,6 +43,7 @@ import kotlin.math.roundToInt
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
     private val tracker: AnalyticsTrackerWrapper,
+    private val appPrefs: AppPrefs,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(Loading)
@@ -50,30 +53,27 @@ class CardReaderDetailViewModel @Inject constructor(
         launch {
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
-                    is Connected -> checkForUpdates()
+                    is Connected -> cardReaderManager.softwareUpdateAvailability().collect(::handleSoftwareUpdateStatus)
                     else -> showNotConnectedState()
                 }
             }.exhaustive
         }
     }
 
-    private fun showNotConnectedState() {
-        viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
+    fun onUpdateReaderResult(updateResult: UpdateResult) {
+        when (updateResult) {
+            SUCCESS -> {
+                handleSoftwareUpdateStatus(UpToDate)
+                triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
+            }
+            FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
+            SKIPPED -> {
+            }
+        }.exhaustive
     }
 
-    private suspend fun checkForUpdates() {
-        cardReaderManager.softwareUpdateAvailability().collect { updateStatus ->
-            val readerStatus = cardReaderManager.readerStatus.value
-            if (readerStatus !is Connected) return@collect
-            when (updateStatus) {
-                Initializing -> viewState.value = Loading
-                UpToDate -> showConnectedState(readerStatus)
-                is UpdateAvailable -> showConnectedState(readerStatus, updateAvailable = true)
-                CheckForUpdatesFailed -> showConnectedState(readerStatus).also {
-                    triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
-                }
-            }.exhaustive
-        }
+    private fun showNotConnectedState() {
+        viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     }
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
@@ -120,6 +120,7 @@ class CardReaderDetailViewModel @Inject constructor(
     private fun onDisconnectClicked() {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         launch {
+            clearLastKnowReader()
             val disconnectionResult = cardReaderManager.disconnectReader()
             if (!disconnectionResult) {
                 WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
@@ -128,16 +129,21 @@ class CardReaderDetailViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateReaderResult(updateResult: UpdateResult) {
-        when (updateResult) {
-            SUCCESS -> {
-                launch { checkForUpdates() }
-                triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
-            }
-            FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
-            SKIPPED -> {
+    private fun handleSoftwareUpdateStatus(updateStatus: SoftwareUpdateAvailability) {
+        val readerStatus = cardReaderManager.readerStatus.value
+        if (readerStatus !is Connected) return
+        when (updateStatus) {
+            Initializing -> viewState.value = Loading
+            UpToDate -> showConnectedState(readerStatus)
+            is UpdateAvailable -> showConnectedState(readerStatus, updateAvailable = true)
+            CheckForUpdatesFailed -> showConnectedState(readerStatus).also {
+                triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
             }
         }.exhaustive
+    }
+
+    private fun clearLastKnowReader() {
+        appPrefs.removeLastConnectedCardReaderId()
     }
 
     private fun CardReader.getReadersName(): UiString {
@@ -188,6 +194,7 @@ class CardReaderDetailViewModel @Inject constructor(
             val secondaryButtonState: ButtonState?
         ) : ViewState() {
             val learnMoreLabel = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true)
+
             data class ButtonState(
                 val onActionClicked: (() -> Unit),
                 val text: UiString

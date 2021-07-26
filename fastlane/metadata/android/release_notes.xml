@@ -1,68 +1,96 @@
-<ar>
-6.9:
-نقرات أقل مطلوبة للوصول إلى سمات منتج متغير – إنها مدرجة مباشرةً في تفاصيل المنتج! يقولون إن الصور تعبر أكثر من الكلمات، لذا لقد قمنا بتحديث بعض الشروحات التوضيحية في جميع أنحاء التطبيق. وأصلحنا بعض الأخطاء القليلة وجعلنا الأشياء أكثر نشاطًا قليلاً – نأمل في أن تلاحظ ذلك!
-</ar>
 <de-DE>
-6.9:
-Zum Abrufen von Attributen eines variablen Produkts musst du nun weniger oft tippen – du findest sie direkt in den Produktdetails! Es heißt doch so schön: Bilder sagen mehr als Worte. Deshalb haben wir einige Abbildungen in der App neu gestaltet. Außerdem haben wir ein paar Fehler behoben und ein bisschen mehr Schwung hineingebracht – hoffentlich macht sich das für dich bemerkbar!
+7.1:
+Einige Verkäufer in den USA, die WooCommerce Shipping & Tax in ihrem Store verwenden, haben einen Fehler beim Erstellen von Etiketten für Bestellungen von Produktmengen mit Dezimalstellen entdeckt. Diesen haben wir behoben!
+
+Möchtest du versuchen, ein Etikett zu erstellen? Installiere und aktiviere die Erweiterung „WooCommerce Shipping & Tax“ in deinem Store. Derzeit unterstützen wir den weltweiten Versand für Verkäufer in den USA. Wir wissen dein Feedback zu schätzen!
 </de-DE>
 <es-ES>
-6.9:
-Ahora, ya no tendrás que hacer tantos toques para llegar a los atributos de un producto variable, ya que aparece una lista directamente en los detalles del producto. Dicen que una imagen vale más que mil palabras, así que hemos actualizado algunas ilustraciones en la aplicación. También hemos corregido errores y hemos hecho que todo vaya un poco más rápido, ¡esperamos que lo notes!
+7.1:
+Algunos vendedores de Estados Unidos que usan la extensión WooCommerce Shipping & Tax descubrieron un error al crear etiquetas para pedidos con cantidades de producto con decimales. ¡Ya está arreglado!
+
+¿Quieres probar a crear etiquetas? Instala y activa la extensión WooCommerce Shipping & Tax en tu tienda. Actualmente, está disponible para vendedores en Estados Unidos que hacen envíos internacionales. ¡Agradecemos tu opinión!
 </es-ES>
 <fr-FR>
-6.9 :
-L’accès aux attributs sur un produit variable est plus rapide. Ils sont répertoriés directement dans les détails du produit ! On dit qu’une image vaut mille mots, nous avons donc actualisé certaines illustrations dans l’application. Nous avons également corrigé quelques bogues et rendu les choses un peu plus fluides. Nous espérons que vous le remarquerez !
+7.1:
+Certains commerçants aux États-Unis qui utilisent l’extension WooCommerce Shipping & Tax ont rencontré un bug lors de la création d’étiquettes pour les commandes dont les quantités de produits incluent des valeurs décimales. Ce problème est résolu !
+
+Voulez-vous essayer de créer des étiquettes ? Installez et activez l’extension WooCommerce Shipping & Tax depuis votre boutique. Nous soutenons désormais les commerçants américains qui livrent le monde entier N’hésitez pas à donner votre avis !
 </fr-FR>
 <iw-IL>
-6.9:
-צמצמנו את מספר ההקשות שנדרשות להגיע למאפיינים במוצרים עם סוגים – הם רשומים עכשיו ישירות בפרטי המוצר! אומרים שתמונה אחת שווה אלף מילים, אז שיפרנו כמה מהאיורים באפליקציה. תיקנו גם כמה באגים ושיפצנו את החוויה הכללית – מקווים שהשיפור ימצא חן בעיניך!
+7.1:
+חלק מהסוחרים בארה"ב שהשתמשו בהרחבת WooCommerce Shipping & Tax נתקלו בבאגים בזמן יצירת תוויות להזמנות עם כמויות מוצר דצימליות. תיקנו את השגיאה!
+
+רוצה לנסות את אפשרות יצירת תווית? התקן והפעל את הרחבת WooCommerce Shipping & Tax בחנות שלך. בשלב זה אנחנו תומכים בסוחרים בארה"ב המבצעים משלוחים לכל העולם. נשמח לשמוע מה דעתך!
 </iw-IL>
 <id>
-6.9:
-Membuka atribut pada produk variabel memerlukan lebih sedikit ketukan – atribut langsung terdaftar dalam detail produk! Katanya gambar lebih bermakna dibanding seribu kata. Oleh karena itu, kami menyegarkan sejumlah ilustrasi di dalam aplikasi. Kami juga telah memperbaiki beberapa bug dan membuat segalanya lebih menarik – semoga Anda suka!
+7.1:
+Sebagian penjual di Amerika Serikat yang menggunakan ekstensi WooCommerce Shipping & Tax menemukan bug saat membuat label untuk pesanan dengan jumlah produk desimal. Ini sudah teratasi.
+
+Ingin coba membuat label pesanan? Instal dan aktifkan ekstensi WooCommerce Shipping & Tax di toko Anda. Saat ini, kami mendukung penjual di Amerika Serikat yang ingin mengirim produk ke seluruh dunia. Kami pasti mendengar masukan Anda.
 </id>
 <it-IT>
-6.9:
-Sono necessari meno tocchi per ottenere gli attributi su un prodotto variabile: sono elencati proprio nei dettagli del prodotto. Si dice che le immagini parlino più delle parole, quindi abbiamo aggiornato alcune illustrazioni in tutta l'app. Abbiamo anche corretto alcuni bug e reso tutto un po' più veloce: speriamo che te ne accorga.
+7.1:
+Alcuni venditori negli USA che utilizzano l'estensione WooCommerce Shipping & Tax hanno visualizzato un bug durante la creazione di etichette per ordini con quantità di prodotto decimali.  È stato risolto.
+
+Vuoi provare la creazione di etichette? Installa e attiva l'estensione WooCommerce Shipping & Tax nel tuo negozio. In questo momento, supportiamo i commercianti negli USA che spediscono in tutto il mondo. Accogliamo volentieri il tuo feedback.
 </it-IT>
 <ja-JP>
-6.9:
-さまざまな製品で、属性にたどり着くまでのタップ数を減らしました。製品詳細の一覧に記載されています。 「百聞は一見に如かず」なので、アプリケーション全体のイラストを一新しました。バグをいくつか修正し、動作速度を改善しました。違いに気づいていただけるとうれしいです。
+7.1:
+WooCommerce Shipping & Tax 拡張機能を使用している米国の一部のマーチャントで、小数点のある商品数量の注文にラベルを作成する際にバグが発生していました。 この問題を修正しました。
+
+ラベルの作成を試す場合は、 WooCommerce Shipping & Tax 拡張機能をストアにインストールして有効化します。 現在、世界中に配送する米国のマーチャントに対応しています。 フィードバックをお待ちしております。
 </ja-JP>
 <ko-KR>
-6.9:
-변형 상품에 도달하려면 눌러야 하는 횟수를 줄였습니다. 상품 상세 정보에 바로 나열됩니다! 그림이 단어보다 더 많은 것을 말해주므로 앱 전체에서 일부 일러스트를 새로 고쳤습니다. 몇 가지 버그도 수정하고 더 생생하게 만들었습니다. 마음에 드시면 좋겠습니다!
+7.1:
+WooCommerce 배송 및 세금 확장 기능을 사용하는 미국의 일부 판매자가 주문에 대한 레이블을 생성할 때 제품 수량에 소수점을 사용하면 버그가 발생했습니다. 해당 버그를 수정했습니다!
+
+레이블을 생성해 보시겠어요? 스토어에 WooCommerce 배송 및 세금 확장 기능을 설치하고 활성화하세요. 미국 내 판매자의 전 세계 배송이 곧바로 지원됩니다. 피드백을 보내주세요!
 </ko-KR>
 <nl-NL>
-6.9:
-Er zijn minder tiks nodig om naar de eigenschappen van een variabel product te gaan. Ze staan gewoon bij de productgegevens! Ze zeggen dat een foto meer zegt dan duizend woorden, dus we hebben in de gehele app wat illustraties vernieuwd. We hebben ook wat bugs verwijderd en zaken wat vlotter gemaakt. We hopen dat je het hebt gemerkt!
+7.1:
+Enkele verkopers in de VS die gebruikmaakten van de extensie WooCommerce Shipping en Tax liepen tegen een bug aan bij het aanmaken van labels voor bestellingen met productaantallen in decimalen. Dat is nu verholpen!
+
+Wil je labels aanmaken? Installeer en activeer de extensie WooCommerce Shipping en Tax in je winkel. Op dit moment ondersteunen we verkopers in de VS die wereldwijd verzenden. We horen graag je feedback!
 </nl-NL>
 <pt-BR>
-6.9:
-São necessários menos toques para acessar os atributos de um produto variável: eles são listados nos detalhes do produto! Dizem que uma imagem vale mais do que mil palavras. Pensando nisso, atualizamos algumas ilustrações do aplicativo. Também corrigimos alguns erros e simplificamos alguns detalhes. Esperamos que você perceba!
+7.1:
+Alguns comerciantes nos EUA que usam a extensão WooCommerce Shipping & Tax perceberam um bug ao criar etiquetas para pedidos com quantidades decimais de produtos. Já foi corrigido!
+
+Quer experimentar a criação de etiquetas? Instale e ative a extensão WooCommerce Shipping & Tax na sua loja. No momento, oferecemos suporte a comerciantes nos EUA que enviam produtos para todo o mundo. Adoraríamos receber seu feedback!
 </pt-BR>
 <ru-RU>
-6.9:
-Для доступа к атрибутам товара с вариантами теперь требуется меньше действий. Атрибуты отображаются прямо в сведениях о товаре! Говорят, что лучше один раз увидеть, чем сто раз прочесть. Поэтому мы обновили некоторые рисунки в приложении. Мы также исправили несколько ошибок и ускорили выполнение ряда операций. Надеемся, вы это заметите!
+7.1:
+Некоторые продавцы в США, пользующиеся расширением WooCommerce Shipping & Tax, сталкивались с ошибкой при создании этикеток для заказов, количество товара в которых было выражено дробным числом. Эта ошибка исправлена.
+
+Хотите попробовать создать этикетку? Установите и активируйте расширение WooCommerce Shipping & Tax в своём магазине. В настоящее время мы поддерживаем продавцов из США, осуществляющих доставку по всему миру. Ждем ваших отзывов!
 </ru-RU>
 <sv-SE>
-6.9:
-Färre tryck behövs för att komma till attribut för en variabel produkt – de listas direkt i produktinformationen! De säger att bilder säger mer än ord, så vi har uppdaterat vissa illustrationer i hela appen. Vi har också korrigerat några fel och gjort saker och ting lite fiffigare – vi hoppas att du märker skillnaden!
+7.1:
+Vissa handlare i USA som använde WooCommerce Shipping & Tax-utökningen noterade ett fel när de skapade etiketter för beställningar med produktkvantiteter innehållande decimaler. Detta har åtgärdats!
+
+Vill du prova att skapa etiketter? Installera och aktivera WooCommerce Shipping & Tax-utökningen i din butik. För tillfället stöder vi handlare i USA med frakt över hela världen. Vi välkomnar din feedback!
 </sv-SE>
 <tr-TR>
-6.9:
-Artık değişken bir ürünün özelliklerine daha az dokunuşla ulaşabilirsiniz. Bunlar ürün ayrntılarında listelenmiştir. Görüntü kelimelerden daha fazla şey anlatır, biz de bu yüzden uygulama genelinde bazı çizimleri yeniledik. Ayrıca birkaç hatayı düzelttik ve işleri biraz daha hızlı hale getirdik. Fark edeceğinizi umuyoruz.
+7,1:
+WooCommerce Shipping & Tax uzantısını kullanan ABD'deki bazı satıcılar, ürün sayıları ondalık işaretli olan siparişler için etiket oluştururken bir hata ile karşılaşıyordu. Ve bu hata giderildi!
+
+Etiket oluşturmayı denemek ister misiniz? Dükkanınızda WooCommerce Shipping & Tax uzantısını indirerek etkinleştirin.  Şu anda, ABD'den tüm dünyaya satış yapan satıcıları destekliyoruz. Geri bildirimleriniz bizim için değerli!
 </tr-TR>
 <zh-CN>
-6.9：
-获取可变产品属性时减少了点击次数 — 产品详细信息中列出了这些属性！ 据说图片比文字更具说服力，因此我们在整个应用程序中刷新了一些插图。我们还修复了一些问题，并提高了灵活性。希望您能注意到！
+7.1:
+一些美国商家发现，在使用 WooCommerce Shipping & Tax 扩展程序创建订单时，如果商品数量带有小数，会遇到错误。 我们修复了这个问题！
+
+想试试标签创建功能吗？ 只要在您的商店中下载并激活 WooCommerce Shipping & Tax 扩展程序就可以了。 目前，我们支持美国商家发货到全球地址。 欢迎大家积极提供反馈！
 </zh-CN>
 <zh-TW>
-6.9：
-我們簡化了查看子項產品屬性的步驟，現在屬性就列於產品詳細資料中！ 有句話是這麼說的，圖片傳達的意象遠勝過文字描述，因此我們在應用程式中新增了一些插圖。我們也修復了一些錯誤，讓操作更簡便，希望你有注意到！
+7.1:
+部分美國商家在使用 WooCommerce Shipping & Tax 擴充功能為產品數量有小數點的訂單建立標籤時發現了一個錯誤。 問題現在已經解決！
+
+想要試用標籤建立功能嗎？ 請在你的商店安裝並啟用 WooCommerce Shipping & Tax 擴充功能。 我們現在支援美國商家出貨到世界各地。 歡迎你提供寶貴意見！
 </zh-TW>
 <en-US>
-6.9:
-Fewer taps are needed to get to attributes on a variable product – they’re listed right in the product details! They say pictures say more than words, so we’ve refreshed some illustrations throughout the app. We also fixed a few bugs and made things a bit zippier – we hope that you notice!
+7.1:
+Some merchants in the USA using the WooCommerce Shipping & Tax extension saw a bug when creating labels for orders with decimal product quantities. It’s fixed!
+
+Want to give label creation a try? Install and activate the WooCommerce Shipping & Tax extension in your store. Right now, we support merchants in the USA shipping worldwide. We welcome your feedback!
 </en-US>

@@ -1,26 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-23 15:54:04+0000
+Translation-Revision-Date: 2021-07-23 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="variation_created_title">Variationen har skapats</string>
+    <string name="variation_list_generate_new_variation">Generera ny variation</string>
+    <string name="product_wip_message_variations">Du kan nu skapa och hantera produktvariationer!</string>
+    <string name="product_attributes_created_generate_action_text">Generera variation</string>
+    <string name="product_attributes_created_description">Nu när du har lagt till attribut kan du skapa din första variation!</string>
+    <string name="product_attributes_created_title">Attribut skapade</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Att avbryta en pågående programvaruuppdatering är inte att rekommendera</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Denna betalning kunde inte bearbetas</string>
+    <string name="card_reader_payment_failed_server_error_state">Ingen anslutning till server</string>
+    <string name="card_reader_payment_failed_no_network_state">Ingen internetanslutning</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Skicka i originalförpackning</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Lägg till i nytt paket</string>
+    <string name="shipping_label_move_item_dialog_description">Denna vara finns för närvarande i %s. Vart vill du flytta den?</string>
+    <string name="shipping_label_move_item_dialog_cancel">Avbryt</string>
+    <string name="shipping_label_move_item_dialog_move">Flytta</string>
+    <string name="shipping_label_move_item_dialog_title">Flytta vara</string>
+    <string name="shipping_label_create_custom_package_success_message">”%1$s” sparat</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Misslyckades att skapa paket. Försök igen.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Misslyckades att skapa paket: okänt API-problem.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Misslyckades att skapa paket: %1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Vänta …</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Skapar nytt paket</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Ogiltigt värde.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Detta fält är obligatoriskt.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Vikt för tomt paket</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Tom förpackningsvikt (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Höjd (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Bredd (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Längd (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Paketnamn</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Kuvert</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Låda</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Välj pakettyp</string>
+    <string name="shipping_label_create_custom_package_field_type">Pakettyp</string>
+    <string name="shipping_label_create_custom_package_field_info">Konfigurera paketet som du kommer att använda för att skicka dina produkter. Vi kommer att spara den för framtida beställningar.</string>
+    <string name="shipping_label_create_package_title">Lägg till nytt paket</string>
+    <string name="shipping_label_create_new_package_button">Skapa nytt paket</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Paketets mått måste vara större än noll. Uppdatera måtten för din vara i sektionen Frakt på din produktsida för att fortsätta.</string>
+    <string name="shipping_label_package_details_individual_package_title">Originalförpackning</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Varumått</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Vara som skickas för sig</string>
+    <string name="order_status_updated">Beställningsstatus uppdaterad</string>
+    <string name="receipt_preview_send_menu_item">Skicka</string>
+    <string name="receipt_preview_print_menu_item">Skriv ut</string>
+    <string name="orderdetail_see_receipt_button">Se kvitto</string>
+    <string name="cancel_anyway">Avbryt ändå</string>
+    <string name="card_reader_detail_connected_update_failed">Det gick inte att uppdatera läsarens programvara</string>
+    <string name="card_reader_detail_connected_update_check_failed">Sökningen efter programvaruversionsuppdateringar misslyckades</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om att ta emot mobilbetalningar och beställa kortläsare</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Slå på Bluetooth</string>
+    <string name="card_reader_connect_scanning_failed_header">Ingen läsare ansluten</string>
+    <string name="card_reader_connect_failed_header">Vi kunde inte ansluta din läsare</string>
+    <string name="card_reader_connect_connect_button">Anslut</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Flera läsare hittade</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">Beställningen är redan betald</string>
+    <string name="card_reader_payment_receipt_email_content">Tack för ditt köp! Klicka på länken nedan för att visa ditt betalningskvitto.\n\n%s</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kort avvisades</string>
+    <string name="shipping_label_print_customs_form_download_failed">Det gick inte att ladda ner tullformuläret</string>
+    <string name="shipping_label_print_customs_form_screen_title">Skriv ut tullfaktura</string>
+    <string name="shipping_label_print_customs_form">Skriv ut tullformulär</string>
+    <string name="shipping_label_print_customs_explanation">Ett tullformulär måste skrivas ut och inkluderas i denna internationella försändelse</string>
+    <string name="shipping_label_customs_form">Tullformulär</string>
+    <string name="shipping_label_payment_method_added">Betalningsmetod har lagts till</string>
+    <string name="shipping_label_payments_add_first_credit_card">Lägg till ett kreditkort</string>
+    <string name="shipping_label_destination_address_phone_invalid">Ange ett giltigt telefonnummer</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Skriv ut tullformulär</string>
     <string name="empty_order_list_message">Utforska hur du kan öka din butiksförsäljning.</string>
     <string name="empty_product_message">Börja sälja idag genom att lägga till din första produkt i butiken.</string>
     <string name="empty_product_add_product_button">Lägg till produkt</string>
     <string name="variable_product_attributes">Variationsattribut</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Aktivera Bluetooth på den mobila enheten</string>
-    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;Läs mer&lt;/a&gt; om att ta emot betalningar med din mobila enhet och att beställa kortläsare</string>
-    <string name="card_reader_fetching_order_failed">Det gick inte att hämta beställningen. Beställningens status i appen kan vara föråldrad.</string>
+    <string name="card_reader_refetching_order_failed">Det gick inte att hämta beställningen. Beställningens status i appen kan vara föråldrad.</string>
     <string name="card_reader_payment_email_client_not_found">Lyckas inte hitta ditt e-postprogram</string>
-    <string name="card_reader_payment_receipt_email_content">Tack för ditt köp! Du kan hitta kvittot för din betalning på följande länk: %s</string>
     <string name="card_reader_payment_receipt_email_subject">Ditt kvitto från %s</string>
     <string name="card_reader_payment_description">Onlinebetalning för beställning %s för %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Uppdaterar beställning</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uppdaterar appstatusen</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Din kund valde %1$s</string>
-    <string name="shipping_label_address_phone_invalid">Tullformulär kräver ett tiosiffrigt telefonnummer</string>
+    <string name="shipping_label_origin_address_phone_invalid">Tullformulär kräver ett tiosiffrigt telefonnummer</string>
     <string name="shipping_label_address_phone_required">Ett telefonnummer krävs eftersom denna försändelse kräver ett tullformulär</string>
     <string name="shipping_label_create_customs_done">Tullformulär ifyllt</string>
     <string name="print_receipt_label_info_step_7">Om du har problem med att skriva ut från din enhet kontaktar du kundsupporten för din skrivare.</string>
@@ -38,9 +103,7 @@ Language: sv_SE
     <string name="card_reader_software_update_in_progress_title">Uppdaterar din läsares programvara</string>
     <string name="card_reader_software_update_title">Programvaruuppdatering</string>
     <string name="card_reader_software_update_description">Din kortläsares programvara behöver uppdateras för att fungera korrekt. Vill du uppdatera den nu?</string>
-    <string name="card_reader_detail_connected_update_failed">Det gick inte att uppdatera läsarens programvara. Försök igen senare</string>
     <string name="card_reader_detail_connected_update_success">Läsarens programvara har uppdaterats</string>
-    <string name="card_reader_detail_connected_update_check_failed">Sökningen efter programvaruversionsuppdateringar misslyckades. Försök igen senare</string>
     <string name="card_reader_detail_connected_reader_unknown">OKÄNT KORTLÄSARNAMN</string>
     <string name="card_reader_detail_connected_disconnect_reader">Koppla från läsare</string>
     <string name="card_reader_detail_connected_enforced_update_software">Uppdatera din läsares programvara för att fortsätta ta emot betalningar</string>
@@ -52,7 +115,6 @@ Language: sv_SE
     <string name="card_reader_detail_not_connected_first_hint_label">Se till att kortläsare är laddad</string>
     <string name="card_reader_detail_not_connected_header">Anslut din kortläsare</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kort avvisades</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kort avvisades. Försök igen med ett annat kort.</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Ansluter till läsaren</string>
     <string name="card_reader_payment_collect_payment_loading_header">Förbereder för att ta emot betalning</string>
     <string name="shipping_label_customs_value_zero_error">Det deklarerade värdet måste vara större än noll</string>
@@ -107,15 +169,12 @@ Language: sv_SE
     <string name="product_type_virtual_desc">En unik digital produkt som tjänster, nedladdningsbara böcker, musik eller videor</string>
     <string name="product_type_simple_desc">En unik fysisk produkt som du kan behöva frakta till kunden</string>
     <string name="product_type_simple_title">Enkel fysisk produkt</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Öppna inställningar</string>
     <string name="card_reader_connect_open_location_settings">Öppna inställningar</string>
     <string name="card_reader_connect_open_permission_settings">Öppna inställningar</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth är inaktiverat</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Plats är inaktiverat</string>
-    <string name="card_reader_connect_missing_permissions_hint">Saknar nödvändig platsbehörighet</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth är inaktiverat</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Plats är inaktiverad</string>
+    <string name="card_reader_connect_missing_permissions_header">Saknar nödvändig platsbehörighet</string>
     <string name="card_reader_connect_connecting_failed_hint">Det gick inte att ansluta till läsaren.</string>
-    <string name="card_reader_connect_scanning_failed_hint">Det gick inte att hitta några läsare.</string>
-    <string name="card_reader_connect_failed_header">Misslyckades med att ansluta till läsaren</string>
     <string name="card_reader_connect_connecting_header">Ansluter till läsaren</string>
     <string name="card_reader_connect_to_reader">Anslut läsaren</string>
     <string name="card_reader_connect_reader_found_header">Vill du ansluta läsaren %s?</string>
@@ -129,7 +188,6 @@ Language: sv_SE
     <string name="product_delete_dialog_title">Tar bort produkt</string>
     <string name="card_reader_payment_send_receipt">Skicka kvitto</string>
     <string name="card_reader_payment_print_receipt">Skriv ut kvitto</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Betalning misslyckades. Försök igen.</string>
     <string name="card_reader_payment_capturing_payment_state">Fångar upp betalning</string>
     <string name="card_reader_payment_processing_payment_state">Behandlar betalning</string>
     <string name="card_reader_payment_collect_payment_state">Läsaren är redo</string>
@@ -245,7 +303,6 @@ Language: sv_SE
     <string name="shipping_label_address_suggestion_use_selected_address">Använd vald adress</string>
     <string name="shipping_label_edit_address_loading_progress_title">Laddar in adressdata</string>
     <string name="product_wip_title_m5">Nya funktioner tillgängliga!</string>
-    <string name="product_wip_message_m5">Du kan nu lägga till nedladdningsbara filer till en produkt och länka produkter för merföräljning och korsförsäljning. Vill du inte ha en produkt längre? Släng den!</string>
     <string name="shipping_label_validation_view_map">Öppna karta</string>
     <string name="shipping_label_validation_contact_customer">Kontakta kunden</string>
     <string name="shipping_label_validation_error_template">Validering misslyckades: %s</string>
@@ -329,7 +386,6 @@ Language: sv_SE
     <string name="product_downloadable_files_add">Lägg till fil</string>
     <string name="product_downloadable_files_value_single">1 fil</string>
     <string name="product_downloadable_files_value_multiple">%1$d filer</string>
-    <string name="product_wip_message_m4">Det är nu möjligt att skapa nya enkla, länkade och grupperade produkter i farten med hjälp av Woo-appen. Är du inte klar än? Spara dem som utkast!</string>
     <string name="print_shipping_label_info_step_4">Du kan behöva &lt;b&gt;konfigurera Wi-Fi-utskrift direkt på själva skrivaren.&lt;/b&gt; Kontrollera att skrivarens fasta programvara är uppdaterad. Anvisningar finns i skrivarens dokumentation.</string>
     <string name="print_shipping_label_info_step_3">Du kan välja din enhets &lt;b&gt;standardutskriftstjänst&lt;/b&gt; eller installera din &lt;b&gt;skrivares varumärkesapp&lt;/b&gt; (detta bör visas som ett rekommenderat alternativ)</string>
     <string name="print_shipping_label_info_step_1">Se till att din skrivare och din enhet är anslutna till &lt;b&gt;samma Wi-Fi-nätverk&lt;/b&gt;</string>
@@ -379,7 +435,7 @@ Language: sv_SE
     <string name="shipping_label_print_error_message">Om det inträffade ett utskriftsfel när du köpte etiketten kan du skriva ut den igen.</string>
     <string name="orderdetail_shipping_label_wip_message">Vi arbetar för att göra det enklare för dig att skriva ut fraktetiketter direkt från din enhet! Om du har skapat fraktetiketter för den här ordern i butiksadmin i WooCommerce Shopping kan du nu skriva ut dem under Beställningsinformation här.</string>
     <string name="orderdetail_shipping_label_wip_title">Skriv ut fraktetiketter från din enhet!</string>
-    <string name="orderdetail_shipping_label_reprint">Skriv ut fraktetikett igen</string>
+    <string name="orderdetail_shipping_label_print">Skriv ut fraktetikett</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Produktutkast sparat</string>
     <string name="product_detail_publish_product_draft_error">Det gick inte att spara produktutkastet</string>
@@ -1141,7 +1197,6 @@ Language: sv_SE
     <string name="site_picker_title">Välj affär</string>
     <string name="settings_signout">Logga ut</string>
     <string name="orderstatus_select_status">Ändra orderstatus</string>
-    <string name="order_status_changed_to">Orderstatus ändrad till %s</string>
     <string name="orderdetail_change_order_status">Klicka för att ändra orderstatus</string>
     <string name="apply">Tillämpa</string>
     <string name="app_rating_rate_never">Nej tack</string>
@@ -1463,5 +1518,9 @@ Language: sv_SE
     <string-array name="order_list_tabs">
         <item>Behandlas</item>
         <item>Alla ordrar</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Anpassat paket</item>
+        <item>Tjänstepaket</item>
     </string-array>
 </resources>

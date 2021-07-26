@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -36,6 +37,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val appPrefs: AppPrefs = mock()
 
     @Test
     fun `when view model init with connected state should emit loading view state`() {
@@ -245,7 +247,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
 
             // THEN
-            verify(cardReaderManager).softwareUpdateAvailability()
             verifyConnectedState(
                 viewModel,
                 UiStringText(READER_NAME),
@@ -256,7 +257,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given software update available, when on update result successful, then connected with update emitted`() {
+    fun `given software update available, when on update result successful, then connected without update emitted`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
@@ -266,12 +267,11 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
 
             // THEN
-            verify(cardReaderManager).softwareUpdateAvailability()
             verifyConnectedState(
                 viewModel,
                 UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                updateAvailable = true
+                updateAvailable = false
             )
         }
     }
@@ -289,7 +289,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
 
             // THEN
-            verify(cardReaderManager).softwareUpdateAvailability()
             verifyConnectedState(
                 viewModel,
                 UiStringText(READER_NAME),
@@ -297,8 +296,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 updateAvailable = false
             )
             assertThat(events[0])
-                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
-            assertThat(events[1])
                 .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
         }
     }
@@ -451,7 +448,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     private fun createViewModel() = CardReaderDetailViewModel(
         cardReaderManager,
         tracker,
-        SavedStateHandle()
+        appPrefs,
+        SavedStateHandle(),
     )
 
     private companion object {

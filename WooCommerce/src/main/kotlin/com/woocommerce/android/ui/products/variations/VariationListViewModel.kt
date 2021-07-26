@@ -149,8 +149,10 @@ class VariationListViewModel @Inject constructor(
         viewState.parentProduct
             ?.createVariation()
             .takeIf { openVariationDetails }
-            ?.let { triggerEvent(ShowVariationDetail(it)) }
-            .also { viewState = viewState.copy(isProgressDialogShown = false) }
+            ?.let {
+                triggerEvent(ShowSnackbar(string.variation_created_title))
+                triggerEvent(ShowVariationDetail(it))
+            }.also { viewState = viewState.copy(isProgressDialogShown = false) }
     }
 
     private suspend fun Product.createVariation() =

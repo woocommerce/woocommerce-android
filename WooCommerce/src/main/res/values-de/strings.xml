@@ -1,26 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-24 15:58:27+0000
+Translation-Revision-Date: 2021-07-23 13:17:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="variation_created_title">Variante erstellt</string>
+    <string name="variation_list_generate_new_variation">Neue Variante erstellen</string>
+    <string name="product_wip_message_variations">Du kannst jetzt Produktvarianten erstellen und verwalten!</string>
+    <string name="product_attributes_created_generate_action_text">Variante erstellen</string>
+    <string name="product_attributes_created_description">Nachdem du nun Attribute hinzugefügt hast, kannst du deine erste Variante erstellen!</string>
+    <string name="product_attributes_created_title">Attribute erstellt</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Es wird nicht empfohlen, ein laufendes Software-Update abzubrechen</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Leider konnte diese Zahlung nicht bearbeitet werden</string>
+    <string name="card_reader_payment_failed_server_error_state">Keine Verbindung zum Server</string>
+    <string name="card_reader_payment_failed_no_network_state">Keine Internetverbindung</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">In Originalverpackung versenden</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Zu neuem Paket hinzufügen</string>
+    <string name="shipping_label_move_item_dialog_description">Dieser Artikel befindet sich aktuell in %s. Wohin möchtest du ihn verschieben?</string>
+    <string name="shipping_label_move_item_dialog_cancel">Abbrechen</string>
+    <string name="shipping_label_move_item_dialog_move">Verschieben</string>
+    <string name="shipping_label_move_item_dialog_title">Artikel verschieben</string>
+    <string name="shipping_label_create_custom_package_success_message">„%1$s“ gespeichert</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Paketerstellung fehlgeschlagen. Bitte versuch es noch einmal.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Paketerstellung fehlgeschlagen: unbekannter API-Fehler.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Paketerstellung fehlgeschlagen: %1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Bitte warten …</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Ein neues Paket wird erstellt</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Ungültiger Wert</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Dies ist ein Pflichtfeld.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Gewicht des leeren Pakets</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Leeres Paketgewicht (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Höhe (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Breite (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Länge (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Paketname</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Umschlag</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Karton</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Wähle eine Paketart aus</string>
+    <string name="shipping_label_create_custom_package_field_type">Paketart</string>
+    <string name="shipping_label_create_custom_package_field_info">Richte das Paket ein, mit dem du deine Produkte versendest. Wir speichern es für zukünftige Bestellungen.</string>
+    <string name="shipping_label_create_package_title">Neues Paket hinzufügen</string>
+    <string name="shipping_label_create_new_package_button">Neues Paket erstellen</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Die Verpackungsabmessungen müssen größer als Null sein. Bitte aktualisiere deine Verpackungsabmessungen im Versandbereich deiner Produktseite, um fortzufahren.</string>
+    <string name="shipping_label_package_details_individual_package_title">Originalverpackung</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Abmessungen des Artikels</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Einzeln versendeter Artikel</string>
+    <string name="order_status_updated">Bestellstatus aktualisiert</string>
+    <string name="receipt_preview_send_menu_item">Senden</string>
+    <string name="receipt_preview_print_menu_item">Drucken</string>
+    <string name="orderdetail_see_receipt_button">Beleg anzeigen</string>
+    <string name="cancel_anyway">Trotzdem abbrechen</string>
+    <string name="card_reader_detail_connected_update_failed">Software-Update des Readers fehlgeschlagen</string>
+    <string name="card_reader_detail_connected_update_check_failed">Update-Überprüfung der Softwareversion fehlgeschlagen</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt; zum Empfang von Zahlungen per Mobilgerät und zur Bestellung von Kartenlesegeräten</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Bluetooth aktivieren</string>
+    <string name="card_reader_connect_scanning_failed_header">Kein Reader verbunden</string>
+    <string name="card_reader_connect_failed_header">Fehler beim Herstellen einer Verbindung zu deinem Reader</string>
+    <string name="card_reader_connect_connect_button">Verbinden</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Mehrere Reader gefunden</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">Diese Bestellung ist bereits bezahlt</string>
+    <string name="card_reader_payment_receipt_email_content">Vielen Dank für deinen Einkauf! Klicke auf den Link unten, um deinen Zahlungsbeleg zu erhalten.\n\n%s</string>
+    <string name="card_reader_payment_failed_card_declined_state">Karte abgelehnt</string>
+    <string name="shipping_label_print_customs_form_download_failed">Fehler beim Herunterladen des Zollformulars</string>
+    <string name="shipping_label_print_customs_form_screen_title">Zollrechnung drucken</string>
+    <string name="shipping_label_print_customs_form">Zollformular drucken</string>
+    <string name="shipping_label_print_customs_explanation">Für diese internationale Lieferung muss ein Zollformular gedruckt und beigelegt werden</string>
+    <string name="shipping_label_customs_form">Zollformular</string>
+    <string name="shipping_label_payment_method_added">Zahlungsmethode hinzugefügt</string>
+    <string name="shipping_label_payments_add_first_credit_card">Kreditkarte hinzufügen</string>
+    <string name="shipping_label_destination_address_phone_invalid">Bitte gib eine gültige Telefonnummer an.</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Zollformular drucken</string>
     <string name="empty_order_list_message">Erkundige dich, wie du deine Verkäufe im Store steigern kannst.</string>
     <string name="empty_product_message">Füge dein erstes Produkt zum Store hinzu, um jetzt mit dem Verkauf zu beginnen.</string>
     <string name="empty_product_add_product_button">Produkt hinzufügen</string>
     <string name="variable_product_attributes">Variantenattribute</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Aktiviere Bluetooth auf dem Mobilgerät</string>
-    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;Weitere Informationen&lt;/a&gt; zum Empfang von Zahlungen mit deinem Mobilgerät und zur Bestellung von Kartenlesegeräten</string>
-    <string name="card_reader_fetching_order_failed">Fehler beim Abrufen der Bestellung Der Bestellstatus in der App ist eventuell nicht aktuell.</string>
+    <string name="card_reader_refetching_order_failed">Fehler beim Abrufen der Bestellung Der Bestellstatus in der App ist eventuell nicht aktuell.</string>
     <string name="card_reader_payment_email_client_not_found">E-Mail-Client-App wird nicht erkannt.</string>
-    <string name="card_reader_payment_receipt_email_content">Vielen Dank für deinen Einkauf! Den Beleg für deine Zahlung findest du unter folgendem Link: %s</string>
     <string name="card_reader_payment_receipt_email_subject">Dein Beleg vom %s</string>
     <string name="card_reader_payment_description">Online-Zahlung für Bestellung %s für %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestellung aktualisieren</string>
     <string name="card_reader_payment_fetch_order_loading_header">App-Status aktualisieren</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Dein Kunde hat %1$s ausgewählt</string>
-    <string name="shipping_label_address_phone_invalid">In Zollformularen muss eine zehnstellige Telefonnummer angegeben werden.</string>
+    <string name="shipping_label_origin_address_phone_invalid">In Zollformularen muss eine zehnstellige Telefonnummer angegeben werden.</string>
     <string name="shipping_label_address_phone_required">Die Telefonnummer ist erforderlich, weil für diese Lieferung ein Zollformular benötigt wird.</string>
     <string name="shipping_label_create_customs_done">Zollformular ausgefüllt</string>
     <string name="print_receipt_label_info_step_7">Wenn du Probleme beim Drucken von deinem Gerät aus hast, wende dich an den Kundensupport für deinen Drucker.</string>
@@ -38,9 +102,7 @@ Language: de
     <string name="card_reader_software_update_in_progress_title">Die Software deines Kartenlesegeräts wird aktualisiert</string>
     <string name="card_reader_software_update_title">Software-Update</string>
     <string name="card_reader_software_update_description">Damit die Software deines Kartenlesegeräts weiter problemlos funktioniert, ist eine Aktualisierung erforderlich. Möchtest du sie jetzt aktualisieren?</string>
-    <string name="card_reader_detail_connected_update_failed">Das Software-Update des Kartenlesegeräts ist fehlgeschlagen. Bitte versuche es später erneut</string>
     <string name="card_reader_detail_connected_update_success">Software des Kartenlesegeräts aktualisiert</string>
-    <string name="card_reader_detail_connected_update_check_failed">Die Update-Überprüfung der Softwareversion ist fehlgeschlagen. Bitte versuche es später erneut</string>
     <string name="card_reader_detail_connected_reader_unknown">NAME DES KARTENLESEGERÄTS UNBEKANNT</string>
     <string name="card_reader_detail_connected_disconnect_reader">Kartenlesegerät trennen</string>
     <string name="card_reader_detail_connected_enforced_update_software">Bitte aktualisiere die Software deines Kartenlesegeräts, um weiter Zahlungen empfangen zu können</string>
@@ -52,7 +114,6 @@ Language: de
     <string name="card_reader_detail_not_connected_first_hint_label">Überprüfe, ob das Kartenlesegerät aufgeladen ist</string>
     <string name="card_reader_detail_not_connected_header">Dein Kartenlesegerät verbinden</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Karte abgelehnt</string>
-    <string name="card_reader_payment_failed_card_declined_state">Karte abgelehnt. Versuche es erneut mit einer anderen Karte.</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Verbindung zum Reader wird hergestellt</string>
     <string name="card_reader_payment_collect_payment_loading_header">Vorbereitung für Zahlungsempfang läuft</string>
     <string name="shipping_label_customs_value_zero_error">Der deklarierte Wert muss größer als Null sein</string>
@@ -107,15 +168,12 @@ Language: de
     <string name="product_type_virtual_desc">Ein einzigartiges digitales Produkt wie eine Dienstleistung oder herunterladbare Bücher, Musik oder Videos</string>
     <string name="product_type_simple_desc">Ein einzigartiges physisches Produkt, das du möglicherweise an den Kunden senden musst</string>
     <string name="product_type_simple_title">Einfaches physisches Produkt</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Einstellungen öffnen</string>
     <string name="card_reader_connect_open_location_settings">Einstellungen öffnen</string>
     <string name="card_reader_connect_open_permission_settings">Einstellungen öffnen</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth ist deaktiviert</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Standort ist deaktiviert</string>
-    <string name="card_reader_connect_missing_permissions_hint">Erforderliche Standortrechte fehlen</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth ist deaktiviert</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Standort ist deaktiviert</string>
+    <string name="card_reader_connect_missing_permissions_header">Erforderliche Standortrechte fehlen</string>
     <string name="card_reader_connect_connecting_failed_hint">Es konnte keine Verbindung zum Reader hergestellt werden.</string>
-    <string name="card_reader_connect_scanning_failed_hint">Es konnten keine Reader gefunden werden.</string>
-    <string name="card_reader_connect_failed_header">Verbindung zum Reader fehlgeschlagen</string>
     <string name="card_reader_connect_connecting_header">Verbindung zum Reader wird hergestellt</string>
     <string name="card_reader_connect_to_reader">Mit Reader verbinden</string>
     <string name="card_reader_connect_reader_found_header">Möchtest du Reader %s verbinden?</string>
@@ -129,7 +187,6 @@ Language: de
     <string name="product_delete_dialog_title">Produkt wird gelöscht</string>
     <string name="card_reader_payment_send_receipt">Beleg senden</string>
     <string name="card_reader_payment_print_receipt">Beleg drucken</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Bezahlen fehlgeschlagen. Bitte versuch es noch einmal.</string>
     <string name="card_reader_payment_capturing_payment_state">Zahlung wird erfasst</string>
     <string name="card_reader_payment_processing_payment_state">Zahlung wird bearbeitet</string>
     <string name="card_reader_payment_collect_payment_state">Kartenlesegerät ist bereit</string>
@@ -245,7 +302,6 @@ Language: de
     <string name="shipping_label_address_suggestion_use_selected_address">Ausgewählte Adresse verwenden</string>
     <string name="shipping_label_edit_address_loading_progress_title">Adressdaten werden geladen</string>
     <string name="product_wip_title_m5">Neue Funktionen verfügbar!</string>
-    <string name="product_wip_message_m5">Du kannst jetzt herunterladbare Dateien zu einem Produkt hinzufügen und Upsell- und Cross-Sell-Produkte verlinken. Du willst ein Produkt nicht mehr? Lege es in den Papierkorb.</string>
     <string name="shipping_label_validation_view_map">Karte öffnen</string>
     <string name="shipping_label_validation_contact_customer">Kunden kontaktieren</string>
     <string name="shipping_label_validation_error_template">Validierung fehlgeschlagen: %s</string>
@@ -329,7 +385,6 @@ Language: de
     <string name="product_downloadable_files_add">Datei hinzufügen</string>
     <string name="product_downloadable_files_value_single">1 Datei</string>
     <string name="product_downloadable_files_value_multiple">%1$d Dateien</string>
-    <string name="product_wip_message_m4">Du hast jetzt die Möglichkeit, neue, einfache und gruppierte Produkte von unterwegs aus in der Woo-App zu erstellen. Noch nicht bereit? Speichere sie als Entwurf!</string>
     <string name="print_shipping_label_info_step_4">Du musst möglicherweise &lt;b&gt;die Funktion zum WLAN-Drucken direkt am Drucker konfigurieren.&lt;/b&gt; Stelle sicher, dass die Firmware des Druckers aktualisiert ist. In der Dokumentation zum Drucker findest du eine Anleitung.</string>
     <string name="print_shipping_label_info_step_3">Du kannst den &lt;b&gt;standardmäßigen Druckdienst&lt;/b&gt; deines Gerätes auswählen oder eine &lt;b&gt;App der Druckermarke&lt;/b&gt; installieren (dies sollte als empfohlene Option angezeigt werden)</string>
     <string name="print_shipping_label_info_step_1">Stelle sicher, dass dein Drucker und dein Gerät mit &lt;b&gt;demselben WLAN-Netzwerk&lt;/b&gt; verbunden sind.</string>
@@ -379,7 +434,7 @@ Language: de
     <string name="shipping_label_print_error_message">Sollte der Ausdruck beim Kauf des Etiketts fehlerhaft sein, kannst du es erneut ausdrucken.</string>
     <string name="orderdetail_shipping_label_wip_message">Wir arbeiten daran, es dir einfacher zu machen, Versandetiketten direkt über den Gerät zu drucken! Vorerst haben wir in deiner Shop-Administration mit WooCommerce Shipping Versandetiketten für diese Bestellung erstellt. Du kannst diese hier in deinen Bestelldetails drucken.</string>
     <string name="orderdetail_shipping_label_wip_title">Drucke Versandetiketten von deinem Gerät!</string>
-    <string name="orderdetail_shipping_label_reprint">Versandetikett erneut drucken</string>
+    <string name="orderdetail_shipping_label_print">Versandetikett drucken</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Produktentwurf gespeichert</string>
     <string name="product_detail_publish_product_draft_error">Fehler beim Speichern des Produktentwurfs</string>
@@ -667,7 +722,7 @@ Language: de
     <string name="order_refunds_select_quantity">Menge wählen</string>
     <string name="order_refunds_shipping_refund">Versandrückerstattung</string>
     <string name="order_refunds_products_refund">Rückerstattung für Produkt</string>
-    <string name="order_refunds_item_description">%s x %s jeweils</string>
+    <string name="order_refunds_item_description">Je %s x %s</string>
     <string name="order_refunds_items_selected">%d Artikel ausgewählt</string>
     <string name="order_refunds_items_select_none">Keine auswählen</string>
     <string name="order_refunds_items_select_all">Alle auswählen</string>
@@ -1141,7 +1196,6 @@ Language: de
     <string name="site_picker_title">Shop auswählen</string>
     <string name="settings_signout">Abmelden</string>
     <string name="orderstatus_select_status">Auftragsstatus ändern</string>
-    <string name="order_status_changed_to">Auftragsstatus zu %s geändert</string>
     <string name="orderdetail_change_order_status">Zum Ändern des Auftragsstatus hier klicken</string>
     <string name="apply">Übernehmen</string>
     <string name="app_rating_rate_never">Nein, danke</string>
@@ -1463,5 +1517,9 @@ Language: de
     <string-array name="order_list_tabs">
         <item>In Bearbeitung</item>
         <item>Alle Bestellungen</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Individuelles Paket</item>
+        <item>Service-Paket</item>
     </string-array>
 </resources>

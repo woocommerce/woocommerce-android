@@ -1,26 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-06-24 15:57:46+0000
+Translation-Revision-Date: 2021-07-23 13:15:53+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="variation_created_title">Variatie aangemaakt</string>
+    <string name="variation_list_generate_new_variation">Nieuwe variatie genereren</string>
+    <string name="product_wip_message_variations">Je kunt nu productvariaties aanmaken en beheren!</string>
+    <string name="product_attributes_created_generate_action_text">Variatie genereren</string>
+    <string name="product_attributes_created_description">Nu je eigenschappen hebt toegevoegd, kun je je eerste variatie aanmaken!</string>
+    <string name="product_attributes_created_title">Eigenschappen aangemaakt</string>
+    <string name="card_reader_software_update_progress_cancel_warning">We raden af een software-update in uitvoering te annuleren</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Deze betaling kon niet worden verwerkt</string>
+    <string name="card_reader_payment_failed_server_error_state">Geen verbinding met de server</string>
+    <string name="card_reader_payment_failed_no_network_state">Geen internet verbinding</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">In oorspronkelijke verpakking verzenden</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Toevoegen aan nieuw pakket</string>
+    <string name="shipping_label_move_item_dialog_description">Dit artikel staat momenteel in %s. Waar wil je het naar verplaatsen?</string>
+    <string name="shipping_label_move_item_dialog_cancel">Annuleren</string>
+    <string name="shipping_label_move_item_dialog_move">Verplaats</string>
+    <string name="shipping_label_move_item_dialog_title">Artikel verplaatsen</string>
+    <string name="shipping_label_create_custom_package_success_message">\'%1$s\' bespaard</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Aanmaken van pakket mislukt. Probeer het nog eens.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Aanmaken van pakket mislukt: onbekend API-probleem.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Aanmaken van pakket mislukt: %1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Een moment geduld …</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Nieuw pakket wordt aangemaakt</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Ongeldige waarde.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Dit veld is vereist.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Gewicht van leeg pakket</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Leeg pakketgewicht (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Hoogte (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Breedte (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Lengte (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Naam pakket</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Envelop</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Doos</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Pakkettype kiezen</string>
+    <string name="shipping_label_create_custom_package_field_type">Pakkettype</string>
+    <string name="shipping_label_create_custom_package_field_info">Configureer het pakket dat je gaat gebruiken voor de verzending van je producten. We slaan het dan op voor toekomstige bestellingen.</string>
+    <string name="shipping_label_create_package_title">Nieuw pakket toevoegen</string>
+    <string name="shipping_label_create_new_package_button">Nieuw pakket aanmaken</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">De pakketafmetingen moeten groter zijn dan nul. Werk de afmetingen van je artikel bij bij het gedeelte Verzending op je productpagina om door te gaan.</string>
+    <string name="shipping_label_package_details_individual_package_title">Oorspronkelijke verpakking</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Artikelafmetingen</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Individueel verzonden artikel</string>
+    <string name="order_status_updated">Bestelstatus bijgewerkt</string>
+    <string name="receipt_preview_send_menu_item">Verzenden</string>
+    <string name="receipt_preview_print_menu_item">Afdrukken</string>
+    <string name="orderdetail_see_receipt_button">Bekijk kwitantie</string>
+    <string name="cancel_anyway">Toch annuleren</string>
+    <string name="card_reader_detail_connected_update_failed">Software-update lezer mislukt</string>
+    <string name="card_reader_detail_connected_update_check_failed">Controleren op softwareversie-update mislukt</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over het aannemen van mobiele betalingen en het bestellen van kaartlezers</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Bluetooth inschakelen</string>
+    <string name="card_reader_connect_scanning_failed_header">Geen lezer verbonden</string>
+    <string name="card_reader_connect_failed_header">We kunnen geen verbinding maken met je lezer</string>
+    <string name="card_reader_connect_connect_button">Verbinden</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Meerdere lezers gevonden</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">De bestelling is al betaald</string>
+    <string name="card_reader_payment_receipt_email_content">Bedankt voor je aankoop! Klik op de onderstaande link voor je betaalbewijs.\n\n%s</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kaart geweigerd</string>
+    <string name="shipping_label_print_customs_form_download_failed">Fout bij downloaden douaneaangifte</string>
+    <string name="shipping_label_print_customs_form_screen_title">Douanefactuur afdrukken</string>
+    <string name="shipping_label_print_customs_form">Douaneformulier afdrukken</string>
+    <string name="shipping_label_print_customs_explanation">Er moet een douaneformulier worden afgedrukt en worden bijgevoegd bij deze internationale verzending</string>
+    <string name="shipping_label_customs_form">Douaneformulier</string>
+    <string name="shipping_label_payment_method_added">Betaalmethode toegevoegd</string>
+    <string name="shipping_label_payments_add_first_credit_card">Een creditcard toevoegen</string>
+    <string name="shipping_label_destination_address_phone_invalid">Voer een geldig telefoonnummer in</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Douaneformulier afdrukken</string>
     <string name="empty_order_list_message">Bekijk hoe je de verkoop van je winkel kunt verhogen.</string>
     <string name="empty_product_message">Begin vandaag te verkopen door het eerste product aan de winkel toe te voegen.</string>
     <string name="empty_product_add_product_button">Product toevoegen</string>
     <string name="variable_product_attributes">Variatie-eigenschappen</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Zet de Bluetooth aan op je mobiele apparaat</string>
-    <string name="card_reader_detail_learn_more">&lt;a href=\"https://woocommerce.com/payments/\"&gt;Meer informatie&lt;/a&gt; over het aannemen van betalingen met je mobiele apparaat en het bestellen van kaartlezers</string>
-    <string name="card_reader_fetching_order_failed">Fout bij ophalen bestelling. De bestellingsstatus in de app kan verouderd zijn.</string>
+    <string name="card_reader_refetching_order_failed">Fout bij ophalen bestelling. De bestellingsstatus in de app kan verouderd zijn.</string>
     <string name="card_reader_payment_email_client_not_found">Detectie van mailclient-app mislukt</string>
-    <string name="card_reader_payment_receipt_email_content">Bedankt voor je aankoop! Je kunt de kwitantie van je betaling vinden onder de volgende link: %s</string>
     <string name="card_reader_payment_receipt_email_subject">Je kwitantie van %s</string>
     <string name="card_reader_payment_description">Online betaling voor bestelling %s voor %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestelling aan het vernieuwen…</string>
     <string name="card_reader_payment_fetch_order_loading_header">Status in de app aan het bijwerken…</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Je klant heeft het volgende geselecteerd %1$s</string>
-    <string name="shipping_label_address_phone_invalid">Voor douaneformulieren is een tiencijferig telefoonnummer verplicht</string>
+    <string name="shipping_label_origin_address_phone_invalid">Voor douaneformulieren is een tiencijferig telefoonnummer verplicht</string>
     <string name="shipping_label_address_phone_required">Een telefoonnummer is verplicht omdat deze verzending een douaneformulier vereist</string>
     <string name="shipping_label_create_customs_done">Douaneformulier ingevuld</string>
     <string name="print_receipt_label_info_step_7">Als je problemen ervaart met afdrukken vanaf je apparaat, neem dan contact op met de klantenservice van uw printer.</string>
@@ -38,9 +102,7 @@ Language: nl
     <string name="card_reader_software_update_in_progress_title">De software van je lezer wordt bijgewerkt</string>
     <string name="card_reader_software_update_title">Software-update</string>
     <string name="card_reader_software_update_description">De software van je kaartlezer moet bijgewerkt worden om alles soepel te laten verlopen. Wil je nu bijwerken?</string>
-    <string name="card_reader_detail_connected_update_failed">De software-update van lezer is mislukt. Probeer later opnieuw</string>
     <string name="card_reader_detail_connected_update_success">De software van de lezer is bijgewerkt</string>
-    <string name="card_reader_detail_connected_update_check_failed">De softwareversie-update is mislukt. Probeer later opnieuw</string>
     <string name="card_reader_detail_connected_reader_unknown">NAAM KAARTLEZER ONBEKEND</string>
     <string name="card_reader_detail_connected_disconnect_reader">Lezer loskoppelen</string>
     <string name="card_reader_detail_connected_enforced_update_software">Werk de software van je lezer bij zodat je betalingen kunt blijven aannemen</string>
@@ -52,7 +114,6 @@ Language: nl
     <string name="card_reader_detail_not_connected_first_hint_label">Zorg ervoor dat de kaartlezer opgeladen is</string>
     <string name="card_reader_detail_not_connected_header">Je kaartlezer koppelen</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kaart geweigerd</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kaart geweigerd. Probeer het opnieuw met een andere kaart.</string>
     <string name="card_reader_payment_collect_payment_loading_payment_state">Er wordt verbinding gemaakt met lezer</string>
     <string name="card_reader_payment_collect_payment_loading_header">Aan het voorbereiden om betaling te innen</string>
     <string name="shipping_label_customs_value_zero_error">De aangegeven waarde moet hoger zijn dan nul</string>
@@ -107,15 +168,12 @@ Language: nl
     <string name="product_type_virtual_desc">Een unieke digitaal product zoals services, downloadbare boeken, muziek of video\'s</string>
     <string name="product_type_simple_desc">Een uniek fysiek product dat je wellicht naar de klant moet verzenden</string>
     <string name="product_type_simple_title">Eenvoudig fysiek product</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Instellingen openen</string>
     <string name="card_reader_connect_open_location_settings">Instellingen openen</string>
     <string name="card_reader_connect_open_permission_settings">Instellingen openen</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth is uitgeschakeld</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Locatie is uitgeschakeld</string>
-    <string name="card_reader_connect_missing_permissions_hint">Ontbrekende vereiste locatietoestemming</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is uitgeschakeld</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Locatie is uitgeschakeld</string>
+    <string name="card_reader_connect_missing_permissions_header">Ontbrekende vereiste locatietoestemming</string>
     <string name="card_reader_connect_connecting_failed_hint">We kunnen geen verbinding maken met de lezer.</string>
-    <string name="card_reader_connect_scanning_failed_hint">We hebben geen lezers kunnen vinden.</string>
-    <string name="card_reader_connect_failed_header">Verbinding maken met lezer mislukt</string>
     <string name="card_reader_connect_connecting_header">Er wordt verbinding gemaakt met lezer</string>
     <string name="card_reader_connect_to_reader">Verbinding maken met lezer</string>
     <string name="card_reader_connect_reader_found_header">Wil je verbinding maken met lezer %s?</string>
@@ -129,7 +187,6 @@ Language: nl
     <string name="product_delete_dialog_title">Product verwijderen</string>
     <string name="card_reader_payment_send_receipt">Kwitantie verzenden</string>
     <string name="card_reader_payment_print_receipt">Kwitantie afdrukken</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Betaling mislukt. Probeer het nog eens.</string>
     <string name="card_reader_payment_capturing_payment_state">Betaling wordt ontvangen</string>
     <string name="card_reader_payment_processing_payment_state">Betaling wordt verwerkt</string>
     <string name="card_reader_payment_collect_payment_state">Lezer is gereed</string>
@@ -245,7 +302,6 @@ Language: nl
     <string name="shipping_label_address_suggestion_use_selected_address">Het geselecteerde adres gebruiken</string>
     <string name="shipping_label_edit_address_loading_progress_title">Adresgegevens worden geladen</string>
     <string name="product_wip_title_m5">Nieuwe functies beschikbaar!</string>
-    <string name="product_wip_message_m5">Je kan nu downloadbare bestanden aan een product toevoegen en upsell- en cross-sell-producten koppelen. Wil je een product niet meer? Verplaats het naar de prullenbak!</string>
     <string name="shipping_label_validation_view_map">Kaart openen</string>
     <string name="shipping_label_validation_contact_customer">Contact opnemen met klant</string>
     <string name="shipping_label_validation_error_template">Validatie mislukt: %s</string>
@@ -329,7 +385,6 @@ Language: nl
     <string name="product_downloadable_files_add">Bestand toevoegen</string>
     <string name="product_downloadable_files_value_single">1 bestand</string>
     <string name="product_downloadable_files_value_multiple">%1$d bestanden</string>
-    <string name="product_wip_message_m4">Je kan nu nieuwe eenvoudige, gekoppelde en gegroepeerde producten aanmaken terwijl je onderweg bent met de Woo-app. Was je nog niet klaar? Sla ze op als een concept!</string>
     <string name="print_shipping_label_info_step_4">Het is mogelijk dat &lt;b&gt;je afdrukken via wifi op de printer zelf moet instellen.&lt;/b&gt; Controleer of de firmware van de printer bijgewerkt is. Zie de documenten van je printer voor instructies.</string>
     <string name="print_shipping_label_info_step_3">Je kan de &lt;b&gt;standaard afdrukservice&lt;/b&gt; van je apparaat selecteren, of de &lt;b&gt;bijbehorende app van je printer&lt;/b&gt; installeren (dit zou de aanbevolen optie moeten zijn)</string>
     <string name="print_shipping_label_info_step_1">Zorg dat je printer en je apparaat verbonden zijn met &lt;b&gt;dezelfde wifi-netwerken&lt;/b&gt;</string>
@@ -379,7 +434,7 @@ Language: nl
     <string name="shipping_label_print_error_message">Als er een afdrukfout heeft plaatsgevonden toen je het label hebt aangeschaft, dan kan je het opnieuw afdrukken.</string>
     <string name="orderdetail_shipping_label_wip_message">We zijn bezig om het eenvoudiger voor je te maken om verzendlabels rechtstreeks vanaf je apparaat af te drukken! Als je met WooCommerce Shipping verzendlabels voor deze bestelling hebt aangemaakt bij je winkelbeheer, kan je ze voorlopig hier, bij je bestelgegevens, afdrukken.</string>
     <string name="orderdetail_shipping_label_wip_title">Verzendlabels afdrukken vanaf je apparaat!</string>
-    <string name="orderdetail_shipping_label_reprint">Verzendlabel opnieuw afdrukken</string>
+    <string name="orderdetail_shipping_label_print">Verzendlabel afdrukken</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Productconcept opgeslagen</string>
     <string name="product_detail_publish_product_draft_error">Fout bij het opslaan van productconcept</string>
@@ -1141,7 +1196,6 @@ Language: nl
     <string name="site_picker_title">Kies winkel</string>
     <string name="settings_signout">Uitloggen</string>
     <string name="orderstatus_select_status">Bestelstatus wijzigen</string>
-    <string name="order_status_changed_to">Bestelstatus gewijzigd naar %s</string>
     <string name="orderdetail_change_order_status">Klik om de bestelstatus te wijzigen</string>
     <string name="apply">Toepassen</string>
     <string name="app_rating_rate_never">Nee, liever niet</string>
@@ -1463,5 +1517,9 @@ Language: nl
     <string-array name="order_list_tabs">
         <item>Bezig met verwerken</item>
         <item>Alle bestellingen</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Aangepast pakket</item>
+        <item>Servicepakket</item>
     </string-array>
 </resources>

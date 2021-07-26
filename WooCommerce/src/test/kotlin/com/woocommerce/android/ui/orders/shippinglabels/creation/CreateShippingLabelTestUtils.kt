@@ -38,6 +38,17 @@ object CreateShippingLabelTestUtils {
         )
     }
 
+    fun generateIndividualPackage(): ShippingPackage {
+        return ShippingPackage(
+            id = ShippingPackage.INDIVIDUAL_PACKAGE,
+            title = ShippingPackage.INDIVIDUAL_PACKAGE,
+            category = ShippingPackage.INDIVIDUAL_PACKAGE,
+            isLetter = false,
+            dimensions = PackageDimensions(1.0f, 1.0f, 1.0f),
+            boxWeight = 0f
+        )
+    }
+
     fun generateShippingLabelPackage(
         position: Int = 1,
         weight: Float = 10f,
@@ -48,7 +59,7 @@ object CreateShippingLabelTestUtils {
             position,
             selectedPackage ?: generatePackage(),
             weight,
-            listOf(Item(0L, "product", "", 2, 10f, BigDecimal.valueOf(10L)))
+            items ?: listOf(Item(0L, "product", "", 2, 10f, BigDecimal.valueOf(10L)))
         )
     }
 
@@ -66,6 +77,7 @@ object CreateShippingLabelTestUtils {
             serviceName = "service",
             deliveryDays = 10,
             price = BigDecimal.TEN,
+            formattedPrice = "10 $",
             discount = BigDecimal.ZERO,
             formattedFee = "10 $",
             option = ShippingRate.Option.DEFAULT

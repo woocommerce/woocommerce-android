@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
@@ -9,19 +11,18 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreateShippingLabelBinding
+import com.woocommerce.android.databinding.ViewShippingLabelOrderPackagePriceBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderSummaryBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.PaymentMethod
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCustomsForm
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
@@ -56,6 +57,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -65,10 +68,11 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label) {
+class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label), BackPressListener {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: CreateShippingLabelViewModel by viewModels()
@@ -86,9 +90,10 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         initializeViews(binding)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         progressDialog?.dismiss()
+        WooDialog.onCleared()
     }
 
     private fun initializeViewModel(binding: FragmentCreateShippingLabelBinding) {
@@ -265,6 +270,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     findNavController().navigateSafely(action)
                 }
+                is ShowDialog -> event.showDialog()
+                is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         }
@@ -335,6 +342,11 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         }
     }
 
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
+    }
+
     private fun ShippingLabelCreationStepView.update(data: StepUiState) {
         isVisible = data.isVisible
         data.details?.let { details = it }
@@ -350,15 +362,40 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             return
         }
         root.isVisible = true
-        subtotalPrice.text = PriceUtils.formatCurrency(state.price + state.discount, state.currency, currencyFormatter)
 
+        // Individual packages prices
+        individualPackagesPricesLayout.removeAllViews()
+        individualPackagesPricesLayout.isVisible = state.individualPackagesPrices.isNotEmpty()
+        state.individualPackagesPrices.forEach { (labelPackage, price) ->
+            val binding = ViewShippingLabelOrderPackagePriceBinding.inflate(
+                LayoutInflater.from(requireContext()),
+                individualPackagesPricesLayout,
+                true
+            )
+            binding.packageTitle.text = labelPackage.getTitle(requireContext())
+            binding.packagePrice.text = PriceUtils.formatCurrency(price, state.currency, currencyFormatter)
+        }
+
+        // Subtotal
+        subtotalPrice.text = PriceUtils.formatCurrency(state.price + state.discount, state.currency, currencyFormatter)
+        subtotalPrice.setTypeface(
+            subtotalPrice.typeface,
+            if (state.individualPackagesPrices.isEmpty()) Typeface.NORMAL else Typeface.BOLD
+        )
+        subtotalLabel.setTypeface(
+            subtotalLabel.typeface,
+            if (state.individualPackagesPrices.isEmpty()) Typeface.NORMAL else Typeface.BOLD
+        )
+
+        // Discount
         if (state.discount.isNotEqualTo(BigDecimal.ZERO)) {
             discountGroup.isVisible = true
-            discountPrice.text = PriceUtils.formatCurrency(state.discount, state.currency, currencyFormatter)
+            discountPrice.text = PriceUtils.formatCurrency(-state.discount, state.currency, currencyFormatter)
         } else {
             discountGroup.isVisible = false
         }
 
+        // Total price
         val totalPriceValue = state.price
         totalPrice.text = PriceUtils.formatCurrency(totalPriceValue, state.currency, currencyFormatter)
     }

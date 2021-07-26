@@ -96,6 +96,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED(siteless = true),
         LOGIN_NO_JETPACK_TRY_AGAIN_TAPPED(siteless = true),
         LOGIN_NO_JETPACK_MENU_HELP_TAPPED(siteless = true),
+        LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED(siteless = true),
         LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED(siteless = true),
@@ -244,8 +245,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CARD_READER_CONNECTION_FAILED,
         CARD_READER_CONNECTION_SUCCESS,
         CARD_READER_DISCONNECT_TAPPED,
+        CARD_READER_AUTO_CONNECTION_STARTED,
 
-        // -- Card Reader - software udpate
+        // -- Card Reader - software update
         CARD_READER_SOFTWARE_UPDATE_TAPPED,
         CARD_READER_SOFTWARE_UPDATE_SUCCESS,
         CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED,
@@ -406,6 +408,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
         PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED,
         PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED,
+        PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED,
 
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,

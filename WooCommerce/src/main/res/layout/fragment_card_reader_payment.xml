@@ -106,11 +106,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_200"
-            android:layout_marginTop="@dimen/major_175"
-            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginBottom="@dimen/minor_100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/payment_state_label"
+            app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
             tools:text="Send receipt" />
 
         <com.google.android.material.button.MaterialButton
@@ -121,7 +120,7 @@
             android:layout_marginHorizontal="@dimen/major_200"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/primary_action_btn"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="Print receipt" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

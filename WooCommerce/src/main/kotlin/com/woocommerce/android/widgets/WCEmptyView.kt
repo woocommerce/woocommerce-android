@@ -14,20 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WcEmptyViewBinding
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_CATEGORY_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_TAG_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.*
 import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
@@ -47,7 +34,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         NETWORK_OFFLINE,
         PRODUCT_CATEGORY_LIST,
         PRODUCT_TAG_LIST,
-        SHIPPING_LABEL_CARRIER_RATES
+        SHIPPING_LABEL_CARRIER_RATES,
+        SHIPPING_LABEL_SERVICE_PACKAGE_LIST
     }
 
     init {
@@ -188,7 +176,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
             SHIPPING_LABEL_CARRIER_RATES -> {
                 isTitleBold = false
-                title = context.getString(R.string.shipping_label_shipping_carrier_rates_unavailable)
+                title = context.getString(R.string.shipping_label_shipping_carrier_rates_unavailable_title)
+                message = context.getString(R.string.shipping_label_shipping_carrier_rates_unavailable_message)
+                buttonText = null
+                drawableId = R.drawable.img_products_error
+            }
+            SHIPPING_LABEL_SERVICE_PACKAGE_LIST -> {
+                isTitleBold = true
+                title = context.getString(R.string.shipping_label_activate_service_package_empty_title)
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_orders_all_fulfilled
