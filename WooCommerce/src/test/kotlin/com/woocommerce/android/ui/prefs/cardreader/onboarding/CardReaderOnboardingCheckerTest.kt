@@ -41,7 +41,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         val result = checker.getOnboardingState()
 
-        assertThat(result).isEqualTo(CardReaderOnboardingState.CountryNotSupported)
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
     }
 
     @Test
@@ -50,7 +50,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         val result = checker.getOnboardingState()
 
-        assertThat(result).isNotEqualTo(CardReaderOnboardingState.CountryNotSupported)
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
     }
 
     @Test
@@ -60,7 +60,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.CountryNotSupported)
+            assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
         }
 
     @Test
@@ -70,7 +70,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.CountryNotSupported)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
         }
 
     @Test
