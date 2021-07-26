@@ -27,7 +27,8 @@ class CardReaderOnboardingChecker @Inject constructor(
 ) {
     @Suppress("ReturnCount")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
-        if (!isCountrySupported()) return CountryNotSupported
+        val countryCode = getCountryCode()
+        if (!isCountrySupported(countryCode)) return CountryNotSupported(countryCode)
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
@@ -50,12 +51,18 @@ class CardReaderOnboardingChecker @Inject constructor(
         return OnboardingCompleted
     }
 
-    private suspend fun isCountrySupported(): Boolean {
+    private suspend fun getCountryCode(): String? {
         return withContext(dispatchers.io) {
-            wooStore.getStoreCountryCode(selectedSite.get())?.let { storeCountryCode ->
-                SUPPORTED_COUNTRIES.any { it.equals(storeCountryCode, ignoreCase = true) }
-            } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
+            wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
+                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
+            }
         }
+    }
+
+    private fun isCountrySupported(countryCode: String?): Boolean {
+        return countryCode?.let { storeCountryCode ->
+            SUPPORTED_COUNTRIES.any { it.equals(storeCountryCode, ignoreCase = true) }
+        } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
     }
 
     private fun isWCPayInstalled(pluginInfo: WCPluginSqlUtils.WCPluginModel?): Boolean = pluginInfo != null
@@ -101,7 +108,7 @@ sealed class CardReaderOnboardingState {
     /**
      * Store is not located in one of the supported countries.
      */
-    object CountryNotSupported : CardReaderOnboardingState()
+    data class CountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
 
     /**
      * WCPay plugin is not installed on the store.

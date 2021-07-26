@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -13,6 +14,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,12 +35,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun refreshState() {
         launch {
             viewState.value = OnboardingViewState.LoadingState
-            when (cardReaderChecker.getOnboardingState()) {
+            when (val state = cardReaderChecker.getOnboardingState()) {
                 CardReaderOnboardingState.OnboardingCompleted -> exitFlow()
-                CardReaderOnboardingState.CountryNotSupported ->
-                    // todo cardreader add country display name
+                is CardReaderOnboardingState.CountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
-                        "HC: United States",
+                        convertCountryCodeToCountry(state.countryCode),
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
                     )
@@ -65,7 +66,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value = OnboardingViewState.GenericErrorState
                 CardReaderOnboardingState.NoConnectionError ->
                     viewState.value = OnboardingViewState.NoConnectionErrorState
-            }
+            }.exhaustive
         }
     }
 
@@ -85,6 +86,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun exitFlow() {
         triggerEvent(Event.Exit)
     }
+
+    private fun convertCountryCodeToCountry(countryCode: String?) =
+        Locale("", countryCode.orEmpty()).displayName
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
         object LoadingState : OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
