@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
@@ -126,12 +127,11 @@ class PrintShippingLabelViewModel @Inject constructor(
 
     fun onPreviewLabelCompleted() {
         viewState = viewState.copy(tempFile = null, previewShippingLabel = null)
-        // TODO
-        // label?.let {
-        //     if (it.hasCommercialInvoice) {
-        //         triggerEvent(ViewPrintCustomsForm(it.commercialInvoiceUrl!!, arguments.isReprint))
-        //     }
-        // }
+        labels.first()?.let {
+            if (it.hasCommercialInvoice) {
+                triggerEvent(ViewPrintCustomsForm(it.commercialInvoiceUrl!!, arguments.isReprint))
+            }
+        }
     }
 
     private suspend fun handlePreviewError() {
