@@ -74,8 +74,8 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductDownloadDetails(
         val isEditing: Boolean,
         val file: ProductFile
-    ) :
-        ProductNavigationTarget()
+    ) : ProductNavigationTarget()
+    object ViewProductAddonsDetails : ProductNavigationTarget()
     object AddProductDownloadableFile : ProductNavigationTarget()
     data class AddProductAttribute(
         val isVariationCreation: Boolean = false
