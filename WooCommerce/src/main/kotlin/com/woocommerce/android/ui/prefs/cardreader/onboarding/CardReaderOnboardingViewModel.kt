@@ -5,6 +5,7 @@ import androidx.annotation.LayoutRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog
@@ -75,11 +76,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onContactSupportClicked() {
-        // TODO cardreader not implemented
+        triggerEvent(OnboardingEvent.NavigateToSupport)
     }
 
     private fun onLearnMoreClicked() {
-        // TODO cardreader not implemented
+        triggerEvent(OnboardingEvent.ViewLearnMore)
     }
 
     private fun exitFlow() {
@@ -89,13 +90,22 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun convertCountryCodeToCountry(countryCode: String?) =
         Locale("", countryCode.orEmpty()).displayName
 
+    sealed class OnboardingEvent : Event() {
+        object ViewLearnMore : OnboardingEvent() {
+            const val url = AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        }
+
+        object NavigateToSupport : Event()
+    }
+
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
         object LoadingState : OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
             val headerLabel: UiString =
                 UiString.UiStringRes(R.string.card_reader_onboarding_loading)
             val hintLabel: UiString =
                 UiString.UiStringRes(R.string.please_wait)
-            @DrawableRes val illustration: Int = R.drawable.img_payment_onboarding_loading
+            @DrawableRes
+            val illustration: Int = R.drawable.img_payment_onboarding_loading
         }
 
         // TODO cardreader Update layout resource
@@ -111,8 +121,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
         // TODO cardreader Update layout resource
         class UnsupportedCountryState(
             val countryDisplayName: String,
-            val onContactSupportActionClicked: (() -> Unit)? = null,
-            val onLearnMoreActionClicked: (() -> Unit)? = null
+            val onContactSupportActionClicked: (() -> Unit),
+            val onLearnMoreActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported_country) {
             val headerLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_header,
@@ -141,7 +151,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
+            @DrawableRes
+            val illustration: Int = R.drawable.img_woo_payments
             val refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
         }
@@ -155,7 +166,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
+            @DrawableRes
+            val illustration: Int = R.drawable.img_woo_payments
             val refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
         }
@@ -169,7 +181,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
+            @DrawableRes
+            val illustration: Int = R.drawable.img_woo_payments
             val refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
         }
@@ -183,7 +196,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
+            @DrawableRes
+            val illustration: Int = R.drawable.img_woo_payments
             val refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
         }
@@ -199,7 +213,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
         }
 
         // TODO cardreader Update layout resource
@@ -213,7 +228,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
         }
 
         // TODO cardreader Update layout resource
@@ -227,7 +243,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
         }
 
         // TODO cardreader Update layout resource
@@ -244,7 +261,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
             val dismissButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_dismiss_button)
         }
@@ -260,7 +278,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
         }
     }
 }
