@@ -34,36 +34,36 @@ class CardReaderOnboardingViewModel @Inject constructor(
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (cardReaderChecker.getOnboardingState()) {
-                CardReaderOnboardingState.ONBOARDING_COMPLETED -> exitFlow()
-                CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED ->
+                CardReaderOnboardingState.OnboardingCompleted -> exitFlow()
+                CardReaderOnboardingState.CountryNotSupported ->
                     // todo cardreader add country display name
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
                         "HC: United States",
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
                     )
-                CardReaderOnboardingState.WCPAY_NOT_INSTALLED ->
+                CardReaderOnboardingState.WcpayNotInstalled ->
                     viewState.value = OnboardingViewState.WCPayNotInstalledState(::refreshState)
-                CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION ->
+                CardReaderOnboardingState.WcpayUnsupportedVersion ->
                     viewState.value = OnboardingViewState.WCPayUnsupportedVersionState(::refreshState)
-                CardReaderOnboardingState.WCPAY_NOT_ACTIVATED ->
+                CardReaderOnboardingState.WcpayNotActivated ->
                     viewState.value = OnboardingViewState.WCPayNotActivatedState(::refreshState)
-                CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED ->
+                CardReaderOnboardingState.WcpaySetupNotCompleted ->
                     viewState.value = OnboardingViewState.WCPayNotSetupState(::refreshState)
-                CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT ->
+                CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
                     viewState.value = OnboardingViewState.WCPayInTestModeWithLiveAccountState
-                CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW ->
+                CardReaderOnboardingState.StripeAccountUnderReview ->
                     viewState.value = OnboardingViewState.WCPayAccountUnderReviewState
                 // TODO cardreader Pass due date to the state
-                CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT ->
+                CardReaderOnboardingState.StripeAccountPendingRequirement ->
                     viewState.value = OnboardingViewState.WCPayAccountPendingRequirementsState("", ::exitFlow)
-                CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT ->
+                CardReaderOnboardingState.StripeAccountOverdueRequirement ->
                     viewState.value = OnboardingViewState.WCPayAccountOverdueRequirementsState
-                CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED ->
+                CardReaderOnboardingState.StripeAccountRejected ->
                     viewState.value = OnboardingViewState.WCPayAccountRejectedState
-                CardReaderOnboardingState.GENERIC_ERROR ->
+                CardReaderOnboardingState.GenericError ->
                     viewState.value = OnboardingViewState.GenericErrorState
-                CardReaderOnboardingState.NO_CONNECTION_ERROR ->
+                CardReaderOnboardingState.NoConnectionError ->
                     viewState.value = OnboardingViewState.NoConnectionErrorState
             }
         }
