@@ -11,40 +11,40 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/eligibility_illustration"
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_illustration"
         app:layout_constraintVertical_chainStyle="packed"
         android:layout_marginBottom="@dimen/margin_large"
-        android:id="@+id/eligibility_header"/>
+        android:id="@+id/unsupported_country_header"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/eligibility_header"
+        app:layout_constraintTop_toBottomOf="@+id/unsupported_country_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/eligibility_hint"
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_hint"
         tools:src="@drawable/img_card_reader_connecting"
         android:layout_marginBottom="@dimen/margin_large"
-        android:id="@+id/eligibility_illustration"/>
+        android:id="@+id/unsupported_country_illustration"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/eligibility_illustration"
+        app:layout_constraintTop_toBottomOf="@id/unsupported_country_illustration"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/eligibility_help"
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_help"
         android:layout_marginBottom="@dimen/margin_extra_medium_large"
-        android:id="@+id/eligibility_hint"/>
+        android:id="@+id/unsupported_country_hint"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/eligibility_hint"
+        app:layout_constraintTop_toBottomOf="@id/unsupported_country_hint"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/eligibility_learn_more"
-        android:id="@+id/eligibility_help"/>
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_learn_more"
+        android:id="@+id/unsupported_country_help"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="0dp"
@@ -54,6 +54,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.2"
-        android:id="@+id/eligibility_learn_more"/>
+        android:id="@+id/unsupported_country_learn_more"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

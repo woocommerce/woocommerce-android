@@ -81,15 +81,15 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         state: CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState
     ) {
         val binding = FragmentCardReaderOnboardingUnsupportedCountryBinding.bind(view)
-        UiHelpers.setTextOrHide(binding.eligibilityHeader, state.headerLabel)
-        UiHelpers.setImageOrHide(binding.eligibilityIllustration, state.illustration)
-        UiHelpers.setTextOrHide(binding.eligibilityHint, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.eligibilityHelp, state.contactSupportLabel)
-        UiHelpers.setTextOrHide(binding.eligibilityLearnMore, state.learnMoreLabel)
-        binding.eligibilityHelp.setOnClickListener {
+        UiHelpers.setTextOrHide(binding.unsupportedCountryHeader, state.headerLabel)
+        UiHelpers.setImageOrHide(binding.unsupportedCountryIllustration, state.illustration)
+        UiHelpers.setTextOrHide(binding.unsupportedCountryHint, state.hintLabel)
+        UiHelpers.setTextOrHide(binding.unsupportedCountryHelp, state.contactSupportLabel)
+        UiHelpers.setTextOrHide(binding.unsupportedCountryLearnMore, state.learnMoreLabel)
+        binding.unsupportedCountryHelp.setOnClickListener {
             state.onContactSupportActionClicked?.invoke()
         }
-        binding.eligibilityLearnMore.setOnClickListener {
+        binding.unsupportedCountryLearnMore.setOnClickListener {
             state.onLearnMoreActionClicked?.invoke()
         }
     }

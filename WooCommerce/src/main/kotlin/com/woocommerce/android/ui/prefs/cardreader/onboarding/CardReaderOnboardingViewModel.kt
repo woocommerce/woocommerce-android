@@ -75,11 +75,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onContactSupportClicked() {
-        // TODO()
+        // TODO cardreader not implemented
     }
 
     private fun onLearnMoreClicked() {
-        // TODO()
+        // TODO cardreader not implemented
     }
 
     private fun exitFlow() {
@@ -112,19 +112,19 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val onLearnMoreActionClicked: (() -> Unit)? = null
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported_country) {
             val headerLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_eligibility_country_not_supported_header,
+                stringRes = R.string.card_reader_onboarding_country_not_supported_header,
                 params = listOf(UiString.UiStringText(countryDisplayName))
             )
             val illustration = R.drawable.img_products_error
             val hintLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_eligibility_country_not_supported_hint
+                stringRes = R.string.card_reader_onboarding_country_not_supported_hint
             )
             val contactSupportLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_eligibility_country_not_supported_contact_support,
+                stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
                 containsHtml = true
             )
             val learnMoreLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_eligibility_country_not_supported_learn_more,
+                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
                 containsHtml = true
             )
         }
