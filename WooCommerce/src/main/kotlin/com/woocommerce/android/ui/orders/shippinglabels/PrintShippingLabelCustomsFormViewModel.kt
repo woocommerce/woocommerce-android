@@ -71,7 +71,7 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
             prefix = "PDF",
             fileExtension = "pdf"
         ) ?: return null
-        return if (fileDownloader.downloadFile(navArgs.url, file)) {
+        return if (fileDownloader.downloadFile(navArgs.invoices.first(), file)) {
             file
         } else {
             null

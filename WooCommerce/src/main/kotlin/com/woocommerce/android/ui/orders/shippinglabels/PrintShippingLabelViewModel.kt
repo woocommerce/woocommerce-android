@@ -127,11 +127,10 @@ class PrintShippingLabelViewModel @Inject constructor(
 
     fun onPreviewLabelCompleted() {
         viewState = viewState.copy(tempFile = null, previewShippingLabel = null)
-        labels.first()?.let {
-            if (it.hasCommercialInvoice) {
-                triggerEvent(ViewPrintCustomsForm(it.commercialInvoiceUrl!!, arguments.isReprint))
-            }
-        }
+        labels.filter { it?.hasCommercialInvoice == true }
+            .map { it!!.commercialInvoiceUrl!! }
+            .takeIf { it.isNotEmpty() }
+            ?.let { triggerEvent(ViewPrintCustomsForm(it, arguments.isReprint)) }
     }
 
     private suspend fun handlePreviewError() {

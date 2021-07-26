@@ -122,13 +122,13 @@ class OrderNavigator @Inject constructor() {
                 val action = if (target.isReprint) {
                     OrderDetailFragmentDirections
                         .actionOrderDetailFragmentToPrintShippingLabelCustomsFormFragment(
-                            url = target.invoiceUrl,
+                            invoices = target.invoices.toTypedArray(),
                             isReprint = target.isReprint
                         )
                 } else {
                     PrintShippingLabelFragmentDirections
                         .actionPrintShippingLabelFragmentToPrintShippingLabelCustomsFormFragment(
-                            url = target.invoiceUrl,
+                            invoices = target.invoices.toTypedArray(),
                             isReprint = target.isReprint
                         )
                 }
