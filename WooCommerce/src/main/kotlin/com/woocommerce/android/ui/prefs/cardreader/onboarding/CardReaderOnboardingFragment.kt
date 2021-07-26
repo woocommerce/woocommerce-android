@@ -85,11 +85,11 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setImageOrHide(binding.unsupportedCountryIllustration, state.illustration)
         UiHelpers.setTextOrHide(binding.unsupportedCountryHint, state.hintLabel)
         UiHelpers.setTextOrHide(binding.unsupportedCountryHelp, state.contactSupportLabel)
-        UiHelpers.setTextOrHide(binding.unsupportedCountryLearnMore, state.learnMoreLabel)
+        UiHelpers.setTextOrHide(binding.unsupportedCountryLearnMoreContainer.learnMore, state.learnMoreLabel)
         binding.unsupportedCountryHelp.setOnClickListener {
             state.onContactSupportActionClicked?.invoke()
         }
-        binding.unsupportedCountryLearnMore.setOnClickListener {
+        binding.unsupportedCountryLearnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked?.invoke()
         }
     }

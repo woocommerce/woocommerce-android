@@ -41,19 +41,20 @@
         android:id="@+id/unsupported_country_help"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/unsupported_country_learn_more"
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_learn_more_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/unsupported_country_hint" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/unsupported_country_learn_more"
-        android:layout_width="0dp"
+    <include
+        android:id="@+id/unsupported_country_learn_more_container"
+        layout="@layout/card_reader_learn_more_section"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
