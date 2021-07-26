@@ -808,11 +808,6 @@
     <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed</string>
 
     <!--
-     Card Reader eligibility
-    -->
-
-
-    <!--
         Card Reader Software update
     -->
     <string name="card_reader_software_update_update" translatable="false">@string/update</string>
