@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.io.File
 import javax.inject.Inject
@@ -29,24 +30,17 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
     private var printJob: Job? = null
     private val navArgs: PrintShippingLabelCustomsFormFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState(commercialInvoices = navArgs.invoices.toList()))
     private var viewState by viewStateData
 
     lateinit var storageDirectory: File
 
+    fun onInvoicePrintButtonClicked(invoiceUrl: String) {
+        downloadAndPrintInvoice(invoiceUrl)
+    }
+
     fun onPrintButtonClicked() {
-        printJob?.cancel()
-        printJob = launch {
-            viewState = viewState.copy(isProgressDialogShown = true)
-            val file = downloadInvoice()
-            viewState = viewState.copy(isProgressDialogShown = false)
-            if (!isActive) return@launch
-            if (file == null) {
-                triggerEvent(ShowSnackbar(R.string.shipping_label_print_customs_form_download_failed))
-                return@launch
-            }
-            triggerEvent(PrintCustomsForm(file))
-        }
+        downloadAndPrintInvoice(viewState.commercialInvoices.first())
     }
 
     fun onSaveForLaterClicked() {
@@ -65,13 +59,28 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
         printJob?.cancel()
     }
 
-    private suspend fun downloadInvoice(): File? {
+    private fun downloadAndPrintInvoice(invoiceUrl: String) {
+        printJob?.cancel()
+        printJob = launch {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            val file = downloadInvoice(invoiceUrl)
+            viewState = viewState.copy(isProgressDialogShown = false)
+            if (!isActive) return@launch
+            if (file == null) {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_print_customs_form_download_failed))
+                return@launch
+            }
+            triggerEvent(PrintCustomsForm(file))
+        }
+    }
+
+    private suspend fun downloadInvoice(invoiceUrl: String): File? {
         val file = fileUtils.createTempTimeStampedFile(
             storageDir = storageDirectory,
             prefix = "PDF",
             fileExtension = "pdf"
         ) ?: return null
-        return if (fileDownloader.downloadFile(navArgs.invoices.first(), file)) {
+        return if (fileDownloader.downloadFile(invoiceUrl, file)) {
             file
         } else {
             null
@@ -80,8 +89,13 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        val commercialInvoices: List<String>,
         val isProgressDialogShown: Boolean = false
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val hasMultipleInvoices
+            get() = commercialInvoices.size > 1
+    }
 
     data class PrintCustomsForm(val file: File) : MultiLiveEvent.Event()
 }
