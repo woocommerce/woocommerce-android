@@ -52,11 +52,24 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
 
         _binding = FragmentPrintShippingLabelBinding.bind(view)
 
+        initUi()
+        setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun initUi() {
         binding.reprintGroup.isVisible = navArgs.isReprint
         binding.purchaseGroup.isVisible = !navArgs.isReprint
 
-        setupObservers(viewModel)
-        setupResultHandlers(viewModel)
+        binding.labelPurchased.setText(
+            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_purchase_success
+            else R.string.shipping_label_print_purchase_success
+        )
+
+        binding.shippingLabelPrintBtn.setText(
+            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_button
+            else R.string.shipping_label_print_button
+        )
 
         binding.shippingLabelPrintPaperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }
         binding.shippingLabelPrintBtn.setOnClickListener { viewModel.onPrintShippingLabelClicked() }
