@@ -797,6 +797,14 @@
     <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed</string>
 
     <!--
+     Card Reader eligibility
+    -->
+    <string name="card_reader_eligibility_country_not_supported_header">We don\'t support In-Person Payments in %1$s</string>
+    <string name="card_reader_eligibility_country_not_supported_hint">You can still accept In-Person Cash Payments by enabling the \"cash on delivery\" payment method on your store</string>
+    <string name="card_reader_eligibility_country_not_supported_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
+    <string name="card_reader_eligibility_country_not_supported_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+
+    <!--
         Card Reader Software update
     -->
     <string name="card_reader_software_update_update" translatable="false">@string/update</string>
@@ -1153,6 +1161,7 @@
     <string name="settings_selected_store">Selected store</string>
     <string name="settings_store">Store settings</string>
     <string name="settings_card_reader">Manage card reader</string>
+    <string name="settings_card_reader_eligibility">Card reader eligibility</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
