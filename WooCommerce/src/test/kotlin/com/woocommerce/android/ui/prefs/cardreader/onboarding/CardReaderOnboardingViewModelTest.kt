@@ -82,7 +82,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport::class.java)
         }
 
-
     @Test
     fun `when wcpay not installed, then wcpay not installed state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
