@@ -116,6 +116,13 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
+            app:destination="@id/productAddonsFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -648,6 +655,10 @@
         </action>
         <deepLink app:uri="wcandroid://variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
     </fragment>
+    <fragment
+        android:id="@+id/productAddonsFragment"
+        android:name="com.woocommerce.android.ui.products.addons.ProductAddonsFragment"
+        android:label="ProductAddonsFragment"/>
     <fragment
         android:id="@+id/productDownloadDetailsFragment"
         android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment"
