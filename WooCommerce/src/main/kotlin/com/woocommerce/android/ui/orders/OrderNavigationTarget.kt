@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 

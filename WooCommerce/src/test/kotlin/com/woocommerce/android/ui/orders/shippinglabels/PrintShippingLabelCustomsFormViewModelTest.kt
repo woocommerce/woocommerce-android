@@ -36,7 +36,8 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
 
     fun initViewModel() {
         viewModel = PrintShippingLabelCustomsFormViewModel(
-            savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(urls.toTypedArray(), true).initSavedStateHandle(),
+            savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(urls.toTypedArray(), true)
+                .initSavedStateHandle(),
             fileDownloader = fileDownloader,
             fileUtils = fileUtils
         )

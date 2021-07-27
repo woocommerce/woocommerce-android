@@ -36,8 +36,7 @@ class PrintShippingLabelCustomsFormFragment :
     BaseFragment(R.layout.fragment_print_label_customs_form), BackPressListener {
     private val viewModel: PrintShippingLabelCustomsFormViewModel by viewModels()
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
     private val navArgs: PrintShippingLabelCustomsFormFragmentArgs by navArgs()
