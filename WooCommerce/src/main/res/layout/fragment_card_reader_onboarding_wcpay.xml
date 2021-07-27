@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/major_200"
     android:background="@color/color_surface"
     android:paddingHorizontal="@dimen/major_200">
 
@@ -23,12 +22,12 @@
         android:id="@+id/illustration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@null"
+        android:importantForAccessibility="no"
         android:paddingVertical="@dimen/major_300"
+        app:layout_constraintBottom_toTopOf="@+id/textLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textHeader"
-        app:layout_constraintBottom_toTopOf="@+id/textLabel"
         app:srcCompat="@drawable/img_woo_payments" />
 
     <com.google.android.material.textview.MaterialTextView
