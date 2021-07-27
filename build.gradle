@@ -13,9 +13,6 @@ buildscript {
         }
     }
     dependencies {
-        // Use updated version of r8 to fix this issue https://issuetracker.google.com/issues/178045782
-        // We should remove this after updating AGP
-        classpath 'com.android.tools:r8:2.2.64'
         classpath 'com.android.tools.build:gradle:4.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.automattic.android:fetchstyle:1.1'
