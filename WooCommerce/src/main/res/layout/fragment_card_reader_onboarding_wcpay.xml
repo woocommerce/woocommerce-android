@@ -28,6 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textHeader"
+        app:layout_constraintBottom_toTopOf="@+id/textLabel"
         app:srcCompat="@drawable/img_woo_payments" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -38,7 +39,8 @@
         android:gravity="center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/illustration"
+        app:layout_constraintBottom_toTopOf="@+id/refreshButton"
+        android:layout_marginBottom="@dimen/major_300"
         tools:text="@string/card_reader_onboarding_wcpay_not_installed_hint" />
 
     <com.google.android.material.button.MaterialButton
