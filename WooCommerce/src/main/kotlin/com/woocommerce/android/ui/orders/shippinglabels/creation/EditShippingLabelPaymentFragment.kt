@@ -139,9 +139,11 @@ class EditShippingLabelPaymentFragment :
                 it.isEmpty().let { isListEmpty ->
                     binding.paymentMethodsSectionTitle.isVisible = !isListEmpty
                     binding.paymentMethodsList.isVisible = !isListEmpty
-                    binding.addPaymentMethodButton.isVisible = !isListEmpty
                     binding.addFirstPaymentMethodButton.isVisible = isListEmpty
                 }
+            }
+            new.canShowAddPaymentButton.takeIfNotEqualTo(old?.canShowAddPaymentButton) {
+                binding.addPaymentMethodButton.isVisible = it
             }
             new.canEditSettings.takeIfNotEqualTo(old?.canEditSettings) { canEditSettings ->
                 binding.emailReceiptsCheckbox.isEnabled = canEditSettings
