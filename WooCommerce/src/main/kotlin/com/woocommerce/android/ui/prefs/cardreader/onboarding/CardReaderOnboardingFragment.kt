@@ -75,9 +75,12 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotActivatedState ->
                 showWCPayNotActivatedState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotInstalledState -> TODO()
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotSetupState -> TODO()
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayUnsupportedVersionState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotInstalledState ->
+                showWCPayNotInstalledState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotSetupState ->
+                showWCPayNotSetupState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayUnsupportedVersionState ->
+                showWCPayUnsupportedVersionState(layout, state)
         }.exhaustive
     }
 
@@ -99,8 +102,67 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
         UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        UiHelpers.setTextOrHide(binding.cardReaderDetailLearnMoreTv.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.refreshButton.setOnClickListener {
             state.refreshButtonAction.invoke()
+        }
+        binding.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
+        }
+    }
+
+    private fun showWCPayNotInstalledState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotInstalledState
+    ) {
+        val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
+        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        UiHelpers.setTextOrHide(binding.cardReaderDetailLearnMoreTv.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
+        binding.refreshButton.setOnClickListener {
+            state.refreshButtonAction.invoke()
+        }
+        binding.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
+        }
+    }
+
+    private fun showWCPayUnsupportedVersionState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayUnsupportedVersionState
+    ) {
+        val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
+        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        UiHelpers.setTextOrHide(binding.cardReaderDetailLearnMoreTv.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
+        binding.refreshButton.setOnClickListener {
+            state.refreshButtonAction.invoke()
+        }
+        binding.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
+        }
+    }
+
+    private fun showWCPayNotSetupState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotSetupState
+    ) {
+        val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
+        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        UiHelpers.setTextOrHide(binding.cardReaderDetailLearnMoreTv.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
+        binding.refreshButton.setOnClickListener {
+            state.refreshButtonAction.invoke()
+        }
+        binding.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
         }
     }
 
