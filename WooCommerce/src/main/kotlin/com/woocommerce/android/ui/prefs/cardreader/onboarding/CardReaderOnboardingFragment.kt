@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedCountryBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
@@ -71,7 +72,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountRejectedState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountUnderReviewState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayInTestModeWithLiveAccountState -> TODO()
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotActivatedState -> TODO()
+
+            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotActivatedState ->
+                showWCPayNotActivatedState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotInstalledState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotSetupState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayUnsupportedVersionState -> TODO()
@@ -83,6 +86,22 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         state: CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
     ) {
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
+        binding.cancelButton.setOnClickListener {
+            viewModel.onCancelClicked()
+        }
+    }
+
+    private fun showWCPayNotActivatedState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotActivatedState
+    ) {
+        val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
+        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        binding.refreshButton.setOnClickListener {
+            state.refreshButtonAction.invoke()
+        }
     }
 
     private fun showCountryNotSupportedState(

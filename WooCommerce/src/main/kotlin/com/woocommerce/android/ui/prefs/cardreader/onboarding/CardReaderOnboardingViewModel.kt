@@ -70,7 +70,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
     }
 
-    private fun onCancelClicked() {
+    fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Onboarding flow interrupted by the user.")
         exitFlow()
     }
@@ -142,9 +142,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
         }
 
-        // TODO cardreader Update layout resource
         data class WCPayNotInstalledState(val refreshButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
+            OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
             val headerLabel: UiString =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header)
             val hintLabel: UiString =
@@ -159,7 +158,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         // TODO cardreader Update layout resource
         data class WCPayNotActivatedState(val refreshButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
+            OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
             val headerLabel: UiString =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_header)
             val hintLabel: UiString =
@@ -174,7 +173,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         // TODO cardreader Update layout resource
         data class WCPayNotSetupState(val refreshButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
+            OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
             val headerLabel: UiString =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_header)
             val hintLabel: UiString =
@@ -189,7 +188,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         // TODO cardreader Update layout resource
         data class WCPayUnsupportedVersionState(val refreshButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
+            OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
             val headerLabel: UiString =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_header)
             val hintLabel: UiString =
@@ -204,7 +203,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         // TODO cardreader Update layout resource
         object WCPayAccountUnderReviewState :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
+            OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
             val headerLabel: UiString =
                 UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header)
             val hintLabel: UiString =
