@@ -1,22 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-07 13:54:04+0000
+Translation-Revision-Date: 2021-07-23 13:14:18+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="variation_created_title">סוג נוצר</string>
+    <string name="variation_list_generate_new_variation">ליצור סוג חדש</string>
+    <string name="product_wip_message_variations">כעת אפשר ליצור ולנהל סוגי מוצרים!</string>
+    <string name="product_attributes_created_generate_action_text">יצירת סוג</string>
+    <string name="product_attributes_created_description">לאחר הוספת המאפיינים, באפשרותך ליצור את הסוג הראשון שלך!</string>
+    <string name="product_attributes_created_title">המאפיינים נוספו</string>
+    <string name="card_reader_software_update_progress_cancel_warning">לא מומלץ לבטל עדכון תוכנה בזמן פעולתו</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">אנו מתנצלים, לא ניתן היה לעבד תשלום זה</string>
+    <string name="card_reader_payment_failed_server_error_state">אין חיבור לשרת</string>
+    <string name="card_reader_payment_failed_no_network_state">אין חיבור אינטרנט</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">משלוח באריזה מקורית</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">הוספת אריזה חדשה</string>
+    <string name="shipping_label_move_item_dialog_description">פריט זה נמצא כעת ב-%s. לאן ברצונך להעביר אותו?</string>
+    <string name="shipping_label_move_item_dialog_cancel">לבטל</string>
+    <string name="shipping_label_move_item_dialog_move">להעביר</string>
+    <string name="shipping_label_move_item_dialog_title">העבר פריט</string>
+    <string name="shipping_label_create_custom_package_success_message">\"⁦%1$s⁩\" נשמר</string>
+    <string name="shipping_label_create_custom_package_generic_failure">יצירת האריזה נכשלה. יש לנסות שוב.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">יצירת האריזה נכשלה: בעיית API לא מוכרת</string>
+    <string name="shipping_label_create_custom_package_api_failure">יצירת האריזה נכשלה: ⁦%1$s⁩</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">רק רגע…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">יצירת אריזה חדשה</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">ערך לא חוקי.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">חובה להזין שדה זה.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">משקל האריזה הריקה</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">משקל האריזה הריקה (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_height">גובה (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_width">רוחב (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_length">אורך (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_name">שם האריזה</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">מעטפה</string>
+    <string name="shipping_label_create_custom_package_field_type_box">קופסה</string>
+    <string name="shipping_label_create_custom_package_field_type_info">בחירת סוג אריזה</string>
+    <string name="shipping_label_create_custom_package_field_type">סוג אריזה</string>
+    <string name="shipping_label_create_custom_package_field_info">הגדר את האריזה שבה תשתמש כדי לשלוח את המוצרים שלך. אנחנו נשמור אותה להזמנות עתידיות.</string>
+    <string name="shipping_label_create_package_title">הוספת אריזה חדשה.</string>
+    <string name="shipping_label_create_new_package_button">יצירת אריזה חדשה</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">ממדי האריזה חייבים להיות גדולים מאפס כדי להמשיך עדכן את ממדי הפריט שלך בחלק ה\'משלוח\' של דף המוצר.</string>
+    <string name="shipping_label_package_details_individual_package_title">אריזה מקורית</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">ממדי הפריט</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">פריט הנשלח באופן נפרד</string>
+    <string name="order_status_updated">מצב ההזמנה עודכן</string>
+    <string name="receipt_preview_send_menu_item">שלח</string>
+    <string name="receipt_preview_print_menu_item">להדפיס</string>
+    <string name="orderdetail_see_receipt_button">להצגת הקבלה</string>
+    <string name="cancel_anyway">בטל בכל זאת</string>
     <string name="card_reader_detail_connected_update_failed">העדכון של תוכנת הקורא נכשל</string>
     <string name="card_reader_detail_connected_update_check_failed">הבדיקה של עדכון גרסת התוכנה נכשלה</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;למידע נוסף&lt;/a&gt; על קבלת תשלומים באמצעות המכשיר נייד והזמנת קוראי כרטיסים</string>
     <string name="card_reader_connect_open_bluetooth_settings">יש להפעיל את חיבור ה-Bluetooth</string>
-    <string name="card_reader_connect_scanning_failed_header">לא נמצא Reader</string>
+    <string name="card_reader_connect_scanning_failed_header">לא מחובר קורא</string>
     <string name="card_reader_connect_failed_header">לא הצלחנו להתחבר לקורא</string>
     <string name="card_reader_connect_connect_button">להתחבר</string>
     <string name="card_reader_connect_multiple_readers_found_header">נמצאו כמה קוראים</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">ההזמנה כבר שולמה</string>
     <string name="card_reader_payment_receipt_email_content">תודה שרכשת אצלנו! ניתן ללחוץ על הקישור שלמטה כדי לקבל את התשלום.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">התשלום נכשל</string>
     <string name="card_reader_payment_failed_card_declined_state">הכרטיס נדחה</string>
     <string name="shipping_label_print_customs_form_download_failed">שגיאה בהורדת טופס המכס</string>
     <string name="shipping_label_print_customs_form_screen_title">הדפסת חשבונית מכס</string>
@@ -257,7 +302,6 @@ Language: he_IL
     <string name="shipping_label_address_suggestion_use_selected_address">להשתמש בכתובת שנבחרה</string>
     <string name="shipping_label_edit_address_loading_progress_title">טוען את הנתונים של הכתובת</string>
     <string name="product_wip_title_m5">אפשרויות חדשות זמינות!</string>
-    <string name="product_wip_message_m5">כעת אפשר להוסיף קבצים שניתנים להורדה למוצר ולקשר מוצרים של שדרוגי מכירות ושל מכירות משלימות. אין לך עוד צורך במוצר מסוים? אפשר להעביר אותו לפח!</string>
     <string name="shipping_label_validation_view_map">לפתוח את המפה</string>
     <string name="shipping_label_validation_contact_customer">ליצור קשר עם הלקוח</string>
     <string name="shipping_label_validation_error_template">האימות נכשל: %s</string>
@@ -341,7 +385,6 @@ Language: he_IL
     <string name="product_downloadable_files_add">להוסיף קובץ</string>
     <string name="product_downloadable_files_value_single">קובץ אחד</string>
     <string name="product_downloadable_files_value_multiple">⁦%1$d⁩ קבצים</string>
-    <string name="product_wip_message_m4">מעכשיו אפשר ליצור מוצרים פשוטים, מקושרים ומקובצים חדשים מכל מקום, דרך האפליקציה של WooCommerce. לא מתאים לך כרגע? אפשר לשמור אותם כטיוטה!</string>
     <string name="print_shipping_label_info_step_4">ייתכן שיהיה עליך &lt;b&gt;להגדיר את ההדפסת מה-WiFi ישירות מהמדפסת עצמה.&lt;/b&gt; יש לוודא שהקושחה של המדפסת מעודכנת ולבדוק את ההוראות בתיעוד של המדפסת.</string>
     <string name="print_shipping_label_info_step_3">אפשר לבחור את &lt;b&gt;שירות ההדפסה בברירת מחדל&lt;/b&gt; של המכשיר או להתקין את &lt;b&gt;אפליקציית המותג של המדפסת&lt;/b&gt; (היא אמורה להופיע כאפשרות מומלצת)</string>
     <string name="print_shipping_label_info_step_1">יש לוודא שהמדפסת והמכשיר מחוברים אל &lt;b&gt;אותן רשתות WiFi‏ &lt;/b&gt;</string>
@@ -1153,7 +1196,6 @@ Language: he_IL
     <string name="site_picker_title">בחירת חנות</string>
     <string name="settings_signout">התנתקות</string>
     <string name="orderstatus_select_status">שינוי מצב ההזמנה</string>
-    <string name="order_status_changed_to">מצב ההזמנה שונה ל-%s</string>
     <string name="orderdetail_change_order_status">ללחוץ לשנוי מצב ההזמנה</string>
     <string name="apply">החלה</string>
     <string name="app_rating_rate_never">לא תודה</string>
@@ -1475,5 +1517,9 @@ Language: he_IL
     <string-array name="order_list_tabs">
         <item>בטיפול</item>
         <item>כל ההזמנות</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>חבילות מותאמות אישית</item>
+        <item>חבילת שירות</item>
     </string-array>
 </resources>

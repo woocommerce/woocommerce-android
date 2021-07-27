@@ -22,25 +22,12 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
             binding.labelTextView.setText(args.getInt(ARG_LABEL_ID))
             binding.detailTextView.setText(args.getInt(ARG_DETAIL_ID))
 
-            val isLandscape = DisplayUtils.isLandscape(context)
-            val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
-
-            // hide images in landscape unless this device is a tablet
-            if (isLandscape && !isTablet) {
+            // hide images in landscape
+            if (DisplayUtils.isLandscape(context)) {
                 binding.imageView.hide()
             } else {
                 binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             }
-
-            // adjust the view sizes based on orientation
-            val ratio = if (isLandscape) {
-                (DisplayUtils.getDisplayPixelWidth() * RATIO_LANDSCAPE).toInt()
-            } else {
-                (DisplayUtils.getDisplayPixelWidth() * RATIO_PORTRAIT).toInt()
-            }
-            binding.labelTextView.layoutParams.width = ratio
-            binding.detailTextView.layoutParams.width = ratio
-            binding.imageView.layoutParams.width = ratio
         }
     }
 
@@ -48,9 +35,6 @@ class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_
         private const val ARG_DRAWABLE_ID = "drawable_id"
         private const val ARG_LABEL_ID = "label_id"
         private const val ARG_DETAIL_ID = "detail_id"
-
-        private const val RATIO_PORTRAIT = 0.6f
-        private const val RATIO_LANDSCAPE = 0.3f
 
         fun newInstance(
             @DrawableRes drawableId: Int,

@@ -10,13 +10,11 @@ Language: ar
     <string name="card_reader_detail_connected_update_check_failed">فشل التحقُّق من تحديث إصدار البرنامج</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام الهاتف المحمول وطلب قارئ البطاقات</string>
     <string name="card_reader_connect_open_bluetooth_settings">تشغيل البلوتوث</string>
-    <string name="card_reader_connect_scanning_failed_header">لم يتم العثور على أي قارئ</string>
     <string name="card_reader_connect_failed_header">تعذر علينا الربط بقارئك</string>
     <string name="card_reader_connect_connect_button">اتصال</string>
     <string name="card_reader_connect_multiple_readers_found_header">تم العثور على عدة قراء</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">تم دفع الطلب بالفعل</string>
     <string name="card_reader_payment_receipt_email_content">شكراً لك على شرائك! انقر على الرابط الوارد أدناه للحصول على إيصال عملية الدفع الخاصة بك.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">لم تنجح عملية الدفع</string>
     <string name="card_reader_payment_failed_card_declined_state">تم رفض البطاقة</string>
     <string name="shipping_label_print_customs_form_download_failed">حدث خطأ في أثناء تنزيل نموذج الجمارك</string>
     <string name="shipping_label_print_customs_form_screen_title">طباعة فاتورة الجمارك</string>
@@ -257,7 +255,6 @@ Language: ar
     <string name="shipping_label_address_suggestion_use_selected_address">استخدام العنوان المحدَّد</string>
     <string name="shipping_label_edit_address_loading_progress_title">تحميل بيانات العنوان</string>
     <string name="product_wip_title_m5">تتوافر ميزات جديدة!</string>
-    <string name="product_wip_message_m5">يمكنك الآن إضافة ملفات قابلة للتنزيل إلى المنتج والربط بين المنتجات الموصى بها والمنتجات التسويقية. ألم تعد تريد منتجًا ما؟ انقله إلى سلة المهملات!</string>
     <string name="shipping_label_validation_view_map">فتح الخريطة</string>
     <string name="shipping_label_validation_contact_customer">الاتصال بالعميل</string>
     <string name="shipping_label_validation_error_template">فشل التحقُّق: %s</string>
@@ -341,7 +338,6 @@ Language: ar
     <string name="product_downloadable_files_add">إضافة ملف</string>
     <string name="product_downloadable_files_value_single">1 ملف</string>
     <string name="product_downloadable_files_value_multiple">⁦%1$d⁩ ملفات</string>
-    <string name="product_wip_message_m4">أصبح من الممكن الآن إنشاء منتجات جديدة بسيطة مرتبطة ومجمَّعة في أثناء التنقل من تطبيق Woo. أليست جاهزة حتى الآن؟ احفظها كمسودة!</string>
     <string name="print_shipping_label_info_step_4">قد تضطر إلى &lt;b&gt;تكوين طباعة WiFi مباشرة على الطابعة نفسها.&lt;/b&gt; تأكُّد من تحديث البرنامج الثابت للطابعة، والاطِّلاع على وثائق الطابعة لديك للحصول على الإرشادات.</string>
     <string name="print_shipping_label_info_step_3">يمكنك تحديد &lt;b&gt;خدمة الطباعة الافتراضية&lt;/b&gt; الخاصة بجهازك أو تثبيت &lt;b&gt;تطبيق العلامة التجارية للطابعة&lt;/b&gt; (ينبغي أن يظهر هذا كخيار موصى به)</string>
     <string name="print_shipping_label_info_step_1">تأكَّد من اتصال طابعتك وجهازك بـ &lt;b&gt;شبكات WiFi نفسها&lt;/b&gt;</string>
@@ -679,7 +675,6 @@ Language: ar
     <string name="order_refunds_select_quantity">تحديد الكمية</string>
     <string name="order_refunds_shipping_refund">استرداد أموال الشحن</string>
     <string name="order_refunds_products_refund">استرداد أموال المنتجات</string>
-    <string name="order_refunds_item_description">%s x %s لكل منتج</string>
     <string name="order_refunds_items_selected">%d من العناصر المُحدَّدة</string>
     <string name="order_refunds_items_select_none">عدم اختيار أي شيء</string>
     <string name="order_refunds_items_select_all">اختيار الكل</string>
@@ -1153,7 +1148,6 @@ Language: ar
     <string name="site_picker_title">اختيار متجر</string>
     <string name="settings_signout">تسجيل الخروج</string>
     <string name="orderstatus_select_status">تغير حالة الطلب</string>
-    <string name="order_status_changed_to">تم تغيير حالة الطلب إلى %s</string>
     <string name="orderdetail_change_order_status">انقر لتغيير حالة الطلب</string>
     <string name="apply">تطبيق</string>
     <string name="app_rating_rate_never">لا شكرًا</string>
