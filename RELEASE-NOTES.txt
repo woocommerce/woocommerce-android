@@ -6,7 +6,7 @@
 
 7.2
 -----
-
+- [*] Fixed a bug that caused empty products screen when sales of a product exceeded its limit [https://github.com/woocommerce/woocommerce-android/pull/4419]
 
 7.1
 -----
