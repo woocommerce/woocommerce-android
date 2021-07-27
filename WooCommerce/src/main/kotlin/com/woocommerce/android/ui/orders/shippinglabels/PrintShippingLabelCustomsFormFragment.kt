@@ -64,7 +64,7 @@ class PrintShippingLabelCustomsFormFragment :
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 showProgressDialog(it)
             }
-            new.hasMultipleInvoices.takeIfNotEqualTo(old?.hasMultipleInvoices) {
+            new.showInvoicesAsAList.takeIfNotEqualTo(old?.showInvoicesAsAList) {
                 binding.invoicesList.isVisible = it
                 binding.printButton.isVisible = !it
             }

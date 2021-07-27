@@ -93,7 +93,7 @@ class PrintShippingLabelCustomsFormViewModel @Inject constructor(
         val isProgressDialogShown: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
-        val hasMultipleInvoices
+        val showInvoicesAsAList
             get() = commercialInvoices.size > 1
     }
 
