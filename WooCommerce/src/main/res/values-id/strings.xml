@@ -1,26 +1,179 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-28 15:54:03+0000
+Translation-Revision-Date: 2021-07-23 13:07:45+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="variation_created_title">Variasi Dibuat</string>
+    <string name="variation_list_generate_new_variation">Buat variasi baru</string>
+    <string name="product_wip_message_variations">Sekarang Anda dapat membuat dan mengelola variasi produk.</string>
+    <string name="product_attributes_created_generate_action_text">Buat Variasi</string>
+    <string name="product_attributes_created_description">Karena atribut sudah ditambahkan, Anda sekarang bisa membuat variasi pertama Anda!</string>
+    <string name="product_attributes_created_title">Atribut dibuat</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Membatalkan pembaruan perangkat lunak yang sedang berlangsung tidak dianjurkan</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Maaf, pembayaran ini tidak dapat diproses</string>
+    <string name="card_reader_payment_failed_server_error_state">Tidak ada koneksi ke server</string>
+    <string name="card_reader_payment_failed_no_network_state">Tidak ada koneksi internet</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Kirim menggunakan kemasan asli</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Tambah ke paket baru</string>
+    <string name="shipping_label_move_item_dialog_description">Item ini saat ini berada di %s. Ke mana Anda ingin memindahkannya?</string>
+    <string name="shipping_label_move_item_dialog_cancel">Batal</string>
+    <string name="shipping_label_move_item_dialog_move">Pindahkan</string>
+    <string name="shipping_label_move_item_dialog_title">Pindah item</string>
+    <string name="shipping_label_create_custom_package_success_message">\"%1$s\" tersimpan</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Gagal membuat paket. Harap coba lagi.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Gagal membuat paket: ada masalah API yang tidak diketahui.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Gagal membuat paket: %1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Harap tunggu…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Membuat paket baru</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Nilai tidak valid.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Kolom ini harus diisi.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Berat paket kosong</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Berat paket kosong (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Tinggi (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Lebar (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Panjang (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Nama paket</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Amplop</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Kotak</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Pilih jenis paket</string>
+    <string name="shipping_label_create_custom_package_field_type">Jenis paket</string>
+    <string name="shipping_label_create_custom_package_field_info">Siapkan paket yang akan digunakan untuk mengirim produk Anda. Kami akan menyimpannya untuk pesanan selanjutnya.</string>
+    <string name="shipping_label_create_package_title">Tambah paket baru</string>
+    <string name="shipping_label_create_new_package_button">Buat paket baru</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Dimensi paket harus lebih besar dari nol. Untuk melanjutkan, silakan perbarui dimensi item di bagian Pengiriman halaman produk Anda.</string>
+    <string name="shipping_label_package_details_individual_package_title">Kemasan asli</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Dimensi Item</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Item yang Dikirim Terpisah</string>
+    <string name="order_status_updated">Status pesanan diperbarui</string>
+    <string name="receipt_preview_send_menu_item">Kirim</string>
+    <string name="receipt_preview_print_menu_item">Cetak</string>
+    <string name="orderdetail_see_receipt_button">Lihat tanda terima</string>
+    <string name="cancel_anyway">Batalkan saja</string>
+    <string name="card_reader_detail_connected_update_failed">Pembaruan perangkat lunak pembaca gagal</string>
+    <string name="card_reader_detail_connected_update_check_failed">Pemeriksaan pembaruan versi perangkat lunak gagal</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Pelajari lebih lanjut&lt;/a&gt; tentang menerima pembayaran dengan perangkat seluler dan memesan pembaca kartu</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Aktifkan Bluetooth</string>
+    <string name="card_reader_connect_scanning_failed_header">Tidak ada pembaca yang terhubung</string>
+    <string name="card_reader_connect_failed_header">Tidak dapat menyambungkan pembaca</string>
+    <string name="card_reader_connect_connect_button">Hubungkan</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Ditemukan beberapa pembaca</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">Pesanan sudah dibayar</string>
+    <string name="card_reader_payment_receipt_email_content">Terima kasih atas pembelian Anda! Klik tautan di bawah untuk melihat tanda terima pembayaran Anda.\n\n%s</string>
+    <string name="card_reader_payment_failed_card_declined_state">Kartu ditolak</string>
+    <string name="shipping_label_print_customs_form_download_failed">Terjadi error saat mengunduh formulir bea cukai</string>
+    <string name="shipping_label_print_customs_form_screen_title">Cetak faktur bea cukai</string>
+    <string name="shipping_label_print_customs_form">Cetak formulir bea cukai</string>
+    <string name="shipping_label_print_customs_explanation">Formulir bea cukai harus dicetak dan disertakan pada pengiriman internasional ini</string>
+    <string name="shipping_label_customs_form">Formulir bea cukai</string>
+    <string name="shipping_label_payment_method_added">Metode pembayaran ditambahkan</string>
+    <string name="shipping_label_payments_add_first_credit_card">Tambahkan kartu kredit</string>
+    <string name="shipping_label_destination_address_phone_invalid">Masukkan nomor telepon yang valid</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Cetak formulir bea cukai</string>
+    <string name="empty_order_list_message">Cari tahu bagaimana Anda dapat meningkatkan penjualan toko Anda.</string>
+    <string name="empty_product_message">Mulai berjualan hari ini dengan menambahkan produk pertama ke toko Anda.</string>
+    <string name="empty_product_add_product_button">Tambahkan produk</string>
+    <string name="variable_product_attributes">Atribut variasi</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Aktifkan bluetooth perangkat seluler</string>
+    <string name="card_reader_refetching_order_failed">Terjadi error saat mengambil pesanan. Status pesanan pada aplikasi mungkin telah usang.</string>
+    <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi klien email Anda</string>
+    <string name="card_reader_payment_receipt_email_subject">Tanda terima Anda dari %s</string>
+    <string name="card_reader_payment_description">Pembayaran online untuk pesanan %s untuk %s</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Menyegarkan pesanan</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Memperbarui status aplikasi</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Pelanggan Anda memilih %1$s</string>
+    <string name="shipping_label_origin_address_phone_invalid">Formulir bea cukai wajib menyertakan nomor telepon 10 digit</string>
+    <string name="shipping_label_address_phone_required">Nomor telepon diwajibkan karena pengiriman ini memerlukan formulir bea-cukai</string>
+    <string name="shipping_label_create_customs_done">Formulir bea-cukai diisi</string>
+    <string name="print_receipt_label_info_step_7">Jika mengalami masalah pencetakan dari perangkat Anda, hubungi dukungan pelanggan untuk mesin cetak Anda.</string>
+    <string name="print_receipt_label_info_step_6">Jika pencetakan tidak tersedia, Anda bisa selalu menyimpan tanda terima ke dalam format PDF dan mengirimkannya melalui email untuk mencetaknya dari perangkat lain.</string>
+    <string name="print_receipt_label_info_step_5">Setel ukuran kertas sesuai kebutuhan, lalu pilih \"Cetak\" jika sudah siap untuk mencetak tanda terima. </string>
+    <string name="print_receipt_label_info_step_4">Sandingkan dan hubungkan mesin cetak ke ponsel jika ditanya.</string>
+    <string name="print_receipt_label_info_step_3">Ketika memilih \"Cetak tanda terima\" setelah menerima pembayaran, ganti \"Simpan sebagai PDF\" dengan \"Semua mesin cetak\", dan cari mesin cetak baru.</string>
+    <string name="print_receipt_label_info_step_2">Aktifkan koneksi bluetooth atau Wifi pada mesin cetak Anda. </string>
+    <string name="print_receipt_label_info_step_1">Pastikan Plugin Layanan Cetak untuk mesin cetak Anda sudah terinstal.</string>
+    <string name="orderdetail_printing_instructions_button">Pelajari selengkapnya mengenai mencetak tanda terima dengan perangkat Anda</string>
+    <string name="product_create_attribute_helper">Untuk membuat variasi, Anda perlu mengatur atributnya (yaitu \"Warna\", \"Ukuran\") terlebih dahulu</string>
+    <string name="product_variation_single_count">1 variasi</string>
+    <string name="product_variation_multiple_count">%1$s variasi</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">%s pelacakan</string>
+    <string name="card_reader_software_update_in_progress_title">Memperbarui perangkat lunak pembaca Anda</string>
+    <string name="card_reader_software_update_title">Pembaruan perangkat lunak</string>
+    <string name="card_reader_software_update_description">Perangkat lunak pembaca kartu Anda perlu diperbarui agar dapat berfungsi normal. Apakah Anda ingin memperbaruinya sekarang?</string>
+    <string name="card_reader_detail_connected_update_success">Perangkat lunak pembaca diperbarui</string>
+    <string name="card_reader_detail_connected_reader_unknown">NAMA PEMBACA KARTU TIDAK DIKENALI</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Putus sambungan pembaca</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Harap perbarui perangkat lunak pembaca Anda untuk dapat terus menerima pembayaran</string>
+    <string name="card_reader_detail_connected_update_software">Perbarui perangkat lunak pembaca</string>
+    <string name="card_reader_detail_connected_battery_percentage">%s%% baterai</string>
+    <string name="card_reader_detail_connected_header">PEMBACA KARTU TERHUBUNG</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Hubungkan pembaca kartu</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Aktifkan pembaca kartu dan pasang di sebelah perangkat seluler</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Pastikan pembaca kartu telah terisi daya</string>
+    <string name="card_reader_detail_not_connected_header">Hubungkan pembaca kartu Anda</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Kartu ditolak</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Menyambungkan ke pembaca</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Bersiap untuk menerima pembayaran</string>
+    <string name="shipping_label_customs_value_zero_error">Nilai yang ditentukan harus lebih besar dari nol</string>
+    <string name="shipping_label_customs_weight_zero_error">Berat harus lebih besar dari nol</string>
+    <string name="shipping_label_customs_required_field">Kolom ini harus diisi</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Mohon jelaskan jenis batasan untuk paket ini.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Mohon jelaskan jenis barang yang dimuat paket ini.</string>
+    <string name="shipping_label_customs_weight_hint">Berat (%1$s per unit)</string>
+    <string name="shipping_label_customs_value_hint">Nilai (%1$s per unit)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s mengenai nomor Tarif HS</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s mengenai Nomor Transaksi Internal (ITN)</string>
+    <string name="shipping_label_customs_line_item">Baris Kustom %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">Lainnya</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Pemeriksaan Sanitasi/Fitosanitasi</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Karantina</string>
+    <string name="shipping_label_customs_restriction_type_none">Tiada</string>
+    <string name="shipping_label_customs_contents_type_other">Lainnya</string>
+    <string name="shipping_label_customs_contents_type_sample">Contoh</string>
+    <string name="shipping_label_customs_contents_type_gifts">Hadiah</string>
+    <string name="shipping_label_customs_contents_type_documents">Dokumen</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Barang dagangan</string>
+    <string name="shipping_label_customs_origin_country_explanation">Negara tempat pembuatan atau perakitan produk</string>
+    <string name="shipping_label_customs_origin_country_hint">Negara asal</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">Nomor tarif harus terdiri dari 6 digit</string>
+    <string name="shipping_label_customs_hs_tariff_hint">Nomor Tarif HS (Opsional)</string>
+    <string name="shipping_label_customs_item_description_hint">Deskripsi</string>
+    <string name="shipping_label_customs_package_content">Isi paket</string>
+    <string name="shipping_label_customs_itn_required_country">ITN diperlukan untuk pengiriman ke %1$s.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">ITN diperlukan untuk pengiriman item dengan nilai lebih dari $2.500 per nomor tarif</string>
+    <string name="shipping_label_customs_itn_invalid_format">Format tidak valid</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Detail batasan</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Detail isi</string>
+    <string name="shipping_label_customs_restriction_type_hint">Jenis batasan</string>
+    <string name="shipping_label_customs_contents_type_hint">Jenis isi</string>
+    <string name="shipping_label_customs_return_to_sender">Kembalikan ke pengirim jika paket tidak dapat dikirimkan</string>
+    <string name="shipping_label_rate_insurance_up_to">hingga %s</string>
+    <string name="order_fulfill_email_info">Jika Anda mengaktifkan pengaturan ini, pelanggan akan menerima email konfirmasi setelah pesanan selesai</string>
+    <string name="order_fulfill_title">Tinjau pesanan</string>
+    <string name="order_fulfill_completed">🎉 Pesanan selesai!</string>
+    <string name="user_access_verifying">Memverifikasi peran…</string>
+    <string name="user_role_access_error_retry">Peran pengguna Anda salah</string>
+    <string name="user_role_access_error_link">Pelajari lebih lanjut tentang peran dan izin</string>
+    <string name="user_role_access_error_msg">Aplikasi ini hanya mendukung peran pengguna Administrator dan Manajer Toko. Harap hubungi pemilik toko Anda untuk mengupgrade peran Anda.</string>
+    <string name="login_prologue_label_reviews">Pantau dan setujui ulasan produk Anda</string>
+    <string name="login_prologue_label_products">Edit dan tambahkan produk baru dari mana saja</string>
+    <string name="login_prologue_label_orders">Kelola pesanan toko Anda dari mana saja</string>
+    <string name="login_prologue_label_analytics">Lacak penjualan dan produk dengan performa tinggi</string>
+    <string name="skip">Lewati</string>
     <string name="product_type_external_title">Produk eksternal</string>
     <string name="product_type_grouped_title">Produk yang dikelompokkan</string>
     <string name="product_type_variable_title">Produk variabel</string>
     <string name="product_type_virtual_desc">Produk digital unik, seperti layanan atau buku, musik, dan video yang dapat diunduh</string>
     <string name="product_type_simple_desc">Produk fisik unik yang mungkin perlu dikirimkan kepada pelanggan</string>
     <string name="product_type_simple_title">Produk fisik sederhana</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Buka pengaturan</string>
     <string name="card_reader_connect_open_location_settings">Buka pengaturan</string>
     <string name="card_reader_connect_open_permission_settings">Buka pengaturan</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth dinonaktifkan</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Lokasi dinonaktifkan</string>
-    <string name="card_reader_connect_missing_permissions_hint">Izin lokasi wajib yang belum disetujui</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth dinonaktifkan</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Lokasi dinonaktifkan</string>
+    <string name="card_reader_connect_missing_permissions_header">Izin lokasi wajib yang belum disetujui</string>
     <string name="card_reader_connect_connecting_failed_hint">Tidak dapat menyambungkan ke pembaca.</string>
-    <string name="card_reader_connect_scanning_failed_hint">Tidak dapat menemukan pembaca.</string>
-    <string name="card_reader_connect_failed_header">Sambungan ke pembaca gagal</string>
     <string name="card_reader_connect_connecting_header">Menyambungkan ke pembaca</string>
     <string name="card_reader_connect_to_reader">Sambungkan ke pembaca</string>
     <string name="card_reader_connect_reader_found_header">Anda ingin menyambungkan pembaca %s?</string>
@@ -34,7 +187,6 @@ Language: id
     <string name="product_delete_dialog_title">Menghapus produk</string>
     <string name="card_reader_payment_send_receipt">Kirimkan tanda terima</string>
     <string name="card_reader_payment_print_receipt">Cetak tanda terima</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Pembayaran gagal. Harap coba lagi.</string>
     <string name="card_reader_payment_capturing_payment_state">Mengambil pembayaran</string>
     <string name="card_reader_payment_processing_payment_state">Memproses pembayaran</string>
     <string name="card_reader_payment_collect_payment_state">Pembaca sudah siap</string>
@@ -78,14 +230,12 @@ Language: id
     <string name="shipping_label_selected_rates_description">%s tarif dipilih</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Memenuhi syarat untuk diproses tanpa tanda tangan</string>
     <string name="shipping_label_rate_included_options_free_pickup">Memenuhi syarat untuk penjemputan gratis</string>
-    <string name="shipping_label_rate_included_options_insurance">Asuransi (hingga %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">Asuransi (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">pelacakan</string>
     <string name="shipping_label_rate_included_options">Sertakan %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Tanda tangan orang dewasa wajib diisi (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Tanda tangan wajib diisi (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">Pengiriman gratis</string>
-    <string name="shipping_label_shipping_method_local_pickup">Pengambilan lokal</string>
-    <string name="shipping_label_shipping_method_flat_rate">Tarif tetap</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Pelanggan membayar %1$s (%2$s) untuk pengiriman</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Pelanggan membayar %1$s dari %2$s untuk pengiriman</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Ketika membeli label pengiriman dengan WooCommerce, Anda bisa berhemat 5% hingga 40% dibandingkan dengan tarif kantor pos.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Apa itu diskon WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Terjadi error saat memuat pilihan pengiriman</string>
@@ -132,7 +282,7 @@ Language: id
     <string name="shipping_label_single_package_total_weight">Total berat paket: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Paket khusus</string>
     <string name="shipping_label_package_details_fetch_products_error">Tidak dapat mengambil produk</string>
-    <string name="shipping_label_missing_data_snackbar_message">Beberapa kolom wajib belum diisi.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Beberapa kolom wajib belum diisi.</string>
     <string name="shipping_label_package_details_weight_error">Berat tidak valid</string>
     <string name="shipping_label_package_selector_title">Paket yang Dipilih</string>
     <string name="shipping_label_packages_loading_message">Harap tunggu…</string>
@@ -152,7 +302,6 @@ Language: id
     <string name="shipping_label_address_suggestion_use_selected_address">Gunakan alamat yang dipilih</string>
     <string name="shipping_label_edit_address_loading_progress_title">Memuat data alamat</string>
     <string name="product_wip_title_m5">Tersedia fitur baru!</string>
-    <string name="product_wip_message_m5">Sekarang Anda dapat menambahkan file yang dapat diunduh ke produk dan menautkan produk upsell &amp; cross-sell. Tidak lagi ingin menampilkan produk? Hapus!</string>
     <string name="shipping_label_validation_view_map">Buka Peta</string>
     <string name="shipping_label_validation_contact_customer">Hubungi Pelanggan</string>
     <string name="shipping_label_validation_error_template">Validasi gagal: %s</string>
@@ -236,7 +385,6 @@ Language: id
     <string name="product_downloadable_files_add">Tambahkan file</string>
     <string name="product_downloadable_files_value_single">1 file</string>
     <string name="product_downloadable_files_value_multiple">%1$d file</string>
-    <string name="product_wip_message_m4">Sekarang Anda dapat membuat produk baru yang sederhana, ditautkan, dan dikelompokkan langsung dari aplikasi Woo. Belum siap? Simpan sebagai draf!</string>
     <string name="print_shipping_label_info_step_4">Anda mungkin perlu &lt;b&gt;mengonfigurasi pencetakan melalui WiFi langsung dari mesin cetak.&lt;/b&gt; Pastikan firmware mesin cetak sudah diperbarui dan lihat manual mesin cetak untuk mengetahui petunjuknya.</string>
     <string name="print_shipping_label_info_step_3">Anda dapat memilih &lt;b&gt;layanan cetak default&lt;/b&gt; perangkat atau pasang &lt;b&gt;aplikasi khusus mesin cetak&lt;/b&gt; Anda (ini akan muncul sebagai opsi yang disarankan)</string>
     <string name="print_shipping_label_info_step_1">Pastikan mesin cetak dan perangkat Anda terhubung ke &lt;b&gt;jaringan WiFi yang sama&lt;/b&gt;</string>
@@ -286,7 +434,7 @@ Language: id
     <string name="shipping_label_print_error_message">Jika terjadi kesalahan mencetak saat Anda membeli label, Anda dapat mencetaknya kembali.</string>
     <string name="orderdetail_shipping_label_wip_message">Kami berusaha mempermudah Anda agar dapat mencetak label pengiriman langsung dari perangkat Anda! Untuk saat ini, jika telah membuat label pengiriman untuk pesanan ini di admin toko Anda dengan Pengiriman WooCommerce, Anda dapat mencetaknya di Detail Pesanan di sini.</string>
     <string name="orderdetail_shipping_label_wip_title">Cetak label pengiriman dari perangkat Anda!</string>
-    <string name="orderdetail_shipping_label_reprint">Cetak ulang label pengiriman</string>
+    <string name="orderdetail_shipping_label_print">Cetak label pengiriman</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Draf produk disimpan</string>
     <string name="product_detail_publish_product_draft_error">Kesalahan saat menyimpan draf produk</string>
@@ -542,7 +690,6 @@ Language: id
     <string name="empty_review_list_message">Tangkap ulasan produk kualitas tinggi untuk toko Anda</string>
     <string name="empty_review_list_title">Dapatkan ulasan pertama Anda</string>
     <string name="empty_order_list_all_processed">Semua pesanan telah terpenuhi</string>
-    <string name="empty_order_list_message">Kami akan memberi tahu saat Anda menerima pesanan baru. Selama rentang waktu tersebut, cari tahu bagaimana Anda dapat meningkatkan penjualan toko Anda.</string>
     <string name="empty_order_list_title">Menunggu pesanan pertama Anda</string>
     <string name="share_your_store_message">Bagikan toko Anda di media sosial dan lewat email dengan kontak Anda</string>
     <string name="get_the_word_out">Kabarkan pada dunia</string>
@@ -575,7 +722,7 @@ Language: id
     <string name="order_refunds_select_quantity">Pilih jumlah</string>
     <string name="order_refunds_shipping_refund">Pengembalian dana pengiriman</string>
     <string name="order_refunds_products_refund">Pengembalian dana produk</string>
-    <string name="order_refunds_item_description">%d x %s masing-masing</string>
+    <string name="order_refunds_item_description">%s x %s tiap buah</string>
     <string name="order_refunds_items_selected">%d item terpilih</string>
     <string name="order_refunds_items_select_none">Tidak memilih</string>
     <string name="order_refunds_items_select_all">Pilih semua</string>
@@ -1049,7 +1196,6 @@ Language: id
     <string name="site_picker_title">Pilih toko</string>
     <string name="settings_signout">Logout</string>
     <string name="orderstatus_select_status">Ubah status pesanan</string>
-    <string name="order_status_changed_to">Status pesanan diubah menjadi %s</string>
     <string name="orderdetail_change_order_status">Klik untuk mengubah status pesanan</string>
     <string name="apply">Terapkan</string>
     <string name="app_rating_rate_never">Tidak, terima kasih</string>
@@ -1320,7 +1466,6 @@ Language: id
     <string name="login_avatar_content_description">Foto profil Anda</string>
     <string name="login_connected_store">Toko yang terhubung</string>
     <string name="login_configure_link">Baca %sinstruksi konfigurasi%s.</string>
-    <string name="login_prologue_banner">Kelola pesanan, lacak penjualan, dan pantau aktivitas toko dengan pemberitahuan real-time.</string>
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Masukkan alamat toko WooCommerce yang ingin dihubungkan.</string>
@@ -1372,5 +1517,9 @@ Language: id
     <string-array name="order_list_tabs">
         <item>Dalam Proses</item>
         <item>Semua Pesanan</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Paket khusus</item>
+        <item>Paket layanan</item>
     </string-array>
 </resources>

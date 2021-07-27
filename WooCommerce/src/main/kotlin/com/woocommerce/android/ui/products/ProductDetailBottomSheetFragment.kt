@@ -57,18 +57,24 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.productDetailBottomSheetList.observe(viewLifecycleOwner, Observer {
-            showProductDetailBottomSheetOptions(it)
-        })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is Exit -> {
-                    dismiss()
-                }
-                else -> event.isHandled = false
+        viewModel.productDetailBottomSheetList.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProductDetailBottomSheetOptions(it)
             }
-        })
+        )
+
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is Exit -> {
+                        dismiss()
+                    }
+                    else -> event.isHandled = false
+                }
+            }
+        )
     }
 
     private fun showProductDetailBottomSheetOptions(

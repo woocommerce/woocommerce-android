@@ -10,10 +10,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -34,10 +36,17 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Kind.STORE_ORDER
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.StringUtils
@@ -51,6 +60,7 @@ import kotlin.random.Random
 @Singleton
 class NotificationHandler @Inject constructor(
     private val notificationStore: NotificationStore, // Required to ensure instantiated when app started from a push
+    private val wcOrderStore: WCOrderStore, // Required to ensure instantiated when app started from a push
     private val siteStore: SiteStore,
     private val dispatcher: Dispatcher
 ) {
@@ -91,9 +101,10 @@ class NotificationHandler @Inject constructor(
          */
         @Synchronized fun bumpPushNotificationsTappedAnalytics(context: Context, noteID: String) {
             ACTIVE_NOTIFICATIONS_MAP.asSequence()
-                    .firstOrNull { it.value.getString(PUSH_ARG_NOTE_ID, "") == noteID }?.let { row ->
-                        bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, row.value)
-                        AnalyticsTracker.flush() }
+                .firstOrNull { it.value.getString(PUSH_ARG_NOTE_ID, "") == noteID }?.let { row ->
+                    bumpPushNotificationsAnalytics(context, Stat.PUSH_NOTIFICATION_TAPPED, row.value)
+                    AnalyticsTracker.flush()
+                }
         }
 
         /**
@@ -271,15 +282,22 @@ class NotificationHandler @Inject constructor(
             dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(it))
 
             // Fire off the event to fetch the actual notification from the api
-            dispatcher.dispatch(NotificationActionBuilder
-                    .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId)))
+            dispatcher.dispatch(
+                NotificationActionBuilder
+                    .newFetchNotificationAction(FetchNotificationPayload(it.remoteNoteId))
+            )
+
+            if (it.type == STORE_ORDER) {
+                dispatchNewOrderEvents(it)
+            }
         }
 
         // don't display the notification if user chose to disable this type of notification - note
         // that we skip this for API 26+ since Oreo added per-app notification settings via channels
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             if ((noteType == NEW_ORDER && !AppPrefs.isOrderNotificationsEnabled()) ||
-                    (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())) {
+                (noteType == REVIEW && !AppPrefs.isReviewNotificationsEnabled())
+            ) {
                 WooLog.i(T.NOTIFS, "Skipped $noteTypeStr notification")
                 return
             }
@@ -291,7 +309,7 @@ class NotificationHandler @Inject constructor(
             context.getString(R.string.app_name)
         } else {
             StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_TITLE))
-                    ?: context.getString(R.string.app_name)
+                ?: context.getString(R.string.app_name)
         }
 
         val message = StringEscapeUtils.unescapeHtml4(data.getString(PUSH_ARG_MSG))
@@ -313,8 +331,10 @@ class NotificationHandler @Inject constructor(
 
         // Build the new notification, add group to support wearable stacking
         val builder = getNotificationBuilder(context, noteType, title, message)
-        val largeIconBitmap = getLargeIconBitmap(context, data.getString("icon"),
-                shouldCircularizeNoteIcon(noteType))
+        val largeIconBitmap = getLargeIconBitmap(
+            context, data.getString("icon"),
+            shouldCircularizeNoteIcon(noteType)
+        )
         largeIconBitmap?.let { builder.setLargeIcon(it) }
 
         showSingleNotificationForBuilder(context, builder, noteType, wpComNoteId, localPushId)
@@ -328,6 +348,32 @@ class NotificationHandler @Inject constructor(
         }
 
         EventBus.getDefault().post(NotificationReceivedEvent(noteType))
+    }
+
+    @VisibleForTesting
+    fun dispatchNewOrderEvents(model: NotificationModel) {
+        siteStore.getSiteBySiteId(model.remoteSiteId)?.let { site ->
+            dispatcher.dispatch(
+                WCOrderActionBuilder.newFetchOrderListAction(
+                    FetchOrderListPayload(
+                        offset = 0,
+                        listDescriptor = WCOrderListDescriptor(site = site)
+                    )
+                )
+            )
+
+            dispatcher.dispatch(
+                WCOrderActionBuilder.newFetchOrderListAction(
+                    FetchOrderListPayload(
+                        offset = 0,
+                        listDescriptor = WCOrderListDescriptor(
+                            site = site,
+                            statusFilter = PROCESSING.value
+                        )
+                    )
+                )
+            )
+        } ?: WooLog.e(T.NOTIFS, "Site not found - can't dispatchNewOrderEvents")
     }
 
     /**
@@ -354,15 +400,15 @@ class NotificationHandler @Inject constructor(
             try {
                 val decodedIconUrl = URLDecoder.decode(iconUrl, "UTF-8")
                 val largeIconSize = context.resources.getDimensionPixelSize(
-                        android.R.dimen.notification_large_icon_height
+                    android.R.dimen.notification_large_icon_height
                 )
                 val resizedUrl = PhotonUtils.getPhotonImageUrl(decodedIconUrl, largeIconSize, largeIconSize)
 
                 val largeIconBitmap = Glide.with(context)
-                        .asBitmap()
-                        .load(resizedUrl)
-                        .submit()
-                        .get()
+                    .asBitmap()
+                    .load(resizedUrl)
+                    .submit()
+                    .get()
 
                 if (largeIconBitmap != null && shouldCircularizeIcon) {
                     return ImageUtils.getCircularBitmap(largeIconBitmap)
@@ -408,6 +454,7 @@ class NotificationHandler @Inject constructor(
 
             // check for existing channel first
             manager.getNotificationChannel(channelId)?.let {
+                WooLog.i(T.NOTIFS, "Notification channel already created with the following attributes: $it")
                 return
             }
 
@@ -418,8 +465,8 @@ class NotificationHandler @Inject constructor(
             // add cha-ching sound to new order notifications
             if (noteType == NEW_ORDER) {
                 val attributes = AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                        .build()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build()
                 channel.setSound(getChaChingUri(context), attributes)
             }
 
@@ -461,15 +508,15 @@ class NotificationHandler @Inject constructor(
     ): NotificationCompat.Builder {
         val channelId = getChannelIdForNoteType(context, noteType)
         return NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_woo_w_notification)
-                .setColor(ContextCompat.getColor(context, R.color.color_primary))
-                .setContentTitle(title)
-                .setContentText(message)
-                .setTicker(message)
-                .setOnlyAlertOnce(true)
-                .setAutoCancel(true)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-                .setGroup(NOTIFICATION_GROUP_KEY)
+            .setSmallIcon(R.drawable.ic_woo_w_notification)
+            .setColor(ContextCompat.getColor(context, R.color.color_primary))
+            .setContentTitle(title)
+            .setContentText(message)
+            .setTicker(message)
+            .setOnlyAlertOnce(true)
+            .setAutoCancel(true)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setGroup(NOTIFICATION_GROUP_KEY)
     }
 
     private fun showSingleNotificationForBuilder(
@@ -483,7 +530,7 @@ class NotificationHandler @Inject constructor(
             NEW_ORDER -> {
                 if (AppPrefs.isOrderNotificationsChaChingEnabled()) {
                     builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
-                    builder.setSound(getChaChingUri(context))
+                    builder.setSound(getChaChingUri(context), AudioManager.STREAM_NOTIFICATION)
                 } else {
                     builder.setDefaults(NotificationCompat.DEFAULT_ALL)
                 }
@@ -534,30 +581,30 @@ class NotificationHandler @Inject constructor(
 
             if (notesMap.size > MAX_INBOX_ITEMS) {
                 inboxStyle.setSummaryText(
-                        String.format(context.getString(R.string.more_notifications), notesMap.size - MAX_INBOX_ITEMS)
+                    String.format(context.getString(R.string.more_notifications), notesMap.size - MAX_INBOX_ITEMS)
                 )
             }
 
             val subject = String.format(context.getString(R.string.new_notifications), notesMap.size)
             val groupBuilder = NotificationCompat.Builder(context, getChannelIdForNoteType(context, noteType))
-                    .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-                    .setSmallIcon(R.drawable.ic_woo_w_notification)
-                    .setColor(ContextCompat.getColor(context, R.color.color_primary))
-                    .setGroup(NOTIFICATION_GROUP_KEY)
-                    .setGroupSummary(true)
-                    .setAutoCancel(true)
-                    .setTicker(message)
-                    .setContentTitle(context.getString(R.string.app_name))
-                    .setContentText(subject)
-                    .setStyle(inboxStyle)
-                    .setSound(null)
-                    .setVibrate(null)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .setSmallIcon(R.drawable.ic_woo_w_notification)
+                .setColor(ContextCompat.getColor(context, R.color.color_primary))
+                .setGroup(NOTIFICATION_GROUP_KEY)
+                .setGroupSummary(true)
+                .setAutoCancel(true)
+                .setTicker(message)
+                .setContentTitle(context.getString(R.string.app_name))
+                .setContentText(subject)
+                .setStyle(inboxStyle)
+                .setSound(null)
+                .setVibrate(null)
 
             showWPComNotificationForBuilder(groupBuilder, context, wpComNoteId, GROUP_NOTIFICATION_ID, noteType)
         } else {
             // Set the individual notification we've already built as the group summary
             builder.setGroupSummary(true)
-                    .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
             showWPComNotificationForBuilder(builder, context, wpComNoteId, GROUP_NOTIFICATION_ID, noteType)
         }
     }
@@ -601,8 +648,8 @@ class NotificationHandler @Inject constructor(
 
         try {
             val pendingIntent = PendingIntent.getActivity(
-                    context, pushId, resultIntent,
-                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT
+                context, pushId, resultIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT
             )
             builder.setContentIntent(pendingIntent)
             val notificationManager = NotificationManagerCompat.from(context)

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.LinearLayout
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.MyStoreDateBarBinding
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
@@ -14,8 +14,11 @@ import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
-class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : LinearLayout(ctx, attrs) {
+class MyStoreDateRangeView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = MyStoreDateBarBinding.inflate(LayoutInflater.from(ctx), this)
 
     private lateinit var dateUtils: DateUtils

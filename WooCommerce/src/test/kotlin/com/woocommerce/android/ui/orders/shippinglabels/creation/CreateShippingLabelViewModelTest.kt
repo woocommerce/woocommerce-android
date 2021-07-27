@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.PurchaseLabels
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
@@ -38,9 +40,12 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -84,7 +89,11 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
             packagingStep = PackagingStep(NOT_READY, emptyList()),
-            customsStep = CustomsStep(NOT_READY, isVisible = true),
+            customsStep = CustomsStep(
+                NOT_READY,
+                isVisible = originAddress.country != shippingAddress.country,
+                data = null
+            ),
             carrierStep = CarrierStep(NOT_READY, emptyList()),
             paymentsStep = PaymentsStep(NOT_READY, null)
         )
@@ -99,7 +108,11 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 READY,
                 listOf(CreateShippingLabelTestUtils.generateShippingLabelPackage())
             ),
-            customsStep = CustomsStep(NOT_READY, isVisible = false),
+            customsStep = CustomsStep(
+                NOT_READY,
+                isVisible = originAddress.country != shippingAddress.country,
+                data = null
+            ),
             carrierStep = CarrierStep(READY, listOf(CreateShippingLabelTestUtils.generateRate())),
             paymentsStep = PaymentsStep(READY, CreateShippingLabelTestUtils.generatePaymentMethod())
         )
@@ -147,6 +160,10 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isContinueButtonVisible = false,
         isEditButtonVisible = false,
         isHighlighted = false
+    )
+
+    private val otherInvisible = StepUiState(
+        isVisible = false
     )
 
     private val otherCurrent = StepUiState(
@@ -205,7 +222,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddressStep = originAddressCurrent,
             shippingAddressStep = shippingAddressNotDone,
             packagingDetailsStep = otherNotDone,
-            customsStep = otherNotDone,
+            customsStep = otherInvisible,
             carrierStep = otherNotDone,
             paymentStep = otherNotDone
         )
@@ -224,7 +241,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddressStep = originAddressDone,
             shippingAddressStep = shippingAddressCurrent,
             packagingDetailsStep = otherNotDone,
-            customsStep = otherNotDone,
+            customsStep = otherInvisible,
             carrierStep = otherNotDone,
             paymentStep = otherNotDone
         )
@@ -248,7 +265,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddressStep = originAddressDone,
             shippingAddressStep = shippingAddressDone,
             packagingDetailsStep = otherCurrent,
-            customsStep = otherNotDone,
+            customsStep = otherInvisible,
             carrierStep = otherNotDone,
             paymentStep = otherNotDone
         )
@@ -278,7 +295,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
         stateFlow.value = Transition(State.OriginAddressValidation(data), null)
 
-        verify(addressValidator).validateAddress(originAddress, ORIGIN)
+        verify(addressValidator).validateAddress(originAddress, ORIGIN, requiresPhoneNumber = false)
     }
 
     @Test
@@ -288,7 +305,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 remoteOrderId = order.remoteOrderId, shippingLabelId = 1
             )
         )
-        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any()))
+        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = false)
@@ -322,16 +339,16 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 remoteOrderId = order.remoteOrderId, shippingLabelId = 1
             )
         )
-        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any()))
+        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
-        whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
-            .thenReturn(true)
+        whenever(orderDetailRepository.updateOrderStatus(any(), any()))
+            .thenReturn(ContinuationWrapper.ContinuationResult.Success(true))
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = true)
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.identifier.toIdSet().id, doneData.order.remoteId, CoreOrderStatus.COMPLETED.value
+            doneData.order.identifier.toIdSet().id, CoreOrderStatus.COMPLETED.value
         )
     }
 
@@ -343,10 +360,10 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                     remoteOrderId = order.remoteOrderId, shippingLabelId = 1
                 )
             )
-            whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any()))
+            whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))
-            whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
-                .thenReturn(false)
+            whenever(orderDetailRepository.updateOrderStatus(any(), any()))
+                .thenReturn(ContinuationWrapper.ContinuationResult.Success(false))
 
             var event: MultiLiveEvent.Event? = null
             viewModel.event.observeForever {
@@ -357,5 +374,29 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
             assertThat(event).isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+        }
+
+    @Test
+    fun `given there are no changes, when the user tries to exit, then don't warn them`() = testBlocking {
+        stateFlow.value = Transition(WaitingForInput(data), null)
+
+        viewModel.onBackButtonClicked()
+
+        assertThat(viewModel.event.value).isEqualTo(Exit)
+    }
+
+    @Test
+    fun `given there are some changes changes, when the user tries to exit, then display a discard changes dialog`() =
+        testBlocking {
+            val stateMachineData = data.copy(
+                stepsState = data.stepsState.copy(
+                    originAddressStep = data.stepsState.originAddressStep.copy(status = DONE)
+                )
+            )
+            stateFlow.value = Transition(WaitingForInput(stateMachineData), null)
+
+            viewModel.onBackButtonClicked()
+
+            assertThat(viewModel.event.value).isInstanceOf(ShowDialog::class.java)
         }
 }

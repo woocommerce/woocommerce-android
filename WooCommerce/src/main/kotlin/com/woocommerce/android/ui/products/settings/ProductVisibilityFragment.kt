@@ -105,7 +105,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
 
     override fun hasChanges(): Boolean {
         return navArgs.visibility != selectedVisibility ||
-                navArgs.password != getPassword()
+            navArgs.password != getPassword()
     }
 
     override fun onResume() {

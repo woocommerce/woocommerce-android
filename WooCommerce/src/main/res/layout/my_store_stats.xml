@@ -11,13 +11,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Date bar -->
-        <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
-            android:id="@+id/my_store_date_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"/>
-
         <include android:id="@+id/stats_view_row" layout="@layout/dashboard_main_stats_row" />
 
         <FrameLayout

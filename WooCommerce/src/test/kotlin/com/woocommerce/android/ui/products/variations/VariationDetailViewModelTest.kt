@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
+import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
@@ -12,7 +13,6 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -48,7 +48,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         gmtOffset = 0f
     )
     private val parameterRepository: ParameterRepository = mock {
-        on { getParameters(any(), any<SavedStateWithArgs>()) } doReturn (siteParams)
+        on { getParameters(any(), any<SavedStateHandle>()) } doReturn (siteParams)
     }
     private val variationRepository: VariationDetailRepository = mock {
         on { getVariation(any(), any()) } doReturn (TEST_VARIATION)

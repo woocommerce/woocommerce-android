@@ -8,19 +8,24 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils
 import org.wordpress.android.util.NetworkUtils
 
-class OfflineStatusBarView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null)
-    : FrameLayout(ctx, attrs) {
+class OfflineStatusBarView @JvmOverloads constructor(
+    ctx: Context,
+    attrs: AttributeSet? = null
+) : FrameLayout(ctx, attrs) {
     init {
         View.inflate(context, R.layout.offline_status_bar, this)
         setOnClickListener {
             WooAnimUtils.animateBottomBar(this, false)
-            postDelayed({
-                if (NetworkUtils.isNetworkAvailable(context)) {
-                    hide()
-                } else {
-                    show()
-                }
-            }, 2000)
+            postDelayed(
+                {
+                    if (NetworkUtils.isNetworkAvailable(context)) {
+                        hide()
+                    } else {
+                        show()
+                    }
+                },
+                2000
+            )
         }
     }
 

@@ -24,7 +24,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.BaseDaggerFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
@@ -36,8 +36,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
@@ -45,12 +45,12 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
-class ReviewDetailFragment : BaseDaggerFragment(R.layout.fragment_review_detail) {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+@AndroidEntryPoint
+class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
 
-    private val viewModel: ReviewDetailViewModel by viewModels { viewModelFactory }
+    private val viewModel: ReviewDetailViewModel by viewModels()
 
     private var runOnStartFunc: (() -> Unit)? = null
     private var productIconSize: Int = 0
@@ -120,18 +120,21 @@ class ReviewDetailFragment : BaseDaggerFragment(R.layout.fragment_review_detail)
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is MarkNotificationAsRead -> {
-                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is MarkNotificationAsRead -> {
+                        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(
                             requireContext(),
                             event.remoteNoteId.toString()
-                    )
+                        )
+                    }
+                    is Exit -> exitDetailView()
                 }
-                is Exit -> exitDetailView()
             }
-        })
+        )
     }
 
     private fun setReview(review: ProductReview) {
@@ -142,10 +145,10 @@ class ReviewDetailFragment : BaseDaggerFragment(R.layout.fragment_review_detail)
 
         // Populate reviewer section
         GlideApp.with(binding.reviewGravatar.context)
-                .load(avatarUrl)
-                .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_user_circle_24dp))
-                .circleCrop()
-                .into(binding.reviewGravatar)
+            .load(avatarUrl)
+            .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_user_circle_24dp))
+            .circleCrop()
+            .into(binding.reviewGravatar)
 
         binding.reviewUserName.text = review.reviewerName
         binding.reviewTime.text = DateTimeUtils.javaDateToTimeSpan(review.dateCreated, requireActivity())
@@ -170,8 +173,8 @@ class ReviewDetailFragment : BaseDaggerFragment(R.layout.fragment_review_detail)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val stars = binding.reviewRatingBar.progressDrawable as? LayerDrawable
             stars?.getDrawable(2)?.setColorFilter(
-                    ContextCompat.getColor(requireContext(), R.color.woo_yellow_30),
-                    PorterDuff.Mode.SRC_ATOP
+                ContextCompat.getColor(requireContext(), R.color.woo_yellow_30),
+                PorterDuff.Mode.SRC_ATOP
             )
         }
 
@@ -189,9 +192,9 @@ class ReviewDetailFragment : BaseDaggerFragment(R.layout.fragment_review_detail)
         productImageMap.get(remoteProductId)?.let { productImage ->
             val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
             GlideApp.with(activity as Context)
-                    .load(imageUrl)
-                    .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
-                    .into(binding.reviewProductIcon)
+                .load(imageUrl)
+                .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
+                .into(binding.reviewProductIcon)
         }
     }
 

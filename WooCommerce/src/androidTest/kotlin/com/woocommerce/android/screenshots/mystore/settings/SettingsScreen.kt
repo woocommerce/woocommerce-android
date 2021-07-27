@@ -16,7 +16,7 @@ class SettingsScreen : Screen {
 
     // Using SELECTED_STORE even if we don't need to interact with it because for some reason Espresso can't find
     // LOG_OUT_BUTTON
-    constructor(): super(SELECTED_STORE)
+    constructor() : super(SELECTED_STORE)
 
     fun openBetaFeatures(): BetaFeaturesScreen {
         clickOn(BETA_FEATURES_BUTTON)

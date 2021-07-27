@@ -1,3 +1,0 @@
-6.7:
-Kami menyadari bahwa pesanan bisa dipenuhi dengan beberapa pengiriman. Dengan pembaruan ini, Anda kini dapat mencetak lebih dari satu label untuk satu pesanan. Kami juga memperbaiki beberapa hal kecil lainnya agar Anda mendapatkan pengalaman yang lebih baik.
-

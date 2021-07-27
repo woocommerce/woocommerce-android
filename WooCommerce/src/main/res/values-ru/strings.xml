@@ -1,26 +1,179 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-05-26 14:54:04+0000
+Translation-Revision-Date: 2021-07-23 13:15:01+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="variation_created_title">Создан вариант</string>
+    <string name="variation_list_generate_new_variation">Создать новый вариант</string>
+    <string name="product_wip_message_variations">Теперь вы можете создавать и менять варианты товаров!</string>
+    <string name="product_attributes_created_generate_action_text">Создать вариант</string>
+    <string name="product_attributes_created_description">Теперь, добавив атрибуты, вы можете создать свой первый вариант.</string>
+    <string name="product_attributes_created_title">Атрибуты созданы</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Не рекомендуется отменять текущее обновление ПО</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Не удалось выполнить этот платеж</string>
+    <string name="card_reader_payment_failed_server_error_state">Нет подключения к серверу</string>
+    <string name="card_reader_payment_failed_no_network_state">Нет подключения к Интернету</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Отправить в оригинальной упаковке</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Добавить в новую упаковку</string>
+    <string name="shipping_label_move_item_dialog_description">Эта позиция в настоящее время включена в %s. Куда вы хотите переместить её?</string>
+    <string name="shipping_label_move_item_dialog_cancel">Отмена</string>
+    <string name="shipping_label_move_item_dialog_move">Переместить</string>
+    <string name="shipping_label_move_item_dialog_title">Переместить позицию</string>
+    <string name="shipping_label_create_custom_package_success_message">Сохранено: \"%1$s\"</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Не удалось создать упаковку. Повторите попытку.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Не удалось создать упаковку: неизвестная проблема с API.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Не удалось создать упаковку: %1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">Пожалуйста, подождите…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Создаётся новая упаковка</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Неверное значение.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Обязательное поле</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Вес пустой упаковки</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Вес пустой упаковки (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Высота (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Ширина (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Длина (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Название упаковки</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Конверт</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Коробка</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Выбрать тип упаковки</string>
+    <string name="shipping_label_create_custom_package_field_type">Тип упаковки</string>
+    <string name="shipping_label_create_custom_package_field_info">Настройте упаковку, которую вы будете использовать для отправки своих товаров. Мы сохраним её для последующих заказов.</string>
+    <string name="shipping_label_create_package_title">Добавить новую упаковку</string>
+    <string name="shipping_label_create_new_package_button">Создать новую упаковку</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Размеры упаковки должны быть больше нуля. Чтобы продолжить, обновите размеры позиции в разделе \"Доставка\" на странице товара.</string>
+    <string name="shipping_label_package_details_individual_package_title">Оригинальная упаковка</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Размеры позиции</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Индивидуально доставляемая позиция</string>
+    <string name="order_status_updated">Статус заказа обновлен</string>
+    <string name="receipt_preview_send_menu_item">Отправить</string>
+    <string name="receipt_preview_print_menu_item">Печать</string>
+    <string name="orderdetail_see_receipt_button">Смотреть чек</string>
+    <string name="cancel_anyway">Отменить в любом случае</string>
+    <string name="card_reader_detail_connected_update_failed">Не удалось обновить ПО устройства чтения</string>
+    <string name="card_reader_detail_connected_update_check_failed">Не удалось проверить наличие обновлений ПО</string>
+    <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Подробнее&lt;/a&gt; о приеме мобильных платежей и заказе устройств чтения карт</string>
+    <string name="card_reader_connect_open_bluetooth_settings">Включить Bluetooth</string>
+    <string name="card_reader_connect_scanning_failed_header">Не подключено устройство чтения</string>
+    <string name="card_reader_connect_failed_header">Не удалось подключиться к устройству чтения</string>
+    <string name="card_reader_connect_connect_button">Подключиться</string>
+    <string name="card_reader_connect_multiple_readers_found_header">Найдено несколько устройств чтения</string>
+    <string name="card_reader_payment_order_paid_payment_cancelled">Заказ уже оплачен</string>
+    <string name="card_reader_payment_receipt_email_content">Спасибо за покупку! Перейдите по ссылке ниже, чтобы получить чек.\n\n%s</string>
+    <string name="card_reader_payment_failed_card_declined_state">Карта отклонена</string>
+    <string name="shipping_label_print_customs_form_download_failed">Ошибка загрузки таможенной формы</string>
+    <string name="shipping_label_print_customs_form_screen_title">Печать таможенного счета-фактуры</string>
+    <string name="shipping_label_print_customs_form">Печать таможенной формы</string>
+    <string name="shipping_label_print_customs_explanation">Необходимо напечатать таможенную форму и включить ее в это международное отправление</string>
+    <string name="shipping_label_customs_form">Таможенная форма</string>
+    <string name="shipping_label_payment_method_added">Способ оплаты добавлен</string>
+    <string name="shipping_label_payments_add_first_credit_card">Добавить кредитную карту</string>
+    <string name="shipping_label_destination_address_phone_invalid">Пожалуйста, введите правильный номер телефона</string>
+    <string name="orderdetail_shipping_label_print_customs_form">Печать таможенной формы</string>
+    <string name="empty_order_list_message">Узнайте о том, как увеличить продажи своего магазина.</string>
+    <string name="empty_product_message">Добавьте в магазин первый продукт, чтобы уже сегодня приступить к продаже товаров.</string>
+    <string name="empty_product_add_product_button">Добавить товар</string>
+    <string name="variable_product_attributes">Атрибуты вариантов</string>
+    <string name="card_reader_detail_not_connected_third_hint_label">Включите Bluetooth на мобильном устройстве</string>
+    <string name="card_reader_refetching_order_failed">Ошибка при загрузке заказа. Состояние заказа в приложении могло устареть.</string>
+    <string name="card_reader_payment_email_client_not_found">Не удалось определить ваш почтовый клиент</string>
+    <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
+    <string name="card_reader_payment_description">Веб-платёж за заказ %s на %s</string>
+    <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
+    <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
+    <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Ваш клиент выбрал %1$s</string>
+    <string name="shipping_label_origin_address_phone_invalid">Для таможенных форм требуется 10-значный телефонный номер</string>
+    <string name="shipping_label_address_phone_required">Телефонный номер необходимо указать, так как для этой доставки требуется таможенная форма</string>
+    <string name="shipping_label_create_customs_done">Таможенная форма заполнена</string>
+    <string name="print_receipt_label_info_step_7">При наличии проблем с печатью с устройства обратитесь в службу поддержки вашего принтера.</string>
+    <string name="print_receipt_label_info_step_6">Если печать недоступна, можно всегда сохранить квитанцию в формате PDF и отправить её по электронной почте, чтобы распечатать с другого устройства.</string>
+    <string name="print_receipt_label_info_step_5">Настройте размер бумаги требуемым образом и нажмите «Печать» для печати квитанции.</string>
+    <string name="print_receipt_label_info_step_4">Установите сопряжение и подключите принтер к мобильному устройству при появлении запроса.</string>
+    <string name="print_receipt_label_info_step_3">При выборе «Печать квитанции» после приёма платежа замените «Сохранить как PDF» на «Все принтеры» и выполните поиск нового принтера.</string>
+    <string name="print_receipt_label_info_step_2">Включите Bluetooth или соединение Wi-Fi на своём принтере.</string>
+    <string name="print_receipt_label_info_step_1">Убедитесь, что для принтера установлен плагин службы печати.</string>
+    <string name="orderdetail_printing_instructions_button">Подробнее о печати квитанций с помощью вашего устройства</string>
+    <string name="product_create_attribute_helper">Чтобы создать вариант, необходимо сначала задать атрибуты (например, «Цвет» или «Размер»).</string>
+    <string name="product_variation_single_count">1 вариант</string>
+    <string name="product_variation_multiple_count">Вариантов: %1$s</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">Отслеживание %s</string>
+    <string name="card_reader_software_update_in_progress_title">Обновление ПО устройства чтения</string>
+    <string name="card_reader_software_update_title">Обновление ПО</string>
+    <string name="card_reader_software_update_description">Для корректной работы устройства чтения необходимо обновить его ПО. Обновить сейчас?</string>
+    <string name="card_reader_detail_connected_update_success">ПО устройства чтения обновлено</string>
+    <string name="card_reader_detail_connected_reader_unknown">ИМЯ НЕИЗВЕСТНОГО УСТРОЙСТВА ЧТЕНИЯ</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Отключить устройство чтения</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Чтобы принимать платежи, обновите ПО устройства чтения</string>
+    <string name="card_reader_detail_connected_update_software">Обновить ПО устройства чтения</string>
+    <string name="card_reader_detail_connected_battery_percentage">Заряд %s%%</string>
+    <string name="card_reader_detail_connected_header">ПОДКЛЮЧЁННОЕ УСТРОЙСТВО ЧТЕНИЯ</string>
+    <string name="card_reader_details_not_connected_connect_button_label">Подключение устройства чтения карт</string>
+    <string name="card_reader_detail_not_connected_second_hint_label">Включите устройство чтения и расположите его рядом с мобильным устройством</string>
+    <string name="card_reader_detail_not_connected_first_hint_label">Убедитесь, что устройство чтения заряжено</string>
+    <string name="card_reader_detail_not_connected_header">Подключите устройство чтения карт</string>
+    <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Карта отклонена</string>
+    <string name="card_reader_payment_collect_payment_loading_payment_state">Подключение к устройству чтения</string>
+    <string name="card_reader_payment_collect_payment_loading_header">Подготовка к получению платежа</string>
+    <string name="shipping_label_customs_value_zero_error">Указанное значение должно быть больше ноля</string>
+    <string name="shipping_label_customs_weight_zero_error">Вес должен быть больше ноля</string>
+    <string name="shipping_label_customs_required_field">Обязательное поле</string>
+    <string name="shipping_label_customs_restriction_type_description_missing">Укажите ограничения для этой посылки.</string>
+    <string name="shipping_label_customs_contents_type_description_missing">Укажите, какие товары находятся в посылке.</string>
+    <string name="shipping_label_customs_weight_hint">Вес (%1$s за единицу)</string>
+    <string name="shipping_label_customs_value_hint">Ценность (%1$s за единицу)</string>
+    <string name="shipping_label_customs_learn_more_hs_tariff_number">%1$s о тарифном коде HS</string>
+    <string name="shipping_label_customs_learn_more_itn">%1$s о внутреннем номере транзакции (ITN)</string>
+    <string name="shipping_label_customs_line_item">Пользовательский артикул %1$d</string>
+    <string name="shipping_label_customs_restriction_type_other">Прочее</string>
+    <string name="shipping_label_customs_restriction_type_sanitary_inspection">Санитарная/фитосанитарная проверка</string>
+    <string name="shipping_label_customs_restriction_type_quarantine">Карантин</string>
+    <string name="shipping_label_customs_restriction_type_none">Пусто</string>
+    <string name="shipping_label_customs_contents_type_other">Прочее</string>
+    <string name="shipping_label_customs_contents_type_sample">Пример</string>
+    <string name="shipping_label_customs_contents_type_gifts">Подарки</string>
+    <string name="shipping_label_customs_contents_type_documents">Документы</string>
+    <string name="shipping_label_customs_contents_type_merchandise">Атрибутика</string>
+    <string name="shipping_label_customs_origin_country_explanation">Страна производства или сборки товара</string>
+    <string name="shipping_label_customs_origin_country_hint">Страна происхождения</string>
+    <string name="shipping_label_customs_hs_tariff_invalid_format">Тарифный код должен включать шесть цифр</string>
+    <string name="shipping_label_customs_hs_tariff_hint">Тарифный код HS (необязательно)</string>
+    <string name="shipping_label_customs_item_description_hint">Описание</string>
+    <string name="shipping_label_customs_package_content">Содержимое посылки</string>
+    <string name="shipping_label_customs_itn_required_country">Необходимо указать номер ITN для посылок в %1$s.</string>
+    <string name="shipping_label_customs_itn_required_items_over_2500">Номер ITN необходимо указывать для посылок стоимостью более 2500 долл. США за тарифный код</string>
+    <string name="shipping_label_customs_itn_invalid_format">Недопустимый формат</string>
+    <string name="shipping_label_customs_restriction_type_other_hint">Сведения об ограничениях</string>
+    <string name="shipping_label_customs_contents_type_other_hint">Сведения о содержимом</string>
+    <string name="shipping_label_customs_restriction_type_hint">Тип ограничения</string>
+    <string name="shipping_label_customs_contents_type_hint">Тип содержимого</string>
+    <string name="shipping_label_customs_return_to_sender">Вернуть отправителю в случае невозможности доставки</string>
+    <string name="shipping_label_rate_insurance_up_to">до %s</string>
+    <string name="order_fulfill_email_info">Если вы включите этот параметр, клиент получит эл. письмо с подтверждением, когда заказ будет выполнен</string>
+    <string name="order_fulfill_title">Просмотр заказа</string>
+    <string name="order_fulfill_completed">Заказ 🎉 завершён!</string>
+    <string name="user_access_verifying">Проверка роли…</string>
+    <string name="user_role_access_error_retry">Неверная роль пользователя</string>
+    <string name="user_role_access_error_link">Подробнее о ролях и разрешениях</string>
+    <string name="user_role_access_error_msg">Это приложение поддерживает только роли администратора и менеджера магазина. Свяжитесь с владельцем магазина для изменения роли.</string>
+    <string name="login_prologue_label_reviews">Отслеживайте и одобряйте обзоры своих товаров</string>
+    <string name="login_prologue_label_products">Добавляйте новые товары и редактируйте существующие откуда угодно</string>
+    <string name="login_prologue_label_orders">Управляйте заказами на ходу</string>
+    <string name="login_prologue_label_analytics">Отслеживайте продажи и высокодоходные товары</string>
+    <string name="skip">Пропустить</string>
     <string name="product_type_external_title">Внешний товар</string>
     <string name="product_type_grouped_title">Сгруппированный товар</string>
     <string name="product_type_variable_title">Вариативный товар</string>
     <string name="product_type_virtual_desc">Уникальный цифровой товар, например услуги, загружаемые книги, музыка или видео.</string>
     <string name="product_type_simple_desc">Уникальный физический товар, который, возможно, потребуется отправить клиенту.</string>
     <string name="product_type_simple_title">Простой физический товар</string>
-    <string name="card_reader_connect_open_bluetooth_settings">Открыть настройки</string>
     <string name="card_reader_connect_open_location_settings">Открыть настройки</string>
     <string name="card_reader_connect_open_permission_settings">Открыть настройки</string>
-    <string name="card_reader_connect_bluetooth_disabled_hint">Bluetooth отключен</string>
-    <string name="card_reader_connect_location_provider_disabled_hint">Определение местоположения отключено</string>
-    <string name="card_reader_connect_missing_permissions_hint">Отсутствует необходимое разрешение на определение местоположения</string>
+    <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth отключен</string>
+    <string name="card_reader_connect_location_provider_disabled_header">Определение местоположения отключено</string>
+    <string name="card_reader_connect_missing_permissions_header">Отсутствует необходимое разрешение на определение местоположения</string>
     <string name="card_reader_connect_connecting_failed_hint">Не удалось подключиться к устройству чтения.</string>
-    <string name="card_reader_connect_scanning_failed_hint">Не удалось найти устройство чтения.</string>
-    <string name="card_reader_connect_failed_header">Не удалось подключиться к устройству чтения.</string>
     <string name="card_reader_connect_connecting_header">Подключение к устройству чтения</string>
     <string name="card_reader_connect_to_reader">Подключиться к устройству чтения</string>
     <string name="card_reader_connect_reader_found_header">Подключить устройство чтения %s?</string>
@@ -34,7 +187,6 @@ Language: ru
     <string name="product_delete_dialog_title">Удаление продукта</string>
     <string name="card_reader_payment_send_receipt">Отправить квитанцию</string>
     <string name="card_reader_payment_print_receipt">Печать квитанции</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Не удалось оплатить. Повторите попытку.</string>
     <string name="card_reader_payment_capturing_payment_state">Получение платежа</string>
     <string name="card_reader_payment_processing_payment_state">Обработка платежа</string>
     <string name="card_reader_payment_collect_payment_state">\"Чтиво\" готово</string>
@@ -78,14 +230,12 @@ Language: ru
     <string name="shipping_label_selected_rates_description">Выбрано %s ставок</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Подходит для бесплатной подписи</string>
     <string name="shipping_label_rate_included_options_free_pickup">Подходит для бесплатного самовывоза</string>
-    <string name="shipping_label_rate_included_options_insurance">Страхование (до %s)</string>
+    <string name="shipping_label_rate_included_options_insurance">Страхование (%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">отслеживание</string>
     <string name="shipping_label_rate_included_options">Включает %s</string>
     <string name="shipping_label_rate_option_adult_signature_required">Требуется подпись совершеннолетнего лица (%s)</string>
     <string name="shipping_label_rate_option_signature_required">Требуется подпись (%s)</string>
-    <string name="shipping_label_shipping_method_free_shipping">Бесплатная доставка</string>
-    <string name="shipping_label_shipping_method_local_pickup">Самовывоз</string>
-    <string name="shipping_label_shipping_method_flat_rate">Единая ставка</string>
-    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Клиент оплатил %1$s (%2$s) за доставку.</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Клиент оплатил %1$s из %2$s за доставку.</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">При покупке транспортных этикеток через WooCommerce вы сэкономите от 5 до 40 % по сравнению с тарифами почты.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Что такое скидка WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">При загрузке вариантов доставки произошла ошибка.</string>
@@ -132,7 +282,7 @@ Language: ru
     <string name="shipping_label_single_package_total_weight">Общий вес посылок: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Специальные посылки</string>
     <string name="shipping_label_package_details_fetch_products_error">Не удаётся получить данные о товарах</string>
-    <string name="shipping_label_missing_data_snackbar_message">Некоторые обязательные поля не заполнены.</string>
+    <string name="shipping_label_address_data_invalid_snackbar_message">Некоторые обязательные поля не заполнены.</string>
     <string name="shipping_label_package_details_weight_error">Неверный вес</string>
     <string name="shipping_label_package_selector_title">Выбранная посылка</string>
     <string name="shipping_label_packages_loading_message">Пожалуйста, подождите…</string>
@@ -152,7 +302,6 @@ Language: ru
     <string name="shipping_label_address_suggestion_use_selected_address">Использовать выбранный адрес</string>
     <string name="shipping_label_edit_address_loading_progress_title">Загрузка адреса</string>
     <string name="product_wip_title_m5">Доступны новые функции!</string>
-    <string name="product_wip_message_m5">Теперь вы можете добавлять к товару скачиваемые файлы и давать ссылки на сопутствующие и более дорогие товары. Товар больше не нужен? Отправьте его в корзину!</string>
     <string name="shipping_label_validation_view_map">Открыть карту</string>
     <string name="shipping_label_validation_contact_customer">Связаться с клиентом</string>
     <string name="shipping_label_validation_error_template">Сбой проверки: %s</string>
@@ -236,7 +385,6 @@ Language: ru
     <string name="product_downloadable_files_add">Добавить файл</string>
     <string name="product_downloadable_files_value_single">1 файл</string>
     <string name="product_downloadable_files_value_multiple">%1$d файлы</string>
-    <string name="product_wip_message_m4">Теперь можно на ходу создавать новые простые, связанные и сгруппированные товары в приложении Woo. Еще не готовы? Сохраните их как черновик.</string>
     <string name="print_shipping_label_info_step_4">Возможно, нужно &lt;b&gt;настроить печать по Wi-Fi на самом принтере&lt;/b&gt;. Убедитесь, что микропрограммное обеспечение принтера обновлено, и ознакомьтесь с документацией принтера.</string>
     <string name="print_shipping_label_info_step_3">Можно выбрать для принтера &lt;b&gt;службу печати по умолчанию&lt;/b&gt; или установить &lt;b&gt;приложение от производителя принтера&lt;/b&gt; (здесь должен появиться рекомендованный вариант).</string>
     <string name="print_shipping_label_info_step_1">Убедитесь, что ваши принтер и устройство подключены к &lt;b&gt;одной сети Wi-Fi&lt;/b&gt;</string>
@@ -286,7 +434,7 @@ Language: ru
     <string name="shipping_label_print_error_message">Если при печати купленной этикетки произошла ошибка, можно распечатать ее еще раз.</string>
     <string name="orderdetail_shipping_label_wip_message">Мы стараемся упростить процедуру печати этикеток с устройства. Сейчас, если вы создали этикетки для этого заказа в разделе администрирования магазина с помощью WooCommerce Shipping, их можно распечатать из описания заказа (здесь).</string>
     <string name="orderdetail_shipping_label_wip_title">Печатайте транспортные этикетки со своего устройства!</string>
-    <string name="orderdetail_shipping_label_reprint">Напечатать транспортную этикетку повторно</string>
+    <string name="orderdetail_shipping_label_print">Напечатать транспортную этикетку</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Черновик товара сохранен</string>
     <string name="product_detail_publish_product_draft_error">Ошибка сохранения черновика товара</string>
@@ -542,7 +690,6 @@ Language: ru
     <string name="empty_review_list_message">Получайте высококачественные отзывы о продуктах в вашем магазине</string>
     <string name="empty_review_list_title">Получить первые отзывы</string>
     <string name="empty_order_list_all_processed">Все заказы выполнены</string>
-    <string name="empty_order_list_message">Мы уведомим вас о поступлении нового заказа. Тем временем вы можете почитать о том, как увеличить продажи своего магазина.</string>
     <string name="empty_order_list_title">Ожидание первого заказа</string>
     <string name="share_your_store_message">Поделитесь информацией о своем магазине в социальных сетях и по электронной почте со своими контактами</string>
     <string name="get_the_word_out">Дайте знать о себе</string>
@@ -575,7 +722,7 @@ Language: ru
     <string name="order_refunds_select_quantity">Выбрать количество</string>
     <string name="order_refunds_shipping_refund">Возврат средств за доставку</string>
     <string name="order_refunds_products_refund">Возврат средств за продукты</string>
-    <string name="order_refunds_item_description">%d x %s каждый</string>
+    <string name="order_refunds_item_description">%s x %s каждый</string>
     <string name="order_refunds_items_selected">Выбрано элементов: %d</string>
     <string name="order_refunds_items_select_none">Ничего не выбирать</string>
     <string name="order_refunds_items_select_all">Выбрать все</string>
@@ -1049,7 +1196,6 @@ Language: ru
     <string name="site_picker_title">Выбрать магазин</string>
     <string name="settings_signout">Выйти</string>
     <string name="orderstatus_select_status">Изменить статус заказа</string>
-    <string name="order_status_changed_to">Статус заказа изменен на %s</string>
     <string name="orderdetail_change_order_status">Нажмите, чтобы изменить статус заказа</string>
     <string name="apply">Применить</string>
     <string name="app_rating_rate_never">Нет, спасибо</string>
@@ -1320,7 +1466,6 @@ Language: ru
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>
     <string name="login_connected_store">Подключенный магазин</string>
     <string name="login_configure_link">Ознакомьтесь с %sинструкциями по настройке%s.</string>
-    <string name="login_prologue_banner">Управляйте заказами, следите за продажами и контролируйте работу магазина с помощью уведомлений в реальном времени.</string>
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>
@@ -1372,5 +1517,9 @@ Language: ru
     <string-array name="order_list_tabs">
         <item>В обработке</item>
         <item>Все заказы</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Индивидуальный пакет</item>
+        <item>Пакет услуг</item>
     </string-array>
 </resources>

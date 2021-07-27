@@ -9,14 +9,19 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_AMOUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FULFILL_ORDER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STEP
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARRIER_RATES_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARRIER_RATES_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOMS_COMPLETE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOMS_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DESTINATION_ADDRESS_COMPLETE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DESTINATION_ADDRESS_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORIGIN_ADDRESS_COMPLETE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORIGIN_ADDRESS_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PACKAGES_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PACKAGES_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENT_METHOD_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENT_METHOD_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_INITIATED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_READY
@@ -25,12 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.PaymentMethod
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -49,7 +49,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PackagesLoadingError
@@ -62,6 +62,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.CustomsFormFilledOut
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditCustomsCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
@@ -91,12 +92,16 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.util.isSuccessful
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -110,6 +115,7 @@ import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class CreateShippingLabelViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -173,7 +179,11 @@ class CreateShippingLabelViewModel @Inject constructor(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
                             progressDialogMessage = string.shipping_label_edit_address_progress_message
                         ) {
-                            validateAddress(transition.state.data.stepsState.originAddressStep.data, ORIGIN)
+                            validateAddress(
+                                address = transition.state.data.stepsState.originAddressStep.data,
+                                type = ORIGIN,
+                                isInternationalShipment = transition.state.data.isInternationalShipment
+                            )
                         }
                     }
                     is State.ShippingAddressValidation -> {
@@ -181,7 +191,11 @@ class CreateShippingLabelViewModel @Inject constructor(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
                             progressDialogMessage = string.shipping_label_edit_address_progress_message
                         ) {
-                            validateAddress(transition.state.data.stepsState.shippingAddressStep.data, DESTINATION)
+                            validateAddress(
+                                address = transition.state.data.stepsState.shippingAddressStep.data,
+                                type = DESTINATION,
+                                isInternationalShipment = transition.state.data.isInternationalShipment
+                            )
                         }
                     }
                     is State.PurchaseLabels -> {
@@ -204,7 +218,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                             ShowAddressEditor(
                                 sideEffect.address,
                                 sideEffect.type,
-                                sideEffect.validationResult
+                                sideEffect.validationResult,
+                                sideEffect.requiresPhoneNumber
                             )
                         )
                         is SideEffect.ShowAddressSuggestion -> triggerEvent(
@@ -216,7 +231,9 @@ class CreateShippingLabelViewModel @Inject constructor(
                         )
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> openCustomsForm(
+                            sideEffect.originCountryCode,
                             sideEffect.destinationCountryCode,
+                            sideEffect.shippingPackages,
                             sideEffect.customsPackages
                         )
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
@@ -259,6 +276,18 @@ class CreateShippingLabelViewModel @Inject constructor(
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to action))
     }
 
+    private fun trackStartedStep(step: FlowStep) {
+        val action = when (step) {
+            FlowStep.ORIGIN_ADDRESS -> VALUE_ORIGIN_ADDRESS_STARTED
+            FlowStep.SHIPPING_ADDRESS -> VALUE_DESTINATION_ADDRESS_STARTED
+            FlowStep.PACKAGING -> VALUE_PACKAGES_STARTED
+            FlowStep.CUSTOMS -> VALUE_CUSTOMS_STARTED
+            FlowStep.CARRIER -> VALUE_CARRIER_RATES_STARTED
+            FlowStep.PAYMENT -> VALUE_PAYMENT_METHOD_STARTED
+        }
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to action))
+    }
+
     private suspend fun handleResult(
         @StringRes progressDialogTitle: Int = 0,
         @StringRes progressDialogMessage: Int = 0,
@@ -285,6 +314,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 data.stepsState.originAddressStep.data,
                 data.stepsState.shippingAddressStep.data,
                 data.stepsState.packagingStep.data,
+                data.stepsState.customsStep.data,
                 data.stepsState.carrierStep.data
             )
         )
@@ -299,8 +329,20 @@ class CreateShippingLabelViewModel @Inject constructor(
         )
     }
 
-    private fun openCustomsForm(destinationCountryCode: String, customsPackages: List<CustomsPackage>) {
-        triggerEvent(ShowCustomsForm(destinationCountryCode, customsPackages))
+    private fun openCustomsForm(
+        originCountryCode: String,
+        destinationCountryCode: String,
+        shippingPackages: List<ShippingLabelPackage>,
+        customsPackages: List<CustomsPackage>
+    ) {
+        triggerEvent(
+            ShowCustomsForm(
+                originCountryCode = originCountryCode,
+                destinationCountryCode = destinationCountryCode,
+                shippingPackages = shippingPackages,
+                customsPackages = customsPackages
+            )
+        )
     }
 
     private fun openPaymentDetails() {
@@ -319,7 +361,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 is OriginAddressStep -> data.toString()
                 is ShippingAddressStep -> data.toString()
                 is PackagingStep -> stepDescription
-                is CustomsStep -> null
+                is CustomsStep -> stepDescription
                 is CarrierStep -> stepDescription
                 is PaymentsStep -> stepDescription
             }
@@ -336,7 +378,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                 shippingAddressStep.status == DONE &&
                 packagingStep.status == DONE &&
                 (!customsStep.isVisible || customsStep.status == DONE) &&
-                carrierStep.status == DONE
+                carrierStep.status == DONE &&
+                paymentsStep.status == DONE
             if (!isVisible) return OrderSummaryState()
 
             AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to VALUE_PURCHASE_READY))
@@ -344,9 +387,17 @@ class CreateShippingLabelViewModel @Inject constructor(
             with(stateMachineData.stepsState.carrierStep.data) {
                 val price = sumByBigDecimal { it.price }
                 val discount = sumByBigDecimal { it.discount }
+                val individualPackagesPrices = if (size > 1) {
+                    map { rate ->
+                        val labelPackage = stateMachineData.stepsState.packagingStep.data
+                            .first { it.packageId == rate.packageId }
+                        Pair(labelPackage, rate.price)
+                    }.toMap()
+                } else emptyMap()
 
                 return OrderSummaryState(
                     isVisible = true,
+                    individualPackagesPrices = individualPackagesPrices,
                     price = price,
                     discount = discount,
                     // TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use
@@ -384,7 +435,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         return Event.DataLoaded(
             order = order,
             originAddress = getStoreAddress(),
-            shippingAddress = order.shippingAddress,
+            shippingAddress = getShippingAddress(order),
             currentPaymentMethod = accountSettings.paymentMethods.find { it.id == accountSettings.selectedPaymentId }
         )
     }
@@ -406,13 +457,18 @@ class CreateShippingLabelViewModel @Inject constructor(
         )
     }
 
-    private suspend fun validateAddress(address: Address, type: AddressType): Event {
-        return when (val result = addressValidator.validateAddress(address, type)) {
+    private fun getShippingAddress(order: Order): Address {
+        val phoneNumber = order.metaData.firstOrNull { it.key == "_shipping_phone" }?.value.orEmpty()
+        return order.shippingAddress.copy(phone = phoneNumber)
+    }
+
+    private suspend fun validateAddress(address: Address, type: AddressType, isInternationalShipment: Boolean): Event {
+        return when (val result = addressValidator.validateAddress(address, type, isInternationalShipment)) {
             ValidationResult.Valid -> AddressValidated(address)
             is ValidationResult.SuggestedChanges -> AddressChangeSuggested(result.suggested)
             is ValidationResult.NotFound,
             is ValidationResult.Invalid,
-            is ValidationResult.NameMissing -> AddressInvalid(address, result)
+            is ValidationResult.NameMissing, ValidationResult.PhoneInvalid -> AddressInvalid(address, result)
             is ValidationResult.Error -> AddressValidationFailed
         }
     }
@@ -427,7 +483,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                 origin = data.stepsState.originAddressStep.data,
                 destination = data.stepsState.shippingAddressStep.data,
                 packages = data.stepsState.packagingStep.data,
-                rates = data.stepsState.carrierStep.data
+                rates = data.stepsState.carrierStep.data,
+                customsPackages = data.stepsState.customsStep.data
             )
         } / 1000.0
 
@@ -445,10 +502,10 @@ class CreateShippingLabelViewModel @Inject constructor(
                 val orderIdSet = data.order.identifier.toIdSet()
                 val fulfillResult = orderDetailRepository.updateOrderStatus(
                     localOrderId = orderIdSet.id,
-                    remoteOrderId = orderIdSet.remoteOrderId,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 )
-                if (fulfillResult) {
+
+                if (fulfillResult.isSuccessful()) {
                     AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
                 } else {
                     AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
@@ -472,10 +529,9 @@ class CreateShippingLabelViewModel @Inject constructor(
                 val firstLine = if (data.size == 1) {
                     data.first().selectedPackage!!.title
                 } else {
-                    // TODO properly test this during M3
                     resourceProvider.getString(
                         string.shipping_label_multi_packages_items_count,
-                        data.sumBy { it.items.size },
+                        data.sumBy { it.itemsCount },
                         data.size
                     )
                 }
@@ -541,65 +597,64 @@ class CreateShippingLabelViewModel @Inject constructor(
             }
         }
 
+    private val CustomsStep.stepDescription: String
+        get() = resourceProvider.getString(
+            if (status == DONE) string.shipping_label_create_customs_done
+            else string.shipping_label_create_customs_description
+        )
+
     fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
 
     fun onAddressEditConfirmed(address: Address) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_EDIT_CONFIRMED)
         stateMachine.handleEvent(AddressValidated(address))
     }
 
     fun onAddressEditCanceled() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_EDIT_CANCELED)
         stateMachine.handleEvent(AddressEditCanceled)
     }
 
     fun onSuggestedAddressDiscarded() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_DISCARDED)
         stateMachine.handleEvent(SuggestedAddressDiscarded)
     }
 
     fun onSuggestedAddressAccepted(address: Address) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_ACCEPTED)
         stateMachine.handleEvent(SuggestedAddressAccepted(address))
     }
 
     fun onSuggestedAddressEditRequested(address: Address) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_EDIT_REQUESTED)
         stateMachine.handleEvent(EditAddressRequested(address))
     }
 
     fun onPackagesUpdated(packages: List<ShippingLabelPackage>) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_UPDATED)
         stateMachine.handleEvent(PackagesSelected(packages))
     }
 
     fun onPackagesEditCanceled() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_CANCELED)
         stateMachine.handleEvent(EditPackagingCanceled)
     }
 
     fun onPaymentsUpdated(paymentMethod: PaymentMethod) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_UPDATED)
         stateMachine.handleEvent(PaymentSelected(paymentMethod))
     }
 
     fun onPaymentsEditCanceled() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_SELECTION_CANCELED)
         stateMachine.handleEvent(EditPaymentCanceled)
     }
 
     fun onShippingCarriersSelected(rates: List<ShippingRate>) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SHIPPING_CARRIER_UPDATED)
         stateMachine.handleEvent(ShippingCarrierSelected(rates))
     }
 
     fun onShippingCarrierSelectionCanceled() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SHIPPING_CARRIER_SELECTION_CANCELED)
         stateMachine.handleEvent(ShippingCarrierSelectionCanceled)
     }
 
-    fun onCustomsFilledOut() {
-        stateMachine.handleEvent(CustomsFormFilledOut)
+    fun onCustomsFilledOut(customsPackages: List<CustomsPackage>) {
+        stateMachine.handleEvent(CustomsFormFilledOut(customsPackages))
+    }
+
+    fun onCustomsEditCanceled() {
+        stateMachine.handleEvent(EditCustomsCanceled)
     }
 
     fun onWooDiscountInfoClicked() {
@@ -608,12 +663,11 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     fun onPurchaseButtonClicked(fulfillOrder: Boolean) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_BUTTON_TAPPED)
         stateMachine.handleEvent(PurchaseStarted(fulfillOrder))
     }
 
     fun onEditButtonTapped(step: FlowStep) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_BUTTON_TAPPED, mapOf(KEY_STEP to step.name))
+        trackStartedStep(step)
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.EditOriginAddressRequested
             FlowStep.SHIPPING_ADDRESS -> Event.EditShippingAddressRequested
@@ -629,7 +683,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     fun onContinueButtonTapped(step: FlowStep) {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_CONTINUE_BUTTON_TAPPED, mapOf(KEY_STEP to step.name))
+        trackStartedStep(step)
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.OriginAddressValidationStarted
             FlowStep.SHIPPING_ADDRESS -> Event.ShippingAddressValidationStarted
@@ -639,6 +693,21 @@ class CreateShippingLabelViewModel @Inject constructor(
             FlowStep.PAYMENT -> Event.PaymentSelectionStarted
         }.also { event ->
             event.let { stateMachine.handleEvent(it) }
+        }
+    }
+
+    fun onBackButtonClicked() {
+        val stepsState = stateMachine.transitions.value.state.data?.stepsState
+        if (stepsState?.any { it.status == StepStatus.DONE } == true) {
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = { _, _ ->
+                        triggerEvent(Exit)
+                    }
+                )
+            )
+        } else {
+            triggerEvent(Exit)
         }
     }
 
@@ -678,6 +747,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     @Parcelize
     data class OrderSummaryState(
         val isVisible: Boolean = false,
+        val individualPackagesPrices: Map<ShippingLabelPackage, BigDecimal> = emptyMap(),
         val price: BigDecimal = BigDecimal.ZERO,
         val discount: BigDecimal = BigDecimal.ZERO,
         val currency: String? = null

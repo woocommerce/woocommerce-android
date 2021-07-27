@@ -60,6 +60,12 @@
             android:layout_height="wrap_content"
             app:optionTitle="@string/settings_card_reader" />
 
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_card_reader_payments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/settings_card_reader_payments" />
+
     </LinearLayout>
 
     <View style="@style/Woo.Divider" />

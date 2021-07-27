@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -109,7 +108,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         binding.attributeList.layoutManager = layoutManager
         binding.attributeList.itemAnimator = null
 
-        binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
+        binding.attributeEditText.setOnEditorActionListener { _, _, _ ->
             val attributeName = binding.attributeEditText.text?.toString() ?: ""
             if (attributeName.isNotBlank()) {
                 binding.attributeEditText.text?.clear()
@@ -122,20 +121,26 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     private fun setupObservers() {
-        viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer {
-            showAttributes(it)
-        })
+        viewModel.globalAttributeList.observe(
+            viewLifecycleOwner,
+            {
+                showAttributes(it)
+            }
+        )
 
         viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitProductAddAttribute -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is ExitProductAddAttribute -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
@@ -173,9 +178,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                 // add the list of global attributes along with any terms each global attribute has in the product draft
                 allAttributes.addAll(
                     ArrayList<ProductAttribute>().also {
-                        it.addAll(globalAttributes.map { attribute ->
-                            attribute.toProductAttributeForDisplay(getGlobalDraftTerms(attribute.remoteId))
-                        })
+                        it.addAll(
+                            globalAttributes.map { attribute ->
+                                attribute.toProductAttributeForDisplay(getGlobalDraftTerms(attribute.remoteId))
+                            }
+                        )
                     }
                 )
 
@@ -184,8 +191,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                 allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
             }
         )
-        binding.attributeSelectionHint.isVisible =
-            globalDraftAttributes.isNotEmpty() or localDraftAttributes.isNotEmpty()
+
+        (globalAttributes.isNotEmpty() or localDraftAttributes.isNotEmpty()).let { shouldBeVisible ->
+            binding.attributeSelectionHint.isVisible = shouldBeVisible
+            binding.divider.isVisible = shouldBeVisible
+        }
     }
 
     private fun showSkeleton(show: Boolean) {

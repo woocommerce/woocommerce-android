@@ -8,7 +8,7 @@ class SingleOrderScreen : Screen {
         const val ORDER_NUMBER_LABEL = R.id.orderStatus_dateAndOrderNum
     }
 
-    constructor(): super(ORDER_NUMBER_LABEL)
+    constructor() : super(ORDER_NUMBER_LABEL)
 
     fun goBackToOrdersScreen(): OrderListScreen {
         pressBack()

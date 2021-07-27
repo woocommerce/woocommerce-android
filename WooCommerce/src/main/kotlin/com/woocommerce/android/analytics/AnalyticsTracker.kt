@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.TracksClient
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.VIEW_SHOWN
 import com.woocommerce.android.util.WooLog
@@ -95,6 +96,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED(siteless = true),
         LOGIN_NO_JETPACK_TRY_AGAIN_TAPPED(siteless = true),
         LOGIN_NO_JETPACK_MENU_HELP_TAPPED(siteless = true),
+        LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED(siteless = true),
         LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED(siteless = true),
         LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED(siteless = true),
@@ -216,37 +218,48 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SHIPPING_LABEL_PRINT_REQUESTED,
         SHIPPING_LABEL_REFUND_REQUESTED,
         SHIPPING_LABEL_PURCHASE_FLOW,
-        SHIPPING_LABEL_EDIT_BUTTON_TAPPED,
-        SHIPPING_LABEL_ADDRESS_EDIT_CONFIRMED,
-        SHIPPING_LABEL_ADDRESS_EDIT_CANCELED,
-        SHIPPING_LABEL_SUGGESTED_ADDRESS_EDIT_REQUESTED,
-        SHIPPING_LABEL_SUGGESTED_ADDRESS_ACCEPTED,
-        SHIPPING_LABEL_SUGGESTED_ADDRESS_DISCARDED,
-        SHIPPING_LABEL_SHIPPING_CARRIER_SELECTION_CANCELED,
-        SHIPPING_LABEL_SHIPPING_CARRIER_UPDATED,
-        SHIPPING_LABEL_PACKAGE_SELECTION_CANCELED,
-        SHIPPING_LABEL_PACKAGE_UPDATED,
-        SHIPPING_LABEL_PAYMENT_SELECTION_CANCELED,
-        SHIPPING_LABEL_PAYMENT_UPDATED,
         SHIPPING_LABEL_DISCOUNT_INFO_BUTTON_TAPPED,
-        SHIPPING_LABEL_CONTINUE_BUTTON_TAPPED,
-        SHIPPING_LABEL_PURCHASE_BUTTON_TAPPED,
         SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED,
         SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED,
-        SHIPPING_LABEL_EDIT_ADDRESS_COUNTRY_SPINNER_TAPPED,
-        SHIPPING_LABEL_EDIT_ADDRESS_STATE_SPINNER_TAPPED,
         SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED,
         SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED,
-        SHIPPING_LABEL_SHIPPING_CARRIER_DONE_BUTTON_TAPPED,
         SHIPPING_LABEL_ADDRESS_SUGGESTIONS_USE_SELECTED_ADDRESS_BUTTON_TAPPED,
         SHIPPING_LABEL_ADDRESS_SUGGESTIONS_EDIT_SELECTED_ADDRESS_BUTTON_TAPPED,
-        SHIPPING_LABEL_PACKAGE_SELECTION_PACKAGE_SPINNER_TAPPED,
-        SHIPPING_LABEL_PACKAGE_SELECTION_DONE_BUTTON_TAPPED,
-        SHIPPING_LABEL_PAYMENT_METHOD_DONE_BUTTON_TAPPED,
         SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
         SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED,
         SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
         SHIPPING_LABEL_ORDER_FULFILL_FAILED,
+
+        // -- Card Present Payments - collection
+        CARD_PRESENT_COLLECT_PAYMENT_TAPPED,
+        CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+        CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
+
+        // -- Card Reader - discovery
+        CARD_READER_DISCOVERY_TAPPED,
+        CARD_READER_DISCOVERY_FAILED,
+        CARD_READER_DISCOVERY_READER_DISCOVERED,
+
+        // -- Card Reader - connection
+        CARD_READER_CONNECTION_TAPPED,
+        CARD_READER_CONNECTION_FAILED,
+        CARD_READER_CONNECTION_SUCCESS,
+        CARD_READER_DISCONNECT_TAPPED,
+        CARD_READER_AUTO_CONNECTION_STARTED,
+
+        // -- Card Reader - software update
+        CARD_READER_SOFTWARE_UPDATE_TAPPED,
+        CARD_READER_SOFTWARE_UPDATE_SUCCESS,
+        CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED,
+        CARD_READER_SOFTWARE_UPDATE_FAILED,
+
+        // -- Receipts
+        RECEIPT_PRINT_TAPPED,
+        RECEIPT_EMAIL_TAPPED,
+        RECEIPT_EMAIL_FAILED,
+        RECEIPT_PRINT_FAILED,
+        RECEIPT_PRINT_CANCELED,
+        RECEIPT_PRINT_SUCCESS,
 
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
@@ -395,6 +408,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
         PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED,
         PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED,
+        PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED,
 
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
@@ -566,6 +580,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
             }
         }
+        finalProperties[IS_DEBUG] = BuildConfig.DEBUG
 
         val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
@@ -619,6 +634,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
 
+        const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"
         const val KEY_BLOG_ID = "blog_id"
         const val KEY_CONTEXT = "context"
@@ -672,6 +688,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_STARTED = "started"
         const val VALUE_PURCHASE_INITIATED = "purchase_initiated"
+        const val VALUE_ORIGIN_ADDRESS_STARTED = "origin_address_started"
+        const val VALUE_DESTINATION_ADDRESS_STARTED = "destination_address_started"
+        const val VALUE_PACKAGES_STARTED = "packages_started"
+        const val VALUE_CARRIER_RATES_STARTED = "carrier_rates_started"
+        const val VALUE_CUSTOMS_STARTED = "customs_started"
+        const val VALUE_PAYMENT_METHOD_STARTED = "payment_method_started"
         const val VALUE_ORIGIN_ADDRESS_COMPLETE = "origin_address_complete"
         const val VALUE_DESTINATION_ADDRESS_COMPLETE = "destination_address_complete"
         const val VALUE_PACKAGES_SELECTED = "packages_selected"
@@ -697,7 +719,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_CANCELED = "canceled"
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
-        const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
+        const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
         const val VALUE_SHIPPING_LABELS_M2_FEEDBACK = "shipping_labels_m2"
 

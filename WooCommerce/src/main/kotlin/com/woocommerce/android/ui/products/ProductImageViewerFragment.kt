@@ -5,19 +5,18 @@ import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.MarginPageTransformer
+import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -32,7 +31,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_viewer),
+class ProductImageViewerFragment :
+    BaseFragment(R.layout.fragment_product_image_viewer),
     ImageViewerListener,
     BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -108,9 +108,11 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
     private fun setupViewPager() {
         resetAdapter()
 
-        binding.viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
+        binding.viewPager.setPageTransformer(
+            MarginPageTransformer(resources.getDimensionPixelSize(R.dimen.margin_large))
+        )
 
-        binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 showToolbar(true)
                 // remember this image id so we can return to it upon rotation, and so
@@ -124,12 +126,12 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
         val images = ArrayList<Product.Image>()
         images.addAll(viewModel.images)
 
-        pagerAdapter = ImageViewerAdapter(childFragmentManager, images)
+        pagerAdapter = ImageViewerAdapter(this, images)
         binding.viewPager.adapter = pagerAdapter
 
         val position = pagerAdapter.indexOfImageId(remoteMediaId)
         if (position > -1) {
-            binding.viewPager.currentItem = position
+            binding.viewPager.setCurrentItem(position, false)
         }
     }
 
@@ -139,16 +141,16 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true
         confirmationDialog = ConfirmRemoveProductImageDialog(
-                requireActivity(),
-                onPositiveButton = this::removeCurrentImage,
-                onNegativeButton = {
-                    isConfirmationShowing = false
-                }
+            requireActivity(),
+            onPositiveButton = this::removeCurrentImage,
+            onNegativeButton = {
+                isConfirmationShowing = false
+            }
         ).show()
     }
 
     private fun removeCurrentImage() {
-        val newImageCount = pagerAdapter.count - 1
+        val newImageCount = pagerAdapter.itemCount - 1
         val currentMediaId = remoteMediaId
 
         // determine the image to return to when the adapter is reloaded following the image removal
@@ -188,7 +190,8 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
     private fun showToolbar(show: Boolean) {
         if (isAdded) {
             if ((show && binding.fakeToolbar.visibility == View.VISIBLE) ||
-                (!show && binding.fakeToolbar.visibility != View.VISIBLE)) {
+                (!show && binding.fakeToolbar.visibility != View.VISIBLE)
+            ) {
                 return
             }
 
@@ -235,8 +238,8 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
         uiMessageResolver.showSnack(R.string.error_loading_image)
     }
 
-    internal inner class ImageViewerAdapter(fm: FragmentManager, val images: ArrayList<Product.Image>) :
-            FragmentStatePagerAdapter(fm) {
+    internal inner class ImageViewerAdapter(fragment: Fragment, val images: ArrayList<Product.Image>) :
+        FragmentStateAdapter(fragment) {
         fun indexOfImageId(imageId: Long): Int {
             for (index in images.indices) {
                 if (imageId == images[index].id) {
@@ -246,17 +249,14 @@ class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_
             return -1
         }
 
-        override fun getItem(position: Int): Fragment {
-            return ImageViewerFragment.newInstance(images[position])
+        override fun createFragment(position: Int): Fragment {
+            return ImageViewerFragment.newInstance(images[position]).also {
+                it.setImageListener(this@ProductImageViewerFragment)
+            }
         }
 
-        override fun getCount(): Int {
+        override fun getItemCount(): Int {
             return images.size
-        }
-
-        override fun setPrimaryItem(container: ViewGroup, position: Int, item: Any) {
-            super.setPrimaryItem(container, position, item)
-            (item as? ImageViewerFragment)?.setImageListener(this@ProductImageViewerFragment)
         }
     }
 }

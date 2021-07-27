@@ -5,17 +5,23 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingCustomsBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs), BackPressListener {
@@ -24,6 +30,7 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
         const val EDIT_CUSTOMS_RESULT = "edit_customs_result"
     }
 
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: ShippingCustomsViewModel by viewModels()
     private lateinit var doneMenuItem: MenuItem
 
@@ -71,32 +78,42 @@ class ShippingCustomsFragment : BaseFragment(R.layout.fragment_shipping_customs)
             }
         }
 
-        setupObservers()
+        setupObservers(binding)
     }
 
-    private fun setupObservers() {
-        viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
-            new.customsPackages.takeIfNotEqualTo(old?.customsPackages) { customsPackages ->
-                customsAdapter.customsPackages = customsPackages
-            }
-            new.canSubmitForm.takeIfNotEqualTo(old?.canSubmitForm) { canSubmitForm ->
-                if (::doneMenuItem.isInitialized) {
-                    doneMenuItem.isVisible = canSubmitForm
+    private fun setupObservers(binding: FragmentShippingCustomsBinding) {
+        viewModel.viewStateData.observe(
+            viewLifecycleOwner,
+            { old, new ->
+                new.customsPackages.takeIfNotEqualTo(old?.customsPackages) { customsPackages ->
+                    customsAdapter.customsPackages = customsPackages
+                }
+                new.canSubmitForm.takeIfNotEqualTo(old?.canSubmitForm) { canSubmitForm ->
+                    if (::doneMenuItem.isInitialized) {
+                        doneMenuItem.isVisible = canSubmitForm
+                    }
+                }
+                new.isProgressViewShown.takeIfNotEqualTo(old?.isProgressViewShown) { show ->
+                    binding.progressView.isVisible = show
+                    binding.packagesList.isVisible = !show
                 }
             }
-        })
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                // TODO use EDIT_CUSTOMS_CLOSED for ExitWIthResult event, and EDIT_CUSTOMS_CLOSED for Exit
-                is Exit -> navigateBackWithNotice(EDIT_CUSTOMS_RESULT)
-                else -> event.isHandled = false
+        )
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is ExitWithResult<*> -> navigateBackWithResult(EDIT_CUSTOMS_RESULT, event.data)
+                    is Exit -> navigateBackWithNotice(EDIT_CUSTOMS_CLOSED)
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        // TODO pass this to the ViewModel
-        navigateBackWithNotice(EDIT_CUSTOMS_RESULT)
+        viewModel.onBackButtonClicked()
         return false
     }
 }

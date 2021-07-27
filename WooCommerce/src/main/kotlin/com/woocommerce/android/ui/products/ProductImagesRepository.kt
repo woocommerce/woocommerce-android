@@ -11,5 +11,5 @@ class ProductImagesRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     fun getProduct(remoteProductId: Long): Product? =
-            productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.toAppModel()
+        productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)?.toAppModel()
 }

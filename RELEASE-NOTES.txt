@@ -1,12 +1,29 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+7.3
+-----
+
+
+7.2
+-----
+
+
+7.1
+-----
+- [*] Fixed a bug where the app doesn't show the correct quantity in orders if it's decimal [https://github.com/woocommerce/woocommerce-android/pull/4267]
+
+7.0
+-----
+- [***] Merchants using WooCommerce Shipping in their store can create international labels from the app [https://github.com/woocommerce/woocommerce-android/pull/4250]
+
 6.9
 -----
 - [*] Products: Attributes are now accessible directly from the Product Details view
 - [*] Updated empty state illustrations. [https://github.com/woocommerce/woocommerce-android/pull/3678]
 - [*] Various design tweaks on empty state screen [https://github.com/woocommerce/woocommerce-android/pull/3879]
 - [*] Removed trash option from product status in Product Settings [https://github.com/woocommerce/woocommerce-android/pull/4148]
-
+- [*] Fixed an issue where the app would crash when loading refunds [https://github.com/woocommerce/woocommerce-android/pull/4166]
+- [*] Fixed a rare bug that would display incorrect order quantities for variable products [https://github.com/woocommerce/woocommerce-android/pull/4193]
 
 6.8
 -----
@@ -16,6 +33,7 @@
 
 6.7
 -----
+- [***] Products: It's now possible to create a Variable Product from the Product section
 - [*] It's now possible to purchase more shipping labels on orders that already has one. [https://github.com/woocommerce/woocommerce-android/pull/3961]
 
 

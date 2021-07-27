@@ -26,12 +26,16 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailPaymentInfoBinding.inflate(LayoutInflater.from(ctx), this)
 
+    @Suppress("LongParameterList", "LongMethod")
     fun updatePaymentInfo(
         order: Order,
+        isReceiptAvailable: Boolean,
         isPaymentCollectableWithCardReader: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String,
+        onSeeReceiptClickListener: (view: View) -> Unit,
         onIssueRefundClickListener: (view: View) -> Unit,
-        onCollectCardPresentPaymentClickListener: (view: View) -> Unit
+        onCollectCardPresentPaymentClickListener: (view: View) -> Unit,
+        onPrintingInstructionsClickListener: (view: View) -> Unit
     ) {
         binding.paymentInfoProductsTotal.text = formatCurrencyForDisplay(order.productsTotal)
         binding.paymentInfoShippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
@@ -103,11 +107,29 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 
         binding.paymentInfoIssueRefundButton.setOnClickListener(onIssueRefundClickListener)
         if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
+            binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.VISIBLE
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
                 onCollectCardPresentPaymentClickListener
             )
         } else {
             binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.GONE
+        }
+
+        if (FeatureFlag.CARD_READER.isEnabled() && isReceiptAvailable) {
+            binding.paymentInfoSeeReceiptButton.visibility = View.VISIBLE
+            binding.paymentInfoSeeReceiptButton.setOnClickListener(
+                onSeeReceiptClickListener
+            )
+        } else {
+            binding.paymentInfoSeeReceiptButton.visibility = View.GONE
+        }
+
+        if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
+            binding.paymentInfoPrintingInstructions.setOnClickListener(
+                onPrintingInstructionsClickListener
+            )
+        } else {
+            binding.paymentInfoPrintingInstructions.visibility = View.GONE
         }
     }
 
@@ -125,7 +147,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         binding.paymentInfoRefundTotalSection.hide()
 
         var availableRefundQuantity = order.availableRefundQuantity
-        refunds.flatMap { it.items }.groupBy { it.uniqueId }.forEach { productRefunds ->
+        refunds.flatMap { it.items }.groupBy { it.orderItemId }.forEach { productRefunds ->
             val refundedCount = productRefunds.value.sumBy { it.quantity }
             availableRefundQuantity -= refundedCount
         }

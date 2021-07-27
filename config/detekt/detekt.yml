@@ -1,0 +1,24 @@
+build:
+  maxIssues: 0
+
+complexity:
+  LargeClass:
+    excludes: ['**/test/**']
+  LongParameterList:
+    ignoreDefaultParameters: true
+    ignoreAnnotated: ['Inject']
+  TooManyFunctions:
+    ignoreOverridden: true
+
+formatting:
+  active: true
+  autoCorrect: true
+  Indentation:
+    active: true
+    autoCorrect: true
+  NoWildcardImports:
+    active: false
+
+style:
+  WildcardImport:
+    active: false

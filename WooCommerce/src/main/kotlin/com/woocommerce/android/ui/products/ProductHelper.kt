@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductBackorderStatus.NotAvailable
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductTaxStatus.None
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
 import java.math.BigDecimal
 import java.util.Date
@@ -39,7 +41,7 @@ object ProductHelper {
             description = "",
             shortDescription = "",
             type = productType.value,
-            status = PUBLISH,
+            status = if (productType == VARIABLE) DRAFT else PUBLISH,
             catalogVisibility = VISIBLE,
             isFeatured = false,
             stockStatus = InStock,

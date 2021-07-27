@@ -1,0 +1,4 @@
+7.1:
+Alcuni venditori negli USA che utilizzano l'estensione WooCommerce Shipping & Tax hanno visualizzato un bug durante la creazione di etichette per ordini con quantità di prodotto decimali.  È stato risolto.
+
+Vuoi provare la creazione di etichette? Installa e attiva l'estensione WooCommerce Shipping & Tax nel tuo negozio. In questo momento, supportiamo i commercianti negli USA che spediscono in tutto il mondo. Accogliamo volentieri il tuo feedback.

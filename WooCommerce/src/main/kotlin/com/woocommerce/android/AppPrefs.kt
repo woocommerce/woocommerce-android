@@ -5,9 +5,11 @@ package com.woocommerce.android
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
@@ -47,7 +49,9 @@ object AppPrefs {
         UNIFIED_LOGIN_LAST_ACTIVE_SOURCE,
         UNIFIED_LOGIN_LAST_ACTIVE_FLOW,
         IS_USER_ELIGIBLE,
-        USER_EMAIL
+        USER_EMAIL,
+        RECEIPT_PREFIX,
+        IS_CARD_PRESENT_ELIGIBLE
     }
 
     /**
@@ -85,8 +89,15 @@ object AppPrefs {
 
         // Application permissions
         ASKED_PERMISSION_CAMERA,
+
         // Date of the app installation
-        APP_INSTALATION_DATE
+        APP_INSTALATION_DATE,
+
+        // last connected card reader's id
+        LAST_CONNECTED_CARD_READER_ID,
+
+        // show card reader tutorial after a reader is connected
+        SHOW_CARD_READER_CONNECTED_TUTORIAL,
     }
 
     fun init(context: Context) {
@@ -122,7 +133,6 @@ object AppPrefs {
         get() = getString(UndeletablePrefKey.APP_INSTALATION_DATE)
             .toLongOrNull()
             ?.let { Date(it) }
-
         private set(value) = value
             ?.time.toString()
             .let { setString(UndeletablePrefKey.APP_INSTALATION_DATE, it) }
@@ -184,6 +194,32 @@ object AppPrefs {
     fun getUserEmail() = getString(DeletablePrefKey.USER_EMAIL)
 
     fun setUserEmail(email: String) = setString(DeletablePrefKey.USER_EMAIL, email)
+
+    fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
+        PreferenceUtils.getString(getPreferences(), getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId))
+
+    fun setReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long, url: String) =
+        PreferenceUtils.setString(
+            getPreferences(),
+            getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId),
+            url
+        )
+
+    private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
+        "$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId"
+
+    fun setLastConnectedCardReaderId(readerId: String) =
+        setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
+
+    fun getLastConnectedCardReaderId() =
+        PreferenceUtils.getString(getPreferences(), UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID.toString(), null)
+
+    fun removeLastConnectedCardReaderId() = remove(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID)
+
+    fun getShowCardReaderConnectedTutorial() = getBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, true)
+
+    fun setShowCardReaderConnectedTutorial(show: Boolean) =
+        setBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, show)
 
     /**
      * Flag to check products features are enabled
@@ -357,6 +393,14 @@ object AppPrefs {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
+    fun setIsCardPresentEligible(isEligible: Boolean) {
+        setBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, isEligible)
+    }
+
+    fun isCardPresentEligible(): Boolean {
+        return getBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, false)
+    }
+
     /**
      * Remove all user and site-related preferences.
      */
@@ -364,9 +408,25 @@ object AppPrefs {
         val editor = getPreferences().edit()
         DeletablePrefKey.values().forEach { a -> editor.remove(a.name) }
         editor.remove(SelectedSite.SELECTED_SITE_LOCAL_ID)
+        removePreferencesWithDynamicKey(editor)
         editor.apply()
 
         resetSitePreferences()
+    }
+
+    /**
+     * This method removes entries in shared preferences which use dynamically created keys.
+     *
+     * For example order receipts are stored under "RECEIPT_PREFIX:siteId:...:orderId" - each entry has a different
+     * key based on the currently selected site and the order it's related to.
+     */
+    private fun removePreferencesWithDynamicKey(editor: Editor) {
+        getPreferences()
+            .all
+            .filter { it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) }
+            .forEach {
+                editor.remove(it.key)
+            }
     }
 
     /**

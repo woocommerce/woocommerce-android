@@ -22,7 +22,8 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_filter_option_list),
+class ProductFilterOptionListFragment :
+    BaseFragment(R.layout.fragment_product_filter_option_list),
     OnProductFilterOptionClickListener {
     private val viewModel: ProductFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_product_filters)
 
@@ -39,11 +40,11 @@ class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_f
         mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this)
         with(binding.filterOptionList) {
             addItemDecoration(
-                    AlignedDividerDecoration(
-                            requireActivity(),
-                            DividerItemDecoration.VERTICAL,
-                            alignStartToStartOf = R.id.filterOptionItem_name
-                    )
+                AlignedDividerDecoration(
+                    requireActivity(),
+                    DividerItemDecoration.VERTICAL,
+                    alignStartToStartOf = R.id.filterOptionItem_name
+                )
             )
             layoutManager = LinearLayoutManager(activity)
             adapter = mProductFilterOptionListAdapter
@@ -56,8 +57,8 @@ class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_f
 
         binding.filterOptionListBtnShowProducts.setOnClickListener {
             AnalyticsTracker.track(
-                    Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
-                    mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString())
+                Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString())
             )
             viewModel.onShowProductsClicked()
         }
@@ -68,9 +69,12 @@ class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_f
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
         }
 
-        viewModel.filterOptionListItems.observe(viewLifecycleOwner, Observer {
-            showProductFilterList(it)
-        })
+        viewModel.filterOptionListItems.observe(
+            viewLifecycleOwner,
+            Observer {
+                showProductFilterList(it)
+            }
+        )
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

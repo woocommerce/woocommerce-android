@@ -33,8 +33,10 @@ class FCMRegistrationIntentService : JobIntentService() {
 
         fun enqueueWork(context: Context) {
             val work = Intent(context, FCMRegistrationIntentService::class.java)
-            JobIntentService.enqueueWork(context, FCMRegistrationIntentService::class.java,
-                    JOB_FCM_REGISTRATION_SERVICE_ID, work)
+            JobIntentService.enqueueWork(
+                context, FCMRegistrationIntentService::class.java,
+                JOB_FCM_REGISTRATION_SERVICE_ID, work
+            )
         }
     }
 

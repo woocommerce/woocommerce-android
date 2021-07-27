@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.PhotonUtils
@@ -34,7 +35,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
         binding.productInfoAttributes.text = context.getString(
             R.string.orderdetail_product_lineitem_attributes,
-            attributes, item.quantity.toString(), productPrice
+            attributes, item.quantity.formatToString(), productPrice
         )
 
         with(binding.productInfoSKU) {
@@ -47,9 +48,9 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
             GlideApp.with(context)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.ic_product)
-                    .into(binding.productInfoIcon)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_product)
+                .into(binding.productInfoIcon)
         } ?: binding.productInfoIcon.setImageResource(R.drawable.ic_product)
     }
 }

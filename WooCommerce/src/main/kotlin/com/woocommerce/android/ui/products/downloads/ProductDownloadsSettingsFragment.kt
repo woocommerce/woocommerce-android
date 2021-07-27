@@ -36,12 +36,15 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
     }
 
     fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is ExitProductDownloadsSettings -> findNavController().navigateUp()
-                else -> event.isHandled = false
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is ExitProductDownloadsSettings -> findNavController().navigateUp()
+                    else -> event.isHandled = false
+                }
             }
-        })
+        )
 
         initFromProductDraft()
         setupListeners()

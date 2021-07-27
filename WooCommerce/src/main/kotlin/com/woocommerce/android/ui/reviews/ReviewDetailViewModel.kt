@@ -1,41 +1,36 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
-import com.woocommerce.android.annotations.OpenClassOnDebug
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegateWithArgs
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.DaggerScopedViewModel
-import kotlinx.parcelize.Parcelize
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
+import javax.inject.Inject
 
-@OpenClassOnDebug
-class ReviewDetailViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers,
+@HiltViewModel
+class ReviewDetailViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val repository: ReviewDetailRepository
-) : DaggerScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
-    final val viewStateData = LiveDataDelegateWithArgs(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     fun start(remoteReviewId: Long, launchedFromNotification: Boolean) {
@@ -53,7 +48,7 @@ class ReviewDetailViewModel @AssistedInject constructor(
                 // post an event to tell the notification list to moderate this
                 // review, then close the fragment
                 val event = OnRequestModerateReviewEvent(
-                        ProductReviewModerationRequest(review, newStatus)
+                    ProductReviewModerationRequest(review, newStatus)
                 )
                 EventBus.getDefault().post(event)
 
@@ -81,8 +76,8 @@ class ReviewDetailViewModel @AssistedInject constructor(
             val reviewInDb = repository.getCachedProductReview(remoteReviewId)
             if (reviewInDb != null) {
                 viewState = viewState.copy(
-                        productReview = reviewInDb,
-                        isSkeletonShown = false
+                    productReview = reviewInDb,
+                    isSkeletonShown = false
                 )
 
                 if (shouldFetch) {
@@ -102,8 +97,8 @@ class ReviewDetailViewModel @AssistedInject constructor(
                     SUCCESS, NO_ACTION_NEEDED -> {
                         repository.getCachedProductReview(remoteReviewId)?.let { review ->
                             viewState = viewState.copy(
-                                    productReview = review,
-                                    isSkeletonShown = false
+                                productReview = review,
+                                isSkeletonShown = false
                             )
                         }
                     }
@@ -127,12 +122,12 @@ class ReviewDetailViewModel @AssistedInject constructor(
             if (launchedFromNotification) {
                 // Send the track event that a product review notification was opened
                 AnalyticsTracker.track(
-                        Stat.NOTIFICATION_OPEN,
-                        mapOf(
-                            AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
-                            AnalyticsTracker.KEY_ALREADY_READ to it.read
-                        )
+                    Stat.NOTIFICATION_OPEN,
+                    mapOf(
+                        AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                        AnalyticsTracker.KEY_ALREADY_READ to it.read
                     )
+                )
             }
         }
     }
@@ -146,7 +141,4 @@ class ReviewDetailViewModel @AssistedInject constructor(
     sealed class ReviewDetailEvent : Event() {
         data class MarkNotificationAsRead(val remoteNoteId: Long) : ReviewDetailEvent()
     }
-
-    @AssistedFactory
-    interface Factory : ViewModelAssistedFactory<ReviewDetailViewModel>
 }

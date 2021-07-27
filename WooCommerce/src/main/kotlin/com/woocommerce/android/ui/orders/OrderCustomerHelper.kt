@@ -24,10 +24,12 @@ object OrderCustomerHelper {
         emailAddr: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION, mapOf(
-            AnalyticsTracker.KEY_ID to order.remoteId,
-            AnalyticsTracker.KEY_STATUS to order.status,
-            AnalyticsTracker.KEY_TYPE to Action.EMAIL.name.toLowerCase(Locale.US))
+            Stat.ORDER_CONTACT_ACTION,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_TYPE to Action.EMAIL.name.toLowerCase(Locale.US)
+            )
         )
 
         val intent = Intent(Intent.ACTION_SENDTO)
@@ -38,7 +40,8 @@ object OrderCustomerHelper {
             AnalyticsTracker.track(
                 Stat.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName, "No e-mail app was found")
+                e.javaClass.simpleName, "No e-mail app was found"
+            )
 
             ToastUtils.showToast(context, R.string.error_no_email_app)
         }
@@ -50,10 +53,12 @@ object OrderCustomerHelper {
         phone: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION, mapOf(
-            AnalyticsTracker.KEY_ID to order.remoteId,
-            AnalyticsTracker.KEY_STATUS to order.status,
-            AnalyticsTracker.KEY_TYPE to Action.CALL.name.toLowerCase(Locale.US))
+            Stat.ORDER_CONTACT_ACTION,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_TYPE to Action.CALL.name.toLowerCase(Locale.US)
+            )
         )
 
         val intent = Intent(Intent.ACTION_DIAL)
@@ -64,7 +69,8 @@ object OrderCustomerHelper {
             AnalyticsTracker.track(
                 Stat.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName, "No phone app was found")
+                e.javaClass.simpleName, "No phone app was found"
+            )
 
             ToastUtils.showToast(context, R.string.error_no_phone_app)
         }
@@ -76,10 +82,13 @@ object OrderCustomerHelper {
         phone: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION, mapOf(
-            AnalyticsTracker.KEY_ID to order.remoteId,
-            AnalyticsTracker.KEY_STATUS to order.status,
-            AnalyticsTracker.KEY_TYPE to Action.SMS.name.toLowerCase(Locale.US)))
+            Stat.ORDER_CONTACT_ACTION,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_TYPE to Action.SMS.name.toLowerCase(Locale.US)
+            )
+        )
 
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("smsto:$phone")
@@ -89,7 +98,8 @@ object OrderCustomerHelper {
             AnalyticsTracker.track(
                 Stat.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName, "No SMS app was found")
+                e.javaClass.simpleName, "No SMS app was found"
+            )
 
             ToastUtils.showToast(context, R.string.error_no_sms_app)
         }

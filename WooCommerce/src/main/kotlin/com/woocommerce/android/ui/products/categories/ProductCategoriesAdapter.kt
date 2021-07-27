@@ -71,11 +71,13 @@ class ProductCategoriesAdapter(
         RecyclerView.ViewHolder(viewBinder.root) {
         fun bind(productCategory: ProductCategoryItemUiModel) {
             viewBinder.categoryName.apply {
-                setHtmlText(if (productCategory.category.name.isEmpty()) {
-                    context.getString(R.string.untitled)
-                } else {
-                    productCategory.category.name
-                })
+                setHtmlText(
+                    if (productCategory.category.name.isEmpty()) {
+                        context.getString(R.string.untitled)
+                    } else {
+                        productCategory.category.name
+                    }
+                )
 
                 val newLayoutParams = layoutParams as LayoutParams
                 newLayoutParams.marginStart = productCategory.margin

@@ -20,6 +20,7 @@ import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFeatures
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
@@ -38,6 +39,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
+import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
@@ -80,14 +82,18 @@ class OrderDetailRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
+    suspend fun fetchOrder(orderIdentifier: OrderIdentifier, useCachedOnFailure: Boolean = true): Order? {
         val remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
-        continuationFetchOrder.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+        val requestResult = continuationFetchOrder.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
         }
-
-        return getOrder(orderIdentifier)
+        val requestSuccessful = requestResult is Success && requestResult.value
+        return if (requestSuccessful || useCachedOnFailure) {
+            getOrder(orderIdentifier)
+        } else {
+            null
+        }
     }
 
     suspend fun fetchOrderNotes(
@@ -137,20 +143,13 @@ class OrderDetailRepository @Inject constructor(
         return result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }?.map { it.toAppModel() } ?: emptyList()
     }
 
-    suspend fun updateOrderStatus(
-        localOrderId: Int,
-        remoteOrderId: Long,
-        newStatus: String
-    ): Boolean {
-        val result = continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+    suspend fun updateOrderStatus(localOrderId: Int, newStatus: String): ContinuationResult<Boolean> {
+        val order = OrderSqlUtils.getOrderByLocalId(localOrderId)
+        return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = UpdateOrderStatusPayload(
-                localOrderId, remoteOrderId, selectedSite.get(), newStatus
+                order, selectedSite.get(), newStatus
             )
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
         }
     }
 
@@ -216,10 +215,12 @@ class OrderDetailRepository @Inject constructor(
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
-        return (orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel().apply {
-            statusKey = key
-            label = key
-        }).toOrderStatus()
+        return (
+            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel().apply {
+                statusKey = key
+                label = key
+            }
+            ).toOrderStatus()
     }
 
     fun getOrderStatusOptions() = orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
@@ -273,7 +274,7 @@ class OrderDetailRepository @Inject constructor(
         .map { it.toAppModel() }
 
     fun getWooServicesPluginInfo(): WooPlugin {
-        val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
+        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
         return WooPlugin(info != null, info?.active ?: false, info?.version)
     }
 
@@ -293,12 +294,14 @@ class OrderDetailRepository @Inject constructor(
             WooLog.e(
                 tag = ORDERS,
                 message = "Fetching shipping labels creation eligibility failed for $orderId, " +
-                    "error: ${result.error.type} ${result.error.message}")
+                    "error: ${result.error.type} ${result.error.message}"
+            )
         } else if (!result.model!!.isEligible) {
             WooLog.d(
                 tag = ORDERS,
                 message = "Order $orderId is not eligible for shipping labels creation, " +
-                    "reason: ${result.model!!.reason}")
+                    "reason: ${result.model!!.reason}"
+            )
         }
     }
 
@@ -343,10 +346,12 @@ class OrderDetailRepository @Inject constructor(
             WCOrderAction.UPDATE_ORDER_STATUS -> {
                 if (event.isError) {
                     AnalyticsTracker.track(
-                        Stat.ORDER_STATUS_CHANGE_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message)
+                        Stat.ORDER_STATUS_CHANGE_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+                        )
                     )
                     continuationUpdateOrderStatus.continueWith(false)
                 } else {
@@ -357,10 +362,12 @@ class OrderDetailRepository @Inject constructor(
             WCOrderAction.POST_ORDER_NOTE -> {
                 if (event.isError) {
                     AnalyticsTracker.track(
-                        Stat.ORDER_NOTE_ADD_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message)
+                        Stat.ORDER_NOTE_ADD_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+                        )
                     )
                     continuationAddOrderNote.continueWith(false)
                 } else {
@@ -371,10 +378,12 @@ class OrderDetailRepository @Inject constructor(
             WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING -> {
                 if (event.isError) {
                     AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_ADD_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message)
+                        Stat.ORDER_TRACKING_ADD_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+                        )
                     )
                     continuationAddShipmentTracking.continueWith(false)
                 } else {
@@ -385,11 +394,13 @@ class OrderDetailRepository @Inject constructor(
             WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
                 if (event.isError) {
                     AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_DELETE_FAILED, mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                    ))
+                        Stat.ORDER_TRACKING_DELETE_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+                        )
+                    )
                     continuationDeleteShipmentTracking.continueWith(false)
                 } else {
                     AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)

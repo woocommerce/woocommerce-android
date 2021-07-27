@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-These dimensions are calculated starting with a baseline, then defined as a percentage of
+<!-- These dimensions are calculated starting with a baseline, then defined as a percentage of
 that baseline. The percentage doesn't have to be exact, it's main purpose it to describe
 the relationship of the dimension to the baseline. So < 100 would be smaller and > 100 would
 be larger.
@@ -115,9 +114,11 @@ so that's the baseline as defined in `major_100`.
     <dimen name="alert_dialog_max_width">300dp</dimen>
     <dimen name="top_performer_min_height">224dp</dimen>
     <dimen name="expanded_toolbar_height">108dp</dimen>
+    <dimen name="expanded_toolbar_bottom_margin">32dp</dimen>
+    <dimen name="expanded_toolbar_bottom_margin_with_subtitle">48dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="floating_dialog_min_width">280dp</dimen>
-    <dimen name="tab_indicator_size">6dp</dimen>
+    <dimen name="tab_indicator_size">8dp</dimen>
     <dimen name="progress_bar_mid">56dp</dimen>
-    <dimen name="progress_bar_large">100dp</dimen>
+    <dimen name="progress_bar_large">91dp</dimen>
 </resources>

@@ -17,6 +17,7 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragmentArgs
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel.ViewState
@@ -32,7 +33,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import kotlin.test.assertNotNull
@@ -59,7 +59,8 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(5, ORDER_IDENTIFIER)
-    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(5,
+    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(
+        5,
         ORDER_IDENTIFIER
     )
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
@@ -77,12 +78,12 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         viewModel = spy(
             OrderFulfillViewModel(
-            savedState,
-            appPrefsWrapper,
-            networkStatus,
-            resources,
-            repository
-        )
+                savedState,
+                appPrefsWrapper,
+                networkStatus,
+                resources,
+                repository
+            )
         )
 
         clearInvocations(
@@ -218,9 +219,12 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         viewModel.start()
         viewModel.onMarkOrderCompleteButtonClicked()
 
-        assertThat(exit).isEqualTo(ExitWithResult(
-            CoreOrderStatus.COMPLETED.value, OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
-        ))
+        assertThat(exit).isEqualTo(
+            ExitWithResult(
+                OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen(order.status.value),
+                OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
+            )
+        )
         assertNull(snackBar)
     }
 
@@ -305,9 +309,11 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         viewModel.onBackButtonClicked()
         assertNull(exit)
-        assertThat(exitWithResult).isEqualTo(ExitWithResult(
-            true, OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT
-        ))
+        assertThat(exitWithResult).isEqualTo(
+            ExitWithResult(
+                true, OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT
+            )
+        )
     }
 
     @Test

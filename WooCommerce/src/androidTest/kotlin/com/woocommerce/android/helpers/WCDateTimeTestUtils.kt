@@ -25,7 +25,7 @@ object WCDateTimeTestUtils {
 
     fun formatDate(date: Date): String {
         val simpleDateFormat = SimpleDateFormat(DATE_FORMAT, Locale.US)
-                .apply { timeZone = TimeZone.getTimeZone("UTC") }
+            .apply { timeZone = TimeZone.getTimeZone("UTC") }
         return simpleDateFormat.format(date)
     }
 

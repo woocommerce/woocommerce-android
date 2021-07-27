@@ -1,3 +1,0 @@
-6.7:
-Wir haben gehört, dass Bestellungen möglicherweise aus mehreren Lieferungen bestehen. Mit diesem Update kannst du jetzt mehr als ein Etikett pro Bestellung drucken. Wir haben auch noch andere kleine Fehler behoben, um deine Erfahrung zu verbessern.
-

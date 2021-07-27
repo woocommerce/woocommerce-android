@@ -9,7 +9,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
-import java.util.Locale
+import java.util.*
 
 @Parcelize
 data class Address(
@@ -93,6 +93,18 @@ data class Address(
             state = state,
             country = country
         )
+    }
+
+    /**
+     * Compares this address's physical location to the other one
+     */
+    fun isSamePhysicalAddress(otherAddress: Address): Boolean {
+        return country == otherAddress.country &&
+            state == otherAddress.state &&
+            address1 == otherAddress.address1 &&
+            address2 == otherAddress.address2 &&
+            city == otherAddress.city &&
+            postcode == otherAddress.postcode
     }
 
     override fun toString(): String {

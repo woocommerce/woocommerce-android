@@ -5,5 +5,10 @@
     <item
         android:id="@+id/menu_refund"
         android:title="@string/orderdetail_shipping_label_request_refund"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_print_customs_form"
+        android:title="@string/orderdetail_shipping_label_print_customs_form"
+        app:showAsAction="always" />
 </menu>

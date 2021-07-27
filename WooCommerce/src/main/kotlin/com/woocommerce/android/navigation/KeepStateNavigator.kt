@@ -46,8 +46,9 @@ class KeepStateNavigator(
 
         if (manager.isStateSaved) {
             Log.i(
-                KeepStateNavigator::class.simpleName, "Ignoring navigate() call: FragmentManager has already" +
-                " saved its state"
+                KeepStateNavigator::class.simpleName,
+                "Ignoring navigate() call: FragmentManager has already" +
+                    " saved its state"
             )
             return null
         }

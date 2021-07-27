@@ -106,7 +106,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 ComplexProperty(
                     R.string.product_description,
                     resources.getString(R.string.product_description_empty),
-                    showTitle = false)
+                    showTitle = false
+                )
             )
         ),
         ProductPropertyCard(
@@ -247,8 +248,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onUpdateButtonClicked()
 
         // then
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
+        assertThat(successSnackbarShown).isTrue
+        assertThat(productData?.isProgressDialogShown).isFalse
     }
 
     @Test
@@ -329,15 +330,13 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `Save as draft shown in discard dialog when changes made in add flow`() {
-        doReturn(true).whenever(viewModel).isAddFlow
+        doReturn(true).whenever(viewModel).isProductUnderCreation
 
         viewModel.start()
 
-        // change the status to draft so we can verify that isDraftProduct works - this will also
-        // force the viewModel to consider the product as changed, so when we click the back button
+        // this will force the viewModel to consider the product as changed, so when we click the back button
         // below it will show the discard dialog
         viewModel.updateProductDraft(productStatus = DRAFT)
-        assertThat(viewModel.isDraftProduct()).isTrue()
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
@@ -352,7 +351,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `Save as draft not shown in discard dialog when not in add flow`() {
-        doReturn(false).whenever(viewModel).isAddFlow
+        doReturn(false).whenever(viewModel).isProductUnderCreation
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = DRAFT)

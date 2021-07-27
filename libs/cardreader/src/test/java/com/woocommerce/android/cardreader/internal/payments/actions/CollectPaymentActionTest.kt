@@ -13,7 +13,6 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CollectPayme
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
@@ -135,8 +134,8 @@ internal class CollectPaymentActionTest {
         assertThat(result.size).isEqualTo(5)
     }
 
-    @Test(expected = ClosedSendChannelException::class)
-    fun `given more events emitted, when terminal event already processed, then exception is thrown`() =
+    @Test
+    fun `given more events emitted, when terminal event already processed, then event is not sent`() =
         runBlockingTest {
             whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
                 (it.arguments[2] as PaymentIntentCallback).onSuccess(mock()) // terminal
@@ -144,6 +143,7 @@ internal class CollectPaymentActionTest {
                 mock<Cancelable>()
             }
 
-            action.collectPayment(mock()).toList()
+            val result = action.collectPayment(mock()).toList()
+            assertThat(result.size).isEqualTo(1)
         }
 }

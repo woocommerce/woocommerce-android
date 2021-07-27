@@ -16,6 +16,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="titleTextStyle">@style/TextAppearance.Woo.CollapsingToolbar.Collapsed</item>
         <item name="navigationIcon">@drawable/ic_back_24dp</item>
+        <item name="android:theme">@style/Widget.Woo.Toolbar.Surface</item>
+    </style>
+    <style name="Widget.Woo.Toolbar.Surface" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
+        <item name="actionMenuTextColor">@color/woo_pink_50</item>
+        <item name="colorControlNormal">@color/woo_pink_50</item>
     </style>
     <style name="TextAppearance.Woo.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
@@ -41,6 +46,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="tint">@color/color_secondary</item>
         <item name="android:paddingEnd">16dp</item>
+    </style>
+    <style name="Woo.TextView.Subtitle1.ToolbarSubtitle">
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
     </style>
 
     <!--

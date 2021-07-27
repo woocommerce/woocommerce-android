@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
@@ -17,7 +18,9 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
@@ -115,6 +118,22 @@ class OrderNavigator @Inject constructor() {
                     .actionPrintShippingLabelFragmentToLabelFormatOptionsFragment()
                 fragment.findNavController().navigateSafely(action)
             }
+            is ViewPrintCustomsForm -> {
+                val action = if (target.isReprint) {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToPrintShippingLabelCustomsFormFragment(
+                            url = target.invoiceUrl,
+                            isReprint = target.isReprint
+                        )
+                } else {
+                    PrintShippingLabelFragmentDirections
+                        .actionPrintShippingLabelFragmentToPrintShippingLabelCustomsFormFragment(
+                            url = target.invoiceUrl,
+                            isReprint = target.isReprint
+                        )
+                }
+                fragment.findNavController().navigateSafely(action)
+            }
             is StartShippingLabelCreationFlow -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderIdentifier)
@@ -128,6 +147,20 @@ class OrderNavigator @Inject constructor() {
             is StartCardReaderPaymentFlow -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToCardReaderPaymentDialog(target.orderIdentifier)
+                fragment.findNavController().navigateSafely(action)
+            }
+            is ViewPrintingInstructions -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToPrintingInstructionsFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+            is PreviewReceipt -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToReceiptPreviewFragment(
+                        receiptUrl = target.receiptUrl,
+                        billingEmail = target.billingEmail,
+                        orderId = target.orderId
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
         }

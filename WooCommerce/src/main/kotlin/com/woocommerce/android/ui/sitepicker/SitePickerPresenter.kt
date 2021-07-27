@@ -4,7 +4,9 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -24,13 +26,15 @@ import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
-class SitePickerPresenter @Inject constructor(
+class SitePickerPresenter
+@Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
     private val appPrefs: AppPrefs,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val cardPresentEligibleFeatureChecker: CardPresentEligibleFeatureChecker
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
 
@@ -84,7 +88,9 @@ class SitePickerPresenter @Inject constructor(
 
     override fun fetchUserRoleFromAPI(site: SiteModel) {
         coroutineScope.launch {
-            val userModel = userEligibilityFetcher.fetchUserInfo()
+            val fetchUserJob = async { userEligibilityFetcher.fetchUserInfo() }
+            async { cardPresentEligibleFeatureChecker.doCheck() }.await()
+            val userModel = fetchUserJob.await()
             view?.hideProgressDialog()
 
             userModel?.let {
@@ -110,18 +116,21 @@ class SitePickerPresenter @Inject constructor(
     }
 
     override fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel> {
-        return siteIdList.map { siteStore.getSiteByLocalId(it) }
+        return siteIdList.toList().mapNotNull { siteStore.getSiteByLocalId(it) }
     }
 
     override fun getSiteModelByUrl(url: String): SiteModel? =
-            SiteUtils.getSiteByMatchingUrl(siteStore, url)
+        SiteUtils.getSiteByMatchingUrl(siteStore, url)
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
-            WooLog.e(T.LOGIN, "Account error [type = ${event.causeOfChange}] : " +
-                    "${event.error.type} > ${event.error.message}")
+            WooLog.e(
+                T.LOGIN,
+                "Account error [type = ${event.causeOfChange}] : " +
+                    "${event.error.type} > ${event.error.message}"
+            )
         } else if (!userIsLoggedIn()) {
             view?.didLogout()
         }
@@ -142,8 +151,11 @@ class SitePickerPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onApiVersionFetched(event: OnApiVersionFetched) {
         if (event.isError) {
-            WooLog.e(T.LOGIN, "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
-                    "${event.error?.type} - ${event.error?.message}")
+            WooLog.e(
+                T.LOGIN,
+                "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
+                    "${event.error?.type} - ${event.error?.message}"
+            )
             view?.siteVerificationError(event.site)
             return
         }

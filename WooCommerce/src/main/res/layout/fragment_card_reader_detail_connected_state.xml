@@ -19,20 +19,24 @@
         android:drawablePadding="@dimen/major_100"
         android:padding="@dimen/major_100"
         android:text="@string/card_reader_detail_connected_enforced_update_software"
-        android:textColor="@color/color_on_surface_high" />
+        android:textColor="@color/color_on_surface_high"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <View
-        android:background="@color/warning_banner_foreground_color"
         android:id="@+id/enforced_update_divider"
-        style="@style/Woo.Divider" />
+        style="@style/Woo.Divider"
+        android:background="@color/warning_banner_foreground_color"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
-        android:letterSpacing="0.15"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
         android:layout_marginBottom="@dimen/minor_100"
+        android:letterSpacing="0.15"
         android:text="@string/card_reader_detail_connected_header"
         android:textColor="@color/color_on_surface_disabled"
         android:textSize="@dimen/text_minor_60" />
@@ -77,5 +81,5 @@
 
     <include
         android:id="@+id/card_reader_detail_learn_more_tv"
-        layout="@layout/fragment_card_reader_detail_learn_more" />
+        layout="@layout/card_reader_learn_more_section" />
 </LinearLayout>

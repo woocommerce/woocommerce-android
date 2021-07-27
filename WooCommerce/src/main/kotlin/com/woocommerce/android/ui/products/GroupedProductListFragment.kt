@@ -74,21 +74,27 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> findNavController().navigateUp()
-                is ExitWithResult<*> -> {
-                    navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is Exit -> findNavController().navigateUp()
+                    is ExitWithResult<*> -> {
+                        navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
+                    }
+                    is ProductNavigationTarget -> navigator.navigate(this, event)
+                    else -> event.isHandled = false
                 }
-                is ProductNavigationTarget -> navigator.navigate(this, event)
-                else -> event.isHandled = false
             }
-        })
+        )
 
-        viewModel.productList.observe(viewLifecycleOwner, Observer {
-            productListAdapter.setProductList(it)
-        })
+        viewModel.productList.observe(
+            viewLifecycleOwner,
+            Observer {
+                productListAdapter.setProductList(it)
+            }
+        )
     }
 
     private fun setupResultHandlers() {

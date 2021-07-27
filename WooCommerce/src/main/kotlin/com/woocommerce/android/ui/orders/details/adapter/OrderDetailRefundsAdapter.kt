@@ -23,7 +23,9 @@ class OrderDetailRefundsAdapter(
                 RefundModelDiffCallback(
                     field,
                     value
-                ), true)
+                ),
+                true
+            )
             field = value
 
             diffResult.dispatchUpdatesTo(this)
@@ -36,7 +38,8 @@ class OrderDetailRefundsAdapter(
             ),
             isCashPayment,
             paymentMethodTitle,
-            formatCurrency)
+            formatCurrency
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

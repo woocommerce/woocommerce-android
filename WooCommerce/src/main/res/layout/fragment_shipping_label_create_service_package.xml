@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/service_packages_list_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/custom_package_form_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/minor_50"
+                    android:text="@string/shipping_label_create_package_field_info"
+                    android:textAppearance="@style/TextAppearance.Woo.Body1" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/service_packages_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingTop="@dimen/major_100"
+                    tools:listitem="@layout/shipping_package_selectable_list_item" />
+            </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.woocommerce.android.widgets.WCEmptyView
+        android:visibility="gone"
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>

@@ -26,6 +26,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -36,7 +37,9 @@ import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
@@ -64,9 +67,6 @@ import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -74,11 +74,14 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.abs
 
+// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")
+@Suppress("LargeClass")
 @AndroidEntryPoint
-class MainActivity : AppUpgradeActivity(),
+class MainActivity :
+    AppUpgradeActivity(),
     MainContract.View,
-    HasAndroidInjector,
     MainNavigationRouter,
     MainBottomNavigationView.MainNavigationListener,
     NavController.OnDestinationChangedListener,
@@ -108,7 +111,6 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
@@ -128,6 +130,12 @@ class MainActivity : AppUpgradeActivity(),
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
+
+    private val appBarOffsetListener by lazy {
+        AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+            binding.toolbarSubtitle.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
+        }
+    }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
@@ -261,6 +269,11 @@ class MainActivity : AppUpgradeActivity(),
         updateOrderBadge(false)
 
         checkConnection()
+    }
+
+    override fun onPause() {
+        binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
+        super.onPause()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -409,7 +422,8 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
                 R.id.printShippingLabelInfoFragment,
-                R.id.shippingLabelFormatOptionsFragment -> {
+                R.id.shippingLabelFormatOptionsFragment,
+                R.id.printingInstructionsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -467,6 +481,29 @@ class MainActivity : AppUpgradeActivity(),
         binding.appBarLayout.setExpanded(expand, animate)
     }
 
+    fun setSubtitle(subtitle: CharSequence) {
+        if (subtitle.isBlank()) {
+            removeSubtitle()
+        } else {
+            setFadingSubtitleOnCollapsingToolbar(subtitle)
+        }
+    }
+
+    private fun removeSubtitle() {
+        binding.toolbarSubtitle.hide()
+        binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
+        binding.collapsingToolbar.expandedTitleMarginBottom =
+            resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin)
+    }
+
+    private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
+        binding.collapsingToolbar.expandedTitleMarginBottom =
+            resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle)
+        binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
+        binding.toolbarSubtitle.text = subtitle
+        binding.toolbarSubtitle.show()
+    }
+
     fun enableToolbarExpansion(enable: Boolean) {
         if (!enable) {
             toolbar.title = title
@@ -496,8 +533,6 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     private fun isDialogDestination(destination: NavDestination) = destination.navigatorName == DIALOG_NAVIGATOR_NAME
-
-    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -587,7 +622,7 @@ class MainActivity : AppUpgradeActivity(),
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
-        val host = uri?.host?.let { it } ?: ""
+        val host = uri?.host ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 

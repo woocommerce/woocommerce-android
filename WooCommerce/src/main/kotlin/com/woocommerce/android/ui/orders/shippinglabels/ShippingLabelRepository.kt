@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabel
@@ -28,12 +29,14 @@ import javax.inject.Singleton
 
 @OpenClassOnDebug
 @Singleton
+@Suppress("TooManyFunctions")
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
 ) {
     private var accountSettings: ShippingAccountSettings? = null
     private var availablePackages: List<ShippingPackage>? = null
+    private var selectableServicePackages: List<ShippingPackage>? = null
 
     suspend fun refundShippingLabel(orderId: Long, shippingLabelId: Long): WooResult<Boolean> {
         return withContext(Dispatchers.IO) {
@@ -80,8 +83,20 @@ class ShippingLabelRepository @Inject constructor(
                 }
 
                 availablePackages = list
-
                 WooResult(availablePackages)
+            }
+    }
+
+    suspend fun getSelectableServicePackages(): WooResult<List<ShippingPackage>> {
+        return selectableServicePackages?.let { WooResult(it) } ?: shippingLabelStore.getAllPredefinedOptions(
+            selectedSite.get()
+        )
+            .let { result ->
+                if (result.isError) return@let WooResult<List<ShippingPackage>>(error = result.error)
+
+                selectableServicePackages = result.model!!.flatMap { it.toAppModel() }
+                availablePackages?.let { selectableServicePackages = selectableServicePackages?.minus(it) }
+                return WooResult(selectableServicePackages)
             }
     }
 
@@ -89,7 +104,8 @@ class ShippingLabelRepository @Inject constructor(
         order: Order,
         origin: Address,
         destination: Address,
-        packages: List<ShippingLabelPackage>
+        packages: List<ShippingLabelPackage>,
+        customsPackages: List<CustomsPackage>?
     ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
         val carrierRates = shippingLabelStore.getShippingRates(
             site = selectedSite.get(),
@@ -108,7 +124,7 @@ class ShippingLabelRepository @Inject constructor(
                     isLetter = pack.isLetter
                 )
             },
-            customsData = null
+            customsData = customsPackages?.map { it.toDataModel() }
         )
 
         return when {
@@ -118,11 +134,12 @@ class ShippingLabelRepository @Inject constructor(
             carrierRates.model == null || carrierRates.model!!.packageRates.isEmpty() -> {
                 WooResult(WooError(INVALID_RESPONSE, GenericErrorType.PARSE_ERROR, "Empty response"))
             }
-            carrierRates.model!!.packageRates.all { pack ->
+            carrierRates.model!!.packageRates.any { pack ->
                 pack.shippingOptions.isEmpty() || pack.shippingOptions.all { option ->
                     option.rates.isEmpty()
                 }
             } -> {
+                // if any of the packages doesn't have any rates, show the empty state screen
                 WooResult(WooError(GENERIC_ERROR, NOT_FOUND, "Empty result"))
             }
             else -> {
@@ -131,7 +148,8 @@ class ShippingLabelRepository @Inject constructor(
         }
     }
 
-    suspend fun getAccountSettings(): WooResult<ShippingAccountSettings> {
+    suspend fun getAccountSettings(forceRefresh: Boolean = false): WooResult<ShippingAccountSettings> {
+        if (forceRefresh) accountSettings = null
         return accountSettings?.let { WooResult(it) } ?: shippingLabelStore.getAccountSettings(selectedSite.get())
             .let { result ->
                 if (result.isError) return@let WooResult<ShippingAccountSettings>(error = result.error)
@@ -139,6 +157,16 @@ class ShippingLabelRepository @Inject constructor(
                 accountSettings = result.model!!.toAppModel()
                 WooResult(accountSettings)
             }
+    }
+
+    /**
+     * Returns the last used package.
+     * Please note that this will ignore all errors, and return null for those cases
+     */
+    suspend fun getLastUsedPackage(): ShippingPackage? {
+        return getAccountSettings().model?.lastUsedBoxId?.let { id ->
+            getShippingPackages().model?.firstOrNull { it.id == id }
+        }
     }
 
     suspend fun updatePaymentSettings(selectedPaymentMethodId: Int, emailReceipts: Boolean): WooResult<Unit> {
@@ -159,7 +187,8 @@ class ShippingLabelRepository @Inject constructor(
         origin: Address,
         destination: Address,
         packages: List<ShippingLabelPackage>,
-        rates: List<ShippingRate>
+        rates: List<ShippingRate>,
+        customsPackages: List<CustomsPackage>?
     ): WooResult<List<ShippingLabel>> {
         val packagesData = packages.mapIndexed { i, labelPackage ->
             val rate = rates.first { it.packageId == labelPackage.packageId }
@@ -175,7 +204,8 @@ class ShippingLabelRepository @Inject constructor(
                 serviceId = rate.serviceId,
                 serviceName = rate.serviceName,
                 carrierId = rate.carrierId,
-                products = labelPackage.items.map { it.productId }
+                // duplicate items according to their quantities
+                products = labelPackage.items.map { item -> List(item.quantity) { item.productId } }.flatten()
             )
         }
         // Retrieve account settings, normally they should be cached at this point, and the response would be
@@ -189,12 +219,47 @@ class ShippingLabelRepository @Inject constructor(
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
             packagesData = packagesData,
-            customsData = null,
+            customsData = customsPackages?.map { it.toDataModel() },
             emailReceipts = emailReceipts
         ).let { result ->
             when {
                 result.isError -> WooResult(result.error)
                 result.model != null -> WooResult(result.model!!.map { it.toAppModel() })
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    suspend fun createCustomPackage(packageToCreate: ShippingPackage): WooResult<Boolean> {
+        return shippingLabelStore.createPackages(
+            site = selectedSite.get(),
+            customPackages = listOf(packageToCreate.toCustomPackageDataModel()),
+            predefinedPackages = emptyList()
+        ).let { result ->
+            when {
+                result.model == true -> {
+                    availablePackages = availablePackages?.let { it + packageToCreate }
+                    WooResult(true)
+                }
+                result.isError -> WooResult(result.error)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    suspend fun activateServicePackage(packageToCreate: ShippingPackage): WooResult<Boolean> {
+        return shippingLabelStore.createPackages(
+            site = selectedSite.get(),
+            customPackages = emptyList(),
+            predefinedPackages = listOf(packageToCreate.toPredefinedOptionDataModel())
+        ).let { result ->
+            when {
+                result.model == true -> {
+                    availablePackages = availablePackages?.plus(packageToCreate)
+                    selectableServicePackages = selectableServicePackages?.minus(packageToCreate)
+                    WooResult(true)
+                }
+                result.isError -> WooResult(result.error)
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }

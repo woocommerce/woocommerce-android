@@ -23,10 +23,13 @@ import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.RestrictionType
+import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsAdapter.PackageCustomsViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WooClickableSpan
 
 class ShippingCustomsAdapter(
@@ -63,6 +66,7 @@ class ShippingCustomsAdapter(
         return customsPackages[position].data.id.hashCode().toLong()
     }
 
+    @Suppress("MagicNumber")
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy {
             ShippingCustomsLineAdapter(
@@ -74,6 +78,9 @@ class ShippingCustomsAdapter(
         }
         private val context
             get() = binding.root.context
+
+        private val isExpanded
+            get() = binding.expandIcon.rotation == 180f
 
         init {
             binding.itemsList.apply {
@@ -120,16 +127,29 @@ class ShippingCustomsAdapter(
             binding.itnEditText.setOnTextChangedListener {
                 it?.let { listener.onItnChanged(adapterPosition, it.toString()) }
             }
+            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
+                binding.expandIcon.isVisible = false
+            } else {
+                binding.titleLayout.setOnClickListener {
+                    if (isExpanded) {
+                        binding.expandIcon.animate().rotation(0f).start()
+                        binding.detailsLayout.collapse()
+                        listener.onPackageExpandedChanged(adapterPosition, false)
+                    } else {
+                        binding.expandIcon.animate().rotation(180f).start()
+                        binding.detailsLayout.expand()
+                        listener.onPackageExpandedChanged(adapterPosition, true)
+                    }
+                }
+            }
         }
 
         @SuppressLint("SetTextI18n")
         fun bind(uiState: CustomsPackageUiState) {
             val (customsPackage, validationState) = uiState
-            binding.packageId.text = context.getString(
-                R.string.orderdetail_shipping_label_item_header,
-                adapterPosition + 1
-            )
-            binding.packageName.text = "- ${customsPackage.box.title}"
+            binding.packageId.text = customsPackage.labelPackage.getTitle(context)
+            binding.packageName.text = "- ${customsPackage.labelPackage.selectedPackage!!.title}"
+            binding.errorView.isVisible = !validationState.isValid
             binding.returnCheckbox.isChecked = customsPackage.returnToSender
 
             // Animate any potential change to visibility of the description fields
@@ -153,6 +173,14 @@ class ShippingCustomsAdapter(
 
             linesAdapter.parentItemPosition = adapterPosition
             linesAdapter.customsLines = uiState.customsLinesUiState
+
+            if (uiState.isExpanded) {
+                binding.expandIcon.rotation = 180f
+                binding.detailsLayout.isVisible = true
+            } else {
+                binding.expandIcon.rotation = 0f
+                binding.detailsLayout.isVisible = false
+            }
         }
     }
 
@@ -194,7 +222,7 @@ class ShippingCustomsLineAdapter(
     var parentItemPosition: Int = -1
 
     override fun getItemId(position: Int): Long {
-        return customsLines[position].first.itemId
+        return customsLines[position].first.productId
     }
 
     override fun getItemCount(): Int = customsLines.size
@@ -213,10 +241,12 @@ class ShippingCustomsLineAdapter(
             get() = binding.root.context
 
         init {
-            binding.expandIcon.setOnClickListener {
+            binding.titleLayout.setOnClickListener {
                 if (binding.expandIcon.rotation == 0f) {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
+                    // TODO update the expand() function an on animation ended callback
+                    binding.detailsLayout.postDelayed({ focusOnFirstInvalidField() }, 300)
                 } else {
                     binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
@@ -256,6 +286,16 @@ class ShippingCustomsLineAdapter(
             )
         }
 
+        private fun focusOnFirstInvalidField() {
+            binding.detailsLayout.children.filterIsInstance(WCMaterialOutlinedEditTextView::class.java)
+                .forEach {
+                    if (!it.error.isNullOrEmpty()) {
+                        it.requestFocus()
+                        return
+                    }
+                }
+        }
+
         fun bind(uiState: CustomsLineUiState) {
             val (customsLine, validationState) = uiState
             binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
@@ -273,6 +313,8 @@ class ShippingCustomsLineAdapter(
             binding.valueEditText.error = validationState.valueErrorMessage
 
             binding.countrySpinner.setText(customsLine.originCountry.name)
+
+            binding.errorView.isVisible = !validationState.isValid
         }
     }
 
@@ -285,7 +327,7 @@ class ShippingCustomsLineAdapter(
         override fun getNewListSize(): Int = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].first.itemId == newList[newItemPosition].first.itemId
+            return oldList[oldItemPosition].first.productId == newList[newItemPosition].first.productId
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -295,6 +337,7 @@ class ShippingCustomsLineAdapter(
 }
 
 interface ShippingCustomsFormListener {
+    fun onPackageExpandedChanged(position: Int, isExpanded: Boolean)
     fun onReturnToSenderChanged(position: Int, returnToSender: Boolean)
     fun onContentsTypeChanged(position: Int, contentsType: ContentsType)
     fun onContentsDescriptionChanged(position: Int, contentsDescription: String)

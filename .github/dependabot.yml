@@ -1,12 +1,12 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 5
     directory: "/"
     schedule:
       interval: "daily"
-    default_labels:
-      - "bot: updated dependencies"
+    labels:
+      - "bot: dependencies update"
     reviewers:
       - "woocommerce/android-developers"
     ignore:
