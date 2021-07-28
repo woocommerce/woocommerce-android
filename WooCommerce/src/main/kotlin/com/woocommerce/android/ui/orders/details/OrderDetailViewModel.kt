@@ -576,6 +576,15 @@ class OrderDetailViewModel @Inject constructor(
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
 
+        if (isOrderEligibleForSLCreation) {
+            AnalyticsTracker.track(
+                stat = Stat.SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
+                properties = mapOf(
+                    "order_status" to order.status.value
+                )
+            )
+        }
+
         viewState = viewState.copy(
             isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
