@@ -34,7 +34,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     private fun loadInitialData() {
         launch {
             loadPaymentMethods(forceRefresh = false)
-            if (viewState.dataLoadState == DataLoadState.Success && viewState.paymentMethods.isEmpty()) {
+            if (viewState.dataLoadState == DataLoadState.Success &&
+                viewState.paymentMethods.isEmpty() &&
+                viewState.canManagePayments
+            ) {
                 triggerEvent(AddPaymentMethod)
             }
         }
