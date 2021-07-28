@@ -230,7 +230,8 @@ class CardReaderPaymentViewModel
                 PaymentSuccessfulState(
                     order.getAmountLabel(),
                     { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
-                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) }
+                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) },
+                    { triggerEvent(Exit) }
                 )
             )
         }
@@ -350,10 +351,12 @@ class CardReaderPaymentViewModel
         // TODO cardreader add tests
         open val isProgressVisible: Boolean = false,
         val primaryActionLabel: Int? = null,
-        val secondaryActionLabel: Int? = null
+        val secondaryActionLabel: Int? = null,
+        val tertiaryActionLabel: Int? = null,
     ) {
         open val onPrimaryActionClicked: (() -> Unit)? = null
         open val onSecondaryActionClicked: (() -> Unit)? = null
+        open val onTertiaryActionClicked: (() -> Unit)? = null
         open val amountWithCurrencyLabel: String? = null
 
         object LoadingDataState : ViewState(
@@ -403,12 +406,14 @@ class CardReaderPaymentViewModel
         data class PaymentSuccessfulState(
             override val amountWithCurrencyLabel: String,
             override val onPrimaryActionClicked: (() -> Unit),
-            override val onSecondaryActionClicked: (() -> Unit)
+            override val onSecondaryActionClicked: (() -> Unit),
+            override val onTertiaryActionClicked: (() -> Unit)
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_completed_payment_header,
             illustration = R.drawable.img_celebration,
             primaryActionLabel = R.string.card_reader_payment_print_receipt,
-            secondaryActionLabel = R.string.card_reader_payment_send_receipt
+            secondaryActionLabel = R.string.card_reader_payment_send_receipt,
+            tertiaryActionLabel = R.string.card_reader_payment_save_for_later,
         )
 
         data class PrintingReceiptState(

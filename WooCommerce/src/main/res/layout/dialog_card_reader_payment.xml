@@ -120,8 +120,19 @@
             android:layout_marginHorizontal="@dimen/major_200"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tertiary_action_btn"
             tools:text="Print receipt" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/tertiary_action_btn"
+            style="@style/Woo.Button.TextButton.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_200"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Save for later" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
