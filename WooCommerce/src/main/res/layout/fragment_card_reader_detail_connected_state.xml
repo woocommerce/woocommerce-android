@@ -81,5 +81,5 @@
 
     <include
         android:id="@+id/card_reader_detail_learn_more_tv"
-        layout="@layout/fragment_card_reader_detail_learn_more" />
+        layout="@layout/card_reader_learn_more_section" />
 </LinearLayout>

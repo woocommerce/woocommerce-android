@@ -541,6 +541,7 @@
     <string name="shipping_label_create_custom_package_success_message">\"%1$s\" saved</string>
     <string name="shipping_label_create_service_package_nothing_selected">Select a package to activate.</string>
     <string name="shipping_label_activate_service_package_saving_progress_title">Activating package</string>
+    <string name="shipping_label_activate_service_package_empty_title">All available packages have been activated</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
     <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>
@@ -818,6 +819,52 @@
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
     <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+
+    <!--
+        Card Reader Onboarding
+    -->
+    <string name="card_reader_onboarding_title">In-person payments</string>
+    <string name="card_reader_onboarding_loading">Connecting to your account</string>
+
+    <string name="card_reader_onboarding_country_not_supported_header">We don\'t support In-Person Payments in %1$s</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">You can still accept In-Person Cash Payments by enabling the \"cash on delivery\" payment method on your store</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">You\’ll need to install the free WooCommerce Payments extension on your store to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Refresh after installing</string>
+
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Activate WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">The WooCommerce Payments extension is installed on your store but not activated. Please activate it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Refresh after activating</string>
+
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
+
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
+
+    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
+    <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
+
+    <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
+    <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
+
+    <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments</string>
+
+    <string name="card_reader_onboarding_account_pending_requirements_header">Your WooCommerce Payments account has pending requirements</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_dismiss_button" translatable="false">@string/dismiss</string>
+
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">In-Person Payments isn\’t available in Test Mode. Please turn it off to continue.</string>
+
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+    <string name="card_reader_onboarding_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
 
     <!--
         Card reader tutorial

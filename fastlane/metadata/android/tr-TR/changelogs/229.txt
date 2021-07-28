@@ -1,2 +1,0 @@
-7.0:
-Uluslararası kargo etiketleri oluşturmak çok kolay! ABD'deki satıcılar, mağazalarında WooCommerce Shipping & Tax'i kullanarak artık uluslararası destinasyonlar için kargo etiketleri ve gümrük formları oluşturabilir. Bu özelliği geliştirmeye devam ediyoruz. Deneyin ve nasıl çalıştığını bize bildirin!
