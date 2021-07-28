@@ -31,7 +31,7 @@ The goal of this document is to give an overview of how the material dark/light 
 
 ### Colors
 
-> See [Color palette](material-theme-designs#design-colors) for theme color designs
+> See [Color palette](material-theme-designs.md#design-colors) for theme color designs
 #### File: `wc_colors_base.xml`
 * Contains raw color values for the WooCommerce color palette. Color definitions added here should be named very specifically to identify the color (ex. *woo_purple_30*), and should only contain hexadecimal color values.
 
@@ -55,7 +55,7 @@ The goal of this document is to give an overview of how the material dark/light 
 * Corner radius and edge definitions for the 3 shape styles. Changes made to these styles will be applied across the app.
 
 ### TextAppearance
-> See [Typography](material-theme-designs#design-typography) for theme typography designs
+> See [Typography](material-theme-designs.md#design-typography) for theme typography designs
 #### File: `type.xml`
 * Text/font style definitions that override the material `TextAppearance` styles. These definitions are all used in the main `Theme.Woo.DayNight` theme.
 * It would be rare to use these directly in a view layout, but if you did, favor the theme attribute version (ex: Use `?attr/textAppearanceBody2` instead of `@style/TextAppearance.Woo.Body2`)

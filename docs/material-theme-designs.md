@@ -1,5 +1,5 @@
 # Material Theme Designs
-This page contains the material theme designs that govern theming inside the WooCommerce for Android app. Each top contains a design for light and dark modes.
+This page contains the material theme designs that govern theming inside the WooCommerce for Android app. Each topic contains a design for light and dark modes.
 
 <a name="design-colors">
 
@@ -7,7 +7,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[images/colors-light.png]] | [[images/colors-dark.png]] |
+| [[docs/images/colors-light.png]] | [[docs/images/colors-dark.png]] |
 
 <a name="design-typography">
 
@@ -15,7 +15,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[images/typo-light.png]] | [[images/typo-dark.png]] |
+| [[docs/images/typo-light.png]] | [[docs/images/typo-dark.png]] |
 
 <a name="design-elevation">
 
@@ -23,7 +23,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[images/elevation-light.png]] | [[images/elevation-dark.png]] |
+| [[docs/images/elevation-light.png]] | [[docs/images/elevation-dark.png]] |
 
 <a name="design-states">
 
@@ -31,7 +31,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[images/states-light.png]] | [[images/states-dark.png]] |
+| [[docs/images/states-light.png]] | [[docs/images/states-dark.png]] |
 
 <a name="design-components">
 
@@ -39,4 +39,4 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[images/components-light.png]] | [[images/components-dark.png]] |
+| [[docs/images/components-light.png]] | [[docs/images/components-dark.png]] |
