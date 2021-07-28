@@ -7,6 +7,8 @@
 <p align="center">
     <a href="https://circleci.com/gh/woocommerce/woocommerce-android">
         <img src="https://circleci.com/gh/woocommerce/woocommerce-android.svg?style=svg" alt="CircleCI">
+    <img alt="Release" src="https://img.shields.io/github/v/tag/woocommerce/woocommerce-android?label=release&sort=semver">
+    <img alt="License" src="https://img.shields.io/github/license/woocommerce/woocommerce-android">
     </a>
 </p>
 
