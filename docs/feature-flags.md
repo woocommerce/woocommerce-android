@@ -31,9 +31,9 @@ enum class FeatureFlag {
 
 Here, we have three features which will be active in the following circumstances:
 
-* `SHIPPING_LABELS_M4` will only be enabled in debug builds and during tests.
+* `SHIPPING_LABELS_M4` will only be enabled in debug builds and during tests until the feature is released.
 * `DB_DOWNGRADE` will only be enabled for debug / beta builds
-* `CARD_READER` will be enabled if the feature is switched on by the user from the Settings page.
+* `CARD_READER` will be enabled if the store is currently eligible for payments i.e when WooCommerce Payments plugin is available.
 
 ### Putting it all together
 
