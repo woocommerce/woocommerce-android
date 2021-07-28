@@ -66,13 +66,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountUnderReviewState(
                         ::onLearnMoreClicked
                     )
-                // TODO cardreader Pass due date to the state
                 CardReaderOnboardingState.StripeAccountPendingRequirement ->
                     viewState.value = OnboardingViewState.WCStripeError
                         .WCPayAccountPendingRequirementsState(
                             buttonAction = ::exitFlow,
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
-                            dueDate = ""
+                            dueDate = "" // TODO cardreader Pass due date to the state
                         )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountOverdueRequirementsState(
