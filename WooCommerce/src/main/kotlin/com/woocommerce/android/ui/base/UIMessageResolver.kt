@@ -51,13 +51,13 @@ interface UIMessageResolver {
      * @param [stringArgs] Optional. One or more format argument stringArgs
      * @param [actionListener] Listener to handle the undo button click event
      */
-    fun getActionSnack(
+    fun getIndefiniteActionSnack(
         message: String,
         vararg stringArgs: String = arrayOf(),
         actionText: String,
         actionListener: View.OnClickListener
     ): Snackbar {
-        return getSnackbarWithAction(
+        return getIndefiniteSnackbarWithAction(
             snackbarRoot,
             String.format(message, *stringArgs),
             actionText,
