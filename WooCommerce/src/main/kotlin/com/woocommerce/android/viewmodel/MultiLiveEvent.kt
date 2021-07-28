@@ -87,7 +87,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             val message: String,
             val args: Array<String> = arrayOf(),
             val undoAction: View.OnClickListener,
-            val dismissAction: Snackbar.Callback
+            val dismissAction: Snackbar.Callback = Snackbar.Callback()
         ) : Event() {
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true

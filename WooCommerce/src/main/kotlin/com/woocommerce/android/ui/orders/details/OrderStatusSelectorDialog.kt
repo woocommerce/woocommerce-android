@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*
 
 /**
  * Dialog displays a list of order statuses and allows for selecting a single order status for
@@ -22,18 +23,19 @@ class OrderStatusSelectorDialog : DialogFragment() {
         private const val REFUNDED_ID: String = "refunded"
     }
 
-    private var selectedOrderStatus: String? = null
-    private val orderStatusList: Array<Order.OrderStatus> by lazy {
-        // remove the Refunded status from the dialog to avoid reporting problems (unless it's already Refunded)
-        navArgs.orderStatusList
-            .filter { selectedOrderStatus == REFUNDED_ID || it.statusKey != REFUNDED_ID }
-//            .map { it.statusKey }
-            .toTypedArray()
-    }
     private val navArgs: OrderStatusSelectorDialogArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        selectedOrderStatus = navArgs.currentStatus
+        var selectedOrderStatus = navArgs.currentStatus
+        val orderStatusList: Array<Order.OrderStatus> =
+            // remove the Refunded status from the dialog to avoid reporting problems (unless it's already Refunded)
+            navArgs.orderStatusList
+                .filter { selectedOrderStatus == REFUNDED_ID || it.statusKey != REFUNDED_ID }
+                .toTypedArray()
+
+        fun getCurrentOrderStatusIndex() =
+            orderStatusList.indexOfFirst { it.statusKey == selectedOrderStatus }
+
         val selectedIndex = getCurrentOrderStatusIndex()
 
         return MaterialAlertDialogBuilder(requireActivity())
@@ -53,7 +55,13 @@ class OrderStatusSelectorDialog : DialogFragment() {
                         Stat.SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
                         mapOf("status" to selectedOrderStatus)
                     )
-                    navigateBackWithResult(KEY_ORDER_STATUS_RESULT, selectedOrderStatus)
+                    navigateBackWithResult(
+                        key = KEY_ORDER_STATUS_RESULT,
+                        result = OrderStatusUpdateSource.Dialog(
+                            oldStatus = navArgs.currentStatus,
+                            newStatus = selectedOrderStatus
+                        )
+                    )
                 }
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
@@ -66,7 +74,4 @@ class OrderStatusSelectorDialog : DialogFragment() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    private fun getCurrentOrderStatusIndex() =
-        orderStatusList.indexOfFirst { it.statusKey == selectedOrderStatus }
 }

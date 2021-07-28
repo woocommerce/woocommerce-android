@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical">
+    android:paddingHorizontal="@dimen/major_200">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/labelTextView"

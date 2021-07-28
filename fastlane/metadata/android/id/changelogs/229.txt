@@ -1,2 +1,0 @@
-7.0:
-Membuat label pengiriman internasional kini menjadi mudah! Penjual di Amerika Serikat yang menggunakan WooCommerce Shipping & Tax di tokonya sekarang bisa membuat label pengiriman dan formulir bea cukai untuk tujuan pengiriman internasional. Kami terus mengembangkan fitur ini, jadi silakan dicoba dan sampaikan pengalaman Anda!

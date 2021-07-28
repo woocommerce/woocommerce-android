@@ -127,7 +127,7 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
                 if (isVisible) {
                     showProgressDialog(
                         title = R.string.shipping_label_create_custom_package_saving_progress_title,
-                        message = R.string.shipping_label_create_custom_package_saving_progress_message
+                        message = R.string.shipping_label_create_package_saving_progress_message
                     )
                 } else {
                     hideProgressDialog()
