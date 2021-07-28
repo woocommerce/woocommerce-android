@@ -83,6 +83,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_75"
+        android:layout_marginEnd="@dimen/major_100"
         android:minHeight="@dimen/minor_00"
         android:textColor="@color/checkbox_shipping_rate_bg_selector"
         app:layout_constraintEnd_toEndOf="parent"
@@ -97,6 +98,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_00"
+        android:layout_marginEnd="@dimen/major_100"
         android:minHeight="@dimen/minor_00"
         android:textColor="@color/checkbox_shipping_rate_bg_selector"
         app:layout_constraintEnd_toEndOf="parent"
@@ -118,7 +120,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="$22.00"
         tools:visibility="visible" />
-
 
     <View
         android:id="@+id/divider"
