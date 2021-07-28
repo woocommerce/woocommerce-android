@@ -55,20 +55,10 @@
         android:gravity="center"
         android:paddingHorizontal="@dimen/major_200"
         android:textColor="@color/color_on_surface_high"
-        app:layout_constraintBottom_toTopOf="@id/refreshButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textLabel"
         tools:text="@string/card_reader_onboarding_contact_support" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/refreshButton"
-        style="@style/Woo.Button.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/major_100"
-        app:layout_constraintBottom_toTopOf="@+id/learn_more_container"
-        tools:text="@string/refresh_button" />
 
     <include
         android:id="@+id/learn_more_container"
