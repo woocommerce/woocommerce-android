@@ -102,12 +102,12 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
         UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
-        UiHelpers.setTextOrHide(binding.cardReaderDetailLearnMoreTv.learnMore, state.learnMoreLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.refreshButton.setOnClickListener {
             state.refreshButtonAction.invoke()
         }
-        binding.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener {
+        binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
     }
@@ -120,12 +120,12 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
         UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
-        UiHelpers.setTextOrHide(binding.cardReaderDetailLearnMoreTv.learnMore, state.learnMoreLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.refreshButton.setOnClickListener {
             state.refreshButtonAction.invoke()
         }
-        binding.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener {
+        binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
     }
@@ -138,12 +138,12 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
         UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
-        UiHelpers.setTextOrHide(binding.cardReaderDetailLearnMoreTv.learnMore, state.learnMoreLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.refreshButton.setOnClickListener {
             state.refreshButtonAction.invoke()
         }
-        binding.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener {
+        binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
     }
@@ -156,12 +156,12 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
         UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
-        UiHelpers.setTextOrHide(binding.cardReaderDetailLearnMoreTv.learnMore, state.learnMoreLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.refreshButton.setOnClickListener {
             state.refreshButtonAction.invoke()
         }
-        binding.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener {
+        binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
     }
