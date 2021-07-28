@@ -8,7 +8,6 @@ import com.woocommerce.android.model.ProductAddon
 class AddonListAdapter(
     val addons: List<ProductAddon>
 ) : RecyclerView.Adapter<AddonListAdapter.AddonsViewHolder>() {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddonsViewHolder {
         TODO("Not yet implemented")
     }
