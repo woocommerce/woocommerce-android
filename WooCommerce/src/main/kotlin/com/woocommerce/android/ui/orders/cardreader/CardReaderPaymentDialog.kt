@@ -96,6 +96,9 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.dialog_card_reader_payme
                 binding.secondaryActionBtn.setOnClickListener {
                     viewState.onSecondaryActionClicked?.invoke()
                 }
+                binding.tertiaryActionBtn.setOnClickListener {
+                    viewState.onTertiaryActionClicked?.invoke()
+                }
             }
         )
 

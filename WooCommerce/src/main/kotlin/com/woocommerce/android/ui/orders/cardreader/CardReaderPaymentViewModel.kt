@@ -231,7 +231,7 @@ class CardReaderPaymentViewModel
                     order.getAmountLabel(),
                     { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
                     { onSendReceiptClicked(receiptUrl, order.billingAddress.email) },
-                    { triggerEvent(Exit) }
+                    { onBackPressed() }
                 )
             )
         }
