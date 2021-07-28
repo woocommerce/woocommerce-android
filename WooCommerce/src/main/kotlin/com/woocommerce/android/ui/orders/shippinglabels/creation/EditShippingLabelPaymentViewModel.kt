@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
@@ -75,6 +76,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     }
 
     fun onAddPaymentMethodClicked() {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SHIPPING_LABEL_ADD_PAYMENT_METHOD_TAPPED)
         triggerEvent(AddPaymentMethod)
     }
 
@@ -120,6 +122,7 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
             if (viewState.dataLoadState == Success &&
                 viewState.paymentMethods.size == countOfCurrentPaymentMethods + 1
             ) {
+                AnalyticsTracker.track(AnalyticsTracker.Stat.SHIPPING_LABEL_PAYMENT_METHOD_ADDED)
                 triggerEvent(ShowSnackbar(R.string.shipping_label_payment_method_added))
             }
         }
