@@ -593,6 +593,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_payment_print_receipt)
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
                 .isEqualTo(R.string.card_reader_payment_send_receipt)
+            assertThat(viewState.tertiaryActionLabel).describedAs("tertiaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_save_for_later)
         }
 
     @Test
@@ -739,6 +741,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             verify(tracker).track(RECEIPT_EMAIL_TAPPED)
+        }
+
+    @Test
+    fun `when user clicks on save for later button, then Exit event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onTertiaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
 
     @Test
