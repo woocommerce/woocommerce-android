@@ -1,3 +1,2 @@
-Some merchants in the USA using the WooCommerce Shipping & Tax extension saw a bug when creating labels for orders with decimal product quantities. It’s fixed!
 
-Want to give label creation a try? Install and activate the WooCommerce Shipping & Tax extension in your store. Right now, we support merchants in the USA shipping worldwide. We welcome your feedback!
+

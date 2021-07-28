@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="?attr/colorSurface"
-    android:paddingHorizontal="@dimen/major_200"
     android:paddingVertical="@dimen/major_200"
     tools:context=".ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment" />
 
