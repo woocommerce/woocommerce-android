@@ -72,15 +72,8 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountRejectedState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountUnderReviewState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayInTestModeWithLiveAccountState -> TODO()
-
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotActivatedState ->
-                showWCPayNotActivatedState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotInstalledState ->
-                showWCPayNotInstalledState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotSetupState ->
-                showWCPayNotSetupState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayUnsupportedVersionState ->
-                showWCPayUnsupportedVersionState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
+                showWCPayErrorState(layout, state)
         }.exhaustive
     }
 
@@ -94,63 +87,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
     }
 
-    private fun showWCPayNotActivatedState(
+    private fun showWCPayErrorState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotActivatedState
-    ) {
-        val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
-        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
-        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
-            state.refreshButtonAction.invoke()
-        }
-        binding.learnMoreContainer.learnMore.setOnClickListener {
-            state.onLearnMoreActionClicked.invoke()
-        }
-    }
-
-    private fun showWCPayNotInstalledState(
-        view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotInstalledState
-    ) {
-        val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
-        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
-        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
-            state.refreshButtonAction.invoke()
-        }
-        binding.learnMoreContainer.learnMore.setOnClickListener {
-            state.onLearnMoreActionClicked.invoke()
-        }
-    }
-
-    private fun showWCPayUnsupportedVersionState(
-        view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayUnsupportedVersionState
-    ) {
-        val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
-        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
-        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
-            state.refreshButtonAction.invoke()
-        }
-        binding.learnMoreContainer.learnMore.setOnClickListener {
-            state.onLearnMoreActionClicked.invoke()
-        }
-    }
-
-    private fun showWCPayNotSetupState(
-        view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayNotSetupState
+        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
     ) {
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
