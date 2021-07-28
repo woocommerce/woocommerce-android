@@ -6,7 +6,7 @@
 
 <p align="center">
     <a href="https://circleci.com/gh/woocommerce/woocommerce-android">
-        <img src="https://circleci.com/gh/woocommerce/woocommerce-ios.svg?style=svg" alt="CircleCI">
+        <img src="https://circleci.com/gh/woocommerce/woocommerce-android.svg?style=svg" alt="CircleCI">
     </a>
 </p>
 
