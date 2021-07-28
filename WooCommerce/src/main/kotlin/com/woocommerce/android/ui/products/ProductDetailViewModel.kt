@@ -2037,6 +2037,8 @@ class ProductDetailViewModel @Inject constructor(
         )
 
         object ExitAttributesAdded : ProductExitEvent(shouldShowDiscardDialog = false)
+
+        object ExitProductAddons : ProductExitEvent(shouldShowDiscardDialog = false)
     }
 
     object RefreshMenu : Event()

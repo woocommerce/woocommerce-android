@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductAddonsBinding
 import com.woocommerce.android.ui.products.BaseProductFragment
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddons
 
 class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addons) {
     companion object {
@@ -26,6 +27,7 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        TODO("Not yet implemented")
+        viewModel.onBackButtonClicked(ExitProductAddons)
+        return false
     }
 }
