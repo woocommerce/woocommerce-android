@@ -245,8 +245,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
+                refreshButtonLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
             )
 
             data class WCPayNotActivatedState(
@@ -256,8 +256,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
+                refreshButtonLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
             )
 
             data class WCPayNotSetupState(
@@ -267,8 +267,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
+                refreshButtonLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
             )
 
             data class WCPayUnsupportedVersionState(
@@ -278,8 +278,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
+                refreshButtonLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
             )
         }
     }
