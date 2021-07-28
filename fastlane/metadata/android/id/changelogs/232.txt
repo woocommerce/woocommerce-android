@@ -1,0 +1,4 @@
+7.1:
+Sebagian penjual di Amerika Serikat yang menggunakan ekstensi WooCommerce Shipping & Tax menemukan bug saat membuat label untuk pesanan dengan jumlah produk desimal. Ini sudah teratasi.
+
+Ingin coba membuat label pesanan? Instal dan aktifkan ekstensi WooCommerce Shipping & Tax di toko Anda. Saat ini, kami mendukung penjual di Amerika Serikat yang ingin mengirim produk ke seluruh dunia. Kami pasti mendengar masukan Anda.
