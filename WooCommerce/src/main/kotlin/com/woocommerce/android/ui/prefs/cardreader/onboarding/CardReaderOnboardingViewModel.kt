@@ -33,9 +33,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshState() {
-        // TODO
-        viewState.value = OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
-        return
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (val state = cardReaderChecker.getOnboardingState()) {
@@ -235,11 +232,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val headerLabel: UiString,
             val hintLabel: UiString,
             val learnMoreLabel: UiString,
-            @DrawableRes val illustration: Int,
             val refreshButtonLabel: UiString
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
             abstract val refreshButtonAction: () -> Unit
             abstract val onLearnMoreActionClicked: (() -> Unit)
+            @DrawableRes val illustration = R.drawable.img_woo_payments
 
             data class WCPayNotInstalledState(
                 override val refreshButtonAction: () -> Unit,
@@ -248,7 +245,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                illustration = R.drawable.img_woo_payments,
                 refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
             )
@@ -260,7 +256,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                illustration = R.drawable.img_woo_payments,
                 refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
             )
@@ -272,7 +267,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                illustration = R.drawable.img_woo_payments,
                 refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
             )
@@ -284,7 +278,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                illustration = R.drawable.img_woo_payments,
                 refreshButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
             )
