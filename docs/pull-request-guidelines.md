@@ -30,7 +30,7 @@ When you are ready, please, spend time crafting a good Pull Request, since it wi
 
 We have labels for different types of PRs as well as different application areas, use them accordingly. A minimum of one label should be assigned to the PR, but strongly encourage finding labels from two or more label categories.
 
-Labels break down into the following main categories:
+Some examples of labels can be found below:
 
 * **Type**: Crash, Bug, Question, Task, Enhancement, Tech Debt, Tooling, etc.
 * **Status**: Do not merge, on-hold, Blocked, feature-flagged etc.
@@ -39,6 +39,6 @@ Labels break down into the following main categories:
 * **Action**: needs design, docs, feedback, api-support, etc.
 * **Category**: accessibility, aanalytics, performance, design, dark mode, etc.
 
-
+*This list is by no means exhaustive so please choose labels that is relevant to the feature you are working on.*
 
 _Thank you very much for contributing to WooCommerce for Android!_
