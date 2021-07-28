@@ -10,10 +10,9 @@
         style="@style/TextAppearance.Woo.Headline6"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_large"
+        android:layout_marginTop="@dimen/major_275"
         android:gravity="center"
         android:paddingHorizontal="@dimen/major_200"
-        app:layout_constraintBottom_toTopOf="@id/illustration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_275"
-        app:layout_constraintBottom_toTopOf="@id/textLabel"
+        app:layout_constraintBottom_toTopOf="@id/illustration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textHeader"
@@ -40,34 +39,26 @@
         android:gravity="center"
         android:paddingHorizontal="@dimen/major_200"
         android:textColor="@color/color_on_surface_high"
-        app:layout_constraintBottom_toTopOf="@id/textSupport"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/illustration"
-        tools:text="@string/card_reader_onboarding_account_under_review_hint" />
+        tools:text="@string/card_reader_onboarding_country_not_supported_hint" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textSupport"
         style="@style/TextAppearance.Woo.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:background="?attr/selectableItemBackground"
         android:gravity="center"
         android:paddingHorizontal="@dimen/major_200"
+        android:paddingVertical="@dimen/major_100"
         android:textColor="@color/color_on_surface_high"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textLabel"
         tools:text="@string/card_reader_onboarding_contact_support" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button"
-        style="@style/Woo.Button.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/major_100"
-        app:layout_constraintBottom_toTopOf="@+id/learn_more_container"
-        tools:text="@string/card_reader_onboarding_account_pending_requirements_dismiss_button" />
 
     <include
         android:id="@+id/learn_more_container"
@@ -76,6 +67,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_350"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1" />
 

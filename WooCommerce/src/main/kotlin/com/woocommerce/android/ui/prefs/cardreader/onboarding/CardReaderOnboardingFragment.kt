@@ -88,12 +88,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
+        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
-        binding.button.setOnClickListener {
-            state.buttonAction?.invoke()
-        }
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
