@@ -138,8 +138,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     ) : Parcelable {
         val canSave: Boolean
             get() = canEditSettings && paymentMethods.any { it.isSelected }
-        val canShowAddPaymentButton: Boolean
+        val showAddPaymentButton: Boolean
             get() = canManagePayments && paymentMethods.isNotEmpty()
+        val showAddFirstPaymentButton: Boolean
+            get() = canManagePayments && paymentMethods.isEmpty()
     }
 
     enum class DataLoadState {

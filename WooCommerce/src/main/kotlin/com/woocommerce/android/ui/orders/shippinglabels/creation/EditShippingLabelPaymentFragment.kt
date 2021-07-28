@@ -139,10 +139,12 @@ class EditShippingLabelPaymentFragment :
                 it.isEmpty().let { isListEmpty ->
                     binding.paymentMethodsSectionTitle.isVisible = !isListEmpty
                     binding.paymentMethodsList.isVisible = !isListEmpty
-                    binding.addFirstPaymentMethodButton.isVisible = isListEmpty
                 }
             }
-            new.canShowAddPaymentButton.takeIfNotEqualTo(old?.canShowAddPaymentButton) {
+            new.showAddFirstPaymentButton.takeIfNotEqualTo(old?.showAddFirstPaymentButton) {
+                binding.addFirstPaymentMethodButton.isVisible = it
+            }
+            new.showAddPaymentButton.takeIfNotEqualTo(old?.showAddPaymentButton) {
                 binding.addPaymentMethodButton.isVisible = it
             }
             new.canEditSettings.takeIfNotEqualTo(old?.canEditSettings) { canEditSettings ->
