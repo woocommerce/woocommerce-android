@@ -21,6 +21,10 @@ val label = context.getString(R.string.orderdetail_shipping_details)
     />
 ```
 
+We also have string resources outside of `strings.xml` such as `key_strings`. These strings are not user-facing and should be used as static strings such as preference keys.
+
+To help ease the translation process we ask that you mark alias string resources - as well as other strings where appropriate - as not translatable. For example `<string name="foo" translatable="false">@string/bar</string>`
+
 You shouldn't need to touch the `strings.xml` for the other languages. During the release process, the `values/strings.xml` file is uploaded to [GlotPress](https://translate.wordpress.com/projects/woocommerce/woocommerce-android/) for translation. Before the release build is finalized, all the translations are grabbed from GlotPress and saved back to their appropriate `values-[lang_code]/strings.xml` file.
 
 ## Use Meaningful Names
