@@ -14,7 +14,7 @@ Android automatically mirrors layouts in RtL mode. In rare cases the default tex
 
 > **Example**: Lists can possibly contain items in both English and Hebrew. When the title `TextView` width is set to `wrap_content`, everything is handled correctly (see Img 1). But if the title `TextView` width is set to `match_parent`, the UI can become disarranged (see Img 2).
 
-[[/images/Right-to-left/TextAlignment.png|width=600px]]
+[[docs/images/Right-to-left/TextAlignment.png|width=600px]]
 
 * To fix this issue set the text alignment explicitly to `viewStart` -> `android:textAlignment="viewStart"`.
 
