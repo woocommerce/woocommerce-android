@@ -62,8 +62,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.container.addView(layout)
         when (state) {
             is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState -> TODO()
-            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState ->
-                showLoadingState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState -> showLoadingState(layout)
             is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState ->
                 showCountryNotSupportedState(layout, state)
@@ -77,10 +76,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }.exhaustive
     }
 
-    private fun showLoadingState(
-        view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
-    ) {
+    private fun showLoadingState(view: View) {
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
         binding.cancelButton.setOnClickListener {
             viewModel.onCancelClicked()
