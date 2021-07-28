@@ -16,21 +16,20 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
@@ -38,6 +37,7 @@ import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
+import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -135,6 +135,14 @@ class ProductImagesFragment :
         binding.addImageButton.setOnClickListener {
             viewModel.onImageSourceButtonClicked()
         }
+        val learnMoreText = getString(R.string.product_images_learn_more)
+        binding.learnMoreButton.setClickableText(
+            content = getString(R.string.product_images_learn_more_button, learnMoreText),
+            clickableContent = learnMoreText,
+            clickAction = WooClickableSpan {
+                ChromeCustomTabUtils.launchUrl(it.context, AppUrls.PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING)
+            }
+        )
     }
 
     override fun onGalleryImageDeleteIconClicked(image: Image) {
