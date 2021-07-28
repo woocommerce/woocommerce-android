@@ -24,7 +24,7 @@
 
 ## 🎉 Setup Instructions
 
-1. Make sure you've installed [Android Studio][studio].
+1. Make sure you've installed [Android Studio](https://developer.android.com/studio).
 1. Clone this repository in the folder of your preference, and then enter that folder:
 
     ```bash
@@ -39,7 +39,7 @@
     $ cp ./gradle.properties-example ./gradle.properties
     ```
 
-1. Generate the `gradle.properties` file for the [Login Library][login-lib] dependency:
+1. Generate the `gradle.properties` file for the [Login Library](https://github.com/wordpress-mobile/WordPress-Login-Flow-Android) dependency:
 
     ```bash
     $ cp ./libs/login/gradle.properties-example ./libs/login/gradle.properties
@@ -65,19 +65,21 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
 ## 📚 Documentation
 
 - Project Overview
-    - [OAuth2 Authentication](docs/project_overview.md#oauth2-authentication)
-    - [Configuration Files](docs/project_overview.md#configuration-files)
-    - [Setting up Checkstyle](docs/project_overview.md#setting-up-checkstyle)
-    - [Setting up Checkstyle](docs/project_overview.md#using-detekt)
-    - [Google Configuration](docs/project_overview.md#google-configuration)
+    - [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication)
+    - [Configuration Files](docs/project-overview.md#configuration-files)
+    - [Setting up Checkstyle](docs/project-overview.md#setting-up-checkstyle)
+    - [Using Detekt](docs/project-overview.md#using-detekt)
+    - [Google Configuration](docs/project-overview.md#google-configuration)
 - Development Practices
-    - [Coding Style Practices](docs/coding-style-guide.md)
+    - [Coding Style Practices](docs/coding-style.md)
     - [Pull Request Guidelines](docs/pull-request-guidelines.md)
     - [Material Theme Designs](docs/material-theme-designs.md)
     - [Using Android Resources](docs/using-android-resources.md)
     - [Localization](docs/localization.md)
     - [Themes & Styling Practices](docs/theming-styling-best-practices.md)
     - [Subtree'd Library Projects](docs/subtreed-library-projects.md)
+- Data
+    - [Tracking Events](docs/tracking-events)
 - Accessibility
     - [Accessibility Guidelines](docs/accessibility-guidelines.md)
     - [Right to Left Layout Guidelines](docs/right-to-left-layout-guidelines.md)
@@ -85,7 +87,7 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
     - [Beta Testing](https://woocommercehalo.wordpress.com/setup/join-android-beta/)
     - [Issue Triage](docs/issue-triage.md)
 - Features
-    - [Feature Flags](docs/feature_flags.md)
+    - [Feature Flags](docs/feature-flags.md)
 
 ## 👏 Contributing
 
@@ -103,7 +105,7 @@ General usage and development questions:
 
 * [WooCommerce Slack Community](https://woocommerce.com/community-slack/)
 * [WordPress.org Forums](https://wordpress.org/support/plugin/woocommerce)
-* The WooCommerce Help and Share Facebook group
+* [The WooCommerce Help and Share Facebook group](https://www.facebook.com/groups/woohelp/)
 
 ## 🔗 Resources
 
@@ -112,7 +114,7 @@ General usage and development questions:
 
 ## 📜 License
 
-WooCommerce for Android is an Open Source project covered by the [GNU General Public License version 2](LICENSE).
+WooCommerce for Android is an Open Source project covered by the [GNU General Public License version 2](https://github.com/woocommerce/woocommerce-android/blob/develop/LICENSE.md).
 
 
 <p align="center">
