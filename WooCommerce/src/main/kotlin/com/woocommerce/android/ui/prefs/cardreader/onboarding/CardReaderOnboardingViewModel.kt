@@ -228,6 +228,19 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val illustration: Int = R.drawable.img_products_error
         }
 
+        sealed class WCStripeError(
+            val headerLabel: UiString,
+            val hintLabel: UiString,
+            val learnMoreLabel: UiString,
+            val refreshButtonLabel: UiString
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
+            abstract val refreshButtonAction: () -> Unit
+            abstract val onLearnMoreActionClicked: (() -> Unit)
+
+            @DrawableRes
+            val illustration = R.drawable.img_products_error
+        }
+
         sealed class WCPayError(
             val headerLabel: UiString,
             val hintLabel: UiString,
