@@ -823,7 +823,7 @@
     <!--
         Card Reader Onboarding
     -->
-    <string name="card_reader_onboarding_title">In-person payments</string>
+    <string name="card_reader_onboarding_title">In-Person Payments</string>
     <string name="card_reader_onboarding_loading">Connecting to your account</string>
 
     <string name="card_reader_onboarding_country_not_supported_header">We don\'t support In-Person Payments in %1$s</string>
