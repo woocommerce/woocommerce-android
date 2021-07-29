@@ -119,6 +119,15 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when a zero package weight value is entered, then do not display error message`() {
+        setup()
+        var state: ShippingLabelCreateCustomPackageViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> state = new }
+        viewModel.onFieldTextChanged("0", InputName.EMPTY_WEIGHT)
+        assertThat(state!!.weightErrorMessage).isEqualTo(null)
+    }
+
+    @Test
     fun `when a package is created successfully, then trigger success event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingRepository.createCustomPackage(any())).thenReturn(WooResult(true))
