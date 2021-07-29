@@ -63,7 +63,7 @@ class ShippingLabelRepository @Inject constructor(
             shippingLabelStore.printShippingLabel(
                 site = selectedSite.get(),
                 paperSize = paperSize,
-                remoteShippingLabelId = shippingLabelId
+                shippingLabelId = shippingLabelId
             )
         }
     }
