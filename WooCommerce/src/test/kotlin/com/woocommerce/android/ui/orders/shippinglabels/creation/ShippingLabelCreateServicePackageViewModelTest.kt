@@ -9,6 +9,7 @@ import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.PackageSuccessfullyMadeEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.ViewState
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -111,5 +112,18 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
                     args = arrayOf(error.message!!)
                 )
             )
+        }
+
+    @Test
+    fun `When there is no available packages to select, then show empty view and hide done button`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(emptyList()))
+            setup()
+
+            var state: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> state = new }
+
+            assertThat(state!!.isEmpty).isEqualTo(true)
+            assertThat(state!!.canSave).isEqualTo(false)
         }
 }
