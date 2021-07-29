@@ -59,16 +59,27 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
                 CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
-                    viewState.value = OnboardingViewState.WCPayInTestModeWithLiveAccountState
+                    viewState.value = OnboardingViewState.WCStripeError.WCPayInTestModeWithLiveAccountState(
+                        ::onLearnMoreClicked
+                    )
                 CardReaderOnboardingState.StripeAccountUnderReview ->
-                    viewState.value = OnboardingViewState.WCPayAccountUnderReviewState
-                // TODO cardreader Pass due date to the state
+                    viewState.value = OnboardingViewState.WCStripeError.WCPayAccountUnderReviewState(
+                        ::onLearnMoreClicked
+                    )
                 CardReaderOnboardingState.StripeAccountPendingRequirement ->
-                    viewState.value = OnboardingViewState.WCPayAccountPendingRequirementsState("", ::exitFlow)
+                    viewState.value = OnboardingViewState.WCStripeError
+                        .WCPayAccountPendingRequirementsState(
+                            onLearnMoreActionClicked = ::onLearnMoreClicked,
+                            dueDate = "" // TODO cardreader Pass due date to the state
+                        )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
-                    viewState.value = OnboardingViewState.WCPayAccountOverdueRequirementsState
+                    viewState.value = OnboardingViewState.WCStripeError.WCPayAccountOverdueRequirementsState(
+                        ::onLearnMoreClicked
+                    )
                 CardReaderOnboardingState.StripeAccountRejected ->
-                    viewState.value = OnboardingViewState.WCPayAccountRejectedState
+                    viewState.value = OnboardingViewState.WCStripeError.WCPayAccountRejectedState(
+                        ::onLearnMoreClicked
+                    )
                 CardReaderOnboardingState.GenericError ->
                     viewState.value = OnboardingViewState.GenericErrorState
                 CardReaderOnboardingState.NoConnectionError ->
@@ -148,84 +159,60 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
         }
 
-        // TODO cardreader Update layout resource
-        object WCPayAccountUnderReviewState :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint)
-            val contactSupportLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
+        sealed class WCStripeError(
+            val headerLabel: UiString,
+            val hintLabel: UiString,
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
+            abstract val onLearnMoreActionClicked: (() -> Unit)
+
+            @DrawableRes
+            val illustration = R.drawable.img_products_error
+            val contactSupportLabel =
+                UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes
-            val illustration: Int = R.drawable.img_products_error
-        }
 
-        // TODO cardreader Update layout resource
-        object WCPayAccountRejectedState :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
-            val contactSupportLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes
-            val illustration: Int = R.drawable.img_products_error
-        }
+            data class WCPayAccountUnderReviewState(
+                override val onLearnMoreActionClicked: () -> Unit
+            ) : WCStripeError(
+                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
+                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
+            )
 
-        // TODO cardreader Update layout resource
-        object WCPayAccountOverdueRequirementsState :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
-            val contactSupportLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes
-            val illustration: Int = R.drawable.img_products_error
-        }
+            data class WCPayAccountRejectedState(
+                override val onLearnMoreActionClicked: () -> Unit
+            ) : WCStripeError(
+                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
+                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
+            )
 
-        // TODO cardreader Update layout resource
-        data class WCPayAccountPendingRequirementsState(val dueDate: String, val dismissButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(
+            data class WCPayAccountOverdueRequirementsState(
+                override val onLearnMoreActionClicked: () -> Unit
+            ) : WCStripeError(
+                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
+                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
+            )
+
+            data class WCPayInTestModeWithLiveAccountState(
+                override val onLearnMoreActionClicked: () -> Unit
+            ) : WCStripeError(
+                headerLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header),
+                hintLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint)
+            )
+
+            data class WCPayAccountPendingRequirementsState(
+                override val onLearnMoreActionClicked: () -> Unit,
+                val dueDate: String
+            ) : WCStripeError(
+                headerLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
+                hintLabel = UiString.UiStringRes(
                     R.string.card_reader_onboarding_account_pending_requirements_hint,
                     listOf(UiString.UiStringText(dueDate))
                 )
-            val contactSupportLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes
-            val illustration: Int = R.drawable.img_products_error
-            val dismissButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_dismiss_button)
-        }
-
-        // TODO cardreader Update layout resource
-        object WCPayInTestModeWithLiveAccountState :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint)
-            val contactSupportLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes
-            val illustration: Int = R.drawable.img_products_error
+            )
         }
 
         sealed class WCPayError(

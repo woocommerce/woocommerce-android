@@ -8,12 +8,8 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardi
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountOverdueRequirementsState
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountPendingRequirementsState
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountRejectedState
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountUnderReviewState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayInTestModeWithLiveAccountState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCStripeError
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -141,7 +137,9 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayInTestModeWithLiveAccountState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                WCStripeError.WCPayInTestModeWithLiveAccountState::class.java
+            )
         }
 
     @Test
@@ -152,7 +150,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayAccountRejectedState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCStripeError.WCPayAccountRejectedState::class.java)
         }
 
     @Test
@@ -163,7 +161,9 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayAccountPendingRequirementsState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                WCStripeError.WCPayAccountPendingRequirementsState::class.java
+            )
         }
 
     @Test
@@ -174,7 +174,9 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayAccountOverdueRequirementsState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                WCStripeError.WCPayAccountOverdueRequirementsState::class.java
+            )
         }
 
     @Test
@@ -185,7 +187,9 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayAccountUnderReviewState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                WCStripeError.WCPayAccountUnderReviewState::class.java
+            )
         }
 
     @Test
