@@ -54,7 +54,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
@@ -382,7 +381,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(areProductsVisible).isFalse()
+            assertThat(areProductsVisible).isFalse
             assertThat(refunds).isNotEmpty
         }
 
@@ -638,7 +637,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         snackbar?.undoAction?.onClick(mock())
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
-        verify(repository, times(2)).updateOrderStatus(eq(order.identifier.toIdSet().id), statusChangeCaptor.capture())
+        verify(repository, times(2)).updateOrderStatus(eq(order.toDataModel()), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
             initialStatus, newStatus, initialStatus
