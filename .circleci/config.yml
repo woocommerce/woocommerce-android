@@ -152,7 +152,7 @@ jobs:
             echo "export SLACK_SUCCESS_MESSAGE=':tada: WooCommerce Android $APP_VERSION has been deployed!'" >> $BASH_ENV
             # Prevent fastlane from checking for updates, also removing the verbose fastlane changelog at the end of each invocation.
             echo "export FASTLANE_SKIP_UPDATE_CHECK=1" >> $BASH_ENV
-            mv ~/.android/debug_a8c.keystore ~/.android/debug.keystore
+            mv ~/.configure/woocommerce-android/secrets/debug_a8c.keystore ~/.android/debug.keystore
             if [[ $APP_VERSION == *"-rc-"* ]]; then
               bundle exec fastlane build_and_upload_beta skip_confirm:true skip_prechecks:true create_release:true
             else

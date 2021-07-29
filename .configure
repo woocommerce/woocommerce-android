@@ -1,7 +1,7 @@
 {
   "project_name": "woocommerce-android",
   "branch": "trunk",
-  "pinned_hash": "3b9a78517bf364e61bd1b1f8a857a3dded835418",
+  "pinned_hash": "eed37c9c53eddc3993181c3f463ae5740bbd7996",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/gradle.properties",
@@ -25,7 +25,7 @@
     },
     {
       "file": "android/debug.keystore",
-      "destination": "~/.android/debug_a8c.keystore",
+      "destination": "~/.configure/woocommerce-android/secrets/debug_a8c.keystore",
       "encrypt": true
     },
     {
