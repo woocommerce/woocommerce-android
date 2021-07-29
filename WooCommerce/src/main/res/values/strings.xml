@@ -758,6 +758,7 @@
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
+    <string name="card_reader_payment_save_for_later">Save for later</string>
 
     <string name="card_reader_payment_description">Online payment for order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
