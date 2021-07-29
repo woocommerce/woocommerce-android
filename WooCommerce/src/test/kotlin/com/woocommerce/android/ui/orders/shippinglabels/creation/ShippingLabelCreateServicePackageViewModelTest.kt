@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
@@ -7,6 +8,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.PackageSuccessfullyMadeEvent
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -18,6 +20,11 @@ import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
@@ -43,9 +50,8 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
         )
     )
 
-    suspend fun setup() {
+    fun setup() {
         val savedState = ShippingLabelCreatePackageFragmentArgs(0).initSavedStateHandle()
-        whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(availablePackages))
         viewModel = ShippingLabelCreateServicePackageViewModel(
             savedState,
             resourceProvider,
@@ -55,13 +61,55 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `When selectable packages fetching fails, then display a Snackbar`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(shippingRepository.getSelectableServicePackages()).thenReturn(
+                WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            )
+            setup()
+
+            assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.shipping_label_packages_loading_error))
+        }
+
+    @Test
     fun `Given no selected packages, when Done button is tapped, then display a Snackbar`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(availablePackages))
             setup()
             var event: MultiLiveEvent.Event? = null
             viewModel.event.observeForever { event = it }
             viewModel.onCustomFormDoneMenuClicked()
 
             assertThat(event).isEqualTo(ShowSnackbar(R.string.shipping_label_create_service_package_nothing_selected))
+        }
+
+    @Test
+    fun `When package is saved successfully, then trigger success event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(availablePackages))
+            whenever(shippingRepository.activateServicePackage(any())).thenReturn(WooResult(true))
+            setup()
+            viewModel.onPackageSelected(availablePackages[0].id)
+            viewModel.onCustomFormDoneMenuClicked()
+
+            assertThat(viewModel.event.value).isEqualTo(PackageSuccessfullyMadeEvent(availablePackages[0]))
+        }
+
+    @Test
+    fun `When package is not saved successfully, then show Snackbar`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val error = WooError(API_ERROR, NETWORK_ERROR, "")
+            whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(availablePackages))
+            whenever(shippingRepository.activateServicePackage(any())).thenReturn(WooResult(error = error))
+            setup()
+            viewModel.onPackageSelected(availablePackages[0].id)
+            viewModel.onCustomFormDoneMenuClicked()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                ShowSnackbar(
+                    message = R.string.shipping_label_create_custom_package_api_failure,
+                    args = arrayOf(error.message!!)
+                )
+            )
         }
 }
