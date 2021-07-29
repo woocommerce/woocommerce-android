@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -18,6 +19,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils
 
 @AndroidEntryPoint
 class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_onboarding) {
@@ -93,6 +95,20 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
+        }
+
+        // decrease the margins for landscape unless this is a tablet
+        if (DisplayUtils.isLandscape(requireActivity()) &&
+            !DisplayUtils.isTablet(requireActivity()) &&
+            !DisplayUtils.isXLargeTablet(requireActivity())
+        ) {
+            fun setTopMargin(view: View) {
+                (view.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+                    resources.getDimensionPixelSize(R.dimen.major_200)
+            }
+            setTopMargin(binding.textHeader)
+            setTopMargin(binding.illustration)
+            setTopMargin(binding.textLabel)
         }
     }
 
