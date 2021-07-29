@@ -775,6 +775,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given re-fetching order, when user clicks on save for later button, then ReFetchingOrderState shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+            simulateFetchOrderJobState(inProgress = true)
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onTertiaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReFetchingOrderState::class.java)
+        }
+
+    @Test
     fun `given user presses back, when already in ReFetchingOrderState, then snackbar shown and screen dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             simulateFetchOrderJobState(inProgress = true)
