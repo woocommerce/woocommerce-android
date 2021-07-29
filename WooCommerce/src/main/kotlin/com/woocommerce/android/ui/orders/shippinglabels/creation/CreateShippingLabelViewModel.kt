@@ -105,7 +105,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
@@ -499,9 +498,9 @@ class CreateShippingLabelViewModel @Inject constructor(
             PurchaseFailed
         } else {
             if (fulfillOrder) {
-                val orderIdSet = data.order.identifier.toIdSet()
+                val order = data.order.toDataModel()
                 val fulfillResult = orderDetailRepository.updateOrderStatus(
-                    localOrderId = orderIdSet.id,
+                    orderModel = order,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 )
 
