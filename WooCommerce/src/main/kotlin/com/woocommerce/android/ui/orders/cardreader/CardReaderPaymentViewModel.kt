@@ -231,10 +231,14 @@ class CardReaderPaymentViewModel
                     order.getAmountLabel(),
                     { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
                     { onSendReceiptClicked(receiptUrl, order.billingAddress.email) },
-                    { onBackPressed() }
+                    { onSaveForLaterClicked() }
                 )
             )
         }
+    }
+
+    private fun onSaveForLaterClicked() {
+        onBackPressed()
     }
 
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
