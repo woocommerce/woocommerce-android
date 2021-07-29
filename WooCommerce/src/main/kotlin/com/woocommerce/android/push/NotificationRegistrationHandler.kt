@@ -1,8 +1,6 @@
 package com.woocommerce.android.push
 
 import com.woocommerce.android.util.PreferencesWrapper
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
@@ -21,7 +19,6 @@ class NotificationRegistrationHandler @Inject constructor(
     fun onNewFCMTokenReceived(token: String) {
         // Register for WordPress.com notifications only if user is logged in
         if (accountStore.hasAccessToken()) {
-            WooLog.d(T.NOTIFS, "Sending FCM token to our remote services: $token")
             preferencesWrapper.setFCMToken(token)
 
             // The site is set to null to ensure we get notifications for all stores the user is logged in
