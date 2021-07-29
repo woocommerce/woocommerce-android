@@ -47,6 +47,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     fun onFieldTextChanged(value: String, field: InputName) {
         when (field) {
             InputName.NAME -> validateNameField(value)
+            InputName.EMPTY_WEIGHT -> validateFloatInput(value, field, isZeroAllowed = true)
             else -> validateFloatInput(value, field)
         }
         updateInputInViewState(value, field)
@@ -60,11 +61,17 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         }
     }
 
-    private fun validateFloatInput(input: String, name: InputName) {
+    private fun validateFloatInput(input: String, name: InputName, isZeroAllowed: Boolean = false) {
         val acc = inputToFloat(input)
         when {
             acc.isNaN() -> updateErrorInViewState(name, emptyInputError)
-            acc == 0f -> updateErrorInViewState(name, invalidInputError)
+            acc == 0f -> {
+                if (isZeroAllowed) {
+                    updateErrorInViewState(name, null)
+                } else {
+                    updateErrorInViewState(name, invalidInputError)
+                }
+            }
             else -> updateErrorInViewState(name, null)
         }
     }
@@ -95,7 +102,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         validateFloatInput(viewState.length, InputName.LENGTH)
         validateFloatInput(viewState.width, InputName.WIDTH)
         validateFloatInput(viewState.height, InputName.HEIGHT)
-        validateFloatInput(viewState.weight, InputName.EMPTY_WEIGHT)
+        validateFloatInput(viewState.weight, InputName.EMPTY_WEIGHT, isZeroAllowed = true)
 
         if (!viewState.areAllRequiredFieldsValid) return
 

@@ -3,7 +3,17 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.*
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountOverdueRequirementsState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountPendingRequirementsState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountRejectedState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayAccountUnderReviewState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayInTestModeWithLiveAccountState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +35,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `when onboarding completed, then flow terminated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.ONBOARDING_COMPLETED)
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.OnboardingCompleted)
 
             val viewModel = createVM()
 
@@ -35,7 +45,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `when country not supported, then country not supported state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.CountryNotSupported(""))
 
             val viewModel = createVM()
 
@@ -43,52 +54,90 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when country not supported, then current store country name shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.CountryNotSupported("US"))
+            val viewModel = createVM()
+
+            val countryName = (viewModel.viewStateData.value as UnsupportedCountryState).headerLabel.params[0]
+
+            assertThat(countryName).isEqualTo(UiString.UiStringText("United States"))
+        }
+
+    @Test
+    fun `given country not supported, when learn more clicked, then app shows learn more section`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.CountryNotSupported(""))
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore::class.java)
+        }
+
+    @Test
+    fun `given country not supported, when contact support clicked, then app navigates to support screen`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.CountryNotSupported(""))
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport::class.java)
+        }
+
+    @Test
     fun `when wcpay not installed, then wcpay not installed state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.WCPAY_NOT_INSTALLED)
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.WcpayNotInstalled)
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayNotInstalledState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotInstalledState::class.java)
         }
 
     @Test
     fun `when wcpay not activated, then wcpay not activated state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.WCPAY_NOT_ACTIVATED)
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.WcpayNotActivated)
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayNotActivatedState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotActivatedState::class.java)
         }
 
     @Test
     fun `when wcpay not setup, then wcpay not setup state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED)
+                .thenReturn(CardReaderOnboardingState.WcpaySetupNotCompleted)
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayNotSetupState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotSetupState::class.java)
         }
 
     @Test
     fun `when unsupported wcpay version installed, then unsupported wcpay version state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION)
+                .thenReturn(CardReaderOnboardingState.WcpayUnsupportedVersion)
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayUnsupportedVersionState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayUnsupportedVersionState::class.java)
         }
 
     @Test
     fun `when wcpay in test mode with live stripe account, then wcpay in test mode state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT)
+                .thenReturn(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
 
             val viewModel = createVM()
 
@@ -99,7 +148,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account rejected, then account rejected state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+                .thenReturn(CardReaderOnboardingState.StripeAccountRejected)
 
             val viewModel = createVM()
 
@@ -110,7 +159,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account pending requirements, then account pending requirements state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT)
+                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement)
 
             val viewModel = createVM()
 
@@ -121,7 +170,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account overdue requirements, then account overdue requirements state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT)
+                .thenReturn(CardReaderOnboardingState.StripeAccountOverdueRequirement)
 
             val viewModel = createVM()
 
@@ -132,7 +181,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account under review, then account under review state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW)
+                .thenReturn(CardReaderOnboardingState.StripeAccountUnderReview)
 
             val viewModel = createVM()
 
@@ -143,7 +192,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when onboarding check fails, then generic state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.GENERIC_ERROR)
+                .thenReturn(CardReaderOnboardingState.GenericError)
 
             val viewModel = createVM()
 
@@ -154,7 +203,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when network not available, then no connection error shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.NO_CONNECTION_ERROR)
+                .thenReturn(CardReaderOnboardingState.NoConnectionError)
 
             val viewModel = createVM()
 

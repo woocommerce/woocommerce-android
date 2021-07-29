@@ -823,7 +823,7 @@
     <!--
         Card Reader Onboarding
     -->
-    <string name="card_reader_onboarding_title">In-person payments</string>
+    <string name="card_reader_onboarding_title">In-Person Payments</string>
     <string name="card_reader_onboarding_loading">Connecting to your account</string>
 
     <string name="card_reader_onboarding_country_not_supported_header">We don\'t support In-Person Payments in %1$s</string>
@@ -1118,6 +1118,7 @@
     <string name="edit_products_button">Edit products</string>
     <string name="empty_product_add_product_button">Add product</string>
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
+    <string name="product_add_ons_card_button_title">Product Add-ons</string>
 
     <plurals name="product_count">
         <item quantity="one">%d product</item>

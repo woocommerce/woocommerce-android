@@ -5,6 +5,7 @@ import androidx.annotation.LayoutRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog
@@ -13,6 +14,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,57 +35,74 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun refreshState() {
         launch {
             viewState.value = OnboardingViewState.LoadingState
-            when (cardReaderChecker.getOnboardingState()) {
-                CardReaderOnboardingState.ONBOARDING_COMPLETED -> exitFlow()
-                CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED ->
-                    // todo cardreader add country display name
+            when (val state = cardReaderChecker.getOnboardingState()) {
+                CardReaderOnboardingState.OnboardingCompleted -> exitFlow()
+                is CardReaderOnboardingState.CountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
-                        "HC: United States",
+                        convertCountryCodeToCountry(state.countryCode),
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
                     )
-                CardReaderOnboardingState.WCPAY_NOT_INSTALLED ->
-                    viewState.value = OnboardingViewState.WCPayNotInstalledState(::refreshState)
-                CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION ->
-                    viewState.value = OnboardingViewState.WCPayUnsupportedVersionState(::refreshState)
-                CardReaderOnboardingState.WCPAY_NOT_ACTIVATED ->
-                    viewState.value = OnboardingViewState.WCPayNotActivatedState(::refreshState)
-                CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED ->
-                    viewState.value = OnboardingViewState.WCPayNotSetupState(::refreshState)
-                CardReaderOnboardingState.WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT ->
+                CardReaderOnboardingState.WcpayNotInstalled ->
+                    viewState.value =
+                        OnboardingViewState.WCPayError.WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
+                CardReaderOnboardingState.WcpayUnsupportedVersion ->
+                    viewState.value =
+                        OnboardingViewState.WCPayError.WCPayUnsupportedVersionState(
+                            ::refreshState,
+                            ::onLearnMoreClicked
+                        )
+                CardReaderOnboardingState.WcpayNotActivated ->
+                    viewState.value =
+                        OnboardingViewState.WCPayError.WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
+                CardReaderOnboardingState.WcpaySetupNotCompleted ->
+                    viewState.value =
+                        OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
+                CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
                     viewState.value = OnboardingViewState.WCPayInTestModeWithLiveAccountState
-                CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW ->
+                CardReaderOnboardingState.StripeAccountUnderReview ->
                     viewState.value = OnboardingViewState.WCPayAccountUnderReviewState
                 // TODO cardreader Pass due date to the state
-                CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT ->
+                CardReaderOnboardingState.StripeAccountPendingRequirement ->
                     viewState.value = OnboardingViewState.WCPayAccountPendingRequirementsState("", ::exitFlow)
-                CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT ->
+                CardReaderOnboardingState.StripeAccountOverdueRequirement ->
                     viewState.value = OnboardingViewState.WCPayAccountOverdueRequirementsState
-                CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED ->
+                CardReaderOnboardingState.StripeAccountRejected ->
                     viewState.value = OnboardingViewState.WCPayAccountRejectedState
-                CardReaderOnboardingState.GENERIC_ERROR ->
+                CardReaderOnboardingState.GenericError ->
                     viewState.value = OnboardingViewState.GenericErrorState
-                CardReaderOnboardingState.NO_CONNECTION_ERROR ->
+                CardReaderOnboardingState.NoConnectionError ->
                     viewState.value = OnboardingViewState.NoConnectionErrorState
             }
         }
     }
 
-    private fun onCancelClicked() {
+    fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Onboarding flow interrupted by the user.")
         exitFlow()
     }
 
     private fun onContactSupportClicked() {
-        // TODO cardreader not implemented
+        triggerEvent(OnboardingEvent.NavigateToSupport)
     }
 
     private fun onLearnMoreClicked() {
-        // TODO cardreader not implemented
+        triggerEvent(OnboardingEvent.ViewLearnMore)
     }
 
     private fun exitFlow() {
         triggerEvent(Event.Exit)
+    }
+
+    private fun convertCountryCodeToCountry(countryCode: String?) =
+        Locale("", countryCode.orEmpty()).displayName
+
+    sealed class OnboardingEvent : Event() {
+        object ViewLearnMore : OnboardingEvent() {
+            const val url = AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        }
+
+        object NavigateToSupport : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
@@ -92,7 +111,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_loading)
             val hintLabel: UiString =
                 UiString.UiStringRes(R.string.please_wait)
-            @DrawableRes val illustration: Int = R.drawable.img_payment_onboarding_loading
+            @DrawableRes
+            val illustration: Int = R.drawable.img_payment_onboarding_loading
         }
 
         // TODO cardreader Update layout resource
@@ -105,11 +125,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
             // TODO cardreader implement no connection error state
         }
 
-        // TODO cardreader Update layout resource
         class UnsupportedCountryState(
             val countryDisplayName: String,
-            val onContactSupportActionClicked: (() -> Unit)? = null,
-            val onLearnMoreActionClicked: (() -> Unit)? = null
+            val onContactSupportActionClicked: (() -> Unit),
+            val onLearnMoreActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported_country) {
             val headerLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_header,
@@ -130,62 +149,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         // TODO cardreader Update layout resource
-        data class WCPayNotInstalledState(val refreshButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
-            val refreshButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
-        }
-
-        // TODO cardreader Update layout resource
-        data class WCPayNotActivatedState(val refreshButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
-            val refreshButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
-        }
-
-        // TODO cardreader Update layout resource
-        data class WCPayNotSetupState(val refreshButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
-            val refreshButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
-        }
-
-        // TODO cardreader Update layout resource
-        data class WCPayUnsupportedVersionState(val refreshButtonAction: () -> Unit) :
-            OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_header)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_woo_payments
-            val refreshButtonLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
-        }
-
-        // TODO cardreader Update layout resource
         object WCPayAccountUnderReviewState :
             OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
             val headerLabel: UiString =
@@ -196,7 +159,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
         }
 
         // TODO cardreader Update layout resource
@@ -210,7 +174,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
         }
 
         // TODO cardreader Update layout resource
@@ -224,7 +189,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
         }
 
         // TODO cardreader Update layout resource
@@ -241,7 +207,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
             val dismissButtonLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_dismiss_button)
         }
@@ -257,7 +224,63 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_contact_support)
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-            @DrawableRes val illustration: Int = R.drawable.img_products_error
+            @DrawableRes
+            val illustration: Int = R.drawable.img_products_error
+        }
+
+        sealed class WCPayError(
+            val headerLabel: UiString,
+            val hintLabel: UiString,
+            val learnMoreLabel: UiString,
+            val refreshButtonLabel: UiString
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
+            abstract val refreshButtonAction: () -> Unit
+            abstract val onLearnMoreActionClicked: (() -> Unit)
+            @DrawableRes val illustration = R.drawable.img_woo_payments
+
+            data class WCPayNotInstalledState(
+                override val refreshButtonAction: () -> Unit,
+                override val onLearnMoreActionClicked: (() -> Unit)
+            ) : WCPayError(
+                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header),
+                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint),
+                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                refreshButtonLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
+            )
+
+            data class WCPayNotActivatedState(
+                override val refreshButtonAction: () -> Unit,
+                override val onLearnMoreActionClicked: (() -> Unit)
+            ) : WCPayError(
+                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_header),
+                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint),
+                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                refreshButtonLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
+            )
+
+            data class WCPayNotSetupState(
+                override val refreshButtonAction: () -> Unit,
+                override val onLearnMoreActionClicked: (() -> Unit)
+            ) : WCPayError(
+                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_header),
+                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint),
+                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                refreshButtonLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
+            )
+
+            data class WCPayUnsupportedVersionState(
+                override val refreshButtonAction: () -> Unit,
+                override val onLearnMoreActionClicked: (() -> Unit)
+            ) : WCPayError(
+                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_header),
+                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint),
+                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                refreshButtonLabel = UiString
+                    .UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
+            )
         }
     }
 }
