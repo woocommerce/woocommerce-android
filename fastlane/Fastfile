@@ -20,7 +20,7 @@ ENV["PROJECT_ROOT_FOLDER"]="./"
 REPOSITORY_NAME="woocommerce-android"
 GH_ORG_NAME="woocommerce"
 
-UPLOAD_TO_PLAY_STORE_JSON_KEY = 'google-upload-credentials.json'
+UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-android', 'secrets', 'google-upload-credentials.json')
 
 SUPPORTED_LOCALES = [
   { glotpress: "ar", android: "ar", google_play: "ar",  promo_config: {}},
