@@ -34,7 +34,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     private fun loadInitialData() {
         launch {
             loadPaymentMethods(forceRefresh = false)
-            if (viewState.dataLoadState == DataLoadState.Success && viewState.paymentMethods.isEmpty()) {
+            if (viewState.dataLoadState == DataLoadState.Success &&
+                viewState.paymentMethods.isEmpty() &&
+                viewState.canManagePayments
+            ) {
                 triggerEvent(AddPaymentMethod)
             }
         }
@@ -138,6 +141,10 @@ class EditShippingLabelPaymentViewModel @Inject constructor(
     ) : Parcelable {
         val canSave: Boolean
             get() = canEditSettings && paymentMethods.any { it.isSelected }
+        val showAddPaymentButton: Boolean
+            get() = canManagePayments && paymentMethods.isNotEmpty()
+        val showAddFirstPaymentButton: Boolean
+            get() = canManagePayments && paymentMethods.isEmpty()
     }
 
     enum class DataLoadState {
