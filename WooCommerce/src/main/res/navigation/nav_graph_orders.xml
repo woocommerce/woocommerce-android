@@ -37,9 +37,8 @@
             android:defaultValue="0L"
             app:argType="long" />
         <argument
-            android:name="shippingLabelId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="shippingLabelIds"
+            app:argType="long[]" />
         <argument
             android:name="isReprint"
             android:defaultValue="true"

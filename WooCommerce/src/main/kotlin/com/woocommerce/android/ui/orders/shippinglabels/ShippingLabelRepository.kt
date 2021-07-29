@@ -58,12 +58,12 @@ class ShippingLabelRepository @Inject constructor(
             ?.toAppModel()
     }
 
-    suspend fun printShippingLabel(paperSize: String, shippingLabelId: Long): WooResult<String> {
+    suspend fun printShippingLabels(paperSize: String, shippingLabelIds: List<Long>): WooResult<String> {
         return withContext(Dispatchers.IO) {
-            shippingLabelStore.printShippingLabel(
+            shippingLabelStore.printShippingLabels(
                 site = selectedSite.get(),
                 paperSize = paperSize,
-                remoteShippingLabelId = shippingLabelId
+                shippingLabelIds = shippingLabelIds
             )
         }
     }
