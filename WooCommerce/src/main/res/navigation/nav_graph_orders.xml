@@ -77,8 +77,8 @@
         android:label="PrintShippingLabelCustomsFormFragment"
         tools:layout="@layout/fragment_print_label_customs_form">
         <argument
-            android:name="url"
-            app:argType="string" />
+            android:name="invoices"
+            app:argType="string[]" />
         <argument
             android:name="isReprint"
             app:argType="boolean" />

@@ -291,7 +291,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
         shippingLabel.commercialInvoiceUrl?.let {
-            triggerEvent(ViewPrintCustomsForm(it, isReprint = true))
+            triggerEvent(ViewPrintCustomsForm(listOf(it), isReprint = true))
         }
     }
 
