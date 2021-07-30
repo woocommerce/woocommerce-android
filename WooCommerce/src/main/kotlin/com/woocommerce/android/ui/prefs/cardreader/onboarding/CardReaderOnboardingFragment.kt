@@ -94,6 +94,13 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
+
+        UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
+        state.onButtonActionClicked?.let { onButtonActionClicked ->
+            binding.button.setOnClickListener {
+                onButtonActionClicked.invoke()
+            }
+        }
     }
 
     private fun showWCPayErrorState(

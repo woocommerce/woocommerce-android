@@ -33,6 +33,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshState() {
+        // TODO remove
+        viewState.value = OnboardingViewState.WCStripeError
+            .WCPayAccountPendingRequirementsState(
+                onLearnMoreActionClicked = ::onLearnMoreClicked,
+                dueDate = ""
+            )
+        return
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (val state = cardReaderChecker.getOnboardingState()) {
@@ -162,8 +169,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
         sealed class WCStripeError(
             val headerLabel: UiString,
             val hintLabel: UiString,
+            val buttonLabel: UiString? = null
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
             abstract val onLearnMoreActionClicked: (() -> Unit)
+            abstract val onButtonActionClicked: (() -> Unit?)?
 
             @DrawableRes
             val illustration = R.drawable.img_products_error
@@ -173,28 +182,32 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
 
             data class WCPayAccountUnderReviewState(
-                override val onLearnMoreActionClicked: () -> Unit
+                override val onLearnMoreActionClicked: () -> Unit,
+                override val onButtonActionClicked: (() -> Unit?)? = null
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
             )
 
             data class WCPayAccountRejectedState(
-                override val onLearnMoreActionClicked: () -> Unit
+                override val onLearnMoreActionClicked: () -> Unit,
+                override val onButtonActionClicked: (() -> Unit?)? = null
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
             )
 
             data class WCPayAccountOverdueRequirementsState(
-                override val onLearnMoreActionClicked: () -> Unit
+                override val onLearnMoreActionClicked: () -> Unit,
+                override val onButtonActionClicked: (() -> Unit?)? = null
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
             )
 
             data class WCPayInTestModeWithLiveAccountState(
-                override val onLearnMoreActionClicked: () -> Unit
+                override val onLearnMoreActionClicked: () -> Unit,
+                override val onButtonActionClicked: (() -> Unit?)? = null
             ) : WCStripeError(
                 headerLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header),
@@ -204,6 +217,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
             data class WCPayAccountPendingRequirementsState(
                 override val onLearnMoreActionClicked: () -> Unit,
+                override val onButtonActionClicked: (() -> Unit?)? = null, // TODO
                 val dueDate: String
             ) : WCStripeError(
                 headerLabel = UiString
@@ -211,7 +225,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 hintLabel = UiString.UiStringRes(
                     R.string.card_reader_onboarding_account_pending_requirements_hint,
                     listOf(UiString.UiStringText(dueDate))
-                )
+                ),
+                buttonLabel = UiString.UiStringRes(R.string.skip)
             )
         }
 
