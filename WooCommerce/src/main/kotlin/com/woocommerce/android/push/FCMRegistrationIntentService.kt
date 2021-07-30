@@ -11,8 +11,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FCMRegistrationIntentService : JobIntentService() {
-    @Inject
-    internal lateinit var notificationRegistrationHandler: NotificationRegistrationHandler
+    @Inject internal lateinit var notificationRegistrationHandler: NotificationRegistrationHandler
 
     companion object {
         fun enqueueWork(context: Context) {
