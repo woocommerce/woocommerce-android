@@ -43,8 +43,8 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (!isWCPaySetupCompleted(paymentAccount)) return WcpaySetupNotCompleted
         if (isWCPayInTestModeWithLiveStripeAccount()) return WcpayInTestModeWithLiveStripeAccount
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
-        if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
+        if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
         if (isInUndefinedState(paymentAccount)) return GenericError
 
