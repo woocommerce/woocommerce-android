@@ -98,7 +98,6 @@ Language: zh_CN
     <string name="product_create_attribute_helper">要创建变体，您需要先设置它的属性（即“颜色”、“大小”）</string>
     <string name="product_variation_single_count">1 个变体</string>
     <string name="product_variation_multiple_count">%1$s 个变体</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s 追踪</string>
     <string name="card_reader_software_update_in_progress_title">更新读卡器软件</string>
     <string name="card_reader_software_update_title">软件更新</string>
     <string name="card_reader_software_update_description">您的读卡器软件需要更新，然后才能顺畅运行。 是否要立即更新？</string>

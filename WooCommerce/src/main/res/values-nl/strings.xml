@@ -98,7 +98,6 @@ Language: nl
     <string name="product_create_attribute_helper">Om een variatie aan te maken moet je de eigenschappen (bv. \'kleur\', \'maat\') eerst instellen</string>
     <string name="product_variation_single_count">1 variatie</string>
     <string name="product_variation_multiple_count">%1$s Variaties</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s volgen</string>
     <string name="card_reader_software_update_in_progress_title">De software van je lezer wordt bijgewerkt</string>
     <string name="card_reader_software_update_title">Software-update</string>
     <string name="card_reader_software_update_description">De software van je kaartlezer moet bijgewerkt worden om alles soepel te laten verlopen. Wil je nu bijwerken?</string>

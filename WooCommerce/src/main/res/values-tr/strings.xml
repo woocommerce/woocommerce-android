@@ -98,7 +98,6 @@ Language: tr
     <string name="product_create_attribute_helper">Bir varyasyon oluşturmak için önce niteliklerini (yani \"Renk\", \"Boyut\") ayarlamanız gerekir.</string>
     <string name="product_variation_single_count">1 varyasyon</string>
     <string name="product_variation_multiple_count">%1$s varyasyon</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s izleniyor</string>
     <string name="card_reader_software_update_in_progress_title">Okuyucunuzun yazılımını güncelleme</string>
     <string name="card_reader_software_update_title">Yazılım güncellemesi</string>
     <string name="card_reader_software_update_description">Sorunsuz çalışmaya devam etmesi için kart okuyucunuzun yazılımının güncellenmesi gerekir. Şimdi güncellemek istiyor musunuz?</string>

@@ -98,7 +98,6 @@ Language: ko_KR
     <string name="product_create_attribute_helper">변형을 만들려면 속성(즉, \"색상\", \"사이즈\")을 먼저 설정해야 합니다.</string>
     <string name="product_variation_single_count">변형 1개</string>
     <string name="product_variation_multiple_count">변형 %1$s개</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s 추적</string>
     <string name="card_reader_software_update_in_progress_title">리더의 소프트웨어 업데이트하기</string>
     <string name="card_reader_software_update_title">소프트웨어 업데이트</string>
     <string name="card_reader_software_update_description">카드 리더가 계속 원활하게 작동하려면 소프트웨어를 업데이트해야 합니다.  지금 업데이트하시겠어요?</string>

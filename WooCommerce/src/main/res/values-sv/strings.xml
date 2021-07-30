@@ -99,7 +99,6 @@ Language: sv_SE
     <string name="product_create_attribute_helper">För att skapa en variation måste du först ställa in dess attribut (dvs. \"Färg\", \"Storlek\")</string>
     <string name="product_variation_single_count">1 variation</string>
     <string name="product_variation_multiple_count">%1$s variationer</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s-spårning</string>
     <string name="card_reader_software_update_in_progress_title">Uppdaterar din läsares programvara</string>
     <string name="card_reader_software_update_title">Programvaruuppdatering</string>
     <string name="card_reader_software_update_description">Din kortläsares programvara behöver uppdateras för att fungera korrekt. Vill du uppdatera den nu?</string>
