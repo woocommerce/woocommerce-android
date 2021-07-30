@@ -18,13 +18,11 @@ If reading this you find anything is not up-to-date, please fix it or report to 
 * **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷
 * **POS** - Point Of Sale
 * **KYC** - Know Your Customer
+* **Card Present Payments / In-Person Payments / Card Reader Payments** - are interchangeable terms in our internal documentation and code, but only “In-person payments” is used in user facing features.
 
 ## CardReader Module
 
 This module provides an abstraction from a provider-specific SDK to connect and accept payments using card readers. The module currently supports only Stripe Terminal SDK for Android and most of this documentation is specific only to this SDK. However, the module tries to hide as many details as possible from the client app.
-
-### Notes
-Card Present Payments / In-Person Payments / Card Reader Payments - are interchangeable terms in our internal documentation and code, but only “In-person payments” is used in user facing features.
 
 ### Public Interfaces
 `CardReaderManager` - The main interface for communicating with a card reader from the client application.
