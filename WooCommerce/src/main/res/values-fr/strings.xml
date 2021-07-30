@@ -98,7 +98,6 @@ Language: fr
     <string name="product_create_attribute_helper">Pour créer une variante, vous devez d’abord définir ses attributs (« Couleur », « Taille »)</string>
     <string name="product_variation_single_count">1 variante</string>
     <string name="product_variation_multiple_count">%1$s variantes</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">Suivi de %s</string>
     <string name="card_reader_software_update_in_progress_title">Mise à jour du logiciel de votre lecteur</string>
     <string name="card_reader_software_update_title">Mise à jour du logiciel</string>
     <string name="card_reader_software_update_description">Le logiciel de votre lecteur de carte doit être mis à jour pour continuer à fonctionner parfaitement. Voulez-vous le mettre à jour maintenant ?</string>

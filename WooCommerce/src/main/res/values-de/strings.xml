@@ -98,7 +98,6 @@ Language: de
     <string name="product_create_attribute_helper">Um eine Variation zu erstellen, musst du zuerst deren Attribute festlegen (d. h. Farbe, Größe).</string>
     <string name="product_variation_single_count">1 Variante</string>
     <string name="product_variation_multiple_count">%1$s Varianten</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">Sendungsverfolgung für %s</string>
     <string name="card_reader_software_update_in_progress_title">Die Software deines Kartenlesegeräts wird aktualisiert</string>
     <string name="card_reader_software_update_title">Software-Update</string>
     <string name="card_reader_software_update_description">Damit die Software deines Kartenlesegeräts weiter problemlos funktioniert, ist eine Aktualisierung erforderlich. Möchtest du sie jetzt aktualisieren?</string>

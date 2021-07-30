@@ -51,7 +51,6 @@ Language: ar
     <string name="product_create_attribute_helper">لإنشاء مجموعة، ستحتاج إلى تعيين سماتها (أي \"اللون\"، \"والحجم\") أولاً</string>
     <string name="product_variation_single_count">مجموعة واحدة</string>
     <string name="product_variation_multiple_count">⁦%1$s⁩ من المجموعات</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">تعقُّب %s</string>
     <string name="card_reader_software_update_in_progress_title">تحديث برنامج قارئك</string>
     <string name="card_reader_software_update_title">تحديث برنامج</string>
     <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يعمل بسلاسة. هل ترغب في تحديثه الآن؟</string>

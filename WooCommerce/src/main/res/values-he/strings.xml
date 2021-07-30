@@ -98,7 +98,6 @@ Language: he_IL
     <string name="product_create_attribute_helper">כדי ליצור סוג, עליך קודם כל להגדיר את המאפיינים שלו (למשל, \'צבע\', \'מידה\')</string>
     <string name="product_variation_single_count">סוג אחד</string>
     <string name="product_variation_multiple_count">⁦%1$s⁩ סוגים</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">מבצע מעקב של %s</string>
     <string name="card_reader_software_update_in_progress_title">מעדכן את התוכנה של הקורא שלך</string>
     <string name="card_reader_software_update_title">עדכון תוכנה</string>
     <string name="card_reader_software_update_description">עליך לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח את הפעילות התקינה שלה. האם ברצונך לעדכן כעת?</string>
