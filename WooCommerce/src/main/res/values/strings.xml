@@ -1189,7 +1189,10 @@
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
     <string name="product_images_validate_drag_and_drop">Validate</string>
-
+    <string name="product_image_service_error_media_null">Media could not be found</string>
+    <string name="product_image_service_error_uploading_single">%d file couldn\'t be uploaded</string>
+    <string name="product_image_service_error_uploading_multiple">%d files couldn\'t be uploaded</string>
+    <string name="product_images_error_detail_title">Upload details (%d)</string>
 
     <!--
         Empty list messages
