@@ -15,4 +15,8 @@ class PreferencesWrapper @Inject constructor(val context: Context) {
     fun setFCMToken(token: String) {
         sharedPreferences.edit().putString(WPCOM_PUSH_DEVICE_TOKEN, token).apply()
     }
+
+    fun removeFCMToken() {
+        sharedPreferences.edit().remove(WPCOM_PUSH_DEVICE_TOKEN).apply()
+    }
 }
