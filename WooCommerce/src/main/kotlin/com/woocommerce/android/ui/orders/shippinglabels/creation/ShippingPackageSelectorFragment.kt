@@ -47,12 +47,8 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
             adapter = packagesAdapter
         }
 
-        if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-            binding.packagesCreateNewContainer.isVisible = false
-        } else {
-            binding.packagesCreateNewButton.setOnClickListener {
-                viewModel.onCreateNewPackageButtonClicked()
-            }
+        binding.packagesCreateNewButton.setOnClickListener {
+            viewModel.onCreateNewPackageButtonClicked()
         }
         setupObservers(binding)
     }
