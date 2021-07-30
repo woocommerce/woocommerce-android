@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
@@ -109,19 +108,15 @@ class ShippingLabelPackagesAdapter(
                 onPackageSpinnerClicked(adapterPosition)
             }
 
-            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                binding.expandIcon.isVisible = false
-            } else {
-                binding.titleLayout.setOnClickListener {
-                    if (isExpanded) {
-                        binding.expandIcon.animate().rotation(0f).start()
-                        binding.detailsLayout.collapse()
-                        onExpandedChanged(adapterPosition, false)
-                    } else {
-                        binding.expandIcon.animate().rotation(180f).start()
-                        binding.detailsLayout.expand()
-                        onExpandedChanged(adapterPosition, true)
-                    }
+            binding.titleLayout.setOnClickListener {
+                if (isExpanded) {
+                    binding.expandIcon.animate().rotation(0f).start()
+                    binding.detailsLayout.collapse()
+                    onExpandedChanged(adapterPosition, false)
+                } else {
+                    binding.expandIcon.animate().rotation(180f).start()
+                    binding.detailsLayout.expand()
+                    onExpandedChanged(adapterPosition, true)
                 }
             }
         }
@@ -244,12 +239,6 @@ class PackageProductsAdapter(
     inner class PackageProductViewHolder(
         val binding: ShippingLabelPackageProductListItemBinding
     ) : ViewHolder(binding.root) {
-        init {
-            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                binding.moveButton.isVisible = false
-            }
-        }
-
         fun bind(item: ShippingLabelPackage.Item) {
             binding.productName.text = item.name
             val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY

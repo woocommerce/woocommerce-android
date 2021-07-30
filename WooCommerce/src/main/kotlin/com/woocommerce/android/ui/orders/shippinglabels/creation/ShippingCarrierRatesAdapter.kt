@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateListViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.*
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.*
@@ -69,20 +68,16 @@ class ShippingCarrierRatesAdapter(
                 }
             }
 
-            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                binding.expandIcon.isVisible = false
-            } else {
-                // expand items by default
-                binding.expandIcon.rotation = 180f
-                binding.rateOptions.isVisible = true
-                binding.titleLayout.setOnClickListener {
-                    if (isExpanded) {
-                        binding.expandIcon.animate().rotation(0f).start()
-                        binding.rateOptions.collapse()
-                    } else {
-                        binding.expandIcon.animate().rotation(180f).start()
-                        binding.rateOptions.expand()
-                    }
+            // expand items by default
+            binding.expandIcon.rotation = 180f
+            binding.rateOptions.isVisible = true
+            binding.titleLayout.setOnClickListener {
+                if (isExpanded) {
+                    binding.expandIcon.animate().rotation(0f).start()
+                    binding.rateOptions.collapse()
+                } else {
+                    binding.expandIcon.animate().rotation(180f).start()
+                    binding.rateOptions.expand()
                 }
             }
         }
