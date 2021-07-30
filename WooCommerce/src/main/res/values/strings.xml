@@ -461,7 +461,8 @@
     <string name="shipping_label_edit_address_name">Name</string>
     <string name="shipping_label_edit_address_company">Company</string>
     <string name="shipping_label_edit_address_phone">Phone</string>
-    <string name="shipping_label_edit_address_address">Address</string>
+    <string name="shipping_label_edit_address_line1">Address line 1</string>
+    <string name="shipping_label_edit_address_line2">Address line 2</string>
     <string name="shipping_label_edit_address_city">City</string>
     <string name="shipping_label_edit_address_state">State</string>
     <string name="shipping_label_edit_address_zip">Zip / Postal Code</string>
