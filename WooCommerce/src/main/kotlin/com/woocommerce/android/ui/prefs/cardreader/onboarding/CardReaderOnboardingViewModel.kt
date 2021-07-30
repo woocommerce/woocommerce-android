@@ -77,6 +77,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value = OnboardingViewState.WCStripeError
                         .WCPayAccountPendingRequirementsState(
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
+                            onButtonActionClicked = ::onSkipPendingRequirementsClicked,
                             dueDate = "" // TODO cardreader Pass due date to the state
                         )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
@@ -106,6 +107,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun onLearnMoreClicked() {
         triggerEvent(OnboardingEvent.ViewLearnMore)
+    }
+
+    private fun onSkipPendingRequirementsClicked() {
+        triggerEvent(Event.ExitWithResult(PENDING_REQUIREMENTS_SKIPPED))
     }
 
     private fun exitFlow() {
@@ -284,5 +289,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
             )
         }
+    }
+
+    companion object {
+        const val PENDING_REQUIREMENTS_SKIPPED = "pending_requirements_skipped"
     }
 }
