@@ -25,7 +25,8 @@ class NotificationRegistrationHandlerTest {
             dispatcher = dispatcher,
             accountStore = accountStore,
             notificationStore = mock(),
-            preferencesWrapper = preferencesWrapper
+            preferencesWrapper = preferencesWrapper,
+            selectedSite = mock()
         )
     }
 
