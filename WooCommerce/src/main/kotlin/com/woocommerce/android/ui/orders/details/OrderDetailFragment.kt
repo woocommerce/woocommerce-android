@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
@@ -221,8 +222,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
-        handleDialogResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT, R.id.orderDetailFragment) {
-            viewModel.onOrderStatusChanged(it, OrderStatusUpdateSource.DIALOG)
+        handleDialogResult<OrderStatusUpdateSource>(
+            key = OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT,
+            entryId = R.id.orderDetailFragment
+        ) { updateSource ->
+            viewModel.onOrderStatusChanged(updateSource)
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
             viewModel.onNewOrderNoteAdded(it)
@@ -233,8 +237,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleResult<OrderShipmentTracking>(AddOrderShipmentTrackingFragment.KEY_ADD_SHIPMENT_TRACKING_RESULT) {
             viewModel.onNewShipmentTrackingAdded(it)
         }
-        handleResult<String>(OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT) {
-            viewModel.onOrderStatusChanged(it, OrderStatusUpdateSource.FULFILL_SCREEN)
+        handleResult<OrderStatusUpdateSource>(OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT) { updateSource ->
+            viewModel.onOrderStatusChanged(updateSource)
         }
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
@@ -244,7 +248,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 viewModel.onConnectToReaderResultReceived(connected)
             }
         }
-        handleNotice(CardReaderPaymentDialog.KEY_CARD_PAYMENT_RESULT) {
+        handleDialogNotice<String>(
+            key = CardReaderPaymentDialog.KEY_CARD_PAYMENT_RESULT,
+            entryId = R.id.orderDetailFragment
+        ) {
             if (FeatureFlag.CARD_READER.isEnabled()) {
                 viewModel.onCardReaderPaymentCompleted()
             }

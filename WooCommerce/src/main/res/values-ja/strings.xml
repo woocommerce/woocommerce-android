@@ -1,22 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-08 09:55:08+0000
+Translation-Revision-Date: 2021-07-23 13:04:51+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="variation_created_title">バリエーションを作成しました</string>
+    <string name="variation_list_generate_new_variation">新しいバリエーションを生成</string>
+    <string name="product_wip_message_variations">商品のバリエーションを作成、管理できるようになりました。</string>
+    <string name="product_attributes_created_generate_action_text">バリエーションを生成</string>
+    <string name="product_attributes_created_description">属性の追加が完了しました。最初のバリエーションを作成してください。</string>
+    <string name="product_attributes_created_title">属性を作成しました</string>
+    <string name="card_reader_software_update_progress_cancel_warning">実行中のソフトウェア更新をキャンセルすることは推奨されません</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">支払いを処理できませんでした</string>
+    <string name="card_reader_payment_failed_server_error_state">サーバーに接続していません</string>
+    <string name="card_reader_payment_failed_no_network_state">インターネットに接続していません</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">初期の梱包で配送する</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">新しい荷物を追加</string>
+    <string name="shipping_label_move_item_dialog_description">この項目は現在%sにあります。 どこに移動しますか ?</string>
+    <string name="shipping_label_move_item_dialog_cancel">キャンセル</string>
+    <string name="shipping_label_move_item_dialog_move">移動</string>
+    <string name="shipping_label_move_item_dialog_title">項目を移動</string>
+    <string name="shipping_label_create_custom_package_success_message">「%1$s」を保存しました</string>
+    <string name="shipping_label_create_custom_package_generic_failure">荷物を作成できませんでした。 もう一度お試しください。</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">荷物を作成できませんでした。不明な API エラーが発生しました。</string>
+    <string name="shipping_label_create_custom_package_api_failure">荷物を作成できませんでした。%1$s</string>
+    <string name="shipping_label_create_custom_package_saving_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">新しい荷物を作成しています</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">無効な値。</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">この欄は入力必須です。</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">空の荷物の重量</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">空の荷物の重量 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">高さ (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">幅 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">長さ (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">荷物の名称</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">封筒</string>
+    <string name="shipping_label_create_custom_package_field_type_box">ボックス</string>
+    <string name="shipping_label_create_custom_package_field_type_info">荷物の種類を選択する</string>
+    <string name="shipping_label_create_custom_package_field_type">荷物の種類</string>
+    <string name="shipping_label_create_custom_package_field_info">商品の配送に使用する荷物を設定します。 今後の注文用に保存されます。</string>
+    <string name="shipping_label_create_package_title">新しい荷物を追加する</string>
+    <string name="shipping_label_create_new_package_button">新しい荷物を作成する</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">荷物の寸法は0以上にする必要があります。 商品ページの「配送」セクションで商品の寸法を更新して続行します。</string>
+    <string name="shipping_label_package_details_individual_package_title">初期の梱包</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">商品の寸法</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">個別に配送した商品</string>
+    <string name="order_status_updated">注文ステータスを更新しました</string>
+    <string name="receipt_preview_send_menu_item">送信</string>
+    <string name="receipt_preview_print_menu_item">印刷</string>
+    <string name="orderdetail_see_receipt_button">領収書を表示</string>
+    <string name="cancel_anyway">キャンセルする</string>
     <string name="card_reader_detail_connected_update_failed">Reader のソフトウェアを更新できませんでした</string>
     <string name="card_reader_detail_connected_update_check_failed">ソフトウェアのバージョンの更新チェックができませんでした。</string>
     <string name="card_reader_detail_learn_more">モバイルでの支払いと注文用カードリーダーの承認について&lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
     <string name="card_reader_connect_open_bluetooth_settings">Bluetooth をオンにする</string>
-    <string name="card_reader_connect_scanning_failed_header">Reader が見つかりません</string>
+    <string name="card_reader_connect_scanning_failed_header">Reader が接続されていません</string>
     <string name="card_reader_connect_failed_header">Reader に接続できませんでした</string>
     <string name="card_reader_connect_connect_button">連携</string>
     <string name="card_reader_connect_multiple_readers_found_header">複数の Reader が見つかりました</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">この注文のお支払いは完了しています</string>
     <string name="card_reader_payment_receipt_email_content">ご購入ありがとうございます。 以下のリンクをクリックしてお支払いのレシートをご確認ください。\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">お支払いが完了しませんでした</string>
     <string name="card_reader_payment_failed_card_declined_state">カードが拒否されました</string>
     <string name="shipping_label_print_customs_form_download_failed">税関申告書をダウンロードする際にエラーが発生しました</string>
     <string name="shipping_label_print_customs_form_screen_title">税関送り状を印刷</string>
@@ -53,7 +98,6 @@ Language: ja_JP
     <string name="product_create_attribute_helper">バリエーションを作るには、最初にその属性 (「色」、「サイズ」など) を設定する必要があります</string>
     <string name="product_variation_single_count">1個のバリエーション</string>
     <string name="product_variation_multiple_count">%1$s個のバリエーション</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s追跡</string>
     <string name="card_reader_software_update_in_progress_title">Reader のソフトウェアを更新しています</string>
     <string name="card_reader_software_update_title">ソフトウェア更新</string>
     <string name="card_reader_software_update_description">カードリーダーのソフトウェアを更新して順調な稼働が続くようにする必要があります。 今すぐ更新しますか ? </string>
@@ -257,7 +301,6 @@ Language: ja_JP
     <string name="shipping_label_address_suggestion_use_selected_address">選択した住所を使用</string>
     <string name="shipping_label_edit_address_loading_progress_title">住所データを読み込んでいます</string>
     <string name="product_wip_title_m5">新機能を利用できます。</string>
-    <string name="product_wip_message_m5">商品にダウンロード可能なファイルを追加して、アップセルとクロスセルの商品をリンクできるようになりました。 商品が不要になりましたか ? ゴミ箱に移動しましょう。</string>
     <string name="shipping_label_validation_view_map">マップを開く</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
     <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
@@ -341,7 +384,6 @@ Language: ja_JP
     <string name="product_downloadable_files_add">ファイルを追加</string>
     <string name="product_downloadable_files_value_single">1件のファイル</string>
     <string name="product_downloadable_files_value_multiple">%1$d ファイル</string>
-    <string name="product_wip_message_m4">Woo アプリで、シンプルでリンクおよびグループ化された商品を外出先でも作成できるようになりました。ぜひインストールしてください。 下書きとして保存しましょう !</string>
     <string name="print_shipping_label_info_step_4">&lt;b&gt;プリンター自体で WiFi 印刷を直接設定する必要があるようです。&lt;/b&gt;プリンターのファームウェアが最新であることを確認し、プリンターの説明書をお読みになることをおすすめします。</string>
     <string name="print_shipping_label_info_step_3">端末の&lt;b&gt;デフォルトの印刷サービス&lt;/b&gt;を選択するか、&lt;b&gt;プリンターのブランドのアプリ&lt;/b&gt;をインストールできます (これは推奨オプションとして表示)</string>
     <string name="print_shipping_label_info_step_1">お使いのプリンターと端末が&lt;b&gt;同じ WiFi ネットワーク&lt;/b&gt;に接続されていることを確認してください</string>
@@ -679,7 +721,7 @@ Language: ja_JP
     <string name="order_refunds_select_quantity">数量を選択</string>
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
-    <string name="order_refunds_item_description">各%s x %s</string>
+    <string name="order_refunds_item_description">各 %s x %s</string>
     <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>
@@ -1153,7 +1195,6 @@ Language: ja_JP
     <string name="site_picker_title">ストアを選択</string>
     <string name="settings_signout">ログアウト</string>
     <string name="orderstatus_select_status">注文ステータスを変更</string>
-    <string name="order_status_changed_to">注文ステータスを %s に変更しました</string>
     <string name="orderdetail_change_order_status">クリックすると注文ステータスを変更できます</string>
     <string name="apply">適用</string>
     <string name="app_rating_rate_never">結構です</string>
@@ -1475,5 +1516,9 @@ Language: ja_JP
     <string-array name="order_list_tabs">
         <item>処理中</item>
         <item>すべての注文</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>カスタムパッケージ</item>
+        <item>サービスパッケージ</item>
     </string-array>
 </resources>

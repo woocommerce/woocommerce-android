@@ -6,8 +6,10 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
+import org.wordpress.android.fluxc.store.MediaStore
 import java.sql.Date
 import java.time.Instant
 
@@ -119,6 +121,21 @@ object ProductTestUtils {
             source = "Image $imageId source",
             dateCreated = Date.from(Instant.EPOCH)
         )
+
+    fun generateProductMedia(remoteProductId: Long = 1, siteId: Long = 1) =
+        MediaModel().apply {
+            id = 1
+            localPostId = remoteProductId.toInt()
+            localSiteId = siteId.toInt()
+            mediaId = 1L
+            fileName = "Image filename $remoteProductId"
+            url = "google.com"
+        }
+
+    fun generateMediaUploadErrorModel() = MediaStore.MediaError(
+        MediaStore.MediaErrorType.GENERIC_ERROR,
+        "Error uploading media"
+    )
 
     fun generateProductImagesList() =
         (1L..10L).map { id -> generateProductImage(imageId = id) }

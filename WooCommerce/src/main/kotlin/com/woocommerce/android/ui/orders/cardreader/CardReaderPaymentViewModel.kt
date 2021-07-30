@@ -29,6 +29,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -137,11 +138,16 @@ class CardReaderPaymentViewModel
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
         cardReaderManager.collectPayment(
-            paymentDescription = order.getPaymentDescription(),
-            orderId = order.remoteId,
-            amount = order.total,
-            currency = order.currency,
-            customerEmail = customerEmail.ifEmpty { null }
+            PaymentInfo(
+                paymentDescription = order.getPaymentDescription(),
+                orderId = order.remoteId,
+                amount = order.total,
+                currency = order.currency,
+                customerEmail = customerEmail.ifEmpty { null },
+                customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
+                storeName = selectedSite.get().name.ifEmpty { null },
+                siteUrl = selectedSite.get().url.ifEmpty { null },
+            )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
         }
@@ -206,7 +212,7 @@ class CardReaderPaymentViewModel
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
-        WooLog.e(WooLog.T.ORDERS, error.errorMessage)
+        WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
@@ -224,10 +230,15 @@ class CardReaderPaymentViewModel
                 PaymentSuccessfulState(
                     order.getAmountLabel(),
                     { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
-                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) }
+                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) },
+                    { onSaveForLaterClicked() }
                 )
             )
         }
+    }
+
+    private fun onSaveForLaterClicked() {
+        onBackPressed()
     }
 
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
@@ -344,10 +355,12 @@ class CardReaderPaymentViewModel
         // TODO cardreader add tests
         open val isProgressVisible: Boolean = false,
         val primaryActionLabel: Int? = null,
-        val secondaryActionLabel: Int? = null
+        val secondaryActionLabel: Int? = null,
+        val tertiaryActionLabel: Int? = null,
     ) {
         open val onPrimaryActionClicked: (() -> Unit)? = null
         open val onSecondaryActionClicked: (() -> Unit)? = null
+        open val onTertiaryActionClicked: (() -> Unit)? = null
         open val amountWithCurrencyLabel: String? = null
 
         object LoadingDataState : ViewState(
@@ -397,12 +410,14 @@ class CardReaderPaymentViewModel
         data class PaymentSuccessfulState(
             override val amountWithCurrencyLabel: String,
             override val onPrimaryActionClicked: (() -> Unit),
-            override val onSecondaryActionClicked: (() -> Unit)
+            override val onSecondaryActionClicked: (() -> Unit),
+            override val onTertiaryActionClicked: (() -> Unit)
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_completed_payment_header,
             illustration = R.drawable.img_celebration,
             primaryActionLabel = R.string.card_reader_payment_print_receipt,
-            secondaryActionLabel = R.string.card_reader_payment_send_receipt
+            secondaryActionLabel = R.string.card_reader_payment_send_receipt,
+            tertiaryActionLabel = R.string.card_reader_payment_save_for_later,
         )
 
         data class PrintingReceiptState(

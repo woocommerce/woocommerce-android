@@ -40,27 +40,33 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
 
     private var progressDialog: CustomProgressDialog? = null
 
-    private var _binding: FragmentPrintShippingLabelBinding? = null
-    private val binding get() = _binding!!
-
     override fun getFragmentTitle(): String {
-        return if (navArgs.isReprint) {
-            getString(R.string.orderdetail_shipping_label_print)
-        } else {
-            getString(R.string.shipping_label_print_screen_title)
-        }
+        return getString(viewModel.screenTitle)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentPrintShippingLabelBinding.bind(view)
+        val binding = FragmentPrintShippingLabelBinding.bind(view)
 
+        initUi(binding)
+        setupObservers(viewModel, binding)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun initUi(binding: FragmentPrintShippingLabelBinding) {
         binding.reprintGroup.isVisible = navArgs.isReprint
         binding.purchaseGroup.isVisible = !navArgs.isReprint
 
-        setupObservers(viewModel)
-        setupResultHandlers(viewModel)
+        binding.labelPurchased.setText(
+            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_purchase_success
+            else R.string.shipping_label_print_purchase_success
+        )
+
+        binding.shippingLabelPrintBtn.setText(
+            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_button
+            else R.string.shipping_label_print_button
+        )
 
         binding.shippingLabelPrintPaperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }
         binding.shippingLabelPrintBtn.setOnClickListener { viewModel.onPrintShippingLabelClicked() }
@@ -69,12 +75,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         binding.saveForLaterButton.setOnClickListener { viewModel.onSaveForLaterClicked() }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setupObservers(viewModel: PrintShippingLabelViewModel) {
+    private fun setupObservers(viewModel: PrintShippingLabelViewModel, binding: FragmentPrintShippingLabelBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.paperSize.takeIfNotEqualTo(old?.paperSize) {
                 binding.shippingLabelPrintPaperSize.setText(getString(it.stringResource))

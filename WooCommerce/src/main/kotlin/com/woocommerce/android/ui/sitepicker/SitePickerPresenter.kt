@@ -89,6 +89,7 @@ class SitePickerPresenter
     override fun fetchUserRoleFromAPI(site: SiteModel) {
         coroutineScope.launch {
             val fetchUserJob = async { userEligibilityFetcher.fetchUserInfo() }
+            AppPrefs.setIsCardPresentEligible(false)
             async { cardPresentEligibleFeatureChecker.doCheck() }.await()
             val userModel = fetchUserJob.await()
             view?.hideProgressDialog()

@@ -92,6 +92,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.util.isSuccessful
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -104,7 +105,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
@@ -498,13 +498,13 @@ class CreateShippingLabelViewModel @Inject constructor(
             PurchaseFailed
         } else {
             if (fulfillOrder) {
-                val orderIdSet = data.order.identifier.toIdSet()
+                val order = data.order.toDataModel()
                 val fulfillResult = orderDetailRepository.updateOrderStatus(
-                    localOrderId = orderIdSet.id,
-                    remoteOrderId = orderIdSet.remoteOrderId,
+                    orderModel = order,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 )
-                if (fulfillResult) {
+
+                if (fulfillResult.isSuccessful()) {
                     AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
                 } else {
                     AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)

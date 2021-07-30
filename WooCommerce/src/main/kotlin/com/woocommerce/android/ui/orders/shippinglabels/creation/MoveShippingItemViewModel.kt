@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*
@@ -46,6 +47,16 @@ class MoveShippingItemViewModel @Inject constructor(
 
     fun onMoveButtonClicked() {
         viewState.selectedDestination?.let {
+            AnalyticsTracker.track(
+                stat = AnalyticsTracker.Stat.SHIPPING_LABEL_ITEM_MOVED,
+                properties = mapOf(
+                    "destination" to when (it) {
+                        is ExistingPackage -> "existing_package"
+                        NewPackage -> "new_package"
+                        OriginalPackage -> "original_packaging"
+                    }
+                )
+            )
             triggerEvent(ExitWithResult(MoveItemResult(navArgs.item, navArgs.currentPackage, it)))
         } ?: throw IllegalStateException("move button listener invoked while no package is selected")
     }

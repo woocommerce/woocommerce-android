@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:background="@drawable/shipping_package_item_bg">
+
+    <RadioButton
+        android:id="@+id/packageRadioButton"
+        style="@style/Woo.RadioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/image_minor_100"
+        android:minHeight="@dimen/image_minor_100"
+        android:padding="@dimen/minor_00"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginStart="@dimen/major_75"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/packageRadioButton"
+        app:layout_constraintRight_toRightOf="parent"
+        android:maxLines="2"
+        tools:text="Small Flat Rate Box" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/dimensions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_75"
+        android:layout_marginTop="@dimen/minor_25"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintLeft_toRightOf="@id/packageRadioButton"
+        tools:text="8.63 z 5.38 x 1.63 in" />
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/major_75"
+        app:layout_constraintTop_toBottomOf="@id/dimensions"
+        app:layout_constraintLeft_toRightOf="@id/packageRadioButton" />
+</androidx.constraintlayout.widget.ConstraintLayout>

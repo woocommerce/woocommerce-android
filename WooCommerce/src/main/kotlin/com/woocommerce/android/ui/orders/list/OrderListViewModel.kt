@@ -131,7 +131,7 @@ class OrderListViewModel @Inject constructor(
             _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
 
             // refresh plugin information
-            wooCommerceStore.fetchWooCommerceServicesPluginInfo(selectedSite.get())
+            wooCommerceStore.fetchSitePlugins(selectedSite.get())
         }
     }
 

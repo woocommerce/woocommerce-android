@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustoms
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsLineAdapter.CustomsLineViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.CustomsPackageUiState
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import com.woocommerce.android.widgets.WooClickableSpan
 
@@ -127,19 +126,15 @@ class ShippingCustomsAdapter(
             binding.itnEditText.setOnTextChangedListener {
                 it?.let { listener.onItnChanged(adapterPosition, it.toString()) }
             }
-            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                binding.expandIcon.isVisible = false
-            } else {
-                binding.titleLayout.setOnClickListener {
-                    if (isExpanded) {
-                        binding.expandIcon.animate().rotation(0f).start()
-                        binding.detailsLayout.collapse()
-                        listener.onPackageExpandedChanged(adapterPosition, false)
-                    } else {
-                        binding.expandIcon.animate().rotation(180f).start()
-                        binding.detailsLayout.expand()
-                        listener.onPackageExpandedChanged(adapterPosition, true)
-                    }
+            binding.titleLayout.setOnClickListener {
+                if (isExpanded) {
+                    binding.expandIcon.animate().rotation(0f).start()
+                    binding.detailsLayout.collapse()
+                    listener.onPackageExpandedChanged(adapterPosition, false)
+                } else {
+                    binding.expandIcon.animate().rotation(180f).start()
+                    binding.detailsLayout.expand()
+                    listener.onPackageExpandedChanged(adapterPosition, true)
                 }
             }
         }

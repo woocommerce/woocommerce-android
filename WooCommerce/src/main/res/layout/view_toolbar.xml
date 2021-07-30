@@ -8,4 +8,5 @@
     app:layout_collapseMode="pin"
     tools:menu="@menu/menu_product_detail_fragment"
     tools:showIn="@layout/activity_app_settings"
+    style="@style/Widget.Woo.Toolbar"
     tools:title="@string/app_name" />

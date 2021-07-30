@@ -7,19 +7,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFeatures
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
@@ -33,25 +25,15 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
-import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
-import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.*
+import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WCShippingLabelStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -142,19 +124,14 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        localOrderId: Int,
-        remoteOrderId: Long,
+        orderModel: WCOrderModel,
         newStatus: String
-    ): Boolean {
-        val result = continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+    ): ContinuationResult<Boolean> {
+        return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = UpdateOrderStatusPayload(
-                localOrderId, remoteOrderId, selectedSite.get(), newStatus
+                orderModel, selectedSite.get(), newStatus
             )
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
         }
     }
 
@@ -279,7 +256,7 @@ class OrderDetailRepository @Inject constructor(
         .map { it.toAppModel() }
 
     fun getWooServicesPluginInfo(): WooPlugin {
-        val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
+        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
         return WooPlugin(info != null, info?.active ?: false, info?.version)
     }
 
@@ -291,9 +268,9 @@ class OrderDetailRepository @Inject constructor(
         val result = shippingLabelStore.fetchShippingLabelCreationEligibility(
             site = selectedSite.get(),
             orderId = orderId,
-            canCreatePackage = ShippingLabelCreationFeatures.CAN_CREATE_PACKAGE,
-            canCreatePaymentMethod = ShippingLabelCreationFeatures.CAN_CREATE_PAYMENT_METHOD,
-            canCreateCustomsForm = ShippingLabelCreationFeatures.CAN_CREATE_CUSTOMS_FORM
+            canCreatePackage = true,
+            canCreatePaymentMethod = true,
+            canCreateCustomsForm = true
         )
         if (result.isError) {
             WooLog.e(
@@ -314,9 +291,9 @@ class OrderDetailRepository @Inject constructor(
         return shippingLabelStore.isOrderEligibleForShippingLabelCreation(
             site = selectedSite.get(),
             orderId = orderId,
-            canCreatePackage = ShippingLabelCreationFeatures.CAN_CREATE_PACKAGE,
-            canCreatePaymentMethod = ShippingLabelCreationFeatures.CAN_CREATE_PAYMENT_METHOD,
-            canCreateCustomsForm = ShippingLabelCreationFeatures.CAN_CREATE_CUSTOMS_FORM
+            canCreatePackage = true,
+            canCreatePaymentMethod = true,
+            canCreateCustomsForm = true
         )?.isEligible ?: false
     }
 

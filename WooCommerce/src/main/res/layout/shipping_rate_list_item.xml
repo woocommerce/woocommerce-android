@@ -80,11 +80,13 @@
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/signatureOption"
         style="@style/Woo.CheckBox"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_75"
+        android:layout_marginEnd="@dimen/major_100"
         android:minHeight="@dimen/minor_00"
         android:textColor="@color/checkbox_shipping_rate_bg_selector"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/includedOptions"
         app:layout_constraintTop_toBottomOf="@+id/includedOptions"
         tools:text="Signature required (+2.60)"
@@ -93,14 +95,16 @@
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/adultSignatureOption"
         style="@style/Woo.CheckBox"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_00"
+        android:layout_marginEnd="@dimen/major_100"
         android:minHeight="@dimen/minor_00"
         android:textColor="@color/checkbox_shipping_rate_bg_selector"
-        app:layout_goneMarginTop="@dimen/major_75"
-        app:layout_constraintStart_toStartOf="@id/signatureOption"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/includedOptions"
         app:layout_constraintTop_toBottomOf="@+id/signatureOption"
+        app:layout_goneMarginTop="@dimen/major_75"
         tools:text="Adult signature required (+2.60)" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -116,7 +120,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="$22.00"
         tools:visibility="visible" />
-
 
     <View
         android:id="@+id/divider"

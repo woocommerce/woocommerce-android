@@ -1,2 +1,2 @@
-- [*] Fixed a bug where the app doesn't show the correct quantity in orders if it's decimal [https://github.com/woocommerce/woocommerce-android/pull/4267]
+
 
