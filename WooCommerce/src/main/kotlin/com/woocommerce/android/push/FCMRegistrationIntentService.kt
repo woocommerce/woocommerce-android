@@ -31,7 +31,7 @@ class FCMRegistrationIntentService : JobIntentService() {
             token?.takeIf { it.isNotEmpty() }?.let {
                 WooLog.d(WooLog.T.NOTIFS, "Sending FCM token to our remote services: $it")
                 notificationRegistrationHandler.onNewFCMTokenReceived(it)
-            }  ?: run {
+            } ?: run {
                 WooLog.w(WooLog.T.NOTIFS, "Empty FCM token, can't register the id on remote services")
                 notificationRegistrationHandler.onEmptyFCMTokenReceived()
             }
