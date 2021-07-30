@@ -2,7 +2,7 @@
 
 7.3
 -----
-
+- [***] Shipping Labels: merchants can add new payment methods and create packages directly from the app, the labels can also contain multiple packages [https://github.com/woocommerce/woocommerce-android/pull/4529]
 
 7.2
 -----
