@@ -430,7 +430,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                orderDetailRepository.updateOrderStatus(orderIdSet.id, newStatus)
+                orderDetailRepository.updateOrderStatus(order.toDataModel(), newStatus)
                     .let { it as? ContinuationWrapper.ContinuationResult.Success }
                     ?.takeIf { it.value.not() }
                     ?.let { triggerEvent(ShowSnackbar(string.order_error_update_general)) }
