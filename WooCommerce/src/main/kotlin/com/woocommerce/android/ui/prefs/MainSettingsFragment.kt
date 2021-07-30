@@ -215,8 +215,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     private fun setupResultHandlers() {
-        // if the user is returning from the card reader onboarding and chose to skip then "pending requirements"
-        // screen, we want to take them straight to the card reader screen
+        // if the user is returning from the card reader onboarding and chose to skip the "pending requirements"
+        // screen, we want to take them straight to the card reader screen (this will change later)
         handleResult<String>(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_RESULT) {
             if (it == CardReaderOnboardingViewModel.PENDING_REQUIREMENTS_SKIPPED) {
                 findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderDetailFragment)
