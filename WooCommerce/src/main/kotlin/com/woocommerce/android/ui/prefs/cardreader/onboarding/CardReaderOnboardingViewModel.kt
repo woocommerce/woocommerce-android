@@ -33,13 +33,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshState() {
-        // TODO remove
-        viewState.value = OnboardingViewState.WCStripeError
-            .WCPayAccountPendingRequirementsState(
-                onLearnMoreActionClicked = ::onLearnMoreClicked,
-                dueDate = ""
-            )
-        return
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (val state = cardReaderChecker.getOnboardingState()) {
@@ -222,7 +215,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
             data class WCPayAccountPendingRequirementsState(
                 override val onLearnMoreActionClicked: () -> Unit,
-                override val onButtonActionClicked: (() -> Unit?)? = null, // TODO
+                override val onButtonActionClicked: (() -> Unit?)?,
                 val dueDate: String
             ) : WCStripeError(
                 headerLabel = UiString
