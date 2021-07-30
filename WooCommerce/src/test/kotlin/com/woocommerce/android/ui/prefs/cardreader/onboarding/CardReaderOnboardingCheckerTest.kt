@@ -181,6 +181,22 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when stripe account has both pending and overdue requirements, then OVERDUE_REQUIREMENT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(
+                    WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                    hasPendingRequirements = true,
+                    hadOverdueRequirements = true
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountOverdueRequirement)
+        }
+
+    @Test
     fun `when stripe account marked as fraud, then STRIPE_ACCOUNT_REJECTED returned`() =
         testBlocking {
             whenever(wcPayStore.loadAccount(site)).thenReturn(
