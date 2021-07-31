@@ -26,6 +26,7 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentProductAddonsBinding.bind(view)
         storedAddons?.let { setupRecyclerViewWith(it) }
     }
 
