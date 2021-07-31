@@ -98,7 +98,6 @@ Language: id
     <string name="product_create_attribute_helper">Untuk membuat variasi, Anda perlu mengatur atributnya (yaitu \"Warna\", \"Ukuran\") terlebih dahulu</string>
     <string name="product_variation_single_count">1 variasi</string>
     <string name="product_variation_multiple_count">%1$s variasi</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s pelacakan</string>
     <string name="card_reader_software_update_in_progress_title">Memperbarui perangkat lunak pembaca Anda</string>
     <string name="card_reader_software_update_title">Pembaruan perangkat lunak</string>
     <string name="card_reader_software_update_description">Perangkat lunak pembaca kartu Anda perlu diperbarui agar dapat berfungsi normal. Apakah Anda ingin memperbaruinya sekarang?</string>

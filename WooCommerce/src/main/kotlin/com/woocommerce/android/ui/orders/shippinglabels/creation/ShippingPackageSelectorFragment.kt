@@ -14,11 +14,10 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorViewModel.ShowCreatePackageScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorViewModel.ShowCreatePackageScreen
-import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -47,12 +46,8 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
             adapter = packagesAdapter
         }
 
-        if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-            binding.packagesCreateNewContainer.isVisible = false
-        } else {
-            binding.packagesCreateNewButton.setOnClickListener {
-                viewModel.onCreateNewPackageButtonClicked()
-            }
+        binding.packagesCreateNewButton.setOnClickListener {
+            viewModel.onCreateNewPackageButtonClicked()
         }
         setupObservers(binding)
     }

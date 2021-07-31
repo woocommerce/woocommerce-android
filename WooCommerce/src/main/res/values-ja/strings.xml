@@ -98,7 +98,6 @@ Language: ja_JP
     <string name="product_create_attribute_helper">バリエーションを作るには、最初にその属性 (「色」、「サイズ」など) を設定する必要があります</string>
     <string name="product_variation_single_count">1個のバリエーション</string>
     <string name="product_variation_multiple_count">%1$s個のバリエーション</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s追跡</string>
     <string name="card_reader_software_update_in_progress_title">Reader のソフトウェアを更新しています</string>
     <string name="card_reader_software_update_title">ソフトウェア更新</string>
     <string name="card_reader_software_update_description">カードリーダーのソフトウェアを更新して順調な稼働が続くようにする必要があります。 今すぐ更新しますか ? </string>

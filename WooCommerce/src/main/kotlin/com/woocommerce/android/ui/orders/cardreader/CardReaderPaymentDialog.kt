@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentCardReaderPaymentBinding
+import com.woocommerce.android.databinding.DialogCardReaderPaymentBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_payment) {
+class CardReaderPaymentDialog : DialogFragment(R.layout.dialog_card_reader_payment) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -50,7 +50,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentCardReaderPaymentBinding.bind(view)
+        val binding = DialogCardReaderPaymentBinding.bind(view)
 
         initObservers(binding)
         initViewModel()
@@ -60,7 +60,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
         viewModel.start()
     }
 
-    private fun initObservers(binding: FragmentCardReaderPaymentBinding) {
+    private fun initObservers(binding: DialogCardReaderPaymentBinding) {
         viewModel.event.observe(
             viewLifecycleOwner,
             { event ->
@@ -88,12 +88,16 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.fragment_card_reader_pay
                 UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
                 UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
                 UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
+                UiHelpers.setTextOrHide(binding.tertiaryActionBtn, viewState.tertiaryActionLabel)
                 UiHelpers.updateVisibility(binding.progressBarWrapper, viewState.isProgressVisible)
                 binding.primaryActionBtn.setOnClickListener {
                     viewState.onPrimaryActionClicked?.invoke()
                 }
                 binding.secondaryActionBtn.setOnClickListener {
                     viewState.onSecondaryActionClicked?.invoke()
+                }
+                binding.tertiaryActionBtn.setOnClickListener {
+                    viewState.onTertiaryActionClicked?.invoke()
                 }
             }
         )

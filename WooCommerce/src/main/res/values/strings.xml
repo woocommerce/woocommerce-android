@@ -388,11 +388,14 @@
     <string name="shipping_label_paper_size">Paper size</string>
     <string name="shipping_label_paper_size_options_title">Choose paper size</string>
     <string name="shipping_label_print_button">Print shipping label</string>
+    <string name="shipping_label_print_multiple_button">Print shipping labels</string>
     <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
     <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
     <string name="shipping_label_print_purchase_success">Shipping label purchased!</string>
+    <string name="shipping_label_print_multiple_purchase_success">Shipping labels purchased!</string>
     <string name="shipping_label_print_save_for_later">Save for later</string>
     <string name="shipping_label_print_screen_title">Print shipping label</string>
+    <string name="shipping_label_print_multiple_screen_title">Print shipping labels</string>
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
@@ -568,7 +571,7 @@
     <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
     <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s tracking</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">USPS tracking</string>
     <string name="shipping_label_rate_included_options_tracking">tracking</string>
     <string name="shipping_label_rate_insurance_up_to">up to %s</string>
     <string name="shipping_label_rate_included_options_insurance">Insurance (%s)</string>
@@ -613,6 +616,7 @@
     <string name="shipping_label_customs_form">Customs form</string>
     <string name="shipping_label_print_customs_explanation">A customs form must be printed and included on this international shipment</string>
     <string name="shipping_label_print_customs_form">Print customs form</string>
+    <string name="shipping_label_multiple_customs_form_print_button">Print</string>
     <string name="shipping_label_print_customs_form_screen_title">Print customs invoice</string>
     <string name="shipping_label_print_customs_form_download_failed">Error downloading the customs form</string>
     <string name="shipping_label_move_item_dialog_title">Move item</string>
@@ -758,6 +762,7 @@
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
+    <string name="card_reader_payment_save_for_later">Save for later</string>
 
     <string name="card_reader_payment_description">Online payment for order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
@@ -823,7 +828,7 @@
     <!--
         Card Reader Onboarding
     -->
-    <string name="card_reader_onboarding_title">In-person payments</string>
+    <string name="card_reader_onboarding_title">In-Person Payments</string>
     <string name="card_reader_onboarding_loading">Connecting to your account</string>
 
     <string name="card_reader_onboarding_country_not_supported_header">We don\'t support In-Person Payments in %1$s</string>
@@ -1184,7 +1189,10 @@
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
     <string name="product_images_validate_drag_and_drop">Validate</string>
-
+    <string name="product_image_service_error_media_null">Media could not be found</string>
+    <string name="product_image_service_error_uploading_single">%d file couldn\'t be uploaded</string>
+    <string name="product_image_service_error_uploading_multiple">%d files couldn\'t be uploaded</string>
+    <string name="product_images_error_detail_title">Upload details (%d)</string>
 
     <!--
         Empty list messages
@@ -1280,6 +1288,8 @@
     <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
     <string name="support_my_tickets">My tickets</string>
     <string name="support_my_tickets_detail">View previously submitted support tickets</string>
+    <string name="support_contact_payments">Contact Payments Support</string>
+    <string name="support_contact_payments_detail">Reach our happiness engineers who can help answer payments related questions</string>
     <string name="support_application_log">Application log</string>
     <string name="support_application_log_detail">Advanced tool to review the app status</string>
     <string name="help">Help</string>

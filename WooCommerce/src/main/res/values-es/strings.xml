@@ -98,7 +98,6 @@ Language: es
     <string name="product_create_attribute_helper">Para crear una variación, antes debes especificar los atributos (p. ej., \"Color\" y \"Talla\")</string>
     <string name="product_variation_single_count">1 variación</string>
     <string name="product_variation_multiple_count">%1$s variaciones</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s seguimiento</string>
     <string name="card_reader_software_update_in_progress_title">Actualizar el software del lector</string>
     <string name="card_reader_software_update_title">Actualización del software</string>
     <string name="card_reader_software_update_description">El software de tu lector de tarjetas tiene que estar actualizado para que funcione correctamente. ¿Quieres actualizarlo ahora?</string>

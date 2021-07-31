@@ -291,7 +291,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
         shippingLabel.commercialInvoiceUrl?.let {
-            triggerEvent(ViewPrintCustomsForm(it, isReprint = true))
+            triggerEvent(ViewPrintCustomsForm(listOf(it), isReprint = true))
         }
     }
 
@@ -430,7 +430,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                orderDetailRepository.updateOrderStatus(orderIdSet.id, newStatus)
+                orderDetailRepository.updateOrderStatus(order.toDataModel(), newStatus)
                     .let { it as? ContinuationWrapper.ContinuationResult.Success }
                     ?.takeIf { it.value.not() }
                     ?.let { triggerEvent(ShowSnackbar(string.order_error_update_general)) }
@@ -575,6 +575,20 @@ class OrderDetailViewModel @Inject constructor(
 
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
+
+        if (isOrderEligibleForSLCreation &&
+            viewState.isCreateShippingLabelButtonVisible != true &&
+            viewState.isProductListMenuVisible != true
+        ) {
+            // we check against the viewstate to avoid sending the event multiple times
+            // if the eligibility was cached, and we had the same value after re-fetching it
+            AnalyticsTracker.track(
+                stat = Stat.SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
+                properties = mapOf(
+                    "order_status" to order.status.value
+                )
+            )
+        }
 
         viewState = viewState.copy(
             isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,

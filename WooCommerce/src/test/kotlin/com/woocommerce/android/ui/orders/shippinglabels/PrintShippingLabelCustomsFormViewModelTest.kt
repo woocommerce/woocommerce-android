@@ -26,13 +26,18 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     private val fileDownloader: FileDownloader = mock()
     private val fileUtils: FileUtils = mock()
     private val storageDirectory: File = File(".")
-    private val url = "test_url"
+    private var urls = mutableListOf("test_url")
 
     @Before
     fun setup() {
         whenever(fileUtils.createTempTimeStampedFile(any(), any(), any())).thenReturn(File("./test"))
+        initViewModel()
+    }
+
+    fun initViewModel() {
         viewModel = PrintShippingLabelCustomsFormViewModel(
-            savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(url, true).initSavedStateHandle(),
+            savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(urls.toTypedArray(), true)
+                .initSavedStateHandle(),
             fileDownloader = fileDownloader,
             fileUtils = fileUtils
         )
@@ -40,14 +45,14 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `start download when print button is clicked`() = testBlocking {
+    fun `when print button is clicked, then start download`() = testBlocking {
         viewModel.onPrintButtonClicked()
 
         verify(fileDownloader).downloadFile(any(), any())
     }
 
     @Test
-    fun `open pdf reader when download is complete`() = testBlocking {
+    fun `when download is complete, then print file`() = testBlocking {
         whenever(fileDownloader.downloadFile(any(), any())).thenReturn(true)
 
         viewModel.onPrintButtonClicked()
@@ -56,7 +61,7 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show error when the file creation fails`() = testBlocking {
+    fun `when file creation fails, then show an error`() = testBlocking {
         whenever(fileUtils.createTempTimeStampedFile(any(), any(), any())).thenReturn(null)
 
         viewModel.onPrintButtonClicked()
@@ -66,7 +71,7 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show error when the file download fails`() = testBlocking {
+    fun `when the file download fails, then show an error`() = testBlocking {
         whenever(fileDownloader.downloadFile(any(), any())).thenReturn(false)
 
         viewModel.onPrintButtonClicked()
@@ -76,7 +81,7 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `navigates back when save for later is clicked`() = testBlocking {
+    fun `when save for later is clicked, then navigate back`() = testBlocking {
         viewModel.onSaveForLaterClicked()
 
         assertThat(viewModel.event.value)
@@ -84,10 +89,33 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `navigates back when back button is clicked`() = testBlocking {
+    fun `when back button is clicked, then navigate back`() = testBlocking {
         viewModel.onBackButtonClicked()
 
         assertThat(viewModel.event.value)
             .isEqualTo(Exit)
+    }
+
+    @Test
+    fun `when there are multiple invoices, then show a list`() = testBlocking {
+        urls.add("second_url")
+
+        initViewModel()
+
+        assertThat(viewModel.viewStateData.liveData.value?.showInvoicesAsAList).isTrue
+        assertThat(viewModel.viewStateData.liveData.value?.commercialInvoices?.size).isEqualTo(2)
+    }
+
+    @Test
+    fun `given there are multiple invoices, when print is clicked, then start download`() = testBlocking {
+        val url = "second_url"
+        urls.add(url)
+        whenever(fileDownloader.downloadFile(any(), any())).thenReturn(true)
+
+        initViewModel()
+        viewModel.onInvoicePrintButtonClicked(url)
+
+        verify(fileDownloader).downloadFile(any(), any())
+        assertThat(viewModel.event.value).isInstanceOf(PrintCustomsForm::class.java)
     }
 }

@@ -98,7 +98,6 @@ Language: ru
     <string name="product_create_attribute_helper">Чтобы создать вариант, необходимо сначала задать атрибуты (например, «Цвет» или «Размер»).</string>
     <string name="product_variation_single_count">1 вариант</string>
     <string name="product_variation_multiple_count">Вариантов: %1$s</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">Отслеживание %s</string>
     <string name="card_reader_software_update_in_progress_title">Обновление ПО устройства чтения</string>
     <string name="card_reader_software_update_title">Обновление ПО</string>
     <string name="card_reader_software_update_description">Для корректной работы устройства чтения необходимо обновить его ПО. Обновить сейчас?</string>

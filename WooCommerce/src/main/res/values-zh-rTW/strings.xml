@@ -98,7 +98,6 @@ Language: zh_TW
     <string name="product_create_attribute_helper">若要建立款式，需要先設定其屬性 (即「顏色」、「尺寸」)</string>
     <string name="product_variation_single_count">1 種款式</string>
     <string name="product_variation_multiple_count">%1$s 種款式</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s 追蹤中</string>
     <string name="card_reader_software_update_in_progress_title">正在更新讀卡機軟體</string>
     <string name="card_reader_software_update_title">軟體更新</string>
     <string name="card_reader_software_update_description">你的讀卡機軟體需要更新才能正常執行功能。 是否要立即更新？</string>

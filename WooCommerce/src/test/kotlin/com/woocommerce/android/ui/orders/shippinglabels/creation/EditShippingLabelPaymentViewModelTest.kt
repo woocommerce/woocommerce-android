@@ -196,4 +196,40 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value)
             .isEqualTo(ShowSnackbar(R.string.shipping_label_payment_method_added))
     }
+
+    @Test
+    fun `given no existing payment methods, when user is store owner, then show Add First Payment button`() {
+        val accountSettings = shippingAccountSettings.copy(paymentMethods = emptyList())
+        setup(WooResult(accountSettings))
+
+        val viewState = viewModel.viewStateData.liveData.value
+        assertThat(viewState!!.showAddFirstPaymentButton).isEqualTo(true)
+    }
+
+    @Test
+    fun `given existing payment methods, when user is store owner, then show Add Payment button`() {
+        setup(WooResult(shippingAccountSettings))
+
+        val viewState = viewModel.viewStateData.liveData.value
+        assertThat(viewState!!.showAddPaymentButton).isEqualTo(true)
+    }
+
+    @Test
+    fun `when user is not store owner, then hide both Add First Payment button and Add Payment Button`() {
+        val accountSettings = shippingAccountSettings.copy(canManagePayments = false)
+        setup(WooResult(accountSettings))
+
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        assertThat(viewState!!.showAddFirstPaymentButton).isEqualTo(false)
+        assertThat(viewState!!.showAddPaymentButton).isEqualTo(false)
+    }
+
+    @Test
+    fun `given no existing payments, when user is store owner, redirect to add payment method screen`() {
+        val accountSettings = shippingAccountSettings.copy(paymentMethods = emptyList())
+        setup(WooResult(accountSettings))
+        assertThat(viewModel.event.value).isEqualTo(AddPaymentMethod)
+    }
 }

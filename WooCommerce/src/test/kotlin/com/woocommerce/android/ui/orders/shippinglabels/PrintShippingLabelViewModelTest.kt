@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
@@ -45,7 +46,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     private val fileUtils: FileUtils = mock()
     private val base64Decoder: Base64Decoder = mock()
 
-    private val savedState = PrintShippingLabelFragmentArgs(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
+    private var savedState = PrintShippingLabelFragmentArgs(shippingLabelIds = longArrayOf(REMOTE_SHIPPING_LABEL_ID))
         .initSavedStateHandle()
 
     private val printShippingLabelViewState = PrintShippingLabelViewState()
@@ -137,7 +138,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     fun `Print shipping label when api connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val testString = "testString"
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(WooResult(testString)).whenever(repository).printShippingLabel(any(), any())
+        doReturn(WooResult(testString)).whenever(repository).printShippingLabels(any(), any())
 
         initViewModel()
 
@@ -162,7 +163,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(
             WooResult<Boolean>(WooError(API_ERROR, NETWORK_ERROR, ""))
-        ).whenever(repository).printShippingLabel(any(), any())
+        ).whenever(repository).printShippingLabels(any(), any())
 
         initViewModel()
 
@@ -237,5 +238,22 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         }
 
         assertThat(isLabelExpired).isFalse()
+    }
+
+    @Test
+    fun `when printing a single label, then show the correct screen title`() {
+        initViewModel()
+
+        assertThat(viewModel.screenTitle).isEqualTo(R.string.shipping_label_print_screen_title)
+    }
+
+    @Test
+    fun `when printing multiple labels, then show the correct screen title`() {
+        savedState = PrintShippingLabelFragmentArgs(shippingLabelIds = longArrayOf(REMOTE_SHIPPING_LABEL_ID, 0L))
+            .initSavedStateHandle()
+
+        initViewModel()
+
+        assertThat(viewModel.screenTitle).isEqualTo(R.string.shipping_label_print_multiple_screen_title)
     }
 }
