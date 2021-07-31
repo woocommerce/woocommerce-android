@@ -20,5 +20,9 @@ class AddonListAdapter(
 
     inner class AddonsViewHolder(
         val viewBinding: AddonItemBinding
-    ) : RecyclerView.ViewHolder(viewBinding.root)
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(addon: ProductAddon) {
+            viewBinding.addonName.text = addon.name
+        }
+    }
 }
