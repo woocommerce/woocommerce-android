@@ -83,8 +83,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     )
                 CardReaderOnboardingState.GenericError ->
                     viewState.value = OnboardingViewState.GenericErrorState(
-                        ::onContactSupportClicked,
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked,
+                        onButtonActionClicked = ::exitFlow
                     )
                 CardReaderOnboardingState.NoConnectionError ->
                     viewState.value = OnboardingViewState.NoConnectionErrorState
@@ -138,7 +139,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         class GenericErrorState(
             val onContactSupportActionClicked: (() -> Unit),
-            val onLearnMoreActionClicked: (() -> Unit)
+            val onLearnMoreActionClicked: (() -> Unit),
+            val onButtonActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
             val contactSupportLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,

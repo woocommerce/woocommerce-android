@@ -104,6 +104,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
+        binding.buttonClose.setOnClickListener {
+            state.onButtonActionClicked.invoke()
+        }
     }
 
     private fun showWCStripeError(
