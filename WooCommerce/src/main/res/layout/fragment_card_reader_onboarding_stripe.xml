@@ -13,63 +13,52 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textHeader"
                 style="@style/TextAppearance.Woo.Headline6"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_275"
                 android:gravity="center"
                 android:paddingHorizontal="@dimen/major_200"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 tools:text="@string/card_reader_onboarding_account_under_review_header" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/illustration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="@dimen/major_275"
-                app:layout_constraintBottom_toTopOf="@id/illustration"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textHeader"
                 tools:src="@drawable/img_products_error" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textLabel"
                 style="@style/TextAppearance.Woo.Body1"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_275"
                 android:gravity="center"
                 android:paddingHorizontal="@dimen/major_200"
                 android:textColor="@color/color_on_surface_high"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/illustration"
                 tools:text="@string/card_reader_onboarding_country_not_supported_hint" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textSupport"
                 style="@style/TextAppearance.Woo.Body1"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
                 android:background="?attr/selectableItemBackground"
-                android:gravity="center"
+                android:layout_gravity="center"
                 android:paddingHorizontal="@dimen/major_200"
                 android:paddingVertical="@dimen/major_100"
                 android:textColor="@color/color_on_surface_high"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textLabel"
-                tools:text="@string/card_reader_onboarding_contact_support" />
+                tools:text="Need some help? Contact support." />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button"
@@ -79,13 +68,11 @@
                 android:layout_marginHorizontal="@dimen/major_200"
                 android:layout_marginVertical="@dimen/major_100"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textSupport"
                 tools:text="@string/skip"
                 tools:visibility="visible" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 
     <include
