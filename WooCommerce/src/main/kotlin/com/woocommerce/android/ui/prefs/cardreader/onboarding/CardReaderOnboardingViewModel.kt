@@ -33,14 +33,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshState() {
-        // TODO remove
-        viewState.value = OnboardingViewState.WCStripeError
-            .WCPayAccountPendingRequirementsState(
-                onLearnMoreActionClicked = ::onLearnMoreClicked,
-                onButtonActionClicked = ::onSkipPendingRequirementsClicked,
-                dueDate = "August 1, 2021" // TODO cardreader Pass due date to the state
-            )
-        return
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (val state = cardReaderChecker.getOnboardingState()) {
