@@ -150,6 +150,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
                 containsHtml = true
             )
+            val illustration = R.drawable.img_error_unmapped
         }
 
         // TODO cardreader Update layout resource

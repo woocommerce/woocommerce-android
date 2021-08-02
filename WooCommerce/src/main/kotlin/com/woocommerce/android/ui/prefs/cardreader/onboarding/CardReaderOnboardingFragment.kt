@@ -98,6 +98,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingGenericErrorBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.textSupport.setOnClickListener {
             state.onContactSupportActionClicked.invoke()
         }
