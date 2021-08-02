@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
@@ -13,7 +14,6 @@ import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupport
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -42,10 +42,11 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                         ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
                     }
                     is MultiLiveEvent.Event.Exit -> navigateBackWithNotice(KEY_READER_ONBOARDING_RESULT)
-                    is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
-                        KEY_READER_ONBOARDING_RESULT,
-                        event.data
-                    )
+                    is MultiLiveEvent.Event.ExitWithResult<*> -> {
+                        findNavController().navigate(
+                            R.id.action_cardReaderOnboardingFragment_to_cardReaderDetailFragment
+                        )
+                    }
                     else -> event.isHandled = false
                 }
             }
