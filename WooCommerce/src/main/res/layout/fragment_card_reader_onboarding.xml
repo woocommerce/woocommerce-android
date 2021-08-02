@@ -9,17 +9,12 @@
     <View style="@style/Woo.Divider" />
 
     <ScrollView
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
-
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:background="?attr/colorSurface"
-            android:paddingVertical="@dimen/major_200" />
-    </ScrollView>
+        android:animateLayoutChanges="true"
+        android:background="?attr/colorSurface"
+        android:fillViewport="true"
+        android:paddingVertical="@dimen/major_200" />
 
 </LinearLayout>
