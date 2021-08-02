@@ -3,16 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment">
 
     <View style="@style/Woo.Divider" />
 
-    <FrameLayout
-        android:id="@+id/container"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        android:background="?attr/colorSurface"
-        android:paddingVertical="@dimen/major_200"
-        tools:context=".ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment" />
+        android:fillViewport="true">
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="?attr/colorSurface"
+            android:paddingVertical="@dimen/major_200" />
+    </ScrollView>
+
 </LinearLayout>
