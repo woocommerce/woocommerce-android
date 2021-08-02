@@ -174,6 +174,7 @@ class HelpActivity : AppCompatActivity() {
     enum class Origin(private val stringValue: String) {
         UNKNOWN("origin:unknown"),
         SETTINGS("origin:settings"),
+        CARD_READER_ONBOARDING("origin:card_reader_onboarding"),
         FEEDBACK_SURVEY("origin:feedback_survey"),
         USER_ELIGIBILITY_ERROR("origin:user_eligibility_error"),
         MY_STORE("origin:my_store"),
