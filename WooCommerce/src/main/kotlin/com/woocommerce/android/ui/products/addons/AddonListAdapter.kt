@@ -8,7 +8,7 @@ class AddonListAdapter(
     val addons: List<ProductAddon>
 ) : RecyclerView.Adapter<AddonListAdapter.AddonsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        AddonsViewHolder(AddonCard(parent.context))
+        AddonsViewHolder(ProductAddonCard(parent.context))
 
     override fun onBindViewHolder(holder: AddonsViewHolder, position: Int) {
         holder.addonCard.bind(addons[position])
@@ -17,6 +17,6 @@ class AddonListAdapter(
     override fun getItemCount() = addons.size
 
     inner class AddonsViewHolder(
-        val addonCard: AddonCard
+        val addonCard: ProductAddonCard
     ) : RecyclerView.ViewHolder(addonCard)
 }
