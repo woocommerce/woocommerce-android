@@ -29,7 +29,8 @@ class AddonOptionListAdapter(
         val binding: ProductAddonOptionItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(option: ProductAddonOption) {
-
+            binding.optionName.text = option.label
+            binding.optionPrice.text = option.price
         }
     }
 }
