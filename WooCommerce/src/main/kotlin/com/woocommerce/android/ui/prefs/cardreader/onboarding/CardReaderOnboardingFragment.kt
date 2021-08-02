@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedCountryBinding
@@ -70,7 +71,8 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val layout = LayoutInflater.from(requireActivity()).inflate(state.layoutRes, binding.container, false)
         binding.container.addView(layout)
         when (state) {
-            is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState ->
+                showGenericErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState -> showLoadingState(layout)
             is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState ->
@@ -86,6 +88,21 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
         binding.cancelButton.setOnClickListener {
             viewModel.onCancelClicked()
+        }
+    }
+
+    private fun showGenericErrorState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
+    ) {
+        val binding = FragmentCardReaderOnboardingGenericErrorBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
+        binding.textSupport.setOnClickListener {
+            state.onContactSupportActionClicked.invoke()
+        }
+        binding.learnMoreContainer.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
         }
     }
 

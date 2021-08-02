@@ -82,7 +82,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.GenericError ->
-                    viewState.value = OnboardingViewState.GenericErrorState
+                    viewState.value = OnboardingViewState.GenericErrorState(
+                        ::onContactSupportClicked,
+                        ::onLearnMoreClicked
+                    )
                 CardReaderOnboardingState.NoConnectionError ->
                     viewState.value = OnboardingViewState.NoConnectionErrorState
             }
@@ -133,9 +136,18 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val illustration: Int = R.drawable.img_payment_onboarding_loading
         }
 
-        // TODO cardreader Update layout resource
-        object GenericErrorState : OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            // TODO cardreader implement generic error state
+        class GenericErrorState(
+            val onContactSupportActionClicked: (() -> Unit),
+            val onLearnMoreActionClicked: (() -> Unit)
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
+            val contactSupportLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
+                containsHtml = true
+            )
+            val learnMoreLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
+                containsHtml = true
+            )
         }
 
         // TODO cardreader Update layout resource
