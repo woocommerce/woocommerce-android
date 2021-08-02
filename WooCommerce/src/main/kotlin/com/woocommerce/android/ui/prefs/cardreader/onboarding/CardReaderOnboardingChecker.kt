@@ -86,7 +86,8 @@ class CardReaderOnboardingChecker @Inject constructor(
             !paymentAccount.hasOverdueRequirements
 
     private fun isStripeAccountPendingRequirements(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status == RESTRICTED && paymentAccount.hasPendingRequirements
+        (paymentAccount.status == RESTRICTED && paymentAccount.hasPendingRequirements) ||
+            paymentAccount.status == RESTRICTED_SOON
 
     private fun isStripeAccountOverdueRequirements(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status == RESTRICTED &&
