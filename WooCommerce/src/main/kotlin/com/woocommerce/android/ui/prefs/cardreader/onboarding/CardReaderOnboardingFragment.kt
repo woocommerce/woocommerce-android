@@ -14,6 +14,8 @@ import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupport
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -36,7 +38,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             { event ->
                 when (event) {
                     is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport -> {
-                        // todo cardreader start HelpActivity
+                        requireActivity().startHelpActivity(HelpActivity.Origin.CARD_READER_ONBOARDING)
                     }
                     is CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore -> {
                         ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
