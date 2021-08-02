@@ -32,6 +32,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         refreshState()
     }
 
+    @Suppress("LongMethod")
     private fun refreshState() {
         launch {
             viewState.value = OnboardingViewState.LoadingState
