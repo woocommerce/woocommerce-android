@@ -34,12 +34,14 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
         layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
-            false)
+            false
+        )
         binding.addonsList.layoutManager = layoutManager
         binding.addonsList.adapter = AddonListAdapter(addonList)
     }
 
     override fun onRequestAllowBackPress(): Boolean {
+        // TODO fix back button click not working
         viewModel.onBackButtonClicked(ExitProductAddons)
         return false
     }
