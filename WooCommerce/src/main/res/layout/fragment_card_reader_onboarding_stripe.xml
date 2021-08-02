@@ -82,7 +82,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textSupport"
-                tools:text="Dismiss"
+                tools:text="@string/skip"
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

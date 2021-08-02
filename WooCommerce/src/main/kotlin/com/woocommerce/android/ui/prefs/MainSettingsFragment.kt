@@ -30,13 +30,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
-import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
@@ -209,18 +206,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionTheme.setOnClickListener {
             // FIXME AMANDA tracks event
             showThemeChooser()
-        }
-
-        setupResultHandlers()
-    }
-
-    private fun setupResultHandlers() {
-        // if the user is returning from the card reader onboarding and chose to skip the "pending requirements"
-        // screen, we want to take them straight to the card reader screen (this will change later)
-        handleResult<String>(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_RESULT) {
-            if (it == CardReaderOnboardingViewModel.PENDING_REQUIREMENTS_SKIPPED) {
-                findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderDetailFragment)
-            }
         }
     }
 

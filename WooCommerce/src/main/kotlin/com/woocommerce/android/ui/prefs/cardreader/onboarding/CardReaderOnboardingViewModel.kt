@@ -33,6 +33,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshState() {
+        // TODO remove
+        viewState.value = OnboardingViewState.WCStripeError
+            .WCPayAccountPendingRequirementsState(
+                onLearnMoreActionClicked = ::onLearnMoreClicked,
+                onButtonActionClicked = ::onSkipPendingRequirementsClicked,
+                dueDate = "August 1, 2021" // TODO cardreader Pass due date to the state
+            )
+        return
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (val state = cardReaderChecker.getOnboardingState()) {
@@ -103,7 +111,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onSkipPendingRequirementsClicked() {
-        triggerEvent(Event.ExitWithResult(PENDING_REQUIREMENTS_SKIPPED))
+        triggerEvent(OnboardingEvent.NavigateToManageCardReader)
     }
 
     private fun exitFlow() {
@@ -119,6 +127,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         object NavigateToSupport : Event()
+
+        object NavigateToManageCardReader : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
@@ -282,9 +292,5 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
             )
         }
-    }
-
-    companion object {
-        const val PENDING_REQUIREMENTS_SKIPPED = "pending_requirements_skipped"
     }
 }
