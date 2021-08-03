@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
@@ -41,6 +42,11 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                     }
                     is CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore -> {
                         ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+                    }
+                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToCardReaderDetail -> {
+                        findNavController().navigate(
+                            R.id.action_cardReaderOnboardingFragment_to_cardReaderDetailFragment
+                        )
                     }
                     is MultiLiveEvent.Event.Exit -> navigateBackWithNotice(KEY_READER_ONBOARDING_RESULT)
                     else -> event.isHandled = false
@@ -95,6 +101,13 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
+        }
+
+        UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
+        state.onButtonActionClicked?.let { onButtonActionClicked ->
+            binding.button.setOnClickListener {
+                onButtonActionClicked.invoke()
+            }
         }
     }
 

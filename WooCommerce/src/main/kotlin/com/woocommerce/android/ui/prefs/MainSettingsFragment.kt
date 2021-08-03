@@ -38,9 +38,9 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.util.FeatureFlag.CARD_READER_ONBOARDING
+import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan

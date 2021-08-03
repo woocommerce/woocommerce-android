@@ -70,6 +70,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value = OnboardingViewState.WCStripeError
                         .WCPayAccountPendingRequirementsState(
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
+                            onButtonActionClicked = ::onSkipPendingRequirementsClicked,
                             dueDate = "" // TODO cardreader Pass due date to the state
                         )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
@@ -101,6 +102,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
         triggerEvent(OnboardingEvent.ViewLearnMore)
     }
 
+    private fun onSkipPendingRequirementsClicked() {
+        triggerEvent(OnboardingEvent.NavigateToCardReaderDetail)
+    }
+
     private fun exitFlow() {
         triggerEvent(Event.Exit)
     }
@@ -114,6 +119,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         object NavigateToSupport : Event()
+
+        object NavigateToCardReaderDetail : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
@@ -162,8 +169,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
         sealed class WCStripeError(
             val headerLabel: UiString,
             val hintLabel: UiString,
+            val buttonLabel: UiString? = null
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
             abstract val onLearnMoreActionClicked: (() -> Unit)
+            open val onButtonActionClicked: (() -> Unit?)? = null
 
             @DrawableRes
             val illustration = R.drawable.img_products_error
@@ -173,28 +182,28 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
 
             data class WCPayAccountUnderReviewState(
-                override val onLearnMoreActionClicked: () -> Unit
+                override val onLearnMoreActionClicked: () -> Unit,
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
             )
 
             data class WCPayAccountRejectedState(
-                override val onLearnMoreActionClicked: () -> Unit
+                override val onLearnMoreActionClicked: () -> Unit,
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
             )
 
             data class WCPayAccountOverdueRequirementsState(
-                override val onLearnMoreActionClicked: () -> Unit
+                override val onLearnMoreActionClicked: () -> Unit,
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
             )
 
             data class WCPayInTestModeWithLiveAccountState(
-                override val onLearnMoreActionClicked: () -> Unit
+                override val onLearnMoreActionClicked: () -> Unit,
             ) : WCStripeError(
                 headerLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header),
@@ -204,6 +213,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
             data class WCPayAccountPendingRequirementsState(
                 override val onLearnMoreActionClicked: () -> Unit,
+                override val onButtonActionClicked: () -> Unit,
                 val dueDate: String
             ) : WCStripeError(
                 headerLabel = UiString
@@ -211,7 +221,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 hintLabel = UiString.UiStringRes(
                     R.string.card_reader_onboarding_account_pending_requirements_hint,
                     listOf(UiString.UiStringText(dueDate))
-                )
+                ),
+                buttonLabel = UiString.UiStringRes(R.string.skip)
             )
         }
 
