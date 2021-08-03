@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.cardreader.hub
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -36,6 +37,12 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
             viewLifecycleOwner
         ) { event ->
             when (event) {
+                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail -> {
+                    findNavController().navigate(R.id.action_cardReaderHubFragment_to_cardReaderDetailFragment)
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
+                    TODO()
+                }
                 else -> event.isHandled = false
             }
         }
