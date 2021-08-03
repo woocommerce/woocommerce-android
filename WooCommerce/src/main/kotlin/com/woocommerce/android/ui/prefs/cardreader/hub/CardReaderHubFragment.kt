@@ -27,7 +27,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     private fun initViews(binding: FragmentCardReaderHubBinding) {
         binding.cardReaderHubRv.layoutManager = LinearLayoutManager(requireContext())
         binding.cardReaderHubRv.addItemDecoration(
-            DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
     }
