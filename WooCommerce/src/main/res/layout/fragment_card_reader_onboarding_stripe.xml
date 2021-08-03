@@ -57,9 +57,11 @@
         android:paddingHorizontal="@dimen/major_200"
         android:paddingVertical="@dimen/major_100"
         android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@+id/learn_more_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textLabel"
+        app:layout_constraintVertical_bias="0"
         tools:text="@string/card_reader_onboarding_contact_support" />
 
     <com.google.android.material.button.MaterialButton
@@ -70,6 +72,8 @@
         android:layout_marginHorizontal="@dimen/major_100"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/learn_more_container"
+        app:layout_constraintTop_toBottomOf="@+id/textSupport"
+        app:layout_constraintVertical_bias="1"
         tools:text="@string/refresh_button"
         tools:visibility="visible" />
 
