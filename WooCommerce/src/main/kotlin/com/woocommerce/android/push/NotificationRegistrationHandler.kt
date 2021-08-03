@@ -8,9 +8,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.RegisterDevicePayload
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class NotificationRegistrationHandler @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
@@ -23,7 +21,6 @@ class NotificationRegistrationHandler @Inject constructor(
         if (accountStore.hasAccessToken()) {
             preferencesWrapper.setFCMToken(token)
 
-            // The site is set to null to ensure we get notifications for all stores the user is logged in
             val payload = RegisterDevicePayload(
                 gcmToken = token,
                 appKey = NotificationStore.NotificationAppKey.WOOCOMMERCE,
