@@ -85,6 +85,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 ),
                 readerName = readerStatus.cardReader.getReadersName(),
                 readerBattery = readerStatus.cardReader.getReadersBatteryLevel(),
+                readerFirmwareVersion = readerStatus.cardReader.getReaderFirmwareVersion(),
                 primaryButtonState = ButtonState(
                     onActionClicked = ::onUpdateReaderClicked,
                     text = UiStringRes(R.string.card_reader_detail_connected_update_software)
@@ -99,6 +100,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 enforceReaderUpdate = null,
                 readerName = readerStatus.cardReader.getReadersName(),
                 readerBattery = readerStatus.cardReader.getReadersBatteryLevel(),
+                readerFirmwareVersion = readerStatus.cardReader.getReaderFirmwareVersion(),
                 primaryButtonState = ButtonState(
                     onActionClicked = ::onDisconnectClicked,
                     text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
@@ -165,6 +167,13 @@ class CardReaderDetailViewModel @Inject constructor(
         }
     }
 
+    private fun CardReader.getReaderFirmwareVersion(): UiString {
+        return UiStringRes(
+                R.string.card_reader_detail_connected_firmware_version,
+                listOf(UiStringText(this.firmwareVersion.substringBefore("-")))
+            )
+    }
+
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
         data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
@@ -190,6 +199,7 @@ class CardReaderDetailViewModel @Inject constructor(
             val enforceReaderUpdate: UiString?,
             val readerName: UiString,
             val readerBattery: UiString?,
+            val readerFirmwareVersion: UiString,
             val primaryButtonState: ButtonState?,
             val secondaryButtonState: ButtonState?
         ) : ViewState() {
