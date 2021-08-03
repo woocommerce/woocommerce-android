@@ -108,7 +108,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onSkipPendingRequirementsClicked() {
-        triggerEvent(OnboardingEvent.NavigateToManageCardReader)
+        triggerEvent(OnboardingEvent.NavigateToCardReaderDetail)
     }
 
     private fun exitFlow() {
@@ -125,7 +125,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         object NavigateToSupport : Event()
 
-        object NavigateToManageCardReader : Event()
+        object NavigateToCardReaderDetail : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
@@ -229,7 +229,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
             data class WCPayAccountPendingRequirementsState(
                 override val onLearnMoreActionClicked: () -> Unit,
-                override val onButtonActionClicked: (() -> Unit?)?,
+                override val onButtonActionClicked: () -> Unit,
                 val dueDate: String
             ) : WCStripeError(
                 headerLabel = UiString
