@@ -118,8 +118,11 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     ) {
         val binding = FragmentCardReaderOnboardingNetworkErrorBinding.bind(view)
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
+        binding.buttonRetry.setOnClickListener {
+            state.onRetryButtonActionClicked.invoke()
+        }
         binding.buttonClose.setOnClickListener {
-            state.onButtonActionClicked.invoke()
+            state.onCloseButtonActionClicked.invoke()
         }
     }
 

@@ -91,7 +91,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     )
                 CardReaderOnboardingState.NoConnectionError ->
                     viewState.value = OnboardingViewState.NoConnectionErrorState(
-                        onButtonActionClicked = ::exitFlow
+                        onRetryButtonActionClicked = ::refreshState,
+                        onCloseButtonActionClicked = ::exitFlow
                     )
             }.exhaustive
         }
@@ -158,7 +159,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         class NoConnectionErrorState(
-            val onButtonActionClicked: (() -> Unit)
+            val onRetryButtonActionClicked: (() -> Unit),
+            val onCloseButtonActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_network_error) {
             val illustration = R.drawable.ic_woo_error_state
         }
