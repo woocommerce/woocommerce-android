@@ -21,4 +21,3 @@ class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
         items.addAll(rows)
     }
 }
-

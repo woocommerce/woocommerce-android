@@ -28,6 +28,8 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     }
 
     private fun observeViewState() {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
+        }
     }
 
     override fun onResume() {

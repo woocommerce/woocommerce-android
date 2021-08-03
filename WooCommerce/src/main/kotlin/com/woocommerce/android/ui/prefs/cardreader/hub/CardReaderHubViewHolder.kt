@@ -12,7 +12,7 @@ sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
 
     class RowViewHolder(parent: ViewGroup) : CardReaderHubViewHolder(parent, R.layout.card_reader_hub_list_item) {
         override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubListItemViewState) {
+            TODO()
         }
     }
 }
-
