@@ -60,26 +60,31 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
                 CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayInTestModeWithLiveAccountState(
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.StripeAccountUnderReview ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountUnderReviewState(
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.StripeAccountPendingRequirement ->
                     viewState.value = OnboardingViewState.WCStripeError
                         .WCPayAccountPendingRequirementsState(
+                            onContactSupportActionClicked = ::onContactSupportClicked,
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
                             onButtonActionClicked = ::onSkipPendingRequirementsClicked,
                             dueDate = "" // TODO cardreader Pass due date to the state
                         )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountOverdueRequirementsState(
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.StripeAccountRejected ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountRejectedState(
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.GenericError ->
                     viewState.value = OnboardingViewState.GenericErrorState
@@ -171,6 +176,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val hintLabel: UiString,
             val buttonLabel: UiString? = null
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
+            abstract val onContactSupportActionClicked: (() -> Unit)
             abstract val onLearnMoreActionClicked: (() -> Unit)
             open val onButtonActionClicked: (() -> Unit?)? = null
 
@@ -182,28 +188,32 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
 
             data class WCPayAccountUnderReviewState(
-                override val onLearnMoreActionClicked: () -> Unit,
+                override val onContactSupportActionClicked: () -> Unit,
+                override val onLearnMoreActionClicked: () -> Unit
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
             )
 
             data class WCPayAccountRejectedState(
-                override val onLearnMoreActionClicked: () -> Unit,
+                override val onContactSupportActionClicked: () -> Unit,
+                override val onLearnMoreActionClicked: () -> Unit
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
             )
 
             data class WCPayAccountOverdueRequirementsState(
-                override val onLearnMoreActionClicked: () -> Unit,
+                override val onContactSupportActionClicked: () -> Unit,
+                override val onLearnMoreActionClicked: () -> Unit
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
             )
 
             data class WCPayInTestModeWithLiveAccountState(
-                override val onLearnMoreActionClicked: () -> Unit,
+                override val onContactSupportActionClicked: () -> Unit,
+                override val onLearnMoreActionClicked: () -> Unit
             ) : WCStripeError(
                 headerLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header),
@@ -212,6 +222,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
 
             data class WCPayAccountPendingRequirementsState(
+                override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit,
                 override val onButtonActionClicked: () -> Unit,
                 val dueDate: String
