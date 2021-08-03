@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CardReaderPaymentDialog : DialogFragment(R.layout.card_reader_payment_dialog) {
+class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_payment_dialog) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
     @Inject lateinit var uiMessageResolver: UIMessageResolver

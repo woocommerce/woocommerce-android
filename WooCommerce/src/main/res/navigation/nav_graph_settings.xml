@@ -61,7 +61,7 @@
     </fragment>
     <dialog
         android:id="@+id/cardReaderConnectFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialog"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
         android:label="CardReaderConnectFragment">
         <action
             android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"

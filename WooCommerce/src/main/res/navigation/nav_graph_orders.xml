@@ -471,7 +471,7 @@
     </fragment>
     <dialog
         android:id="@+id/cardReaderPaymentDialog"
-        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog"
+        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
         android:label="CardReaderPaymentDialog">
         <argument
             android:name="orderIdentifier"
@@ -479,7 +479,7 @@
     </dialog>
     <dialog
         android:id="@+id/cardReaderConnectDialog"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialog"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
         android:label="CardReaderConnectDialog">
         <action
             android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"

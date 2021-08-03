@@ -51,7 +51,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CardReaderConnectDialog : DialogFragment(R.layout.card_reader_connect_dialog) {
+class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_connect_dialog) {
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     @Inject lateinit var locationUtils: LocationUtils

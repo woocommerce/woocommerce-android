@@ -75,7 +75,7 @@ class CardReaderPaymentViewModel
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
-    private val arguments: CardReaderPaymentDialogArgs by savedState.navArgs()
+    private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
