@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textHeader"
+        style="@style/TextAppearance.Woo.Headline6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:text="@string/network_activity_no_connectivity"
+        app:layout_constraintBottom_toTopOf="@id/illustration"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_275"
+        app:layout_constraintBottom_toTopOf="@id/textLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textHeader"
+        tools:srcCompat="@drawable/ic_woo_error_state" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textLabel"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_275"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:text="@string/error_generic_network"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@id/buttonClose"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/illustration" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonClose"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:text="@string/close"
+        app:layout_constraintBottom_toTopOf="@+id/learnMoreContainer"
+        app:layout_constraintVertical_bias="1" />
+
+    <include
+        android:id="@+id/learnMoreContainer"
+        layout="@layout/card_reader_learn_more_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_350"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

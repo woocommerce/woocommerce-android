@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedCountryBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
@@ -73,8 +74,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         when (state) {
             is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState ->
                 showGenericErrorState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState ->
+                showNetworkErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState -> showLoadingState(layout)
-            is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState ->
                 showCountryNotSupportedState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
@@ -105,6 +107,17 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
+        binding.buttonClose.setOnClickListener {
+            state.onButtonActionClicked.invoke()
+        }
+    }
+
+    private fun showNetworkErrorState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
+    ) {
+        val binding = FragmentCardReaderOnboardingNetworkErrorBinding.bind(view)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.buttonClose.setOnClickListener {
             state.onButtonActionClicked.invoke()
         }
