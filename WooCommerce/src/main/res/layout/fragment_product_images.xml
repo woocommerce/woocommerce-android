@@ -20,6 +20,8 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/learnMoreButton"
         style="@style/Woo.ListItem.Body"
+        android:gravity="center"
+        android:background="?android:attr/selectableItemBackground"
         android:layout_marginTop="@dimen/minor_75"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
