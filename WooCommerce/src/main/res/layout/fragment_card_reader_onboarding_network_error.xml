@@ -37,43 +37,23 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_275"
+        android:layout_marginBottom="@dimen/major_100"
         android:gravity="center"
         android:paddingHorizontal="@dimen/major_200"
         android:text="@string/error_generic_network"
         android:textColor="@color/color_on_surface_high"
-        app:layout_constraintBottom_toTopOf="@id/buttonClose"
+        app:layout_constraintBottom_toTopOf="@id/retryCloseButtonContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/illustration" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonRetry"
-        style="@style/Woo.Button.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/major_100"
-        android:text="@string/retry"
-        app:layout_constraintBottom_toTopOf="@+id/buttonClose"
-        app:layout_constraintVertical_bias="1" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonClose"
-        style="@style/Woo.Button.Outlined"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/major_100"
-        android:text="@string/close"
-        app:layout_constraintBottom_toTopOf="@+id/learnMoreContainer"
-        app:layout_constraintVertical_bias="1" />
-
     <include
-        android:id="@+id/learnMoreContainer"
-        layout="@layout/card_reader_learn_more_section"
+        android:id="@+id/retryCloseButtonContainer"
+        layout="@layout/card_reader_onboarding_retry_close_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_350"
+        android:layout_marginHorizontal="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
