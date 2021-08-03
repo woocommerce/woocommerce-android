@@ -5,11 +5,13 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -37,7 +39,6 @@ import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
-import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -135,14 +136,16 @@ class ProductImagesFragment :
         binding.addImageButton.setOnClickListener {
             viewModel.onImageSourceButtonClicked()
         }
-        val learnMoreText = getString(R.string.product_images_learn_more)
-        binding.learnMoreButton.setClickableText(
-            content = getString(R.string.product_images_learn_more_button, learnMoreText),
-            clickableContent = learnMoreText,
-            clickAction = WooClickableSpan {
+        with(binding.learnMoreButton) {
+            text = HtmlCompat.fromHtml(
+                context.getString(R.string.product_images_learn_more_button),
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
+            movementMethod = LinkMovementMethod.getInstance()
+            setOnClickListener {
                 ChromeCustomTabUtils.launchUrl(it.context, AppUrls.PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING)
             }
-        )
+        }
     }
 
     override fun onGalleryImageDeleteIconClicked(image: Image) {
