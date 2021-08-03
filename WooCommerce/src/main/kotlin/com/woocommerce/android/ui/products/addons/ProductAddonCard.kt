@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products.addons
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +25,7 @@ class ProductAddonCard @JvmOverloads constructor(
         )
 
     init {
+        layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT)
         binding.optionsList.layoutManager =
             LinearLayoutManager(
                 context,
