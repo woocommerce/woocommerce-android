@@ -62,7 +62,7 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When selectable packages fetching fails, then display a Snackbar`() =
+    fun `when selectable packages fetching fails, then display a Snackbar`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingRepository.getSelectableServicePackages()).thenReturn(
                 WooResult(WooError(GENERIC_ERROR, UNKNOWN))
@@ -73,7 +73,7 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given no selected packages, when Done button is tapped, then display a Snackbar`() =
+    fun `given no selected packages, when Done button is tapped, then display a Snackbar`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(availablePackages))
             setup()
@@ -85,7 +85,7 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `When package is saved successfully, then trigger success event`() =
+    fun `when package is saved successfully, then trigger success event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(availablePackages))
             whenever(shippingRepository.activateServicePackage(any())).thenReturn(WooResult(true))
@@ -97,7 +97,7 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `When package is not saved successfully, then show Snackbar`() =
+    fun `when package is not saved successfully, then show Snackbar`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val error = WooError(API_ERROR, NETWORK_ERROR, "")
             whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(availablePackages))
@@ -115,7 +115,7 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `When there is no available packages to select, then show empty view and hide done button`() =
+    fun `when there is no available packages to select, then show empty view and hide done button`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(emptyList()))
             setup()

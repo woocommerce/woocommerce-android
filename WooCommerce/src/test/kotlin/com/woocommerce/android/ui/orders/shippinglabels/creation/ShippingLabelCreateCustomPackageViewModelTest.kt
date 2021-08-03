@@ -75,7 +75,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When an invalid package name is entered, display error message`() {
+    fun `when an invalid package name is entered, display error message`() {
         setup()
         var viewState: ShippingLabelCreateCustomPackageViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }

@@ -33,7 +33,7 @@ class ShippingLabelCreatePackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When handling package creation success, then show Snackbar and navigate to edit label package screen`() {
+    fun `when handling package creation success, then show Snackbar and navigate to edit label package screen`() {
         setup()
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
