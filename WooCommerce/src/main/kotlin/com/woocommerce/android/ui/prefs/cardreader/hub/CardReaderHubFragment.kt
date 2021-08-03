@@ -3,8 +3,11 @@ package com.woocommerce.android.ui.prefs.cardreader.hub
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
 import com.woocommerce.android.ui.base.BaseFragment
 
 class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
@@ -13,8 +16,19 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val binding = FragmentCardReaderHubBinding.bind(view)
+
+        initViews(binding)
         observeEvents()
-        observeViewState()
+        observeViewState(binding)
+    }
+
+    private fun initViews(binding: FragmentCardReaderHubBinding) {
+        binding.cardReaderHubRv.layoutManager = LinearLayoutManager(requireContext())
+        binding.cardReaderHubRv.addItemDecoration(
+            DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
+        )
+        binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
     }
 
     private fun observeEvents() {
@@ -27,8 +41,9 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
         }
     }
 
-    private fun observeViewState() {
+    private fun observeViewState(binding: FragmentCardReaderHubBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
+            (binding.cardReaderHubRv.adapter as CardReaderHubAdapter).setItems(state.rows)
         }
     }
 

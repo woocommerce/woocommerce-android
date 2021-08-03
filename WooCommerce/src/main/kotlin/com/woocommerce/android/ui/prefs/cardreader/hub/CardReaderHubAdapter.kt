@@ -16,7 +16,7 @@ class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
         holder.onBind(items[position])
     }
 
-    fun setProductList(rows: List<CardReaderHubViewModel.CardReaderHubListItemViewState>) {
+    fun setItems(rows: List<CardReaderHubViewModel.CardReaderHubListItemViewState>) {
         items.clear()
         items.addAll(rows)
     }

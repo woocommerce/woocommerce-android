@@ -45,7 +45,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     sealed class CardReaderHubViewState {
-        open val rows: List<CardReaderHubListItemViewState>? = null
+        abstract val rows: List<CardReaderHubListItemViewState>
 
         data class Content(override val rows: List<CardReaderHubListItemViewState>) : CardReaderHubViewState()
     }
