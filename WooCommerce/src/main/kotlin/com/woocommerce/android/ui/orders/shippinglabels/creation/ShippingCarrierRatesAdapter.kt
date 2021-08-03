@@ -128,16 +128,24 @@ class ShippingCarrierRatesAdapter(
             fun bind(rateItem: ShippingRateItem) {
                 binding.carrierServiceName.text = rateItem.title
 
-                if (rateItem.deliveryDate != null) {
-                    binding.deliveryTime.text = dateUtils.getShortMonthDayString(
-                        dateUtils.getYearMonthDayStringFromDate(rateItem.deliveryDate)
-                    )
-                } else {
-                    binding.deliveryTime.text = binding.root.resources.getQuantityString(
-                        R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
-                        rateItem.deliveryEstimate,
-                        rateItem.deliveryEstimate
-                    )
+                when {
+                    rateItem.deliveryDate != null -> {
+                        binding.deliveryTime.isVisible = true
+                        binding.deliveryTime.text = dateUtils.getShortMonthDayString(
+                            dateUtils.getYearMonthDayStringFromDate(rateItem.deliveryDate)
+                        )
+                    }
+                    rateItem.deliveryEstimate != 0 -> {
+                        binding.deliveryTime.isVisible = true
+                        binding.deliveryTime.text = binding.root.resources.getQuantityString(
+                            R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
+                            rateItem.deliveryEstimate,
+                            rateItem.deliveryEstimate
+                        )
+                    }
+                    else -> {
+                        binding.deliveryTime.isVisible = false
+                    }
                 }
 
                 binding.servicePrice.text = rateItem.options[rateItem.selectedOption ?: DEFAULT]?.formattedPrice
