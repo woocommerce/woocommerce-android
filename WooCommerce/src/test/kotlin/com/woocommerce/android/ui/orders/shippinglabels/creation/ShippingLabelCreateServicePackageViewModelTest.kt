@@ -115,7 +115,7 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when there is no available packages to select, then show empty view and hide done button`() =
+    fun `given no available packages, when service package tab is opened, then show empty view and hide done button`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(shippingRepository.getSelectableServicePackages()).thenReturn(WooResult(emptyList()))
             setup()

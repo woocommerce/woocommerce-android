@@ -75,7 +75,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when an invalid package name is entered, display error message`() {
+    fun `when an invalid package name is entered, then display error message`() {
         setup()
         var viewState: ShippingLabelCreateCustomPackageViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
@@ -86,7 +86,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when an empty package length, width, height, or weight value is entered, then display error message`() {
+    fun `given empty length, width, height, or weight value, when value is entered, then display error message`() {
         setup()
         var state: ShippingLabelCreateCustomPackageViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
@@ -102,7 +102,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a zero package length, width, or height value is entered, then display error message`() {
+    fun `given zero package length, width, or height value, when value is entered, then display error message`() {
         setup()
         var state: ShippingLabelCreateCustomPackageViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
@@ -119,7 +119,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a zero package weight value is entered, then do not display error message`() {
+    fun `given zero weight value, when value is entered, then do not display error message`() {
         setup()
         var state: ShippingLabelCreateCustomPackageViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
