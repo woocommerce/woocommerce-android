@@ -103,7 +103,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onSkipPendingRequirementsClicked() {
-        triggerEvent(OnboardingEvent.NavigateToManageCardReader)
+        triggerEvent(OnboardingEvent.NavigateToCardReaderDetail)
     }
 
     private fun exitFlow() {
@@ -120,7 +120,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         object NavigateToSupport : Event()
 
-        object NavigateToManageCardReader : Event()
+        object NavigateToCardReaderDetail : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {

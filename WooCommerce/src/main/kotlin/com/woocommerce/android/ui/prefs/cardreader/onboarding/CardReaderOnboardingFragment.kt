@@ -43,7 +43,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                     is CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore -> {
                         ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
                     }
-                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToManageCardReader -> {
+                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToCardReaderDetail -> {
                         findNavController().navigate(
                             R.id.action_cardReaderOnboardingFragment_to_cardReaderDetailFragment
                         )
