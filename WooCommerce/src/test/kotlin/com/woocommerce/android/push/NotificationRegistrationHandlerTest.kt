@@ -39,7 +39,7 @@ class NotificationRegistrationHandlerTest {
 
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(preferencesWrapper, never()).setFCMToken(any())
-        verify(dispatcher, never()).dispatch(actionCaptor.capture())
+        verify(dispatcher, never()).dispatch(any())
     }
 
     @Test
@@ -50,6 +50,6 @@ class NotificationRegistrationHandlerTest {
         notificationRegistrationHandler.onNewFCMTokenReceived(token = fcmToken)
 
         verify(preferencesWrapper, atLeastOnce()).setFCMToken(any())
-        verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
+        verify(dispatcher, atLeastOnce()).dispatch(any())
     }
 }
