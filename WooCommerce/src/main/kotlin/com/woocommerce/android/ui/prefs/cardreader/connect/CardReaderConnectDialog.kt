@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.databinding.FragmentCardReaderConnectBinding
+import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -51,7 +51,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_connect) {
+class CardReaderConnectDialog : DialogFragment(R.layout.card_reader_connect_dialog) {
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     @Inject lateinit var locationUtils: LocationUtils
@@ -81,12 +81,12 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentCardReaderConnectBinding.bind(view)
+        val binding = CardReaderConnectDialogBinding.bind(view)
         initMultipleReadersFoundRecyclerView(binding)
         initObservers(binding)
     }
 
-    private fun initMultipleReadersFoundRecyclerView(binding: FragmentCardReaderConnectBinding) {
+    private fun initMultipleReadersFoundRecyclerView(binding: CardReaderConnectDialogBinding) {
         binding.multipleCardReadersFoundRv.layoutManager = LinearLayoutManager(requireContext())
         binding.multipleCardReadersFoundRv.addItemDecoration(
             AlignedDividerDecoration(
@@ -98,13 +98,13 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
         binding.multipleCardReadersFoundRv.adapter = MultipleCardReadersFoundAdapter()
     }
 
-    private fun initObservers(binding: FragmentCardReaderConnectBinding) {
+    private fun initObservers(binding: CardReaderConnectDialogBinding) {
         observeEvents()
         observeState(binding)
         setupResultHandlers(viewModel)
     }
 
-    private fun observeState(binding: FragmentCardReaderConnectBinding) {
+    private fun observeState(binding: CardReaderConnectDialogBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
             if (viewState is ViewState.ReaderFoundState) {
                 moveToReaderFoundState(binding, viewState)
@@ -124,7 +124,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
      * When a reader is found, we fade out the scanning illustration, update the UI to the new state, then
      * fade in the reader found illustration
      */
-    private fun moveToReaderFoundState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
+    private fun moveToReaderFoundState(binding: CardReaderConnectDialogBinding, viewState: ViewState) {
         val fadeOut = WooAnimUtils.getFadeOutAnim(binding.illustration, WooAnimUtils.Duration.LONG)
         val fadeIn = WooAnimUtils.getFadeInAnim(binding.illustration, WooAnimUtils.Duration.LONG)
 
@@ -140,7 +140,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
         fadeOut.start()
     }
 
-    private fun moveToState(binding: FragmentCardReaderConnectBinding, viewState: ViewState) {
+    private fun moveToState(binding: CardReaderConnectDialogBinding, viewState: ViewState) {
         UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
         UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
         UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
@@ -208,7 +208,7 @@ class CardReaderConnectFragment : DialogFragment(R.layout.fragment_card_reader_c
     }
 
     private fun updateMultipleReadersFoundRecyclerView(
-        binding: FragmentCardReaderConnectBinding,
+        binding: CardReaderConnectDialogBinding,
         viewState: ViewState
     ) {
         (binding.multipleCardReadersFoundRv.adapter as MultipleCardReadersFoundAdapter)

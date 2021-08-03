@@ -479,7 +479,7 @@
     </dialog>
     <dialog
         android:id="@+id/cardReaderConnectDialog"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialog"
         android:label="CardReaderConnectDialog">
         <action
             android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"

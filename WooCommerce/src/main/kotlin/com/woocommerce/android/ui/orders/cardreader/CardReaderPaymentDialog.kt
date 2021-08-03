@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.DialogCardReaderPaymentBinding
+import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CardReaderPaymentDialog : DialogFragment(R.layout.dialog_card_reader_payment) {
+class CardReaderPaymentDialog : DialogFragment(R.layout.card_reader_payment_dialog) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -50,7 +50,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.dialog_card_reader_payme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = DialogCardReaderPaymentBinding.bind(view)
+        val binding = CardReaderPaymentDialogBinding.bind(view)
 
         initObservers(binding)
         initViewModel()
@@ -60,7 +60,7 @@ class CardReaderPaymentDialog : DialogFragment(R.layout.dialog_card_reader_payme
         viewModel.start()
     }
 
-    private fun initObservers(binding: DialogCardReaderPaymentBinding) {
+    private fun initObservers(binding: CardReaderPaymentDialogBinding) {
         viewModel.event.observe(
             viewLifecycleOwner,
             { event ->
