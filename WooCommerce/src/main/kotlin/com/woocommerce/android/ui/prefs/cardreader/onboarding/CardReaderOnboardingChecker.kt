@@ -31,7 +31,6 @@ class CardReaderOnboardingChecker @Inject constructor(
         val countryCode = getCountryCode()
         if (!isCountrySupported(countryCode)) return CountryNotSupported(countryCode)
 
-        return GenericError
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
         val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
