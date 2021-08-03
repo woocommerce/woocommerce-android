@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.cardreader.hub
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import javax.inject.Inject
 
@@ -14,4 +15,6 @@ class CardReaderHubViewModel @Inject constructor(
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
 
     sealed class CardReaderHubViewState
+
+    data class CardReaderHubListItemViewState(val label: UiString, val onItemClicked: () -> Unit)
 }
