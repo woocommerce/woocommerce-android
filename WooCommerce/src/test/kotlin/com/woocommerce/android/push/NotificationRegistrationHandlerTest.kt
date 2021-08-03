@@ -7,7 +7,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.store.AccountStore
 
 @RunWith(RobolectricTestRunner::class)
@@ -17,7 +16,6 @@ class NotificationRegistrationHandlerTest {
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
     private val preferencesWrapper: PreferencesWrapper = mock()
-    private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
 
     @Before
     fun setUp() {
