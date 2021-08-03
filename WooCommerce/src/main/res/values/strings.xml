@@ -1059,6 +1059,7 @@
     <string name="product_trash_yes">Move to trash</string>
     <string name="product_trash_undo_snackbar_message">Product moved to trash</string>
     <string name="product_trash_error">Error trashing product</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about uploading images</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>
