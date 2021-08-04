@@ -5,10 +5,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductAddonCardBinding
 import com.woocommerce.android.model.ProductAddon
@@ -20,11 +20,12 @@ class ProductAddonCard @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.style.Woo_Card
-) : MaterialCardView(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr) {
     private val binding: ProductAddonCardBinding =
         ProductAddonCardBinding.inflate(
             LayoutInflater.from(context),
-            this
+            this,
+            true
         )
 
     init {
