@@ -370,7 +370,6 @@ class CardReaderPaymentViewModel
             isProgressVisible = true
         )
 
-        // TODO cardreader Update FailedPaymentState
         data class FailedPaymentState(
             private val errorType: PaymentFlowError,
             override val amountWithCurrencyLabel: String?,
