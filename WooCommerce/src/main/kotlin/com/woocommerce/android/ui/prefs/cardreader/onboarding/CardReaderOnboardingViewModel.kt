@@ -35,6 +35,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     @Suppress("LongMethod")
     private fun refreshState() {
+        // TODO
+        viewState.value = OnboardingViewState.GenericErrorState(
+            onContactSupportActionClicked = ::onContactSupportClicked,
+            onLearnMoreActionClicked = ::onLearnMoreClicked
+        )
+        return
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (val state = cardReaderChecker.getOnboardingState()) {
@@ -86,8 +92,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 CardReaderOnboardingState.GenericError ->
                     viewState.value = OnboardingViewState.GenericErrorState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
-                        onLearnMoreActionClicked = ::onLearnMoreClicked,
-                        onButtonActionClicked = ::exitFlow
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.NoConnectionError ->
                     viewState.value = OnboardingViewState.NoConnectionErrorState
@@ -141,8 +146,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         class GenericErrorState(
             val onContactSupportActionClicked: (() -> Unit),
-            val onLearnMoreActionClicked: (() -> Unit),
-            val onButtonActionClicked: (() -> Unit)
+            val onLearnMoreActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
             val contactSupportLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
