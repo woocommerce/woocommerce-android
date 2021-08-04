@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products.addons
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -11,6 +13,7 @@ import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddons
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,7 +36,15 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProductAddonsBinding.bind(view)
+        viewModel.event.observe(viewLifecycleOwner, Observer(::onEventReceived))
         storedAddons?.let { setupRecyclerViewWith(it, viewModel.currencyCode) }
+    }
+
+    private fun onEventReceived(event: MultiLiveEvent.Event) {
+        when (event) {
+            is ExitProductAddons -> findNavController().navigateUp()
+            else -> event.isHandled = false
+        }
     }
 
     private fun setupRecyclerViewWith(addonList: List<ProductAddon>, currencyCode: String) {
@@ -50,7 +61,6 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        // TODO fix back button click not working
         viewModel.onBackButtonClicked(ExitProductAddons)
         return false
     }
