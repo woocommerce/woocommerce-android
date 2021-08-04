@@ -8,7 +8,9 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedCountryBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
@@ -70,9 +72,12 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val layout = LayoutInflater.from(requireActivity()).inflate(state.layoutRes, binding.container, false)
         binding.container.addView(layout)
         when (state) {
-            is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState -> TODO()
-            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState -> showLoadingState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState ->
+                showGenericErrorState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState ->
+                showNetworkErrorState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState ->
+                showLoadingState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState ->
                 showCountryNotSupportedState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
@@ -90,6 +95,33 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.textHeaderTv, state.headerLabel)
         UiHelpers.setTextOrHide(binding.hintTv, state.hintLabel)
         UiHelpers.setImageOrHide(binding.illustrationIv, state.illustration)
+    }
+
+    private fun showGenericErrorState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
+    ) {
+        val binding = FragmentCardReaderOnboardingGenericErrorBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
+        binding.textSupport.setOnClickListener {
+            state.onContactSupportActionClicked.invoke()
+        }
+        binding.learnMoreContainer.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
+        }
+    }
+
+    private fun showNetworkErrorState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
+    ) {
+        val binding = FragmentCardReaderOnboardingNetworkErrorBinding.bind(view)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
+        binding.buttonRetry.setOnClickListener {
+            state.onRetryButtonActionClicked.invoke()
+        }
     }
 
     private fun showWCStripeError(

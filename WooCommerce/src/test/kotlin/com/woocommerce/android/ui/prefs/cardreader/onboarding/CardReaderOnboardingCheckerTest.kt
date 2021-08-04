@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import com.nhaarman.mockitokotlin2.*
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,18 +22,44 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
     private val wcPayStore: WCPayStore = mock()
+    private val networkStatus: NetworkStatus = mock()
 
     private val site = SiteModel()
 
     @Before
     fun setUp() = testBlocking {
-        checker = CardReaderOnboardingChecker(selectedSite, wooStore, wcPayStore, coroutinesTestRule.testDispatchers)
+        checker = CardReaderOnboardingChecker(
+            selectedSite,
+            wooStore,
+            wcPayStore,
+            coroutinesTestRule.testDispatchers,
+            networkStatus
+        )
+        whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
         whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult())
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo())
+    }
+
+    @Test
+    fun `when not connected to network, then NO_CONNECTION returned`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(false)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.NoConnectionError::class.java)
+    }
+
+    @Test
+    fun `when connected to network, then NO_CONNECTION not returned`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.NoConnectionError::class.java)
     }
 
     @Test
