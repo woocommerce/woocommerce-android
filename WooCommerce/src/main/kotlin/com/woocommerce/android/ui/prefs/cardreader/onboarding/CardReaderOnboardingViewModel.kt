@@ -35,12 +35,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     @Suppress("LongMethod")
     private fun refreshState() {
-        // TODO
-        viewState.value = OnboardingViewState.GenericErrorState(
-            onContactSupportActionClicked = ::onContactSupportClicked,
-            onLearnMoreActionClicked = ::onLearnMoreClicked
-        )
-        return
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (val state = cardReaderChecker.getOnboardingState()) {
@@ -156,7 +150,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
                 containsHtml = true
             )
-            val illustration = R.drawable.img_error_unmapped
+            val illustration = R.drawable.img_products_error
         }
 
         // TODO cardreader Update layout resource
