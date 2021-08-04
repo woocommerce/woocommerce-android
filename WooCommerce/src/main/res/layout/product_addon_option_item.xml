@@ -15,7 +15,7 @@
         android:ellipsize="end"
         android:gravity="start"
         android:includeFontPadding="false"
-        tools:text="Color" />
+        tools:text="Option" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/option_price"
