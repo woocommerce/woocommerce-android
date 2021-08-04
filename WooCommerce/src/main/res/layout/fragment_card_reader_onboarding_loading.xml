@@ -26,7 +26,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textHeader"
-        app:srcCompat="@drawable/img_payment_onboarding_loading" />
+        app:srcCompat="@drawable/img_hot_air_balloon" />
 
     <ProgressBar
         android:id="@+id/progress"

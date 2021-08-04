@@ -131,7 +131,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val hintLabel: UiString =
                 UiString.UiStringRes(R.string.please_wait)
             @DrawableRes
-            val illustration: Int = R.drawable.img_payment_onboarding_loading
+            val illustration: Int = R.drawable.img_hot_air_balloon
         }
 
         // TODO cardreader Update layout resource
@@ -153,7 +153,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_header,
                 params = listOf(UiString.UiStringText(countryDisplayName))
             )
-            val illustration = R.drawable.img_products_error
+            val illustration = R.drawable.img_hot_air_balloon
             val hintLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_hint
             )
