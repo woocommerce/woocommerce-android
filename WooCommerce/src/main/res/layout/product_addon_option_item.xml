@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:orientation="horizontal">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/option_name"
+        style="@style/Woo.ListItem.Title"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:ellipsize="end"
         android:gravity="start"
-        android:layout_weight="1" />
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        tools:text="Color" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/option_price"
+        style="@style/Woo.ListItem.Title"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
         android:gravity="end"
-        android:layout_weight="1" />
+        tools:text="$30.00" />
 </LinearLayout>
