@@ -35,12 +35,14 @@ class ProductAddonCard @JvmOverloads constructor(
                 RecyclerView.VERTICAL,
                 false
             )
-        binding.optionsList.addItemDecoration(AlignedDividerDecoration(
-            context,
-            DividerItemDecoration.VERTICAL,
-            R.id.option_name,
-            clipToMargin = false
-        ))
+        binding.optionsList.addItemDecoration(
+            AlignedDividerDecoration(
+                context,
+                DividerItemDecoration.VERTICAL,
+                R.id.option_name,
+                clipToMargin = false
+            )
+        )
     }
 
     fun bind(

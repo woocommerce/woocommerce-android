@@ -20,8 +20,7 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
         val TAG: String = ProductAddonsFragment::class.java.simpleName
     }
 
-    @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var layoutManager: LayoutManager? = null
 

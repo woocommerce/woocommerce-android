@@ -32,11 +32,9 @@ class AddonOptionListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(option: ProductAddonOption) {
             binding.optionName.text = option.label
-            binding.optionPrice.text =
-                option.price
-                    .toBigDecimalOrNull()
-                    ?.let { formatCurrencyForDisplay(it) }
-                    ?: option.price
+            binding.optionPrice.text = option.price.toBigDecimalOrNull()
+                ?.let { formatCurrencyForDisplay(it) }
+                ?: option.price
         }
     }
 }
