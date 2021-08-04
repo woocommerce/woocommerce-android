@@ -146,7 +146,7 @@ sealed class CardReaderOnboardingState {
 
     /**
      * There are some pending requirements on the connected Stripe account. The merchant still has some time before the
-     * deadline to fix them expires. In-person payments should work without issues.
+     * deadline to fix them expires. In-Person Payments should work without issues.
      */
     object StripeAccountPendingRequirement : CardReaderOnboardingState()
 
