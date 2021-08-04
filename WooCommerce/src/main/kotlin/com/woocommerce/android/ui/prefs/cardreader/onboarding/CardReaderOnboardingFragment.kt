@@ -71,7 +71,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.container.addView(layout)
         when (state) {
             is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState -> TODO()
-            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState -> showLoadingState(layout)
+            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState -> showLoadingState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState ->
                 showCountryNotSupportedState(layout, state)
@@ -82,11 +82,14 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }.exhaustive
     }
 
-    private fun showLoadingState(view: View) {
+    private fun showLoadingState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
+    ) {
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
-        binding.cancelButton.setOnClickListener {
-            viewModel.onCancelClicked()
-        }
+        UiHelpers.setTextOrHide(binding.textHeaderTv, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.hintTv, state.hintLabel)
+        UiHelpers.setImageOrHide(binding.illustrationIv, state.illustration)
     }
 
     private fun showWCStripeError(
@@ -101,6 +104,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
+        }
+        binding.textSupport.setOnClickListener {
+            state.onContactSupportActionClicked.invoke()
         }
 
         UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
