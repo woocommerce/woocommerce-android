@@ -51,8 +51,25 @@ class ProductAddonCard @JvmOverloads constructor(
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) = with(binding) {
         addonName.text = addon.name
-        optionsList.adapter = AddonOptionListAdapter(addon.options, formatCurrencyForDisplay)
-        binding.addonDescription.text = addon.description
-        binding.addonDescription.visibility = if(addon.description.isNotEmpty()) VISIBLE else GONE
+        bindDescription(addon)
+        bindOptionList(addon, formatCurrencyForDisplay)
+    }
+
+    private fun ProductAddonCardBinding.bindDescription(
+        addon: ProductAddon
+    ) {
+        addonDescription.text = addon.description
+        addonDescription.visibility = if (addon.description.isNotEmpty()) VISIBLE else GONE
+    }
+
+    private fun ProductAddonCardBinding.bindOptionList(
+        addon: ProductAddon,
+        formatCurrencyForDisplay: (BigDecimal) -> String
+    ) {
+        optionsList.visibility = GONE
+        addon.takeIf { it.options.isNotEmpty() }
+            ?.priceSafeOptionList
+            ?.let { optionsList.adapter = AddonOptionListAdapter(it, formatCurrencyForDisplay) }
+            ?.also { optionsList.visibility = VISIBLE }
     }
 }
