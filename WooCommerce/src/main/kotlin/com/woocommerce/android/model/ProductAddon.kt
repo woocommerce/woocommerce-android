@@ -3,11 +3,11 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.addons.WCProductAddonModel
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnType
 import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnDisplay
+import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType
 import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnRestrictionsType
 import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnTitleFormat
+import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnType
 
 @Parcelize
 data class ProductAddon(
@@ -27,7 +27,22 @@ data class ProductAddon(
     val type: AddOnType?,
     val display: AddOnDisplay?,
     val options: List<ProductAddonOption>
-) : Parcelable
+) : Parcelable {
+    /**
+     * Some addons comes with a option list containing a empty single [ProductAddonOption]
+     * and all the information for that option stored at [ProductAddon].
+     *
+     * To keep the standard behavior of get price information always through [options],
+     * this property parses this detached [ProductAddon] information to an option list
+     */
+    val priceSafeOptionList
+        get() = takeIf { (options.size == 1) && options.single().price.isEmpty() }
+            ?.let { asPricedOptionList(options.single()) }
+            ?: options
+
+    private fun asPricedOptionList(source: ProductAddonOption) =
+        listOf(source.copy(priceType = priceType, price = price))
+}
 
 @Parcelize
 data class ProductAddonOption(
