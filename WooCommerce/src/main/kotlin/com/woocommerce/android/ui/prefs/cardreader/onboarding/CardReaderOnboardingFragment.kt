@@ -102,6 +102,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
+        binding.textSupport.setOnClickListener {
+            state.onContactSupportActionClicked.invoke()
+        }
 
         UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
         state.onButtonActionClicked?.let { onButtonActionClicked ->
