@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardReaderHubRv"
+    android:layout_width="match_parent"
+    android:background="@color/color_surface"
+    android:layout_height="match_parent"
+    tools:listitem="@layout/card_reader_hub_list_item" />

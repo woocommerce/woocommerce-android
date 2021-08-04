@@ -11,9 +11,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
-import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.zendesk.logger.Logger
@@ -62,7 +62,7 @@ class ZendeskHelper(
     private val wcPushNotificationDeviceToken: String?
         get() {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            return preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
+            return preferences.getString(PreferencesWrapper.WPCOM_PUSH_DEVICE_TOKEN, null)
         }
 
     private val timer: Timer by lazy {

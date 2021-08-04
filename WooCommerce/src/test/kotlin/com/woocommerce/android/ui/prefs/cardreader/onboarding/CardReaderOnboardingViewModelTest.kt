@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardi
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCStripeError
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -29,13 +28,14 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onboarding completed, then flow terminated`() =
+    fun `when onboarding completed, then navigates to card reader hub screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.OnboardingCompleted)
 
             val viewModel = createVM()
 
-            assertThat(viewModel.event.value).isInstanceOf(MultiLiveEvent.Event.Exit::class.java)
+            assertThat(viewModel.event.value)
+                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.NavigateToCardReaderHubFragment::class.java)
         }
 
     @Test

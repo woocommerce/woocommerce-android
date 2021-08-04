@@ -38,7 +38,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
         launch {
             viewState.value = OnboardingViewState.LoadingState
             when (val state = cardReaderChecker.getOnboardingState()) {
-                CardReaderOnboardingState.OnboardingCompleted -> exitFlow()
+                CardReaderOnboardingState.OnboardingCompleted ->
+                    triggerEvent(OnboardingEvent.NavigateToCardReaderHubFragment)
                 is CardReaderOnboardingState.CountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
                         convertCountryCodeToCountry(state.countryCode),
@@ -62,32 +63,36 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
                 CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayInTestModeWithLiveAccountState(
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.StripeAccountUnderReview ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountUnderReviewState(
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.StripeAccountPendingRequirement ->
                     viewState.value = OnboardingViewState.WCStripeError
                         .WCPayAccountPendingRequirementsState(
+                            onContactSupportActionClicked = ::onContactSupportClicked,
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
                             onButtonActionClicked = ::onSkipPendingRequirementsClicked,
                             dueDate = "" // TODO cardreader Pass due date to the state
                         )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountOverdueRequirementsState(
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.StripeAccountRejected ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountRejectedState(
-                        ::onLearnMoreClicked
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.GenericError ->
                     viewState.value = OnboardingViewState.GenericErrorState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
-                        onLearnMoreActionClicked = ::onLearnMoreClicked,
-                        onButtonActionClicked = ::exitFlow
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.NoConnectionError ->
                     viewState.value = OnboardingViewState.NoConnectionErrorState(
@@ -111,7 +116,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onSkipPendingRequirementsClicked() {
-        triggerEvent(OnboardingEvent.NavigateToCardReaderDetail)
+        triggerEvent(OnboardingEvent.NavigateToCardReaderHubFragment)
     }
 
     private fun exitFlow() {
@@ -128,7 +133,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         object NavigateToSupport : Event()
 
-        object NavigateToCardReaderDetail : Event()
+        object NavigateToCardReaderHubFragment : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
@@ -143,8 +148,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         class GenericErrorState(
             val onContactSupportActionClicked: (() -> Unit),
-            val onLearnMoreActionClicked: (() -> Unit),
-            val onButtonActionClicked: (() -> Unit)
+            val onLearnMoreActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
             val contactSupportLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
@@ -154,7 +158,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
                 containsHtml = true
             )
-            val illustration = R.drawable.img_error_unmapped
+            val illustration = R.drawable.img_products_error
         }
 
         class NoConnectionErrorState(
@@ -191,6 +195,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val hintLabel: UiString,
             val buttonLabel: UiString? = null
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
+            abstract val onContactSupportActionClicked: (() -> Unit)
             abstract val onLearnMoreActionClicked: (() -> Unit)
             open val onButtonActionClicked: (() -> Unit?)? = null
 
@@ -202,28 +207,32 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
 
             data class WCPayAccountUnderReviewState(
-                override val onLearnMoreActionClicked: () -> Unit,
+                override val onContactSupportActionClicked: () -> Unit,
+                override val onLearnMoreActionClicked: () -> Unit
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
             )
 
             data class WCPayAccountRejectedState(
-                override val onLearnMoreActionClicked: () -> Unit,
+                override val onContactSupportActionClicked: () -> Unit,
+                override val onLearnMoreActionClicked: () -> Unit
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
             )
 
             data class WCPayAccountOverdueRequirementsState(
-                override val onLearnMoreActionClicked: () -> Unit,
+                override val onContactSupportActionClicked: () -> Unit,
+                override val onLearnMoreActionClicked: () -> Unit
             ) : WCStripeError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
             )
 
             data class WCPayInTestModeWithLiveAccountState(
-                override val onLearnMoreActionClicked: () -> Unit,
+                override val onContactSupportActionClicked: () -> Unit,
+                override val onLearnMoreActionClicked: () -> Unit
             ) : WCStripeError(
                 headerLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header),
@@ -232,6 +241,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
 
             data class WCPayAccountPendingRequirementsState(
+                override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit,
                 override val onButtonActionClicked: () -> Unit,
                 val dueDate: String
