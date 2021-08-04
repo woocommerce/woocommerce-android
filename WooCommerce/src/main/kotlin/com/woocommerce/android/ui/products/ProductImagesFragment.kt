@@ -5,32 +5,33 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
@@ -134,6 +135,16 @@ class ProductImagesFragment :
     private fun setupViews() {
         binding.addImageButton.setOnClickListener {
             viewModel.onImageSourceButtonClicked()
+        }
+        with(binding.learnMoreButton) {
+            text = HtmlCompat.fromHtml(
+                context.getString(R.string.product_images_learn_more_button),
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
+            movementMethod = LinkMovementMethod.getInstance()
+            setOnClickListener {
+                ChromeCustomTabUtils.launchUrl(it.context, AppUrls.PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING)
+            }
         }
     }
 

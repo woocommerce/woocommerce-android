@@ -1,7 +1,8 @@
 include ':libs:cardreader'
 include ':WooCommerce'
 
-gradle.ext.fluxCBinaryPath = "com.github.wordpress-mobile.WordPress-FluxC-Android"
+gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
+gradle.ext.fluxCWooCommercePluginBinaryPath = "org.wordpress.fluxc.plugins:woocommerce"
 gradle.ext.loginFlowBinaryPath = "org.wordpress:login"
 
 def localBuilds = new File('local-builds.gradle')
@@ -22,9 +23,8 @@ if (localBuilds.exists()) {
         includeBuild(ext.localFluxCPath) {
             dependencySubstitution {
                 println "Substituting fluxc with the local build"
-                substitute module("$gradle.ext.fluxCBinaryPath:fluxc") with project(':fluxc')
-                substitute module("$gradle.ext.fluxCBinaryPath:woocommerce") with project(':plugins:woocommerce')
-
+                substitute module(gradle.ext.fluxCBinaryPath) with project(':fluxc')
+                substitute module(gradle.ext.fluxCWooCommercePluginBinaryPath) with project(':plugins:woocommerce')
             }
         }
     }

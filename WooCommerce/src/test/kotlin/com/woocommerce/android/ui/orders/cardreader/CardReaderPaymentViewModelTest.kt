@@ -85,7 +85,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
 
-    private val savedState: SavedStateHandle = CardReaderPaymentDialogArgs(ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
+        ORDER_IDENTIFIER
+    ).initSavedStateHandle()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -345,7 +347,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         viewModel.start()
         val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isTrue()
+        assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isTrue
         assertThat(viewState.headerLabel).describedAs("headerLabel")
             .isEqualTo(R.string.card_reader_payment_collect_payment_loading_header)
         assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isNull()
@@ -370,7 +372,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
@@ -409,7 +411,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
@@ -448,7 +450,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
@@ -487,7 +489,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
 

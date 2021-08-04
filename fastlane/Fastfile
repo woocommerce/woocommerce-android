@@ -20,6 +20,8 @@ ENV["PROJECT_ROOT_FOLDER"]="./"
 REPOSITORY_NAME="woocommerce-android"
 GH_ORG_NAME="woocommerce"
 
+UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-android', 'secrets', 'google-upload-credentials.json')
+
 SUPPORTED_LOCALES = [
   { glotpress: "ar", android: "ar", google_play: "ar",  promo_config: {}},
   { glotpress: "de", android: "de", google_play: "de-DE",  promo_config: {} },
@@ -296,7 +298,7 @@ platform :android do
       skip_upload_changelogs: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key: './google-upload-credentials.json',
+      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
     create_gh_release(version: version) if options[:create_release]
@@ -339,7 +341,7 @@ platform :android do
       skip_upload_changelogs: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key: './google-upload-credentials.json',
+      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
     create_gh_release(version: version, prerelease: true) if options[:create_release]

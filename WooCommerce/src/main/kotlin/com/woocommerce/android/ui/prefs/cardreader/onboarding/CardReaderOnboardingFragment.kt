@@ -4,15 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedCountryBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -35,10 +40,15 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             { event ->
                 when (event) {
                     is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport -> {
-                        // todo cardreader start HelpActivity
+                        requireActivity().startHelpActivity(HelpActivity.Origin.CARD_READER_ONBOARDING)
                     }
                     is CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore -> {
                         ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+                    }
+                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToCardReaderHubFragment -> {
+                        findNavController().navigate(
+                            R.id.action_cardReaderOnboardingFragment_to_cardReaderHubFragment
+                        )
                     }
                     is MultiLiveEvent.Event.Exit -> navigateBackWithNotice(KEY_READER_ONBOARDING_RESULT)
                     else -> event.isHandled = false
@@ -62,9 +72,12 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val layout = LayoutInflater.from(requireActivity()).inflate(state.layoutRes, binding.container, false)
         binding.container.addView(layout)
         when (state) {
-            is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState -> TODO()
-            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState -> showLoadingState(layout)
-            is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState ->
+                showGenericErrorState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState ->
+                showNetworkErrorState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState ->
+                showLoadingState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState ->
                 showCountryNotSupportedState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
@@ -74,10 +87,40 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }.exhaustive
     }
 
-    private fun showLoadingState(view: View) {
+    private fun showLoadingState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
+    ) {
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
-        binding.cancelButton.setOnClickListener {
-            viewModel.onCancelClicked()
+        UiHelpers.setTextOrHide(binding.textHeaderTv, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.hintTv, state.hintLabel)
+        UiHelpers.setImageOrHide(binding.illustrationIv, state.illustration)
+    }
+
+    private fun showGenericErrorState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
+    ) {
+        val binding = FragmentCardReaderOnboardingGenericErrorBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
+        binding.textSupport.setOnClickListener {
+            state.onContactSupportActionClicked.invoke()
+        }
+        binding.learnMoreContainer.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
+        }
+    }
+
+    private fun showNetworkErrorState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
+    ) {
+        val binding = FragmentCardReaderOnboardingNetworkErrorBinding.bind(view)
+        UiHelpers.setImageOrHide(binding.illustration, state.illustration)
+        binding.buttonRetry.setOnClickListener {
+            state.onRetryButtonActionClicked.invoke()
         }
     }
 
@@ -93,6 +136,16 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setImageOrHide(binding.illustration, state.illustration)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
+        }
+        binding.textSupport.setOnClickListener {
+            state.onContactSupportActionClicked.invoke()
+        }
+
+        UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
+        state.onButtonActionClicked?.let { onButtonActionClicked ->
+            binding.button.setOnClickListener {
+                onButtonActionClicked.invoke()
+            }
         }
     }
 

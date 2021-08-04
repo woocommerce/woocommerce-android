@@ -119,7 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
-            android:hint="@string/shipping_label_edit_address_address"
+            android:hint="@string/shipping_label_edit_address_line1"
             android:inputType="text"
             android:nextFocusForward="@+id/address2"
             app:errorEnabled="true" />
@@ -129,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
-            android:hint="@string/shipping_label_edit_address_address"
+            android:hint="@string/shipping_label_edit_address_line2"
             android:inputType="text"
             android:nextFocusForward="@+id/city"
             app:errorEnabled="true" />
@@ -143,6 +143,19 @@
             android:inputType="text"
             android:nextFocusForward="@+id/state"
             app:errorEnabled="true"/>
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+            android:id="@+id/countrySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_country"
+            android:inputType="text"
+            android:nextFocusForward="@+id/useAddressAsIsButton"
+            android:textAppearance="@style/TextAppearance.Woo.Caption" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/state"
@@ -176,19 +189,6 @@
             android:hint="@string/shipping_label_edit_address_zip"
             android:nextFocusForward="@+id/countrySpinner"
             app:errorEnabled="true"/>
-
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/countrySpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_00"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:hint="@string/shipping_label_edit_address_country"
-            android:inputType="text"
-            android:nextFocusForward="@+id/useAddressAsIsButton"
-            android:textAppearance="@style/TextAppearance.Woo.Caption" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/useAddressAsIsButton"
