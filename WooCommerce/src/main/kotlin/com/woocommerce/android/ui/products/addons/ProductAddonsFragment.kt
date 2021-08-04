@@ -10,11 +10,18 @@ import com.woocommerce.android.databinding.FragmentProductAddonsBinding
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddons
+import com.woocommerce.android.util.CurrencyFormatter
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addons) {
     companion object {
-        const val TAG = "ProductAddonsFragment"
+        val TAG: String = ProductAddonsFragment::class.java.simpleName
     }
+
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     private var layoutManager: LayoutManager? = null
 
@@ -27,17 +34,20 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProductAddonsBinding.bind(view)
-        storedAddons?.let { setupRecyclerViewWith(it) }
+        storedAddons?.let { setupRecyclerViewWith(it, viewModel.currencyCode) }
     }
 
-    private fun setupRecyclerViewWith(addonList: List<ProductAddon>) {
+    private fun setupRecyclerViewWith(addonList: List<ProductAddon>, currencyCode: String) {
         layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
             false
         )
         binding.addonsList.layoutManager = layoutManager
-        binding.addonsList.adapter = AddonListAdapter(addonList)
+        binding.addonsList.adapter = AddonListAdapter(
+            addonList,
+            currencyFormatter.buildBigDecimalFormatter(currencyCode)
+        )
     }
 
     override fun onRequestAllowBackPress(): Boolean {

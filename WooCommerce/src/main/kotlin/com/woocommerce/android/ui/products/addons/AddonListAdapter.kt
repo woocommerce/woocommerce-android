@@ -4,15 +4,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.products.addons.AddonListAdapter.AddonsViewHolder
+import java.math.BigDecimal
 
 class AddonListAdapter(
-    val addons: List<ProductAddon>
+    private val addons: List<ProductAddon>,
+    private val formatCurrencyForDisplay: (BigDecimal) -> String
 ) : RecyclerView.Adapter<AddonsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         AddonsViewHolder(ProductAddonCard(parent.context))
 
     override fun onBindViewHolder(holder: AddonsViewHolder, position: Int) {
-        holder.addonCard.bind(addons[position])
+        holder.addonCard.bind(addons[position], formatCurrencyForDisplay)
     }
 
     override fun getItemCount() = addons.size

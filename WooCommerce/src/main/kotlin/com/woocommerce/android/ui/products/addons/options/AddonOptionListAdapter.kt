@@ -6,9 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductAddonOptionItemBinding
 import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.addons.options.AddonOptionListAdapter.AddonOptionsViewHolder
+import java.math.BigDecimal
 
 class AddonOptionListAdapter(
-    val options: List<ProductAddonOption>
+    private val options: List<ProductAddonOption>,
+    private val formatCurrencyForDisplay: (BigDecimal) -> String
 ) : RecyclerView.Adapter<AddonOptionsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         AddonOptionsViewHolder(
@@ -30,7 +32,11 @@ class AddonOptionListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(option: ProductAddonOption) {
             binding.optionName.text = option.label
-            binding.optionPrice.text = option.price
+            binding.optionPrice.text =
+                option.price
+                    .toBigDecimalOrNull()
+                    ?.let { formatCurrencyForDisplay(it) }
+                    ?: option.price
         }
     }
 }
