@@ -85,7 +85,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
 
-    private val savedState: SavedStateHandle = CardReaderPaymentDialogArgs(ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
+        ORDER_IDENTIFIER
+    ).initSavedStateHandle()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {

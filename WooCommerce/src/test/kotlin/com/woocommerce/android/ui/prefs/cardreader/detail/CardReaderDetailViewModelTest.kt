@@ -28,6 +28,9 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
+private const val DUMMY_FIRMWARE_VERSION = "1.0.0.123-abcd-test-3000"
+private const val DUMMY_FIRMWARE_VERSION_SIMPLIFIED = "1.0.0.123"
+
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
@@ -79,6 +82,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 viewModel,
                 UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
                 updateAvailable = false
             )
         }
@@ -97,6 +104,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 viewModel,
                 UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("33"))),
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
                 updateAvailable = false
             )
         }
@@ -116,6 +127,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 viewModel,
                 UiStringRes(R.string.card_reader_detail_connected_reader_unknown),
                 null,
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
                 updateAvailable = false
             )
         }
@@ -187,6 +202,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 viewModel,
                 UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
                 updateAvailable = true
             )
         }
@@ -205,6 +224,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 viewModel,
                 UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
                 updateAvailable = false
             )
             assertThat(viewModel.event.value)
@@ -251,6 +274,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 viewModel,
                 UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
                 updateAvailable = false
             )
         }
@@ -271,6 +298,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 viewModel,
                 UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
                 updateAvailable = false
             )
         }
@@ -293,6 +324,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 viewModel,
                 UiStringText(READER_NAME),
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
                 updateAvailable = false
             )
             assertThat(events[0])
@@ -411,11 +446,13 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         viewModel: CardReaderDetailViewModel,
         readerName: UiString,
         batteryLevel: UiString?,
+        firmwareVersion: UiString,
         updateAvailable: Boolean
     ) {
         val state = viewModel.viewStateData.value as ConnectedState
         assertThat(state.readerName).isEqualTo(readerName)
         assertThat(state.readerBattery).isEqualTo(batteryLevel)
+        assertThat(state.readerFirmwareVersion).isEqualTo(firmwareVersion)
         if (updateAvailable) {
             assertThat(state.enforceReaderUpdate)
                 .isEqualTo(UiStringRes(R.string.card_reader_detail_connected_enforced_update_software))
@@ -434,11 +471,13 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     private fun initConnectedState(
         readersName: String? = READER_NAME,
         batteryLevel: Float? = 0.65F,
+        firmwareVersion: String = DUMMY_FIRMWARE_VERSION,
         updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.UpToDate
     ) = coroutinesTestRule.testDispatcher.runBlockingTest {
         val reader: CardReader = mock {
-            on { id }.thenReturn(readersName)
-            on { currentBatteryLevel }.thenReturn(batteryLevel)
+            on { this.id }.thenReturn(readersName)
+            on { this.currentBatteryLevel }.thenReturn(batteryLevel)
+            on { this.firmwareVersion }.thenReturn(firmwareVersion)
         }
         val status = MutableStateFlow(CardReaderStatus.Connected(reader))
         whenever(cardReaderManager.readerStatus).thenReturn(status)

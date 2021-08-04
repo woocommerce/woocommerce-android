@@ -15,13 +15,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
-import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.PreferencesWrapper
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
@@ -187,6 +187,6 @@ class AppSettingsActivity :
     }
 
     override fun clearNotificationPreferences() {
-        sharedPreferences.edit().remove(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN).apply()
+        sharedPreferences.edit().remove(PreferencesWrapper.WPCOM_PUSH_DEVICE_TOKEN).apply()
     }
 }

@@ -44,7 +44,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
@@ -52,7 +52,7 @@ import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -243,13 +243,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
         }
-        handleResult<Boolean>(CardReaderConnectFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
+        handleResult<Boolean>(CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
             if (FeatureFlag.CARD_READER.isEnabled()) {
                 viewModel.onConnectToReaderResultReceived(connected)
             }
         }
         handleDialogNotice<String>(
-            key = CardReaderPaymentDialog.KEY_CARD_PAYMENT_RESULT,
+            key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {
             if (FeatureFlag.CARD_READER.isEnabled()) {
