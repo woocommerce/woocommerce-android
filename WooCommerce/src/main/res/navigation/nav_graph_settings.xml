@@ -102,14 +102,26 @@
         android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
         android:label="CardReaderOnboardingFragment">
         <action
-            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderDetailFragment"
-            app:destination="@id/cardReaderDetailFragment"
+            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
+            app:destination="@id/cardReaderHubFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@+id/mainSettingsFragment"
             app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/cardReaderHubFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.hub.CardReaderHubFragment"
+        android:label="CardReaderHubFragment">
+        <action
+            android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
+            app:destination="@id/cardReaderDetailFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"

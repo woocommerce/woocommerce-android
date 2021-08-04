@@ -730,6 +730,11 @@
     <string name="order_shipment_tracking_progress_message">Please wait</string>
 
     <!--
+            Card Reader Hub
+        -->
+    <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <!--
         Card Reader Payments
     -->
     <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
