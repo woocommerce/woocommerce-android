@@ -173,7 +173,7 @@ class CardReaderPaymentViewModel
                 // TODO cardreader prompt the user to take certain action eg. Remove card
             }
             WaitingForInput -> {
-                // TODO cardreader prompt the user to tap/insert a card
+                // noop
             }
             is PaymentFailed -> {
                 paymentDataForRetry = paymentStatus.paymentDataForRetry
