@@ -47,6 +47,8 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
         }
     }
 
+    override fun getFragmentTitle() = getString(R.string.product_add_ons_card_button_title)
+
     private fun setupRecyclerViewWith(addonList: List<ProductAddon>, currencyCode: String) {
         layoutManager = LinearLayoutManager(
             activity,
