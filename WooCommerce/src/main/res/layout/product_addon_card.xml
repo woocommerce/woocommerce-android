@@ -29,6 +29,7 @@
             android:ellipsize="end"
             android:gravity="start"
             android:includeFontPadding="false"
+            android:visibility="gone"
             tools:text="Addon Description" />
 
         <androidx.recyclerview.widget.RecyclerView

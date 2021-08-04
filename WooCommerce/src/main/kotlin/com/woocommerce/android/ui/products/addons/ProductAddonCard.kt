@@ -51,7 +51,8 @@ class ProductAddonCard @JvmOverloads constructor(
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) = with(binding) {
         addonName.text = addon.name
-        addonDescription.text = addon.description
         optionsList.adapter = AddonOptionListAdapter(addon.options, formatCurrencyForDisplay)
+        binding.addonDescription.text = addon.description
+        binding.addonDescription.visibility = if(addon.description.isNotEmpty()) VISIBLE else GONE
     }
 }
