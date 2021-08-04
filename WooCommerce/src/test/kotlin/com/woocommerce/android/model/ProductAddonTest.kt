@@ -26,23 +26,29 @@ internal class ProductAddonTest {
             priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
             type = WCProductAddonModel.AddOnType.CustomPrice,
             display = WCProductAddonModel.AddOnDisplay.RadioButton,
-            options = listOf(ProductAddonOption(
-                priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
-                label = "test-option-label",
-                price = "test-option-price",
-                image = "test-option-image"
-            ))
+            options = listOf(
+                ProductAddonOption(
+                    priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
+                    label = "test-option-label",
+                    price = "test-option-price",
+                    image = "test-option-image"
+                )
+            )
         )
     }
 
     @Test
     fun `priceSafeOptionList should replace empty price option data with addon data correctly`() {
-        addonUnderTest = addonUnderTest.copy(options = listOf(ProductAddonOption(
-            priceType = null,
-            label = "",
-            price = "",
-            image = ""
-        )))
+        addonUnderTest = addonUnderTest.copy(
+            options = listOf(
+                ProductAddonOption(
+                    priceType = null,
+                    label = "",
+                    price = "",
+                    image = ""
+                )
+            )
+        )
 
         assertThat(addonUnderTest.options.isNotEmpty())
 
