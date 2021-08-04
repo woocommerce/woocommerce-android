@@ -37,11 +37,8 @@ data class ProductAddon(
      */
     val priceSafeOptionList
         get() = takeIf { (options.size == 1) && options.single().price.isEmpty() }
-            ?.let { asPricedOptionList(options.single()) }
+            ?.let { listOf(options.single().copy(priceType = priceType, price = price)) }
             ?: options
-
-    private fun asPricedOptionList(source: ProductAddonOption) =
-        listOf(source.copy(priceType = priceType, price = price))
 }
 
 @Parcelize
