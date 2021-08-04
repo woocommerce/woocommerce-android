@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.extensions.semverCompareTo
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -24,10 +25,12 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooStore: WooCommerceStore,
     private val wcPayStore: WCPayStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val networkStatus: NetworkStatus,
 ) {
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "ComplexMethod")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
+        if (!networkStatus.isConnected()) return NoConnectionError
         val countryCode = getCountryCode()
         if (!isCountrySupported(countryCode)) return CountryNotSupported(countryCode)
 
