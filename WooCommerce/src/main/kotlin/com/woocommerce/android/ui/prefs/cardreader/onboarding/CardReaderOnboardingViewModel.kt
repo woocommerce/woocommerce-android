@@ -95,7 +95,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.NoConnectionError ->
-                    viewState.value = OnboardingViewState.NoConnectionErrorState
+                    viewState.value = OnboardingViewState.NoConnectionErrorState(
+                        onRetryButtonActionClicked = ::refreshState
+                    )
             }.exhaustive
         }
     }
@@ -159,9 +161,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val illustration = R.drawable.img_products_error
         }
 
-        // TODO cardreader Update layout resource
-        object NoConnectionErrorState : OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            // TODO cardreader implement no connection error state
+        class NoConnectionErrorState(
+            val onRetryButtonActionClicked: (() -> Unit)
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_network_error) {
+            val illustration = R.drawable.ic_woo_error_state
         }
 
         class UnsupportedCountryState(
