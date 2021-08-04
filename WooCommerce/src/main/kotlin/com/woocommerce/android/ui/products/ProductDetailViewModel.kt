@@ -259,6 +259,12 @@ class ProductDetailViewModel @Inject constructor(
     val isTrashEnabled: Boolean
         get() = !isProductUnderCreation && navArgs.isTrashEnabled
 
+    /**
+     * Provides the currencyCode for views who requires display prices
+     */
+    val currencyCode: String
+        get() = parameters.currencyCode.orEmpty()
+
     init {
         start()
     }
