@@ -238,6 +238,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SHIPPING_LABEL_ADD_PACKAGE_FAILED,
         SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
 
+        // -- Card Present Payments - onboarding
+        CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED,
+        CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+
         // -- Card Present Payments - collection
         CARD_PRESENT_COLLECT_PAYMENT_TAPPED,
         CARD_PRESENT_COLLECT_PAYMENT_FAILED,
