@@ -98,7 +98,7 @@ data class Order(
         val totalTax: BigDecimal,
         val total: BigDecimal,
         val variationId: Long,
-        val attributesList: String
+        val attributesDescription: String
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)

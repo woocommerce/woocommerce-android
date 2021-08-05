@@ -98,7 +98,7 @@ class ShippingCustomsViewModel @Inject constructor(
                 returnToSender = true,
                 itn = "",
                 lines = labelPackage.items.map { item ->
-                    val attributes = item.attributesList.ifEmpty { null }?.let { " $it" } ?: ""
+                    val attributes = item.attributesDescription.ifEmpty { null }?.let { " $it" } ?: ""
                     val defaultDescription = item.name.substringBefore("-").trim() + attributes
                     CustomsLine(
                         productId = item.productId,
