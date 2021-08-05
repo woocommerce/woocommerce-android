@@ -57,8 +57,8 @@ internal class CreatePaymentAction(
             .setAmount(amountInSmallestCurrencyUnit)
             .setCurrency(paymentInfo.currency)
             .setMetadata(createMetaData(paymentInfo))
-        with (paymentInfo) {
-            customerId?.let {builder.setCustomer(it) }
+        with(paymentInfo) {
+            customerId?.let { builder.setCustomer(it) }
             customerEmail?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
         }
         return builder.build()
