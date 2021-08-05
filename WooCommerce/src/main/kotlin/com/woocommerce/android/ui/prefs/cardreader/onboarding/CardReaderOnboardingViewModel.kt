@@ -21,6 +21,8 @@ import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
+private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
+
 @HiltViewModel
 class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -157,7 +159,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         Locale("", countryCode.orEmpty()).displayName
 
     private fun formatDueDate(state: CardReaderOnboardingState.StripeAccountPendingRequirement) =
-        state.dueDate?.let { Date(it).formatToMMMMdd() } ?: ""
+        state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() } ?: ""
 
     sealed class OnboardingEvent : Event() {
         object ViewLearnMore : OnboardingEvent() {
