@@ -241,7 +241,10 @@ class PackageProductsAdapter(
     ) : ViewHolder(binding.root) {
         fun bind(item: ShippingLabelPackage.Item) {
             binding.productName.text = item.name
-            val attributes = item.attributesDescription.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
+            val attributes = item.attributesDescription
+                .takeIf { it.isNotEmpty() }
+                ?.let { "$it \u2981 " }
+                ?: StringUtils.EMPTY
             val details = "$attributes${item.weight} $weightUnit"
             if (details.isEmpty()) {
                 binding.productDetails.isVisible = false
