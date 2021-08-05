@@ -24,16 +24,22 @@ class FCMRegistrationIntentService : JobIntentService() {
     }
 
     override fun onHandleWork(intent: Intent) {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            val token = task.result
+        try {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                val token = task.result
 
-            token?.takeIf { it.isNotEmpty() }?.let {
-                WooLog.d(WooLog.T.NOTIFS, "Sending FCM token to our remote services: $it")
-                notificationRegistrationHandler.onNewFCMTokenReceived(it)
-            } ?: run {
-                WooLog.w(WooLog.T.NOTIFS, "Empty FCM token, can't register the id on remote services")
-                notificationRegistrationHandler.onEmptyFCMTokenReceived()
+                token?.takeIf { it.isNotEmpty() }?.let {
+                    WooLog.d(WooLog.T.NOTIFS, "Sending FCM token to our remote services: $it")
+                    notificationRegistrationHandler.onNewFCMTokenReceived(it)
+                } ?: run {
+                    WooLog.w(WooLog.T.NOTIFS, "Empty FCM token, can't register the id on remote services")
+                    notificationRegistrationHandler.onEmptyFCMTokenReceived()
+                }
             }
+        } catch (e: Exception) {
+            // SecurityException can happen on some devices without Google services (these devices probably strip
+            // the AndroidManifest.xml and remove unsupported permissions).
+            WooLog.e(WooLog.T.NOTIFS, "Google Play Services unavailable: ", e)
         }
     }
 
