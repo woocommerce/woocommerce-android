@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -19,6 +20,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+
+private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
 
 @HiltViewModel
 class CardReaderOnboardingViewModel @Inject constructor(
@@ -76,13 +79,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
-                CardReaderOnboardingState.StripeAccountPendingRequirement ->
+                is CardReaderOnboardingState.StripeAccountPendingRequirement ->
                     viewState.value = OnboardingViewState.WCStripeError
                         .WCPayAccountPendingRequirementsState(
                             onContactSupportActionClicked = ::onContactSupportClicked,
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
                             onButtonActionClicked = ::onSkipPendingRequirementsClicked,
-                            dueDate = "" // TODO cardreader Pass due date to the state
+                            dueDate = formatDueDate(state)
                         )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayAccountOverdueRequirementsState(
@@ -118,7 +121,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.OnboardingCompleted -> null
             is CardReaderOnboardingState.CountryNotSupported -> "country_not_supported"
             CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
-            CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
+            is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
             CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
             CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
             CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
@@ -154,6 +157,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun convertCountryCodeToCountry(countryCode: String?) =
         Locale("", countryCode.orEmpty()).displayName
+
+    private fun formatDueDate(state: CardReaderOnboardingState.StripeAccountPendingRequirement) =
+        state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() } ?: ""
 
     sealed class OnboardingEvent : Event() {
         object ViewLearnMore : OnboardingEvent() {

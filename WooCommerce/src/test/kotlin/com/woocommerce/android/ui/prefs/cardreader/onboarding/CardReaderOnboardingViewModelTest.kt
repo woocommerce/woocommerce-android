@@ -159,13 +159,25 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account pending requirements, then account pending requirements state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement)
+                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement(0L))
 
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 WCStripeError.WCPayAccountPendingRequirementsState::class.java
             )
+        }
+
+    @Test
+    fun `when account pending requirements, then due date not empty`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement(0L))
+
+            val viewModel = createVM()
+
+            assertThat((viewModel.viewStateData.value as WCStripeError.WCPayAccountPendingRequirementsState).dueDate)
+                .isNotEmpty()
         }
 
     @Test
@@ -313,7 +325,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account pending requirements, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement)
+                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement(0L))
 
             createVM()
 
