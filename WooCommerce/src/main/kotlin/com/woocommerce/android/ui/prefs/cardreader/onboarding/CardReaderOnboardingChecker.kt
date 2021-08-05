@@ -48,7 +48,9 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isWCPayInTestModeWithLiveStripeAccount()) return WcpayInTestModeWithLiveStripeAccount
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
-        if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement
+        if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
+            paymentAccount.currentDeadline
+        )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
         if (isInUndefinedState(paymentAccount)) return GenericError
 
@@ -151,7 +153,7 @@ sealed class CardReaderOnboardingState {
      * There are some pending requirements on the connected Stripe account. The merchant still has some time before the
      * deadline to fix them expires. In-person payments should work without issues.
      */
-    object StripeAccountPendingRequirement : CardReaderOnboardingState()
+    data class StripeAccountPendingRequirement(val dueDate: Long?) : CardReaderOnboardingState()
 
     /**
      * There are some overdue requirements on the connected Stripe account. Connecting to a reader or accepting
