@@ -98,12 +98,19 @@ data class Order(
         val totalTax: BigDecimal,
         val total: BigDecimal,
         val variationId: Long,
-        val attributesDescription: String
+        val attributesDescription: String,
+        val attributesList: List<Attribute>
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
         @IgnoredOnParcel
         val isVariation: Boolean = variationId != 0L
+
+        @Parcelize
+        data class Attribute(
+            val key: String,
+            val value: String
+        ) : Parcelable
     }
 
     @Parcelize
@@ -284,7 +291,10 @@ fun WCOrderModel.toAppModel(): Order {
                     it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                     it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                     it.variationId ?: 0,
-                    it.getAttributesAsString()
+                    it.getAttributesAsString(),
+                    it.getAttributeList().map { attribute ->
+                        Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
+                    }
                 )
             },
         shippingLines = getShippingLineList().map {
