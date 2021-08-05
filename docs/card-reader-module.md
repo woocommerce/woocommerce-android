@@ -3,7 +3,7 @@ If reading this you find anything is not up-to-date, please fix it or report to 
 
 ## Useful Links To Get Started
 * Store Setup for Card Present Payment Testing - P91TBi-4BH-p2
-* Stripe terminal in-person payments - https://stripe.com/docs/terminal
+* Stripe terminal In-Person Payments - https://stripe.com/docs/terminal
 * Our very own P2 - dfdoF-p2
 * Before creating of taptopay P2 we were using general WooMobile P2 with tag #card-present 91TBi-p2
 * WCPay Server repo. If something goes wrong with the API most probably issue has to be created there - https://github.com/Automattic/woocommerce-payments-server
@@ -12,13 +12,13 @@ If reading this you find anything is not up-to-date, please fix it or report to 
 
 ## Dictionary
 * **CPP** - Card Present Payments
-* **Stripe** - Third party company we use as payments processing for in-person payments
+* **Stripe** - Third party company we use as payments processing for In-Person Payments
 * **WCPay** - Or WooCommerce Payments is a plugin for WooCommerce (which itself is a plugin for Wordpress) that contains integrations with different payments platform including Stripe
 * **Card Reader** - At the moment only one reader is supported *BBPOS Chipper 2X BT* (ask Aaron to order your own reader)
 * **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷
 * **POS** - Point Of Sale
 * **KYC** - Know Your Customer
-* **Card Present Payments / In-Person Payments / Card Reader Payments** - are interchangeable terms in our internal documentation and code, but only “In-person payments” is used in user facing features.
+* **Card Present Payments / In-Person Payments / Card Reader Payments** - are interchangeable terms in our internal documentation and code, but only “In-Person Payments” is used in user facing features.
 
 ## CardReader Module
 
