@@ -38,14 +38,8 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper
 ) {
     suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
-        if (!paymentUtils.isSupportedCurrency(paymentInfo.currency)) {
-            emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
-            return@flow
-        }
-        if (!terminalWrapper.isInitialized()) {
-            emit(errorMapper.mapError(errorMessage = "Reader not connected"))
-            return@flow
-        }
+        if (isValidState(paymentInfo)) return@flow
+
         val paymentIntent = createPaymentIntent(paymentInfo)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
@@ -106,7 +100,9 @@ internal class PaymentManager(
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(paymentInfo: PaymentInfo): PaymentIntent? {
         var paymentIntent: PaymentIntent? = null
         emit(InitializingPayment)
-        createPaymentAction.createPaymentIntent(paymentInfo).collect {
+        val customerId = cardReaderStore.getCustomerIdByOrderId(paymentInfo.orderId)
+        val enrichedPaymentInfo = paymentInfo.copy(customerId = customerId)
+        createPaymentAction.createPaymentIntent(enrichedPaymentInfo).collect {
             when (it) {
                 is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent
@@ -157,6 +153,19 @@ internal class PaymentManager(
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }
+
+    private suspend fun FlowCollector<CardPaymentStatus>.isValidState(paymentInfo: PaymentInfo) =
+        when {
+            !paymentUtils.isSupportedCurrency(paymentInfo.currency) -> {
+                emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
+                true
+            }
+            !terminalWrapper.isInitialized() -> {
+                emit(errorMapper.mapError(errorMessage = "Reader not connected"))
+                true
+            }
+            else -> false
+        }
 }
 
 data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData
