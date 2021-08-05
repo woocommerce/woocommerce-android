@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val cardReaderChecker: CardReaderOnboardingChecker
+    private val cardReaderChecker: CardReaderOnboardingChecker,
+    private val trackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
@@ -37,7 +40,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun refreshState() {
         launch {
             viewState.value = OnboardingViewState.LoadingState
-            when (val state = cardReaderChecker.getOnboardingState()) {
+            val state = cardReaderChecker.getOnboardingState()
+            trackState(state)
+            when (state) {
                 CardReaderOnboardingState.OnboardingCompleted ->
                     triggerEvent(OnboardingEvent.NavigateToCardReaderHubFragment)
                 is CardReaderOnboardingState.CountryNotSupported ->
@@ -102,6 +107,29 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
     }
 
+    private fun trackState(state: CardReaderOnboardingState) {
+        getTrackingReason(state)?.let {
+            trackerWrapper.track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to it))
+        }
+    }
+
+    private fun getTrackingReason(state: CardReaderOnboardingState): String? =
+        when (state) {
+            CardReaderOnboardingState.OnboardingCompleted -> null
+            is CardReaderOnboardingState.CountryNotSupported -> "country_not_supported"
+            CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
+            CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
+            CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
+            CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
+            CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> ""
+            CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
+            CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
+            CardReaderOnboardingState.WcpaySetupNotCompleted -> "wcpay_not_setup"
+            CardReaderOnboardingState.WcpayUnsupportedVersion -> "wcpay_unsupported_version"
+            CardReaderOnboardingState.GenericError -> "generic_error"
+            CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
+        }
+
     fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Onboarding flow interrupted by the user.")
         exitFlow()
@@ -112,6 +140,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onLearnMoreClicked() {
+        trackerWrapper.track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
         triggerEvent(OnboardingEvent.ViewLearnMore)
     }
 
@@ -142,6 +171,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_loading)
             val hintLabel: UiString =
                 UiString.UiStringRes(R.string.please_wait)
+
             @DrawableRes
             val illustration: Int = R.drawable.img_payment_onboarding_loading
         }
@@ -264,7 +294,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
             abstract val refreshButtonAction: () -> Unit
             abstract val onLearnMoreActionClicked: (() -> Unit)
-            @DrawableRes val illustration = R.drawable.img_woo_payments
+
+            @DrawableRes
+            val illustration = R.drawable.img_woo_payments
 
             data class WCPayNotInstalledState(
                 override val refreshButtonAction: () -> Unit,
