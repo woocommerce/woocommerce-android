@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
@@ -19,6 +20,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `when screen initialized, then loading state shown`() {
@@ -214,5 +216,164 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(NoConnectionErrorState::class.java)
         }
 
-    private fun createVM() = CardReaderOnboardingViewModel(SavedStateHandle(), onboardingChecker)
+    // Tracking Begin
+    @Test
+    fun `when learn more tapped, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.GenericError)
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as GenericErrorState).onLearnMoreActionClicked.invoke()
+
+            verify(tracker).track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+        }
+
+    @Test
+    fun `when generic error occurs, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.GenericError)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "generic_error")
+            )
+        }
+
+    @Test
+    fun `when country not supported, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.CountryNotSupported(""))
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "country_not_supported")
+            )
+        }
+
+    @Test
+    fun `when wcpay not installed, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.WcpayNotInstalled)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "wcpay_not_installed")
+            )
+        }
+
+    @Test
+    fun `when wcpay not activated, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.WcpayNotActivated)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "wcpay_not_activated")
+            )
+        }
+
+    @Test
+    fun `when wcpay unsupported version, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.WcpayUnsupportedVersion)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+                mapOf("reason" to "wcpay_unsupported_version")
+            )
+        }
+
+    @Test
+    fun `when wcpay setup not complete, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.WcpaySetupNotCompleted)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+                mapOf("reason" to "wcpay_not_setup")
+            )
+        }
+
+    @Test
+    fun `when account pending requirements, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+                mapOf("reason" to "account_pending_requirements")
+            )
+        }
+
+    @Test
+    fun `when account overdue requirements, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StripeAccountOverdueRequirement)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+                mapOf("reason" to "account_overdue_requirements")
+            )
+        }
+
+    @Test
+    fun `when account under review, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StripeAccountUnderReview)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "account_under_review")
+            )
+        }
+
+    @Test
+    fun `when account rejected, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StripeAccountRejected)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "account_rejected")
+            )
+        }
+
+    @Test
+    fun `when onboarding completed, then event NOT tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.OnboardingCompleted)
+
+            createVM()
+
+            verify(tracker, never()).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED), any())
+        }
+    // Tracking End
+
+    private fun createVM() = CardReaderOnboardingViewModel(SavedStateHandle(), onboardingChecker, tracker)
 }
