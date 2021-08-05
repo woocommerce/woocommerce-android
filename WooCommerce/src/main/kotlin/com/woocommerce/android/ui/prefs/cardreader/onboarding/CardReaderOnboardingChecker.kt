@@ -47,8 +47,9 @@ class CardReaderOnboardingChecker @Inject constructor(
         val tokenResponse = wcPayStore.fetchConnectionToken(selectedSite.get()).model ?: return GenericError
 
         if (!isWCPaySetupCompleted(paymentAccount)) return WcpaySetupNotCompleted
-        if (isWCPayInTestModeWithLiveStripeAccount(paymentAccount.isLive, tokenResponse.isTestMode))
+        if (isWCPayInTestModeWithLiveStripeAccount(paymentAccount.isLive, tokenResponse.isTestMode)) {
             return WcpayInTestModeWithLiveStripeAccount
+        }
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement
