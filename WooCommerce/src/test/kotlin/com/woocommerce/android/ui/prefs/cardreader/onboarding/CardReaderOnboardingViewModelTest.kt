@@ -364,6 +364,20 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when wcpay in test mode with live account, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+                mapOf("reason" to "wcpay_in_test_mode_with_live_account")
+            )
+        }
+
+    @Test
     fun `when onboarding completed, then event NOT tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())

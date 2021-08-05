@@ -121,7 +121,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
             CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
             CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
-            CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> ""
+            CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
             CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
             CardReaderOnboardingState.WcpaySetupNotCompleted -> "wcpay_not_setup"
