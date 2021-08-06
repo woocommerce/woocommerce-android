@@ -96,14 +96,14 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun checkOnboardingState() {
         launch {
             when (onboardingChecker.getOnboardingState()) {
-                CardReaderOnboardingState.GenericError,
-                CardReaderOnboardingState.NoConnectionError -> {
+                is CardReaderOnboardingState.GenericError,
+                is CardReaderOnboardingState.NoConnectionError -> {
                     viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
                 }
-                CardReaderOnboardingState.OnboardingCompleted -> {
+                is CardReaderOnboardingState.OnboardingCompleted -> {
                     triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
                 }
-                else -> triggerEvent(CardReaderConnectEvent.RedirectToOnboardingFlow)
+                else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
             }
         }
     }
@@ -360,7 +360,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
         object ShowCardReaderTutorial : CardReaderConnectEvent()
 
-        object RedirectToOnboardingFlow : CardReaderConnectEvent()
+        object NavigateToOnboardingFlow : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")
