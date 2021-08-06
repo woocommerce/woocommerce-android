@@ -163,6 +163,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
     }
 
+    @Suppress("ComplexMethod")
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -198,6 +199,10 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 is ShowCardReaderTutorial -> {
                     findNavController()
                         .navigateSafely(R.id.action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment)
+                }
+                is CardReaderConnectViewModel.CardReaderConnectEvent.NavigateToOnboardingFlow -> {
+                    findNavController()
+                        .navigateSafely(R.id.action_cardReaderConnectFragment_to_cardReaderOnboardingFragment)
                 }
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_CONNECT_TO_READER_RESULT, event.data as Boolean)

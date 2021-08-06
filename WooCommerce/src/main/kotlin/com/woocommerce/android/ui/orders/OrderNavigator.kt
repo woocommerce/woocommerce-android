@@ -141,7 +141,7 @@ class OrderNavigator @Inject constructor() {
             }
             is StartCardReaderConnectFlow -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCardReaderConnectDialog()
+                    .actionOrderDetailFragmentToCardReaderConnectDialog(target.skipOnboarding)
                 fragment.findNavController().navigateSafely(action)
             }
             is StartCardReaderPaymentFlow -> {

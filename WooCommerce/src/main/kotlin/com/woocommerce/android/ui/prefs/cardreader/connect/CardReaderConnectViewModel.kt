@@ -41,12 +41,15 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -60,7 +63,9 @@ class CardReaderConnectViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val tracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
+    private val onboardingChecker: CardReaderOnboardingChecker,
 ) : ScopedViewModel(savedState) {
+    private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
      * When multiple events are send synchronously to MultiLiveEvent only the first one gets handled
@@ -87,7 +92,26 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun startFlow() {
         viewState.value = ScanningState(::onCancelClicked)
-        triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+        if (arguments.skipOnboarding) {
+            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+        } else {
+            checkOnboardingState()
+        }
+    }
+
+    private fun checkOnboardingState() {
+        launch {
+            when (onboardingChecker.getOnboardingState()) {
+                is CardReaderOnboardingState.GenericError,
+                is CardReaderOnboardingState.NoConnectionError -> {
+                    viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
+                }
+                is CardReaderOnboardingState.OnboardingCompleted -> {
+                    triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+                }
+                else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
+            }
+        }
     }
 
     private fun onCheckLocationPermissionsResult(granted: Boolean) {
@@ -341,6 +365,8 @@ class CardReaderConnectViewModel @Inject constructor(
         data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
 
         object ShowCardReaderTutorial : CardReaderConnectEvent()
+
+        object NavigateToOnboardingFlow : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")
@@ -454,7 +480,9 @@ class CardReaderConnectViewModel @Inject constructor(
     sealed class ListItemViewState {
         object ScanningInProgressListItem : ListItemViewState() {
             val label = UiStringRes(R.string.card_reader_connect_scanning_progress)
-            @DrawableRes val scanningIcon = R.drawable.ic_loop_24px
+
+            @DrawableRes
+            val scanningIcon = R.drawable.ic_loop_24px
         }
 
         data class CardReaderListItem(
