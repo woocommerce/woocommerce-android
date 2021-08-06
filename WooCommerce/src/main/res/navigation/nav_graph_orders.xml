@@ -481,6 +481,10 @@
         android:id="@+id/cardReaderConnectDialog"
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
         android:label="CardReaderConnectDialog">
+        <argument
+            android:name="skipOnboarding"
+            app:argType="boolean"
+            app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"

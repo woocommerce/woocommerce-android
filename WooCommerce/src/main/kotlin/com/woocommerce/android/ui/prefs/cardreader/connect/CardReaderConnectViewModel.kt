@@ -49,6 +49,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -64,6 +65,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val appPrefs: AppPrefs,
     private val onboardingChecker: CardReaderOnboardingChecker,
 ) : ScopedViewModel(savedState) {
+    private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
      * When multiple events are send synchronously to MultiLiveEvent only the first one gets handled
@@ -90,7 +92,11 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun startFlow() {
         viewState.value = ScanningState(::onCancelClicked)
-        checkOnboardingState()
+        if(arguments.skipOnboarding) {
+            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+        } else {
+            checkOnboardingState()
+        }
     }
 
     private fun checkOnboardingState() {
