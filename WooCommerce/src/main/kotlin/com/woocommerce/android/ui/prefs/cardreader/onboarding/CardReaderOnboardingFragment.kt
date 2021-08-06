@@ -45,12 +45,17 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                     is CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore -> {
                         ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
                     }
-                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToCardReaderHubFragment -> {
-                        findNavController().navigate(
-                            R.id.action_cardReaderOnboardingFragment_to_cardReaderHubFragment
-                        )
+                    is CardReaderOnboardingViewModel.OnboardingEvent.Continue -> {
+                        val inSettingsGraph = findNavController().graph.id == R.id.nav_graph_settings
+                        if (inSettingsGraph) {
+                            findNavController().navigate(
+                                R.id.action_cardReaderOnboardingFragment_to_cardReaderHubFragment
+                            )
+                        } else {
+                            navigateBackWithNotice(KEY_READER_ONBOARDING_SUCCESS)
+                        }
                     }
-                    is MultiLiveEvent.Event.Exit -> navigateBackWithNotice(KEY_READER_ONBOARDING_RESULT)
+                    is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                     else -> event.isHandled = false
                 }
             }
@@ -188,6 +193,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
 
     companion object {
-        const val KEY_READER_ONBOARDING_RESULT = "key_reader_onboarding_result"
+        const val KEY_READER_ONBOARDING_SUCCESS = "key_reader_onboarding_result"
     }
 }
