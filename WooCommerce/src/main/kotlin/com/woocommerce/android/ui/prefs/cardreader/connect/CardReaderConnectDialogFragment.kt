@@ -163,6 +163,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
     }
 
+    @Suppress("ComplexMethod")
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

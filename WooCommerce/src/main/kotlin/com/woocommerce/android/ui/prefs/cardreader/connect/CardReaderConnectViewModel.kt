@@ -92,7 +92,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun startFlow() {
         viewState.value = ScanningState(::onCancelClicked)
-        if(arguments.skipOnboarding) {
+        if (arguments.skipOnboarding) {
             triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
         } else {
             checkOnboardingState()
