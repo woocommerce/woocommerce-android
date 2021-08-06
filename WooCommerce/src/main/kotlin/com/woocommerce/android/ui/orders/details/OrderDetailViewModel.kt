@@ -241,8 +241,12 @@ class OrderDetailViewModel @Inject constructor(
         if (cardReaderManager.readerStatus.value is Connected) {
             triggerEvent(StartCardReaderPaymentFlow(order.identifier))
         } else {
-            triggerEvent(StartCardReaderConnectFlow)
+            triggerEvent(StartCardReaderConnectFlow(skipOnboarding = false))
         }
+    }
+
+    fun onOnboardingSuccess() {
+        triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
     }
 
     fun onSeeReceiptClicked() {

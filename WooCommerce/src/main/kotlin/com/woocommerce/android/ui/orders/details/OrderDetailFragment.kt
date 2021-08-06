@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragme
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -261,6 +262,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
         handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
             viewModel.onShippingLabelsPurchased()
+        }
+        handleNotice(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_SUCCESS) {
+            viewModel.onOnboardingSuccess()
         }
     }
 
