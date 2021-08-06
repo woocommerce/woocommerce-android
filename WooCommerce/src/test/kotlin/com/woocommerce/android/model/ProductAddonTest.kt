@@ -26,7 +26,7 @@ internal class ProductAddonTest {
             priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
             type = WCProductAddonModel.AddOnType.CustomPrice,
             display = WCProductAddonModel.AddOnDisplay.RadioButton,
-            options = listOf(
+            rawOptions = listOf(
                 ProductAddonOption(
                     priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
                     label = "test-option-label",
@@ -40,7 +40,7 @@ internal class ProductAddonTest {
     @Test
     fun `priceSafeOptionList should replace empty price option data with addon data correctly`() {
         addonUnderTest = addonUnderTest.copy(
-            options = listOf(
+            rawOptions = listOf(
                 ProductAddonOption(
                     priceType = null,
                     label = "",
@@ -50,14 +50,14 @@ internal class ProductAddonTest {
             )
         )
 
-        assertThat(addonUnderTest.options.isNotEmpty())
+        assertThat(addonUnderTest.rawOptions.isNotEmpty())
 
-        val priceSafeOptionList = addonUnderTest.priceSafeOptionList
+        val priceSafeOptionList = addonUnderTest.options
 
         assertThat(priceSafeOptionList.isNotEmpty())
         assertThat(priceSafeOptionList.size).isEqualTo(1)
 
-        val priceSafeOption = addonUnderTest.priceSafeOptionList.first()
+        val priceSafeOption = addonUnderTest.options.first()
 
         assertThat(priceSafeOption).isNotNull
         assertThat(priceSafeOption.priceType).isEqualTo(addonUnderTest.priceType)
@@ -66,11 +66,11 @@ internal class ProductAddonTest {
 
     @Test
     fun `priceSafeOptionList should return existent option list when option data is available`() {
-        assertThat(addonUnderTest.options.isNotEmpty())
+        assertThat(addonUnderTest.rawOptions.isNotEmpty())
 
-        val priceSafeOptionList = addonUnderTest.priceSafeOptionList
+        val priceSafeOptionList = addonUnderTest.options
 
         assertThat(priceSafeOptionList.isNotEmpty())
-        assertThat(priceSafeOptionList).isEqualTo(addonUnderTest.options)
+        assertThat(priceSafeOptionList).isEqualTo(addonUnderTest.rawOptions)
     }
 }

@@ -67,8 +67,8 @@ class ProductAddonCard @JvmOverloads constructor(
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
         optionsList.visibility = GONE
-        addon.takeIf { it.options.isNotEmpty() }
-            ?.priceSafeOptionList
+        addon.takeIf { it.rawOptions.isNotEmpty() }
+            ?.options
             ?.let { optionsList.adapter = AddonOptionListAdapter(it, formatCurrencyForDisplay) }
             ?.also { optionsList.visibility = VISIBLE }
     }

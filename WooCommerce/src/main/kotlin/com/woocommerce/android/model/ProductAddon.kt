@@ -26,19 +26,19 @@ data class ProductAddon(
     val priceType: AddOnPriceType?,
     val type: AddOnType?,
     val display: AddOnDisplay?,
-    val options: List<ProductAddonOption>
+    val rawOptions: List<ProductAddonOption>
 ) : Parcelable {
     /**
      * Some addons comes with a option list containing a empty single [ProductAddonOption]
      * and all the information for that option stored at [ProductAddon].
      *
-     * To keep the standard behavior of get price information always through [options],
+     * To keep the standard behavior of get price information always through [rawOptions],
      * this property parses this detached [ProductAddon] information to an option list
      */
-    val priceSafeOptionList
-        get() = takeIf { (options.size == 1) && options.single().price.isEmpty() }
-            ?.let { listOf(options.single().copy(priceType = priceType, price = price)) }
-            ?: options
+    val options
+        get() = takeIf { (rawOptions.size == 1) && rawOptions.single().price.isEmpty() }
+            ?.let { listOf(rawOptions.single().copy(priceType = priceType, price = price)) }
+            ?: rawOptions
 }
 
 @Parcelize
@@ -66,7 +66,7 @@ fun WCProductAddonModel.toAppModel() =
         priceType = priceType,
         type = type,
         display = display,
-        options = options?.map { it.toAppModel() } ?: emptyList()
+        rawOptions = options?.map { it.toAppModel() } ?: emptyList()
     )
 
 fun WCProductAddonModel.ProductAddonOption.toAppModel() =
