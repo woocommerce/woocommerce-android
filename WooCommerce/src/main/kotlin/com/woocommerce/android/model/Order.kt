@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
+import java.util.Locale
 
 @Parcelize
 data class Order(
@@ -98,12 +99,29 @@ data class Order(
         val totalTax: BigDecimal,
         val total: BigDecimal,
         val variationId: Long,
-        val attributesList: String
+        val attributesList: List<Attribute>
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
+
         @IgnoredOnParcel
         val isVariation: Boolean = variationId != 0L
+
+        @Parcelize
+        data class Attribute(
+            val key: String,
+            val value: String
+        ) : Parcelable
+
+        /**
+         * @return a comma-separated list of attribute values for display
+         */
+        val attributesDescription
+            get() = attributesList.filter {
+                // Don't include empty or the "_reduced_stock" key
+                // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
+                it.value.isNotEmpty() && it.key.isNotEmpty() && it.key.first().toString() != "_"
+            }.joinToString { it.value.capitalize(Locale.getDefault()) }
     }
 
     @Parcelize
@@ -284,7 +302,9 @@ fun WCOrderModel.toAppModel(): Order {
                     it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                     it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                     it.variationId ?: 0,
-                    it.getAttributesAsString()
+                    it.getAttributeList().map { attribute ->
+                        Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
+                    }
                 )
             },
         shippingLines = getShippingLineList().map {

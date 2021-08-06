@@ -17,7 +17,7 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
     private val defaultItem = ShippingLabelPackage.Item(
         productId = 0L,
         name = "product",
-        attributesList = "",
+        attributesDescription = "",
         quantity = 3,
         weight = 10f,
         value = BigDecimal.valueOf(10L)

@@ -328,7 +328,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         return ShippingLabelPackage.Item(
             productId = uniqueId,
             name = name,
-            attributesList = attributesList,
+            attributesDescription = attributesDescription,
             // for shipping purposes, consider portion quantities as complete values
             quantity = ceil(quantity).toInt(),
             value = price,
