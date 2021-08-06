@@ -268,7 +268,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -486,11 +486,22 @@
             app:destination="@id/cardReaderTutorialDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderTutorialDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
         android:label="CardReaderTutorialDialogFragment" />
+    <fragment
+        android:id="@+id/cardReaderOnboardingFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
+        android:label="CardReaderOnboardingFragment" />
     <fragment
         android:id="@+id/receiptPreviewFragment"
         android:name="com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewFragment"
