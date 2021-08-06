@@ -44,7 +44,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             trackState(state)
             when (state) {
                 CardReaderOnboardingState.OnboardingCompleted ->
-                    triggerEvent(OnboardingEvent.NavigateToCardReaderHubFragment)
+                    triggerEvent(OnboardingEvent.Continue)
                 is CardReaderOnboardingState.CountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
                         convertCountryCodeToCountry(state.countryCode),
@@ -145,7 +145,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onSkipPendingRequirementsClicked() {
-        triggerEvent(OnboardingEvent.NavigateToCardReaderHubFragment)
+        triggerEvent(OnboardingEvent.Continue)
     }
 
     private fun exitFlow() {
@@ -162,7 +162,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         object NavigateToSupport : Event()
 
-        object NavigateToCardReaderHubFragment : Event()
+        object Continue : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
