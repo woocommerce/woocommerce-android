@@ -71,18 +71,36 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        viewModel = CardReaderConnectViewModel(
-            SavedStateHandle(),
-            coroutinesTestRule.testDispatchers,
-            tracker,
-            appPrefs,
-            onboardingChecker,
-        )
-        whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.OnboardingCompleted)
+        viewModel = initVM(CardReaderOnboardingState.OnboardingCompleted)
     }
 
     @Test
-    fun `when vm initialized, then location permissions check requested`() =
+    fun `given onboarding not completed, when flow started, then app starts onboarding flow`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val vm = initVM(CardReaderOnboardingState.WcpaySetupNotCompleted)
+
+            assertThat(vm.event.value)
+                .isInstanceOf(CardReaderConnectViewModel.CardReaderConnectEvent.NavigateToOnboardingFlow::class.java)
+        }
+
+    @Test
+    fun `given onboarding check fails, when flow started, then scanning failed state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val vm = initVM(CardReaderOnboardingState.GenericError)
+
+            assertThat(vm.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
+        }
+
+    @Test
+    fun `given connection not available, when flow started, then scanning failed state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val vm = initVM(CardReaderOnboardingState.GenericError)
+
+            assertThat(vm.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
+        }
+
+    @Test
+    fun `when onboarding completed, then location permissions check requested`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             assertThat(viewModel.event.value).isInstanceOf(CheckLocationPermissions::class.java)
         }
@@ -811,6 +829,17 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .describedAs("Check illustration vertical margin")
                 .isEqualTo(R.dimen.major_150)
         }
+
+    private suspend fun initVM(onboardingState: CardReaderOnboardingState): CardReaderConnectViewModel {
+        whenever(onboardingChecker.getOnboardingState()).thenReturn(onboardingState)
+        return CardReaderConnectViewModel(
+            SavedStateHandle(),
+            coroutinesTestRule.testDispatchers,
+            tracker,
+            appPrefs,
+            onboardingChecker,
+        )
+    }
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
         whenever(cardReaderManager.discoverReaders(anyBoolean())).thenAnswer {
