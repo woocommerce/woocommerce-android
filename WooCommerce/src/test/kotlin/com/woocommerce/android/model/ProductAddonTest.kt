@@ -8,6 +8,16 @@ import org.wordpress.android.fluxc.model.addons.WCProductAddonModel
 internal class ProductAddonTest {
     private lateinit var addonUnderTest: ProductAddon
 
+    private val addonPriceFake = "test-price"
+    private val rawOptionsFake = listOf(
+        ProductAddonOption(
+            priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
+            label = "test-option-label",
+            price = "test-option-price",
+            image = "test-option-image"
+        )
+    )
+
     @Before
     fun setUp() {
         addonUnderTest = ProductAddon(
@@ -18,7 +28,6 @@ internal class ProductAddonTest {
             max = "test-max",
             min = "test-min",
             position = "test-position",
-            price = "test-price",
             adjustPrice = "test-adjust-price",
             restrictions = "test-restrictions",
             titleFormat = WCProductAddonModel.AddOnTitleFormat.Label,
@@ -26,19 +35,13 @@ internal class ProductAddonTest {
             priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
             type = WCProductAddonModel.AddOnType.CustomPrice,
             display = WCProductAddonModel.AddOnDisplay.RadioButton,
-            rawOptions = listOf(
-                ProductAddonOption(
-                    priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
-                    label = "test-option-label",
-                    price = "test-option-price",
-                    image = "test-option-image"
-                )
-            )
+            price = addonPriceFake,
+            rawOptions = rawOptionsFake
         )
     }
 
     @Test
-    fun `priceSafeOptionList should replace empty price option data with addon data correctly`() {
+    fun `options should replace empty price raw option data with addon data correctly`() {
         addonUnderTest = addonUnderTest.copy(
             rawOptions = listOf(
                 ProductAddonOption(
@@ -50,8 +53,6 @@ internal class ProductAddonTest {
             )
         )
 
-        assertThat(addonUnderTest.rawOptions.isNotEmpty())
-
         val priceSafeOptionList = addonUnderTest.options
 
         assertThat(priceSafeOptionList.isNotEmpty())
@@ -61,16 +62,14 @@ internal class ProductAddonTest {
 
         assertThat(priceSafeOption).isNotNull
         assertThat(priceSafeOption.priceType).isEqualTo(addonUnderTest.priceType)
-        assertThat(priceSafeOption.price).isEqualTo(addonUnderTest.price)
+        assertThat(priceSafeOption.price).isEqualTo(addonPriceFake)
     }
 
     @Test
-    fun `priceSafeOptionList should return existent option list when option data is available`() {
-        assertThat(addonUnderTest.rawOptions.isNotEmpty())
-
+    fun `options should return existent raw option list when option data is available`() {
         val priceSafeOptionList = addonUnderTest.options
 
-        assertThat(priceSafeOptionList.isNotEmpty())
-        assertThat(priceSafeOptionList).isEqualTo(addonUnderTest.rawOptions)
+        assertThat(priceSafeOptionList).isNotEmpty
+        assertThat(priceSafeOptionList).isEqualTo(rawOptionsFake)
     }
 }

@@ -18,7 +18,6 @@ data class ProductAddon(
     val max: String,
     val min: String,
     val position: String,
-    val price: String,
     val adjustPrice: String,
     val restrictions: String,
     val titleFormat: AddOnTitleFormat?,
@@ -26,11 +25,12 @@ data class ProductAddon(
     val priceType: AddOnPriceType?,
     val type: AddOnType?,
     val display: AddOnDisplay?,
-    val rawOptions: List<ProductAddonOption>
+    private val price: String,
+    private val rawOptions: List<ProductAddonOption>
 ) : Parcelable {
     /**
      * Some addons comes with a option list containing a empty single [ProductAddonOption]
-     * and all the information for that option stored at [ProductAddon].
+     * and all the information for that option stored at [ProductAddon] itself.
      *
      * To keep the standard behavior of get price information always through [rawOptions],
      * this property parses this detached [ProductAddon] information to an option list
