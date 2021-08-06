@@ -193,6 +193,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
 
     companion object {
-        const val KEY_READER_ONBOARDING_SUCCESS = "key_reader_onboarding_result"
+        const val KEY_READER_ONBOARDING_SUCCESS = "key_reader_onboarding_success"
     }
 }
