@@ -1,6 +1,6 @@
 package com.woocommerce.android.model
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -26,30 +26,36 @@ class OrderItemTest {
 
     @Test
     fun `should parse attributeList to String description correctly`() {
-        orderItemUnderTest = orderItemUnderTest.copy(attributesList = listOf(
-            Order.Item.Attribute("First Key", "First Value"),
-            Order.Item.Attribute("Second Key", "Second Value")
-        ))
+        orderItemUnderTest = orderItemUnderTest.copy(
+            attributesList = listOf(
+                Order.Item.Attribute("First Key", "First Value"),
+                Order.Item.Attribute("Second Key", "Second Value")
+            )
+        )
         assertEquals("First Value, Second Value", orderItemUnderTest.attributesDescription)
     }
 
     @Test
     fun `should ignore empty values from the String description`() {
-        orderItemUnderTest = orderItemUnderTest.copy(attributesList = listOf(
-            Order.Item.Attribute("First Key", "First Value"),
-            Order.Item.Attribute("Empty Key", ""),
-            Order.Item.Attribute("Second Key", "Second Value")
-        ))
+        orderItemUnderTest = orderItemUnderTest.copy(
+            attributesList = listOf(
+                Order.Item.Attribute("First Key", "First Value"),
+                Order.Item.Attribute("Empty Key", ""),
+                Order.Item.Attribute("Second Key", "Second Value")
+            )
+        )
         assertEquals("First Value, Second Value", orderItemUnderTest.attributesDescription)
     }
 
     @Test
     fun `should ignore values starting with _ character`() {
-        orderItemUnderTest = orderItemUnderTest.copy(attributesList = listOf(
-            Order.Item.Attribute("First Key", "First Value"),
-            Order.Item.Attribute("_Invalid Key", "Ignored Value"),
-            Order.Item.Attribute("Second Key", "Second Value")
-        ))
+        orderItemUnderTest = orderItemUnderTest.copy(
+            attributesList = listOf(
+                Order.Item.Attribute("First Key", "First Value"),
+                Order.Item.Attribute("_Invalid Key", "Ignored Value"),
+                Order.Item.Attribute("Second Key", "Second Value")
+            )
+        )
         assertEquals("First Value, Second Value", orderItemUnderTest.attributesDescription)
     }
 }
