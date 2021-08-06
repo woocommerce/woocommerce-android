@@ -12,7 +12,7 @@ internal class TokenProvider(private val storeWrapper: CardReaderStore) : Connec
      */
     override fun fetchConnectionToken(callback: ConnectionTokenCallback) {
         try {
-            val token = runBlocking { storeWrapper.getConnectionToken() }
+            val token = runBlocking { storeWrapper.fetchConnectionToken() }
             callback.onSuccess(token)
         } catch (e: RuntimeException) {
             callback.onFailure(ConnectionTokenException(e.message.orEmpty(), e))

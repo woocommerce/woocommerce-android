@@ -166,7 +166,7 @@ internal class PaymentManager(
         }
 
     private suspend fun enrichPaymentInfoWithCustomerId(paymentInfo: PaymentInfo): PaymentInfo {
-        val customerId = cardReaderStore.getCustomerIdByOrderId(paymentInfo.orderId)
+        val customerId = cardReaderStore.fetchCustomerIdByOrderId(paymentInfo.orderId)
         return paymentInfo.copy(customerId = customerId)
     }
 }

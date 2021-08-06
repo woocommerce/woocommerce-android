@@ -30,11 +30,11 @@ class CardReaderModule {
         payStore: WCPayStore,
         responseMapper: CapturePaymentResponseMapper
     ) = object : CardReaderStore {
-        override suspend fun getCustomerIdByOrderId(orderId: Long): String? {
+        override suspend fun fetchCustomerIdByOrderId(orderId: Long): String? {
             return payStore.createCustomerByOrderId(selectedSite.get(), orderId).model?.customerId
         }
 
-        override suspend fun getConnectionToken(): String {
+        override suspend fun fetchConnectionToken(): String {
             val result = payStore.fetchConnectionToken(selectedSite.get())
             return result.model?.token.orEmpty()
         }

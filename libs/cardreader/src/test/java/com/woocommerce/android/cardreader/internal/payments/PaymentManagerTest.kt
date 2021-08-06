@@ -190,7 +190,7 @@ class PaymentManagerTest {
             whenever(createPaymentAction.createPaymentIntent(anyOrNull()))
                 .thenReturn(flow { emit(CreatePaymentStatus.Success(mock())) })
             val customerId = "customerId"
-            whenever(cardReaderStore.getCustomerIdByOrderId(any()))
+            whenever(cardReaderStore.fetchCustomerIdByOrderId(any()))
                 .thenReturn(customerId)
 
             val result = withTimeoutOrNull(TIMEOUT) {
