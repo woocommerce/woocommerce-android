@@ -107,6 +107,15 @@
             app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@+id/mainSettingsFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderDetailFragment"
+            app:destination="@id/cardReaderDetailFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:popUpTo="@+id/mainSettingsFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/cardReaderHubFragment"
