@@ -185,7 +185,7 @@ class PaymentManagerTest {
     }
 
     @Test
-    fun `given status not customer id returns, when creating payment finishes, then payment info enriched`() =
+    fun `given customer id returns, when creating payment finishes, then payment info enriched`() =
         runBlockingTest {
             whenever(createPaymentAction.createPaymentIntent(anyOrNull()))
                 .thenReturn(flow { emit(CreatePaymentStatus.Success(mock())) })
