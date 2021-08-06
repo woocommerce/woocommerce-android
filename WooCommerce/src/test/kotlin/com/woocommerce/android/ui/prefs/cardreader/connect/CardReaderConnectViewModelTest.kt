@@ -1,12 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
-import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.argThat
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -15,32 +9,14 @@ import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.InitializeCardReaderManager
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenLocationSettings
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.OpenPermissionsSettings
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowCardReaderTutorial
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingFailedState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.LocationDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MultipleReadersFoundState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.FAILED
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.MULTIPLE_READERS_FOUND
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.*
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.*
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -54,11 +30,11 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.junit.MockitoJUnitRunner
+import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
@@ -77,16 +53,24 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given onboarding not completed, when flow started, then app starts onboarding flow`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(CardReaderOnboardingState.WcpaySetupNotCompleted)
+            val vm = initVM(CardReaderOnboardingState.WcpaySetupNotCompleted, skipOnboarding = false)
 
             assertThat(vm.event.value)
                 .isInstanceOf(CardReaderConnectViewModel.CardReaderConnectEvent.NavigateToOnboardingFlow::class.java)
         }
 
     @Test
+    fun `when skip onboarding flag is true, then onboarding state ignored`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val vm = initVM(CardReaderOnboardingState.WcpaySetupNotCompleted, skipOnboarding = true)
+
+            assertThat(vm.event.value).isNotInstanceOf(NavigateToOnboardingFlow::class.java)
+        }
+
+    @Test
     fun `given onboarding check fails, when flow started, then scanning failed state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(CardReaderOnboardingState.GenericError)
+            val vm = initVM(CardReaderOnboardingState.GenericError, skipOnboarding = false)
 
             assertThat(vm.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
         }
@@ -94,7 +78,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given connection not available, when flow started, then scanning failed state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(CardReaderOnboardingState.GenericError)
+            val vm = initVM(CardReaderOnboardingState.GenericError, skipOnboarding = false)
 
             assertThat(vm.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
         }
@@ -830,10 +814,14 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.dimen.major_150)
         }
 
-    private suspend fun initVM(onboardingState: CardReaderOnboardingState): CardReaderConnectViewModel {
+    private suspend fun initVM(
+        onboardingState: CardReaderOnboardingState,
+        skipOnboarding: Boolean = false
+    ): CardReaderConnectViewModel {
+        val savedState = CardReaderConnectDialogFragmentArgs(skipOnboarding = skipOnboarding).initSavedStateHandle()
         whenever(onboardingChecker.getOnboardingState()).thenReturn(onboardingState)
         return CardReaderConnectViewModel(
-            SavedStateHandle(),
+            savedState,
             coroutinesTestRule.testDispatchers,
             tracker,
             appPrefs,
