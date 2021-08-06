@@ -38,7 +38,7 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper
 ) {
     suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
-        if (isValidState(paymentInfo)) return@flow
+        if (isInvalidState(paymentInfo)) return@flow
 
         val paymentIntent = createPaymentIntent(paymentInfo)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
@@ -152,7 +152,7 @@ internal class PaymentManager(
         }
     }
 
-    private suspend fun FlowCollector<CardPaymentStatus>.isValidState(paymentInfo: PaymentInfo) =
+    private suspend fun FlowCollector<CardPaymentStatus>.isInvalidState(paymentInfo: PaymentInfo) =
         when {
             !paymentUtils.isSupportedCurrency(paymentInfo.currency) -> {
                 emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
