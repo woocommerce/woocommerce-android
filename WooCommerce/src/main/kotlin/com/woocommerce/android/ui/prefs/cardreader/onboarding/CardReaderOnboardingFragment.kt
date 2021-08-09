@@ -49,7 +49,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                         val inSettingsGraph = findNavController().graph.id == R.id.nav_graph_settings
                         if (inSettingsGraph) {
                             findNavController().navigate(
-                                R.id.action_cardReaderOnboardingFragment_to_cardReaderDetailFragment
+                                R.id.action_cardReaderOnboardingFragment_to_cardReaderHubFragment
                             )
                         } else {
                             navigateBackWithNotice(KEY_READER_ONBOARDING_SUCCESS)
