@@ -16,7 +16,7 @@ data class FeatureFeedbackSettings(
     }
 
     enum class Feature(val description: String) {
-        SHIPPING_LABELS_M1("shipping_labels_m1"),
+        SHIPPING_LABELS_M4("shipping_labels_m4"),
         PRODUCTS_VARIATIONS("products_variations")
     }
 }

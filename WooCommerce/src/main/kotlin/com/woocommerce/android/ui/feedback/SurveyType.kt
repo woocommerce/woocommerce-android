@@ -5,7 +5,7 @@ import com.woocommerce.android.BuildConfig
 
 enum class SurveyType(private val untaggedUrl: String, private val milestone: Int? = null) {
     PRODUCT(AppUrls.CROWDSIGNAL_PRODUCT_SURVEY, 4),
-    SHIPPING_LABELS(AppUrls.CROWDSIGNAL_SHIPPING_LABELS_SURVEY, 1),
+    SHIPPING_LABELS(AppUrls.CROWDSIGNAL_SHIPPING_LABELS_SURVEY, 4),
     MAIN(AppUrls.CROWDSIGNAL_MAIN_SURVEY);
 
     val url
