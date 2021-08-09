@@ -134,7 +134,7 @@
 
         <include
             android:id="@+id/card_reader_detail_learn_more_tv"
-            layout="@layout/fragment_card_reader_detail_learn_more"
+            layout="@layout/card_reader_learn_more_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_200"

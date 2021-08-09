@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-23 13:15:17+0000
+Translation-Revision-Date: 2021-08-04 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="settings_card_reader_payments">Paiements en personne</string>
+    <string name="card_reader_tutorial_charged_detail">La charge complète de votre Lecteur nécessite environ trois heures</string>
+    <string name="card_reader_tutorial_charged_label">Conservez votre Lecteur chargé</string>
+    <string name="card_reader_tutorial_reconnect_detail">Votre Lecteur se mettra en veille après 10 min sans activité. Appuyez simplement sur le bouton de mise en marche pour le reconnecter.</string>
+    <string name="card_reader_tutorial_reconnect_label">Reconnexion Automattic</string>
+    <string name="card_reader_tutorial_collect_detail">Pour percevoir un paiement, glissez ou appuyez une carte sur le Lecteur, ou insérez-la </string>
+    <string name="card_reader_tutorial_collect_label">Glissez, appuyez ou insérez une carte</string>
+    <string name="card_reader_tutorial_connected_detail">Bravo, vous pouvez désormais accepter les cartes de paiement !</string>
+    <string name="card_reader_tutorial_connected_label">Lecteur connecté</string>
+    <string name="card_reader_onboarding_contact_support">Besoin d’aide ? &lt;a href=\'\'&gt;Contacter l’assistance&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements avec votre appareil mobile et la commande de lecteurs de carte</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Les paiements en personne ne sont pas disponibles en Mode test. Veuillez le désactiver pour continuer.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Votre compte comporte des prérequis en attente. Veuillez compléter ces prérequis avant le %1$s afin de continuer à accepter des paiements en personne.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Votre compte WooCommerce Payments comporte des prérequis en attente.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Votre compte comporte au moins un prérequis en attente. Veuillez y remédier afin de reprendre les paiements en personne.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Vous pourrez accepter des paiements en personne dès que nous aurons passé votre compte en revue.</string>
+    <string name="card_reader_onboarding_account_under_review_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
+    <string name="card_reader_onboarding_account_rejected_hint">Malheureusement, nous ne pouvons pas prendre en charge les paiements en personne pour cette boutique.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Les paiements en personne ne sont pas disponibles pour cette boutique.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Rafraîchir après la mise à jour</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">La version de l’extension WooCommerce Payments installée sur votre boutique est obsolète. Veuillez mettre à jour afin d’accepter les paiements en personne.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Mettre à jour WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Actualiser</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Vous y êtes presque ! Veuillez finir de configurer WooCommerce Payments afin de commencer à accepter les paiements par carte en personne.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Finir de configurer WooCommerce Payments dans la page d’administration de la boutique</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Rafraîchir après l’activation</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">L’extension WooCommerce Payments est installée sur votre boutique, mais elle n’est pas activée. Veuillez l’activer afin d’accepter les paiements en personne.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Activer WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Rafraîchir après l’installation</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Vous devrez installer l’extension gratuite WooCommerce Payments sur votre boutique afin d’accepter les paiements en personne.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Installer WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements avec votre appareil mobile et la commande de lecteurs de carte</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Besoin d’aide ? &lt;a href=\'\'&gt;Contacter l’assistance&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Vous pouvez toujours accepter des paiements en personne en activant le moyen de paiement « Paiement à la livraison » dans votre boutique.</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Nous ne prenons pas en charge les paiements en personne dans le pays suivant : %1$s</string>
+    <string name="card_reader_onboarding_loading">Connexion à votre compte</string>
+    <string name="card_reader_onboarding_title">Paiements en personne</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Veuillez vérifier les dimensions et le poids de votre colis, ou essayez d’utiliser un autre colis dans Détails du colis.</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Aucun tarif d’expédition disponible</string>
+    <string name="shipping_label_activate_service_package_empty_title">Tous les colis disponibles ont été activés.</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Activer le colis</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Sélectionner un colis à activer.</string>
+    <string name="error_required_field">Champ obligatoire</string>
+    <string name="close">Fermer</string>
     <string name="variation_created_title">Variante créée</string>
     <string name="variation_list_generate_new_variation">Générer une nouvelle variante</string>
     <string name="product_wip_message_variations">Vous pouvez désormais créer et gérer des variantes de produit !</string>
@@ -26,7 +72,7 @@ Language: fr
     <string name="shipping_label_create_custom_package_generic_failure">Échec de création du colis. Veuillez réessayer.</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Échec de création du colis : problème d’API inconnue.</string>
     <string name="shipping_label_create_custom_package_api_failure">Échec de création du colis : %1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Veuillez patienter…</string>
+    <string name="shipping_label_create_package_saving_progress_message">Veuillez patienter…</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Création d’un nouveau colis</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Valeur non valide.</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Champ obligatoire.</string>
@@ -40,7 +86,7 @@ Language: fr
     <string name="shipping_label_create_custom_package_field_type_box">Boîte</string>
     <string name="shipping_label_create_custom_package_field_type_info">Choisir un type de colis</string>
     <string name="shipping_label_create_custom_package_field_type">Type de colis</string>
-    <string name="shipping_label_create_custom_package_field_info">Définissez le colis que vous utiliserez pour expédier vos produits. Nous l’enregistrerons pour vos commandes à venir.</string>
+    <string name="shipping_label_create_package_field_info">Définissez le colis que vous utiliserez pour expédier vos produits. Nous l’enregistrerons pour vos commandes à venir.</string>
     <string name="shipping_label_create_package_title">Ajouter un nouveau colis</string>
     <string name="shipping_label_create_new_package_button">Créer un nouveau colis</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Les dimensions du colis doivent être supérieures à zéro. Veuillez mettre à jour les dimensions de votre article dans la section Expédition de la page de votre produit pour continuer.</string>
@@ -239,7 +285,6 @@ Language: fr
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Lors de l’achat d’étiquettes d’expédition avec WooCommerce, vous bénéficiez de 5 à 40 % de réduction par rapport aux tarifs de la Poste.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Qu’est-ce que la remise WooCommerce  Services ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Une erreur est survenue lors du chargement des options de livraison</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">Il n’y a pas d’options de livraison pour l’adresse et les colis sélectionnés</string>
     <string name="shipping_label_shipping_carriers_title">Transporteurs et frais de port</string>
     <string name="shipping_label_create_purchase">Acheter une étiquette d’expédition</string>
     <string name="shipping_label_create_mark_order_complete">Marquer cette commande comme terminée et informer le client</string>
@@ -277,7 +322,7 @@ Language: fr
     <string name="product_add_attribute">Ajouter un attribut</string>
     <string name="product_variation_attributes">Attributs</string>
     <string name="product_variations_edit_attr">Modifier les attributs</string>
-    <string name="shipping_label_multi_packages_total_weight">Poids total du colis : %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">Poids total des colis : %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d articles dans %2$d colis</string>
     <string name="shipping_label_single_package_total_weight">Poids total du colis : %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Colis personnalisés</string>
@@ -305,7 +350,6 @@ Language: fr
     <string name="shipping_label_validation_view_map">Ouvrir une carte</string>
     <string name="shipping_label_validation_contact_customer">Contacter le client</string>
     <string name="shipping_label_validation_error_template">Échec de la validation : %s</string>
-    <string name="shipping_label_error_required_field">Champ obligatoire</string>
     <string name="shipping_label_error_address_invalid_street">Rue non valide</string>
     <string name="shipping_label_error_address_house_number_missing">Numéro de maison manquant</string>
     <string name="shipping_label_error_address_not_found">Adresse introuvable</string>

@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-23 13:12:03+0000
+Translation-Revision-Date: 2021-08-04 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="settings_card_reader_payments">Pagos en Persona</string>
+    <string name="card_reader_tutorial_charged_detail">El lector tarda unas tres horas en cargarse por completo</string>
+    <string name="card_reader_tutorial_charged_label">Mantén cargado el lector</string>
+    <string name="card_reader_tutorial_reconnect_detail">El lector entrará en reposo a los 10 minutos de inactividad. Tan solo tienes que pulsar el botón de encendido para volver a conectarlo.</string>
+    <string name="card_reader_tutorial_reconnect_label">Reconexión automática</string>
+    <string name="card_reader_tutorial_collect_detail">Para cobrar, basta con pasar la tarjeta por el lector, tocarla o insertarla</string>
+    <string name="card_reader_tutorial_collect_label">Deslizar, tocar o insertar tarjeta</string>
+    <string name="card_reader_tutorial_connected_detail">Enhorabuena, ya puedes aceptar pagos con tarjetas de débito y crédito.</string>
+    <string name="card_reader_tutorial_connected_label">Lector conectado</string>
+    <string name="card_reader_onboarding_contact_support">¿Necesitas ayuda? &lt;a href=\'\'&gt;Contacta con soporte&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Obtén más información&lt;/a&gt; sobre aceptar pagos con tu dispositivo móvil y pedir lectores de tarjetas</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Pagos en Persona no está disponible en modo de prueba. Desactívalo para continuar.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Pagos en Persona no está disponible en este momento</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Tu cuenta está pendiente de cumplir algunos requisitos. Completa los requisitos antes del %1$s para seguir aceptando Pagos en Persona.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Tu cuenta de WooCommerce Payments está pendiente de cumplir algunos requisitos.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Tu cuenta no cumple al menos un requisito. Resuélvelo para reanudar Pagos en Persona</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Pagos en Persona no está disponible en este momento</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Podrás aceptar Pagos en Persona en cuanto terminemos de revisar tu cuenta.</string>
+    <string name="card_reader_onboarding_account_under_review_header">Pagos en Persona no está disponible en este momento</string>
+    <string name="card_reader_onboarding_account_rejected_hint">Lo sentimos, pero no podemos admitir Pagos en Persona para esta tienda.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Pagos en Persona no está disponible para esta tienda</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Recarga la página después de actualizar</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Se ha instalado una versión obsoleta de la extensión WooCommerce Payments en tu tienda. Actualízala para aceptar Pagos en Persona.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Actualizar WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refrescar</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Ya casi has acabado. Termina de configurar WooCommerce Payments para empezar a aceptar Pagos con Tarjeta.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Termina de configurar WooCommerce Payments en la administración de tu tienda</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Recarga la página después de activar</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">La extensión WooCommerce Payments está instalada en tu tienda, pero no está activada. Actívala para aceptar Pagos en Persona.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Activar WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Recarga la página después de instalar</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Tendrás que instalar la extensión gratuita de WooCommerce Payments en tu tienda para aceptar Pagos en Persona.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Instalar WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Obtén más información&lt;/a&gt; sobre aceptar pagos con tu dispositivo móvil y pedir lectores de tarjetas</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">¿Necesitas ayuda? &lt;a href=\'\'&gt;Contacta con soporte&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Para seguir aceptando Pagos en Persona en efectivo, puedes habilitar el método de pago “Contra reembolso” en tu tienda</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Pagos en Persona no se admite en %1$s</string>
+    <string name="card_reader_onboarding_loading">Conectando con tu cuenta</string>
+    <string name="card_reader_onboarding_title">Pagos en Persona</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Confirma las dimensiones y el peso del paquete o utiliza un paquete diferente en Detalles del paquete</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Las tarifas de envío no están disponibles</string>
+    <string name="shipping_label_activate_service_package_empty_title">Se han activado todos los paquetes disponibles</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Activando paquete</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Selecciona un paquete que activar.</string>
+    <string name="error_required_field">Campo obligatorio</string>
+    <string name="close">Cerrar</string>
     <string name="variation_created_title">Variación creada</string>
     <string name="variation_list_generate_new_variation">Generar nueva variación</string>
     <string name="product_wip_message_variations">¡Ahora puedes crear y gestionar variaciones de productos!</string>
@@ -26,7 +72,7 @@ Language: es
     <string name="shipping_label_create_custom_package_generic_failure">No se ha podido crear el paquete. Inténtalo de nuevo.</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">No se ha podido crear el paquete: se ha producido un problema de API desconocido.</string>
     <string name="shipping_label_create_custom_package_api_failure">No se ha podido crear el paquete: %1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Por favor, espera…</string>
+    <string name="shipping_label_create_package_saving_progress_message">Por favor, espera…</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Creando nuevo paquete</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Valor no válido.</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Este campo es obligatorio.</string>
@@ -40,7 +86,7 @@ Language: es
     <string name="shipping_label_create_custom_package_field_type_box">Caja</string>
     <string name="shipping_label_create_custom_package_field_type_info">Escoger tipo de paquete</string>
     <string name="shipping_label_create_custom_package_field_type">Tipo de paquete</string>
-    <string name="shipping_label_create_custom_package_field_info">Configura el paquete que vas a utilizar para enviar tus productos. Lo guardaremos para futuros pedidos.</string>
+    <string name="shipping_label_create_package_field_info">Configura el paquete que vas a utilizar para enviar tus productos. Lo guardaremos para futuros pedidos.</string>
     <string name="shipping_label_create_package_title">Añadir nuevo paquete</string>
     <string name="shipping_label_create_new_package_button">Crear nuevo paquete</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Las dimensiones del paquete deben ser mayores que cero. Actualiza las dimensiones del artículo en la sección Envío de la página del producto para continuar.</string>
@@ -239,7 +285,6 @@ Language: es
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Al comprar etiquetas de envío con WooCommerce, pagas entre un 5 y un 40 % menos que con las tarifas de las oficinas de correos.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">¿En qué consiste el descuento de WooCommerce Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Se ha producido un error al cargar las opciones de envío</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">No hay opciones de envío para las direcciones y los paquetes seleccionados.</string>
     <string name="shipping_label_shipping_carriers_title">Empresas de transporte y tarifas</string>
     <string name="shipping_label_create_purchase">Comprar etiqueta de envío</string>
     <string name="shipping_label_create_mark_order_complete">Marca este pedido como completado y avisa al cliente</string>
@@ -277,7 +322,7 @@ Language: es
     <string name="product_add_attribute">Añadir atributo</string>
     <string name="product_variation_attributes">Atributos</string>
     <string name="product_variations_edit_attr">Editar atributos</string>
-    <string name="shipping_label_multi_packages_total_weight">Peso total del paquete: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">Peso total de los paquetes: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d artículos en %2$d paquetes</string>
     <string name="shipping_label_single_package_total_weight">Peso total del paquete: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Paquetes personalizados</string>
@@ -305,7 +350,6 @@ Language: es
     <string name="shipping_label_validation_view_map">Abrir mapa</string>
     <string name="shipping_label_validation_contact_customer">Contactar con el cliente</string>
     <string name="shipping_label_validation_error_template">Error de validación: %s</string>
-    <string name="shipping_label_error_required_field">Campo obligatorio</string>
     <string name="shipping_label_error_address_invalid_street">Calle no válida</string>
     <string name="shipping_label_error_address_house_number_missing">Falta el número de la casa</string>
     <string name="shipping_label_error_address_not_found">No se encuentra la dirección</string>

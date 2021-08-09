@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-23 11:54:04+0000
+Translation-Revision-Date: 2021-08-04 12:54:15+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="settings_card_reader_payments">Personliga betalningar</string>
+    <string name="card_reader_tutorial_charged_detail">Det tar ungefär tre timmar att ladda din läsare</string>
+    <string name="card_reader_tutorial_charged_label">Håll din läsare laddad</string>
+    <string name="card_reader_tutorial_reconnect_detail">Din läsare går in i viloläge efter 10 minuter av inaktivitet. Det är bara att trycka på strömknappen för att återansluta den.</string>
+    <string name="card_reader_tutorial_reconnect_label">Automatisk återanslutning</string>
+    <string name="card_reader_tutorial_collect_detail">Det är bara att svepa, trycka eller infoga kort på läsaren för att ta emot betalningar.</string>
+    <string name="card_reader_tutorial_collect_label">Svep, tryck eller sätt in kort</string>
+    <string name="card_reader_tutorial_connected_detail">Grattis, du kan nu ta emot kredit- och betalkortsbetalningar!</string>
+    <string name="card_reader_tutorial_connected_label">Läsare ansluten</string>
+    <string name="card_reader_onboarding_contact_support">Behöver du lite hjälp? &lt;a href=\'\'&gt;Kontakta support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om att ta emot betalningar med din mobila enhet och att beställa kortläsare</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Personliga betalningar är inte tillgängliga i testläget. Stäng av det för att fortsätta.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Personliga betalningar är för närvarande inte tillgängliga</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Det finns krav som inväntar granskning i ditt konto. Slutför dessa krav senast den %1$s för att fortsätta ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Ditt WooCommerce Payments-konto har krav som inväntar granskning</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Du har minst ett försenat krav i ditt konto. Ta hand om det för att återuppta personliga betalningar.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Personliga betalningar är för närvarande inte tillgängliga</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Du kommer att kunna ta emot personliga betalningar så snart vi har slutfört granskningen av ditt konto.</string>
+    <string name="card_reader_onboarding_account_under_review_header">Personliga betalningar är för närvarande inte tillgängliga</string>
+    <string name="card_reader_onboarding_account_rejected_hint">Tyvärr kan vi inte erbjuda personliga betalningar för den här butiken.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Personliga betalningar är inte tillgängliga för den här butiken</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Payments är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Uppdatera WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Uppdatera</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Du är nästan framme! Slutför konfigurationen av WooCommerce Payments för att börja ta emot kortbetalningar.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Slutför konfigurationen av WooCommerce Payments i adminpanelen för din butik</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Uppdatera efter aktivering</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">Utökningen WooCommerce Payments är installerad för din butik, men den har inte aktiverats. Aktivera den för att ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Aktivera WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Uppdatera efter installation</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Du måste installera den kostnadsfria utökningen WooCommerce Payments för din butik för att ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Installera WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om att ta emot betalningar med din mobila enhet och att beställa kortläsare</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Behöver du lite hjälp? &lt;a href=\'\'&gt;Kontakta support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Du kan fortfarande ta emot personliga kontanta betalningar genom att aktivera betalningsmetoden \"Postförskott\" i din butik</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Vi stöder inte personliga betalningar i %1$s</string>
+    <string name="card_reader_onboarding_loading">Ansluter till ditt konto</string>
+    <string name="card_reader_onboarding_title">Personliga betalningar</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Dubbelkolla måtten eller vikten på ditt paket eller prova att använda ett annat paket i Paketinformation</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Det finns inga fraktavgifter tillgängliga</string>
+    <string name="shipping_label_activate_service_package_empty_title">Alla tillgängliga paket har aktiverats</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Aktiverar paket</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Välj ett paket att aktivera.</string>
+    <string name="error_required_field">Obligatoriskt fält</string>
+    <string name="close">Stäng</string>
     <string name="variation_created_title">Variationen har skapats</string>
     <string name="variation_list_generate_new_variation">Generera ny variation</string>
     <string name="product_wip_message_variations">Du kan nu skapa och hantera produktvariationer!</string>
@@ -27,7 +73,7 @@ Language: sv_SE
     <string name="shipping_label_create_custom_package_generic_failure">Misslyckades att skapa paket. Försök igen.</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Misslyckades att skapa paket: okänt API-problem.</string>
     <string name="shipping_label_create_custom_package_api_failure">Misslyckades att skapa paket: %1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Vänta …</string>
+    <string name="shipping_label_create_package_saving_progress_message">Vänta …</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Skapar nytt paket</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Ogiltigt värde.</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Detta fält är obligatoriskt.</string>
@@ -41,7 +87,7 @@ Language: sv_SE
     <string name="shipping_label_create_custom_package_field_type_box">Låda</string>
     <string name="shipping_label_create_custom_package_field_type_info">Välj pakettyp</string>
     <string name="shipping_label_create_custom_package_field_type">Pakettyp</string>
-    <string name="shipping_label_create_custom_package_field_info">Konfigurera paketet som du kommer att använda för att skicka dina produkter. Vi kommer att spara den för framtida beställningar.</string>
+    <string name="shipping_label_create_package_field_info">Konfigurera paketet som du kommer att använda för att skicka dina produkter. Vi kommer att spara den för framtida beställningar.</string>
     <string name="shipping_label_create_package_title">Lägg till nytt paket</string>
     <string name="shipping_label_create_new_package_button">Skapa nytt paket</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Paketets mått måste vara större än noll. Uppdatera måtten för din vara i sektionen Frakt på din produktsida för att fortsätta.</string>
@@ -240,7 +286,6 @@ Language: sv_SE
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">När du köper fraktetiketter med WooCommerce, får du 5 % till 40 % i rabatt jämfört med postkontoret.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Vad innebär rabatt på  WooCommerce-tjänster?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Det gick inte att hämta leveransalternativen</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">Det finns inga leveransalternativ för den valda adressen och de valda paketen</string>
     <string name="shipping_label_shipping_carriers_title">Transportföretag och avgifter</string>
     <string name="shipping_label_create_purchase">Köp fraktetikett</string>
     <string name="shipping_label_create_mark_order_complete">Markera den här beställningen som slutförd och meddela kunden</string>
@@ -306,7 +351,6 @@ Language: sv_SE
     <string name="shipping_label_validation_view_map">Öppna karta</string>
     <string name="shipping_label_validation_contact_customer">Kontakta kunden</string>
     <string name="shipping_label_validation_error_template">Validering misslyckades: %s</string>
-    <string name="shipping_label_error_required_field">Obligatoriskt fält</string>
     <string name="shipping_label_error_address_invalid_street">Ogiltig gata</string>
     <string name="shipping_label_error_address_house_number_missing">Husnummer saknas</string>
     <string name="shipping_label_error_address_not_found">Adress hittades inte</string>

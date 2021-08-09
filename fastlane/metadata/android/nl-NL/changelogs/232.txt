@@ -1,4 +1,0 @@
-7.1:
-Enkele verkopers in de VS die gebruikmaakten van de extensie WooCommerce Shipping en Tax liepen tegen een bug aan bij het aanmaken van labels voor bestellingen met productaantallen in decimalen. Dat is nu verholpen!
-
-Wil je labels aanmaken? Installeer en activeer de extensie WooCommerce Shipping en Tax in je winkel. Op dit moment ondersteunen we verkopers in de VS die wereldwijd verzenden. We horen graag je feedback!

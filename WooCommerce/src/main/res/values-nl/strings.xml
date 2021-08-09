@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-23 13:15:53+0000
+Translation-Revision-Date: 2021-08-04 14:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="settings_card_reader_payments">Fysieke betalingen</string>
+    <string name="card_reader_tutorial_charged_detail">Je lezer heeft zo\'n drie uur nodig om op te laden.</string>
+    <string name="card_reader_tutorial_charged_label">Houd je lezer opgeladen</string>
+    <string name="card_reader_tutorial_reconnect_detail">Je lezer valt terug in de slaapstand na 10 minuten zonder activiteit. Druk simpelweg op de aan/uit-schakelknop om de lezer opnieuw te verbinden.</string>
+    <string name="card_reader_tutorial_reconnect_label">Opnieuw verbinden met Automattic</string>
+    <string name="card_reader_tutorial_collect_detail">Veeg, tik of steek je kaart in de lezer om betalingen te ontvangen</string>
+    <string name="card_reader_tutorial_collect_label">Vegen, tikken of kaart insteken</string>
+    <string name="card_reader_tutorial_connected_detail">Gefeliciteerd, je kunt nu betalingen van creditcards en betaalpassen aannemen!</string>
+    <string name="card_reader_tutorial_connected_label">Lezer verbonden</string>
+    <string name="card_reader_onboarding_contact_support">Hulp nodig? &lt;a href=\'\'&gt;Neem contact op met support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over het aannemen van betalingen met je mobiele apparaat en het bestellen van kaartlezers</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Fysieke betalingen zijn nog niet beschikbaar in de testmodus. Schakel deze uit om door te gaan.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Er zijn openstaande verplichtingen op je account. Voltooi deze verplichtingen door %1$s om fysieke betalingen te kunnen blijven aannemen.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Je WooCommerce Payments-account heeft verplichtingen open staan</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Je hebt ten minste openstaande verplichting op je account. Rond de verplichting af om fysieke betalingen te blijven ontvangen</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Je kunt fysieke betalingen aannemen zodra we je account hebben gecontroleerd.</string>
+    <string name="card_reader_onboarding_account_under_review_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
+    <string name="card_reader_onboarding_account_rejected_hint">We kunnen helaas fysieke betalingen niet voor deze winkel ondersteunen.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Fysieke betalingen zijn niet beschikbaar voor deze winkel</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Vernieuwen na bijwerken</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Verouderde versie van de WooCommerce Payments-extensie is geïnstalleerd in je winkel. Werk deze bij om fysieke betalingen aan te nemen.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments bijwerken</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Vernieuw</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Je bent bijna klaar! Rond het instellen van WooCommerce Payments af om betalingen met fysieke betaalkaart (Card-Present) aan te nemen.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Rond het instellen van WooCommerce Payments af bij je winkelbeheer</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Vernieuwen na activeren</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">De WooCommerce Payments-extensie is geïnstalleerd in je winkel, maar nog niet geactiveerd. Activeer deze om fysieke betalingen aan te nemen.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">WooCommerce Payments activeren</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Vernieuwen na installeren</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Je moet de gratis WooCommerce Payments-extensie installeren in je winkel om fysieke betalingen aan te nemen.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">WooCommerce Payments installeren</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over het aannemen van betalingen met je mobiele apparaat en het bestellen van kaartlezers</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Hulp nodig? &lt;a href=\'\'&gt;Neem contact op met support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Je kunt nog altijd fysieke cashbetalingen door de betaalmethode \'Contant betalen bij ontvangst\' in te schakelen in je winkel</string>
+    <string name="card_reader_onboarding_country_not_supported_header">We ondersteunen fysieke betalingen niet in %1$s</string>
+    <string name="card_reader_onboarding_loading">Je account koppelen</string>
+    <string name="card_reader_onboarding_title">Fysieke betalingen</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Controleer uitvoerig de afmetingen en het gewicht van je pakket of probeer een ander pakket bij Pakketgegevens</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Geen verzendkosten beschikbaar</string>
+    <string name="shipping_label_activate_service_package_empty_title">Alle beschikbare pakketten zijn geactiveerd</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Pakket wordt geactiveerd</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Selecteer een pakket om te activeren.</string>
+    <string name="error_required_field">Vereist veld</string>
+    <string name="close">Sluiten</string>
     <string name="variation_created_title">Variatie aangemaakt</string>
     <string name="variation_list_generate_new_variation">Nieuwe variatie genereren</string>
     <string name="product_wip_message_variations">Je kunt nu productvariaties aanmaken en beheren!</string>
@@ -26,7 +72,7 @@ Language: nl
     <string name="shipping_label_create_custom_package_generic_failure">Aanmaken van pakket mislukt. Probeer het nog eens.</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Aanmaken van pakket mislukt: onbekend API-probleem.</string>
     <string name="shipping_label_create_custom_package_api_failure">Aanmaken van pakket mislukt: %1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Een moment geduld …</string>
+    <string name="shipping_label_create_package_saving_progress_message">Een moment geduld …</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Nieuw pakket wordt aangemaakt</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Ongeldige waarde.</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Dit veld is vereist.</string>
@@ -40,7 +86,7 @@ Language: nl
     <string name="shipping_label_create_custom_package_field_type_box">Doos</string>
     <string name="shipping_label_create_custom_package_field_type_info">Pakkettype kiezen</string>
     <string name="shipping_label_create_custom_package_field_type">Pakkettype</string>
-    <string name="shipping_label_create_custom_package_field_info">Configureer het pakket dat je gaat gebruiken voor de verzending van je producten. We slaan het dan op voor toekomstige bestellingen.</string>
+    <string name="shipping_label_create_package_field_info">Configureer het pakket dat je gaat gebruiken voor de verzending van je producten. We slaan het dan op voor toekomstige bestellingen.</string>
     <string name="shipping_label_create_package_title">Nieuw pakket toevoegen</string>
     <string name="shipping_label_create_new_package_button">Nieuw pakket aanmaken</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">De pakketafmetingen moeten groter zijn dan nul. Werk de afmetingen van je artikel bij bij het gedeelte Verzending op je productpagina om door te gaan.</string>
@@ -239,7 +285,6 @@ Language: nl
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Wanneer je verzendlabels koopt met WooCommerce, krijg je 5 tot 40% korting ten opzichte van de tarieven van postkantoren.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Wat houdt korting op WooCommerce  Services in?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Er is een fout opgetreden bij het laden van de verzendopties</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">Er zijn geen verzendopties voor het geselecteerde adres en pakketjes</string>
     <string name="shipping_label_shipping_carriers_title">Koeriersdiensten en tarieven</string>
     <string name="shipping_label_create_purchase">Verzendlabel kopen</string>
     <string name="shipping_label_create_mark_order_complete">Markeer deze bestelling als voltooid en informeer de klant</string>
@@ -277,7 +322,7 @@ Language: nl
     <string name="product_add_attribute">Eigenschap toevoegen</string>
     <string name="product_variation_attributes">Eigenschappen</string>
     <string name="product_variations_edit_attr">Wijzig eigenschappen</string>
-    <string name="shipping_label_multi_packages_total_weight">Totaal pakketgewicht: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">Totaal gewicht van pakketten: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d artikelen in %2$d pakketten</string>
     <string name="shipping_label_single_package_total_weight">Totaal pakketgewicht: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Aangepaste pakketten</string>
@@ -305,7 +350,6 @@ Language: nl
     <string name="shipping_label_validation_view_map">Kaart openen</string>
     <string name="shipping_label_validation_contact_customer">Contact opnemen met klant</string>
     <string name="shipping_label_validation_error_template">Validatie mislukt: %s</string>
-    <string name="shipping_label_error_required_field">Vereist veld</string>
     <string name="shipping_label_error_address_invalid_street">Ongeldige straat</string>
     <string name="shipping_label_error_address_house_number_missing">Huisnummer ontbreekt</string>
     <string name="shipping_label_error_address_not_found">Adres is niet gevonden</string>

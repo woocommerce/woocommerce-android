@@ -1,4 +1,0 @@
-7.1:
-Certains commerçants aux États-Unis qui utilisent l’extension WooCommerce Shipping & Tax ont rencontré un bug lors de la création d’étiquettes pour les commandes dont les quantités de produits incluent des valeurs décimales. Ce problème est résolu !
-
-Voulez-vous essayer de créer des étiquettes ? Installez et activez l’extension WooCommerce Shipping & Tax depuis votre boutique. Nous soutenons désormais les commerçants américains qui livrent le monde entier N’hésitez pas à donner votre avis !

@@ -20,6 +20,7 @@ import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFeatures
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
@@ -33,6 +34,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -142,19 +144,14 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        localOrderId: Int,
-        remoteOrderId: Long,
+        orderModel: WCOrderModel,
         newStatus: String
-    ): Boolean {
-        val result = continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+    ): ContinuationResult<Boolean> {
+        return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = UpdateOrderStatusPayload(
-                localOrderId, remoteOrderId, selectedSite.get(), newStatus
+                orderModel, selectedSite.get(), newStatus
             )
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
         }
     }
 
@@ -279,7 +276,7 @@ class OrderDetailRepository @Inject constructor(
         .map { it.toAppModel() }
 
     fun getWooServicesPluginInfo(): WooPlugin {
-        val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
+        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
         return WooPlugin(info != null, info?.active ?: false, info?.version)
     }
 

@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-23 13:04:51+0000
+Translation-Revision-Date: 2021-08-05 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="settings_card_reader_payments">オフラインでの支払い</string>
+    <string name="card_reader_tutorial_charged_detail">リーダーのフル充電には約3時間かかります</string>
+    <string name="card_reader_tutorial_charged_label">リーダーは常に充電しておいてください</string>
+    <string name="card_reader_tutorial_reconnect_detail">10分間使用しないと、リーダーはスリープ状態になります。 再接続するには、電源ボタンを押します。</string>
+    <string name="card_reader_tutorial_reconnect_label">Automattic の再接続</string>
+    <string name="card_reader_tutorial_collect_detail">支払いを受け取るには、リーダーをスワイプまたはタップするか、カードを挿入します。</string>
+    <string name="card_reader_tutorial_collect_label">スワイプまたはタップするか、カードを挿入する</string>
+    <string name="card_reader_tutorial_connected_detail">デビットカードやクレジットカードでの支払いを受け取ることができるようになりました。</string>
+    <string name="card_reader_tutorial_connected_label">リーダー接続済み</string>
+    <string name="card_reader_onboarding_contact_support">ヘルプが必要ですか ? &lt;a href=\'\'&gt;サポートに問い合わせる&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">モバイルデバイスや注文用カードリーダーでの支払いの受領方法について&lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">テストモードではオフラインの支払いを利用できません。 電源をオフにして続行します。</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">オフラインでの支払いは現在利用できません</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">口座に保留中の要件があります。 引き続きオフラインでのお支払いを受け取る場合は、%1$sまでに要件を完了させてください。</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">WooCommerce Payments アカウントに保留中の要件があります</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">ご使用のアカウントに期限切れの要件があります。 オフラインでの支払いを再開するには、この要件を処理してください</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">オフラインでの支払いは現在利用できません</string>
+    <string name="card_reader_onboarding_account_under_review_hint">アカウントのレビューが完了すると、すぐにオフラインでの支払いを受け取れるようになります。</string>
+    <string name="card_reader_onboarding_account_under_review_header">オフラインでの支払いは現在利用できません</string>
+    <string name="card_reader_onboarding_account_rejected_hint">このストアはオフラインでの支払いに対応していません。</string>
+    <string name="card_reader_onboarding_account_rejected_header">このストアではオフラインでの支払いを使用できません</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">更新後に再読み込みする</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">再読み込み</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">あともう少しです。 カードを使用した支払いを開始するには、WooCommerce Payments のセットアップを完了させてください。</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">ストア管理で WooCommerce Payments のセットアップを完了させる</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">有効化後に再読み込みする</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">ご使用のストアには WooCommerce Payments 拡張機能はインストールされていますが、有効化されていません。 オフラインでの支払いを受け取るには、この拡張機能を有効化してください。</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">WooCommerce Payments を有効化する</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">インストール後に再読み込みする</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">オフラインでの支払いを受け取るには、無料の WooCommerce Payments 拡張機能をストアにインストールする必要があります。</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">WooCommerce Payments をインストールする</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">モバイルデバイスや注文用カードリーダーでの支払いの受領方法について&lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">ヘルプが必要ですか ? &lt;a href=\'\'&gt;サポートに問い合わせる&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">ストアで「代金引換」の支払い方法を有効にすれば、オフラインでの現金支払いを受け取ることもできます。</string>
+    <string name="card_reader_onboarding_country_not_supported_header">%1$s ではオフラインでの支払いがサポートされていません</string>
+    <string name="card_reader_onboarding_loading">アカウントへの接続</string>
+    <string name="card_reader_onboarding_title">オフラインでの支払い</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">荷物の寸法と重量を再度ご確認いただくか、「荷物の詳細」で別の荷物のご利用をお試しください。</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">利用できる配送料金がありません</string>
+    <string name="shipping_label_activate_service_package_empty_title">利用可能なすべての荷物が有効化されました</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">荷物の有効化</string>
+    <string name="shipping_label_create_service_package_nothing_selected">有効化する荷物を選択します。</string>
+    <string name="error_required_field">必須項目</string>
+    <string name="close">閉じる</string>
     <string name="variation_created_title">バリエーションを作成しました</string>
     <string name="variation_list_generate_new_variation">新しいバリエーションを生成</string>
     <string name="product_wip_message_variations">商品のバリエーションを作成、管理できるようになりました。</string>
@@ -26,7 +72,7 @@ Language: ja_JP
     <string name="shipping_label_create_custom_package_generic_failure">荷物を作成できませんでした。 もう一度お試しください。</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">荷物を作成できませんでした。不明な API エラーが発生しました。</string>
     <string name="shipping_label_create_custom_package_api_failure">荷物を作成できませんでした。%1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_create_package_saving_progress_message">しばらくお待ちください…</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">新しい荷物を作成しています</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">無効な値。</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">この欄は入力必須です。</string>
@@ -40,7 +86,7 @@ Language: ja_JP
     <string name="shipping_label_create_custom_package_field_type_box">ボックス</string>
     <string name="shipping_label_create_custom_package_field_type_info">荷物の種類を選択する</string>
     <string name="shipping_label_create_custom_package_field_type">荷物の種類</string>
-    <string name="shipping_label_create_custom_package_field_info">商品の配送に使用する荷物を設定します。 今後の注文用に保存されます。</string>
+    <string name="shipping_label_create_package_field_info">商品の配送に使用する荷物を設定します。 今後の注文用に保存されます。</string>
     <string name="shipping_label_create_package_title">新しい荷物を追加する</string>
     <string name="shipping_label_create_new_package_button">新しい荷物を作成する</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">荷物の寸法は0以上にする必要があります。 商品ページの「配送」セクションで商品の寸法を更新して続行します。</string>
@@ -239,7 +285,6 @@ Language: ja_JP
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce で配送ラベルを購入すると、郵便局の価格と比べて5%～40% お得です。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  サービスの割引はどのくらいですか ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">配送オプションの読み込みでエラーが発生しました</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">選択したアドレスと荷物に対応した配送オプションがありません</string>
     <string name="shipping_label_shipping_carriers_title">配送業者と金額</string>
     <string name="shipping_label_create_purchase">配送ラベルを購入</string>
     <string name="shipping_label_create_mark_order_complete">この注文に完了のマークを付けてお客様に通知</string>
@@ -277,7 +322,7 @@ Language: ja_JP
     <string name="product_add_attribute">属性を追加</string>
     <string name="product_variation_attributes">属性</string>
     <string name="product_variations_edit_attr">属性を編集</string>
-    <string name="shipping_label_multi_packages_total_weight">荷物の総重量: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">荷物の合計重量: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%2$d個の荷物内に%1$d個のアイテム</string>
     <string name="shipping_label_single_package_total_weight">荷物の総重量: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">カスタム荷物</string>
@@ -305,7 +350,6 @@ Language: ja_JP
     <string name="shipping_label_validation_view_map">マップを開く</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
     <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
-    <string name="shipping_label_error_required_field">必須のフィールド</string>
     <string name="shipping_label_error_address_invalid_street">無効な住所</string>
     <string name="shipping_label_error_address_house_number_missing">番地が見つかりません</string>
     <string name="shipping_label_error_address_not_found">住所が見つかりませんでした</string>

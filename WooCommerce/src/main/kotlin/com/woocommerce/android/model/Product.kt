@@ -39,7 +39,7 @@ data class Product(
     val backorderStatus: ProductBackorderStatus,
     val dateCreated: Date,
     val firstImageUrl: String?,
-    val totalSales: Int,
+    val totalSales: Long,
     val reviewsAllowed: Boolean,
     val isVirtual: Boolean,
     val ratingCount: Int,

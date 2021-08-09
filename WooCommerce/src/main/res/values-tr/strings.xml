@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-23 13:10:00+0000
+Translation-Revision-Date: 2021-08-03 11:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="settings_card_reader_payments">Şahsen ödemeler</string>
+    <string name="card_reader_tutorial_charged_detail">Okuyucunuzun tamamen şarj olması yaklaşık üç saat sürer</string>
+    <string name="card_reader_tutorial_charged_label">Okuyucunuzu her zaman şarjlı tutun</string>
+    <string name="card_reader_tutorial_reconnect_detail">Okuyucunuzda 10 dakika işlem yapılmazsa uyku moduna girer. Yeniden bağlamak için güç düğmesine basmanız yeterlidir.</string>
+    <string name="card_reader_tutorial_reconnect_label">Automattic yeniden bağlantısı</string>
+    <string name="card_reader_tutorial_collect_detail">Ödemeleri almak için kaydırmanız, dokunmanız veya kartı okuyucuya takmanız yeterlidir</string>
+    <string name="card_reader_tutorial_collect_label">Kaydırın, dokunun veya kartı takın</string>
+    <string name="card_reader_tutorial_connected_detail">Tebrikler, artık banka ve kredi kartı ile yapılan ödemeleri kabul edebilirsiniz!</string>
+    <string name="card_reader_tutorial_connected_label">Okuyucu bağlandı</string>
+    <string name="card_reader_onboarding_contact_support">Biraz yardıma mı ihtiyacınız var? &lt;a href=\'\'&gt;Destek ile iletişim kur&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">Mobil cihazınızla ödeme kabul etme ve kart okuyucu sipariş etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin &lt;/a&gt;</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Şahsen Ödemeler özelliği Test Modu\'nda kullanılamaz. Devam etmek için lütfen kapatın.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Hesabınızda bekleyen gereksinimler var. Şahsen Ödemeleri kabul etmeye devam etmek için lütfen %1$s tarihine kadar bu gereksinimleri karşılayın.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">WooCommerce Payments hesabınızda bekleyen gereksinimler var</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Hesabınızda en az bir vadesi geçmiş gereksinim var. Şahsen Ödemeleri kullanmaya devam etmek için lütfen bu durumu giderin</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Hesabınızın incelenmesi biter bitirmez Şahsen Ödemeleri kabul edebileceksiniz.</string>
+    <string name="card_reader_onboarding_account_under_review_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
+    <string name="card_reader_onboarding_account_rejected_hint">Maalesef bu mağaza için Şahsen Ödemeleri destekleyemiyoruz.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Bu mağazada Şahsen Ödemeler kullanılamıyor</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Güncellemeden sonra yenileyin</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce Payments uzantısının eski sürümü mağazanızda yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments\'ı Güncelleyin</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Yenile</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Çok az kaldı! Card-Present Payments\'ı kabul etmeye başlamak için lütfen WooCommerce Payments kurulumunu tamamlayın.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Mağaza yönetici bölümünüzde WooCommerce Payments kurulumunu tamamlayın</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Etkinleştirdikten sonra yenileyin</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">WooCommerce Payments uzantısı mağazanıza yüklendi ancak etkinleştirilmedi. Şahsen Ödemeleri kabul etmek için lütfen etkinleştirin.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">WooCommerce Payments\'ı Etkinleştirin</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Kurulumdan sonra yenileyin</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Şahsen Ödemeleri kabul etmek için mağazanıza ücretsiz WooCommerce Payments uzantısını yüklemeniz gerekir.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">WooCommerce Payments\'ı Yükleyin</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">Mobil cihazınızla ödeme kabul etme ve kart okuyucu sipariş etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin &lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Biraz yardıma mı ihtiyacınız var? &lt;a href=\'\'&gt;Destek ile iletişim kur&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Mağazanızda \"kağıda nakit\" ödeme yöntemini etkinleştirerek, Şahsen Nakit Ödemeleri kabul edebilirsiniz.</string>
+    <string name="card_reader_onboarding_country_not_supported_header">%1$s için Şahsen Ödemeleri desteklemiyoruz</string>
+    <string name="card_reader_onboarding_loading">Hesabınıza bağlanılıyor</string>
+    <string name="card_reader_onboarding_title">Şahsen ödemeler</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Lütfen paketinizin boyutlarını ve ağırlığını bir daha kontrol edin veya Paket Ayrıntıları\'nda farklı bir paket kullanmayı deneyin.</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Gönderim ücreti yok</string>
+    <string name="shipping_label_activate_service_package_empty_title">Mevcut tüm paketler etkinleştirildi</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Paket etkinleştirme</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Etkinleştirmek için bir paket seçin.</string>
+    <string name="error_required_field">Zorunlu alan</string>
+    <string name="close">Kapat</string>
     <string name="variation_created_title">Varyasyon Oluşturuldu</string>
     <string name="variation_list_generate_new_variation">Yeni varyasyon oluştur</string>
     <string name="product_wip_message_variations">Artık ürün çeşitleri oluşturabilir ve yönetebilirsiniz!</string>
@@ -26,7 +72,7 @@ Language: tr
     <string name="shipping_label_create_custom_package_generic_failure">Paket oluşturma işlemi başarısız oldu. Lütfen yeniden deneyin.</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Paket oluşturma başarısız oldu: bilinmeyen API sorunu.</string>
     <string name="shipping_label_create_custom_package_api_failure">Paket oluşturma başarısız oldu: %1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_create_package_saving_progress_message">Lütfen bekleyin…</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Yeni paket oluşturuluyor</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Geçersiz değer.</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Bu alan zorunludur.</string>
@@ -40,7 +86,7 @@ Language: tr
     <string name="shipping_label_create_custom_package_field_type_box">Kutu</string>
     <string name="shipping_label_create_custom_package_field_type_info">Paket tipini seçin</string>
     <string name="shipping_label_create_custom_package_field_type">Paket tipi</string>
-    <string name="shipping_label_create_custom_package_field_info">Ürünlerinizi göndereceğiniz paket tipini ayarlayın. Gelecekte aldığınız siparişler için bu seçiminizi hatırlayacağız.</string>
+    <string name="shipping_label_create_package_field_info">Ürünlerinizi göndereceğiniz paket tipini ayarlayın. Gelecekte aldığınız siparişler için bu seçiminizi hatırlayacağız.</string>
     <string name="shipping_label_create_package_title">Yeni paket ekle</string>
     <string name="shipping_label_create_new_package_button">Yeni paket oluştur</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Paket boyutları sıfırdan büyük olmalıdır. Devam etmek için lütfen ürün sayfanızın Gönderim kısmındaki öğenizin ölçülerini güncelleyin.</string>
@@ -239,7 +285,6 @@ Language: tr
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce\'ten gönderim etiketi satın alırken, postane fiyatlarına kıyasla %5 ila %40 indirimden yararlanırsınız.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  Hizmetleri indirimi nedir?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Gönderim seçenekleri yüklenirken hata oluştu</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">Seçilen adres ve paketler için gönderim seçeneği yok</string>
     <string name="shipping_label_shipping_carriers_title">Taşıyıcılar ve ücretler</string>
     <string name="shipping_label_create_purchase">Gönderim etiketi satın al</string>
     <string name="shipping_label_create_mark_order_complete">Bu siparişi tamamlandı olarak işaretleyin ve müşteriyi bilgilendirin</string>
@@ -305,7 +350,6 @@ Language: tr
     <string name="shipping_label_validation_view_map">Haritayı Aç</string>
     <string name="shipping_label_validation_contact_customer">Müşteri İle İletişime Geç</string>
     <string name="shipping_label_validation_error_template">Doğrulama başarısız: %s</string>
-    <string name="shipping_label_error_required_field">Zorunlu alan</string>
     <string name="shipping_label_error_address_invalid_street">Geçersiz sokak </string>
     <string name="shipping_label_error_address_house_number_missing">Ev numarası eksik</string>
     <string name="shipping_label_error_address_not_found">Adres bulunamadı</string>

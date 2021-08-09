@@ -4,15 +4,7 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
-import com.woocommerce.android.cardreader.BuildConfig
-import com.woocommerce.android.cardreader.CardPaymentStatus
-import com.woocommerce.android.cardreader.CardReader
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus
-import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.*
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
@@ -20,7 +12,6 @@ import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.math.BigDecimal
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -87,17 +78,13 @@ internal class CardReaderManagerImpl(
         return connectionManager.disconnectReader()
     }
 
-    override suspend fun collectPayment(
-        paymentDescription: String,
-        orderId: Long,
-        amount: BigDecimal,
-        currency: String,
-        customerEmail: String?
-    ): Flow<CardPaymentStatus> =
-        paymentManager.acceptPayment(paymentDescription, orderId, amount, currency, customerEmail)
+    override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> =
+        paymentManager.acceptPayment(paymentInfo)
 
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
         paymentManager.retryPayment(orderId, paymentData)
+
+    override fun cancelPayment(paymentData: PaymentData) = paymentManager.cancelPayment(paymentData)
 
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)

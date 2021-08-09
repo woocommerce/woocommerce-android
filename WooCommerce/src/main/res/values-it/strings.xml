@@ -26,7 +26,6 @@ Language: it
     <string name="shipping_label_create_custom_package_generic_failure">Creazione del pacchetto non riuscita. Riprova.</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Creazione del pacchetto non riuscita: problema API sconosciuto.</string>
     <string name="shipping_label_create_custom_package_api_failure">Creazione del pacchetto non riuscita: %1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Attendi…</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Creazione di un nuovo pacchetto</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Valore non valido.</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Campo richiesto.</string>
@@ -40,7 +39,6 @@ Language: it
     <string name="shipping_label_create_custom_package_field_type_box">Confezione</string>
     <string name="shipping_label_create_custom_package_field_type_info">Scegli tipo di pacchetto</string>
     <string name="shipping_label_create_custom_package_field_type">Tipo di pacchetto</string>
-    <string name="shipping_label_create_custom_package_field_info">Configura il pacchetto che utilizzerai per spedire i tuoi prodotti. Lo salveremo per ordini futuri.</string>
     <string name="shipping_label_create_package_title">Aggiungi un nuovo pacchetto</string>
     <string name="shipping_label_create_new_package_button">Crea un nuovo pacchetto</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Le dimensioni del pacchetto devono essere superiori a zero. Aggiorna le dimensioni dell\'elemento nella sezione Spedizione della pagina del prodotto per continuare.</string>
@@ -239,7 +237,6 @@ Language: it
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Quando acquisti le etichette di spedizione tramite WooCommerce, ottieni dal 5​% 25 al 40​% 25 di sconto rispetto alle tariffe degli uffici postali.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Cos\'è lo sconto di WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Si è verificato un errore durante il caricamento delle opzioni di spedizione</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">Non sono presenti opzioni di spedizione per l\'indirizzo e i pacchetti selezionati</string>
     <string name="shipping_label_shipping_carriers_title">Corrieri e tariffe</string>
     <string name="shipping_label_create_purchase">Acquista l\'etichetta di spedizione</string>
     <string name="shipping_label_create_mark_order_complete">Contrassegna questo ordine come completato e invia una notifica al cliente</string>
@@ -277,7 +274,6 @@ Language: it
     <string name="product_add_attribute">Aggiungi attributo</string>
     <string name="product_variation_attributes">Attributi</string>
     <string name="product_variations_edit_attr">Modifica attributi</string>
-    <string name="shipping_label_multi_packages_total_weight">Peso del pacchetto totale: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d articoli in %2$d pacchetti</string>
     <string name="shipping_label_single_package_total_weight">Peso del pacchetto totale: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Pacchetti personalizzati</string>
@@ -305,7 +301,6 @@ Language: it
     <string name="shipping_label_validation_view_map">Apri mappa</string>
     <string name="shipping_label_validation_contact_customer">Contatta cliente</string>
     <string name="shipping_label_validation_error_template">Convalida non riuscita: %s</string>
-    <string name="shipping_label_error_required_field">Campo obbligatorio</string>
     <string name="shipping_label_error_address_invalid_street">Strada non valida</string>
     <string name="shipping_label_error_address_house_number_missing">Numero civico mancante</string>
     <string name="shipping_label_error_address_not_found">Indirizzo non trovato</string>

@@ -21,6 +21,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -189,6 +190,19 @@ data class Order(
 
         @Parcelize
         data class Custom(private val customValue: String) : Status(customValue)
+    }
+
+    /**
+     * This method converts the [Order] model to [WCOrderModel].
+     * Currently only includes the id, localSiteId and remoteOrderId
+     * since we only use these 3 fields when updating an order status
+     */
+    fun toDataModel(): WCOrderModel {
+        return WCOrderModel().also {
+            it.id = identifier.toIdSet().id
+            it.remoteOrderId = remoteId
+            it.localSiteId = localSiteId
+        }
     }
 }
 

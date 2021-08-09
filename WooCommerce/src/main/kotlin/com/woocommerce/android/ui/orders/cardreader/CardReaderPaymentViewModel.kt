@@ -29,6 +29,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -81,7 +82,10 @@ class CardReaderPaymentViewModel
     val viewStateData: LiveData<ViewState> = viewState
 
     private var paymentFlowJob: Job? = null
-    @VisibleForTesting var refetchOrderJob: Job? = null
+    private var paymentDataForRetry: PaymentData? = null
+
+    @VisibleForTesting
+    var refetchOrderJob: Job? = null
 
     fun start() {
         // TODO cardreader Make sure a reader is connected
@@ -134,11 +138,16 @@ class CardReaderPaymentViewModel
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
         cardReaderManager.collectPayment(
-            paymentDescription = order.getPaymentDescription(),
-            orderId = order.remoteId,
-            amount = order.total,
-            currency = order.currency,
-            customerEmail = customerEmail.ifEmpty { null }
+            PaymentInfo(
+                paymentDescription = order.getPaymentDescription(),
+                orderId = order.remoteId,
+                amount = order.total,
+                currency = order.currency,
+                customerEmail = customerEmail.ifEmpty { null },
+                customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
+                storeName = selectedSite.get().name.ifEmpty { null },
+                siteUrl = selectedSite.get().url.ifEmpty { null },
+            )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
         }
@@ -150,6 +159,7 @@ class CardReaderPaymentViewModel
         paymentStatus: CardPaymentStatus,
         amountLabel: String
     ) {
+        paymentDataForRetry = null
         when (paymentStatus) {
             InitializingPayment -> viewState.postValue(LoadingDataState)
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
@@ -166,6 +176,7 @@ class CardReaderPaymentViewModel
                 // TODO cardreader prompt the user to tap/insert a card
             }
             is PaymentFailed -> {
+                paymentDataForRetry = paymentStatus.paymentDataForRetry
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
                     this@CardReaderPaymentViewModel.javaClass.simpleName,
@@ -201,7 +212,7 @@ class CardReaderPaymentViewModel
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
-        WooLog.e(WooLog.T.ORDERS, error.errorMessage)
+        WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
@@ -282,9 +293,13 @@ class CardReaderPaymentViewModel
     }
 
     // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
-    override fun onCleared() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public override fun onCleared() {
         super.onCleared()
         orderRepository.onCleanup()
+        paymentDataForRetry?.let {
+            cardReaderManager.cancelPayment(it)
+        }
     }
 
     fun onBackPressed() {
