@@ -489,7 +489,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     ) : Parcelable {
         @IgnoredOnParcel
         val isInternationalShipment
-            get() = stepsState.isInternational
+            get() = stepsState.isCustomsFormRequired
     }
 
     /**
@@ -552,8 +552,26 @@ class ShippingLabelsStateMachine @Inject constructor() {
         val paymentsStep: PaymentsStep
     ) : Parcelable, Iterable<Step<out Any?>> {
         @IgnoredOnParcel
-        val isInternational
-            get() = originAddressStep.data.country != shippingAddressStep.data.country
+        val isCustomsFormRequired: Boolean by lazy {
+            val originAddress = originAddressStep.data
+            val shippingAddress = shippingAddressStep.data
+
+            return@lazy when {
+                originAddress.country == "US" &&
+                    US_MILITARY_STATES.any { it == originAddress.state || it == shippingAddress.state } -> {
+                    // Special case: Any shipment from/to military addresses must have Customs
+                    true
+                }
+                DOMESTIC_US_TERRITORIES.contains(originAddress.country) &&
+                    DOMESTIC_US_TERRITORIES.contains(shippingAddress.country) -> {
+                    // Shipments between US, Puerto Rico and Virgin Islands don't need Customs
+                    false
+                }
+                else -> {
+                    originAddress.country != shippingAddress.country
+                }
+            }
+        }
 
         @IgnoredOnParcel
         private val backingList = listOf(
@@ -612,11 +630,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
 
         private fun updateForInternationalRequirements(): StepsState {
-            val originAddressStep = if (isInternational && !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN)) {
+            val originAddressStep = if (isCustomsFormRequired && !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN)) {
                 originAddressStep.copy(status = READY)
             } else originAddressStep
 
-            val shippingAddressStep = if (isInternational &&
+            val shippingAddressStep = if (isCustomsFormRequired &&
                 carrierStep.requiresDestinationPhoneNumber &&
                 !shippingAddressStep.data.phone.isValidPhoneNumber(DESTINATION)
             ) {
@@ -624,8 +642,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
             } else shippingAddressStep
 
             val customsStep = customsStep.copy(
-                isVisible = isInternational,
-                data = if (isInternational) customsStep.data else null
+                isVisible = isCustomsFormRequired,
+                data = if (isCustomsFormRequired) customsStep.data else null
             )
 
             return copy(
@@ -840,3 +858,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     data class Transition(val state: State, val sideEffect: SideEffect?)
 }
+
+// These US states are a special case because they represent military bases. They're considered "domestic",
+// but they require a Customs form to ship from/to them.
+private val US_MILITARY_STATES = arrayOf("AA","AE","AP")
+
+// Packages shipping to or from the US, Puerto Rico and Virgin Islands don't need a Customs form
+private val DOMESTIC_US_TERRITORIES = arrayOf("US","PR","VI")
