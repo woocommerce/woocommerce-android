@@ -631,7 +631,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
             .fixStates()
 
         private fun updateForInternationalRequirements(): StepsState {
-            val originAddressStep = if (isCustomsFormRequired && !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN)) {
+            val originAddressStep = if (isCustomsFormRequired &&
+                !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN)
+            ) {
                 originAddressStep.copy(status = READY)
             } else originAddressStep
 
