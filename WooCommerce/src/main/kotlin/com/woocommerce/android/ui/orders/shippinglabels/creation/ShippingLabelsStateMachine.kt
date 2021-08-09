@@ -132,15 +132,15 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.DataLoading> {
             on<Event.DataLoaded> { event ->
-                val isInternational = event.shippingAddress.country != event.originAddress.country
                 val steps = StepsState(
                     originAddressStep = OriginAddressStep(READY, event.originAddress),
                     shippingAddressStep = ShippingAddressStep(NOT_READY, event.shippingAddress),
                     packagingStep = PackagingStep(NOT_READY, emptyList()),
-                    customsStep = CustomsStep(NOT_READY, isVisible = isInternational, data = null),
+                    customsStep = CustomsStep(NOT_READY, data = null),
                     carrierStep = CarrierStep(NOT_READY, emptyList()),
                     paymentsStep = PaymentsStep(NOT_READY, event.currentPaymentMethod)
-                )
+                ).checkRequirementsAndUpdateState()
+
                 val data = StateMachineData(
                     order = event.order,
                     stepsState = steps
@@ -518,7 +518,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         @Parcelize
         data class CustomsStep(
             override val status: StepStatus,
-            override val isVisible: Boolean,
+            override val isVisible: Boolean = false,
             override val data: List<CustomsPackage>?
         ) : Step<List<CustomsPackage>?>()
 
@@ -623,10 +623,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     paymentsStep = paymentsStep.copy(status = DONE, data = newData as PaymentMethod)
                 )
             }
-                .updateForInternationalRequirements()
-                .calculateNextStep()
-                .fixStates()
+                .checkRequirementsAndUpdateState()
         }
+
+        fun checkRequirementsAndUpdateState() = updateForInternationalRequirements()
+            .calculateNextStep()
+            .fixStates()
 
         private fun updateForInternationalRequirements(): StepsState {
             val originAddressStep = if (isCustomsFormRequired && !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN)) {
