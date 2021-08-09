@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-23 13:16:40+0000
+Translation-Revision-Date: 2021-08-04 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="settings_card_reader_payments">现场付款</string>
+    <string name="card_reader_tutorial_charged_detail">您的读卡器充满电大约需要三个小时的时间。</string>
+    <string name="card_reader_tutorial_charged_label">请确保读卡器有电</string>
+    <string name="card_reader_tutorial_reconnect_detail">读卡器如果 10 分钟未活动，将进入睡眠状态。 只需按下电源按钮，即可重新连接。</string>
+    <string name="card_reader_tutorial_reconnect_label">Automattic 重连</string>
+    <string name="card_reader_tutorial_collect_detail">收款时，只需在读卡器上刷卡、点按或插卡即可</string>
+    <string name="card_reader_tutorial_collect_label">刷卡、点按或插卡</string>
+    <string name="card_reader_tutorial_connected_detail">恭喜您，现在可以接受借记卡和信用卡付款了！</string>
+    <string name="card_reader_tutorial_connected_label">已连接读卡器</string>
+    <string name="card_reader_onboarding_contact_support">需要一些帮助？ &lt;a href=\'\'&gt;联系支持&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;详细了解&lt;/a&gt;使用移动设备接受付款和订购读卡器</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">测试模式中不支持现场付款。 请将其关闭后再继续。</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">当前不支持现场付款</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">您的帐户中存在待处理的要求。 请在 %1$s 之前完成这些要求，以继续接受现场付款。</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">您的 WooCommerce Payments 帐户中存在待处理的要求。</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">您的帐户中至少有一项逾期要求。 请注意恢复现场付款</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">当前不支持现场付款</string>
+    <string name="card_reader_onboarding_account_under_review_hint">我们完成您的帐户审核后，您即可接受现场付款。</string>
+    <string name="card_reader_onboarding_account_under_review_header">当前不支持现场付款</string>
+    <string name="card_reader_onboarding_account_rejected_hint">抱歉，我们不能为这家商店提供现场付款支持。</string>
+    <string name="card_reader_onboarding_account_rejected_header">这家商店不支持现场付款</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">更新后刷新</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">您的商店中安装的 WooCommerce Payments 扩展程序版本已过时。 请更新，以支持现场付款。</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">刷新</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">您即将大功告成！ 请完成 WooCommerce Payments 设置，以支持现场刷卡付款。</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">在您的商店管理页面中完成 WooCommerce Payments 设置 </string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">激活后刷新</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">您的商店中已安装 WooCommerce Payments 扩展程序，但未激活。 请激活它，以支持现场付款。</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">激活 WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">安装后刷新</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">您需要在您的商店中安装免费的 WooCommerce Payments 扩展程序，才能支持现场付款。</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">安装 WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;详细了解&lt;/a&gt;使用移动设备接受付款和订购读卡器</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">需要一些帮助？ &lt;a href=\'\'&gt;联系支持&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">您仍然可以在商店中启用“货到付款”的支付方式，来接受现场现金付款。</string>
+    <string name="card_reader_onboarding_country_not_supported_header">在 %1$s 中，我们不支持现场付款。</string>
+    <string name="card_reader_onboarding_loading">连接到您的帐户</string>
+    <string name="card_reader_onboarding_title">现场付款</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">请仔细检查您的包裹尺寸和重量，或在“包裹详情”中尝试使用不同的包裹。</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">没有适用的运费</string>
+    <string name="shipping_label_activate_service_package_empty_title">已激活所有适用包裹</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">正在激活包裹</string>
+    <string name="shipping_label_create_service_package_nothing_selected">选择一个包裹进行激活。</string>
+    <string name="error_required_field">必填字段</string>
+    <string name="close">关闭</string>
     <string name="variation_created_title">已创建变体</string>
     <string name="variation_list_generate_new_variation">生成新变体</string>
     <string name="product_wip_message_variations">您现在可以创建和管理产品变体！</string>
@@ -26,7 +72,7 @@ Language: zh_CN
     <string name="shipping_label_create_custom_package_generic_failure">包裹创建失败。 请重试。</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">包裹创建失败：未知的 API 问题。</string>
     <string name="shipping_label_create_custom_package_api_failure">包裹创建失败：%1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">请稍候…</string>
+    <string name="shipping_label_create_package_saving_progress_message">请稍候…</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">创建新包裹</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">无效值。</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">此字段为必填字段。</string>
@@ -40,7 +86,7 @@ Language: zh_CN
     <string name="shipping_label_create_custom_package_field_type_box">包装箱</string>
     <string name="shipping_label_create_custom_package_field_type_info">选择包裹类型</string>
     <string name="shipping_label_create_custom_package_field_type">包裹类型</string>
-    <string name="shipping_label_create_custom_package_field_info">设置您要用来发运商品的包裹。 我们会保存它，以供您在将来的订单中使用。</string>
+    <string name="shipping_label_create_package_field_info">设置您要用来发运商品的包裹。 我们会保存它，以供您在将来的订单中使用。</string>
     <string name="shipping_label_create_package_title">添加新包裹</string>
     <string name="shipping_label_create_new_package_button">创建新包裹</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">包裹尺寸必须大于零。 请在产品页面的“发货”部分更新产品的尺寸以继续。</string>
@@ -238,7 +284,6 @@ Language: zh_CN
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">相比邮局的收费标准，使用 WooCommerce 购买配送标签可以获得 5% 至 40% 的优惠。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  服务折扣是什么？</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">加载配送选项时出现错误</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">所选地址和包裹没有配送选项。</string>
     <string name="shipping_label_shipping_carriers_title">承运商和收费标准</string>
     <string name="shipping_label_create_purchase">购买配送标签</string>
     <string name="shipping_label_create_mark_order_complete">将订单标注为已完成并通知客户</string>
@@ -304,7 +349,6 @@ Language: zh_CN
     <string name="shipping_label_validation_view_map">打开地图</string>
     <string name="shipping_label_validation_contact_customer">联系客户</string>
     <string name="shipping_label_validation_error_template">验证失败：%s</string>
-    <string name="shipping_label_error_required_field">必填字段</string>
     <string name="shipping_label_error_address_invalid_street">街道无效</string>
     <string name="shipping_label_error_address_house_number_missing">缺少房屋编号</string>
     <string name="shipping_label_error_address_not_found">找不到地址</string>

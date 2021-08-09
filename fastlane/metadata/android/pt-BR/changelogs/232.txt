@@ -1,4 +1,0 @@
-7.1:
-Alguns comerciantes nos EUA que usam a extensão WooCommerce Shipping & Tax perceberam um bug ao criar etiquetas para pedidos com quantidades decimais de produtos. Já foi corrigido!
-
-Quer experimentar a criação de etiquetas? Instale e ative a extensão WooCommerce Shipping & Tax na sua loja. No momento, oferecemos suporte a comerciantes nos EUA que enviam produtos para todo o mundo. Adoraríamos receber seu feedback!

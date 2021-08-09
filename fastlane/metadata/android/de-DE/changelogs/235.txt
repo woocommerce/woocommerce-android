@@ -1,0 +1,2 @@
+7.2:
+Wir haben uns diesmal darauf konzentriert, das Produkt für dich noch stabiler und zuverlässiger zu machen. Es wurden einige Bugs behoben, darunter einer, bei dem die Produktliste manchmal leer war, wenn ein Produkt im Gesamtumsatz einen unerwarteten Wert enthielt. Danke, dass du dich auf dem Laufenden hältst, und immer her mit deinem Feedback!
