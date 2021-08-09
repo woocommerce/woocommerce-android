@@ -117,7 +117,9 @@ data class Order(
                     .findAll(key)
                     .first().groupValues
                     .takeIf { it.size == 3 }
-                    ?.let { Pair(it[1], it.last()) }
+                    ?.toMutableList()
+                    ?.apply { removeFirst() }
+                    ?.let { Pair(it.first(), it.last()) }
         }
 
         /**
