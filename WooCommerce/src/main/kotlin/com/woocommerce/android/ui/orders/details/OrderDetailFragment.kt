@@ -150,10 +150,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 showProductListMenuButton(it)
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it, false)
-            }
-            new.isReprintShippingLabelBannerVisible.takeIfNotEqualTo(old?.isReprintShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it, true)
+                displayShippingLabelsWIPCard(it)
             }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
@@ -431,30 +428,21 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
     }
 
-    private fun displayShippingLabelsWIPCard(show: Boolean, isReprintBanner: Boolean) {
+    private fun displayShippingLabelsWIPCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
             binding.orderDetailShippingLabelsWipCard.isVisible = true
-            val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner) {
-                R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
-            } else {
-                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m3_wip_message
-            }
 
             binding.orderDetailShippingLabelsWipCard.initView(
-                getString(wipCardTitleId),
-                getString(wipCardMessageId),
-                onGiveFeedbackClick = { onGiveFeedbackClicked(isReprintBanner) },
-                onDismissClick = { onDismissProductWIPNoticeCardClicked(isReprintBanner) }
+                getString(R.string.orderdetail_shipping_label_m2_wip_title),
+                getString(R.string.orderdetail_shipping_label_m3_wip_message),
+                onGiveFeedbackClick = { onGiveFeedbackClicked() },
+                onDismissClick = { onDismissProductWIPNoticeCardClicked() }
             )
         } else binding.orderDetailShippingLabelsWipCard.isVisible = false
     }
 
-    private fun onGiveFeedbackClicked(isM1: Boolean) {
-        val context = if (isM1) {
-            AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
-        } else {
-            AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
-        }
+    private fun onGiveFeedbackClicked() {
+        val context = AnalyticsTracker.VALUE_SHIPPING_LABELS_M4_FEEDBACK
 
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER,
@@ -469,12 +457,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             .apply { findNavController().navigateSafely(this) }
     }
 
-    private fun onDismissProductWIPNoticeCardClicked(isM1: Boolean) {
-        val context = if (isM1) {
-            AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
-        } else {
-            AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
-        }
+    private fun onDismissProductWIPNoticeCardClicked() {
+        val context = AnalyticsTracker.VALUE_SHIPPING_LABELS_M4_FEEDBACK
 
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER,
@@ -484,7 +468,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             )
         )
         registerFeedbackSetting(DISMISSED)
-        displayShippingLabelsWIPCard(false, isM1)
+        displayShippingLabelsWIPCard(false)
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
