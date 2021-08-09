@@ -194,7 +194,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = data.stepsState.originAddressStep.data,
                         type = ORIGIN,
-                        requiresPhoneNumber = data.isInternationalShipment
+                        requiresPhoneNumber = data.isCustomsFormRequired
                     )
                 )
             }
@@ -204,7 +204,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = data.stepsState.shippingAddressStep.data,
                         type = DESTINATION,
-                        requiresPhoneNumber = data.isInternationalShipment &&
+                        requiresPhoneNumber = data.isCustomsFormRequired &&
                             data.stepsState.carrierStep.requiresDestinationPhoneNumber
                     )
                 )
@@ -261,7 +261,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         address = data.stepsState.originAddressStep.data,
                         type = ORIGIN,
                         validationResult = event.validationResult,
-                        requiresPhoneNumber = data.isInternationalShipment
+                        requiresPhoneNumber = data.isCustomsFormRequired
                     )
                 )
             }
@@ -283,7 +283,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = event.address,
                         type = ORIGIN,
-                        requiresPhoneNumber = data.isInternationalShipment
+                        requiresPhoneNumber = data.isCustomsFormRequired
                     )
                 )
             }
@@ -328,7 +328,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         address = data.stepsState.shippingAddressStep.data,
                         type = DESTINATION,
                         validationResult = event.validationResult,
-                        requiresPhoneNumber = data.isInternationalShipment &&
+                        requiresPhoneNumber = data.isCustomsFormRequired &&
                             data.stepsState.carrierStep.requiresDestinationPhoneNumber
                     )
                 )
@@ -351,7 +351,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = event.address,
                         type = DESTINATION,
-                        requiresPhoneNumber = data.isInternationalShipment &&
+                        requiresPhoneNumber = data.isCustomsFormRequired &&
                             data.stepsState.carrierStep.requiresDestinationPhoneNumber
                     )
                 )
@@ -488,7 +488,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         val stepsState: StepsState
     ) : Parcelable {
         @IgnoredOnParcel
-        val isInternationalShipment
+        val isCustomsFormRequired
             get() = stepsState.isCustomsFormRequired
     }
 
