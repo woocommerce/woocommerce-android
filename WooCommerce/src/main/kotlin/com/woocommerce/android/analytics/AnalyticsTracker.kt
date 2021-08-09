@@ -732,8 +732,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
         const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
-        const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
-        const val VALUE_SHIPPING_LABELS_M2_FEEDBACK = "shipping_labels_m2"
+        const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"

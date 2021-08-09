@@ -649,9 +649,6 @@ class OrderDetailViewModel @Inject constructor(
 
         val isCreateShippingLabelBannerVisible: Boolean
             get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
-
-        val isReprintShippingLabelBannerVisible: Boolean
-            get() = !isCreateShippingLabelBannerVisible && areShippingLabelsVisible == true
     }
 
     @Parcelize
