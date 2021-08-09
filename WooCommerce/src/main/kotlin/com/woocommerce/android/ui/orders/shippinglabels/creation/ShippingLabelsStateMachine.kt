@@ -551,25 +551,24 @@ class ShippingLabelsStateMachine @Inject constructor() {
         val carrierStep: CarrierStep,
         val paymentsStep: PaymentsStep
     ) : Parcelable, Iterable<Step<out Any?>> {
+        companion object {
+            // These US states are a special case because they represent military bases. They're considered "domestic",
+            // but they require a Customs form to ship from/to them.
+            private val US_MILITARY_STATES = arrayOf("AA", "AE", "AP")
+        }
+
         @IgnoredOnParcel
         val isCustomsFormRequired: Boolean by lazy {
             val originAddress = originAddressStep.data
             val shippingAddress = shippingAddressStep.data
 
-            return@lazy when {
-                originAddress.country == "US" &&
-                    US_MILITARY_STATES.any { it == originAddress.state || it == shippingAddress.state } -> {
-                    // Special case: Any shipment from/to military addresses must have Customs
-                    true
-                }
-                DOMESTIC_US_TERRITORIES.contains(originAddress.country) &&
-                    DOMESTIC_US_TERRITORIES.contains(shippingAddress.country) -> {
-                    // Shipments between US, Puerto Rico and Virgin Islands don't need Customs
-                    false
-                }
-                else -> {
-                    originAddress.country != shippingAddress.country
-                }
+            fun Address.isUSMilitaryState() = country == "US" && US_MILITARY_STATES.contains(state)
+
+            return@lazy if (originAddress.isUSMilitaryState() || shippingAddress.isUSMilitaryState()) {
+                // Special case: Any shipment from/to military addresses must have Customs
+                true
+            } else {
+                originAddress.country != shippingAddress.country
             }
         }
 
@@ -858,10 +857,3 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     data class Transition(val state: State, val sideEffect: SideEffect?)
 }
-
-// These US states are a special case because they represent military bases. They're considered "domestic",
-// but they require a Customs form to ship from/to them.
-private val US_MILITARY_STATES = arrayOf("AA","AE","AP")
-
-// Packages shipping to or from the US, Puerto Rico and Virgin Islands don't need a Customs form
-private val DOMESTIC_US_TERRITORIES = arrayOf("US","PR","VI")
