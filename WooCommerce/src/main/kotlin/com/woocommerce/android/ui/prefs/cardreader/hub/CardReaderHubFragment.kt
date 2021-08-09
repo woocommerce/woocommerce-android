@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs.cardreader.hub
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
