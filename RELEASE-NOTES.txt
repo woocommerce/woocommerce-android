@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+7.4
+-----
+
+
 7.3
 -----
 - [***] Shipping Labels: merchants can add new payment methods and create packages directly from the app, the labels can also contain multiple packages [https://github.com/woocommerce/woocommerce-android/pull/4529]
