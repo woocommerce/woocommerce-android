@@ -16,7 +16,6 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -84,32 +83,28 @@ class ProductFilterListViewModel @Inject constructor(
 
     fun getFilterByProductType() = productFilterOptions[TYPE]
 
-    private fun loadCategories() {
-        launch {
-            // First get the categories from the db
-            val productsInDb = productCategoriesRepository.getProductCategoriesList()
-            _productCategories.value = productsInDb
-
-            if (networkStatus.isConnected()) {
-                _productCategories.value = productCategoriesRepository.fetchProductCategories()
-            } else {
-                triggerEvent(ShowSnackbar(string.product_category_fetch_error))
-            }
+    private suspend fun loadCategories() {
+        if (networkStatus.isConnected()) {
+            _productCategories.value = productCategoriesRepository.fetchProductCategories()
+        } else {
+            _productCategories.value = productCategoriesRepository.getProductCategoriesList()
         }
     }
 
     fun loadFilters() {
-        loadCategories()
-        _filterListItems.value = buildFilterListItemUiModel()
+        launch {
+            loadCategories()
+            _filterListItems.value = buildFilterListItemUiModel()
 
-        val screenTitle = if (productFilterOptions.isNotEmpty()) {
-            resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
-        } else resourceProvider.getString(string.product_list_filters)
+            val screenTitle = if (productFilterOptions.isNotEmpty()) {
+                resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
+            } else resourceProvider.getString(string.product_list_filters)
 
-        productFilterListViewState = productFilterListViewState.copy(
-            screenTitle = screenTitle,
-            displayClearButton = productFilterOptions.isNotEmpty()
-        )
+            productFilterListViewState = productFilterListViewState.copy(
+                screenTitle = screenTitle,
+                displayClearButton = productFilterOptions.isNotEmpty()
+            )
+        }
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
