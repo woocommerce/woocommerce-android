@@ -5,6 +5,7 @@ import com.woocommerce.android.util.locale.LocaleProvider
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -111,8 +112,13 @@ class CurrencyFormatter @Inject constructor(
     }
 
     /**
-     * Returns currency symbol for the provided currency code - eg. $ for USD.
+     * Returns formatted amount with currency symbol - eg. $113.5 for EN/USD or 113,5€ for FR/EUR.
      */
-    fun getCurrencySymbol(currencyCode: String): String =
-        Currency.getInstance(currencyCode).getSymbol(localeProvider.provideLocale() ?: Locale.getDefault())
+    fun formatAmountWithCurrency(currencyCode: String, amount: Double): String {
+        val locale = localeProvider.provideLocale() ?: Locale.getDefault()
+        val formatter = NumberFormat.getCurrencyInstance(locale)
+        formatter.currency = Currency.getInstance(currencyCode)
+        return formatter.format(amount)
+    }
+
 }
