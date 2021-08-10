@@ -69,8 +69,10 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
 
 private val noop = object : Callback {
     override fun onFailure(e: TerminalException) {
+        // noop
     }
 
     override fun onSuccess() {
+        // noop
     }
 }
