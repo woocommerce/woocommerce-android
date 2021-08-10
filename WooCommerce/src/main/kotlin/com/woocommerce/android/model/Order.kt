@@ -111,16 +111,7 @@ data class Order(
         data class Attribute(
             val key: String,
             val value: String
-        ) : Parcelable {
-            val asFilteredPair
-                get() = "(.*?) \\((.*?)\\)".toRegex()
-                    .findAll(key)
-                    .first().groupValues
-                    .takeIf { it.size == 3 }
-                    ?.toMutableList()
-                    ?.apply { removeFirst() }
-                    ?.let { Pair(it.first(), it.last()) }
-        }
+        ) : Parcelable
 
         /**
          * @return a comma-separated list of attribute values for display
