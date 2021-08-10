@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
@@ -73,7 +74,8 @@ class CardReaderPaymentViewModel
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
-    private val tracker: AnalyticsTrackerWrapper
+    private val tracker: AnalyticsTrackerWrapper,
+    private val currencyFormatter: CurrencyFormatter,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -297,7 +299,6 @@ class CardReaderPaymentViewModel
         )
     }
 
-    // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onCleared() {
         super.onCleared()
@@ -341,8 +342,7 @@ class CardReaderPaymentViewModel
             selectedSite.get().name.orEmpty()
         )
 
-    // TODO cardreader don't hardcode currency symbol ($)
-    private fun Order.getAmountLabel() = "$$total"
+    private fun Order.getAmountLabel() = "${currencyFormatter.getCurrencySymbol(this.currency)}$total"
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 

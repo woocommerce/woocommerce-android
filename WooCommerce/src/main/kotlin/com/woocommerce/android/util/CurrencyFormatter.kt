@@ -2,7 +2,6 @@ package com.woocommerce.android.util
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
-import dagger.Reusable
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -17,7 +16,8 @@ typealias FormatCurrencyRounded = (rawValue: Double, currencyCode: String) -> St
 @Singleton
 class CurrencyFormatter @Inject constructor(
     private val wcStore: WooCommerceStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val localeProvider: LocaleProvider,
 ) {
     companion object {
         private const val ONE_THOUSAND = 1000
@@ -109,4 +109,10 @@ class CurrencyFormatter @Inject constructor(
     fun buildBigDecimalFormatter(currencyCode: String) = { amount: BigDecimal ->
         formatCurrency(amount, currencyCode, true)
     }
+
+    /**
+     * Returns currency symbol for the provided currency code - eg. $ for USD.
+     */
+    fun getCurrencySymbol(currencyCode: String): String =
+        Currency.getInstance(currencyCode).getSymbol(localeProvider.provideLocale() ?: Locale.getDefault())
 }
