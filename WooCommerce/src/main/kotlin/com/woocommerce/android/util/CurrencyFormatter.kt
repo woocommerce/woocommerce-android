@@ -120,5 +120,4 @@ class CurrencyFormatter @Inject constructor(
         formatter.currency = Currency.getInstance(currencyCode)
         return formatter.format(amount)
     }
-
 }
