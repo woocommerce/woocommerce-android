@@ -175,7 +175,7 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
-        return listOf(
+        val filterListItems = mutableListOf(
             FilterListItemUiModel(
                 STOCK_STATUS,
                 resourceProvider.getString(string.product_stock_status),
@@ -217,6 +217,31 @@ class ProductFilterListViewModel @Inject constructor(
                     }.toMutableList(),
                     productFilterOptions[TYPE].isNullOrEmpty()
                 )
+            )
+        )
+
+        _productCategories.value?.let { categoryList ->
+            filterListItems.add(
+                buildCategoryFilterListItemUiModel(categoryList)
+            )
+        }
+
+        return filterListItems
+    }
+
+    private fun buildCategoryFilterListItemUiModel(categoryList: List<ProductCategory>): FilterListItemUiModel {
+        return FilterListItemUiModel(
+            CATEGORY,
+            resourceProvider.getString(string.product_category),
+            addDefaultFilterOption(
+                categoryList.map { category ->
+                    FilterListOptionItemUiModel(
+                        category.name,
+                        category.remoteCategoryId.toString(),
+                        isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString()
+                    )
+                }.toMutableList(),
+                productFilterOptions[CATEGORY].isNullOrEmpty()
             )
         )
     }
