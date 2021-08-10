@@ -1,15 +1,24 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.locale.LocaleProvider
+import dagger.Reusable
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 typealias FormatCurrencyRounded = (rawValue: Double, currencyCode: String) -> String
 
-class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selectedSite: SelectedSite) {
+@Singleton
+class CurrencyFormatter @Inject constructor(
+    private val wcStore: WooCommerceStore,
+    private val selectedSite: SelectedSite
+) {
     companion object {
         private const val ONE_THOUSAND = 1000
         private const val ONE_MILLION = 1000000
