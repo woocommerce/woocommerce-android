@@ -968,6 +968,8 @@
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
     <string name="product_type">Product type</string>
+    <string name="product_category">Category</string>
+    <string name="product_category_fetch_error">Your network is unavailable. Categories list might not be accurate.</string>
     <string name="product_type_description">%s product</string>
     <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
