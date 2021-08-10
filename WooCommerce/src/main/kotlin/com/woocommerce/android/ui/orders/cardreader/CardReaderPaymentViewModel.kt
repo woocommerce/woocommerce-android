@@ -60,6 +60,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -342,7 +343,8 @@ class CardReaderPaymentViewModel
             selectedSite.get().name.orEmpty()
         )
 
-    private fun Order.getAmountLabel() = "${currencyFormatter.getCurrencySymbol(this.currency)}$total"
+    private fun Order.getAmountLabel(): String = currencyFormatter
+        .formatAmountWithCurrency(this.currency, this.total.toDouble())
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 
