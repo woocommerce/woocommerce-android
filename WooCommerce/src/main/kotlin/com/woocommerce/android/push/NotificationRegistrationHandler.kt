@@ -17,8 +17,8 @@ class NotificationRegistrationHandler @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     fun onNewFCMTokenReceived(token: String) {
-        // Register for WordPress.com notifications only if user is logged in
-        if (accountStore.hasAccessToken()) {
+        // Register for WordPress.com notifications only if user is logged in & if site exists
+        if (accountStore.hasAccessToken() && selectedSite.exists()) {
             preferencesWrapper.setFCMToken(token)
 
             val payload = RegisterDevicePayload(
