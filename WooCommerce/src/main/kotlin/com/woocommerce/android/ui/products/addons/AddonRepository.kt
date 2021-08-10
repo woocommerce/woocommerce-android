@@ -15,5 +15,30 @@ class AddonRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
+    private val attributesRegex = "(.*?) \\((.*?)\\)".toRegex()
 
+    private fun fetchOrderedAddonsData(
+        order: Order,
+        productID: Long
+    ) : Pair<List<ProductAddon>, List<Order.Item.Attribute>>? =
+        order.findAttributesFromProduct(productID)?.let { attributes ->
+            productStore
+                .getProductByRemoteId(selectedSite.get(), productID)
+                ?.toAppModel()
+                ?.addons
+                ?.let { addons -> Pair(addons, attributes) }
+        }
+
+    private fun Order.findAttributesFromProduct(productID: Long) =
+        items.find { it.productId == productID }
+            ?.attributesList
+
+    private val Order.Item.Attribute.asFilteredPair
+        get() = attributesRegex
+            .findAll(key)
+            .first().groupValues
+            .takeIf { it.size == 3 }
+            ?.toMutableList()
+            ?.apply { removeFirst() }
+            ?.let { Pair(it.first(), it.last()) }
 }
