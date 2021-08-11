@@ -40,5 +40,5 @@ class OrderedAddonViewModel @Inject constructor(
         addons: List<ProductAddon>,
         attributes: List<Order.Item.Attribute>
     ) = attributes.mapNotNull { it.key.asParsedPair }
-            .map { pair -> addons.find { it.name == pair.first } }
+        .map { pair -> addons.find { it.name == pair.first } }
 }
