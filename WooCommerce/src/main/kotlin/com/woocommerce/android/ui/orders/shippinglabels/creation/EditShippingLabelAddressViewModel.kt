@@ -338,7 +338,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType),
             cityField = RequiredField(args.address.city),
             zipField = RequiredField(args.address.postcode),
-            stateField = LocationField(Location(code = args.address.state, name = "")),
+            stateField = LocationField(Location(code = args.address.state, name = args.address.state)),
             countryField = LocationField(Location(code = args.address.country, name = ""), isRequired = true)
         )
 
