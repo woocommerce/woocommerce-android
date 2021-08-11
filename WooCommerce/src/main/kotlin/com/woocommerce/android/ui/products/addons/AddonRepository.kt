@@ -5,23 +5,28 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import org.wordpress.android.fluxc.store.WCAddonsStore
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
 class AddonRepository @Inject constructor(
-    private val addonStore: WCAddonsStore,
+    private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    fun fetchOrderedAddonsData(
-        order: Order,
+    fun fetchOrderAddonsData(
+        orderID: OrderIdentifier,
         productID: Long
-    ) = order.findAttributesWith(productID)
+    ) = fetchOrder(orderID)
+        ?.findOrderAttributesWith(productID)
         ?.joinWithAddonsFrom(productID)
 
-    private fun Order.findAttributesWith(productID: Long) =
+    private fun fetchOrder(orderID: OrderIdentifier) =
+        orderStore.getOrderByIdentifier(orderID)?.toAppModel()
+
+    private fun Order.findOrderAttributesWith(productID: Long) =
         items.find { it.productId == productID }
             ?.attributesList
 
