@@ -25,7 +25,7 @@ data class ProductAddon(
     val priceType: AddOnPriceType?,
     val type: AddOnType?,
     val display: AddOnDisplay?,
-    private val price: String,
+    private val rawPrice: String,
     private val rawOptions: List<ProductAddonOption>
 ) : Parcelable {
     /**
@@ -36,9 +36,17 @@ data class ProductAddon(
      * this property parses this detached [ProductAddon] information to an option list
      */
     val options
-        get() = takeIf { (rawOptions.size == 1) && rawOptions.single().price.isEmpty() }
-            ?.let { listOf(rawOptions.single().copy(priceType = priceType, price = price)) }
+        get() = takeIf { isNoPriceAvailableAtOptions }
+            ?.let { listOf(rawOptions.single().copy(priceType = priceType, price = rawPrice)) }
             ?: rawOptions
+
+    val prices
+        get() = takeIf { isNoPriceAvailableAtOptions }
+            ?.let { listOf(rawPrice) }
+            ?: rawOptions.map { it.price }
+
+    private val isNoPriceAvailableAtOptions
+        get() = (rawOptions.size == 1) && rawOptions.single().price.isEmpty()
 }
 
 @Parcelize
@@ -57,7 +65,7 @@ fun WCProductAddonModel.toAppModel() =
         max = max ?: "",
         min = min ?: "",
         position = position ?: "",
-        price = price ?: "",
+        rawPrice = price ?: "",
         adjustPrice = adjustPrice ?: "",
         required = required?.toIntOrNull().toBoolean(),
         restrictions = restrictions ?: "",
