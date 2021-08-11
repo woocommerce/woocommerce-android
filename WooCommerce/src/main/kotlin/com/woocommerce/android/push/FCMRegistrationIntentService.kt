@@ -8,7 +8,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.woocommerce.android.JobServiceIds.JOB_FCM_REGISTRATION_SERVICE_ID
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.NetworkUtils
+import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,7 +34,7 @@ class FCMRegistrationIntentService : JobIntentService() {
                 val exception = task.exception
                 WooLog.e(WooLog.T.NOTIFS, message, exception)
 
-                if (NetworkUtils.isNetworkAvailable(this)) {
+                if (exception?.isServiceUnavailable() == false) {
                     crashLogging.sendReport(exception = exception, message = message)
                 }
 
@@ -56,5 +56,9 @@ class FCMRegistrationIntentService : JobIntentService() {
     override fun onStopCurrentWork(): Boolean {
         // Ensure that the job is rescheduled if stopped
         return true
+    }
+
+    private fun Exception.isServiceUnavailable(): Boolean {
+        return this is IOException && this.message == "SERVICE_NOT_AVAILABLE"
     }
 }
