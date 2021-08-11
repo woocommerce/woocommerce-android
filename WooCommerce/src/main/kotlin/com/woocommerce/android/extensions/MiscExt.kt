@@ -16,6 +16,6 @@ inline fun <T> T.takeIfNotEqualTo(other: T?, block: (T) -> Unit) {
 val Any?.exhaustive
     get() = Unit
 
-inline fun <T,X> Pair<T,X>.unwrap(
-    action: (T, X) -> Unit
+inline fun <T,X,Z> Pair<T,X>.unwrap(
+    action: (T, X) -> Z
 ) = action(first, second)
