@@ -16,6 +16,16 @@ inline fun <T> T.takeIfNotEqualTo(other: T?, block: (T) -> Unit) {
 val Any?.exhaustive
     get() = Unit
 
-inline fun <T, X, Z> Pair<T, X>.unwrap(
-    action: (T, X) -> Z
+/**
+ * The objective of this function is to make easier the usage of [Pair]
+ * as a double valued function return, this way the unwrap delivers inline
+ * both arguments inside a declared HOF
+ *
+ * [F] stands for the first argument of the Pair
+ * [S] stands for the second argument of the Pair
+ * [R] stands for the response of the action so it can be piped with
+ * additional functions if needed
+ */
+inline fun <F, S, R> Pair<F, S>.unwrap(
+    action: (F, S) -> R
 ) = action(first, second)
