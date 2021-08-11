@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ProductAddon
+import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.WCAddonsStore
@@ -18,17 +18,17 @@ class AddonRepository @Inject constructor(
     fun fetchOrderedAddonsData(
         order: Order,
         productID: Long
-    ): Pair<List<ProductAddon>, List<Order.Item.Attribute>>? =
-        order.findAttributesFromProduct(productID)
-            ?.let { attributes ->
-                productStore
-                    .getProductByRemoteId(selectedSite.get(), productID)
-                    ?.toAppModel()
-                    ?.addons
-                    ?.let { addons -> Pair(addons, attributes) }
-            }
+    ) = order.findAttributesWith(productID)
+        ?.joinWithAddonsFrom(productID)
 
-    private fun Order.findAttributesFromProduct(productID: Long) =
+    private fun Order.findAttributesWith(productID: Long) =
         items.find { it.productId == productID }
             ?.attributesList
+
+    private fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
+        productStore
+            .getProductByRemoteId(selectedSite.get(), productID)
+            ?.toAppModel()
+            ?.addons
+            ?.let { addons -> Pair(addons, this) }
 }
