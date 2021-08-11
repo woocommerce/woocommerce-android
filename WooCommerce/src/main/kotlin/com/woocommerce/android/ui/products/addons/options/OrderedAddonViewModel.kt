@@ -11,6 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
+typealias OrderAddonAttribute = Pair<String, String>
+
 @HiltViewModel
 class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -23,7 +25,7 @@ class OrderedAddonViewModel @Inject constructor(
 
     private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
-    private val String.asParsedPair
+    private val String.toPair
         get() = orderAttributesKeyRegex
             .findAll(this)
             .first().groupValues
@@ -32,13 +34,22 @@ class OrderedAddonViewModel @Inject constructor(
             ?.apply { removeFirst() }
             ?.let { Pair(it.first(), it.last()) }
 
-    fun generateOrderedAddons(orderID: OrderIdentifier, productID: Long) =
+    fun init(orderID: OrderIdentifier, productID: Long) =
         addonsRepository.fetchOrderAddonsData(orderID, productID)
-            ?.unwrap(::mergeOrderedAddonsData)
+            ?.unwrap(::filterAddonsOrderAttributes)
 
-    private fun mergeOrderedAddonsData(
+    private fun filterAddonsOrderAttributes(
         addons: List<ProductAddon>,
         attributes: List<Order.Item.Attribute>
-    ) = attributes.mapNotNull { it.key.asParsedPair }
-        .map { pair -> addons.find { it.name == pair.first } }
+    ) = attributes.mapNotNull { it.key.toPair }
+        .map { it.findMatchingAddon(addons) }
+
+    private fun OrderAddonAttribute.findMatchingAddon(
+        addons: List<ProductAddon>
+    ) = unwrap { addonName, selectedOptionPrice ->
+        addons.find {
+            it.name == addonName
+                && it.prices.contains(selectedOptionPrice)
+        }
+    }
 }
