@@ -8,6 +8,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.woocommerce.android.JobServiceIds.JOB_FCM_REGISTRATION_SERVICE_ID
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,8 +31,13 @@ class FCMRegistrationIntentService : JobIntentService() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 val message = "Fetching FCM registration token failed"
-                WooLog.e(WooLog.T.NOTIFS, message, task.exception)
-                crashLogging.sendReport(task.exception, message = message)
+                val exception = task.exception
+                WooLog.e(WooLog.T.NOTIFS, message, exception)
+
+                if (NetworkUtils.isNetworkAvailable(this)) {
+                    crashLogging.sendReport(exception = exception, message = message)
+                }
+
                 return@addOnCompleteListener
             }
 
