@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.toAppModel
@@ -15,30 +16,38 @@ class AddonRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    private val attributesRegex = "(.*?) \\((.*?)\\)".toRegex()
+    private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
-    private fun fetchOrderedAddonsData(
-        order: Order,
-        productID: Long
-    ) : Pair<List<ProductAddon>, List<Order.Item.Attribute>>? =
-        order.findAttributesFromProduct(productID)?.let { attributes ->
-            productStore
-                .getProductByRemoteId(selectedSite.get(), productID)
-                ?.toAppModel()
-                ?.addons
-                ?.let { addons -> Pair(addons, attributes) }
-        }
-
-    private fun Order.findAttributesFromProduct(productID: Long) =
-        items.find { it.productId == productID }
-            ?.attributesList
-
-    private val Order.Item.Attribute.asFilteredPair
-        get() = attributesRegex
-            .findAll(key)
+    private val String.asParsedPair
+        get() = orderAttributesKeyRegex
+            .findAll(this)
             .first().groupValues
             .takeIf { it.size == 3 }
             ?.toMutableList()
             ?.apply { removeFirst() }
             ?.let { Pair(it.first(), it.last()) }
+
+    fun mergeDataFromOrderedAddons(order: Order, productID: Long) =
+        fetchOrderedAddonsData(order, productID)
+            ?.unwrap { addons, attributes ->
+                attributes.mapNotNull { it.key.asParsedPair }
+                    .map { pair -> addons.find { it.name == pair.first } }
+            }
+
+    private fun fetchOrderedAddonsData(
+        order: Order,
+        productID: Long
+    ): Pair<List<ProductAddon>, List<Order.Item.Attribute>>? =
+        order.findAttributesFromProduct(productID)
+            ?.let { attributes ->
+                productStore
+                    .getProductByRemoteId(selectedSite.get(), productID)
+                    ?.toAppModel()
+                    ?.addons
+                    ?.let { addons -> Pair(addons, attributes) }
+            }
+
+    private fun Order.findAttributesFromProduct(productID: Long) =
+        items.find { it.productId == productID }
+            ?.attributesList
 }
