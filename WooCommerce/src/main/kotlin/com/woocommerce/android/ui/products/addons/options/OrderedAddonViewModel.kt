@@ -16,7 +16,7 @@ class OrderedAddonViewModel @Inject constructor(
     private val addonsRepository: AddonRepository
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val regexGroupMatchSize = 3
+        private const val addonAttributeGroupSize = 3
     }
 
     private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
@@ -25,7 +25,7 @@ class OrderedAddonViewModel @Inject constructor(
         get() = orderAttributesKeyRegex
             .findAll(this)
             .first().groupValues
-            .takeIf { it.size == regexGroupMatchSize }
+            .takeIf { it.size == addonAttributeGroupSize }
             ?.toMutableList()
             ?.apply { removeFirst() }
             ?.let { Pair(it.first(), it.last()) }
