@@ -3,6 +3,7 @@ package com.woocommerce.android.push
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.JobIntentService
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.messaging.FirebaseMessaging
 import com.woocommerce.android.JobServiceIds.JOB_FCM_REGISTRATION_SERVICE_ID
 import com.woocommerce.android.util.WooLog
@@ -11,7 +12,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FCMRegistrationIntentService : JobIntentService() {
-    @Inject internal lateinit var notificationRegistrationHandler: NotificationRegistrationHandler
+    @Inject
+    lateinit var notificationRegistrationHandler: NotificationRegistrationHandler
+
+    @Inject
+    lateinit var crashLogging: CrashLogging
 
     companion object {
         fun enqueueWork(context: Context) {
@@ -24,22 +29,23 @@ class FCMRegistrationIntentService : JobIntentService() {
     }
 
     override fun onHandleWork(intent: Intent) {
-        try {
-            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                val token = task.result
-
-                token?.takeIf { it.isNotEmpty() }?.let {
-                    WooLog.d(WooLog.T.NOTIFS, "Sending FCM token to our remote services: $it")
-                    notificationRegistrationHandler.onNewFCMTokenReceived(it)
-                } ?: run {
-                    WooLog.w(WooLog.T.NOTIFS, "Empty FCM token, can't register the id on remote services")
-                    notificationRegistrationHandler.onEmptyFCMTokenReceived()
-                }
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                val message = "Fetching FCM registration token failed"
+                WooLog.e(WooLog.T.NOTIFS, message, task.exception)
+                crashLogging.sendReport(task.exception, message = message)
+                return@addOnCompleteListener
             }
-        } catch (e: Exception) {
-            // SecurityException can happen on some devices without Google services (these devices probably strip
-            // the AndroidManifest.xml and remove unsupported permissions).
-            WooLog.e(WooLog.T.NOTIFS, "Google Play Services unavailable: ", e)
+
+            val token = task.result
+
+            token?.takeIf { it.isNotEmpty() }?.let {
+                WooLog.d(WooLog.T.NOTIFS, "Sending FCM token to our remote services: $it")
+                notificationRegistrationHandler.onNewFCMTokenReceived(it)
+            } ?: run {
+                WooLog.w(WooLog.T.NOTIFS, "Empty FCM token, can't register the id on remote services")
+                notificationRegistrationHandler.onEmptyFCMTokenReceived()
+            }
         }
     }
 
