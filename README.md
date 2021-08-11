@@ -85,7 +85,7 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
     - [Themes & Styling Practices](docs/theming-styling-best-practices.md)
     - [Subtree'd Library Projects](docs/subtreed-library-projects.md)
 - Data
-    - [Tracking Events](docs/tracking-events)
+    - [Tracking Events](docs/tracking-events.md)
 - Accessibility
     - [Accessibility Guidelines](docs/accessibility-guidelines.md)
     - [Right to Left Layout Guidelines](docs/right-to-left-layout-guidelines.md)

@@ -1,4 +1,0 @@
-7,1:
-WooCommerce Shipping & Tax uzantısını kullanan ABD'deki bazı satıcılar, ürün sayıları ondalık işaretli olan siparişler için etiket oluştururken bir hata ile karşılaşıyordu. Ve bu hata giderildi!
-
-Etiket oluşturmayı denemek ister misiniz? Dükkanınızda WooCommerce Shipping & Tax uzantısını indirerek etkinleştirin.  Şu anda, ABD'den tüm dünyaya satış yapan satıcıları destekliyoruz. Geri bildirimleriniz bizim için değerli!

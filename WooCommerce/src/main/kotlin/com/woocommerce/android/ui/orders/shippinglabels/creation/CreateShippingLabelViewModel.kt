@@ -181,7 +181,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             validateAddress(
                                 address = transition.state.data.stepsState.originAddressStep.data,
                                 type = ORIGIN,
-                                isInternationalShipment = transition.state.data.isInternationalShipment
+                                isCustomsFormRequired = transition.state.data.isCustomsFormRequired
                             )
                         }
                     }
@@ -193,7 +193,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             validateAddress(
                                 address = transition.state.data.stepsState.shippingAddressStep.data,
                                 type = DESTINATION,
-                                isInternationalShipment = transition.state.data.isInternationalShipment
+                                isCustomsFormRequired = transition.state.data.isCustomsFormRequired
                             )
                         }
                     }
@@ -461,8 +461,8 @@ class CreateShippingLabelViewModel @Inject constructor(
         return order.shippingAddress.copy(phone = phoneNumber)
     }
 
-    private suspend fun validateAddress(address: Address, type: AddressType, isInternationalShipment: Boolean): Event {
-        return when (val result = addressValidator.validateAddress(address, type, isInternationalShipment)) {
+    private suspend fun validateAddress(address: Address, type: AddressType, isCustomsFormRequired: Boolean): Event {
+        return when (val result = addressValidator.validateAddress(address, type, isCustomsFormRequired)) {
             ValidationResult.Valid -> AddressValidated(address)
             is ValidationResult.SuggestedChanges -> AddressChangeSuggested(result.suggested)
             is ValidationResult.NotFound,

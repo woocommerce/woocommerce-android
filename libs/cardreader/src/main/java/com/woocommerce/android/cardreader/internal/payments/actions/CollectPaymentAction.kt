@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
+import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.callable.ReaderDisplayListener
 import com.stripe.stripeterminal.model.external.PaymentIntent
@@ -28,7 +29,7 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
 
     fun collectPayment(paymentIntent: PaymentIntent): Flow<CollectPaymentStatus> {
         return callbackFlow {
-            terminal.collectPaymentMethod(
+            val cancelable = terminal.collectPaymentMethod(
                 paymentIntent,
                 object : ReaderDisplayListener {
                     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
@@ -48,19 +49,30 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                         this@callbackFlow.close()
                     }
 
-                    override fun onFailure(exception: TerminalException) {
+                    override fun onFailure(e: TerminalException) {
                         logWrapper.d("CardReader", "Payment collection failed")
-                        this@callbackFlow.sendBlocking(Failure(exception))
+                        this@callbackFlow.sendBlocking(Failure(e))
                         this@callbackFlow.close()
                     }
                 }
             )
-            // TODO cardreader implement timeout
-            awaitClose()
+            awaitClose {
+                if (!cancelable.isCompleted) cancelable.cancel(noop)
+            }
         }
     }
 
     private fun <E> SendChannel<E>.sendBlockingIfOpen(element: E) {
         if (!isClosedForSend) sendBlocking(element)
+    }
+}
+
+private val noop = object : Callback {
+    override fun onFailure(e: TerminalException) {
+        // noop
+    }
+
+    override fun onSuccess() {
+        // noop
     }
 }

@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
@@ -63,6 +64,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
 
 private val DUMMY_TOTAL = BigDecimal(10.72)
+private const val DUMMY_CURRENCY_SYMBOL = "£"
 private const val DUMMY_ORDER_NUMBER = "123"
 
 @InternalCoroutinesApi
@@ -81,6 +83,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val currencyFormatter: CurrencyFormatter = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
@@ -99,20 +102,23 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             tracker = tracker,
-            appPrefsWrapper = appPrefsWrapper
+            appPrefsWrapper = appPrefsWrapper,
+            currencyFormatter = currencyFormatter,
         )
 
         val mockedOrder = mock<Order>()
         whenever(orderRepository.getOrder(any())).thenReturn(mockedOrder)
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
-        whenever(mockedOrder.currency).thenReturn("USD")
+        whenever(mockedOrder.currency).thenReturn("GBP")
+        whenever(currencyFormatter.formatAmountWithCurrency("GBP", DUMMY_TOTAL.toDouble()))
+            .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
         val address = mock<Address>()
         whenever(mockedOrder.billingAddress).thenReturn(address)
         whenever(address.email).thenReturn("test@test.test")
         whenever(address.firstName).thenReturn("Tester")
         whenever(address.lastName).thenReturn("Test")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
-        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(mockedOrder)
+        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
@@ -129,7 +135,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given fetching order fails, when payment screen shown, then FailedPayment state is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
 
             viewModel.start()
 
@@ -139,7 +145,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when fetching order fails, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
 
             viewModel.start()
 
@@ -151,7 +157,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
 
             viewModel.start()
 
@@ -390,7 +396,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_collect_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
@@ -429,7 +435,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_processing_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
@@ -468,7 +474,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_capturing_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
@@ -506,7 +512,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_payment_failed_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
@@ -585,7 +591,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.headerLabel).describedAs("headerLabel")
                 .isEqualTo(R.string.card_reader_payment_completed_payment_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-                .isEqualTo("$$DUMMY_TOTAL")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_celebration)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
@@ -866,7 +872,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when re-fetching order fails, then SnackBar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(any(), any())).thenReturn(null)
+            whenever(orderRepository.fetchOrder(any())).thenReturn(null)
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)

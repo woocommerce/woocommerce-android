@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.cardreader.hub
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -41,7 +42,9 @@ class CardReaderHubViewModel @Inject constructor(
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         object NavigateToCardReaderDetail : CardReaderHubEvents()
-        object NavigateToPurchaseCardReaderFlow : CardReaderHubEvents()
+        object NavigateToPurchaseCardReaderFlow : CardReaderHubEvents() {
+            const val url = AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER
+        }
     }
 
     sealed class CardReaderHubViewState {

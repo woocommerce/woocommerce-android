@@ -127,6 +127,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoMorePanel.hide()
             binding.customerInfoViewMore.setOnClickListener(null)
         }
+        if (shippingAddress.isEmpty() && billingInfo.isEmpty()) {
+            hide()
+        }
     }
 
     private fun showCallOrMessagePopup(order: Order) {

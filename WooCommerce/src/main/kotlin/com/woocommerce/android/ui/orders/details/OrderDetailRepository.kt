@@ -16,6 +16,7 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cance
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
+import com.woocommerce.android.util.isSuccessful
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
@@ -62,14 +63,13 @@ class OrderDetailRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchOrder(orderIdentifier: OrderIdentifier, useCachedOnFailure: Boolean = true): Order? {
+    suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
         val remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
         val requestResult = continuationFetchOrder.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
             dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
         }
-        val requestSuccessful = requestResult is Success && requestResult.value
-        return if (requestSuccessful || useCachedOnFailure) {
+        return if (requestResult.isSuccessful()) {
             getOrder(orderIdentifier)
         } else {
             null

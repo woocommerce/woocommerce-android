@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-23 13:15:01+0000
+Translation-Revision-Date: 2021-08-04 16:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="settings_card_reader_payments">Очные платежи</string>
+    <string name="card_reader_tutorial_charged_detail">Чтобы полностью зарядить устройство чтения, требуется приблизительно три часа.</string>
+    <string name="card_reader_tutorial_charged_label">Следите за уровнем заряда устройства чтения.</string>
+    <string name="card_reader_tutorial_reconnect_detail">Ваше устройство чтения перейдет в спящий режим через 10 минут неактивности. Чтобы подключить его повторно, просто нажмите кнопку питания.</string>
+    <string name="card_reader_tutorial_reconnect_label">Автоматическое повторное подключение</string>
+    <string name="card_reader_tutorial_collect_detail">Для получения платежей просто проведите пальцем, коснитесь экрана или вставьте карту в устройство чтения.</string>
+    <string name="card_reader_tutorial_collect_label">Проведите пальцем, коснитесь экрана или вставьте карту.</string>
+    <string name="card_reader_tutorial_connected_detail">Поздравляем, теперь вы можете получать платежи по дебетовым и кредитным картам!</string>
+    <string name="card_reader_tutorial_connected_label">Устройство чтения подключено</string>
+    <string name="card_reader_onboarding_contact_support">Нужна какая-то помощь? &lt;a href=\'\'&gt;Обратиться в службу поддержки&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Подробнее&lt;/a&gt; о приёме платежей с помощью мобильного устройства и заказе устройств чтения карт</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Очные платежи недоступны в тестовом режиме. Чтобы продолжить, отключите режим.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">В настоящее время очные платежи недоступны</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Для вашей учётной записи существуют требования на утверждении. Выполните эти требования к %1$s, чтобы продолжать получать очные платежи.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Для вашей учётной записи WooCommerce Payments существуют требования на утверждении.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Для вашей учётной записи существует по крайней мере одно просроченное требование. Пожалуйста, выполните его, чтобы возобновить очные платежи.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">В настоящее время очные платежи недоступны</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Вы сможете получать очные платежи, как только мы завершим проверку вашей учётной записи.</string>
+    <string name="card_reader_onboarding_account_under_review_header">В настоящее время очные платежи недоступны</string>
+    <string name="card_reader_onboarding_account_rejected_hint">К сожалению, мы не можем поддерживать очные платежи для этого магазина.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Очные платежи недоступны для этого магазина</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Перезагрузите после обновления</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">В вашем магазине установлена устаревшая версия расширения WooCommerce Payments. Обновите его, чтобы получать очные платежи.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Обновить WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Обновить</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Почти готово. Закончите настройку WooCommerce Payments, чтобы начать получать платежи по карте.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Закончите настройку WooCommerce Payments в учётной записи администратора магазина.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Обновите после активации</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">В вашем магазине версия расширения WooCommerce Payments установлена, но не активирована. Активируйте её, чтобы получать очные платежи.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Активировать WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Обновите после установки</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Вам будет нужно установить бесплатное расширение WooCommerce Payments в своём магазине, чтобы получать очные платежи.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Установить WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Подробнее&lt;/a&gt; о приёме платежей с помощью мобильного устройства и заказе устройств чтения карт</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Нужна какая-то помощь? &lt;a href=\'\'&gt;Обратиться в службу поддержки&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Вы можете по-прежнему принимать очные наличные платежи, если включите способ оплаты \"Оплата при доставке\" в магазине.</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Мы не поддерживаем очные платежи в %1$s.</string>
+    <string name="card_reader_onboarding_loading">Подключение к вашей учётной записи</string>
+    <string name="card_reader_onboarding_title">Очные платежи</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Проверьте размеры и вес посылки или выберите другую посылку в разделе сведений о посылках.</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Тарифы доставки недоступны</string>
+    <string name="shipping_label_activate_service_package_empty_title">Все доступные посылки активированы</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Активация посылки</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Выберите посылку для активации.</string>
+    <string name="error_required_field">Обязательное поле</string>
+    <string name="close">Закрыть</string>
     <string name="variation_created_title">Создан вариант</string>
     <string name="variation_list_generate_new_variation">Создать новый вариант</string>
     <string name="product_wip_message_variations">Теперь вы можете создавать и менять варианты товаров!</string>
@@ -26,7 +72,7 @@ Language: ru
     <string name="shipping_label_create_custom_package_generic_failure">Не удалось создать упаковку. Повторите попытку.</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Не удалось создать упаковку: неизвестная проблема с API.</string>
     <string name="shipping_label_create_custom_package_api_failure">Не удалось создать упаковку: %1$s</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Пожалуйста, подождите…</string>
+    <string name="shipping_label_create_package_saving_progress_message">Пожалуйста, подождите…</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Создаётся новая упаковка</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Неверное значение.</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Обязательное поле</string>
@@ -40,7 +86,7 @@ Language: ru
     <string name="shipping_label_create_custom_package_field_type_box">Коробка</string>
     <string name="shipping_label_create_custom_package_field_type_info">Выбрать тип упаковки</string>
     <string name="shipping_label_create_custom_package_field_type">Тип упаковки</string>
-    <string name="shipping_label_create_custom_package_field_info">Настройте упаковку, которую вы будете использовать для отправки своих товаров. Мы сохраним её для последующих заказов.</string>
+    <string name="shipping_label_create_package_field_info">Настройте упаковку, которую вы будете использовать для отправки своих товаров. Мы сохраним её для последующих заказов.</string>
     <string name="shipping_label_create_package_title">Добавить новую упаковку</string>
     <string name="shipping_label_create_new_package_button">Создать новую упаковку</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Размеры упаковки должны быть больше нуля. Чтобы продолжить, обновите размеры позиции в разделе \"Доставка\" на странице товара.</string>
@@ -238,7 +284,6 @@ Language: ru
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">При покупке транспортных этикеток через WooCommerce вы сэкономите от 5 до 40 % по сравнению с тарифами почты.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Что такое скидка WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">При загрузке вариантов доставки произошла ошибка.</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">Для выбранного адреса и грузов варианты доставки отсутствуют.</string>
     <string name="shipping_label_shipping_carriers_title">Перевозчики и тарифы</string>
     <string name="shipping_label_create_purchase">Приобрести транспортную этикетку</string>
     <string name="shipping_label_create_mark_order_complete">Отметить заказ как выполненный и уведомить заказчика</string>
@@ -304,7 +349,6 @@ Language: ru
     <string name="shipping_label_validation_view_map">Открыть карту</string>
     <string name="shipping_label_validation_contact_customer">Связаться с клиентом</string>
     <string name="shipping_label_validation_error_template">Сбой проверки: %s</string>
-    <string name="shipping_label_error_required_field">Обязательное поле</string>
     <string name="shipping_label_error_address_invalid_street">Недопустимая улица</string>
     <string name="shipping_label_error_address_house_number_missing">Не указан номер дома</string>
     <string name="shipping_label_error_address_not_found">Адрес не найден</string>

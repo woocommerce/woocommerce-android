@@ -1,4 +1,0 @@
-7.1:
-Vissa handlare i USA som använde WooCommerce Shipping & Tax-utökningen noterade ett fel när de skapade etiketter för beställningar med produktkvantiteter innehållande decimaler. Detta har åtgärdats!
-
-Vill du prova att skapa etiketter? Installera och aktivera WooCommerce Shipping & Tax-utökningen i din butik. För tillfället stöder vi handlare i USA med frakt över hela världen. Vi välkomnar din feedback!
