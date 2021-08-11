@@ -12,11 +12,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FCMRegistrationIntentService : JobIntentService() {
-    @Inject
-    lateinit var notificationRegistrationHandler: NotificationRegistrationHandler
+    @Inject lateinit var notificationRegistrationHandler: NotificationRegistrationHandler
 
-    @Inject
-    lateinit var crashLogging: CrashLogging
+    @Inject lateinit var crashLogging: CrashLogging
 
     companion object {
         fun enqueueWork(context: Context) {
