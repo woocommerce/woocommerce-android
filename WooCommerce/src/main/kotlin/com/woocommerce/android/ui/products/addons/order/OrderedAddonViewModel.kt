@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.addons.options
+package com.woocommerce.android.ui.products.addons.order
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.unwrap
@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
@@ -35,8 +36,10 @@ class OrderedAddonViewModel @Inject constructor(
             ?.let { Pair(it.first(), it.last()) }
 
     fun init(orderID: OrderIdentifier, productID: Long) =
-        addonsRepository.fetchOrderAddonsData(orderID, productID)
-            ?.unwrap(::filterAddonsOrderAttributes)
+        launch(dispatchers.computation) {
+            addonsRepository.fetchOrderAddonsData(orderID, productID)
+                ?.unwrap(::filterAddonsOrderAttributes)
+        }
 
     private fun filterAddonsOrderAttributes(
         addons: List<ProductAddon>,
