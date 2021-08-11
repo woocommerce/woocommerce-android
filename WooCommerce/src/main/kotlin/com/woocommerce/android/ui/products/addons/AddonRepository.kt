@@ -16,13 +16,17 @@ class AddonRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
+    companion object {
+        private const val regexGroupMatchSize = 3
+    }
+
     private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
     private val String.asParsedPair
         get() = orderAttributesKeyRegex
             .findAll(this)
             .first().groupValues
-            .takeIf { it.size == 3 }
+            .takeIf { it.size == regexGroupMatchSize }
             ?.toMutableList()
             ?.apply { removeFirst() }
             ?.let { Pair(it.first(), it.last()) }
