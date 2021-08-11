@@ -146,7 +146,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 )
             }
             is ValidationResult.SuggestedChanges -> {
-                triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
+                if(result.isTrivial) {
+                    triggerEvent(ExitWithResult(result.suggested))
+                } else {
+                    triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
+                }
             }
             is ValidationResult.NotFound -> {
                 viewState = viewState.copy(
