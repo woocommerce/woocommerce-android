@@ -17,14 +17,16 @@ class AddonRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     fun fetchOrderAddonsData(
-        orderID: OrderIdentifier,
+        orderID: Long,
         productID: Long
     ) = fetchOrder(orderID)
         ?.findOrderAttributesWith(productID)
         ?.joinWithAddonsFrom(productID)
 
-    private fun fetchOrder(orderID: OrderIdentifier) =
-        orderStore.getOrderByIdentifier(orderID)?.toAppModel()
+    private fun fetchOrder(orderID: Long) =
+        orderStore.getOrderByIdentifier(
+            OrderIdentifier(selectedSite.get().id, orderID)
+        )?.toAppModel()
 
     private fun Order.findOrderAttributesWith(productID: Long) =
         items.find { it.productId == productID }
