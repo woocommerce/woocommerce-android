@@ -307,7 +307,6 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             verify(stateMachine).handleEvent(Event.AddressChangeSuggested(suggestedAddress))
         }
 
-
     @Test
     fun `when the address validation has trivial suggestion, then use the suggested address`() = testBlocking {
         val suggestedAddress = originAddress.copy(address1 = "Suggested street")
