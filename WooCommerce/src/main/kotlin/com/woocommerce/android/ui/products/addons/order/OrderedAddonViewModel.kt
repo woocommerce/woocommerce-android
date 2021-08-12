@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.addons.order
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.unwrap
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -41,10 +40,10 @@ class OrderedAddonViewModel @Inject constructor(
         }
 
     private fun filterAddonsOrderAttributes(
-        addons: List<ProductAddon>,
-        attributes: List<Order.Item.Attribute>
-    ) = attributes.mapNotNull { it.key.toPair }
-        .map { it.findMatchingAddon(addons) }
+        productAddons: List<ProductAddon>,
+        orderAddons: List<String>
+    ) = orderAddons.mapNotNull { it.toPair }
+        .map { it.findMatchingAddon(productAddons) }
 
     private fun OrderAddonAttribute.findMatchingAddon(
         addons: List<ProductAddon>
