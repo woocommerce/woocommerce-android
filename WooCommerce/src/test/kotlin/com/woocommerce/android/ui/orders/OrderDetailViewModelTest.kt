@@ -1029,7 +1029,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
 
             // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.identifier), viewModel.event.value)
             assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderPaymentFlow::class.java)
         }
 
@@ -1068,7 +1067,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given card reader connecting,when user clicks on accept card,then start card reader connect flow with data`() =
+    fun `given card reader connecting,when user clicks on accept card,then onboarding checks not skipped`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             doReturn(order).whenever(repository).getOrder(any())
@@ -1085,7 +1084,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given card reader NOT connected,when user clicks on accept card,then start reader connect flow with data`() =
+    fun `given card reader NOT connected,when user clicks on accept card,then onboarding checks not skipped`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             doReturn(order).whenever(repository).getOrder(any())
