@@ -19,15 +19,15 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.StepUiState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.OriginAddressValidationStarted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseSuccess
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.NoOp
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.PurchaseLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
@@ -37,8 +37,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CurrencyFormatter
@@ -295,6 +293,29 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         stateFlow.value = Transition(State.OriginAddressValidation(data), null)
 
         verify(addressValidator).validateAddress(originAddress, ORIGIN, requiresPhoneNumber = false)
+    }
+
+    @Test
+    fun `when the address validation has a non trivial suggestion, then show address suggestions screen`() =
+        testBlocking {
+            val suggestedAddress = originAddress.copy(address1 = "Suggested street")
+            whenever(addressValidator.validateAddress(any(), any(), any()))
+                .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress, isTrivial = false))
+
+            stateFlow.value = Transition(State.OriginAddressValidation(data), null)
+
+            verify(stateMachine).handleEvent(Event.AddressChangeSuggested(suggestedAddress))
+        }
+
+    @Test
+    fun `when the address validation has trivial suggestion, then use the suggested address`() = testBlocking {
+        val suggestedAddress = originAddress.copy(address1 = "Suggested street")
+        whenever(addressValidator.validateAddress(any(), any(), any()))
+            .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress, isTrivial = true))
+
+        stateFlow.value = Transition(State.OriginAddressValidation(data), null)
+
+        verify(stateMachine).handleEvent(AddressValidated(suggestedAddress))
     }
 
     @Test

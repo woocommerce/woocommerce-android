@@ -225,20 +225,38 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given there are suggestions to improve address, when done is clicked, then display them`() = testBlocking {
-        val suggestedAddress = address.copy(address1 = "Suggested street")
-        whenever(addressValidator.validateAddress(any(), any(), any()))
-            .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress))
+    fun `given there are non trivial suggestions to the address, when done is clicked, then display them`() =
+        testBlocking {
+            val suggestedAddress = address.copy(address1 = "Suggested street")
+            whenever(addressValidator.validateAddress(any(), any(), any()))
+                .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress, isTrivial = false))
 
-        var event: Event? = null
-        viewModel.event.observeForever { event = it }
+            var event: Event? = null
+            viewModel.event.observeForever { event = it }
 
-        viewModel.onDoneButtonClicked()
+            viewModel.onDoneButtonClicked()
 
-        verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
+            verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
 
-        assertThat(event).isEqualTo(ShowSuggestedAddress(adjustedAddress, suggestedAddress, ORIGIN))
-    }
+            assertThat(event).isEqualTo(ShowSuggestedAddress(adjustedAddress, suggestedAddress, ORIGIN))
+        }
+
+    @Test
+    fun `given there are trivial suggestions to the address, when done is clicked, then use them directly`() =
+        testBlocking {
+            val suggestedAddress = address.copy(address1 = "Suggested street")
+            whenever(addressValidator.validateAddress(any(), any(), any()))
+                .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress, isTrivial = true))
+
+            var event: Event? = null
+            viewModel.event.observeForever { event = it }
+
+            viewModel.onDoneButtonClicked()
+
+            verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
+
+            assertThat(event).isEqualTo(ExitWithResult(suggestedAddress))
+        }
 
     @Test
     fun `when country spinner is tapped, then display country selector`() = testBlocking {

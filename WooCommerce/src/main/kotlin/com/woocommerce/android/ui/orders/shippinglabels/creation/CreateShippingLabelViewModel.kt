@@ -464,7 +464,13 @@ class CreateShippingLabelViewModel @Inject constructor(
     private suspend fun validateAddress(address: Address, type: AddressType, isCustomsFormRequired: Boolean): Event {
         return when (val result = addressValidator.validateAddress(address, type, isCustomsFormRequired)) {
             ValidationResult.Valid -> AddressValidated(address)
-            is ValidationResult.SuggestedChanges -> AddressChangeSuggested(result.suggested)
+            is ValidationResult.SuggestedChanges -> {
+                if (result.isTrivial) {
+                    AddressValidated(result.suggested)
+                } else {
+                    AddressChangeSuggested(result.suggested)
+                }
+            }
             is ValidationResult.NotFound,
             is ValidationResult.Invalid,
             is ValidationResult.NameMissing, ValidationResult.PhoneInvalid -> AddressInvalid(address, result)
