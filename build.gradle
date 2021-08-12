@@ -3,7 +3,7 @@ buildscript {
     ext.navigationVersion = '2.3.5'
     ext.daggerVersion = '2.35.1'
     ext.wordPressLoginVersion = '0.0.4'
-    ext.detektVersion = '1.15.0'
+    ext.detektVersion = '1.17.1'
 
     repositories {
         google()
