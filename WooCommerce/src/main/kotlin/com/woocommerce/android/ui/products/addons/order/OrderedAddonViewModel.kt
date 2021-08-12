@@ -49,8 +49,8 @@ class OrderedAddonViewModel @Inject constructor(
         addons: List<ProductAddon>
     ) = unwrap { addonName, selectedOptionPrice ->
         addons.find {
-            it.name == addonName
-                && it.prices.contains(selectedOptionPrice)
+            it.name == addonName &&
+                it.prices.contains(selectedOptionPrice)
         }
     }
 }
