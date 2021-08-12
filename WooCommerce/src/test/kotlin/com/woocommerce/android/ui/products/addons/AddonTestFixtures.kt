@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.addons
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTaxStatus
@@ -128,5 +129,25 @@ object AddonTestFixtures {
             crossSellProductIds = listOf(),
             upsellProductIds = listOf(),
             addons = listOf()
+        )
+
+    val defaultProductAddon
+        get() = ProductAddon(
+            name = "",
+            description = "",
+            descriptionEnabled = false,
+            max = "",
+            min = "",
+            position = "",
+            rawPrice = "",
+            adjustPrice = "",
+            required = false,
+            restrictions = "",
+            titleFormat = null,
+            restrictionsType = null,
+            priceType = null,
+            type = null,
+            display = null,
+            rawOptions = listOf()
         )
 }
