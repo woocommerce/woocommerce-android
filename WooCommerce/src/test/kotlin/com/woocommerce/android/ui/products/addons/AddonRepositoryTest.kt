@@ -49,6 +49,9 @@ class AddonRepositoryTest {
             productStoreMock,
             selectedSiteMock
         )
+
+        configureOrderResponse()
+        configureProductResponse()
     }
 
     @Test
@@ -56,13 +59,10 @@ class AddonRepositoryTest {
         val expectedAttributeList = listOf(
             Attribute("test-key", "test-value")
         )
-        configureOrderResponse()
 
         val expectedAddonList = listOf(
             defaultProductAddon.copy(name = "test-addon-name")
         )
-
-        configureProductResponse()
 
         repositoryUnderTest.fetchOrderAddonsData(remoteOrderID, remoteProductID)
             ?.unwrap { addons, attributes ->

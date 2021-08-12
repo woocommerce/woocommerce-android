@@ -2,16 +2,7 @@
   {
     "id": 49,
     "name": "Pizza",
-    "product_id": 533,
-    "variation_id": 0,
-    "quantity": 1,
-    "tax_class": "",
-    "subtotal": "73.00",
-    "subtotal_tax": "0.00",
-    "total": "73.00",
-    "total_tax": "0.00",
-    "taxes": [
-    ],
+    "product_id": 333,
     "meta_data": [
       {
         "id": 448,
@@ -59,5 +50,17 @@
     "sku": "",
     "price": 73,
     "parent_name": null
+  },
+  {
+    "id": 50,
+    "name": "",
+    "product_id": 999,
+    "meta_data": []
+  },
+  {
+    "id": 51,
+    "name": "",
+    "product_id": 888,
+    "meta_data": []
   }
 ]
