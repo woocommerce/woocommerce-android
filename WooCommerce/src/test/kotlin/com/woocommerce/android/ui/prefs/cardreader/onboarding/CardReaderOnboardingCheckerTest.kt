@@ -295,10 +295,72 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
         }
 
+    @Test
+    fun `when test mode enabled on site with live account, then WcpayInTestModeWithLiveStripeAccount returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(liveAccount = true, testModeEnabled = true)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
+    @Test
+    fun `when test mode disabled on site with live account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(liveAccount = true, testModeEnabled = false)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
+    @Test
+    fun `when test mode disabled on site with test account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(liveAccount = false, testModeEnabled = false)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
+    @Test
+    fun `when test mode enabled on site with test account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(liveAccount = false, testModeEnabled = true)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
+    @Test
+    fun `when test mode flag not supported, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(testModeEnabled = null)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE,
         hasPendingRequirements: Boolean = false,
-        hadOverdueRequirements: Boolean = false
+        hadOverdueRequirements: Boolean = false,
+        liveAccount: Boolean = true,
+        testModeEnabled: Boolean? = false,
     ) = WooResult(
         WCPaymentAccountResult(
             status,
@@ -309,7 +371,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
             country = "US",
             isCardPresentEligible = true,
-            isLive = true
+            isLive = liveAccount,
+            testMode = testModeEnabled
         )
     )
 
