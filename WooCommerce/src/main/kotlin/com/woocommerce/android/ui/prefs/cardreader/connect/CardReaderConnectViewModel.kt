@@ -189,7 +189,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private suspend fun startScanning() {
         cardReaderManager
             .discoverReaders(isSimulated = BuildConfig.USE_SIMULATED_READER)
-            // TODO cardreader should we move flowOn to CardReaderModule?
             .flowOn(dispatchers.io)
             .collect { discoveryEvent ->
                 handleScanEvent(discoveryEvent)
