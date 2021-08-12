@@ -17,17 +17,18 @@ object UnitTestUtils {
     ) = try {
         this::class.java.classLoader?.getResourceAsStream(fileName)
             ?.let { BufferedReader(InputStreamReader(it, "UTF-8")) }
-            ?.let { bufferedReader ->
-                val buffer = StringBuilder()
-                var lineString: String?
-                while (bufferedReader.readLine().also { lineString = it } != null) {
-                    buffer.append(lineString)
-                }
-                bufferedReader.close()
-                buffer.toString()
-            }
+            ?.let { StringBuilder().appendStreamFrom(it) }
+            .toString()
     } catch (e: IOException) {
         AppLog.e(AppLog.T.TESTS, "Could not load response JSON file.")
         null
+    }
+
+    private fun StringBuilder.appendStreamFrom(reader: BufferedReader) = apply {
+        do {
+            val lineString = reader.readLine()
+            lineString?.let { append(it) }
+        } while (lineString != null)
+        reader.close()
     }
 }
