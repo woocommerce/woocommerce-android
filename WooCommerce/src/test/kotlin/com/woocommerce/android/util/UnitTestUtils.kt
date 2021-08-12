@@ -12,6 +12,9 @@ object UnitTestUtils {
             this
         )?.let { Gson().fromJson(it, clazz) }
 
+    fun String.jsonFileToString() =
+        getStringFromResourceFile(this)
+
     private fun getStringFromResourceFile(
         fileName: String
     ) = try {
