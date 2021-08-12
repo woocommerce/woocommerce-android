@@ -30,6 +30,7 @@ class AddonRepository @Inject constructor(
     private fun WCOrderModel.findOrderAttributesWith(productID: Long) =
         getLineItemList().find { it.productId == productID }
             ?.getAttributeList()
+            ?.filter { it.key?.first().toString() != "_" }
             ?.mapNotNull { it.key }
 
     private fun List<String>.joinWithAddonsFrom(productID: Long) =
