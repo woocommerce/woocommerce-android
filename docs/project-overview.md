@@ -44,15 +44,6 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 | wc.reset_db_on_downgrade   | Debug/Beta builds: If `true` will drop all tables and recreate the db if a database downgrade is detected. |
 | wc.sentry.dsn              | Used for Sentry integration. Can be ignored.|
 
-#### Login library `gradle.properties`
-
-| Property                   | Description |
-|:---------------------------|:------------|
-| wp.debug.wpcom_login_email |Optional: used to autofill email during login on debug build only|
-| wp.debug.wpcom_login_username|Optional: used to autofill username during login on debug build only|
-|wp.debug.wpcom_login_password|Optional: used to autofill password during login on debug build only|
-|wp.debug.wpcom_website_url|Optional: used to autofill store url during login on debug build only|
-
 ### Setting up Checkstyle
 
 The woocommerce-android project uses [Checkstyle][checkstyle]. You can run checkstyle using `./gradlew checkstyle`.

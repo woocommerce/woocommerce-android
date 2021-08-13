@@ -1,15 +1,25 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.locale.LocaleProvider
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 typealias FormatCurrencyRounded = (rawValue: Double, currencyCode: String) -> String
 
-class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selectedSite: SelectedSite) {
+@Singleton
+class CurrencyFormatter @Inject constructor(
+    private val wcStore: WooCommerceStore,
+    private val selectedSite: SelectedSite,
+    private val localeProvider: LocaleProvider,
+) {
     companion object {
         private const val ONE_THOUSAND = 1000
         private const val ONE_MILLION = 1000000
@@ -99,5 +109,15 @@ class CurrencyFormatter(private val wcStore: WooCommerceStore, private val selec
      */
     fun buildBigDecimalFormatter(currencyCode: String) = { amount: BigDecimal ->
         formatCurrency(amount, currencyCode, true)
+    }
+
+    /**
+     * Returns formatted amount with currency symbol - eg. $113.5 for EN/USD or 113,5€ for FR/EUR.
+     */
+    fun formatAmountWithCurrency(currencyCode: String, amount: Double): String {
+        val locale = localeProvider.provideLocale() ?: Locale.getDefault()
+        val formatter = NumberFormat.getCurrencyInstance(locale)
+        formatter.currency = Currency.getInstance(currencyCode)
+        return formatter.format(amount)
     }
 }

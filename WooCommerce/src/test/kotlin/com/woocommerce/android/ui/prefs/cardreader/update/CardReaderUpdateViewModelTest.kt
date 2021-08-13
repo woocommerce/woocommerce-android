@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED
@@ -12,11 +12,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTW
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Initializing
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus.UpToDate
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Initializing
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult

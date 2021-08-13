@@ -54,7 +54,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
             return ValidationResult.Error(result.error.type)
         }
-        return when (result.model) {
+        return when (val validationResult = result.model) {
             null -> {
                 AnalyticsTracker.track(
                     Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
@@ -69,7 +69,7 @@ class ShippingLabelAddressValidator @Inject constructor(
                     mapOf("error" to "address_not_found")
                 )
 
-                ValidationResult.NotFound((result.model as InvalidRequest).message)
+                ValidationResult.NotFound(validationResult.message)
             }
             is InvalidAddress -> {
                 AnalyticsTracker.track(
@@ -77,14 +77,14 @@ class ShippingLabelAddressValidator @Inject constructor(
                     mapOf("error" to "invalid_address")
                 )
 
-                ValidationResult.Invalid((result.model as InvalidAddress).message)
+                ValidationResult.Invalid(validationResult.message)
             }
             is WCAddressVerificationResult.Valid -> {
                 AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
                 val suggestion =
-                    (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
+                    validationResult.suggestedAddress.toAppModel()
                 if (suggestion.toString() != address.toString()) {
-                    ValidationResult.SuggestedChanges(suggestion)
+                    ValidationResult.SuggestedChanges(suggestion, validationResult.isTrivialNormalization)
                 } else {
                     ValidationResult.Valid
                 }
@@ -107,7 +107,7 @@ class ShippingLabelAddressValidator @Inject constructor(
         object PhoneInvalid : ValidationResult()
 
         @Parcelize
-        data class SuggestedChanges(val suggested: Address) : ValidationResult()
+        data class SuggestedChanges(val suggested: Address, val isTrivial: Boolean) : ValidationResult()
 
         @Parcelize
         data class Invalid(val message: String) : ValidationResult()

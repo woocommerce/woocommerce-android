@@ -29,7 +29,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.PaymentInfo
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.V
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
@@ -59,6 +60,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -73,7 +75,8 @@ class CardReaderPaymentViewModel
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
-    private val tracker: AnalyticsTrackerWrapper
+    private val tracker: AnalyticsTrackerWrapper,
+    private val currencyFormatter: CurrencyFormatter,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -84,8 +87,7 @@ class CardReaderPaymentViewModel
     private var paymentFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
 
-    @VisibleForTesting
-    var refetchOrderJob: Job? = null
+    private var refetchOrderJob: Job? = null
 
     fun start() {
         // TODO cardreader Make sure a reader is connected
@@ -297,7 +299,6 @@ class CardReaderPaymentViewModel
         )
     }
 
-    // TODO cardreader cancel payment intent in vm.onCleared if payment not completed with success
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onCleared() {
         super.onCleared()
@@ -341,8 +342,8 @@ class CardReaderPaymentViewModel
             selectedSite.get().name.orEmpty()
         )
 
-    // TODO cardreader don't hardcode currency symbol ($)
-    private fun Order.getAmountLabel() = "$$total"
+    private fun Order.getAmountLabel(): String = currencyFormatter
+        .formatAmountWithCurrency(this.currency, this.total.toDouble())
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 
@@ -379,7 +380,6 @@ class CardReaderPaymentViewModel
             paymentStateLabel = errorType.message,
             paymentStateLabelTopMargin = R.dimen.major_100,
             primaryActionLabel = R.string.try_again,
-            // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
         )
 

@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.firmware.actions
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateCallback
 import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
