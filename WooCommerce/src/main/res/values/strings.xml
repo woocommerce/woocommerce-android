@@ -479,7 +479,7 @@
     <string name="shipping_label_error_address_invalid_street">Invalid street</string>
     <string name="shipping_label_validation_error_template">We were unable to automatically verify the shipping address: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
-    <string name="shipping_label_validation_view_map">Open Map</string>
+    <string name="shipping_label_validation_view_map">Find on Map</string>
     <string name="shipping_label_address_suggestion_use_selected_address">Use selected address</string>
     <string name="shipping_label_address_suggestion_edit_selected_address">Edit selected address</string>
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
