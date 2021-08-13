@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
@@ -112,7 +113,38 @@ object AddonTestFixtures {
         )
     }
 
-    private val emptyProductAddon by lazy {
+    val repositoryResponseWithSingleValidOption by lazy {
+        Pair(
+            listOf(
+                emptyProductAddon.copy(
+                    name = "test-name",
+                    priceType = FlatFee,
+                    rawOptions = listOf(
+                        ProductAddonOption(
+                            null,
+                            "invalid",
+                            "invalid",
+                            "invalid"
+                        ),
+                        ProductAddonOption(
+                            FlatFee,
+                            "test-label",
+                            "test-price",
+                            "test-image"
+                        ),
+                    )
+                )
+            ),
+            listOf(
+                Order.Item.Attribute(
+                    "test-name (test-price)",
+                    "test-label"
+                )
+            )
+        )
+    }
+
+    val emptyProductAddon by lazy {
         ProductAddon(
             name = "",
             required = false,
