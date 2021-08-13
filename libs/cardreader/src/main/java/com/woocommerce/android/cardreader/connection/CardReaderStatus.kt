@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader
+package com.woocommerce.android.cardreader.connection
 
 sealed class CardReaderStatus {
     object NotConnected : CardReaderStatus()
