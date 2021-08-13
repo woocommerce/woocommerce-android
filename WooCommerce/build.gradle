@@ -162,8 +162,8 @@ dependencies {
     }
     implementation "androidx.preference:preference:1.1.1"
 
-    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-fragment:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui:$navigationVersion"
 
     implementation('org.wordpress:utils:1.40.0') {
         exclude group: "com.mcxiaoke.volley"
@@ -210,7 +210,9 @@ dependencies {
 
     // Dagger
     implementation "com.google.dagger:hilt-android:$daggerVersion"
-    implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
+    implementation("androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion") {
+        exclude group: 'androidx.navigation'
+    }
     kapt "com.google.dagger:hilt-compiler:$daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
