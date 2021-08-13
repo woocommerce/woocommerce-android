@@ -49,7 +49,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `start should trigger a successful ordered addons data parse`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         configureSuccessfulAddonsResponse()
 
         val expectedResult = defaultOrderedAddonList
