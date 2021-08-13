@@ -30,7 +30,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -88,10 +87,14 @@ class MainActivity :
         }
     }
 
-    @Inject lateinit var presenter: MainContract.Presenter
-    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var presenter: MainContract.Presenter
+    @Inject
+    lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject
+    lateinit var selectedSite: SelectedSite
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -181,13 +184,9 @@ class MainActivity :
         presenter.takeView(this)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
-        val navigator = KeepStateNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment_main)
         navController = navHostFragment.navController
-        with(navController) {
-            navigatorProvider.addNavigator(navigator)
-            setGraph(R.navigation.nav_graph_main)
-            addOnDestinationChangedListener(this@MainActivity)
-        }
+        navController.addOnDestinationChangedListener(this@MainActivity)
+
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
 
         binding.bottomNav.init(navController, this)
