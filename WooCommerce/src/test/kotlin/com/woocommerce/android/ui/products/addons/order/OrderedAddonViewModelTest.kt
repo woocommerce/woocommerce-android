@@ -7,12 +7,14 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultProductAddons
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultProductAddonList
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,15 +51,22 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     fun `test`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         configureSuccessfulAddonsResponse()
 
+        var actualResult: List<ProductAddon>? = null
+        viewModelUnderTest.orderedAddonsData.observeForever {
+            actualResult = it
+        }
+
         viewModelUnderTest
             .start(
                 321,
                 123
             )
+
+        assertThat(actualResult).isNotNull
     }
 
     private fun configureSuccessfulAddonsResponse() {
         whenever(addonRepositoryMock.fetchOrderAddonsData(321, 123))
-            .doReturn(Pair(defaultProductAddons, defaultOrderAttributes))
+            .doReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
     }
 }

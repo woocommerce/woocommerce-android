@@ -25,7 +25,7 @@ class OrderedAddonViewModel @Inject constructor(
     }
 
     private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
-    val orderedAddons = _orderedAddons
+    val orderedAddonsData = _orderedAddons
 
     private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
@@ -71,7 +71,7 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun dispatchResult(result: List<ProductAddon>) {
         withContext(dispatchers.main) {
-            orderedAddons.value = result
+            orderedAddonsData.value = result
         }
     }
 
