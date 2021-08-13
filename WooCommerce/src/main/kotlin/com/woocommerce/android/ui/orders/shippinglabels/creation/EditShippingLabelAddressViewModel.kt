@@ -142,7 +142,10 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 val validationErrorMessage = getAddressErrorStringRes(result.message)
                 viewState = viewState.copy(
                     address1Field = viewState.address1Field.copy(validationError = validationErrorMessage).validate(),
-                    bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
+                    bannerMessage = resourceProvider.getString(
+                        if (arguments.addressType == ORIGIN) R.string.shipping_label_edit_origin_address_error_warning
+                        else R.string.shipping_label_edit_address_error_warning
+                    )
                 )
             }
             is ValidationResult.SuggestedChanges -> {
