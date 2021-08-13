@@ -15,7 +15,7 @@ object AddonTestFixtures {
             ?: emptyList()
     }
 
-    val defaultOrderAddons by lazy {
+    val defaultOrderAttributes by lazy {
         listOf(
             Attribute("Topping ($3,00)", "Peperoni"),
             Attribute("Topping ($4,00)", "Extra cheese"),

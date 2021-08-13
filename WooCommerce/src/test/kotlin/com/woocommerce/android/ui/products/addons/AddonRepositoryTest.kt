@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAddons
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
 import org.assertj.core.api.Assertions.assertThat
@@ -65,7 +65,7 @@ class AddonRepositoryTest {
         configureSuccessfulOrderResponse()
         configureSuccessfulProductResponse()
 
-        val expectedAddons = defaultOrderAddons
+        val expectedAddons = defaultOrderAttributes
 
         repositoryUnderTest.fetchOrderAddonsData(123, 333)
             ?.unwrap { _, orderAddons ->

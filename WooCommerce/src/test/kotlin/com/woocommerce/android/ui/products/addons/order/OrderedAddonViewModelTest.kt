@@ -8,7 +8,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAddons
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultProductAddons
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,6 +58,6 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     private fun configureSuccessfulAddonsResponse() {
         whenever(addonRepositoryMock.fetchOrderAddonsData(321, 123))
-            .doReturn(Pair(defaultProductAddons, defaultOrderAddons))
+            .doReturn(Pair(defaultProductAddons, defaultOrderAttributes))
     }
 }
