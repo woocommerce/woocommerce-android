@@ -2,15 +2,15 @@ package com.woocommerce.android.ui.products.addons.order
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.unwrap
+import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.ProductAddon
+import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-typealias OrderAddonAttribute = Pair<String, String>
 
 @HiltViewModel
 class OrderedAddonViewModel @Inject constructor(
@@ -24,33 +24,59 @@ class OrderedAddonViewModel @Inject constructor(
 
     private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
-    private val String.toPair
+    private val String.toAddonRegexGroup
         get() = orderAttributesKeyRegex
             .findAll(this)
             .first().groupValues
             .takeIf { it.size == addonAttributeGroupSize }
             ?.toMutableList()
             ?.apply { removeFirst() }
-            ?.let { Pair(it.first(), it.last()) }
 
-    fun start(orderID: Long, productID: Long) =
-        launch(dispatchers.computation) {
-            addonsRepository.fetchOrderAddonsData(orderID, productID)
-                ?.unwrap(::filterAddonsOrderAttributes)
-        }
+    private val String.asAddonName
+        get() = toAddonRegexGroup
+            ?.first()
+            .orEmpty()
+
+    private val String.asAddonPrice
+        get() = toAddonRegexGroup
+            ?.last()
+            .orEmpty()
+
+    fun start(
+        orderID: Long,
+        productID: Long
+    ) = launch(dispatchers.computation) {
+        addonsRepository.fetchOrderAddonsData(orderID, productID)
+            ?.unwrap(::filterAddonsOrderAttributes)
+    }
 
     private fun filterAddonsOrderAttributes(
         productAddons: List<ProductAddon>,
-        orderAddons: List<String>
-    ) = orderAddons.mapNotNull { it.toPair }
-        .map { it.findMatchingAddon(productAddons) }
+        orderAttributes: List<Attribute>
+    ) = orderAttributes.mapNotNull { it.findMatchingAddon(productAddons) }
 
-    private fun OrderAddonAttribute.findMatchingAddon(
+    private fun Attribute.findMatchingAddon(
         addons: List<ProductAddon>
-    ) = unwrap { addonName, selectedOptionPrice ->
-        addons.find {
-            it.name == addonName &&
-                it.prices.contains(selectedOptionPrice)
-        }
-    }
+    ) = addons.find { it.name == key.asAddonName }
+        ?.asAddonWithSelectedOption(this)
+
+    private fun ProductAddon.asAddonWithSelectedOption(
+        attribute: Attribute
+    ) = options.find { it.label == attribute.value }
+            ?.let { copy(rawOptions = listOf(it)) }
+            ?: mergeAttributeWithAddon(this, attribute)
+
+    private fun mergeAttributeWithAddon(
+        addon: ProductAddon,
+        attribute: Attribute
+    ) = addon.copy(
+        rawOptions = listOf(
+            ProductAddonOption(
+                priceType = addon.priceType,
+                label = attribute.value,
+                price = attribute.key.asAddonPrice,
+                image = addon.options.first().image
+            )
+        )
+    )
 }
