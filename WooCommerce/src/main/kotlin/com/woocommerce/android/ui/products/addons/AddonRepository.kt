@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -31,9 +32,9 @@ class AddonRepository @Inject constructor(
         getLineItemList().find { it.productId == productID }
             ?.getAttributeList()
             ?.filter { it.key?.first().toString() != "_" }
-            ?.mapNotNull { it.key }
+            ?.map { Attribute(it.key.orEmpty(), it.value.orEmpty()) }
 
-    private fun List<String>.joinWithAddonsFrom(productID: Long) =
+    private fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
         productStore
             .getProductByRemoteId(selectedSite.get(), productID)
             ?.toAppModel()
