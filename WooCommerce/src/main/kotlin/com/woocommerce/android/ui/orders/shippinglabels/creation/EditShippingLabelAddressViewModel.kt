@@ -319,6 +319,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        private val addressType: AddressType,
         val bannerMessage: String? = null,
         val isValidationProgressDialogVisible: Boolean? = null,
         val isLoadingProgressDialogVisible: Boolean? = null,
@@ -335,6 +336,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         @StringRes val title: Int? = null
     ) : Parcelable {
         constructor(args: EditShippingLabelAddressFragmentArgs) : this(
+            addressType = args.addressType,
             nameField = NameField(
                 content = "${args.address.firstName} ${args.address.lastName}".trim(),
                 companyContent = args.address.company
@@ -350,7 +352,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         )
 
         @IgnoredOnParcel
-        val isContactCustomerButtonVisible = phoneField.content.isNotBlank()
+        val isContactCustomerButtonVisible
+            get() = addressType == DESTINATION && phoneField.content.isNotBlank()
 
         @IgnoredOnParcel
         val areAllRequiredFieldsValid
