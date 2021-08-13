@@ -34,7 +34,7 @@ object AddonTestFixtures {
             }
     }
 
-    val defaultProductAddons by lazy {
+    val defaultProductAddonList by lazy {
         defaultWCProductModel
             .toAppModel()
             .addons
