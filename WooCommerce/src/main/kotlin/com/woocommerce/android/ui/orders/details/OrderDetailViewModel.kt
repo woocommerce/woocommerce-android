@@ -594,8 +594,7 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation &&
-                !shippingLabels.isVisible,
+            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
