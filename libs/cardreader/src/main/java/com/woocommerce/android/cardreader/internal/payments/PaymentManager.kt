@@ -35,7 +35,8 @@ internal class PaymentManager(
     private val processPaymentAction: ProcessPaymentAction,
     private val cancelPaymentAction: CancelPaymentAction,
     private val paymentUtils: PaymentUtils,
-    private val errorMapper: PaymentErrorMapper
+    private val errorMapper: PaymentErrorMapper,
+    private val additionalInfoMapper: AdditionalInfoMapper,
 ) {
     suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
         if (isInvalidState(paymentInfo)) return@flow
@@ -116,7 +117,7 @@ internal class PaymentManager(
         emit(CollectingPayment)
         collectPaymentAction.collectPayment(paymentIntent).collect {
             when (it) {
-                is DisplayMessageRequested -> emit(ShowAdditionalInfo)
+                is DisplayMessageRequested -> emit(ShowAdditionalInfo(additionalInfoMapper.map(it.msg)))
                 is ReaderInputRequested -> emit(WaitingForInput)
                 is CollectPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
