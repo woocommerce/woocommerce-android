@@ -10,10 +10,10 @@ import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
 import com.stripe.stripeterminal.model.external.ConnectionStatus.NOT_CONNECTED
 import com.stripe.stripeterminal.model.external.Reader
 import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
-import com.woocommerce.android.cardreader.CardReaderImpl
-import com.woocommerce.android.cardreader.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.connection.CardReaderImpl
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
