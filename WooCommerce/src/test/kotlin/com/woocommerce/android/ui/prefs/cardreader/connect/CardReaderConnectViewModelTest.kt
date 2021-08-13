@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker

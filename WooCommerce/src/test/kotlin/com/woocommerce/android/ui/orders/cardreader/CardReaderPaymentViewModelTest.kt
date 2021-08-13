@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.cardreader
 
 import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker

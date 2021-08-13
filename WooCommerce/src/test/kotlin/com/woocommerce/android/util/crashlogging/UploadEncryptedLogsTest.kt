@@ -1,8 +1,8 @@
 package com.woocommerce.android.util.crashlogging
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before

@@ -1,7 +1,7 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode

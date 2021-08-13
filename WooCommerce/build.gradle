@@ -237,7 +237,7 @@ dependencies {
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.mockito:mockito-inline:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"

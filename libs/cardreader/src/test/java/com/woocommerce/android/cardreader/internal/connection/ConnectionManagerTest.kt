@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.ReaderCallback
 import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
