@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.addons.order
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.model.Order
@@ -10,6 +11,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,6 +24,9 @@ class OrderedAddonViewModel @Inject constructor(
         private const val addonAttributeGroupSize = 3
     }
 
+    private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
+    val orderedAddons = _orderedAddons
+
     private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
     fun start(
@@ -29,10 +34,11 @@ class OrderedAddonViewModel @Inject constructor(
         productID: Long
     ) = launch(dispatchers.computation) {
         addonsRepository.fetchOrderAddonsData(orderID, productID)
-            ?.unwrap(::filterAddonsOrderAttributes)
+            ?.unwrap(::mapAddonsFromOrderAttributes)
+            ?.let { dispatchResult(it) }
     }
 
-    private fun filterAddonsOrderAttributes(
+    private fun mapAddonsFromOrderAttributes(
         productAddons: List<ProductAddon>,
         orderAttributes: List<Order.Item.Attribute>
     ) = orderAttributes.mapNotNull { it.findMatchingAddon(productAddons) }
@@ -62,6 +68,12 @@ class OrderedAddonViewModel @Inject constructor(
             )
         )
     )
+
+    private suspend fun dispatchResult(result: List<ProductAddon>) {
+        withContext(dispatchers.main) {
+            orderedAddons.value = result
+        }
+    }
 
     private val String.toAddonRegexGroup
         get() = orderAttributesKeyRegex
