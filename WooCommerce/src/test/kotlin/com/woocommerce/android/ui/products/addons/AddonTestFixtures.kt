@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
 import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCProductModel
+import java.math.BigDecimal
 
 object AddonTestFixtures {
     val defaultWCOrderItemList: List<LineItem> by lazy {
@@ -14,13 +17,13 @@ object AddonTestFixtures {
             ?: emptyList()
     }
 
-    val defaultOrderAddonsStringList by lazy {
+    val defaultOrderAddons by lazy {
         listOf(
-            "Topping ($3,00)",
-            "Topping ($4,00)",
-            "Topping ($3,00)",
-            "Soda ($8,00)",
-            "Delivery ($5,00)"
+            Attribute("Topping ($3,00)", "Peperoni"),
+            Attribute("Topping ($4,00)", "Extra cheese"),
+            Attribute("Topping ($3,00)", "Salami"),
+            Attribute("Soda ($8,00)", "4"),
+            Attribute("Delivery ($5,00)", "Yes")
         )
     }
 

@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAddonsStringList
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAddons
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
 import org.assertj.core.api.Assertions.assertThat
@@ -65,11 +65,11 @@ class AddonRepositoryTest {
         configureSuccessfulOrderResponse()
         configureSuccessfulProductResponse()
 
-        val expectedStrings = defaultOrderAddonsStringList
+        val expectedAddons = defaultOrderAddons
 
         repositoryUnderTest.fetchOrderAddonsData(123, 333)
             ?.unwrap { _, orderAddons ->
-                assertThat(orderAddons).isEqualTo(expectedStrings)
+                assertThat(orderAddons).isEqualTo(expectedAddons)
             } ?: fail("non-null Pair with valid data was expected")
     }
 
