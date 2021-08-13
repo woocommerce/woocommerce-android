@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -9,6 +9,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.Field
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.ViewState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -44,6 +45,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
     private var validationResult: ValidationResult = ValidationResult.Valid
     private var isPhoneRequired = false
+    private var addressType = ORIGIN
 
     private val countries = listOf(
         WCLocationModel().also {
@@ -81,7 +83,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     private val savedState
         get() = EditShippingLabelAddressFragmentArgs(
             address = address,
-            addressType = ORIGIN,
+            addressType = addressType,
             validationResult = validationResult,
             requiresPhoneNumber = isPhoneRequired
         ).initSavedStateHandle()
@@ -126,7 +128,23 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the address is invalid, when the screen loads, then display an error`() = testBlocking {
+    fun `given the origin address is invalid, when the screen loads, then display an error`() = testBlocking {
+        validationResult = ValidationResult.Invalid("House number is missing")
+
+        createViewModel()
+
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        assertThat(viewState?.bannerMessage)
+            .isEqualTo(string.shipping_label_edit_origin_address_error_warning.toString())
+        assertThat(viewState?.address1Field?.error)
+            .isEqualTo(UiStringRes(string.shipping_label_error_address_house_number_missing))
+    }
+
+    @Test
+    fun `given the destination address is invalid, when the screen loads, then display an error`() = testBlocking {
+        addressType = DESTINATION
         validationResult = ValidationResult.Invalid("House number is missing")
 
         createViewModel()

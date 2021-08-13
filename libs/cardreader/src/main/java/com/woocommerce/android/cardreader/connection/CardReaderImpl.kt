@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader
+package com.woocommerce.android.cardreader.connection
 
 import com.stripe.stripeterminal.model.external.Reader
 

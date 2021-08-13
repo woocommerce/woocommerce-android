@@ -2,24 +2,24 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.atLeastOnce
-import com.nhaarman.mockitokotlin2.clearInvocations
-import com.nhaarman.mockitokotlin2.doAnswer
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
@@ -545,6 +545,54 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             assertThat(shippingLabels).isNotEmpty
             assertThat(orderData?.isShipmentTrackingAvailable).isFalse()
+        }
+
+    @Test
+    fun `Do not display shipment tracking when order is eligible for in-person payments`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+
+            doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
+            doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
+
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+
+            doReturn(
+                WooPlugin(
+                    isInstalled = true,
+                    isActive = true,
+                    version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
+                )
+            ).whenever(repository).getWooServicesPluginInfo()
+
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+
+            val shippingLabels = ArrayList<ShippingLabel>()
+            viewModel.shippingLabels.observeForever {
+                it?.let { shippingLabels.addAll(it) }
+            }
+
+            var isCreateShippingLabelButtonVisible: Boolean? = null
+            var isProductListMenuVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+                isProductListMenuVisible = new.isProductListMenuVisible
+            }
+
+            viewModel.start()
+
+            assertThat(shippingLabels).isEmpty()
+            assertThat(isCreateShippingLabelButtonVisible).isFalse
+            assertThat(isProductListMenuVisible).isFalse
         }
 
     @Test

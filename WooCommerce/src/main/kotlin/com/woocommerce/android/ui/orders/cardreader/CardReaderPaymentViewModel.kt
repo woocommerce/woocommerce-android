@@ -38,7 +38,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.PaymentInfo
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -97,8 +97,7 @@ class CardReaderPaymentViewModel
     private var paymentFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
 
-    @VisibleForTesting
-    var refetchOrderJob: Job? = null
+    private var refetchOrderJob: Job? = null
 
     fun start() {
         // TODO cardreader Make sure a reader is connected

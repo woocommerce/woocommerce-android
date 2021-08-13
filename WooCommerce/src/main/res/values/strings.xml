@@ -473,13 +473,14 @@
     <string name="shipping_label_edit_address_loading_progress_title">Loading address data</string>
     <string name="shipping_label_edit_address_progress_message">Please wait…</string>
     <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
+    <string name="shipping_label_edit_origin_address_error_warning">We were unable to automatically verify the origin address. View it on Google Maps to make sure the address is correct.</string>
     <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View it on Google Maps or try contacting the customer to make sure the address is correct.</string>
     <string name="shipping_label_error_address_not_found">Address was not found</string>
     <string name="shipping_label_error_address_house_number_missing">House number missing</string>
     <string name="shipping_label_error_address_invalid_street">Invalid street</string>
-    <string name="shipping_label_validation_error_template">Validation failed: %s</string>
+    <string name="shipping_label_validation_error_template">We were unable to automatically verify the shipping address: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
-    <string name="shipping_label_validation_view_map">Open Map</string>
+    <string name="shipping_label_validation_view_map">Find on Map</string>
     <string name="shipping_label_address_suggestion_use_selected_address">Use selected address</string>
     <string name="shipping_label_address_suggestion_edit_selected_address">Edit selected address</string>
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>

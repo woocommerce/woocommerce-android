@@ -1,7 +1,7 @@
 package com.woocommerce.android.util.crashlogging
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import com.woocommerce.android.util.WooLogWrapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

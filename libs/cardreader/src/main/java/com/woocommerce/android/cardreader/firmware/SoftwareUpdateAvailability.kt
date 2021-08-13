@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader
+package com.woocommerce.android.cardreader.firmware
 
 sealed class SoftwareUpdateAvailability {
     object Initializing : SoftwareUpdateAvailability()
