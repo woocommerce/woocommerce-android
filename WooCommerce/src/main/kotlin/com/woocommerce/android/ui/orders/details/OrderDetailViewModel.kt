@@ -648,9 +648,7 @@ class OrderDetailViewModel @Inject constructor(
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
 
         val isCreateShippingLabelBannerVisible: Boolean
-            get() = isCreateShippingLabelButtonVisible == true &&
-                isProductListVisible == true &&
-                orderInfo?.isPaymentCollectableWithCardReader == false
+            get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
     }
 
     @Parcelize
