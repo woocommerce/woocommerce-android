@@ -40,11 +40,6 @@ data class ProductAddon(
             ?.let { listOf(rawOptions.single().copy(priceType = priceType, price = rawPrice)) }
             ?: rawOptions
 
-    val prices
-        get() = takeIf { isNoPriceAvailableAtOptions }
-            ?.let { listOf(rawPrice) }
-            ?: rawOptions.map { it.price }
-
     private val isNoPriceAvailableAtOptions
         get() = (rawOptions.size == 1) && rawOptions.single().price.isEmpty()
 }
