@@ -14,31 +14,11 @@ object AddonTestFixtures {
             ?: emptyList()
     }
 
-    val defaultProduct
+    val defaultWCProductModel
         get() = WCProductModel()
             .apply {
                 attributes = "[]"
                 status = "draft"
                 metadata = "mocks/product_addon_metadata.json".jsonFileToString() ?: ""
             }
-
-    val defaultProductAddon
-        get() = ProductAddon(
-            name = "",
-            description = "",
-            descriptionEnabled = false,
-            max = "",
-            min = "",
-            position = "",
-            rawPrice = "",
-            adjustPrice = "",
-            required = false,
-            restrictions = "",
-            titleFormat = null,
-            restrictionsType = null,
-            priceType = null,
-            type = null,
-            display = null,
-            rawOptions = listOf()
-        )
 }

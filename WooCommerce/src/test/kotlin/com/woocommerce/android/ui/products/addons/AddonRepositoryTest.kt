@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultProduct
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -111,6 +111,6 @@ class AddonRepositoryTest {
             productStoreMock.getProductByRemoteId(
                 siteModelMock, remoteProductID
             )
-        ).thenReturn(defaultProduct)
+        ).thenReturn(defaultWCProductModel)
     }
 }
