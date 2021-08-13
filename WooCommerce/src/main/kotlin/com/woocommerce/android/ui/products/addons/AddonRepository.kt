@@ -37,7 +37,6 @@ class AddonRepository @Inject constructor(
     private fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
         productStore
             .getProductByRemoteId(selectedSite.get(), productID)
-            ?.toAppModel()
-            ?.addons
+            ?.addons?.map { it.toAppModel() }
             ?.let { addons -> Pair(addons, this) }
 }
