@@ -49,7 +49,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             .doReturn(Pair(listOf(), listOf()))
 
         viewModelUnderTest
-            .init(
+            .start(
                 321,
                 123
             )

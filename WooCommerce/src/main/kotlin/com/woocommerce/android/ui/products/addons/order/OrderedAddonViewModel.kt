@@ -33,7 +33,7 @@ class OrderedAddonViewModel @Inject constructor(
             ?.apply { removeFirst() }
             ?.let { Pair(it.first(), it.last()) }
 
-    fun init(orderID: Long, productID: Long) =
+    fun start(orderID: Long, productID: Long) =
         launch(dispatchers.computation) {
             addonsRepository.fetchOrderAddonsData(orderID, productID)
                 ?.unwrap(::filterAddonsOrderAttributes)
