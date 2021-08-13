@@ -548,6 +548,54 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `Do not display shipment tracking when order is eligible for in-person payments`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+
+            doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
+            doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
+
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+
+            doReturn(
+                WooPlugin(
+                    isInstalled = true,
+                    isActive = true,
+                    version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
+                )
+            ).whenever(repository).getWooServicesPluginInfo()
+
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+
+            val shippingLabels = ArrayList<ShippingLabel>()
+            viewModel.shippingLabels.observeForever {
+                it?.let { shippingLabels.addAll(it) }
+            }
+
+            var isCreateShippingLabelButtonVisible: Boolean? = null
+            var isProductListMenuVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+                isProductListMenuVisible = new.isProductListMenuVisible
+            }
+
+            viewModel.start()
+
+            assertThat(shippingLabels).isEmpty()
+            assertThat(isCreateShippingLabelButtonVisible).isFalse
+            assertThat(isProductListMenuVisible).isFalse
+        }
+
+    @Test
     fun `Display error message on fetch order error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         whenever(repository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
         whenever(repository.getOrder(ORDER_IDENTIFIER)).thenReturn(null)

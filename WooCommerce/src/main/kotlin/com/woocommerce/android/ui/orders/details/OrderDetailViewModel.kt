@@ -576,7 +576,8 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
-            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
+            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
+            viewState.orderInfo?.isPaymentCollectableWithCardReader != true
 
         if (isOrderEligibleForSLCreation &&
             viewState.isCreateShippingLabelButtonVisible != true &&
