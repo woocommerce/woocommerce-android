@@ -593,7 +593,7 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,
+            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible && viewState.orderInfo?.isPaymentCollectableWithCardReader == false,
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
@@ -646,7 +646,8 @@ class OrderDetailViewModel @Inject constructor(
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
 
         val isCreateShippingLabelBannerVisible: Boolean
-            get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
+            get() = isCreateShippingLabelButtonVisible == true &&
+                    isProductListVisible == true && orderInfo?.isPaymentCollectableWithCardReader == false
     }
 
     @Parcelize
