@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderedAddonList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultProductAddonList
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,6 +52,8 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     fun `test`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         configureSuccessfulAddonsResponse()
 
+        val expectedResult = defaultOrderedAddonList
+
         var actualResult: List<ProductAddon>? = null
         viewModelUnderTest.orderedAddonsData.observeForever {
             actualResult = it
@@ -62,7 +65,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 123
             )
 
-        assertThat(actualResult).isNotNull
+        assertThat(actualResult).isEqualTo(expectedResult)
     }
 
     private fun configureSuccessfulAddonsResponse() {
