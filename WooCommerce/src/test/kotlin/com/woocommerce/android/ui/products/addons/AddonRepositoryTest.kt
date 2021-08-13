@@ -25,7 +25,6 @@ class AddonRepositoryTest {
     private lateinit var productStoreMock: WCProductStore
     private lateinit var selectedSiteMock: SelectedSite
     private lateinit var siteModelMock: SiteModel
-    private lateinit var wcProductModelMock: WCProductModel
 
     private val localSiteID = 321
     private val remoteOrderID = 123L
