@@ -8,12 +8,15 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ShowSnackbarInDialog
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.util.ActivityUtils
@@ -72,6 +75,8 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                     )
                     is SendReceipt -> composeEmail(event.address, event.subject, event.content)
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ShowSnackbarInDialog -> Snackbar
+                        .make(requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG).show()
                     else -> event.isHandled = false
                 }
             }
