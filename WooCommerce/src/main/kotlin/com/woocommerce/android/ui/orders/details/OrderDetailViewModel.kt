@@ -595,7 +595,7 @@ class OrderDetailViewModel @Inject constructor(
         viewState = viewState.copy(
             isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation &&
                 !shippingLabels.isVisible &&
-                viewState.orderInfo?.isPaymentCollectableWithCardReader == false,
+                viewState.orderInfo?.isPaymentCollectableWithCardReader != true,
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
