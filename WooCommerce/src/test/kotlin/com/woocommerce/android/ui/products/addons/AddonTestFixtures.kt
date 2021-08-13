@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
 import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
@@ -30,5 +31,11 @@ object AddonTestFixtures {
                 status = "draft"
                 metadata = "mocks/product_addon_metadata.json".jsonFileToString() ?: ""
             }
+    }
+
+    val defaultProductAddons by lazy {
+        defaultWCProductModel
+            .toAppModel()
+            .addons
     }
 }
