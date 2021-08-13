@@ -18,6 +18,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.RETRY_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.SWIPE_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
@@ -50,6 +59,7 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -172,8 +182,8 @@ class CardReaderPaymentViewModel
                 tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
                 onPaymentCompleted(paymentStatus, orderId)
             }
-            ShowAdditionalInfo -> {
-                // TODO cardreader prompt the user to take certain action eg. Remove card
+            is ShowAdditionalInfo -> {
+                handleAdditionalInfo(paymentStatus.type)
             }
             WaitingForInput -> {
                 // noop
@@ -237,6 +247,22 @@ class CardReaderPaymentViewModel
                     { onSaveForLaterClicked() }
                 )
             )
+        }
+    }
+
+    private fun handleAdditionalInfo(type: AdditionalInfoType) {
+        when (type) {
+            RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
+            INSERT_CARD -> null // noop - collect payment screen is currently shown
+            INSERT_OR_SWIPE_CARD -> null // noop - collect payment screen is currently shown
+            SWIPE_CARD -> null // noop - collect payment screen is currently shown
+            REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
+            MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
+                R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
+            TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
+            TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
+        }?.let { message ->
+            triggerEvent(ShowSnackbarInDialog(message))
         }
     }
 
@@ -347,6 +373,8 @@ class CardReaderPaymentViewModel
         .formatAmountWithCurrency(this.currency, this.total.toDouble())
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
+
+    class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
