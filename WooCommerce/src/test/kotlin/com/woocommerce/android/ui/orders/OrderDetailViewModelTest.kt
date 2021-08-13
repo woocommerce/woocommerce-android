@@ -1099,4 +1099,56 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Then
             assertEquals(OrderNavigationTarget.StartCardReaderConnectFlow(false), viewModel.event.value)
         }
+
+    @Test
+    fun `given card reader result is received, when it is connected, then trigger start card reader payment flow`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            viewModel.start()
+
+            // When
+            viewModel.onConnectToReaderResultReceived(connected = true)
+            advanceUntilIdle()
+
+            // Then
+            assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderPaymentFlow::class.java)
+        }
+
+    @Test
+    fun `given card reader result is received,when it is connected,then trigger card reader payment flow with data`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            viewModel.start()
+
+            // When
+            viewModel.onConnectToReaderResultReceived(connected = true)
+            advanceUntilIdle()
+
+            // Then
+            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.identifier), viewModel.event.value)
+        }
+
+    @Test
+    fun `given card reader result is received,when it is NOT connected,then do not trigger card reader payment flow`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            viewModel.start()
+
+            // When
+            viewModel.onConnectToReaderResultReceived(connected = false)
+            advanceUntilIdle()
+
+            // Then
+            assertThat(viewModel.event.value)
+                .isNotInstanceOf(OrderNavigationTarget.StartCardReaderPaymentFlow::class.java)
+        }
 }
