@@ -1140,7 +1140,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
             viewModel.start()
 
             // When
