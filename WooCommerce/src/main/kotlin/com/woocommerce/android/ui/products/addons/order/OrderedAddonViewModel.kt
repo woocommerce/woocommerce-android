@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.products.addons.order
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.unwrap
-import com.woocommerce.android.model.Order.Item.Attribute
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -24,6 +24,44 @@ class OrderedAddonViewModel @Inject constructor(
 
     private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
+    fun start(
+        orderID: Long,
+        productID: Long
+    ) = launch(dispatchers.computation) {
+        addonsRepository.fetchOrderAddonsData(orderID, productID)
+            ?.unwrap(::filterAddonsOrderAttributes)
+    }
+
+    private fun filterAddonsOrderAttributes(
+        productAddons: List<ProductAddon>,
+        orderAttributes: List<Order.Item.Attribute>
+    ) = orderAttributes.mapNotNull { it.findMatchingAddon(productAddons) }
+
+    private fun Order.Item.Attribute.findMatchingAddon(
+        addons: List<ProductAddon>
+    ) = addons.find { it.name == key.asAddonName }
+        ?.toAddonWithSingleSelectedOption(this)
+
+    private fun ProductAddon.toAddonWithSingleSelectedOption(
+        attribute: Order.Item.Attribute
+    ) = options.find { it.label == attribute.value }
+        ?.let { copy(rawOptions = listOf(it)) }
+        ?: mergeOrderAttributeWithAddon(this, attribute)
+
+    private fun mergeOrderAttributeWithAddon(
+        addon: ProductAddon,
+        attribute: Order.Item.Attribute
+    ) = addon.copy(
+        rawOptions = listOf(
+            ProductAddonOption(
+                priceType = addon.priceType,
+                label = attribute.value,
+                price = attribute.key.asAddonPrice,
+                image = addon.options.first().image
+            )
+        )
+    )
+
     private val String.toAddonRegexGroup
         get() = orderAttributesKeyRegex
             .findAll(this)
@@ -41,42 +79,4 @@ class OrderedAddonViewModel @Inject constructor(
         get() = toAddonRegexGroup
             ?.last()
             .orEmpty()
-
-    fun start(
-        orderID: Long,
-        productID: Long
-    ) = launch(dispatchers.computation) {
-        addonsRepository.fetchOrderAddonsData(orderID, productID)
-            ?.unwrap(::filterAddonsOrderAttributes)
-    }
-
-    private fun filterAddonsOrderAttributes(
-        productAddons: List<ProductAddon>,
-        orderAttributes: List<Attribute>
-    ) = orderAttributes.mapNotNull { it.findMatchingAddon(productAddons) }
-
-    private fun Attribute.findMatchingAddon(
-        addons: List<ProductAddon>
-    ) = addons.find { it.name == key.asAddonName }
-        ?.asAddonWithSelectedOption(this)
-
-    private fun ProductAddon.asAddonWithSelectedOption(
-        attribute: Attribute
-    ) = options.find { it.label == attribute.value }
-        ?.let { copy(rawOptions = listOf(it)) }
-        ?: mergeAttributeWithAddon(this, attribute)
-
-    private fun mergeAttributeWithAddon(
-        addon: ProductAddon,
-        attribute: Attribute
-    ) = addon.copy(
-        rawOptions = listOf(
-            ProductAddonOption(
-                priceType = addon.priceType,
-                label = attribute.value,
-                price = attribute.key.asAddonPrice,
-                image = addon.options.first().image
-            )
-        )
-    )
 }
