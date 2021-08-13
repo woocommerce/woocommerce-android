@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image

@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils

@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
