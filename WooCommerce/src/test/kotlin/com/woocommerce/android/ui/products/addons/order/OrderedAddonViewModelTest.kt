@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -14,7 +15,7 @@ import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrder
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderedAddonList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultProductAddonList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.emptyProductAddon
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.repositoryResponseWithSingleValidOption
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.listWithSingleAddonAndTwoValidOptions
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -23,7 +24,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.addons.WCProductAddonModel
 import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType.FlatFee
+import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType.QuantityBased
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -53,7 +56,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should trigger a successful ordered addons data parse`() =
+    fun `should trigger a successful parse all data at once`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.fetchOrderAddonsData(321, 123))
                 .doReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
@@ -71,7 +74,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `should inject Attribute data when no matching option is found`() =
+    fun `should inject Attribute data when matching option is NOT found`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val mockResponse = Pair(
                 listOf(
@@ -113,7 +116,17 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     fun `should return Addon with single option when matching option is found`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.fetchOrderAddonsData(321, 123))
-                .doReturn(repositoryResponseWithSingleValidOption)
+                .doReturn(
+                    Pair(
+                        listWithSingleAddonAndTwoValidOptions,
+                        listOf(
+                            Order.Item.Attribute(
+                                "test-name (test-price)",
+                                "test-label"
+                            )
+                        )
+                    )
+                )
 
             val expectedResult = emptyProductAddon.copy(
                 name = "test-name",
@@ -127,6 +140,63 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                     )
                 )
             ).let { listOf(it) }
+
+            var actualResult: List<ProductAddon>? = null
+            viewModelUnderTest.orderedAddonsData.observeForever {
+                actualResult = it
+            }
+
+            viewModelUnderTest.start(321, 123)
+
+            assertThat(actualResult).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `should return two Addons with a single option when matching addon is found twice`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.fetchOrderAddonsData(321, 123))
+                .doReturn(
+                    Pair(
+                        listWithSingleAddonAndTwoValidOptions,
+                        listOf(
+                            Order.Item.Attribute(
+                                "test-name (test-price)",
+                                "test-label"
+                            ),
+                            Order.Item.Attribute(
+                                "test-name (test-price-2)",
+                                "test-label-2"
+                            )
+                        )
+                    )
+                )
+
+            val expectedResult = listOf(
+                emptyProductAddon.copy(
+                    name = "test-name",
+                    priceType = FlatFee,
+                    rawOptions = listOf(
+                        ProductAddonOption(
+                            priceType = FlatFee,
+                            "test-label",
+                            "test-price",
+                            "test-image"
+                        )
+                    )
+                ),
+                emptyProductAddon.copy(
+                    name = "test-name",
+                    priceType = FlatFee,
+                    rawOptions = listOf(
+                        ProductAddonOption(
+                            priceType = QuantityBased,
+                            "test-label-2",
+                            "test-price-2",
+                            "test-image-2"
+                        )
+                    )
+                )
+            )
 
             var actualResult: List<ProductAddon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {

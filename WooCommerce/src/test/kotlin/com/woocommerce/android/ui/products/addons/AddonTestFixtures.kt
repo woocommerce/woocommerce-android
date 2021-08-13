@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.addons
 
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
@@ -10,6 +9,7 @@ import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType.FlatFee
+import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType.QuantityBased
 
 object AddonTestFixtures {
     val defaultWCOrderItemList: List<LineItem> by lazy {
@@ -113,32 +113,24 @@ object AddonTestFixtures {
         )
     }
 
-    val repositoryResponseWithSingleValidOption by lazy {
-        Pair(
-            listOf(
-                emptyProductAddon.copy(
-                    name = "test-name",
-                    priceType = FlatFee,
-                    rawOptions = listOf(
-                        ProductAddonOption(
-                            null,
-                            "invalid",
-                            "invalid",
-                            "invalid"
-                        ),
-                        ProductAddonOption(
-                            FlatFee,
-                            "test-label",
-                            "test-price",
-                            "test-image"
-                        ),
-                    )
-                )
-            ),
-            listOf(
-                Order.Item.Attribute(
-                    "test-name (test-price)",
-                    "test-label"
+    val listWithSingleAddonAndTwoValidOptions by lazy {
+        listOf(
+            emptyProductAddon.copy(
+                name = "test-name",
+                priceType = FlatFee,
+                rawOptions = listOf(
+                    ProductAddonOption(
+                        QuantityBased,
+                        "test-label-2",
+                        "test-price-2",
+                        "test-image-2"
+                    ),
+                    ProductAddonOption(
+                        FlatFee,
+                        "test-label",
+                        "test-price",
+                        "test-image"
+                    ),
                 )
             )
         )
