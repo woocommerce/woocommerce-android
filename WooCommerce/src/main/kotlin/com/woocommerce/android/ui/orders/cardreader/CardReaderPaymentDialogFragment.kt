@@ -75,8 +75,9 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                     )
                     is SendReceipt -> composeEmail(event.address, event.subject, event.content)
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ShowSnackbarInDialog -> Snackbar
-                        .make(requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG).show()
+                    is ShowSnackbarInDialog -> Snackbar.make(
+                        requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
+                    ).show()
                     else -> event.isHandled = false
                 }
             }
