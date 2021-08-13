@@ -1,13 +1,11 @@
 package com.woocommerce.android.ui.products.addons
 
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
 import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCProductModel
-import java.math.BigDecimal
 
 object AddonTestFixtures {
     val defaultWCOrderItemList: List<LineItem> by lazy {

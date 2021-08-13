@@ -63,8 +63,8 @@ class OrderedAddonViewModel @Inject constructor(
     private fun ProductAddon.asAddonWithSelectedOption(
         attribute: Attribute
     ) = options.find { it.label == attribute.value }
-            ?.let { copy(rawOptions = listOf(it)) }
-            ?: mergeAttributeWithAddon(this, attribute)
+        ?.let { copy(rawOptions = listOf(it)) }
+        ?: mergeAttributeWithAddon(this, attribute)
 
     private fun mergeAttributeWithAddon(
         addon: ProductAddon,
