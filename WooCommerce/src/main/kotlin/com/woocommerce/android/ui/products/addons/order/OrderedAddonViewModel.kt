@@ -57,7 +57,8 @@ class OrderedAddonViewModel @Inject constructor(
                 priceType = addon.priceType,
                 label = attribute.value,
                 price = attribute.key.asAddonPrice,
-                image = addon.options.first().image
+                image = addon.options
+                    .firstOrNull()?.image.orEmpty()
             )
         )
     )
