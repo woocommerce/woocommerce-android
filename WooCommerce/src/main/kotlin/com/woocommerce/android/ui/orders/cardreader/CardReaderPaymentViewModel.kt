@@ -87,8 +87,7 @@ class CardReaderPaymentViewModel
     private var paymentFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
 
-    @VisibleForTesting
-    var refetchOrderJob: Job? = null
+    private var refetchOrderJob: Job? = null
 
     fun start() {
         // TODO cardreader Make sure a reader is connected
