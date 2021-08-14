@@ -88,7 +88,7 @@ object AddonTestFixtures {
             emptyProductAddon.copy(
                 name = "Soda",
                 priceType = FlatFee,
-                rawPrice = "2",
+                price = "2",
                 rawOptions = listOf(
                     ProductAddonOption(
                         priceType = FlatFee,
@@ -152,7 +152,7 @@ object AddonTestFixtures {
             priceType = null,
             type = null,
             display = null,
-            rawPrice = "",
+            price = "",
             rawOptions = listOf()
         )
     }

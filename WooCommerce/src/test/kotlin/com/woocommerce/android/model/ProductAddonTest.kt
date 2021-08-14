@@ -35,7 +35,7 @@ internal class ProductAddonTest {
             priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
             type = WCProductAddonModel.AddOnType.CustomPrice,
             display = WCProductAddonModel.AddOnDisplay.RadioButton,
-            rawPrice = addonPriceFake,
+            price = addonPriceFake,
             rawOptions = rawOptionsFake
         )
     }
