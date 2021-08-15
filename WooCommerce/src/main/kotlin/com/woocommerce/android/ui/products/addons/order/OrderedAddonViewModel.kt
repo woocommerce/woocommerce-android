@@ -54,6 +54,15 @@ class OrderedAddonViewModel @Inject constructor(
         ?.let { this.copy(rawOptions = listOf(it)) }
         ?: mergeOrderAttributeWithAddon(this, attribute)
 
+    /**
+     * If it wasn't possible to find the respective option
+     * through [Order.Item.Attribute.value] matching we will
+     * have to merge the Addon data with the Attribute in order
+     * to display the Ordered addon correctly.
+     *
+     * In this scenario there's no way to infer the image
+     * information since it's something contained inside the options only
+     */
     private fun mergeOrderAttributeWithAddon(
         addon: ProductAddon,
         attribute: Order.Item.Attribute
@@ -63,8 +72,7 @@ class OrderedAddonViewModel @Inject constructor(
                 priceType = addon.priceType,
                 label = attribute.value,
                 price = attribute.key.asAddonPrice,
-                image = addon.options
-                    .firstOrNull()?.image.orEmpty()
+                image = ""
             )
         )
     )
