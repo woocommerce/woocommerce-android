@@ -55,7 +55,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should trigger a successful parse all data at once`() =
+    fun `should trigger a successful parse to all data at once`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.fetchOrderAddonsData(321, 123))
                 .doReturn(Pair(defaultProductAddonList, defaultOrderAttributes))

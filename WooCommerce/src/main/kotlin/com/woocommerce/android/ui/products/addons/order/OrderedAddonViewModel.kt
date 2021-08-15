@@ -46,12 +46,12 @@ class OrderedAddonViewModel @Inject constructor(
     private fun Order.Item.Attribute.findMatchingAddon(
         addons: List<ProductAddon>
     ) = addons.find { it.name == key.asAddonName }
-        ?.toAddonWithSingleSelectedOption(this)
+        ?.asAddonWithSingleSelectedOption(this)
 
-    private fun ProductAddon.toAddonWithSingleSelectedOption(
+    private fun ProductAddon.asAddonWithSingleSelectedOption(
         attribute: Order.Item.Attribute
     ) = options.find { it.label == attribute.value }
-        ?.let { copy(rawOptions = listOf(it)) }
+        ?.let { this.copy(rawOptions = listOf(it)) }
         ?: mergeOrderAttributeWithAddon(this, attribute)
 
     private fun mergeOrderAttributeWithAddon(
