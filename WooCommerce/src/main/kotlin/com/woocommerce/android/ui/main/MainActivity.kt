@@ -850,9 +850,14 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
+    override fun showProductFilters(
+        stockStatus: String?,
+        productType: String?,
+        productStatus: String?,
+        productCategory: String?
+    ) {
         val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
-            stockStatus, productStatus, productType
+            stockStatus, productStatus, productType, productCategory
         )
         navController.navigateSafely(action)
     }

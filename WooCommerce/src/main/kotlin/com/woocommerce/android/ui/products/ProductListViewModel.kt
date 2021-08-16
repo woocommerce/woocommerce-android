@@ -134,7 +134,8 @@ class ProductListViewModel @Inject constructor(
             ShowProductFilterScreen(
                 productFilterOptions[ProductFilterOption.STOCK_STATUS],
                 productFilterOptions[ProductFilterOption.TYPE],
-                productFilterOptions[ProductFilterOption.STATUS]
+                productFilterOptions[ProductFilterOption.STATUS],
+                productFilterOptions[ProductFilterOption.CATEGORY]
             )
         )
     }
@@ -428,7 +429,8 @@ class ProductListViewModel @Inject constructor(
         data class ShowProductFilterScreen(
             val stockStatusFilter: String?,
             val productTypeFilter: String?,
-            val productStatusFilter: String?
+            val productStatusFilter: String?,
+            val productCategory: String?
         ) : ProductListEvent()
     }
 }

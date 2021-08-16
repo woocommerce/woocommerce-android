@@ -51,6 +51,10 @@
                 android:name="selectedProductType"
                 app:argType="string"
                 app:nullable="true" />
+            <argument
+                android:name="selectedProductCategory"
+                app:argType="string"
+                app:nullable="true" />
         </action>
         <action
             android:id="@+id/action_productListFragment_to_productTypesBottomSheet"
