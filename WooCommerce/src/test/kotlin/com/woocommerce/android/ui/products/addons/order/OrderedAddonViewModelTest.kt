@@ -1,12 +1,8 @@
 package com.woocommerce.android.ui.products.addons.order
 
-import android.content.Context
-import android.content.SharedPreferences
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
