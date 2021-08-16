@@ -282,6 +282,7 @@
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">View Add-ons</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_multiple">Products</string>
