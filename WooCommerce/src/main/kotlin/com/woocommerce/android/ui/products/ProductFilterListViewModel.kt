@@ -77,11 +77,13 @@ class ProductFilterListViewModel @Inject constructor(
 
     fun getFilterString() = productFilterOptions.values.joinToString(", ")
 
-    fun getFilterByStockStatus() = productFilterOptions[STOCK_STATUS]
+    private fun getFilterByStockStatus() = productFilterOptions[STOCK_STATUS]
 
-    fun getFilterByProductStatus() = productFilterOptions[STATUS]
+    private fun getFilterByProductStatus() = productFilterOptions[STATUS]
 
-    fun getFilterByProductType() = productFilterOptions[TYPE]
+    private fun getFilterByProductType() = productFilterOptions[TYPE]
+
+    private fun getFilterByProductCategory() = productFilterOptions[CATEGORY]
 
     private suspend fun loadCategories() {
         if (networkStatus.isConnected()) {
@@ -169,7 +171,8 @@ class ProductFilterListViewModel @Inject constructor(
         val result = ProductFilterResult(
             productStatus = getFilterByProductStatus(),
             stockStatus = getFilterByStockStatus(),
-            productType = getFilterByProductType()
+            productType = getFilterByProductType(),
+            productCategory = getFilterByProductCategory()
         )
         triggerEvent(ExitWithResult(result))
     }
