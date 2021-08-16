@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.addons.order
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
@@ -35,7 +34,7 @@ class OrderedAddonViewModel @Inject constructor(
         productID: Long
     ) = launch(dispatchers.computation) {
         addonsRepository.fetchOrderAddonsData(orderID, orderItemID, productID)
-            ?.unwrap(::mapAddonsFromOrderAttributes)
+            ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
             ?.let { dispatchResult(it) }
     }
 
