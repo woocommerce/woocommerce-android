@@ -107,6 +107,9 @@ data class Order(
         @IgnoredOnParcel
         val isVariation: Boolean = variationId != 0L
 
+        @IgnoredOnParcel
+        val containsProductAddons = attributesList.find { it.isAddonAttribute } != null
+
         /**
          * @return a comma-separated list of attribute values for display
          */
@@ -116,9 +119,6 @@ data class Order(
                 // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
                 it.value.isNotEmpty() && it.key.isNotEmpty() && it.key.first().toString() != "_"
             }.joinToString { it.value.capitalize(Locale.getDefault()) }
-
-        val containsProductAddons
-            get() = attributesList.find { it.isAddonAttribute } != null
 
         @Parcelize
         data class Attribute(
@@ -135,8 +135,8 @@ data class Order(
             val keyAsAddonRegexGroup
                 get() = attributeAddonKeyRegex
                     .findAll(key)
-                    .first().groupValues
-                    .takeIf { it.size == addonAttributeGroupSize }
+                    .firstOrNull()?.groupValues
+                    ?.takeIf { it.size == addonAttributeGroupSize }
                     ?.toMutableList()
                     ?.apply { removeFirst() }
 
