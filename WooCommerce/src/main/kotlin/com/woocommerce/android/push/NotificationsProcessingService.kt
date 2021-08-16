@@ -5,11 +5,12 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import androidx.core.app.NotificationManagerCompat
-
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NotificationsProcessingService : Service() {
     companion object {
         const val ARG_ACTION_TYPE = "action_type"
@@ -26,6 +27,8 @@ class NotificationsProcessingService : Service() {
     }
 
     private lateinit var actionProcessor: ActionProcessor
+    @Inject
+    lateinit var notificationMessageHandler: NotificationMessageHandler
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -43,14 +46,13 @@ class NotificationsProcessingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Offload to a separate thread.
-        actionProcessor = ActionProcessor(this, intent, startId)
-        Thread(Runnable { actionProcessor.process() }).start()
+        actionProcessor = ActionProcessor(intent, startId)
+        Thread { actionProcessor.process() }.start()
 
-        return Service.START_NOT_STICKY
+        return START_NOT_STICKY
     }
 
-    private inner class ActionProcessor internal constructor(
-        private val context: Context,
+    private inner class ActionProcessor(
         private val intent: Intent?,
         private val taskId: Int
     ) {
@@ -59,16 +61,7 @@ class NotificationsProcessingService : Service() {
                 // Check notification dismissed pending intent
                 if (actionType == ARG_ACTION_NOTIFICATION_DISMISS) {
                     val notificationId = intent.getIntExtra(ARG_PUSH_ID, 0)
-                    if (notificationId == NotificationHandler.GROUP_NOTIFICATION_ID) {
-                        NotificationHandler.clearNotifications()
-                    } else {
-                        NotificationHandler.removeNotification(notificationId)
-                        // Dismiss the grouped notification if a user dismisses all notifications from a wear device
-                        if (!NotificationHandler.hasNotifications()) {
-                            val notificationManager = NotificationManagerCompat.from(context)
-                            notificationManager.cancel(NotificationHandler.GROUP_NOTIFICATION_ID)
-                        }
-                    }
+                    notificationMessageHandler.onNotificationDismissed(notificationId)
                 }
             } ?: stopSelf(taskId)
         }
