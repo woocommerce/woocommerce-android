@@ -1,11 +1,7 @@
 package com.woocommerce.android.util
 
-import android.content.Context
-import android.os.Bundle
 import android.util.Base64
-import androidx.core.app.NotificationManagerCompat
 import com.google.gson.Gson
-import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONException
 import org.json.JSONObject
@@ -17,25 +13,6 @@ import java.util.zip.Inflater
 
 object NotificationsUtils {
     private const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
-
-    /**
-     * Checks if global notifications toggle is enabled in the Android app settings.
-     */
-    fun isNotificationsEnabled(context: Context): Boolean {
-        return NotificationManagerCompat.from(context.applicationContext).areNotificationsEnabled()
-    }
-
-    /**
-     * Builds a [NotificationModel] from a push notification bundle.
-     */
-    fun buildNotificationModelFromBundle(data: Bundle): NotificationModel? {
-        return data.getString(NotificationHandler.PUSH_ARG_NOTE_FULL_DATA)?.let {
-            getNotificationJsonFromBase64EncodedData(it)?.let { json ->
-                val apiResponse = Gson().fromJson(json.toString(), NotificationApiResponse::class.java)
-                NotificationApiResponse.notificationResponseToNotificationModel(apiResponse)
-            }
-        }
-    }
 
     /**
      * Builds a [NotificationModel] from a push notification payload.
@@ -81,7 +58,7 @@ object NotificationsUtils {
                 // Attempt to pull out the notification object
                 if (jsonObject.has("notes")) {
                     val jsonArray = jsonObject.getJSONArray("notes")
-                    if (jsonArray != null && jsonArray.length() == 1) {
+                    if (jsonArray.length() == 1) {
                         resultJson = jsonArray.getJSONObject(0)
                     }
                 }
