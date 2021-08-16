@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.addons
 
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -10,7 +9,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class AddonRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
