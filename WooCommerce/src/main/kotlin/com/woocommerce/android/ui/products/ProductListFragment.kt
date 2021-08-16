@@ -292,7 +292,7 @@ class ProductListFragment :
                         event.stockStatusFilter,
                         event.productTypeFilter,
                         event.productStatusFilter,
-                        event.productCategory
+                        event.productCategoryFilter
                     )
                     is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                     else -> event.isHandled = false
