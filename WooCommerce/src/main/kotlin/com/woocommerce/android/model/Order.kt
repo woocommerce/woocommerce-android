@@ -107,12 +107,6 @@ data class Order(
         @IgnoredOnParcel
         val isVariation: Boolean = variationId != 0L
 
-        @Parcelize
-        data class Attribute(
-            val key: String,
-            val value: String
-        ) : Parcelable
-
         /**
          * @return a comma-separated list of attribute values for display
          */
@@ -122,6 +116,33 @@ data class Order(
                 // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
                 it.value.isNotEmpty() && it.key.isNotEmpty() && it.key.first().toString() != "_"
             }.joinToString { it.value.capitalize(Locale.getDefault()) }
+
+        val containsProductAddons
+            get() = attributesList.find { it.isAddonAttribute } != null
+
+        @Parcelize
+        data class Attribute(
+            val key: String,
+            val value: String
+        ) : Parcelable {
+            companion object {
+                private const val addonAttributeGroupSize = 3
+            }
+
+            @IgnoredOnParcel
+            private val attributeAddonKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
+
+            val keyAsAddonRegexGroup
+                get() = attributeAddonKeyRegex
+                    .findAll(key)
+                    .first().groupValues
+                    .takeIf { it.size == addonAttributeGroupSize }
+                    ?.toMutableList()
+                    ?.apply { removeFirst() }
+
+            val isAddonAttribute
+                get() = keyAsAddonRegexGroup?.isNotEmpty() ?: false
+        }
     }
 
     @Parcelize
