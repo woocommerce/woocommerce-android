@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products.addons
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.tools.SelectedSite
@@ -55,6 +57,13 @@ class AddonRepositoryTest {
 
         repositoryUnderTest.fetchOrderAddonsData(123, 999,333)
             ?.unwrap { productAddons, orderAddons ->
+
+                verify(orderStoreMock, times(1))
+                    .getOrderByIdentifier(OrderIdentifier(321, 123))
+
+                verify(productStoreMock, times(1))
+                    .getProductByRemoteId(siteModelMock, 333)
+
                 assertThat(productAddons).isNotEmpty
                 assertThat(orderAddons).isNotEmpty
             } ?: fail("non-null Pair with valid data was expected")
@@ -69,6 +78,13 @@ class AddonRepositoryTest {
 
         repositoryUnderTest.fetchOrderAddonsData(123, 999,333)
             ?.unwrap { _, orderAddons ->
+
+                verify(orderStoreMock, times(1))
+                    .getOrderByIdentifier(OrderIdentifier(321, 123))
+
+                verify(productStoreMock, times(1))
+                    .getProductByRemoteId(siteModelMock, 333)
+
                 assertThat(orderAddons).isEqualTo(expectedAddons)
             } ?: fail("non-null Pair with valid data was expected")
     }
