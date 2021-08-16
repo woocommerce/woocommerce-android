@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
@@ -82,6 +83,7 @@ class OrderDetailViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository,
+    private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
 ) : ScopedViewModel(savedState) {
@@ -496,6 +498,7 @@ class OrderDetailViewModel @Inject constructor(
         refunds: ListInfo<Refund>
     ): ListInfo<Order.Item> {
         val products = refunds.list.getNonRefundedProducts(order.items)
+        products.forEach { it.containsProductAddons = addonsRepository.orderItemContainsAddons(it) }
         return ListInfo(isVisible = products.isNotEmpty(), list = products)
     }
 
