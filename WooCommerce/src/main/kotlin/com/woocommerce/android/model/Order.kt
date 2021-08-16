@@ -108,7 +108,7 @@ data class Order(
         val isVariation: Boolean = variationId != 0L
 
         @IgnoredOnParcel
-        val containsProductAddons = attributesList.find { it.isAddonAttribute } != null
+        var containsProductAddons = false
 
         /**
          * @return a comma-separated list of attribute values for display
@@ -139,9 +139,6 @@ data class Order(
                     ?.takeIf { it.size == addonAttributeGroupSize }
                     ?.toMutableList()
                     ?.apply { removeFirst() }
-
-            val isAddonAttribute
-                get() = keyAsAddonRegexGroup?.isNotEmpty() ?: false
         }
     }
 
