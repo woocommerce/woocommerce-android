@@ -25,4 +25,8 @@ class AnalyticsTrackerWrapper
     fun track(stat: Stat, errorContext: String?, errorType: String?, errorDescription: String?) {
         AnalyticsTracker.track(stat, errorContext, errorType, errorDescription)
     }
+
+    fun flush() {
+        AnalyticsTracker.flush()
+    }
 }
