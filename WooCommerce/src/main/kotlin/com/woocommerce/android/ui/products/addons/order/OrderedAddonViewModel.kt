@@ -58,7 +58,7 @@ class OrderedAddonViewModel @Inject constructor(
     /**
      * If it isn't possible to find the respective option
      * through [Order.Item.Attribute.value] matching we will
-     * have to merge the Addon data with the Attribute in order
+     * have to merge the [ProductAddon] data with the Attribute in order
      * to display the Ordered addon correctly, which is exactly
      * what this method does.
      *
