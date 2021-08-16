@@ -3,15 +3,12 @@ package com.woocommerce.android.ui.main
 import androidx.annotation.StringRes
 import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
-import com.woocommerce.android.ui.base.TopLevelFragmentRouter
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.notification.NotificationModel
 
 interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun userIsLoggedIn(): Boolean
         fun storeMagicLinkToken(token: String)
-        fun getNotificationByRemoteNoteId(remoteNoteId: Long): NotificationModel?
         fun hasMultipleStores(): Boolean
         fun selectedSiteChanged(site: SiteModel)
         fun fetchUnfilledOrderCount()
@@ -19,7 +16,7 @@ interface MainContract {
         fun isUserEligible(): Boolean
     }
 
-    interface View : BaseView<Presenter>, TopLevelFragmentRouter {
+    interface View : BaseView<Presenter> {
         fun notifyTokenUpdated()
         fun showLoginScreen()
         fun showSitePickerScreen()
