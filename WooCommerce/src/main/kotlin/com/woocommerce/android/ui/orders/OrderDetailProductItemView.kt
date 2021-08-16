@@ -10,6 +10,7 @@ import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.util.FeatureFlag.PRODUCT_ADD_ONS
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
@@ -46,6 +47,10 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             val productSku = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
             binding.productInfoSKU.text = productSku
         }
+
+        binding.productInfoAddons.visibility =
+            if (item.containsProductAddons && PRODUCT_ADD_ONS.isEnabled()) VISIBLE
+            else GONE
 
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
