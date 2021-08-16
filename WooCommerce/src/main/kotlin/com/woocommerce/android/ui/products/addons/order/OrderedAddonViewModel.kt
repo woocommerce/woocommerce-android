@@ -20,14 +20,8 @@ class OrderedAddonViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val addonsRepository: AddonRepository
 ) : ScopedViewModel(savedState) {
-    companion object {
-        private const val addonAttributeGroupSize = 3
-    }
-
     private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
     val orderedAddonsData = _orderedAddons
-
-    private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
     fun start(
         orderID: Long,
@@ -46,7 +40,7 @@ class OrderedAddonViewModel @Inject constructor(
 
     private fun Order.Item.Attribute.findMatchingAddon(
         addons: List<ProductAddon>
-    ) = addons.find { it.name == key.asAddonName }
+    ) = addons.find { it.name == addonName }
         ?.asAddonWithSingleSelectedOption(this)
 
     private fun ProductAddon.asAddonWithSingleSelectedOption(
@@ -73,7 +67,7 @@ class OrderedAddonViewModel @Inject constructor(
             ProductAddonOption(
                 priceType = addon.priceType,
                 label = attribute.value,
-                price = attribute.key.asAddonPrice,
+                price = attribute.asAddonPrice,
                 image = ""
             )
         )
@@ -85,21 +79,13 @@ class OrderedAddonViewModel @Inject constructor(
         }
     }
 
-    private val String.toAddonRegexGroup
-        get() = orderAttributesKeyRegex
-            .findAll(this)
-            .first().groupValues
-            .takeIf { it.size == addonAttributeGroupSize }
-            ?.toMutableList()
-            ?.apply { removeFirst() }
-
-    private val String.asAddonName
-        get() = toAddonRegexGroup
+    private val Order.Item.Attribute.addonName
+        get() = keyAsAddonRegexGroup
             ?.first()
             .orEmpty()
 
-    private val String.asAddonPrice
-        get() = toAddonRegexGroup
+    private val Order.Item.Attribute.asAddonPrice
+        get() = keyAsAddonRegexGroup
             ?.last()
             .orEmpty()
 }
