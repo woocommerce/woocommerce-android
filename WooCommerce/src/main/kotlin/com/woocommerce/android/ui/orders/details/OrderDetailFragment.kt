@@ -217,6 +217,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 }
             }
         )
+        viewModel.start()
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {

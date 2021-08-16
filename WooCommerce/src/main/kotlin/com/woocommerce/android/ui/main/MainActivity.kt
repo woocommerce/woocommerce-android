@@ -734,7 +734,8 @@ class MainActivity :
                         showOrderDetail(
                             event.localSiteId,
                             remoteOrderId = event.uniqueId,
-                            remoteNoteId = event.remoteNoteId
+                            remoteNoteId = event.remoteNoteId,
+                            launchedFromNotification = true
                         )
                     }
                     is ViewReviewDetail -> {
@@ -807,12 +808,13 @@ class MainActivity :
         localSiteId: Int,
         localOrderId: Int,
         remoteOrderId: Long,
-        remoteNoteId: Long
+        remoteNoteId: Long,
+        launchedFromNotification: Boolean
     ) {
-        if (binding.bottomNav.currentPosition != ORDERS) {
+        if (launchedFromNotification) {
+            showBottomNav()
             binding.bottomNav.currentPosition = ORDERS
-            val navPos = ORDERS.position
-            binding.bottomNav.active(navPos)
+            binding.bottomNav.active(ORDERS.position)
         }
 
         val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
