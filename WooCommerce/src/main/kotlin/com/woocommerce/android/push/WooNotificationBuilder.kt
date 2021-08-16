@@ -27,6 +27,7 @@ import java.net.URLDecoder
 import java.util.concurrent.ExecutionException
 import javax.inject.Singleton
 
+@Suppress("TooManyFunctions")
 @Singleton
 class WooNotificationBuilder constructor(private val context: Context) {
     fun isNotificationsEnabled(): Boolean {
@@ -208,7 +209,7 @@ class WooNotificationBuilder constructor(private val context: Context) {
         iconUrl: String?,
         shouldCircularizeIcon: Boolean
     ): Bitmap? {
-        iconUrl?.let {
+        return iconUrl?.let {
             try {
                 val decodedIconUrl = URLDecoder.decode(iconUrl, "UTF-8")
                 val largeIconSize = context.resources.getDimensionPixelSize(
@@ -222,19 +223,20 @@ class WooNotificationBuilder constructor(private val context: Context) {
                     .get()
 
                 if (largeIconBitmap != null && shouldCircularizeIcon) {
-                    return ImageUtils.getCircularBitmap(largeIconBitmap)
+                    ImageUtils.getCircularBitmap(largeIconBitmap)
                 }
 
-                return largeIconBitmap
+                largeIconBitmap
             } catch (e: UnsupportedEncodingException) {
                 WooLog.e(WooLog.T.NOTIFS, e)
+                null
             } catch (e: ExecutionException) {
                 // ExecutionException happens when the image fails to load.
                 // handling the exception here to gracefully display notification, without icon
                 // instead of crashing the app
                 WooLog.e(WooLog.T.NOTIFS, "Failed to load image with url $iconUrl")
+                null
             }
         }
-        return null
     }
 }
