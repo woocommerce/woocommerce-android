@@ -120,7 +120,7 @@ class NotificationMessageHandler @Inject constructor(
         handleWooNotification(notification)
     }
 
-    fun dispatchBackgroundEvents(notificationModel: NotificationModel) {
+    private fun dispatchBackgroundEvents(notificationModel: NotificationModel) {
         // Save temporary notification to the database.
         dispatcher.dispatch(NotificationActionBuilder.newUpdateNotificationAction(notificationModel))
 
@@ -158,7 +158,7 @@ class NotificationMessageHandler @Inject constructor(
      * Don't display the notification if user chose to disable this type of notification -
      * note that we skip this for API 26+ since Oreo added per-app notification settings via channels
      */
-    fun isNotificationOptionEnabled(notification: Notification): Boolean {
+    private fun isNotificationOptionEnabled(notification: Notification): Boolean {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             when {
                 notification.isOrderNotification -> appPrefsWrapper.isOrderNotificationsEnabled()
