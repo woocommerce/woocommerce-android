@@ -56,12 +56,13 @@ class OrderedAddonViewModel @Inject constructor(
         ?: mergeOrderAttributeWithAddon(this, attribute)
 
     /**
-     * If it wasn't possible to find the respective option
+     * If it isn't possible to find the respective option
      * through [Order.Item.Attribute.value] matching we will
      * have to merge the Addon data with the Attribute in order
-     * to display the Ordered addon correctly.
+     * to display the Ordered addon correctly, which is exactly
+     * what this method does.
      *
-     * In this scenario there's no way to infer the image
+     * Also, in this scenario there's no way to infer the image
      * information since it's something contained inside the options only
      */
     private fun mergeOrderAttributeWithAddon(
