@@ -1,5 +1,7 @@
 package com.woocommerce.android.push
 
+import com.woocommerce.android.model.Notification
+
 object NotificationTestUtils {
     const val TEST_ORDER_NOTE_FULL_DATA_1 = "eNqlVFtr2zAU/iuaGGOjdiLbSZwYyqDdwyhbW2gZjKkUxVZibbYkdKkbSv77jpz" +
         "L3O5hlL3Yks79fN85T1gqxy0ufjxhUeFiOskzkiQzkkbYbTTHBbZOGX6vTMUNjrCXhjNQlL5pImyl0Jq7w3Wpqk3vyvFHeMSg3/JKsN3bzp" +
@@ -65,5 +67,24 @@ object NotificationTestUtils {
         "user" to userId.toString(),
         "note_id" to noteId,
         "note_full_data" to noteData
+    )
+
+    fun generateTestNotification(
+        noteId: Int = 0,
+        remoteNoteId: Long,
+        remoteSiteId: Long,
+        uniqueId: Long,
+        channelType: NotificationChannelType,
+        noteType: WooNotificationType
+    ) = Notification(
+        noteId = noteId,
+        uniqueId = uniqueId,
+        remoteNoteId = remoteNoteId,
+        remoteSiteId = remoteSiteId,
+        channelType = channelType,
+        noteType = noteType,
+        noteTitle = "",
+        noteMessage = "",
+        icon = ""
     )
 }
