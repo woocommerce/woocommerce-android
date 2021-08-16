@@ -127,11 +127,14 @@ class ShippingLabelPackagesAdapter(
             val uiModel = uiModels[position]
             val shippingLabelPackage = uiModel.data
             binding.packageName.text = shippingLabelPackage.getTitle(context)
-            binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
-                R.plurals.shipping_label_package_details_items_count,
-                shippingLabelPackage.itemsCount,
-                shippingLabelPackage.itemsCount
+
+            binding.packageItemsCount.text = "- ${StringUtils.getQuantityString(
+                context = binding.packageItemsCount.context,
+                quantity = shippingLabelPackage.itemsCount,
+                default = R.string.shipping_label_package_details_items_count_other,
+                one = R.string.shipping_label_package_details_items_count_one,
             )}"
+
             binding.errorView.isVisible = !uiModel.isValid
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()

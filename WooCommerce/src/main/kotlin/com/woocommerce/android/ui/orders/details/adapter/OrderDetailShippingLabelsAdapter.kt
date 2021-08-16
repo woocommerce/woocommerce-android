@@ -20,6 +20,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
 
@@ -119,10 +120,11 @@ class OrderDetailShippingLabelsAdapter(
             }
 
             // Set up the collapsible button to show/hide the products list.
-            viewBinding.shippingLabelListCountButtonTitle.text = viewBinding.root.resources.getQuantityString(
-                R.plurals.shipping_label_package_details_items_count,
-                shippingLabel.products.count(),
-                shippingLabel.products.count()
+            viewBinding.shippingLabelListCountButtonTitle.text = StringUtils.getQuantityString(
+                context = viewBinding.shippingLabelListCountButtonTitle.context,
+                quantity = shippingLabel.products.count(),
+                default = R.string.shipping_label_package_details_items_count_other,
+                one = R.string.shipping_label_package_details_items_count_one,
             )
             viewBinding.shippingLabelListViewItems.setOnClickListener {
                 val isChecked = viewBinding.shippingLabelListCountButtonImage.rotation == 0F

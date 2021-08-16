@@ -497,10 +497,8 @@
     <string name="shipping_label_package_details_weight_hint">Total package weight (%1$s)</string>
     <string name="shipping_label_package_details_weight_info">Includes package weight</string>
     <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
-    <plurals name="shipping_label_package_details_items_count">
-        <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
-    </plurals>
+    <string name="shipping_label_package_details_items_count_one">%d item</string>
+    <string name="shipping_label_package_details_items_count_other">%d items</string>
     <string name="shipping_label_package_details_individual_package_subtitle">Individually Shipped Item</string>
     <string name="shipping_label_package_details_individual_package_dimensions">Item Dimensions</string>
     <string name="shipping_label_package_details_individual_package_title">Original packaging</string>
