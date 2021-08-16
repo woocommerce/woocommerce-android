@@ -40,18 +40,6 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             addonRepositoryMock
         )
-
-        mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
-            .let { editor ->
-                mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
-            }
-            .let { prefs ->
-                mock<Context> {
-                    whenever(it.applicationContext).thenReturn(it)
-                    whenever(it.getSharedPreferences(any(), any())).thenReturn(prefs)
-                    AppPrefs.init(it)
-                }
-            }
     }
 
     @Test
