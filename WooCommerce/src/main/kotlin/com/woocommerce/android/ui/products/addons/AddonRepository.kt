@@ -32,8 +32,8 @@ class AddonRepository @Inject constructor(
     private fun WCOrderModel.findOrderAttributesWith(orderItemID: Long) =
         getLineItemList().find { it.id == orderItemID }
             ?.getAttributeList()
-            ?.filter { it.key?.first().toString() != "_" }
             ?.map { Attribute(it.key.orEmpty(), it.value.orEmpty()) }
+            ?.filter { it.isNotInternalAttributeData }
 
     private fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
         productStore
