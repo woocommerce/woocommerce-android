@@ -1,0 +1,84 @@
+[
+  {
+    "id": 11116,
+    "key": "_last_editor_used_jetpack",
+    "value": "classic-editor"
+  },
+  {
+    "id": 11118,
+    "key": "_product_addons",
+    "value": [
+      {
+        "name": "Topping",
+        "description": "Pizza topping",
+        "price_type": "flat_fee",
+        "price": "",
+        "options": [
+          {
+            "label": "Peperoni",
+            "price": "3",
+            "image": "",
+            "price_type": "flat_fee"
+          },
+          {
+            "label": "Extra cheese",
+            "price": "4",
+            "image": "",
+            "price_type": "flat_fee"
+          },
+          {
+            "label": "Salami",
+            "price": "3",
+            "image": "",
+            "price_type": "flat_fee"
+          },
+          {
+            "label": "Ham",
+            "price": "3",
+            "image": "",
+            "price_type": "flat_fee"
+          }
+        ]
+      },
+      {
+        "name": "Soda",
+        "description": "",
+        "price_type": "flat_fee",
+        "price": "2",
+        "options": [
+          {
+            "label": "",
+            "price": "",
+            "image": "",
+            "price_type": "flat_fee"
+          }
+        ]
+      },
+      {
+        "name": "Delivery",
+        "description": "",
+        "price_type": "flat_fee",
+        "price": "",
+        "options": [
+          {
+            "label": "Yes",
+            "price": "5",
+            "image": "",
+            "price_type": "flat_fee"
+          },
+          {
+            "label": "No",
+            "price": "",
+            "image": "",
+            "price_type": "flat_fee"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 11119,
+    "key": "_product_addons_exclude_global",
+    "value": "0"
+  }
+]

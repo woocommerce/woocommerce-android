@@ -36,9 +36,12 @@ data class ProductAddon(
      * this property parses this detached [ProductAddon] information to an option list
      */
     val options
-        get() = takeIf { (rawOptions.size == 1) && rawOptions.single().price.isEmpty() }
+        get() = takeIf { isNoPriceAvailableAtOptions }
             ?.let { listOf(rawOptions.single().copy(priceType = priceType, price = price)) }
             ?: rawOptions
+
+    private val isNoPriceAvailableAtOptions
+        get() = (rawOptions.size == 1) && rawOptions.single().price.isEmpty()
 }
 
 @Parcelize
