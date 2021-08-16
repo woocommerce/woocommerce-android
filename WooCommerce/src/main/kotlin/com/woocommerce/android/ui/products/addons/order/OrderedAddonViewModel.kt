@@ -31,9 +31,10 @@ class OrderedAddonViewModel @Inject constructor(
 
     fun start(
         orderID: Long,
+        orderItemID: Long,
         productID: Long
     ) = launch(dispatchers.computation) {
-        addonsRepository.fetchOrderAddonsData(orderID, productID)
+        addonsRepository.fetchOrderAddonsData(orderID, orderItemID, productID)
             ?.unwrap(::mapAddonsFromOrderAttributes)
             ?.let { dispatchResult(it) }
     }

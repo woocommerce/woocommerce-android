@@ -18,9 +18,10 @@ class AddonRepository @Inject constructor(
 ) {
     fun fetchOrderAddonsData(
         orderID: Long,
+        orderItemID: Long,
         productID: Long
     ) = fetchOrder(orderID)
-        ?.findOrderAttributesWith(productID)
+        ?.findOrderAttributesWith(orderItemID)
         ?.joinWithAddonsFrom(productID)
 
     private fun fetchOrder(orderID: Long) =
@@ -28,8 +29,8 @@ class AddonRepository @Inject constructor(
             OrderIdentifier(selectedSite.get().id, orderID)
         )
 
-    private fun WCOrderModel.findOrderAttributesWith(productID: Long) =
-        getLineItemList().find { it.productId == productID }
+    private fun WCOrderModel.findOrderAttributesWith(orderItemID: Long) =
+        getLineItemList().find { it.id == orderItemID }
             ?.getAttributeList()
             ?.filter { it.key?.first().toString() != "_" }
             ?.map { Attribute(it.key.orEmpty(), it.value.orEmpty()) }

@@ -53,7 +53,7 @@ class AddonRepositoryTest {
         configureSuccessfulOrderResponse()
         configureSuccessfulProductResponse()
 
-        repositoryUnderTest.fetchOrderAddonsData(123, 333)
+        repositoryUnderTest.fetchOrderAddonsData(123, 999,333)
             ?.unwrap { productAddons, orderAddons ->
                 assertThat(productAddons).isNotEmpty
                 assertThat(orderAddons).isNotEmpty
@@ -67,7 +67,7 @@ class AddonRepositoryTest {
 
         val expectedAddons = defaultOrderAttributes
 
-        repositoryUnderTest.fetchOrderAddonsData(123, 333)
+        repositoryUnderTest.fetchOrderAddonsData(123, 999,333)
             ?.unwrap { _, orderAddons ->
                 assertThat(orderAddons).isEqualTo(expectedAddons)
             } ?: fail("non-null Pair with valid data was expected")
@@ -76,14 +76,21 @@ class AddonRepositoryTest {
     @Test
     fun `fetchOrderAddonsData should return null if product addon data fails`() {
         configureSuccessfulOrderResponse()
-        val response = repositoryUnderTest.fetchOrderAddonsData(123, 333)
+        val response = repositoryUnderTest.fetchOrderAddonsData(123, 999, 333)
         assertThat(response).isNull()
     }
 
     @Test
     fun `fetchOrderAddonsData should return null if order addon data fails`() {
         configureSuccessfulProductResponse()
-        val response = repositoryUnderTest.fetchOrderAddonsData(123, 333)
+        val response = repositoryUnderTest.fetchOrderAddonsData(123, 999,333)
+        assertThat(response).isNull()
+    }
+
+    @Test
+    fun `fetchOrderAddonsData should return null if order item ID is incorrect`() {
+        configureSuccessfulProductResponse()
+        val response = repositoryUnderTest.fetchOrderAddonsData(123, 0,333)
         assertThat(response).isNull()
     }
 
