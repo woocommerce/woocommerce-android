@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.addons.order
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
@@ -24,7 +25,7 @@ class OrderedAddonViewModel @Inject constructor(
     }
 
     private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
-    val orderedAddonsData = _orderedAddons
+    val orderedAddonsData: LiveData<List<ProductAddon>> = _orderedAddons
 
     private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
@@ -80,7 +81,7 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun dispatchResult(result: List<ProductAddon>) {
         withContext(dispatchers.main) {
-            orderedAddonsData.value = result
+            _orderedAddons.value = result
         }
     }
 
