@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailRefundsInfoBinding
+import com.woocommerce.android.util.StringUtils
 
 class OrderDetailRefundsView @JvmOverloads constructor(
     ctx: Context,
@@ -19,10 +20,11 @@ class OrderDetailRefundsView @JvmOverloads constructor(
         onTap: () -> Unit
     ) {
         with(binding.refundsInfoCount) {
-            text = context.resources.getQuantityString(
-                R.plurals.order_refunds_refund_info_description,
-                refundsCount,
-                refundsCount
+            text = StringUtils.getQuantityString(
+                context = context,
+                quantity = refundsCount,
+                one = R.string.order_refunds_refund_info_description_one,
+                default = R.string.order_refunds_refund_info_description_other,
             )
             setOnClickListener { onTap() }
         }
