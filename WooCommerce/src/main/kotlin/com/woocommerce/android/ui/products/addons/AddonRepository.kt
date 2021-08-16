@@ -18,11 +18,11 @@ class AddonRepository @Inject constructor(
         orderID: Long,
         orderItemID: Long,
         productID: Long
-    ) = fetchOrder(orderID)
+    ) = getOrder(orderID)
         ?.findOrderAttributesWith(orderItemID)
         ?.joinWithAddonsFrom(productID)
 
-    private fun fetchOrder(orderID: Long) =
+    private fun getOrder(orderID: Long) =
         orderStore.getOrderByIdentifier(
             OrderIdentifier(selectedSite.get().id, orderID)
         )
