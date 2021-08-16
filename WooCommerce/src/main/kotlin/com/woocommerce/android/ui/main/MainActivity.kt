@@ -31,12 +31,12 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.push.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.push.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
-import com.woocommerce.android.extensions.getWooType
+import com.woocommerce.android.push.getWooType
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
