@@ -16,6 +16,8 @@ import java.util.zip.DataFormatException
 import java.util.zip.Inflater
 
 object NotificationsUtils {
+    private const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
+
     /**
      * Checks if global notifications toggle is enabled in the Android app settings.
      */
@@ -28,6 +30,18 @@ object NotificationsUtils {
      */
     fun buildNotificationModelFromBundle(data: Bundle): NotificationModel? {
         return data.getString(NotificationHandler.PUSH_ARG_NOTE_FULL_DATA)?.let {
+            getNotificationJsonFromBase64EncodedData(it)?.let { json ->
+                val apiResponse = Gson().fromJson(json.toString(), NotificationApiResponse::class.java)
+                NotificationApiResponse.notificationResponseToNotificationModel(apiResponse)
+            }
+        }
+    }
+
+    /**
+     * Builds a [NotificationModel] from a push notification payload.
+     */
+    fun buildNotificationModelFromPayloadMap(dataMap: Map<String, String>): NotificationModel? {
+        return dataMap[PUSH_ARG_NOTE_FULL_DATA]?.let {
             getNotificationJsonFromBase64EncodedData(it)?.let { json ->
                 val apiResponse = Gson().fromJson(json.toString(), NotificationApiResponse::class.java)
                 NotificationApiResponse.notificationResponseToNotificationModel(apiResponse)
