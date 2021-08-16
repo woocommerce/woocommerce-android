@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -16,6 +17,12 @@ class AddonRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
+    fun orderItemContainsAddons(
+        item: Order.Item
+    ) = productStore.getProductByRemoteId(selectedSite.get(), item.productId)
+        ?.addons?.isNotEmpty()
+        ?: false
+
     fun fetchOrderAddonsData(
         orderID: Long,
         orderItemID: Long,
