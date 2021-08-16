@@ -313,7 +313,8 @@ class ProductListFragment :
             viewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,
                 productStatus = result.productStatus,
-                productType = result.productType
+                productType = result.productType,
+                productCategory = result.productCategory
             )
         }
     }

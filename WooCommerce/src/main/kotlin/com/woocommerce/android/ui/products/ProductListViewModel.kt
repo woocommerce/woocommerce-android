@@ -101,20 +101,31 @@ class ProductListViewModel @Inject constructor(
     fun onFiltersChanged(
         stockStatus: String?,
         productStatus: String?,
-        productType: String?
+        productType: String?,
+        productCategory: String?
     ) {
-        if (stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
-            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
-            productType != productFilterOptions[ProductFilterOption.TYPE]
-        ) {
+        if (areFiltersChanged(stockStatus, productStatus, productType, productCategory)) {
             productFilterOptions.clear()
             stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
             productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
             productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
+            productCategory?.let { productFilterOptions[ProductFilterOption.CATEGORY] = it }
 
             viewState = viewState.copy(filterCount = productFilterOptions.size)
             refreshProducts()
         }
+    }
+
+    private fun areFiltersChanged(
+        stockStatus: String?,
+        productStatus: String?,
+        productType: String?,
+        productCategory: String?
+    ): Boolean {
+        return stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
+            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
+            productType != productFilterOptions[ProductFilterOption.TYPE] ||
+            productCategory != productFilterOptions[ProductFilterOption.CATEGORY]
     }
 
     fun onFiltersButtonTapped() {
