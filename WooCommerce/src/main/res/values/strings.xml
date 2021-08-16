@@ -559,10 +559,8 @@
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_title">No shipping rates available</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Please double check your package dimensions and weight or try using a different package in Package Details</string>
-    <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
-        <item quantity="one">%d business day</item>
-        <item quantity="other">%d business days</item>
-    </plurals>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d business day</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_other">%d business days</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates.</string>

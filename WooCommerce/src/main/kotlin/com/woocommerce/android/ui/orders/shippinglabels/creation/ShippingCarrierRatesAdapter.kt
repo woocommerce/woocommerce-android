@@ -140,10 +140,11 @@ class ShippingCarrierRatesAdapter(
                     }
                     rateItem.deliveryEstimate != 0 -> {
                         binding.deliveryTime.isVisible = true
-                        binding.deliveryTime.text = binding.root.resources.getQuantityString(
-                            R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
-                            rateItem.deliveryEstimate,
-                            rateItem.deliveryEstimate
+                        binding.deliveryTime.text = StringUtils.getQuantityString(
+                            context = binding.deliveryTime.context,
+                            quantity = rateItem.deliveryEstimate,
+                            default = string.shipping_label_shipping_carrier_rates_delivery_estimate_other,
+                            one = string.shipping_label_shipping_carrier_rates_delivery_estimate_one
                         )
                     }
                     else -> {
