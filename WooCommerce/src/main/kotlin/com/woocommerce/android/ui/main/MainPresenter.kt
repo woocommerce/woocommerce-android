@@ -6,9 +6,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
-import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
-import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenReviewsEvent
+import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite

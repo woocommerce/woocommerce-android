@@ -25,9 +25,11 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.OTHER
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
+import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
+import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationChannelType.OTHER
+import com.woocommerce.android.push.NotificationChannelType.REVIEW
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.NotificationsUtils
 import com.woocommerce.android.util.PreferencesWrapper
@@ -225,22 +227,6 @@ class NotificationHandler @Inject constructor(
                 EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
             }
         }
-    }
-
-    class NotificationsUnseenReviewsEvent(var hasUnseen: Boolean)
-
-    class NotificationReceivedEvent(var channel: NotificationChannelType)
-
-    /**
-     * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
-     * necessary because once a channel is created we can't change it, and if we delete the channel and re-create
-     * it then it will be re-created with the same settings it previously had (ie: we can't simply have a single
-     * channel for orders and add/remove the sound from it)
-     */
-    enum class NotificationChannelType {
-        OTHER,
-        REVIEW,
-        NEW_ORDER,
     }
 
     @Synchronized fun buildAndShowNotificationFromNoteData(context: Context, data: Bundle, account: AccountModel) {

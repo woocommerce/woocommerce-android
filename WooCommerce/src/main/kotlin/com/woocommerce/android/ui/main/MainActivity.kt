@@ -42,7 +42,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.push.NotificationHandler
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
+import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
