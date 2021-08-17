@@ -51,9 +51,12 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             binding.productInfoSKU.text = productSku
         }
 
-        binding.productInfoAddons.visibility =
-            if (item.containsAddons && PRODUCT_ADD_ONS.isEnabled()) VISIBLE
-            else GONE
+        onViewAddonsClick?.let {
+            binding.productInfoAddons.visibility =
+                if (item.containsAddons && PRODUCT_ADD_ONS.isEnabled()) VISIBLE
+                else GONE
+            binding.productInfoAddons.setOnClickListener { it(item) }
+        } ?: binding.productInfoAddons.let { visibility = GONE }
 
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
