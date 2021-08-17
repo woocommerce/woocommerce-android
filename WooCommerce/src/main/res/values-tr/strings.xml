@@ -749,10 +749,10 @@ Language: tr
     <string name="orderlist_loading">Siparişleriniz aranıyor…</string>
     <string name="product_detail_editable_text_hint">Metin girin</string>
     <string name="product_detail_title_hint">Ürün Başlığını Gir</string>
-    <string name="product_detail_update_product_success">Ürün güncellendi</string>
+    <string name="product_detail_save_product_success">Ürün güncellendi</string>
     <string name="product_detail_update_product_error">Ürün güncellenirken hata oluştu</string>
     <string name="product_update_dialog_message">Lütfen bekleyin…</string>
-    <string name="product_update_dialog_title">Ürün güncelleniyor</string>
+    <string name="product_save_dialog_title">Ürün güncelleniyor</string>
     <string name="product_description_empty">Ürününüzü tanımlayın</string>
     <string name="product_description">Tanım</string>
     <string name="product_edit_description">Tanımı düzenle</string>

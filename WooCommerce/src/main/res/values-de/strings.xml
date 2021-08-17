@@ -749,10 +749,10 @@ Language: de
     <string name="orderlist_loading">Deine Bestellungen werden abgerufen …</string>
     <string name="product_detail_editable_text_hint">Text eingeben</string>
     <string name="product_detail_title_hint">Produkttitel eingeben</string>
-    <string name="product_detail_update_product_success">Produkt aktualisiert</string>
+    <string name="product_detail_save_product_success">Produkt aktualisiert</string>
     <string name="product_detail_update_product_error">Fehler beim Aktualisieren des Produkts</string>
     <string name="product_update_dialog_message">Bitte warten …</string>
-    <string name="product_update_dialog_title">Produkt aktualisieren</string>
+    <string name="product_save_dialog_title">Produkt aktualisieren</string>
     <string name="product_description_empty">Produkt beschreiben</string>
     <string name="product_description">Beschreibung</string>
     <string name="product_edit_description">Beschreibung bearbeiten</string>

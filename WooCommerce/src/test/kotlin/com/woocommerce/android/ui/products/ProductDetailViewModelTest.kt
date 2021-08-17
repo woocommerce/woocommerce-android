@@ -428,7 +428,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var successSnackbarShown = false
         viewModel.event.observeForever {
-            if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
+            if (it is ShowSnackbar && it.message == R.string.product_detail_save_product_success) {
                 successSnackbarShown = true
             }
         }

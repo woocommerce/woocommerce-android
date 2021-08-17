@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/product_update_dialog_title"/>
+        tools:text="@string/product_save_dialog_title"/>
 
     <ProgressBar
         android:id="@+id/progress_bar"

@@ -107,6 +107,7 @@
     <string name="type">Type</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
+    <string name="save">Save</string>
     <string name="skip">Skip</string>
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
@@ -1045,11 +1046,11 @@
     <string name="product_description_empty">Describe your product</string>
     <string name="product_short_description">Short description</string>
     <string name="product_short_description_empty">Brief summary about the product</string>
-    <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_save_dialog_title">Saving your product</string>
     <string name="product_delete_dialog_title">Deleting product</string>
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
-    <string name="product_detail_update_product_success">Product updated</string>
+    <string name="product_detail_save_product_success">Product saved</string>
     <string name="product_detail_update_product_password_error">Error updating password</string>
     <string name="product_detail_title_hint">Enter Product Title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
