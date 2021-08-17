@@ -25,11 +25,12 @@ import org.wordpress.android.util.PhotonUtils
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import java.util.concurrent.ExecutionException
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Suppress("TooManyFunctions")
 @Singleton
-class WooNotificationBuilder constructor(private val context: Context) {
+class WooNotificationBuilder @Inject constructor(private val context: Context) {
     fun isNotificationsEnabled(): Boolean {
         return NotificationManagerCompat.from(context.applicationContext).areNotificationsEnabled()
     }
