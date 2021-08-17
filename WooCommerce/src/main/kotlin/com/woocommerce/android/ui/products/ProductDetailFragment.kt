@@ -84,7 +84,7 @@ class ProductDetailFragment :
     private var detailSnackbar: Snackbar? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
-    private val updateTitleId = R.string.update
+    private val updateTitleId = R.string.save
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
@@ -218,7 +218,7 @@ class ProductDetailFragment :
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
-                    showProgressDialog(R.string.product_update_dialog_title, R.string.product_update_dialog_message)
+                    showProgressDialog(R.string.product_save_dialog_title, R.string.product_update_dialog_message)
                 } else {
                     hideProgressDialog()
                 }
