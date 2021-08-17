@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -432,7 +431,12 @@ class ProductDetailCardBuilder(
         val showTitle = groupedProductsSize > 0
 
         val groupedProductsDesc = if (showTitle) {
-            StringUtils.getPluralString(resources, groupedProductsSize, R.plurals.product_count)
+            StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = groupedProductsSize,
+                default = string.product_count_many,
+                one = string.product_count_one,
+            )
         } else {
             resources.getString(string.grouped_product_empty)
         }
@@ -453,15 +457,17 @@ class ProductDetailCardBuilder(
     private fun Product.linkedProducts(): ProductProperty? {
         if (!hasLinkedProducts()) return null
 
-        val upsellDesc = StringUtils.getPluralString(
-            resources,
-            this.upsellProductIds.size,
-            R.plurals.upsell_product_count
+        val upsellDesc = StringUtils.getQuantityString(
+            resourceProvider = resources,
+            quantity = this.upsellProductIds.size,
+            one = string.upsell_product_count_one,
+            default = string.upsell_product_count_many,
         )
-        val crossSellDesc = StringUtils.getPluralString(
-            resources,
-            this.crossSellProductIds.size,
-            R.plurals.cross_sell_product_count
+        val crossSellDesc = StringUtils.getQuantityString(
+            resourceProvider = resources,
+            quantity = this.crossSellProductIds.size,
+            one = string.cross_sell_product_count_one,
+            default = string.cross_sell_product_count_many,
         )
 
         return ComplexProperty(

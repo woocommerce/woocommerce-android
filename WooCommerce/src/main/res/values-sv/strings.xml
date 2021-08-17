@@ -750,10 +750,10 @@ Language: sv_SE
     <string name="orderlist_loading">Kollar upp din beställning…</string>
     <string name="product_detail_editable_text_hint">Ange text</string>
     <string name="product_detail_title_hint">Ange produktrubrik</string>
-    <string name="product_detail_update_product_success">Produkt uppdaterad</string>
+    <string name="product_detail_save_product_success">Produkt uppdaterad</string>
     <string name="product_detail_update_product_error">Det gick inte att uppdatera produkten</string>
     <string name="product_update_dialog_message">Vänta …</string>
-    <string name="product_update_dialog_title">Uppdaterar produkt</string>
+    <string name="product_save_dialog_title">Uppdaterar produkt</string>
     <string name="product_description_empty">Beskriv din produkt</string>
     <string name="product_description">Beskrivning</string>
     <string name="product_edit_description">Redigera beskrivning</string>
