@@ -110,6 +110,9 @@ data class Order(
         @IgnoredOnParcel
         var containsAddons = false
 
+        @IgnoredOnParcel
+        val attributesNames = attributesList.map { it.addonName }
+
         /**
          * @return a comma-separated list of attribute values for display
          */
@@ -130,28 +133,28 @@ data class Order(
             @IgnoredOnParcel
             private val attributeAddonKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
 
-            val keyAsAddonRegexGroup
-                get() = attributeAddonKeyRegex
+            @IgnoredOnParcel
+            private val keyAsAddonRegexGroup = attributeAddonKeyRegex
                     .findAll(key)
                     .firstOrNull()?.groupValues
                     ?.takeIf { it.size == addonAttributeGroupSize }
                     ?.toMutableList()
                     ?.apply { removeFirst() }
 
+            @IgnoredOnParcel
+            val addonName = keyAsAddonRegexGroup
+                ?.first()
+                .orEmpty()
+
+            @IgnoredOnParcel
+            val asAddonPrice = keyAsAddonRegexGroup
+                ?.last()
+                .orEmpty()
+
             // Don't include empty or the "_reduced_stock" key
             // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
             val isNotInternalAttributeData
                 get() = key.first().toString() != "_"
-
-            val addonName
-                get() = keyAsAddonRegexGroup
-                    ?.first()
-                    .orEmpty()
-
-            val asAddonPrice
-                get() = keyAsAddonRegexGroup
-                    ?.last()
-                    .orEmpty()
         }
     }
 

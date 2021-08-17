@@ -49,7 +49,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         }
 
         binding.productInfoAddons.visibility =
-            if (item.containsProductAddons && PRODUCT_ADD_ONS.isEnabled()) VISIBLE
+            if (item.containsAddons && PRODUCT_ADD_ONS.isEnabled()) VISIBLE
             else GONE
 
         productImage?.let {
