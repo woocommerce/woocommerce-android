@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fillViewport="true">
 
     <com.woocommerce.android.widgets.WCElevatedConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginBottom="@dimen/minor_100">
 
@@ -64,6 +68,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/suggestionBanner"
+            app:layout_constraintBottom_toTopOf="@id/useSuggestedAddressButton"
+            app:layout_constraintVertical_bias="0"
             android:layout_marginStart="@dimen/major_75"
             android:layout_marginBottom="@dimen/major_100">
 
@@ -144,3 +150,4 @@
             android:text="@string/shipping_label_address_suggestion_edit_selected_address" />
 
     </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
+</ScrollView>
