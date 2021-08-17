@@ -129,7 +129,7 @@ class ShippingLabelPackagesAdapter(
             binding.packageName.text = shippingLabelPackage.getTitle(context)
 
             binding.packageItemsCount.text = "- ${StringUtils.getQuantityString(
-                context = binding.packageItemsCount.context,
+                context = context,
                 quantity = shippingLabelPackage.itemsCount,
                 default = R.string.shipping_label_package_details_items_count_other,
                 one = R.string.shipping_label_package_details_items_count_one,
