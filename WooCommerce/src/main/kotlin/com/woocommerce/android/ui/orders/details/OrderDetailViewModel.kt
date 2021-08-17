@@ -460,6 +460,10 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(ViewOrderFulfillInfo(order.identifier))
     }
 
+    fun onViewOrderedAddonButtonTapped(product: Order.Item) {
+        // TODO: trigger OrderedAddonsFragment
+    }
+
     private fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
