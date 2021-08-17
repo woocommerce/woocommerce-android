@@ -126,6 +126,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 networkStatus,
                 resources,
                 repository,
+                mock(),
                 selectedSite,
                 paymentCollectibilityChecker
             )

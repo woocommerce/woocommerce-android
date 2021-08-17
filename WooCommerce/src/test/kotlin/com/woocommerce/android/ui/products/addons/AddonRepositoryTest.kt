@@ -89,6 +89,26 @@ class AddonRepositoryTest {
     }
 
     @Test
+    fun `getAddonsFrom should return addons successfully`() {
+        configureSuccessfulProductResponse()
+
+        val expectedAddons = defaultWCProductModel.addons!!
+
+        val actualAddons = repositoryUnderTest.getAddonsFrom(333)
+
+        assertThat(actualAddons).isEqualTo(expectedAddons)
+    }
+
+    @Test
+    fun `getAddonsFrom should return null when the requested with wrong ID`() {
+        configureSuccessfulProductResponse()
+
+        val actualAddons = repositoryUnderTest.getAddonsFrom(999)
+
+        assertThat(actualAddons).isNull()
+    }
+
+    @Test
     fun `fetchOrderAddonsData should return null if product addon data fails`() {
         configureSuccessfulOrderResponse()
         val response = repositoryUnderTest.getOrderAddonsData(123, 999, 333)
