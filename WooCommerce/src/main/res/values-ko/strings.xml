@@ -749,10 +749,10 @@ Language: ko_KR
     <string name="orderlist_loading">주문 검색 중…</string>
     <string name="product_detail_editable_text_hint">텍스트 입력</string>
     <string name="product_detail_title_hint">제품 제목 입력</string>
-    <string name="product_detail_update_product_success">제품 업데이트됨</string>
+    <string name="product_detail_save_product_success">제품 업데이트됨</string>
     <string name="product_detail_update_product_error">제품을 업데이트하는 중 오류 발생</string>
     <string name="product_update_dialog_message">기다려주세요…</string>
-    <string name="product_update_dialog_title">제품을 업데이트하는 중</string>
+    <string name="product_save_dialog_title">제품을 업데이트하는 중</string>
     <string name="product_description_empty">제품 설명</string>
     <string name="product_description">설명</string>
     <string name="product_edit_description">설명 수정</string>
