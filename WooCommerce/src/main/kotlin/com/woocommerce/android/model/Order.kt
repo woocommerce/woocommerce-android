@@ -144,7 +144,7 @@ data class Order(
             @IgnoredOnParcel
             val addonName = keyAsAddonRegexGroup
                 ?.first()
-                .orEmpty()
+                ?: key
 
             @IgnoredOnParcel
             val asAddonPrice = keyAsAddonRegexGroup
