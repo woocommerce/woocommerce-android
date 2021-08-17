@@ -41,7 +41,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should trigger a successful parse to all data at once`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(addonRepositoryMock.fetchOrderAddonsData(321, 999, 123))
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .doReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
             val expectedResult = defaultOrderedAddonList
@@ -69,7 +69,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 defaultOrderAttributes
             )
 
-            whenever(addonRepositoryMock.fetchOrderAddonsData(321, 999, 123))
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .doReturn(mockResponse)
 
             val expectedResult = emptyProductAddon.copy(
@@ -98,7 +98,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should return Addon with single option when matching option is found`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(addonRepositoryMock.fetchOrderAddonsData(321, 999, 123))
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .doReturn(
                     Pair(
                         listWithSingleAddonAndTwoValidOptions,
@@ -137,7 +137,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should return two Addons with a single option when matching addon is found twice`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(addonRepositoryMock.fetchOrderAddonsData(321, 999, 123))
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .doReturn(
                     Pair(
                         listWithSingleAddonAndTwoValidOptions,

@@ -496,7 +496,9 @@ class OrderDetailViewModel @Inject constructor(
         refunds: ListInfo<Refund>
     ): ListInfo<Order.Item> {
         val products = refunds.list.getNonRefundedProducts(order.items)
-        products.forEach { it.containsProductAddons = addonsRepository.orderItemContainsAddons(it) }
+        products.forEach {
+            it.containsProductAddons = addonsRepository.getAddonsFrom(it.productId)?.isNotEmpty() ?: false
+        }
         return ListInfo(isVisible = products.isNotEmpty(), list = products)
     }
 

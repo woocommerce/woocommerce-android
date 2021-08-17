@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.addons
 
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -15,13 +14,11 @@ class AddonRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    fun orderItemContainsAddons(
-        item: Order.Item
-    ) = productStore.getProductByRemoteId(selectedSite.get(), item.productId)
-        ?.addons?.isNotEmpty()
-        ?: false
+    fun getAddonsFrom(productID: Long) =
+        productStore.getProductByRemoteId(selectedSite.get(), productID)
+            ?.addons
 
-    fun fetchOrderAddonsData(
+    fun getOrderAddonsData(
         orderID: Long,
         orderItemID: Long,
         productID: Long
@@ -41,8 +38,7 @@ class AddonRepository @Inject constructor(
             ?.filter { it.isNotInternalAttributeData }
 
     private fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
-        productStore
-            .getProductByRemoteId(selectedSite.get(), productID)
-            ?.addons?.map { it.toAppModel() }
+        getAddonsFrom(productID)
+            ?.map { it.toAppModel() }
             ?.let { addons -> Pair(addons, this) }
 }
