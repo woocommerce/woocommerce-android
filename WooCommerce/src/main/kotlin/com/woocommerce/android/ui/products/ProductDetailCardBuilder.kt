@@ -463,10 +463,11 @@ class ProductDetailCardBuilder(
             this.upsellProductIds.size,
             R.plurals.upsell_product_count
         )
-        val crossSellDesc = StringUtils.getPluralString(
-            resources,
-            this.crossSellProductIds.size,
-            R.plurals.cross_sell_product_count
+        val crossSellDesc = StringUtils.getQuantityString(
+            resourceProvider = resources,
+            quantity = this.crossSellProductIds.size,
+            one = string.cross_sell_product_count_one,
+            default = string.cross_sell_product_count_other,
         )
 
         return ComplexProperty(

@@ -1133,10 +1133,8 @@
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
     <string name="product_count_other">%d products</string>
-    <plurals name="cross_sell_product_count">
-        <item quantity="one">%d cross-sell product</item>
-        <item quantity="other">%d cross-sell products</item>
-    </plurals>
+    <string name="cross_sell_product_count_one">%d cross-sell product</string>
+    <string name="cross_sell_product_count_other">%d cross-sell products</string>
     <plurals name="upsell_product_count">
         <item quantity="one">%d upsell product</item>
         <item quantity="other">%d upsell products</item>
