@@ -1,194 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.WCElevatedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    style="@style/Woo.Card.WithoutPadding">
 
-    <LinearLayout
-        android:id="@+id/title_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/package_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
-            android:textColor="@color/color_on_surface_high"
-            android:textStyle="bold"
-            tools:text="Package 1" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/package_items_count"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/minor_50"
-            android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.Woo.Body1"
-            tools:text="- 10 items" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/error_view"
-            android:layout_width="@dimen/image_minor_50"
-            android:layout_height="@dimen/image_minor_50"
-            app:srcCompat="@drawable/mtrl_ic_error"
-            app:tint="@color/woo_red_50" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/expand_icon"
-            android:layout_width="@dimen/image_major_50"
-            android:layout_height="@dimen/image_major_50"
-            android:padding="@dimen/major_75"
-            android:src="@drawable/ic_arrow_down"
-            android:tint="@color/color_on_surface_high" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider_1"
-        style="@style/Woo.Divider" />
-
-    <LinearLayout
-        android:id="@+id/details_layout"
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/items_section_title"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/major_300"
-            android:background="?android:attr/colorBackground"
-            android:gravity="center_vertical"
-            android:paddingStart="@dimen/major_100"
-            android:paddingEnd="@dimen/major_100"
-            android:text="@string/shipping_label_package_details_items_section_title"
-            android:textAppearance="?attr/textAppearanceSubtitle2"
-            android:textColor="@color/color_on_surface_disabled" />
-
-        <View
-            android:id="@+id/divider_2"
-            style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/items_list"
+        <LinearLayout
+            android:id="@+id/title_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            tools:itemCount="5"
-            tools:listitem="@layout/shipping_label_package_product_list_item" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/details_section_title"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/major_300"
-            android:background="@color/default_window_background"
+            android:background="?attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:paddingStart="@dimen/major_100"
-            android:paddingEnd="@dimen/major_100"
-            android:text="@string/shipping_label_package_details_section_title"
-            android:textAppearance="?attr/textAppearanceSubtitle2"
-            android:textColor="@color/color_on_surface_disabled" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/package_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/color_on_surface_high"
+                android:textStyle="bold"
+                tools:text="Package 1" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/package_items_count"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/minor_50"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.Woo.Body1"
+                tools:text="- 10 items" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/error_view"
+                android:layout_width="@dimen/image_minor_50"
+                android:layout_height="@dimen/image_minor_50"
+                app:srcCompat="@drawable/mtrl_ic_error"
+                app:tint="@color/woo_red_50" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/expand_icon"
+                android:layout_width="@dimen/image_major_50"
+                android:layout_height="@dimen/image_major_50"
+                android:padding="@dimen/major_75"
+                android:src="@drawable/ic_arrow_down"
+                android:tint="@color/color_on_surface_high" />
+        </LinearLayout>
 
         <View
-            android:id="@+id/divider_3"
-            style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/details_section_title" />
-
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/selected_package_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_75"
-            android:layout_marginEnd="@dimen/major_100"
-            android:hint="@string/shipping_label_package_details_selected_package_hint" />
+            android:id="@+id/divider_1"
+            style="@style/Woo.Divider" />
 
         <LinearLayout
-            android:id="@+id/individual_package_layout"
+            android:id="@+id/details_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/major_100"
-                android:layout_marginTop="@dimen/minor_100"
-                android:text="@string/shipping_label_package_details_individual_package_title"
-                android:textAppearance="?attr/textAppearanceSubtitle1" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/individual_package_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/major_100"
-                android:text="@string/shipping_label_package_details_individual_package_subtitle"
-                android:textAppearance="?attr/textAppearanceBody2" />
+                android:id="@+id/items_section_title"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_300"
+                android:background="?android:attr/colorBackground"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100"
+                android:text="@string/shipping_label_package_details_items_section_title"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:textColor="@color/color_on_surface_disabled" />
 
             <View
+                android:id="@+id/divider_2"
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/items_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                tools:itemCount="5"
+                tools:listitem="@layout/shipping_label_package_product_list_item" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/details_section_title"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_300"
+                android:background="@color/default_window_background"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100"
+                android:text="@string/shipping_label_package_details_section_title"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:textColor="@color/color_on_surface_disabled" />
+
+            <View
+                android:id="@+id/divider_3"
                 style="@style/Woo.Divider"
                 android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/minor_100" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/details_section_title" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
+            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                android:id="@+id/selected_package_spinner"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/major_100"
-                android:layout_marginTop="@dimen/minor_100"
-                android:text="@string/shipping_label_package_details_individual_package_dimensions"
-                android:textAppearance="?attr/textAppearanceSubtitle1" />
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/shipping_label_package_details_selected_package_hint" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/individual_package_dimensions"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/individual_package_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/major_100"
-                android:textAppearance="?attr/textAppearanceBody2"
-                tools:text="10cm x 10cm x 10cm" />
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:text="@string/shipping_label_package_details_individual_package_title"
+                    android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/individual_package_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:text="@string/shipping_label_package_details_individual_package_subtitle"
+                    android:textAppearance="?attr/textAppearanceBody2" />
+
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:text="@string/shipping_label_package_details_individual_package_dimensions"
+                    android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/individual_package_dimensions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    tools:text="10cm x 10cm x 10cm" />
+
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginTop="@dimen/minor_100" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/individual_package_error"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:drawablePadding="@dimen/minor_100"
+                    android:text="@string/shipping_label_package_details_individual_package_dimensions_error"
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textColor="@color/color_error"
+                    app:drawableStartCompat="@drawable/ic_info_outline_24dp"
+                    app:drawableTint="@color/color_error" />
+            </LinearLayout>
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/weight_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_175"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_200"
+                android:hint="@string/shipping_label_package_details_weight_hint"
+                android:inputType="numberDecimal"
+                app:helperText="@string/shipping_label_package_details_weight_info" />
 
             <View
+                android:id="@+id/bottom_divider"
                 style="@style/Woo.Divider"
-                android:layout_marginTop="@dimen/minor_100" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/individual_package_error"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/major_100"
-                android:layout_marginTop="@dimen/minor_100"
-                android:drawablePadding="@dimen/minor_100"
-                android:text="@string/shipping_label_package_details_individual_package_dimensions_error"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="@color/color_error"
-                app:drawableStartCompat="@drawable/ic_info_outline_24dp"
-                app:drawableTint="@color/color_error" />
+                app:layout_constraintBottom_toBottomOf="parent" />
         </LinearLayout>
-
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/weight_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_175"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_200"
-            android:hint="@string/shipping_label_package_details_weight_hint"
-            android:inputType="numberDecimal"
-            app:helperText="@string/shipping_label_package_details_weight_info" />
-
-        <View
-            android:id="@+id/bottom_divider"
-            style="@style/Woo.Divider"
-            app:layout_constraintBottom_toBottomOf="parent" />
     </LinearLayout>
-
-</com.woocommerce.android.widgets.WCElevatedLinearLayout>
+</androidx.cardview.widget.CardView>

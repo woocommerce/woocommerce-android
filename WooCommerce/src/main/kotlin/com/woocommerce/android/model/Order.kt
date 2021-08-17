@@ -111,16 +111,19 @@ data class Order(
         data class Attribute(
             val key: String,
             val value: String
-        ) : Parcelable
+        ) : Parcelable {
+            // Don't include empty or the "_reduced_stock" key
+            // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
+            val isNotInternalAttributeData
+                get() = key.first().toString() != "_"
+        }
 
         /**
          * @return a comma-separated list of attribute values for display
          */
         val attributesDescription
             get() = attributesList.filter {
-                // Don't include empty or the "_reduced_stock" key
-                // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
-                it.value.isNotEmpty() && it.key.isNotEmpty() && it.key.first().toString() != "_"
+                it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
             }.joinToString { it.value.capitalize(Locale.getDefault()) }
     }
 

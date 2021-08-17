@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.orders.cardreader
 
 import android.app.Dialog
+import android.content.ContentResolver
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -72,6 +75,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                     )
                     is SendReceipt -> composeEmail(event.address, event.subject, event.content)
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is CardReaderPaymentViewModel.PlayChaChing -> playChaChing()
                     else -> event.isHandled = false
                 }
             }
@@ -112,6 +116,16 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 }
             }
         )
+    }
+
+    private fun playChaChing() {
+        val chaChingUri =
+            Uri.parse(
+                ContentResolver.SCHEME_ANDROID_RESOURCE +
+                    "://" + requireActivity().packageName + "/" + R.raw.cha_ching
+            )
+        val mp = MediaPlayer.create(requireActivity(), chaChingUri)
+        mp.start()
     }
 
     private fun composeEmail(address: String, subject: UiString, content: UiString) {
