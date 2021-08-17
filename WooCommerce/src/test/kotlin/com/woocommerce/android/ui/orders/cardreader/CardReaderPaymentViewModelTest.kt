@@ -14,11 +14,13 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErr
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.SERVER_ERROR
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.NavigateToCardReaderConnectFragment
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.*
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
@@ -35,6 +37,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -102,6 +105,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(address.lastName).thenReturn("Test")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
         whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
+        whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
@@ -895,6 +899,171 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             verify(cardReaderManager, never()).cancelPayment(any())
         }
+
+    @Test
+    fun `given reader status is connecting,when payment screen is shown,then make sure NOT to initiate payment `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+
+            // when
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager, never()).collectPayment(any())
+        }
+
+    @Test
+    fun `given reader status is NOT connected,when payment screen is shown,then make sure NOT to initiate payment `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager, never()).collectPayment(any())
+        }
+
+    @Test
+    fun `given reader status is connected,when payment screen is shown,then proceed to initiate payment `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(any())
+        }
+
+    @Test
+    fun `given reader status is NOT connected,when payment screen is shown,then move to CardReaderConnectFragment `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+
+            // When
+            viewModel.start()
+            advanceUntilIdle()
+
+            // Then
+            assertThat(viewModel.event.value).isInstanceOf(NavigateToCardReaderConnectFragment::class.java)
+        }
+
+    @Test
+    fun `given reader status is connecting,when payment screen is shown,then move to CardReaderConnectFragment `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+
+            // When
+            viewModel.start()
+            advanceUntilIdle()
+
+            // Then
+            assertThat(viewModel.event.value).isInstanceOf(NavigateToCardReaderConnectFragment::class.java)
+        }
+
+//    @Test
+//    fun `given reader status is NOT connected,when payment screen is shown,then show error Snackbar `() =
+//        coroutinesTestRule.testDispatcher.runBlockingTest {
+//            // Given
+//            val events = mutableListOf<Event>()
+//            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+//            viewModel.event.observeForever {
+//                events.add(it)
+//            }
+//
+//            // When
+//            viewModel.start()
+//
+//            // Then
+//            assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
+//        }
+//
+//    @Test
+//    fun `given reader status is NOT connected,when payment screen is shown,then Snackbar is shown with message`() =
+//        coroutinesTestRule.testDispatcher.runBlockingTest {
+//            // Given
+//            val events = mutableListOf<Event>()
+//            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+//            viewModel.event.observeForever {
+//                events.add(it)
+//            }
+//
+//            // When
+//            viewModel.start()
+//
+//            // Then
+//            assertThat((events[0] as ShowSnackbar).message)
+//                .isEqualTo(R.string.card_reader_payment_reader_not_connected)
+//        }
+//
+//    @Test
+//    fun `given reader status is NOT connected,when payment screen is shown,then exit event is triggered `() =
+//        coroutinesTestRule.testDispatcher.runBlockingTest {
+//            // Given
+//            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+//
+//            // When
+//            viewModel.start()
+//            advanceUntilIdle()
+//
+//            // Then
+//            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+//        }
+//
+//    @Test
+//    fun `given reader status is connecting,when payment screen is shown,then show error Snackbar `() =
+//        coroutinesTestRule.testDispatcher.runBlockingTest {
+//            // Given
+//            val events = mutableListOf<Event>()
+//            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+//            viewModel.event.observeForever {
+//                events.add(it)
+//            }
+//
+//            // When
+//            viewModel.start()
+//
+//            // Then
+//            assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
+//        }
+//
+//    @Test
+//    fun `given reader status is connecting,when payment screen is shown,then Snackbar is shown with the message`() =
+//        coroutinesTestRule.testDispatcher.runBlockingTest {
+//            // Given
+//            val events = mutableListOf<Event>()
+//            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+//            viewModel.event.observeForever {
+//                events.add(it)
+//            }
+//
+//            // When
+//            viewModel.start()
+//
+//            // Then
+//            assertThat((events[0] as ShowSnackbar).message)
+//                .isEqualTo(R.string.card_reader_payment_reader_not_connected)
+//        }
+//
+//    @Test
+//    fun `given reader status is connecting,when payment screen is shown,then exit event is triggered `() =
+//        coroutinesTestRule.testDispatcher.runBlockingTest {
+//            // Given
+//            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+//
+//            // When
+//            viewModel.start()
+//            advanceUntilIdle()
+//
+//            // Then
+//            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+//        }
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {

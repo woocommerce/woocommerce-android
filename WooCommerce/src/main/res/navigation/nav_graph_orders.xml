@@ -476,6 +476,11 @@
         <argument
             android:name="orderIdentifier"
             app:argType="string" />
+        <action
+            android:id="@+id/action_cardReaderPaymentDialogFragment_to_cardReaderConnectDialogFragment"
+            app:destination="@id/cardReaderConnectDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderConnectDialog"

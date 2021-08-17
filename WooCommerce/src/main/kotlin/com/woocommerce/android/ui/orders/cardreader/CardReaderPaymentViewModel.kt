@@ -29,6 +29,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -50,6 +51,7 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -90,9 +92,12 @@ class CardReaderPaymentViewModel
     private var refetchOrderJob: Job? = null
 
     fun start() {
-        // TODO cardreader Make sure a reader is connected
-        if (paymentFlowJob == null) {
+        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
             initPaymentFlow(isRetry = false)
+        } else {
+            triggerEvent(CardReaderPaymentEvent.NavigateToCardReaderConnectFragment)
+//            triggerEvent(ShowSnackbar(R.string.card_reader_payment_reader_not_connected))
+//            triggerEvent(Exit)
         }
     }
 
@@ -346,6 +351,10 @@ class CardReaderPaymentViewModel
         .formatAmountWithCurrency(this.currency, this.total.toDouble())
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
+
+    sealed class CardReaderPaymentEvent : Event() {
+        object NavigateToCardReaderConnectFragment : CardReaderPaymentEvent()
+    }
 
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
