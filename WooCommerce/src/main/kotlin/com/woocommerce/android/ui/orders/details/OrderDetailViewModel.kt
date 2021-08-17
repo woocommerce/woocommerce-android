@@ -511,11 +511,11 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun containsAddons(product: Order.Item) =
-            addonsRepository
-                .getAddonsFrom(product.productId)
-                ?.map { addon -> product.attributesList.find { it.addonName == addon.name } }
-                ?.isNotEmpty()
-                ?: false
+        addonsRepository
+            .getAddonsFrom(product.productId)
+            ?.map { addon -> product.attributesList.find { it.addonName == addon.name } }
+            ?.isNotEmpty()
+            ?: false
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
     private fun fetchOrderProductsAsync() = async {

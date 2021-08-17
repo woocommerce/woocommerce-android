@@ -135,11 +135,11 @@ data class Order(
 
             @IgnoredOnParcel
             private val keyAsAddonRegexGroup = attributeAddonKeyRegex
-                    .findAll(key)
-                    .firstOrNull()?.groupValues
-                    ?.takeIf { it.size == addonAttributeGroupSize }
-                    ?.toMutableList()
-                    ?.apply { removeFirst() }
+                .findAll(key)
+                .firstOrNull()?.groupValues
+                ?.takeIf { it.size == addonAttributeGroupSize }
+                ?.toMutableList()
+                ?.apply { removeFirst() }
 
             @IgnoredOnParcel
             val addonName = keyAsAddonRegexGroup
