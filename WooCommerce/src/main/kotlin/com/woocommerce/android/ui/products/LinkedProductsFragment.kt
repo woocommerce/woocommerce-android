@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
 import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
+import com.woocommerce.android.util.StringUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -76,7 +77,12 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
 
         val numUpsells = viewModel.getProduct().productDraft?.upsellProductIds?.size ?: 0
         if (numUpsells > 0) {
-            binding.upsellsCount.text = resources.getQuantityString(R.plurals.product_count, numUpsells, numUpsells)
+            binding.upsellsCount.text = StringUtils.getQuantityString(
+                context = requireContext(),
+                quantity = numUpsells,
+                default = R.string.product_count_other,
+                one = R.string.product_count_one,
+            )
             binding.upsellsCount.show()
             binding.addUpsellProducts.text = getString(R.string.edit_products_button)
         } else {
@@ -86,10 +92,11 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
 
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
         if (numCrossSells > 0) {
-            binding.crossSellsCount.text = resources.getQuantityString(
-                R.plurals.product_count,
-                numCrossSells,
-                numCrossSells
+            binding.crossSellsCount.text = StringUtils.getQuantityString(
+                context = requireContext(),
+                quantity = numCrossSells,
+                default = R.string.product_count_other,
+                one = R.string.product_count_one,
             )
             binding.crossSellsCount.show()
             binding.addCrossSellProducts.text = getString(R.string.edit_products_button)

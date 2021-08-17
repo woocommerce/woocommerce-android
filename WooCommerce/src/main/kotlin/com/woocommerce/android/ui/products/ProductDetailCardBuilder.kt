@@ -432,7 +432,12 @@ class ProductDetailCardBuilder(
         val showTitle = groupedProductsSize > 0
 
         val groupedProductsDesc = if (showTitle) {
-            StringUtils.getPluralString(resources, groupedProductsSize, R.plurals.product_count)
+            StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = groupedProductsSize,
+                default = string.product_count_other,
+                one = string.product_count_one,
+            )
         } else {
             resources.getString(string.grouped_product_empty)
         }
