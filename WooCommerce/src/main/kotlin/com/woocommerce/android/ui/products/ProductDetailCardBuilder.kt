@@ -458,10 +458,11 @@ class ProductDetailCardBuilder(
     private fun Product.linkedProducts(): ProductProperty? {
         if (!hasLinkedProducts()) return null
 
-        val upsellDesc = StringUtils.getPluralString(
-            resources,
-            this.upsellProductIds.size,
-            R.plurals.upsell_product_count
+        val upsellDesc = StringUtils.getQuantityString(
+            resourceProvider = resources,
+            quantity = this.upsellProductIds.size,
+            one = string.upsell_product_count_one,
+            default = string.upsell_product_count_other,
         )
         val crossSellDesc = StringUtils.getQuantityString(
             resourceProvider = resources,

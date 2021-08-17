@@ -1135,10 +1135,8 @@
     <string name="product_count_other">%d products</string>
     <string name="cross_sell_product_count_one">%d cross-sell product</string>
     <string name="cross_sell_product_count_other">%d cross-sell products</string>
-    <plurals name="upsell_product_count">
-        <item quantity="one">%d upsell product</item>
-        <item quantity="other">%d upsell products</item>
-    </plurals>
+    <string name="upsell_product_count_one">%d upsell product</string>
+    <string name="upsell_product_count_other">%d upsell products</string>
 
     <!--
         Product Add more details Bottom sheet
