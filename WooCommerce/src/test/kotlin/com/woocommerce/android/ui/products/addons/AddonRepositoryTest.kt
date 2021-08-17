@@ -1,18 +1,17 @@
 package com.woocommerce.android.ui.products.addons
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.times
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -56,7 +55,7 @@ class AddonRepositoryTest {
         configureSuccessfulProductResponse()
 
         repositoryUnderTest.fetchOrderAddonsData(123, 999, 333)
-            ?.unwrap { productAddons, orderAddons ->
+            ?.let { (productAddons, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
                     .getOrderByIdentifier(OrderIdentifier(321, 123))
@@ -77,7 +76,7 @@ class AddonRepositoryTest {
         val expectedAddons = defaultOrderAttributes
 
         repositoryUnderTest.fetchOrderAddonsData(123, 999, 333)
-            ?.unwrap { _, orderAddons ->
+            ?.let { (_, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
                     .getOrderByIdentifier(OrderIdentifier(321, 123))

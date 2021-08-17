@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_COLL
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -239,7 +239,6 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
         AnalyticsTracker.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
-        // TODO cardreader add tests for this functionality
         if (cardReaderManager.readerStatus.value is Connected) {
             triggerEvent(StartCardReaderPaymentFlow(order.identifier))
         } else {
@@ -268,7 +267,6 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
-        // TODO cardreader add tests for this functionality
         launch {
             // this dummy delay needs to be here since the navigation component hasn't finished the previous
             // transaction when a result is received
@@ -581,7 +579,8 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
-            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
+            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
+            viewState.orderInfo?.isPaymentCollectableWithCardReader != true
 
         if (isOrderEligibleForSLCreation &&
             viewState.isCreateShippingLabelButtonVisible != true &&

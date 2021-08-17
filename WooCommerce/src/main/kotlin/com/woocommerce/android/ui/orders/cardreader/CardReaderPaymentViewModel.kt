@@ -29,7 +29,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
-import com.woocommerce.android.cardreader.PaymentInfo
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -50,6 +50,7 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -87,8 +88,7 @@ class CardReaderPaymentViewModel
     private var paymentFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
 
-    @VisibleForTesting
-    var refetchOrderJob: Job? = null
+    private var refetchOrderJob: Job? = null
 
     fun start() {
         // TODO cardreader Make sure a reader is connected
@@ -196,6 +196,7 @@ class CardReaderPaymentViewModel
         orderId: Long,
     ) {
         storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        triggerEvent(PlayChaChing)
         showPaymentSuccessfulState()
         reFetchOrder()
     }
@@ -348,6 +349,8 @@ class CardReaderPaymentViewModel
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 
+    object PlayChaChing : MultiLiveEvent.Event()
+
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
         @StringRes val headerLabel: Int? = null,
@@ -381,7 +384,6 @@ class CardReaderPaymentViewModel
             paymentStateLabel = errorType.message,
             paymentStateLabelTopMargin = R.dimen.major_100,
             primaryActionLabel = R.string.try_again,
-            // TODO cardreader optimize all newly added vector drawables
             illustration = R.drawable.img_products_error
         )
 

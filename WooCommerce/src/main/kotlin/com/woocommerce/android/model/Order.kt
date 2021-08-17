@@ -115,9 +115,7 @@ data class Order(
          */
         val attributesDescription
             get() = attributesList.filter {
-                // Don't include empty or the "_reduced_stock" key
-                // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
-                it.value.isNotEmpty() && it.key.isNotEmpty() && it.key.first().toString() != "_"
+                it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
             }.joinToString { it.value.capitalize(Locale.getDefault()) }
 
         @Parcelize
@@ -139,6 +137,11 @@ data class Order(
                     ?.takeIf { it.size == addonAttributeGroupSize }
                     ?.toMutableList()
                     ?.apply { removeFirst() }
+
+            // Don't include empty or the "_reduced_stock" key
+            // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
+            val isNotInternalAttributeData
+                get() = key.first().toString() != "_"
         }
     }
 

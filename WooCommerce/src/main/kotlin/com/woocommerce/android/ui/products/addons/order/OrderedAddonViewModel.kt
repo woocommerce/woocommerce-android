@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.products.addons.order
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.extensions.unwrap
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
@@ -21,7 +21,7 @@ class OrderedAddonViewModel @Inject constructor(
     private val addonsRepository: AddonRepository
 ) : ScopedViewModel(savedState) {
     private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
-    val orderedAddonsData = _orderedAddons
+    val orderedAddonsData: LiveData<List<ProductAddon>> = _orderedAddons
 
     fun start(
         orderID: Long,
@@ -29,7 +29,7 @@ class OrderedAddonViewModel @Inject constructor(
         productID: Long
     ) = launch(dispatchers.computation) {
         addonsRepository.fetchOrderAddonsData(orderID, orderItemID, productID)
-            ?.unwrap(::mapAddonsFromOrderAttributes)
+            ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
             ?.let { dispatchResult(it) }
     }
 
@@ -52,7 +52,7 @@ class OrderedAddonViewModel @Inject constructor(
     /**
      * If it isn't possible to find the respective option
      * through [Order.Item.Attribute.value] matching we will
-     * have to merge the Addon data with the Attribute in order
+     * have to merge the [ProductAddon] data with the Attribute in order
      * to display the Ordered addon correctly, which is exactly
      * what this method does.
      *
@@ -75,7 +75,7 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun dispatchResult(result: List<ProductAddon>) {
         withContext(dispatchers.main) {
-            orderedAddonsData.value = result
+            _orderedAddons.value = result
         }
     }
 

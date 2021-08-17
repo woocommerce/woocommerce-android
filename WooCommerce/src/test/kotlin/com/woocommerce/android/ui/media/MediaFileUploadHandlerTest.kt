@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.media
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest

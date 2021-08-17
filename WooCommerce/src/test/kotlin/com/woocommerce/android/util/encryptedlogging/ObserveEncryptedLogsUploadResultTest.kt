@@ -1,10 +1,10 @@
 package com.woocommerce.android.util.encryptedlogging
 
-import com.nhaarman.mockitokotlin2.argForWhich
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import org.mockito.kotlin.argForWhich
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyZeroInteractions
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ENCRYPTED_LOGGING_UPLOAD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
