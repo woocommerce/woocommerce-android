@@ -108,7 +108,7 @@ data class Order(
         val isVariation: Boolean = variationId != 0L
 
         @IgnoredOnParcel
-        var containsProductAddons = false
+        var containsAddons = false
 
         /**
          * @return a comma-separated list of attribute values for display
@@ -142,6 +142,16 @@ data class Order(
             // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
             val isNotInternalAttributeData
                 get() = key.first().toString() != "_"
+
+            val addonName
+                get() = keyAsAddonRegexGroup
+                    ?.first()
+                    .orEmpty()
+
+            val asAddonPrice
+                get() = keyAsAddonRegexGroup
+                    ?.last()
+                    .orEmpty()
         }
     }
 

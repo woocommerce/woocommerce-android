@@ -78,14 +78,4 @@ class OrderedAddonViewModel @Inject constructor(
             _orderedAddons.value = result
         }
     }
-
-    private val Order.Item.Attribute.addonName
-        get() = keyAsAddonRegexGroup
-            ?.first()
-            .orEmpty()
-
-    private val Order.Item.Attribute.asAddonPrice
-        get() = keyAsAddonRegexGroup
-            ?.last()
-            .orEmpty()
 }
