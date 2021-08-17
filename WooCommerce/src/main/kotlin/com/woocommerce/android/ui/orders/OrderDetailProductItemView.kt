@@ -15,6 +15,8 @@ import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
+typealias ViewAddonClickListener = (Order.Item) -> Unit
+
 class OrderDetailProductItemView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -25,7 +27,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(
     fun initView(
         item: Order.Item,
         productImage: String?,
-        formatCurrencyForDisplay: (BigDecimal) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        onViewAddonsClick: ViewAddonClickListener?
     ) {
         binding.productInfoName.text = item.name
 
