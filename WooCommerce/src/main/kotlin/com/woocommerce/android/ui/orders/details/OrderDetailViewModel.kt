@@ -461,7 +461,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onViewOrderedAddonButtonTapped(product: Order.Item) {
-        // TODO: trigger OrderedAddonsFragment
+        // trigger OrderedAddonsFragment
     }
 
     private fun updateOrderState() {

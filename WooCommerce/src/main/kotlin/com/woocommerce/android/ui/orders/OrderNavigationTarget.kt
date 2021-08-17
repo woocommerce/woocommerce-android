@@ -55,5 +55,5 @@ sealed class OrderNavigationTarget : Event() {
     object ViewPrintingInstructions : OrderNavigationTarget()
     data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :
         OrderNavigationTarget()
-    data class ViewOrderAddons(val remoteOrderID: Long, val orderItemID: Long): OrderNavigationTarget()
+    data class ViewOrderAddons(val remoteOrderID: Long, val orderItemID: Long) : OrderNavigationTarget()
 }
