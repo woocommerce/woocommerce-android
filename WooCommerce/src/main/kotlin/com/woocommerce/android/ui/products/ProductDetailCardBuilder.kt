@@ -434,7 +434,7 @@ class ProductDetailCardBuilder(
             StringUtils.getQuantityString(
                 resourceProvider = resources,
                 quantity = groupedProductsSize,
-                default = string.product_count_other,
+                default = string.product_count_many,
                 one = string.product_count_one,
             )
         } else {
@@ -461,13 +461,13 @@ class ProductDetailCardBuilder(
             resourceProvider = resources,
             quantity = this.upsellProductIds.size,
             one = string.upsell_product_count_one,
-            default = string.upsell_product_count_other,
+            default = string.upsell_product_count_many,
         )
         val crossSellDesc = StringUtils.getQuantityString(
             resourceProvider = resources,
             quantity = this.crossSellProductIds.size,
             one = string.cross_sell_product_count_one,
-            default = string.cross_sell_product_count_other,
+            default = string.cross_sell_product_count_many,
         )
 
         return ComplexProperty(

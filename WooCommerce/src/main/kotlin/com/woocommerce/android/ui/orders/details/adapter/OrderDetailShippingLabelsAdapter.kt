@@ -123,7 +123,7 @@ class OrderDetailShippingLabelsAdapter(
             viewBinding.shippingLabelListCountButtonTitle.text = StringUtils.getQuantityString(
                 context = viewBinding.shippingLabelListCountButtonTitle.context,
                 quantity = shippingLabel.products.count(),
-                default = R.string.shipping_label_package_details_items_count_other,
+                default = R.string.shipping_label_package_details_items_count_many,
                 one = R.string.shipping_label_package_details_items_count_one,
             )
             viewBinding.shippingLabelListViewItems.setOnClickListener {

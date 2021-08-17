@@ -24,7 +24,7 @@ class OrderDetailRefundsView @JvmOverloads constructor(
                 context = context,
                 quantity = refundsCount,
                 one = R.string.order_refunds_refund_info_description_one,
-                default = R.string.order_refunds_refund_info_description_other,
+                default = R.string.order_refunds_refund_info_description_many,
             )
             setOnClickListener { onTap() }
         }

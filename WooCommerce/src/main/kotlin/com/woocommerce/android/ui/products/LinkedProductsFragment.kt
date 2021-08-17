@@ -80,7 +80,7 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
             binding.upsellsCount.text = StringUtils.getQuantityString(
                 context = requireContext(),
                 quantity = numUpsells,
-                default = R.string.product_count_other,
+                default = R.string.product_count_many,
                 one = R.string.product_count_one,
             )
             binding.upsellsCount.show()
@@ -95,7 +95,7 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
             binding.crossSellsCount.text = StringUtils.getQuantityString(
                 context = requireContext(),
                 quantity = numCrossSells,
-                default = R.string.product_count_other,
+                default = R.string.product_count_many,
                 one = R.string.product_count_one,
             )
             binding.crossSellsCount.show()

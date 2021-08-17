@@ -498,7 +498,7 @@
     <string name="shipping_label_package_details_weight_info">Includes package weight</string>
     <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
     <string name="shipping_label_package_details_items_count_one">%d item</string>
-    <string name="shipping_label_package_details_items_count_other">%d items</string>
+    <string name="shipping_label_package_details_items_count_many">%d items</string>
     <string name="shipping_label_package_details_individual_package_subtitle">Individually Shipped Item</string>
     <string name="shipping_label_package_details_individual_package_dimensions">Item Dimensions</string>
     <string name="shipping_label_package_details_individual_package_title">Original packaging</string>
@@ -560,7 +560,7 @@
     <string name="shipping_label_shipping_carrier_rates_unavailable_title">No shipping rates available</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Please double check your package dimensions and weight or try using a different package in Package Details</string>
     <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d business day</string>
-    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_other">%d business days</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d business days</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates.</string>
@@ -660,7 +660,7 @@
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
     <string name="order_refunds_refund_info_description_one">%d item</string>
-    <string name="order_refunds_refund_info_description_other">%d items</string>
+    <string name="order_refunds_refund_info_description_many">%d items</string>
     <string name="order_refunds_refund_info_title">Refunded products</string>
     <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
@@ -1132,11 +1132,11 @@
     <string name="product_add_ons_card_button_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
-    <string name="product_count_other">%d products</string>
+    <string name="product_count_many">%d products</string>
     <string name="cross_sell_product_count_one">%d cross-sell product</string>
-    <string name="cross_sell_product_count_other">%d cross-sell products</string>
+    <string name="cross_sell_product_count_many">%d cross-sell products</string>
     <string name="upsell_product_count_one">%d upsell product</string>
-    <string name="upsell_product_count_other">%d upsell products</string>
+    <string name="upsell_product_count_many">%d upsell products</string>
 
     <!--
         Product Add more details Bottom sheet

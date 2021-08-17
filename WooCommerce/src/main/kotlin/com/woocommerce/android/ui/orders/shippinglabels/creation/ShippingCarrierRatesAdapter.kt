@@ -90,7 +90,7 @@ class ShippingCarrierRatesAdapter(
             binding.packageItemsCount.text = "- ${StringUtils.getQuantityString(
                 context = binding.packageItemsCount.context,
                 quantity = rateList.shippingPackage.itemsCount,
-                default = string.shipping_label_package_details_items_count_other,
+                default = string.shipping_label_package_details_items_count_many,
                 one = string.shipping_label_package_details_items_count_one,
             )}"
 
@@ -143,7 +143,7 @@ class ShippingCarrierRatesAdapter(
                         binding.deliveryTime.text = StringUtils.getQuantityString(
                             context = binding.deliveryTime.context,
                             quantity = rateItem.deliveryEstimate,
-                            default = string.shipping_label_shipping_carrier_rates_delivery_estimate_other,
+                            default = string.shipping_label_shipping_carrier_rates_delivery_estimate_many,
                             one = string.shipping_label_shipping_carrier_rates_delivery_estimate_one
                         )
                     }

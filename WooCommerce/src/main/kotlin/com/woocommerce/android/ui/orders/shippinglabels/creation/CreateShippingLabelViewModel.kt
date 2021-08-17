@@ -594,7 +594,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                     val deliveryDays = StringUtils.getQuantityString(
                         resourceProvider = resourceProvider,
                         quantity = rate.deliveryDays,
-                        default = string.shipping_label_shipping_carrier_rates_delivery_estimate_other,
+                        default = string.shipping_label_shipping_carrier_rates_delivery_estimate_many,
                         one = string.shipping_label_shipping_carrier_rates_delivery_estimate_one
                     )
                     secondLine = "$total - $deliveryDays"
