@@ -592,5 +592,9 @@
             android:name="orderItemId"
             app:argType="long"
             app:nullable="false" />
+        <argument
+            android:name="addonsProductId"
+            app:argType="long"
+            app:nullable="false" />
     </fragment>
 </navigation>
