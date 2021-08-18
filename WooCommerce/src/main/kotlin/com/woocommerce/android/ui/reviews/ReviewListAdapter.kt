@@ -37,7 +37,7 @@ class ReviewListAdapter(
     private val removedRemoteIds = HashSet<Long>()
 
     interface OnReviewClickListener {
-        fun onReviewClick(review: ProductReview) { }
+        fun onReviewClick(review: ProductReview) {}
     }
 
     fun setReviews(reviews: List<ProductReview>) {
@@ -352,8 +352,12 @@ class ReviewListAdapter(
         override fun onBindItemViewHolder(holder: ViewHolder, position: Int) {
             val review = list[position]
             val itemHolder = holder as ItemViewHolder
-            itemHolder.bind(review, position, getContentItemsTotal(),
-                reviewStatus = ProductReviewStatus.fromString(review.status))
+            itemHolder.bind(
+                review,
+                position,
+                getContentItemsTotal(),
+                reviewStatus = ProductReviewStatus.fromString(review.status)
+            )
             itemHolder.itemView.setOnClickListener {
                 clickListener.onReviewClick(review)
             }
@@ -431,14 +435,15 @@ class ReviewListAdapter(
                 viewBinding.notifDivider.visibility = View.INVISIBLE
             }
         }
+
         private fun getPendingReviewLabel() =
             "<font color=$pendingLabelColor>${context.getString(R.string.pending_review_label)}</font>"
     }
-    }
+}
 
-    private class HeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
-        RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(@StringRes headerId: Int) {
-            viewBinding.orderListHeader.text = viewBinding.root.context.getString(headerId)
-        }
+private class HeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
+    RecyclerView.ViewHolder(viewBinding.root) {
+    fun bind(@StringRes headerId: Int) {
+        viewBinding.orderListHeader.text = viewBinding.root.context.getString(headerId)
     }
+}
