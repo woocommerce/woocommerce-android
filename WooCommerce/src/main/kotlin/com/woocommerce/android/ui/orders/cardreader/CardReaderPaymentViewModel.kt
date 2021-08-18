@@ -250,18 +250,20 @@ class CardReaderPaymentViewModel
     }
 
     private fun handleAdditionalInfo(type: AdditionalInfoType) {
-        when (type) {
-            RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
-            INSERT_CARD -> null // noop - collect payment screen is currently shown
-            INSERT_OR_SWIPE_CARD -> null // noop - collect payment screen is currently shown
-            SWIPE_CARD -> null // noop - collect payment screen is currently shown
-            REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
-            MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
-                R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
-            TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
-            TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
-        }?.let { message ->
-            triggerEvent(ShowSnackbarInDialog(message))
+        (viewState.value as? CollectPaymentState)?.let { collectPaymentState ->
+            when (type) {
+                RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
+                INSERT_CARD -> null // noop - collect payment screen is currently shown
+                INSERT_OR_SWIPE_CARD -> null // noop - collect payment screen is currently shown
+                SWIPE_CARD -> null // noop - collect payment screen is currently shown
+                REMOVE_CARD -> null // noop - processing payment screen always shows "remove card" message
+                MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
+                    R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
+                TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
+                TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
+            }?.let { hint ->
+                viewState.value = collectPaymentState.copy(hintLabel = hint)
+            }
         }
     }
 
@@ -376,8 +378,8 @@ class CardReaderPaymentViewModel
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 
     sealed class ViewState(
-        @StringRes val hintLabel: Int? = null,
-        @StringRes val headerLabel: Int? = null,
+        @StringRes open val hintLabel: Int? = null,
+        @StringRes open val headerLabel: Int? = null,
         @StringRes val paymentStateLabel: Int? = null,
         @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
         @DrawableRes val illustration: Int? = null,
@@ -411,9 +413,11 @@ class CardReaderPaymentViewModel
             illustration = R.drawable.img_products_error
         )
 
-        data class CollectPaymentState(override val amountWithCurrencyLabel: String) : ViewState(
-            hintLabel = R.string.card_reader_payment_collect_payment_hint,
-            headerLabel = R.string.card_reader_payment_collect_payment_header,
+        data class CollectPaymentState(
+            override val amountWithCurrencyLabel: String,
+            override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
+            override val headerLabel: Int = R.string.card_reader_payment_collect_payment_header,
+        ) : ViewState(
             paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
             illustration = R.drawable.img_card_reader_available
         )
