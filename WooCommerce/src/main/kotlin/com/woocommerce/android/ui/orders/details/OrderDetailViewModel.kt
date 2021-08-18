@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
@@ -460,8 +461,9 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(ViewOrderFulfillInfo(order.identifier))
     }
 
-    fun onViewOrderedAddonButtonTapped(product: Order.Item) {
-        // trigger OrderedAddonsFragment
+    fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
+        // track add-ons event
+        triggerEvent(ViewOrderedAddons(orderIdSet.remoteOrderId, orderItem.itemId))
     }
 
     private fun updateOrderState() {
