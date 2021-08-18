@@ -417,25 +417,20 @@ class ReviewListAdapter(
             val reviewText: String = StringUtils.getRawTextFromHtml(review.review)
 
             if (reviewStatus == ProductReviewStatus.HOLD) {
-
                 val pendingReviewText = getPendingReviewLabel()
                 viewBinding.notifDesc.text = HtmlCompat.fromHtml(
                     "$pendingReviewText $bullet $reviewText",
                     HtmlCompat.FROM_HTML_MODE_LEGACY
                 )
                 viewBinding.notifIcon.setColorFilter(notifsIconPendingColor)
-
             } else {
-
                 viewBinding.notifIcon.colorFilter = null
                 viewBinding.notifDesc.text = reviewText
             }
-
             if (position == totalItems - 1) {
                 viewBinding.notifDivider.visibility = View.INVISIBLE
             }
         }
-
         private fun getPendingReviewLabel() =
             "<font color=$pendingLabelColor>${context.getString(R.string.pending_review_label)}</font>"
     }
