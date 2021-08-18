@@ -92,6 +92,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.isSuccessful
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -590,9 +591,11 @@ class CreateShippingLabelViewModel @Inject constructor(
                     firstLine = rate.serviceName
 
                     val total = data.sumByBigDecimal { it.price }.format()
-                    val deliveryDays = resourceProvider.getPluralString(
-                        R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
-                        rate.deliveryDays
+                    val deliveryDays = StringUtils.getQuantityString(
+                        resourceProvider = resourceProvider,
+                        quantity = rate.deliveryDays,
+                        default = string.shipping_label_shipping_carrier_rates_delivery_estimate_many,
+                        one = string.shipping_label_shipping_carrier_rates_delivery_estimate_one
                     )
                     secondLine = "$total - $deliveryDays"
                 }

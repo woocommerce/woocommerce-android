@@ -10,9 +10,12 @@ import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.util.FeatureFlag.PRODUCT_ADD_ONS
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+
+typealias ViewAddonClickListener = (Order.Item) -> Unit
 
 class OrderDetailProductItemView @JvmOverloads constructor(
     ctx: Context,
@@ -24,7 +27,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(
     fun initView(
         item: Order.Item,
         productImage: String?,
-        formatCurrencyForDisplay: (BigDecimal) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        onViewAddonsClick: ViewAddonClickListener?
     ) {
         binding.productInfoName.text = item.name
 
@@ -46,6 +50,13 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             val productSku = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
             binding.productInfoSKU.text = productSku
         }
+
+        onViewAddonsClick?.let {
+            binding.productInfoAddons.visibility =
+                if (item.containsAddons && PRODUCT_ADD_ONS.isEnabled()) VISIBLE
+                else GONE
+            binding.productInfoAddons.setOnClickListener { it(item) }
+        } ?: binding.productInfoAddons.let { visibility = GONE }
 
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)

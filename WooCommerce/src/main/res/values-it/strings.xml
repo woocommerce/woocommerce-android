@@ -700,10 +700,10 @@ Language: it
     <string name="orderlist_loading">Ricerca dei tuoi ordini in corso…</string>
     <string name="product_detail_editable_text_hint">Inserisci testo</string>
     <string name="product_detail_title_hint">Inserisci il titolo del prodotto</string>
-    <string name="product_detail_update_product_success">Prodotto aggiornato</string>
+    <string name="product_detail_save_product_success">Prodotto aggiornato</string>
     <string name="product_detail_update_product_error">Errore durante l\'aggiornamento del prodotto</string>
     <string name="product_update_dialog_message">Attendi…</string>
-    <string name="product_update_dialog_title">Aggiornamento prodotto</string>
+    <string name="product_save_dialog_title">Aggiornamento prodotto</string>
     <string name="product_description_empty">Descrivi il tuo prodotto</string>
     <string name="product_description">Descrizione</string>
     <string name="product_edit_description">Modifica descrizione</string>

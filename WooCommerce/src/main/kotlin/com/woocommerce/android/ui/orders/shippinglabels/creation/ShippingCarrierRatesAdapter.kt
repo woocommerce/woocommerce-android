@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateListViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.*
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.StringUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.*
@@ -81,14 +82,16 @@ class ShippingCarrierRatesAdapter(
                 }
             }
         }
+
         @SuppressLint("SetTextI18n")
         fun bind(rateList: PackageRateListItem) {
             binding.packageName.text = rateList.shippingPackage.getTitle(binding.root.context)
 
-            binding.packageItemsCount.text = "- ${binding.root.resources.getQuantityString(
-                R.plurals.shipping_label_package_details_items_count,
-                rateList.shippingPackage.itemsCount,
-                rateList.shippingPackage.itemsCount
+            binding.packageItemsCount.text = "- ${StringUtils.getQuantityString(
+                context = binding.packageItemsCount.context,
+                quantity = rateList.shippingPackage.itemsCount,
+                default = string.shipping_label_package_details_items_count_many,
+                one = string.shipping_label_package_details_items_count_one,
             )}"
 
             (binding.rateOptions.adapter as? RateListAdapter)?.updateRates(rateList)
@@ -137,10 +140,11 @@ class ShippingCarrierRatesAdapter(
                     }
                     rateItem.deliveryEstimate != 0 -> {
                         binding.deliveryTime.isVisible = true
-                        binding.deliveryTime.text = binding.root.resources.getQuantityString(
-                            R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
-                            rateItem.deliveryEstimate,
-                            rateItem.deliveryEstimate
+                        binding.deliveryTime.text = StringUtils.getQuantityString(
+                            context = binding.deliveryTime.context,
+                            quantity = rateItem.deliveryEstimate,
+                            default = string.shipping_label_shipping_carrier_rates_delivery_estimate_many,
+                            one = string.shipping_label_shipping_carrier_rates_delivery_estimate_one
                         )
                     }
                     else -> {

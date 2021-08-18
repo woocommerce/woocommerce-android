@@ -59,6 +59,7 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -205,6 +206,7 @@ class CardReaderPaymentViewModel
         orderId: Long,
     ) {
         storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        triggerEvent(PlayChaChing)
         showPaymentSuccessfulState()
         reFetchOrder()
     }
@@ -376,6 +378,8 @@ class CardReaderPaymentViewModel
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
+
+    object PlayChaChing : MultiLiveEvent.Event()
 
     sealed class ViewState(
         @StringRes open val hintLabel: Int? = null,
