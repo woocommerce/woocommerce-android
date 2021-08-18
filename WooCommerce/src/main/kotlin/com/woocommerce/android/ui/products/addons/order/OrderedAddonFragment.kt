@@ -50,10 +50,10 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun onOrderedAddonsReceived(orderedAddons: List<ProductAddon>) {
-        setupRecyclerViewWith(orderedAddons, "")
+        setupRecyclerViewWith(orderedAddons)
     }
 
-    private fun setupRecyclerViewWith(addonList: List<ProductAddon>, currencyCode: String) {
+    private fun setupRecyclerViewWith(addonList: List<ProductAddon>) {
         layoutManager = LinearLayoutManager(
             activity,
             RecyclerView.VERTICAL,
@@ -62,7 +62,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         binding.addonsList.layoutManager = layoutManager
         binding.addonsList.adapter = AddonListAdapter(
             addonList,
-            currencyFormatter.buildBigDecimalFormatter(currencyCode)
+            currencyFormatter.buildBigDecimalFormatter(viewModel.currencyCode)
         )
     }
 }
