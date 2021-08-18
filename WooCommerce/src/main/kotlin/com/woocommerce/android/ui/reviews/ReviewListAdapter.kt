@@ -1,14 +1,12 @@
 package com.woocommerce.android.ui.reviews
 
 import android.content.Context
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -220,7 +218,7 @@ class ReviewListAdapter(
                 currentPos++
             }
             if (currentPos == position) {
-                return if (review.read ?: true) ItemType.READ else ItemType.UNREAD
+                return if (review.read != false) ItemType.READ else ItemType.UNREAD
             }
             currentPos++
         }
@@ -388,6 +386,11 @@ class ReviewListAdapter(
 
     private class ItemViewHolder(val viewBinding: NotifsListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
+        private val context = viewBinding.root.context
+        private val bullet = "\u2022"
+        private val pendingLabelColor: Int = ContextCompat.getColor(context, R.color.woo_orange_50)
+        private val notifsIconPendingColor: Int = ContextCompat.getColor(context, R.color.woo_purple_60)
+
         fun bind(review: ProductReview, position: Int, totalItems: Int, reviewStatus: ProductReviewStatus) {
             viewBinding.notifRating.visibility = View.GONE
             viewBinding.notifIcon.setImageResource(R.drawable.ic_comment)
@@ -411,29 +414,20 @@ class ReviewListAdapter(
                 )
             }
 
-            val pendingReviewLabel: String = viewBinding.root.context.getString(
-                R.string.pending_review_label
-            )
             val reviewText: String = StringUtils.getRawTextFromHtml(review.review)
-            val spannableReviewText = SpannableStringBuilder(pendingReviewLabel)
-            val pendingLabelColor: Int = ContextCompat.getColor(viewBinding.root.context, R.color.woo_orange_50)
-            val notifsIconPendingColor: Int = ContextCompat.getColor(viewBinding.root.context, R.color.woo_purple_60)
 
-            spannableReviewText.setSpan(
-                ForegroundColorSpan(pendingLabelColor),
-                0, // start
-                14, // end
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            spannableReviewText.insert(17, reviewText)
+            if (reviewStatus == ProductReviewStatus.HOLD) {
 
-            if (reviewStatus == ProductReviewStatus.HOLD ) {
-
-                viewBinding.notifDesc.text = spannableReviewText
+                val pendingReviewText = getPendingReviewLabel()
+                viewBinding.notifDesc.text = HtmlCompat.fromHtml(
+                    "$pendingReviewText $bullet $reviewText",
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                )
                 viewBinding.notifIcon.setColorFilter(notifsIconPendingColor)
 
             } else {
 
+                viewBinding.notifIcon.colorFilter = null
                 viewBinding.notifDesc.text = reviewText
             }
 
@@ -441,6 +435,10 @@ class ReviewListAdapter(
                 viewBinding.notifDivider.visibility = View.INVISIBLE
             }
         }
+
+        private fun getPendingReviewLabel() =
+            "<font color=$pendingLabelColor>${context.getString(R.string.pending_review_label)}</font>"
+    }
     }
 
     private class HeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
@@ -449,4 +447,3 @@ class ReviewListAdapter(
             viewBinding.orderListHeader.text = viewBinding.root.context.getString(headerId)
         }
     }
-}
