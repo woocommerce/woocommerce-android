@@ -30,7 +30,8 @@
             android:gravity="start"
             android:includeFontPadding="false"
             android:visibility="gone"
-            tools:text="Addon Description" />
+            tools:text="Addon Description"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/options_list"

@@ -121,11 +121,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel = spy(
             OrderDetailViewModel(
                 dispatcher,
+                coroutinesTestRule.testDispatchers,
                 savedState,
                 appPrefsWrapper,
                 networkStatus,
                 resources,
                 repository,
+                mock(),
                 selectedSite,
                 paymentCollectibilityChecker
             )
