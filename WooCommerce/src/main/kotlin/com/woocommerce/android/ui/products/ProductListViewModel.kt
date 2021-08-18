@@ -430,7 +430,7 @@ class ProductListViewModel @Inject constructor(
             val stockStatusFilter: String?,
             val productTypeFilter: String?,
             val productStatusFilter: String?,
-            val productCategory: String?
+            val productCategoryFilter: String?
         ) : ProductListEvent()
     }
 }
