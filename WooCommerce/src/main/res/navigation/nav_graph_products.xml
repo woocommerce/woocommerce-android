@@ -116,6 +116,13 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
+            app:destination="@id/productAddonsFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -649,6 +656,10 @@
         <deepLink app:uri="wcandroid://variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
     </fragment>
     <fragment
+        android:id="@+id/productAddonsFragment"
+        android:name="com.woocommerce.android.ui.products.addons.product.ProductAddonsFragment"
+        android:label="ProductAddonsFragment"/>
+    <fragment
         android:id="@+id/productDownloadDetailsFragment"
         android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment"
         android:label="ProductDownloadDetailsFragment">
@@ -663,11 +674,27 @@
         android:id="@+id/productDownloadsSettingsFragment"
         android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsFragment"
         android:label="ProductDownloadsSettingsFragment" />
+    <fragment
+        android:id="@+id/mediaUploadErrorsFragment"
+        android:name="com.woocommerce.android.ui.media.MediaUploadErrorListFragment"
+        android:label="MediaUploadErrorsFragment">
+        <argument
+            android:name="remoteId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
     <dialog
         android:id="@+id/addProductDownloadBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment"
         android:label="AddProductDownloadBottomSheetFragment"
         tools:layout="@layout/dialog_product_add_downloadable_file" />
+    <action
+        android:id="@+id/action_global_mediaUploadErrorsFragment"
+        app:destination="@id/mediaUploadErrorsFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right"/>
     <action
         android:id="@+id/action_global_productDownloadDetailsFragment"
         app:destination="@id/productDownloadDetailsFragment"

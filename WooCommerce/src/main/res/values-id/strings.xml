@@ -1,22 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-07 11:54:04+0000
+Translation-Revision-Date: 2021-08-04 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="settings_card_reader_payments">Pembayaran langsung</string>
+    <string name="card_reader_tutorial_charged_detail">Pembaca Anda memerlukan waktu sekitar tiga jam untuk terisi penuh</string>
+    <string name="card_reader_tutorial_charged_label">Pastikan pembaca selalu memiliki daya</string>
+    <string name="card_reader_tutorial_reconnect_detail">Pembaca Anda akan masuk mode tidur setelah 10 menit tidak aktif. Cukup tekan tombol daya untuk menghubungkannya kembali.</string>
+    <string name="card_reader_tutorial_reconnect_label">Penghubungan kembali Automattic</string>
+    <string name="card_reader_tutorial_collect_detail">Untuk menerima pembayaran, cukup geser, ketuk, atau sisipkan kartu pada pembaca</string>
+    <string name="card_reader_tutorial_collect_label">Geser, ketuk, atau sisipkan kartu</string>
+    <string name="card_reader_tutorial_connected_detail">Selamat, Anda sekarang dapat menerima pembayaran menggunakan kartu debit dan kredit!</string>
+    <string name="card_reader_tutorial_connected_label">Pembaca terhubung</string>
+    <string name="card_reader_onboarding_contact_support">Butuh bantuan? &lt;a href=\'\'&gt;Hubungi dukungan&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Pelajari lebih lanjut&lt;/a&gt; tentang penerimaan pembayaran dengan perangkat seluler Anda dan pemesanan pembaca kartu</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Pembayaran Langsung tidak tersedia dalam Mode Pengujian. Harap matikan untuk melanjutkan.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Pembayaran Langsung saat ini tidak tersedia</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Ada persyaratan yang tertunda di akun Anda. Penuhi persyaratan tersebut dengan %1$s agar dapat tetap menerima Pembayaran Langsung.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Akun WooCommerce Payments Anda memiliki persyaratan tertunda</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Anda memiliki setidaknya satu persyaratan yang terlambat di akun Anda. Harap penuhi persyaratan tersebut untuk dapat terus menggunakan Pembayaran Langsung</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Pembayaran Langsung saat ini tidak tersedia</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Anda akan dapat menerima Pembayaran Langsung segera setelah kami selesai meninjau akun Anda.</string>
+    <string name="card_reader_onboarding_account_under_review_header">Pembayaran Langsung saat ini tidak tersedia</string>
+    <string name="card_reader_onboarding_account_rejected_hint">Mohon maaf, kami tidak dapat mendukung Pembayaran Langsung untuk toko ini.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Pembayaran Langsung tidak tersedia untuk toko ini.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Segarkan setelah memperbarui</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Versi ekstensi WooCommerce Payments yang terpasang di toko Anda sudah usang. Harap perbarui untuk menerima Pembayaran Langsung.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Perbarui WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Segarkan</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Hampir jadi! Harap selesaikan pengaturan WooCommerce Payments untuk mulai menerima Pembayaran dengan Kartu.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Selesaikan pengaturan WooCommerce Payments di admin toko Anda</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Segarkan setelah mengaktifkan</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">Ekstensi WooCommerce Payments sudah terpasang di toko Anda tetapi belum diaktifkan. Harap aktifkan terlebih dahulu untuk menerima Pembayaran Langsung.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Aktifkan WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Segarkan setelah menginstal</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Anda perlu menginstal ekstensi WooCommerce Payments gratis di toko Anda untuk menerima Pembayaran Langsung.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Instal WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Pelajari lebih lanjut&lt;/a&gt; tentang penerimaan pembayaran dengan perangkat seluler Anda dan pemesanan pembaca kartu</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Butuh bantuan? &lt;a href=\'\'&gt;Hubungi dukungan&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Anda masih dapat menerima Pembayaran Tunai secara Langsung dengan mengaktifkan metode pembayaran \"bayar di tempat\" di toko Anda</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Kami tidak mendukung Pembayaran Langsung di %1$s</string>
+    <string name="card_reader_onboarding_loading">Menghubungkan ke akun Anda</string>
+    <string name="card_reader_onboarding_title">Pembayaran langsung</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Pastikan kembali dimensi dan berat paket atau coba gunakan paket lain di Detail Paket</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Tarif pengiriman tidak tersedia</string>
+    <string name="shipping_label_activate_service_package_empty_title">Semua paket yang tersedia telah diaktifkan</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Mengaktifkan paket</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Pilih paket yang ingin diaktifkan.</string>
+    <string name="error_required_field">Kolom wajib diisi</string>
+    <string name="close">Tutup</string>
+    <string name="variation_created_title">Variasi Dibuat</string>
+    <string name="variation_list_generate_new_variation">Buat variasi baru</string>
+    <string name="product_wip_message_variations">Sekarang Anda dapat membuat dan mengelola variasi produk.</string>
+    <string name="product_attributes_created_generate_action_text">Buat Variasi</string>
+    <string name="product_attributes_created_description">Karena atribut sudah ditambahkan, Anda sekarang bisa membuat variasi pertama Anda!</string>
+    <string name="product_attributes_created_title">Atribut dibuat</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Membatalkan pembaruan perangkat lunak yang sedang berlangsung tidak dianjurkan</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Maaf, pembayaran ini tidak dapat diproses</string>
+    <string name="card_reader_payment_failed_server_error_state">Tidak ada koneksi ke server</string>
+    <string name="card_reader_payment_failed_no_network_state">Tidak ada koneksi internet</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Kirim menggunakan kemasan asli</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Tambah ke paket baru</string>
+    <string name="shipping_label_move_item_dialog_description">Item ini saat ini berada di %s. Ke mana Anda ingin memindahkannya?</string>
+    <string name="shipping_label_move_item_dialog_cancel">Batal</string>
+    <string name="shipping_label_move_item_dialog_move">Pindahkan</string>
+    <string name="shipping_label_move_item_dialog_title">Pindah item</string>
+    <string name="shipping_label_create_custom_package_success_message">\"%1$s\" tersimpan</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Gagal membuat paket. Harap coba lagi.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Gagal membuat paket: ada masalah API yang tidak diketahui.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Gagal membuat paket: %1$s</string>
+    <string name="shipping_label_create_package_saving_progress_message">Harap tunggu…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Membuat paket baru</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Nilai tidak valid.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Kolom ini harus diisi.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Berat paket kosong</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Berat paket kosong (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Tinggi (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Lebar (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Panjang (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Nama paket</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Amplop</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Kotak</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Pilih jenis paket</string>
+    <string name="shipping_label_create_custom_package_field_type">Jenis paket</string>
+    <string name="shipping_label_create_package_field_info">Siapkan paket yang akan digunakan untuk mengirim produk Anda. Kami akan menyimpannya untuk pesanan selanjutnya.</string>
+    <string name="shipping_label_create_package_title">Tambah paket baru</string>
+    <string name="shipping_label_create_new_package_button">Buat paket baru</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Dimensi paket harus lebih besar dari nol. Untuk melanjutkan, silakan perbarui dimensi item di bagian Pengiriman halaman produk Anda.</string>
+    <string name="shipping_label_package_details_individual_package_title">Kemasan asli</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Dimensi Item</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Item yang Dikirim Terpisah</string>
+    <string name="order_status_updated">Status pesanan diperbarui</string>
+    <string name="receipt_preview_send_menu_item">Kirim</string>
+    <string name="receipt_preview_print_menu_item">Cetak</string>
+    <string name="orderdetail_see_receipt_button">Lihat tanda terima</string>
+    <string name="cancel_anyway">Batalkan saja</string>
     <string name="card_reader_detail_connected_update_failed">Pembaruan perangkat lunak pembaca gagal</string>
     <string name="card_reader_detail_connected_update_check_failed">Pemeriksaan pembaruan versi perangkat lunak gagal</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Pelajari lebih lanjut&lt;/a&gt; tentang menerima pembayaran dengan perangkat seluler dan memesan pembaca kartu</string>
     <string name="card_reader_connect_open_bluetooth_settings">Aktifkan Bluetooth</string>
-    <string name="card_reader_connect_scanning_failed_header">Pembaca tidak ditemukan</string>
+    <string name="card_reader_connect_scanning_failed_header">Tidak ada pembaca yang terhubung</string>
     <string name="card_reader_connect_failed_header">Tidak dapat menyambungkan pembaca</string>
     <string name="card_reader_connect_connect_button">Hubungkan</string>
     <string name="card_reader_connect_multiple_readers_found_header">Ditemukan beberapa pembaca</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Pesanan sudah dibayar</string>
     <string name="card_reader_payment_receipt_email_content">Terima kasih atas pembelian Anda! Klik tautan di bawah untuk melihat tanda terima pembayaran Anda.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Pembayaran tidak berhasil</string>
     <string name="card_reader_payment_failed_card_declined_state">Kartu ditolak</string>
     <string name="shipping_label_print_customs_form_download_failed">Terjadi error saat mengunduh formulir bea cukai</string>
     <string name="shipping_label_print_customs_form_screen_title">Cetak faktur bea cukai</string>
@@ -53,7 +144,6 @@ Language: id
     <string name="product_create_attribute_helper">Untuk membuat variasi, Anda perlu mengatur atributnya (yaitu \"Warna\", \"Ukuran\") terlebih dahulu</string>
     <string name="product_variation_single_count">1 variasi</string>
     <string name="product_variation_multiple_count">%1$s variasi</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s pelacakan</string>
     <string name="card_reader_software_update_in_progress_title">Memperbarui perangkat lunak pembaca Anda</string>
     <string name="card_reader_software_update_title">Pembaruan perangkat lunak</string>
     <string name="card_reader_software_update_description">Perangkat lunak pembaca kartu Anda perlu diperbarui agar dapat berfungsi normal. Apakah Anda ingin memperbaruinya sekarang?</string>
@@ -194,7 +284,6 @@ Language: id
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Ketika membeli label pengiriman dengan WooCommerce, Anda bisa berhemat 5% hingga 40% dibandingkan dengan tarif kantor pos.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Apa itu diskon WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Terjadi error saat memuat pilihan pengiriman</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">Tidak ada pilihan pengiriman untuk alamat dan paket yang dipilih</string>
     <string name="shipping_label_shipping_carriers_title">Operator dan tarif</string>
     <string name="shipping_label_create_purchase">Beli label pengiriman</string>
     <string name="shipping_label_create_mark_order_complete">Tandai pesanan ini selesai dan kirim pemberitahuan ke pelanggan</string>
@@ -257,11 +346,9 @@ Language: id
     <string name="shipping_label_address_suggestion_use_selected_address">Gunakan alamat yang dipilih</string>
     <string name="shipping_label_edit_address_loading_progress_title">Memuat data alamat</string>
     <string name="product_wip_title_m5">Tersedia fitur baru!</string>
-    <string name="product_wip_message_m5">Sekarang Anda dapat menambahkan file yang dapat diunduh ke produk dan menautkan produk upsell &amp; cross-sell. Tidak lagi ingin menampilkan produk? Hapus!</string>
     <string name="shipping_label_validation_view_map">Buka Peta</string>
     <string name="shipping_label_validation_contact_customer">Hubungi Pelanggan</string>
     <string name="shipping_label_validation_error_template">Validasi gagal: %s</string>
-    <string name="shipping_label_error_required_field">Kolom wajib diisi</string>
     <string name="shipping_label_error_address_invalid_street">Nama jalan tidak valid</string>
     <string name="shipping_label_error_address_house_number_missing">Nomor rumah tidak ada</string>
     <string name="shipping_label_error_address_not_found">Alamat tidak ditemukan</string>
@@ -341,7 +428,6 @@ Language: id
     <string name="product_downloadable_files_add">Tambahkan file</string>
     <string name="product_downloadable_files_value_single">1 file</string>
     <string name="product_downloadable_files_value_multiple">%1$d file</string>
-    <string name="product_wip_message_m4">Sekarang Anda dapat membuat produk baru yang sederhana, ditautkan, dan dikelompokkan langsung dari aplikasi Woo. Belum siap? Simpan sebagai draf!</string>
     <string name="print_shipping_label_info_step_4">Anda mungkin perlu &lt;b&gt;mengonfigurasi pencetakan melalui WiFi langsung dari mesin cetak.&lt;/b&gt; Pastikan firmware mesin cetak sudah diperbarui dan lihat manual mesin cetak untuk mengetahui petunjuknya.</string>
     <string name="print_shipping_label_info_step_3">Anda dapat memilih &lt;b&gt;layanan cetak default&lt;/b&gt; perangkat atau pasang &lt;b&gt;aplikasi khusus mesin cetak&lt;/b&gt; Anda (ini akan muncul sebagai opsi yang disarankan)</string>
     <string name="print_shipping_label_info_step_1">Pastikan mesin cetak dan perangkat Anda terhubung ke &lt;b&gt;jaringan WiFi yang sama&lt;/b&gt;</string>
@@ -663,10 +749,10 @@ Language: id
     <string name="orderlist_loading">Mencari pesanan Anda…</string>
     <string name="product_detail_editable_text_hint">Masukkan teks</string>
     <string name="product_detail_title_hint">Masukkan Nama Produk</string>
-    <string name="product_detail_update_product_success">Produk diperbarui</string>
+    <string name="product_detail_save_product_success">Produk diperbarui</string>
     <string name="product_detail_update_product_error">Error saat memperbarui produk</string>
     <string name="product_update_dialog_message">Harap tunggu…</string>
-    <string name="product_update_dialog_title">Memperbarui produk</string>
+    <string name="product_save_dialog_title">Memperbarui produk</string>
     <string name="product_description_empty">Deskripsikan produk Anda</string>
     <string name="product_description">Deskripsi</string>
     <string name="product_edit_description">Sunting deskripsi</string>
@@ -679,7 +765,7 @@ Language: id
     <string name="order_refunds_select_quantity">Pilih jumlah</string>
     <string name="order_refunds_shipping_refund">Pengembalian dana pengiriman</string>
     <string name="order_refunds_products_refund">Pengembalian dana produk</string>
-    <string name="order_refunds_item_description">%s x %s masing-masing</string>
+    <string name="order_refunds_item_description">%s x %s tiap buah</string>
     <string name="order_refunds_items_selected">%d item terpilih</string>
     <string name="order_refunds_items_select_none">Tidak memilih</string>
     <string name="order_refunds_items_select_all">Pilih semua</string>
@@ -1153,7 +1239,6 @@ Language: id
     <string name="site_picker_title">Pilih toko</string>
     <string name="settings_signout">Logout</string>
     <string name="orderstatus_select_status">Ubah status pesanan</string>
-    <string name="order_status_changed_to">Status pesanan diubah menjadi %s</string>
     <string name="orderdetail_change_order_status">Klik untuk mengubah status pesanan</string>
     <string name="apply">Terapkan</string>
     <string name="app_rating_rate_never">Tidak, terima kasih</string>
@@ -1475,5 +1560,9 @@ Language: id
     <string-array name="order_list_tabs">
         <item>Dalam Proses</item>
         <item>Semua Pesanan</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Paket khusus</item>
+        <item>Paket layanan</item>
     </string-array>
 </resources>

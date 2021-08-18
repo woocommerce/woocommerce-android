@@ -86,7 +86,7 @@ class OrderNavigator @Inject constructor() {
             is PrintShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintShippingLabelFragment(
-                        target.remoteOrderId, target.shippingLabelId, isReprint = true
+                        target.remoteOrderId, longArrayOf(target.shippingLabelId), isReprint = true
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -122,13 +122,13 @@ class OrderNavigator @Inject constructor() {
                 val action = if (target.isReprint) {
                     OrderDetailFragmentDirections
                         .actionOrderDetailFragmentToPrintShippingLabelCustomsFormFragment(
-                            url = target.invoiceUrl,
+                            invoices = target.invoices.toTypedArray(),
                             isReprint = target.isReprint
                         )
                 } else {
                     PrintShippingLabelFragmentDirections
                         .actionPrintShippingLabelFragmentToPrintShippingLabelCustomsFormFragment(
-                            url = target.invoiceUrl,
+                            invoices = target.invoices.toTypedArray(),
                             isReprint = target.isReprint
                         )
                 }
@@ -141,7 +141,7 @@ class OrderNavigator @Inject constructor() {
             }
             is StartCardReaderConnectFlow -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCardReaderConnectDialog()
+                    .actionOrderDetailFragmentToCardReaderConnectDialog(target.skipOnboarding)
                 fragment.findNavController().navigateSafely(action)
             }
             is StartCardReaderPaymentFlow -> {

@@ -1,12 +1,13 @@
 package com.woocommerce.android.ui.products.variations
 
 import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doAnswer
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -58,6 +59,8 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         on { getString(any()) } doAnswer { answer -> answer.arguments[0].toString() }
     }
 
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
+
     private val savedState = VariationDetailFragmentArgs(
         TEST_VARIATION.remoteProductId,
         TEST_VARIATION.remoteVariationId
@@ -72,7 +75,8 @@ class VariationDetailViewModelTest : BaseUnitTest() {
             networkStatus = mock(),
             currencyFormatter = mock(),
             parameterRepository = parameterRepository,
-            resources = resourceProvider
+            resources = resourceProvider,
+            mediaFileUploadHandler = mediaFileUploadHandler
         )
     }
 

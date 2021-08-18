@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
@@ -109,19 +108,15 @@ class ShippingLabelPackagesAdapter(
                 onPackageSpinnerClicked(adapterPosition)
             }
 
-            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                binding.expandIcon.isVisible = false
-            } else {
-                binding.titleLayout.setOnClickListener {
-                    if (isExpanded) {
-                        binding.expandIcon.animate().rotation(0f).start()
-                        binding.detailsLayout.collapse()
-                        onExpandedChanged(adapterPosition, false)
-                    } else {
-                        binding.expandIcon.animate().rotation(180f).start()
-                        binding.detailsLayout.expand()
-                        onExpandedChanged(adapterPosition, true)
-                    }
+            binding.titleLayout.setOnClickListener {
+                if (isExpanded) {
+                    binding.expandIcon.animate().rotation(0f).start()
+                    binding.detailsLayout.collapse()
+                    onExpandedChanged(adapterPosition, false)
+                } else {
+                    binding.expandIcon.animate().rotation(180f).start()
+                    binding.detailsLayout.expand()
+                    onExpandedChanged(adapterPosition, true)
                 }
             }
         }
@@ -132,11 +127,14 @@ class ShippingLabelPackagesAdapter(
             val uiModel = uiModels[position]
             val shippingLabelPackage = uiModel.data
             binding.packageName.text = shippingLabelPackage.getTitle(context)
-            binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
-                R.plurals.shipping_label_package_details_items_count,
-                shippingLabelPackage.itemsCount,
-                shippingLabelPackage.itemsCount
+
+            binding.packageItemsCount.text = "- ${StringUtils.getQuantityString(
+                context = context,
+                quantity = shippingLabelPackage.itemsCount,
+                default = R.string.shipping_label_package_details_items_count_many,
+                one = R.string.shipping_label_package_details_items_count_one,
             )}"
+
             binding.errorView.isVisible = !uiModel.isValid
             with(binding.itemsList.adapter as PackageProductsAdapter) {
                 items = shippingLabelPackage.adaptItemsForUi()
@@ -244,15 +242,12 @@ class PackageProductsAdapter(
     inner class PackageProductViewHolder(
         val binding: ShippingLabelPackageProductListItemBinding
     ) : ViewHolder(binding.root) {
-        init {
-            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                binding.moveButton.isVisible = false
-            }
-        }
-
         fun bind(item: ShippingLabelPackage.Item) {
             binding.productName.text = item.name
-            val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
+            val attributes = item.attributesDescription
+                .takeIf { it.isNotEmpty() }
+                ?.let { "$it \u2981 " }
+                ?: StringUtils.EMPTY
             val details = "$attributes${item.weight} $weightUnit"
             if (details.isEmpty()) {
                 binding.productDetails.isVisible = false

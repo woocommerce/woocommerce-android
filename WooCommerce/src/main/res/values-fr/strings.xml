@@ -1,22 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-07 11:54:03+0000
+Translation-Revision-Date: 2021-08-04 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="settings_card_reader_payments">Paiements en personne</string>
+    <string name="card_reader_tutorial_charged_detail">La charge complète de votre Lecteur nécessite environ trois heures</string>
+    <string name="card_reader_tutorial_charged_label">Conservez votre Lecteur chargé</string>
+    <string name="card_reader_tutorial_reconnect_detail">Votre Lecteur se mettra en veille après 10 min sans activité. Appuyez simplement sur le bouton de mise en marche pour le reconnecter.</string>
+    <string name="card_reader_tutorial_reconnect_label">Reconnexion Automattic</string>
+    <string name="card_reader_tutorial_collect_detail">Pour percevoir un paiement, glissez ou appuyez une carte sur le Lecteur, ou insérez-la </string>
+    <string name="card_reader_tutorial_collect_label">Glissez, appuyez ou insérez une carte</string>
+    <string name="card_reader_tutorial_connected_detail">Bravo, vous pouvez désormais accepter les cartes de paiement !</string>
+    <string name="card_reader_tutorial_connected_label">Lecteur connecté</string>
+    <string name="card_reader_onboarding_contact_support">Besoin d’aide ? &lt;a href=\'\'&gt;Contacter l’assistance&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements avec votre appareil mobile et la commande de lecteurs de carte</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Les paiements en personne ne sont pas disponibles en Mode test. Veuillez le désactiver pour continuer.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Votre compte comporte des prérequis en attente. Veuillez compléter ces prérequis avant le %1$s afin de continuer à accepter des paiements en personne.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Votre compte WooCommerce Payments comporte des prérequis en attente.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Votre compte comporte au moins un prérequis en attente. Veuillez y remédier afin de reprendre les paiements en personne.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Vous pourrez accepter des paiements en personne dès que nous aurons passé votre compte en revue.</string>
+    <string name="card_reader_onboarding_account_under_review_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
+    <string name="card_reader_onboarding_account_rejected_hint">Malheureusement, nous ne pouvons pas prendre en charge les paiements en personne pour cette boutique.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Les paiements en personne ne sont pas disponibles pour cette boutique.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Rafraîchir après la mise à jour</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">La version de l’extension WooCommerce Payments installée sur votre boutique est obsolète. Veuillez mettre à jour afin d’accepter les paiements en personne.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Mettre à jour WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Actualiser</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Vous y êtes presque ! Veuillez finir de configurer WooCommerce Payments afin de commencer à accepter les paiements par carte en personne.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Finir de configurer WooCommerce Payments dans la page d’administration de la boutique</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Rafraîchir après l’activation</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">L’extension WooCommerce Payments est installée sur votre boutique, mais elle n’est pas activée. Veuillez l’activer afin d’accepter les paiements en personne.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Activer WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Rafraîchir après l’installation</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Vous devrez installer l’extension gratuite WooCommerce Payments sur votre boutique afin d’accepter les paiements en personne.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Installer WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements avec votre appareil mobile et la commande de lecteurs de carte</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Besoin d’aide ? &lt;a href=\'\'&gt;Contacter l’assistance&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Vous pouvez toujours accepter des paiements en personne en activant le moyen de paiement « Paiement à la livraison » dans votre boutique.</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Nous ne prenons pas en charge les paiements en personne dans le pays suivant : %1$s</string>
+    <string name="card_reader_onboarding_loading">Connexion à votre compte</string>
+    <string name="card_reader_onboarding_title">Paiements en personne</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Veuillez vérifier les dimensions et le poids de votre colis, ou essayez d’utiliser un autre colis dans Détails du colis.</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Aucun tarif d’expédition disponible</string>
+    <string name="shipping_label_activate_service_package_empty_title">Tous les colis disponibles ont été activés.</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Activer le colis</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Sélectionner un colis à activer.</string>
+    <string name="error_required_field">Champ obligatoire</string>
+    <string name="close">Fermer</string>
+    <string name="variation_created_title">Variante créée</string>
+    <string name="variation_list_generate_new_variation">Générer une nouvelle variante</string>
+    <string name="product_wip_message_variations">Vous pouvez désormais créer et gérer des variantes de produit !</string>
+    <string name="product_attributes_created_generate_action_text">Générer une variante</string>
+    <string name="product_attributes_created_description">Maintenant que vous avez ajouté des attributs, vous pouvez créer votre première variante !</string>
+    <string name="product_attributes_created_title">Attributs créés</string>
+    <string name="card_reader_software_update_progress_cancel_warning">Il n’est pas recommandé d’annuler une mise à jour logicielle en cours</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">Désolé, impossible de traiter ce paiement</string>
+    <string name="card_reader_payment_failed_server_error_state">Aucune connexion au serveur</string>
+    <string name="card_reader_payment_failed_no_network_state">Aucune connexion internet.</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">Livrer dans l\'emballage d\'origine</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">Ajouter au nouveau colis</string>
+    <string name="shipping_label_move_item_dialog_description">Cet élément est actuellement dans %s. Où souhaitez-vous le déplacer ?</string>
+    <string name="shipping_label_move_item_dialog_cancel">Annuler</string>
+    <string name="shipping_label_move_item_dialog_move">Déplacer</string>
+    <string name="shipping_label_move_item_dialog_title">Déplacer l\'élément</string>
+    <string name="shipping_label_create_custom_package_success_message">« %1$s » enregistré</string>
+    <string name="shipping_label_create_custom_package_generic_failure">Échec de création du colis. Veuillez réessayer.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">Échec de création du colis : problème d’API inconnue.</string>
+    <string name="shipping_label_create_custom_package_api_failure">Échec de création du colis : %1$s</string>
+    <string name="shipping_label_create_package_saving_progress_message">Veuillez patienter…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">Création d’un nouveau colis</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">Valeur non valide.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">Champ obligatoire.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">Poids du colis vide</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">Poids du colis vide (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">Hauteur (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">Largeur (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">Longueur (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">Nom du colis</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">Enveloppe</string>
+    <string name="shipping_label_create_custom_package_field_type_box">Boîte</string>
+    <string name="shipping_label_create_custom_package_field_type_info">Choisir un type de colis</string>
+    <string name="shipping_label_create_custom_package_field_type">Type de colis</string>
+    <string name="shipping_label_create_package_field_info">Définissez le colis que vous utiliserez pour expédier vos produits. Nous l’enregistrerons pour vos commandes à venir.</string>
+    <string name="shipping_label_create_package_title">Ajouter un nouveau colis</string>
+    <string name="shipping_label_create_new_package_button">Créer un nouveau colis</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">Les dimensions du colis doivent être supérieures à zéro. Veuillez mettre à jour les dimensions de votre article dans la section Expédition de la page de votre produit pour continuer.</string>
+    <string name="shipping_label_package_details_individual_package_title">Emballage d’origine</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">Dimensions de l\'élément</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">Élément livré individuellement</string>
+    <string name="order_status_updated">État de la commande mis à jour</string>
+    <string name="receipt_preview_send_menu_item">Envoyer</string>
+    <string name="receipt_preview_print_menu_item">Imprimer</string>
+    <string name="orderdetail_see_receipt_button">Voir le reçu</string>
+    <string name="cancel_anyway">Annuler quand même</string>
     <string name="card_reader_detail_connected_update_failed">La mise à jour du logiciel du lecteur a échoué</string>
     <string name="card_reader_detail_connected_update_check_failed">La vérification de la mise à jour de la version du logiciel a échoué</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements mobiles et la commande de lecteurs de carte</string>
     <string name="card_reader_connect_open_bluetooth_settings">Activer le Bluetooth</string>
-    <string name="card_reader_connect_scanning_failed_header">Aucun lecteur trouvé</string>
+    <string name="card_reader_connect_scanning_failed_header">Aucun lecteur connecté</string>
     <string name="card_reader_connect_failed_header">Nous n’avons pas pu connecter votre lecteur</string>
     <string name="card_reader_connect_connect_button">Connecter</string>
     <string name="card_reader_connect_multiple_readers_found_header">Plusieurs lecteurs trouvés</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">La commande est déjà payée</string>
     <string name="card_reader_payment_receipt_email_content">Merci pour votre achat ! Cliquez sur le lien ci-dessous pour votre reçu de paiement.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">Échec du paiement</string>
     <string name="card_reader_payment_failed_card_declined_state">Carte refusée</string>
     <string name="shipping_label_print_customs_form_download_failed">Erreur lors du téléchargement du formulaire douanier</string>
     <string name="shipping_label_print_customs_form_screen_title">Imprimer la facture de douane</string>
@@ -53,7 +144,6 @@ Language: fr
     <string name="product_create_attribute_helper">Pour créer une variante, vous devez d’abord définir ses attributs (« Couleur », « Taille »)</string>
     <string name="product_variation_single_count">1 variante</string>
     <string name="product_variation_multiple_count">%1$s variantes</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">Suivi de %s</string>
     <string name="card_reader_software_update_in_progress_title">Mise à jour du logiciel de votre lecteur</string>
     <string name="card_reader_software_update_title">Mise à jour du logiciel</string>
     <string name="card_reader_software_update_description">Le logiciel de votre lecteur de carte doit être mis à jour pour continuer à fonctionner parfaitement. Voulez-vous le mettre à jour maintenant ?</string>
@@ -194,7 +284,6 @@ Language: fr
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Lors de l’achat d’étiquettes d’expédition avec WooCommerce, vous bénéficiez de 5 à 40 % de réduction par rapport aux tarifs de la Poste.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Qu’est-ce que la remise WooCommerce  Services ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Une erreur est survenue lors du chargement des options de livraison</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">Il n’y a pas d’options de livraison pour l’adresse et les colis sélectionnés</string>
     <string name="shipping_label_shipping_carriers_title">Transporteurs et frais de port</string>
     <string name="shipping_label_create_purchase">Acheter une étiquette d’expédition</string>
     <string name="shipping_label_create_mark_order_complete">Marquer cette commande comme terminée et informer le client</string>
@@ -232,7 +321,7 @@ Language: fr
     <string name="product_add_attribute">Ajouter un attribut</string>
     <string name="product_variation_attributes">Attributs</string>
     <string name="product_variations_edit_attr">Modifier les attributs</string>
-    <string name="shipping_label_multi_packages_total_weight">Poids total du colis : %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">Poids total des colis : %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d articles dans %2$d colis</string>
     <string name="shipping_label_single_package_total_weight">Poids total du colis : %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Colis personnalisés</string>
@@ -257,11 +346,9 @@ Language: fr
     <string name="shipping_label_address_suggestion_use_selected_address">Utiliser l\'adresse sélectionnée</string>
     <string name="shipping_label_edit_address_loading_progress_title">Données d’adresse en cours de chargement</string>
     <string name="product_wip_title_m5">Nouvelles fonctionnalités disponibles !</string>
-    <string name="product_wip_message_m5">Vous pouvez désormais ajouter des fichiers téléchargeables à un produit et associer des produits suggérés et des ventes croisées. Vous ne voulez plus d’un produit ? Déplacez-le vers la corbeille !</string>
     <string name="shipping_label_validation_view_map">Ouvrir une carte</string>
     <string name="shipping_label_validation_contact_customer">Contacter le client</string>
     <string name="shipping_label_validation_error_template">Échec de la validation : %s</string>
-    <string name="shipping_label_error_required_field">Champ obligatoire</string>
     <string name="shipping_label_error_address_invalid_street">Rue non valide</string>
     <string name="shipping_label_error_address_house_number_missing">Numéro de maison manquant</string>
     <string name="shipping_label_error_address_not_found">Adresse introuvable</string>
@@ -341,7 +428,6 @@ Language: fr
     <string name="product_downloadable_files_add">Ajouter un fichier</string>
     <string name="product_downloadable_files_value_single">1 fichier</string>
     <string name="product_downloadable_files_value_multiple">%1$d fichiers</string>
-    <string name="product_wip_message_m4">Il est désormais possible de créer à la volée de nouveaux produits simples, liés et groupés, à partir de l’application Woo. Vous n’êtes pas encore prêt ? Enregistrez-les comme brouillon !</string>
     <string name="print_shipping_label_info_step_4">Il se peut que vous deviez &lt;b&gt;configurer l’impression Wi-Fi directement depuis l’imprimante.&lt;/b&gt; Assurez-vous que le micrologiciel de l’imprimante est mis à jour et consultez la documentation de votre imprimante pour obtenir des instructions.</string>
     <string name="print_shipping_label_info_step_3">Vous pouvez sélectionner le &lt;b&gt;service d’impression par défaut&lt;/b&gt; de votre appareil ou installer l’&lt;b&gt;application de la marque de votre imprimante&lt;/b&gt; (celle-ci devrait s’afficher comme option recommandée)</string>
     <string name="print_shipping_label_info_step_1">Vérifiez que votre imprimante et votre appareil sont connectés au &lt;b&gt;même réseau Wi-Fi&lt;/b&gt;</string>
@@ -663,10 +749,10 @@ Language: fr
     <string name="orderlist_loading">Recherche dans vos commandes…</string>
     <string name="product_detail_editable_text_hint">Saisissez du texte</string>
     <string name="product_detail_title_hint">Entrer le nom du produit</string>
-    <string name="product_detail_update_product_success">Produit mis à jour</string>
+    <string name="product_detail_save_product_success">Produit mis à jour</string>
     <string name="product_detail_update_product_error">Erreur lors de la mise à jour du produit</string>
     <string name="product_update_dialog_message">Veuillez patienter…</string>
-    <string name="product_update_dialog_title">Mise à jour du produit</string>
+    <string name="product_save_dialog_title">Mise à jour du produit</string>
     <string name="product_description_empty">Décrivez votre produit</string>
     <string name="product_description">Description</string>
     <string name="product_edit_description">Modifier la description</string>
@@ -1153,7 +1239,6 @@ Language: fr
     <string name="site_picker_title">Sélectionner la boutique</string>
     <string name="settings_signout">Se déconnecter</string>
     <string name="orderstatus_select_status">Modifier l\'état des commandes</string>
-    <string name="order_status_changed_to">État des commandes basculé sur %s</string>
     <string name="orderdetail_change_order_status">Cliquer pour modifier l\'état des commandes</string>
     <string name="apply">Appliquer</string>
     <string name="app_rating_rate_never">Non merci</string>
@@ -1475,5 +1560,9 @@ Language: fr
     <string-array name="order_list_tabs">
         <item>En cours</item>
         <item>Toutes les commandes</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>Colis personnalisé</item>
+        <item>Ensemble de services</item>
     </string-array>
 </resources>

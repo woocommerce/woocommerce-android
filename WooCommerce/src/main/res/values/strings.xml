@@ -107,6 +107,7 @@
     <string name="type">Type</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
+    <string name="save">Save</string>
     <string name="skip">Skip</string>
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
@@ -388,11 +389,14 @@
     <string name="shipping_label_paper_size">Paper size</string>
     <string name="shipping_label_paper_size_options_title">Choose paper size</string>
     <string name="shipping_label_print_button">Print shipping label</string>
+    <string name="shipping_label_print_multiple_button">Print shipping labels</string>
     <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
     <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
     <string name="shipping_label_print_purchase_success">Shipping label purchased!</string>
+    <string name="shipping_label_print_multiple_purchase_success">Shipping labels purchased!</string>
     <string name="shipping_label_print_save_for_later">Save for later</string>
     <string name="shipping_label_print_screen_title">Print shipping label</string>
+    <string name="shipping_label_print_multiple_screen_title">Print shipping labels</string>
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
@@ -458,9 +462,10 @@
     <string name="shipping_label_edit_address_name">Name</string>
     <string name="shipping_label_edit_address_company">Company</string>
     <string name="shipping_label_edit_address_phone">Phone</string>
-    <string name="shipping_label_edit_address_address">Address</string>
+    <string name="shipping_label_edit_address_line1">Address line 1</string>
+    <string name="shipping_label_edit_address_line2">Address line 2</string>
     <string name="shipping_label_edit_address_city">City</string>
-    <string name="shipping_label_edit_address_state">State</string>
+    <string name="shipping_label_edit_address_state">State / County</string>
     <string name="shipping_label_edit_address_zip">Zip / Postal Code</string>
     <string name="shipping_label_edit_address_country">Country</string>
     <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
@@ -469,13 +474,14 @@
     <string name="shipping_label_edit_address_loading_progress_title">Loading address data</string>
     <string name="shipping_label_edit_address_progress_message">Please wait…</string>
     <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
+    <string name="shipping_label_edit_origin_address_error_warning">We were unable to automatically verify the origin address. View it on Google Maps to make sure the address is correct.</string>
     <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View it on Google Maps or try contacting the customer to make sure the address is correct.</string>
     <string name="shipping_label_error_address_not_found">Address was not found</string>
     <string name="shipping_label_error_address_house_number_missing">House number missing</string>
     <string name="shipping_label_error_address_invalid_street">Invalid street</string>
-    <string name="shipping_label_validation_error_template">Validation failed: %s</string>
+    <string name="shipping_label_validation_error_template">We were unable to automatically verify the shipping address: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
-    <string name="shipping_label_validation_view_map">Open Map</string>
+    <string name="shipping_label_validation_view_map">Find on Map</string>
     <string name="shipping_label_address_suggestion_use_selected_address">Use selected address</string>
     <string name="shipping_label_address_suggestion_edit_selected_address">Edit selected address</string>
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
@@ -492,10 +498,8 @@
     <string name="shipping_label_package_details_weight_hint">Total package weight (%1$s)</string>
     <string name="shipping_label_package_details_weight_info">Includes package weight</string>
     <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
-    <plurals name="shipping_label_package_details_items_count">
-        <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
-    </plurals>
+    <string name="shipping_label_package_details_items_count_one">%d item</string>
+    <string name="shipping_label_package_details_items_count_many">%d items</string>
     <string name="shipping_label_package_details_individual_package_subtitle">Individually Shipped Item</string>
     <string name="shipping_label_package_details_individual_package_dimensions">Item Dimensions</string>
     <string name="shipping_label_package_details_individual_package_title">Original packaging</string>
@@ -520,7 +524,7 @@
         <item>Service package</item>
     </string-array>
     <string name="shipping_label_create_package_title">Add new package</string>
-    <string name="shipping_label_create_custom_package_field_info">Set up the package you\'ll be using to ship your products. We\'ll save it for future orders.</string>
+    <string name="shipping_label_create_package_field_info">Set up the package you\'ll be using to ship your products. We\'ll save it for future orders.</string>
     <string name="shipping_label_create_custom_package_field_type">Package type</string>
     <string name="shipping_label_create_custom_package_field_type_info">Choose package type</string>
     <string name="shipping_label_create_custom_package_field_type_box">Box</string>
@@ -534,11 +538,14 @@
     <string name="shipping_label_create_custom_package_field_empty_hint">This field is required.</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Invalid value.</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Creating new package</string>
-    <string name="shipping_label_create_custom_package_saving_progress_message">Please wait…</string>
+    <string name="shipping_label_create_package_saving_progress_message">Please wait…</string>
     <string name="shipping_label_create_custom_package_api_failure">Package creation failed: %1$s</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Package creation failed: unknown API issue.</string>
     <string name="shipping_label_create_custom_package_generic_failure">Package creation failed. Please try again.</string>
     <string name="shipping_label_create_custom_package_success_message">\"%1$s\" saved</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Select a package to activate.</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Activating package</string>
+    <string name="shipping_label_activate_service_package_empty_title">All available packages have been activated</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
     <string name="shipping_label_payments_add_first_credit_card">Add a credit card</string>
@@ -553,10 +560,8 @@
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_title">No shipping rates available</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Please double check your package dimensions and weight or try using a different package in Package Details</string>
-    <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
-        <item quantity="one">%d business day</item>
-        <item quantity="other">%d business days</item>
-    </plurals>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d business day</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d business days</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates.</string>
@@ -565,7 +570,7 @@
     <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
     <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s tracking</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">USPS tracking</string>
     <string name="shipping_label_rate_included_options_tracking">tracking</string>
     <string name="shipping_label_rate_insurance_up_to">up to %s</string>
     <string name="shipping_label_rate_included_options_insurance">Insurance (%s)</string>
@@ -610,6 +615,7 @@
     <string name="shipping_label_customs_form">Customs form</string>
     <string name="shipping_label_print_customs_explanation">A customs form must be printed and included on this international shipment</string>
     <string name="shipping_label_print_customs_form">Print customs form</string>
+    <string name="shipping_label_multiple_customs_form_print_button">Print</string>
     <string name="shipping_label_print_customs_form_screen_title">Print customs invoice</string>
     <string name="shipping_label_print_customs_form_download_failed">Error downloading the customs form</string>
     <string name="shipping_label_move_item_dialog_title">Move item</string>
@@ -654,10 +660,8 @@
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
-    <plurals name="order_refunds_refund_info_description">
-        <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
-    </plurals>
+    <string name="order_refunds_refund_info_description_one">%d item</string>
+    <string name="order_refunds_refund_info_description_many">%d items</string>
     <string name="order_refunds_refund_info_title">Refunded products</string>
     <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
@@ -722,6 +726,11 @@
     <string name="order_shipment_tracking_progress_message">Please wait</string>
 
     <!--
+            Card Reader Hub
+        -->
+    <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <!--
         Card Reader Payments
     -->
     <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
@@ -755,6 +764,7 @@
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
+    <string name="card_reader_payment_save_for_later">Save for later</string>
 
     <string name="card_reader_payment_description">Online payment for order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
@@ -796,6 +806,7 @@
 
     <string name="card_reader_detail_connected_header">CONNECTED READER</string>
     <string name="card_reader_detail_connected_battery_percentage">%s%% battery</string>
+    <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
     <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
     <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
     <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
@@ -816,6 +827,55 @@
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
     <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+
+    <!--
+        Card Reader Onboarding
+    -->
+    <string name="card_reader_onboarding_title">In-Person Payments</string>
+    <string name="card_reader_onboarding_loading">Connecting to your account</string>
+
+    <string name="card_reader_onboarding_country_not_supported_header">We don\'t support In-Person Payments in %1$s</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">You can still accept In-Person Cash Payments by enabling the \"cash on delivery\" payment method on your store</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">You\’ll need to install the free WooCommerce Payments extension on your store to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Refresh after installing</string>
+
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Activate WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">The WooCommerce Payments extension is installed on your store but not activated. Please activate it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Refresh after activating</string>
+
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
+
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
+
+    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
+    <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
+
+    <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
+    <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
+
+    <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments</string>
+
+    <string name="card_reader_onboarding_account_pending_requirements_header">Your WooCommerce Payments account has pending requirements</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_dismiss_button" translatable="false">@string/dismiss</string>
+
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">In-Person Payments isn\’t available in Test Mode. Please turn it off to continue.</string>
+
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+    <string name="card_reader_onboarding_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
+
+    <string name="card_reader_onboarding_generic_error_header">Unable to verify In-Person Payments for this store</string>
+    <string name="card_reader_onboarding_generic_error_hint">We\'re sorry, we were unable to verify In-Person Payments for this store</string>
 
     <!--
         Card reader tutorial
@@ -980,11 +1040,11 @@
     <string name="product_description_empty">Describe your product</string>
     <string name="product_short_description">Short description</string>
     <string name="product_short_description_empty">Brief summary about the product</string>
-    <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_save_dialog_title">Saving your product</string>
     <string name="product_delete_dialog_title">Deleting product</string>
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
-    <string name="product_detail_update_product_success">Product updated</string>
+    <string name="product_detail_save_product_success">Product saved</string>
     <string name="product_detail_update_product_password_error">Error updating password</string>
     <string name="product_detail_title_hint">Enter Product Title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
@@ -1004,6 +1064,7 @@
     <string name="product_trash_yes">Move to trash</string>
     <string name="product_trash_undo_snackbar_message">Product moved to trash</string>
     <string name="product_trash_error">Error trashing product</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about uploading images</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>
@@ -1069,19 +1130,14 @@
     <string name="edit_products_button">Edit products</string>
     <string name="empty_product_add_product_button">Add product</string>
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
-
-    <plurals name="product_count">
-        <item quantity="one">%d product</item>
-        <item quantity="other">%d products</item>
-    </plurals>
-    <plurals name="cross_sell_product_count">
-        <item quantity="one">%d cross-sell product</item>
-        <item quantity="other">%d cross-sell products</item>
-    </plurals>
-    <plurals name="upsell_product_count">
-        <item quantity="one">%d upsell product</item>
-        <item quantity="other">%d upsell products</item>
-    </plurals>
+    <string name="product_add_ons_card_button_title">Product Add-ons</string>
+    <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
+    <string name="product_count_one">%d product</string>
+    <string name="product_count_many">%d products</string>
+    <string name="cross_sell_product_count_one">%d cross-sell product</string>
+    <string name="cross_sell_product_count_many">%d cross-sell products</string>
+    <string name="upsell_product_count_one">%d upsell product</string>
+    <string name="upsell_product_count_many">%d upsell products</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -1134,7 +1190,10 @@
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
     <string name="product_images_validate_drag_and_drop">Validate</string>
-
+    <string name="product_image_service_error_media_null">Media could not be found</string>
+    <string name="product_image_service_error_uploading_single">%d file couldn\'t be uploaded</string>
+    <string name="product_image_service_error_uploading_multiple">%d files couldn\'t be uploaded</string>
+    <string name="product_images_error_detail_title">Upload details (%d)</string>
 
     <!--
         Empty list messages
@@ -1180,7 +1239,7 @@
     <string name="settings_selected_store">Selected store</string>
     <string name="settings_store">Store settings</string>
     <string name="settings_card_reader">Manage card reader</string>
-    <string name="settings_card_reader_payments">In-person payments</string>
+    <string name="settings_card_reader_payments">In-Person Payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
@@ -1230,6 +1289,8 @@
     <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
     <string name="support_my_tickets">My tickets</string>
     <string name="support_my_tickets_detail">View previously submitted support tickets</string>
+    <string name="support_contact_payments">Contact Payments Support</string>
+    <string name="support_contact_payments_detail">Reach our happiness engineers who can help answer payments related questions</string>
     <string name="support_application_log">Application log</string>
     <string name="support_application_log_detail">Advanced tool to review the app status</string>
     <string name="help">Help</string>

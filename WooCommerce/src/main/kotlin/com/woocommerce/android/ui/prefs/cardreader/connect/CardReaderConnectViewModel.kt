@@ -11,12 +11,12 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.CardReader
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
+import com.woocommerce.android.cardreader.connection.CardReader
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -41,13 +41,17 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -59,7 +63,9 @@ class CardReaderConnectViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val tracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
+    private val onboardingChecker: CardReaderOnboardingChecker,
 ) : ScopedViewModel(savedState) {
+    private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
      * When multiple events are send synchronously to MultiLiveEvent only the first one gets handled
@@ -86,7 +92,26 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun startFlow() {
         viewState.value = ScanningState(::onCancelClicked)
-        triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+        if (arguments.skipOnboarding) {
+            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+        } else {
+            checkOnboardingState()
+        }
+    }
+
+    private fun checkOnboardingState() {
+        launch {
+            when (onboardingChecker.getOnboardingState()) {
+                is CardReaderOnboardingState.GenericError,
+                is CardReaderOnboardingState.NoConnectionError -> {
+                    viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
+                }
+                is CardReaderOnboardingState.OnboardingCompleted -> {
+                    triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+                }
+                else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
+            }
+        }
     }
 
     private fun onCheckLocationPermissionsResult(granted: Boolean) {
@@ -164,7 +189,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private suspend fun startScanning() {
         cardReaderManager
             .discoverReaders(isSimulated = BuildConfig.USE_SIMULATED_READER)
-            // TODO cardreader should we move flowOn to CardReaderModule?
             .flowOn(dispatchers.io)
             .collect { discoveryEvent ->
                 handleScanEvent(discoveryEvent)
@@ -293,7 +317,12 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     fun onTutorialClosed() {
-        exitFlow(connected = true)
+        launch {
+            // this workaround needs to be here since the navigation component hasn't finished the previous
+            // transaction when a result is received
+            delay(1)
+            exitFlow(connected = true)
+        }
     }
 
     private fun exitFlow(connected: Boolean) {
@@ -335,6 +364,8 @@ class CardReaderConnectViewModel @Inject constructor(
         data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
 
         object ShowCardReaderTutorial : CardReaderConnectEvent()
+
+        object NavigateToOnboardingFlow : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")
@@ -448,7 +479,9 @@ class CardReaderConnectViewModel @Inject constructor(
     sealed class ListItemViewState {
         object ScanningInProgressListItem : ListItemViewState() {
             val label = UiStringRes(R.string.card_reader_connect_scanning_progress)
-            @DrawableRes val scanningIcon = R.drawable.ic_loop_24px
+
+            @DrawableRes
+            val scanningIcon = R.drawable.ic_loop_24px
         }
 
         data class CardReaderListItem(

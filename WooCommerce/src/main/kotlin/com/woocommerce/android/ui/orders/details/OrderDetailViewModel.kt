@@ -1,13 +1,12 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.Callback
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -15,13 +14,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_COLL
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -48,8 +46,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.DIALOG
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource.FULFILL_SCREEN
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -65,18 +62,21 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
 class OrderDetailViewModel @Inject constructor(
+    private val dispatcher: Dispatcher,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
@@ -138,7 +138,7 @@ class OrderDetailViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         orderDetailRepository.onCleanup()
-        EventBus.getDefault().unregister(this)
+        dispatcher.unregister(this)
     }
 
     init {
@@ -146,7 +146,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     final fun start() {
-        EventBus.getDefault().register(this)
+        dispatcher.register(this)
 
         val orderInDb = orderDetailRepository.getOrder(navArgs.orderId)
         val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
@@ -237,12 +237,15 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
         AnalyticsTracker.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
-        // TODO cardreader add tests for this functionality
         if (cardReaderManager.readerStatus.value is Connected) {
             triggerEvent(StartCardReaderPaymentFlow(order.identifier))
         } else {
-            triggerEvent(StartCardReaderConnectFlow)
+            triggerEvent(StartCardReaderConnectFlow(skipOnboarding = false))
         }
+    }
+
+    fun onOnboardingSuccess() {
+        triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
     }
 
     fun onSeeReceiptClicked() {
@@ -262,7 +265,6 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
-        // TODO cardreader add tests for this functionality
         launch {
             // this dummy delay needs to be here since the navigation component hasn't finished the previous
             // transaction when a result is received
@@ -291,7 +293,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
         shippingLabel.commercialInvoiceUrl?.let {
-            triggerEvent(ViewPrintCustomsForm(it, isReprint = true))
+            triggerEvent(ViewPrintCustomsForm(listOf(it), isReprint = true))
         }
     }
 
@@ -341,47 +343,31 @@ class OrderDetailViewModel @Inject constructor(
         launch { fetchOrder(false) }
     }
 
-    fun onOrderStatusChanged(newStatus: String, updateSource: OrderStatusUpdateSource) {
+    fun onOrderStatusChanged(updateSource: OrderStatusUpdateSource) {
         AnalyticsTracker.track(
             Stat.ORDER_STATUS_CHANGE,
             mapOf(
                 AnalyticsTracker.KEY_ID to order.remoteId,
                 AnalyticsTracker.KEY_FROM to order.status.value,
-                AnalyticsTracker.KEY_TO to newStatus
+                AnalyticsTracker.KEY_TO to updateSource.newStatus
             )
         )
 
-        val message = when (updateSource) {
-            FULFILL_SCREEN -> {
-                resourceProvider.getString(string.order_fulfill_completed)
-            }
-            DIALOG -> {
-                resourceProvider.getString(string.order_status_updated)
-            }
+        val snackbarMessage = when (updateSource) {
+            is OrderStatusUpdateSource.Dialog -> R.string.order_status_updated
+            is OrderStatusUpdateSource.FullFillScreen -> R.string.order_fulfill_completed
         }
 
-        // display undo snackbar
         triggerEvent(
             ShowUndoSnackbar(
-                message = message,
-                undoAction = { onOrderStatusChangeReverted() },
-                dismissAction = object : Callback() {
-                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                        super.onDismissed(transientBottomBar, event)
-                        if (event != DISMISS_EVENT_ACTION) {
-                            // update the order only if user has not clicked on the undo snackbar
-                            updateOrderStatus(newStatus)
-                        }
-                    }
-                }
+                message = resourceProvider.getString(snackbarMessage),
+                undoAction = {
+                    updateOrderStatus(updateSource.oldStatus)
+                },
             )
         )
 
-        // change the order status
-        val newOrderStatus = orderDetailRepository.getOrderStatus(newStatus)
-        viewState = viewState.copy(
-            orderStatus = newOrderStatus
-        )
+        updateOrderStatus(updateSource.newStatus)
     }
 
     fun onNewOrderNoteAdded(orderNote: OrderNote) {
@@ -443,26 +429,17 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    @VisibleForTesting
-    fun updateOrderStatus(newStatus: String) {
+    private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
-                    order = order.copy(status = Status.fromValue(newStatus))
-                } else {
-                    onOrderStatusChangeReverted()
-                    triggerEvent(ShowSnackbar(string.order_error_update_general))
-                }
+                orderDetailRepository.updateOrderStatus(order.toDataModel(), newStatus)
+                    .let { it as? ContinuationWrapper.ContinuationResult.Success }
+                    ?.takeIf { it.value.not() }
+                    ?.let { triggerEvent(ShowSnackbar(string.order_error_update_general)) }
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
-    }
-
-    fun onOrderStatusChangeReverted() {
-        viewState = viewState.copy(
-            orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
-        )
     }
 
     fun onShippingLabelNoticeTapped() {
@@ -599,7 +576,22 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
-            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
+            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
+            viewState.orderInfo?.isPaymentCollectableWithCardReader != true
+
+        if (isOrderEligibleForSLCreation &&
+            viewState.isCreateShippingLabelButtonVisible != true &&
+            viewState.isProductListMenuVisible != true
+        ) {
+            // we check against the viewstate to avoid sending the event multiple times
+            // if the eligibility was cached, and we had the same value after re-fetching it
+            AnalyticsTracker.track(
+                stat = Stat.SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
+                properties = mapOf(
+                    "order_status" to order.status.value
+                )
+            )
+        }
 
         viewState = viewState.copy(
             isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,
@@ -614,6 +606,14 @@ class OrderDetailViewModel @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductImageChanged(event: OnProductImageChanged) {
         viewState = viewState.copy(refreshedProductId = event.remoteProductId)
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onOrderChanged(event: WCOrderStore.OnOrderChanged) {
+        if (event.causeOfChange == WCOrderAction.UPDATED_ORDER_STATUS) {
+            reloadOrderDetails()
+        }
     }
 
     fun onCardReaderPaymentCompleted() {
@@ -648,9 +648,6 @@ class OrderDetailViewModel @Inject constructor(
 
         val isCreateShippingLabelBannerVisible: Boolean
             get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
-
-        val isReprintShippingLabelBannerVisible: Boolean
-            get() = !isCreateShippingLabelBannerVisible && areShippingLabelsVisible == true
     }
 
     @Parcelize
@@ -660,9 +657,19 @@ class OrderDetailViewModel @Inject constructor(
         val isReceiptButtonsVisible: Boolean = false
     ) : Parcelable
 
-    data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+    sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {
+        @Parcelize
+        data class FullFillScreen(override val oldStatus: String) : OrderStatusUpdateSource(
+            oldStatus = oldStatus,
+            newStatus = CoreOrderStatus.COMPLETED.value
+        )
 
-    enum class OrderStatusUpdateSource {
-        FULFILL_SCREEN, DIALOG
+        @Parcelize
+        data class Dialog(
+            override val oldStatus: String,
+            override val newStatus: String
+        ) : OrderStatusUpdateSource(oldStatus, newStatus)
     }
+
+    data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }

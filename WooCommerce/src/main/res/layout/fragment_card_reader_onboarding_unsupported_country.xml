@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/unsupported_country_header"
+        style="@style/TextAppearance.Woo.Headline6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_illustration"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="@string/card_reader_onboarding_country_not_supported_header" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/unsupported_country_illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_275"
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_hint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/unsupported_country_header"
+        tools:src="@drawable/img_card_reader_connecting" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/unsupported_country_hint"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_275"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_help"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/unsupported_country_illustration"
+        tools:text="@string/card_reader_onboarding_country_not_supported_hint" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/unsupported_country_help"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:paddingVertical="@dimen/major_100"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@id/unsupported_country_learn_more_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/unsupported_country_hint"
+        tools:text="@string/card_reader_onboarding_country_not_supported_contact_support" />
+
+    <include
+        android:id="@+id/unsupported_country_learn_more_container"
+        layout="@layout/card_reader_learn_more_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_350"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

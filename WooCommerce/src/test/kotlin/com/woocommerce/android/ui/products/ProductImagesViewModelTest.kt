@@ -1,15 +1,17 @@
 package com.woocommerce.android.ui.products
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductImagesList
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
@@ -22,6 +24,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     lateinit var viewModel: ProductImagesViewModel
 
     private val networkStatus: NetworkStatus = mock()
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
 
@@ -37,6 +40,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel = ProductImagesViewModel(
             networkStatus,
             productImagesServiceWrapper,
+            mediaFileUploadHandler,
             savedState(productImages)
         ).apply {
             viewStateData.observeForever { _, _ -> }
@@ -62,7 +66,20 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel.onNavigateBackButtonClicked()
 
         observeEvents { event ->
-            assertThat(event).isEqualTo(ExitWithResult(images))
+            assertThat(event).isEqualTo(Exit)
+        }
+    }
+
+    @Test
+    fun `Trigger exitWithResult event on back button clicked when in browsing state`() {
+        initialize()
+
+        val images = generateProductImagesList()
+        viewModel.onDeleteImageConfirmed(images[0])
+        viewModel.onNavigateBackButtonClicked()
+
+        observeEvents { event ->
+            assertThat(event).isEqualTo(ExitWithResult(images - images[0]))
         }
     }
 

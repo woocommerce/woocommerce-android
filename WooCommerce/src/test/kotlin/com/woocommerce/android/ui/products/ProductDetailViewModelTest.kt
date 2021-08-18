@@ -1,15 +1,15 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.clearInvocations
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -19,6 +19,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -78,6 +79,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private val savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).initSavedStateHandle()
@@ -225,6 +227,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 productTagsRepository,
                 mediaFilesRepository,
                 variationRepository,
+                mediaFileUploadHandler,
                 prefs
             )
         )
@@ -425,7 +428,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var successSnackbarShown = false
         viewModel.event.observeForever {
-            if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
+            if (it is ShowSnackbar && it.message == R.string.product_detail_save_product_success) {
                 successSnackbarShown = true
             }
         }
@@ -623,7 +626,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             clearInvocations(productRepository)
 
             // Precondition
-            assertThat(productData?.productDraft?.numVariations).isZero
+            assertThat(productData?.productDraft?.numVariations).isZero()
 
             doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
             doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))

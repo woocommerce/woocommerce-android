@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData

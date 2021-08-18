@@ -9,12 +9,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.DialogCardReaderTutorialBinding
+import com.woocommerce.android.databinding.CardReaderTutorialDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_reader_tutorial) {
+class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tutorial_dialog) {
     companion object {
         const val KEY_READER_TUTORIAL_RESULT = "key_reader_tutorial_result"
     }
@@ -32,7 +32,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.dialog_card_rea
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = DialogCardReaderTutorialBinding.bind(view)
+        val binding = CardReaderTutorialDialogBinding.bind(view)
 
         binding.viewPager.adapter = CardReaderTutorialAdapter(this)
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {

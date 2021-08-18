@@ -84,7 +84,7 @@ data class Address(
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
             company = company,
-            name = "$firstName $lastName",
+            name = "$firstName $lastName".trim().takeIf { it.isNotBlank() },
             phone = phone,
             address = address1,
             address2 = address2,

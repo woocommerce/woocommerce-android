@@ -17,8 +17,8 @@ import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.log.LogLevel
-import com.woocommerce.android.cardreader.CardReader
-import com.woocommerce.android.cardreader.CardReaderImpl
+import com.woocommerce.android.cardreader.connection.CardReader
+import com.woocommerce.android.cardreader.connection.CardReaderImpl
 
 /**
  * Injectable wrapper for Stripe's Terminal object.

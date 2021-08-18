@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/addons_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:itemCount="3"
+            tools:listitem="@layout/product_addon_card" />
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/Woo.TextView.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_10"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/product_add_ons_details_info_notice"
+            android:drawableStart="@drawable/ic_info_outline_24dp"
+            android:drawablePadding="@dimen/minor_100"
+            android:gravity="center_vertical"
+            android:visibility="visible"
+            tools:text="You can edit product add-ons in the web dashboard." />
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

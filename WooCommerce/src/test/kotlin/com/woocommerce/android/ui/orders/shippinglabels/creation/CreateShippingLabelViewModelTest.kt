@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.clearInvocations
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.toAppModel
@@ -19,15 +19,15 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.StepUiState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.OriginAddressValidationStarted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseSuccess
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.NoOp
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.PurchaseLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
@@ -37,9 +37,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -55,7 +54,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
@@ -298,6 +296,29 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the address validation has a non trivial suggestion, then show address suggestions screen`() =
+        testBlocking {
+            val suggestedAddress = originAddress.copy(address1 = "Suggested street")
+            whenever(addressValidator.validateAddress(any(), any(), any()))
+                .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress, isTrivial = false))
+
+            stateFlow.value = Transition(State.OriginAddressValidation(data), null)
+
+            verify(stateMachine).handleEvent(Event.AddressChangeSuggested(suggestedAddress))
+        }
+
+    @Test
+    fun `when the address validation has trivial suggestion, then use the suggested address`() = testBlocking {
+        val suggestedAddress = originAddress.copy(address1 = "Suggested street")
+        whenever(addressValidator.validateAddress(any(), any(), any()))
+            .thenReturn(ValidationResult.SuggestedChanges(suggestedAddress, isTrivial = true))
+
+        stateFlow.value = Transition(State.OriginAddressValidation(data), null)
+
+        verify(stateMachine).handleEvent(AddressValidated(suggestedAddress))
+    }
+
+    @Test
     fun `Purchase a label successfully`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(
@@ -340,14 +361,14 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
-        whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
-            .thenReturn(true)
+        whenever(orderDetailRepository.updateOrderStatus(any(), any()))
+            .thenReturn(ContinuationWrapper.ContinuationResult.Success(true))
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = true)
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.identifier.toIdSet().id, doneData.order.remoteId, CoreOrderStatus.COMPLETED.value
+            doneData.order.toDataModel(), CoreOrderStatus.COMPLETED.value
         )
     }
 
@@ -361,8 +382,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             )
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))
-            whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
-                .thenReturn(false)
+            whenever(orderDetailRepository.updateOrderStatus(any(), any()))
+                .thenReturn(ContinuationWrapper.ContinuationResult.Success(false))
 
             var event: MultiLiveEvent.Event? = null
             viewModel.event.observeForever {

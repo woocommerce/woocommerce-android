@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
@@ -195,5 +195,41 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value)
             .isEqualTo(ShowSnackbar(R.string.shipping_label_payment_method_added))
+    }
+
+    @Test
+    fun `given no existing payment methods, when user is store owner, then show Add First Payment button`() {
+        val accountSettings = shippingAccountSettings.copy(paymentMethods = emptyList())
+        setup(WooResult(accountSettings))
+
+        val viewState = viewModel.viewStateData.liveData.value
+        assertThat(viewState!!.showAddFirstPaymentButton).isEqualTo(true)
+    }
+
+    @Test
+    fun `given existing payment methods, when user is store owner, then show Add Payment button`() {
+        setup(WooResult(shippingAccountSettings))
+
+        val viewState = viewModel.viewStateData.liveData.value
+        assertThat(viewState!!.showAddPaymentButton).isEqualTo(true)
+    }
+
+    @Test
+    fun `when user is not store owner, then hide both Add First Payment button and Add Payment Button`() {
+        val accountSettings = shippingAccountSettings.copy(canManagePayments = false)
+        setup(WooResult(accountSettings))
+
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        assertThat(viewState!!.showAddFirstPaymentButton).isEqualTo(false)
+        assertThat(viewState!!.showAddPaymentButton).isEqualTo(false)
+    }
+
+    @Test
+    fun `given no existing payments, when user is store owner, redirect to add payment method screen`() {
+        val accountSettings = shippingAccountSettings.copy(paymentMethods = emptyList())
+        setup(WooResult(accountSettings))
+        assertThat(viewModel.event.value).isEqualTo(AddPaymentMethod)
     }
 }

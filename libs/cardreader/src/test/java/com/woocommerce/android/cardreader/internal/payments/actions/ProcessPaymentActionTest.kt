@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="@dimen/major_200">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textHeaderTv"
+        style="@style/Woo.TextView.Headline6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/illustrationIv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="@string/card_reader_onboarding_loading" />
+
+    <ImageView
+        android:id="@+id/illustrationIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_325"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toTopOf="@+id/hintTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textHeaderTv"
+        app:srcCompat="@drawable/img_hot_air_balloon" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hintTv"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_325"
+        android:layout_marginBottom="@dimen/major_200"
+        android:textColor="@color/color_on_surface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/illustrationIv"
+        tools:text="@string/please_wait"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

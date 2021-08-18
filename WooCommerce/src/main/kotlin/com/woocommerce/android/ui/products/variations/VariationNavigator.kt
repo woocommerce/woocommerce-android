@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphProductsDirections
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewAttributes
@@ -10,6 +11,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -71,6 +73,10 @@ class VariationNavigator @Inject constructor() {
                         target.remoteProductId,
                         target.remoteVariationId
                     ).let { fragment.findNavController().navigateSafely(it) }
+            }
+            is ViewMediaUploadErrors -> {
+                val action = NavGraphProductsDirections.actionGlobalMediaUploadErrorsFragment(target.remoteId)
+                fragment.findNavController().navigateSafely(action)
             }
         }
     }

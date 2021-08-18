@@ -1,22 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-07 15:54:04+0000
+Translation-Revision-Date: 2021-08-04 18:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="settings_card_reader_payments">المدفوعات الشخصية</string>
+    <string name="card_reader_tutorial_charged_detail">سيستغرق قارئك ثلاث ساعات تقريبًا ليتم شحنه بالكامل</string>
+    <string name="card_reader_tutorial_charged_label">أبق قارئك مشحونًا</string>
+    <string name="card_reader_tutorial_reconnect_detail">سيدخل قارئك في وضع السكون بعد 10 دقائق من عدم النشاط. ما عليك سوى الضغط على زر الطاقة لإعادة اتصاله.</string>
+    <string name="card_reader_tutorial_reconnect_label">إعادة الاتصال التلقائي</string>
+    <string name="card_reader_tutorial_collect_detail">لجمع المدفوعات، ما عليك سوى التمرير أو النقر أو إدراج بطاقة في القارئ</string>
+    <string name="card_reader_tutorial_collect_label">التمرير أو النقر أو إدراج بطاقة</string>
+    <string name="card_reader_tutorial_connected_detail">تهانينا، إنك الآن قادر على قبول مدفوعات بطاقة الائتمان والخصم!</string>
+    <string name="card_reader_tutorial_connected_label">تم اتصال القارئ</string>
+    <string name="card_reader_onboarding_contact_support">هل تحتاج المساعدة؟ &lt;a href=\'\'&gt;الاتصال بالدعم&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام جهازك المحمول وطلب قارئ البطاقات</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">المدفوعات الشخصية غير متاحة في وضع الاختبار. يرجى إيقافه للمتابعة.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">المدفوعات الشخصية غير متاحة في الوقت الحالي</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">توجد متطلبات معلقة في حسابك. يرجى إكمال هذه المتطلبات عن طريق ⁦%1$s⁩ للاستمرار في قبول المدفوعات الشخصية.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">يتضمن حساب مدفوعات WooCommerce الخاص بك متطلبات معلقة</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">لديك متطلب متأخر على الأقل على حسابك. يرجى الاهتمام بذلك لمتابعة المدفوعات الشخصية</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">المدفوعات الشخصية غير متاحة في الوقت الحالي</string>
+    <string name="card_reader_onboarding_account_under_review_hint">ستتمكن من قبول المدفوعات الشخصية بمجرد أن ننتهي من مراجعة حسابك.</string>
+    <string name="card_reader_onboarding_account_under_review_header">المدفوعات الشخصية غير متاحة في الوقت الحالي</string>
+    <string name="card_reader_onboarding_account_rejected_hint">عذرًا، ولكن لا يمكننا دعم المدفوعات الشخصية لهذا المخزن.</string>
+    <string name="card_reader_onboarding_account_rejected_header">المدفوعات الشخصية غير متاحة لهذا المخزن.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">التنشيط بعد التحديث</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">تم تثبيت إصدار قديم من إضافة مدفوعات WooCommerce على مخزنك. يرجى تحديثه لقبول المدفوعات الشخصية.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">تحديث مدفوعات WooCommerce</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">تجديد</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">لقد أوشكت على الانتهاء! يرجى الانتهاء من إعداد مدفوعات WooCommerce لبدء قبول المدفوعات الحالية بالبطاقة.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">يرجى الانتهاء من إعداد مدفوعات WooCommerce في مسؤول مخزنك</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">التنشيط بعد التفعيل</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">تم تثبيت إضافة مدفوعات WooCommerce على مخزنك ولكن لم يتم تفعيلها. يرجى تفعيلها لقبول المدفوعات الشخصية.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">تفعيل مدفوعات WooCommerce</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">التنشيط بعد التثبيت</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">سيتعيَّن عليك تثبيت إضافة مدفوعات WooCommerce المجانية على مخزنك لقبول المدفوعات الشخصية.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">تثبيت مدفوعات WooCommerce</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام جهازك المحمول وطلب قارئ البطاقات</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">هل تحتاج المساعدة؟ &lt;a href=\'\'&gt;الاتصال بالدعم&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">لا يزال بإمكانك قبول المدفوعات النقدية الشخصية عن طريق تمكين طريقة الدفع \"الدفع عند الاستلام\" على مخزنك</string>
+    <string name="card_reader_onboarding_country_not_supported_header">لا ندعم المدفوعات الشخصية في ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_loading">الربط بحسابك</string>
+    <string name="card_reader_onboarding_title">المدفوعات الشخصية</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">يرجى التحقُّق مرة أخرى من أبعاد حزمتك ووزنها، أو حاول استخدام حزمة مختلفة في تفاصيل الحزمة</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">لا توجد أسعار شحن متاحة</string>
+    <string name="shipping_label_activate_service_package_empty_title">تم تفعيل جميع الحزم المتاحة</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">تفعيل الحزمة</string>
+    <string name="shipping_label_create_service_package_nothing_selected">حدِّد حزمة لتفعيلها.</string>
+    <string name="error_required_field">الحقل المطلوب</string>
+    <string name="close">إغلاق</string>
+    <string name="variation_created_title">تم إنشاء مجموعة</string>
+    <string name="variation_list_generate_new_variation">إنشاء مجموعة جديدة</string>
+    <string name="product_wip_message_variations">يمكنك الآن إنشاء أنواع المنتجات وإدارتها!</string>
+    <string name="product_attributes_created_generate_action_text">إنشاء مجموعة</string>
+    <string name="product_attributes_created_description">لقد قمت الآن بإضافة السمات، يمكنك إنشاء مجموعتك الأولى!</string>
+    <string name="product_attributes_created_title">تم إنشاء سمات</string>
+    <string name="card_reader_software_update_progress_cancel_warning">لا يوصى بإلغاء أي تحديث برنامج جارٍ</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">عذرًا، تتعذر معالجة عملية الدفع هذه</string>
+    <string name="card_reader_payment_failed_server_error_state">لا اتصال بالخادم</string>
+    <string name="card_reader_payment_failed_no_network_state">لا يوجد اتصال بالإنترنت</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">الشحن في الحزمة الأصلية</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">إضافة إلى الحزمة الجديدة</string>
+    <string name="shipping_label_move_item_dialog_description">يوجد هذا العنصر في الوقت الحالي في %s. أين ترغب في نقله؟</string>
+    <string name="shipping_label_move_item_dialog_cancel">إلغاء</string>
+    <string name="shipping_label_move_item_dialog_move">نقل</string>
+    <string name="shipping_label_move_item_dialog_title">نقل عنصر</string>
+    <string name="shipping_label_create_custom_package_success_message">تم حفظ \"⁦%1$s⁩\"</string>
+    <string name="shipping_label_create_custom_package_generic_failure">فشل إنشاء حزمة. يُرجى المحاولة مرة أخرى.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">فشل إنشاء حزمة: مشكلة واجهة برمجة تطبيقات غير معروفة.</string>
+    <string name="shipping_label_create_custom_package_api_failure">فشل إنشاء حزمة: ⁦%1$s⁩</string>
+    <string name="shipping_label_create_package_saving_progress_message">يُرجى الانتظار…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">إنشاء حزمة جديدة</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">قيمة غير صالحة.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">هذا الحقل مطلوب.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">وزن الحزمة الفارغة</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">وزن الحزمة الفارغة (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_height">الارتفاع (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_width">العرض (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_length">الطول (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_name">اسم الحزمة</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">تغليف</string>
+    <string name="shipping_label_create_custom_package_field_type_box">صندوق</string>
+    <string name="shipping_label_create_custom_package_field_type_info">اختيار نوع الحزمة</string>
+    <string name="shipping_label_create_custom_package_field_type">نوع الحزمة</string>
+    <string name="shipping_label_create_package_field_info">قم بإعداد الحزمة التي ستستخدمها لشحن منتجاتك. سنقوم بحفظها للطلبات المستقبلية.</string>
+    <string name="shipping_label_create_package_title">إضافة حزمة جديدة</string>
+    <string name="shipping_label_create_new_package_button">إنشاء حزمة جديدة</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">يجب أن تكون أبعاد الحزمة أكبر من صفر. يرجى تحديث أبعاد عنصرك في قسم الشحن في صفحة منتجك للمتابعة.</string>
+    <string name="shipping_label_package_details_individual_package_title">الحزمة الأصلية</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">أبعاد العنصر</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">عنصر تم شحنه بشكل فردي</string>
+    <string name="order_status_updated">تم تحديث حالة الطلب</string>
+    <string name="receipt_preview_send_menu_item">إرسال</string>
+    <string name="receipt_preview_print_menu_item">اطبع</string>
+    <string name="orderdetail_see_receipt_button">الاطلاع على إيصال</string>
+    <string name="cancel_anyway">إلغاء على أية حال</string>
     <string name="card_reader_detail_connected_update_failed">فشل تحديث برنامج القارئ.</string>
     <string name="card_reader_detail_connected_update_check_failed">فشل التحقُّق من تحديث إصدار البرنامج</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام الهاتف المحمول وطلب قارئ البطاقات</string>
     <string name="card_reader_connect_open_bluetooth_settings">تشغيل البلوتوث</string>
-    <string name="card_reader_connect_scanning_failed_header">لم يتم العثور على أي قارئ</string>
+    <string name="card_reader_connect_scanning_failed_header">لا يوجد قارئ متصل</string>
     <string name="card_reader_connect_failed_header">تعذر علينا الربط بقارئك</string>
     <string name="card_reader_connect_connect_button">اتصال</string>
     <string name="card_reader_connect_multiple_readers_found_header">تم العثور على عدة قراء</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">تم دفع الطلب بالفعل</string>
     <string name="card_reader_payment_receipt_email_content">شكراً لك على شرائك! انقر على الرابط الوارد أدناه للحصول على إيصال عملية الدفع الخاصة بك.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">لم تنجح عملية الدفع</string>
     <string name="card_reader_payment_failed_card_declined_state">تم رفض البطاقة</string>
     <string name="shipping_label_print_customs_form_download_failed">حدث خطأ في أثناء تنزيل نموذج الجمارك</string>
     <string name="shipping_label_print_customs_form_screen_title">طباعة فاتورة الجمارك</string>
@@ -53,7 +144,6 @@ Language: ar
     <string name="product_create_attribute_helper">لإنشاء مجموعة، ستحتاج إلى تعيين سماتها (أي \"اللون\"، \"والحجم\") أولاً</string>
     <string name="product_variation_single_count">مجموعة واحدة</string>
     <string name="product_variation_multiple_count">⁦%1$s⁩ من المجموعات</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">تعقُّب %s</string>
     <string name="card_reader_software_update_in_progress_title">تحديث برنامج قارئك</string>
     <string name="card_reader_software_update_title">تحديث برنامج</string>
     <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يعمل بسلاسة. هل ترغب في تحديثه الآن؟</string>
@@ -194,7 +284,6 @@ Language: ar
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">عند شراء ملصقات الشحن باستخدام WooCommerce، ستحصل على خصم يتراوح بين 5 % و40 % مقارنةً بأسعار مكاتب البريد.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">ما المقصود بخصم خدمات  WooCommerce؟</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">حدث خطأ ما في أثناء تحميل خيارات الشحن</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">لا يوجد أي خيارات شحن للعنوان والحزم المحدَّدة</string>
     <string name="shipping_label_shipping_carriers_title">شركات النقل وأسعارها</string>
     <string name="shipping_label_create_purchase">شراء ملصق الشحن</string>
     <string name="shipping_label_create_mark_order_complete">وضع علامة على هذا الطلب على أنه مكتمل وإخطار العميل</string>
@@ -232,7 +321,7 @@ Language: ar
     <string name="product_add_attribute">إضافة سمة</string>
     <string name="product_variation_attributes">السمات</string>
     <string name="product_variations_edit_attr">تحرير السمات</string>
-    <string name="shipping_label_multi_packages_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">إجمالي وزن الحزم: ⁦%1$s⁩ %2$s</string>
     <string name="shipping_label_multi_packages_items_count">⁦%1$d⁩ من العناصر موجودة في ⁦%2$d⁩ من الحزم</string>
     <string name="shipping_label_single_package_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>
     <string name="shipping_label_packages_custom_section_title">حزم مخصصة</string>
@@ -257,11 +346,9 @@ Language: ar
     <string name="shipping_label_address_suggestion_use_selected_address">استخدام العنوان المحدَّد</string>
     <string name="shipping_label_edit_address_loading_progress_title">تحميل بيانات العنوان</string>
     <string name="product_wip_title_m5">تتوافر ميزات جديدة!</string>
-    <string name="product_wip_message_m5">يمكنك الآن إضافة ملفات قابلة للتنزيل إلى المنتج والربط بين المنتجات الموصى بها والمنتجات التسويقية. ألم تعد تريد منتجًا ما؟ انقله إلى سلة المهملات!</string>
     <string name="shipping_label_validation_view_map">فتح الخريطة</string>
     <string name="shipping_label_validation_contact_customer">الاتصال بالعميل</string>
     <string name="shipping_label_validation_error_template">فشل التحقُّق: %s</string>
-    <string name="shipping_label_error_required_field">الحقل المطلوب</string>
     <string name="shipping_label_error_address_invalid_street">شارع غير صالح</string>
     <string name="shipping_label_error_address_house_number_missing">رقم المنزل مفقود</string>
     <string name="shipping_label_error_address_not_found">لم يتم العثور على العنوان</string>
@@ -341,7 +428,6 @@ Language: ar
     <string name="product_downloadable_files_add">إضافة ملف</string>
     <string name="product_downloadable_files_value_single">1 ملف</string>
     <string name="product_downloadable_files_value_multiple">⁦%1$d⁩ ملفات</string>
-    <string name="product_wip_message_m4">أصبح من الممكن الآن إنشاء منتجات جديدة بسيطة مرتبطة ومجمَّعة في أثناء التنقل من تطبيق Woo. أليست جاهزة حتى الآن؟ احفظها كمسودة!</string>
     <string name="print_shipping_label_info_step_4">قد تضطر إلى &lt;b&gt;تكوين طباعة WiFi مباشرة على الطابعة نفسها.&lt;/b&gt; تأكُّد من تحديث البرنامج الثابت للطابعة، والاطِّلاع على وثائق الطابعة لديك للحصول على الإرشادات.</string>
     <string name="print_shipping_label_info_step_3">يمكنك تحديد &lt;b&gt;خدمة الطباعة الافتراضية&lt;/b&gt; الخاصة بجهازك أو تثبيت &lt;b&gt;تطبيق العلامة التجارية للطابعة&lt;/b&gt; (ينبغي أن يظهر هذا كخيار موصى به)</string>
     <string name="print_shipping_label_info_step_1">تأكَّد من اتصال طابعتك وجهازك بـ &lt;b&gt;شبكات WiFi نفسها&lt;/b&gt;</string>
@@ -663,10 +749,10 @@ Language: ar
     <string name="orderlist_loading">جارٍ البحث عن طلباتك…</string>
     <string name="product_detail_editable_text_hint">إدخال نص</string>
     <string name="product_detail_title_hint">إدخال عنوان الموقع</string>
-    <string name="product_detail_update_product_success">تم تحديث المنتج</string>
+    <string name="product_detail_save_product_success">تم تحديث المنتج</string>
     <string name="product_detail_update_product_error">خطأ في أثناء تحرير المنتج</string>
     <string name="product_update_dialog_message">يُرجى الانتظار…</string>
-    <string name="product_update_dialog_title">تحديث المنتج</string>
+    <string name="product_save_dialog_title">تحديث المنتج</string>
     <string name="product_description_empty">وصف منتجك</string>
     <string name="product_description">الوصف</string>
     <string name="product_edit_description">تحرير الوصف</string>
@@ -679,7 +765,7 @@ Language: ar
     <string name="order_refunds_select_quantity">تحديد الكمية</string>
     <string name="order_refunds_shipping_refund">استرداد أموال الشحن</string>
     <string name="order_refunds_products_refund">استرداد أموال المنتجات</string>
-    <string name="order_refunds_item_description">%s x %s لكل منتج</string>
+    <string name="order_refunds_item_description">%s x %s لكل منها</string>
     <string name="order_refunds_items_selected">%d من العناصر المُحدَّدة</string>
     <string name="order_refunds_items_select_none">عدم اختيار أي شيء</string>
     <string name="order_refunds_items_select_all">اختيار الكل</string>
@@ -1153,7 +1239,6 @@ Language: ar
     <string name="site_picker_title">اختيار متجر</string>
     <string name="settings_signout">تسجيل الخروج</string>
     <string name="orderstatus_select_status">تغير حالة الطلب</string>
-    <string name="order_status_changed_to">تم تغيير حالة الطلب إلى %s</string>
     <string name="orderdetail_change_order_status">انقر لتغيير حالة الطلب</string>
     <string name="apply">تطبيق</string>
     <string name="app_rating_rate_never">لا شكرًا</string>
@@ -1475,5 +1560,9 @@ Language: ar
     <string-array name="order_list_tabs">
         <item>قيد المعالجة</item>
         <item>جميع الطلبات</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>حزمة مخصصة</item>
+        <item>حزمة الخدمة</item>
     </string-array>
 </resources>

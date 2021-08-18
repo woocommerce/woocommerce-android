@@ -1,2 +1,0 @@
-7.0:
-Das Erstellen internationaler Versandetiketten ist ein Kinderspiel! Verkäufer in den USA, die WooCommerce Shipping & Tax in ihrem Store verwenden, können nun Versandetiketten und Zollformulare für internationale Empfänger erstellen. Wir werden diese Funktion weiter ausbauen – Probiere sie aus und teile uns mit, was du davon hältst!

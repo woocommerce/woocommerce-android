@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErr
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
@@ -24,9 +25,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import java.math.BigDecimal
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "TooManyFunctions")
 internal class PaymentManager(
     private val terminalWrapper: TerminalWrapper,
     private val cardReaderStore: CardReaderStore,
@@ -37,37 +37,14 @@ internal class PaymentManager(
     private val paymentUtils: PaymentUtils,
     private val errorMapper: PaymentErrorMapper
 ) {
-    suspend fun acceptPayment(
-        paymentDescription: String,
-        orderId: Long,
-        amount: BigDecimal,
-        currency: String,
-        customerEmail: String?
-    ): Flow<CardPaymentStatus> = flow {
-        if (!paymentUtils.isSupportedCurrency(currency)) {
-            emit(errorMapper.mapError(errorMessage = "Unsupported currency: $currency"))
-            return@flow
-        }
-        val amountInSmallestCurrencyUnit = try {
-            paymentUtils.convertBigDecimalInDollarsToIntegerInCents(amount)
-        } catch (e: ArithmeticException) {
-            emit(errorMapper.mapError(errorMessage = "BigDecimal amount doesn't fit into an Integer: $amount"))
-            return@flow
-        }
-        if (!terminalWrapper.isInitialized()) {
-            emit(errorMapper.mapError(errorMessage = "Reader not connected"))
-            return@flow
-        }
-        val paymentIntent = createPaymentIntent(
-            paymentDescription,
-            amountInSmallestCurrencyUnit,
-            currency,
-            customerEmail
-        )
+    suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
+        if (isInvalidState(paymentInfo)) return@flow
+
+        val paymentIntent = createPaymentIntent(paymentInfo)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
-        processPaymentIntent(orderId, paymentIntent).collect { emit(it) }
+        processPaymentIntent(paymentInfo.orderId, paymentIntent).collect { emit(it) }
     }
 
     fun retryPayment(orderId: Long, paymentData: PaymentData) =
@@ -120,15 +97,10 @@ internal class PaymentManager(
         }
     }
 
-    private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(
-        paymentDescription: String,
-        amount: Int,
-        currency: String,
-        customerEmail: String?
-    ): PaymentIntent? {
+    private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(paymentInfo: PaymentInfo): PaymentIntent? {
         var paymentIntent: PaymentIntent? = null
         emit(InitializingPayment)
-        createPaymentAction.createPaymentIntent(paymentDescription, amount, currency, customerEmail).collect {
+        createPaymentAction.createPaymentIntent(enrichPaymentInfoWithCustomerId(paymentInfo)).collect {
             when (it) {
                 is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent
@@ -178,6 +150,24 @@ internal class PaymentManager(
             is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
+    }
+
+    private suspend fun FlowCollector<CardPaymentStatus>.isInvalidState(paymentInfo: PaymentInfo) =
+        when {
+            !paymentUtils.isSupportedCurrency(paymentInfo.currency) -> {
+                emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
+                true
+            }
+            !terminalWrapper.isInitialized() -> {
+                emit(errorMapper.mapError(errorMessage = "Reader not connected"))
+                true
+            }
+            else -> false
+        }
+
+    private suspend fun enrichPaymentInfoWithCustomerId(paymentInfo: PaymentInfo): PaymentInfo {
+        val customerId = cardReaderStore.fetchCustomerIdByOrderId(paymentInfo.orderId)
+        return paymentInfo.copy(customerId = customerId)
     }
 }
 

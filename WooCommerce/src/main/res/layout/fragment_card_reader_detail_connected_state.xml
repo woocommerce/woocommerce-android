@@ -56,6 +56,13 @@
         android:layout_height="wrap_content"
         tools:text="@string/card_reader_detail_connected_battery_percentage" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/reader_firmware_version_tv"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="@string/card_reader_detail_connected_firmware_version" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/primary_action_btn"
         style="@style/Woo.Button.Colored"
@@ -81,5 +88,5 @@
 
     <include
         android:id="@+id/card_reader_detail_learn_more_tv"
-        layout="@layout/fragment_card_reader_detail_learn_more" />
+        layout="@layout/card_reader_learn_more_section" />
 </LinearLayout>

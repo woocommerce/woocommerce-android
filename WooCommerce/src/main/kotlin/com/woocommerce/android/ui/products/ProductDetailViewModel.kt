@@ -45,6 +45,7 @@ import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
@@ -71,6 +72,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSl
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -92,6 +94,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -122,6 +125,7 @@ class ProductDetailViewModel @Inject constructor(
     private val productTagsRepository: ProductTagsRepository,
     private val mediaFilesRepository: MediaFilesRepository,
     private val variationRepository: VariationRepository,
+    private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val prefs: AppPrefs
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -154,11 +158,11 @@ class ProductDetailViewModel @Inject constructor(
     private var productCategoriesViewState by productCategoriesViewStateData
 
     // view state for the product tags screen
-    final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
+    val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
 
     // view state for the product downloads screen
-    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
+    val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
     private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
@@ -254,6 +258,12 @@ class ProductDetailViewModel @Inject constructor(
      */
     val isTrashEnabled: Boolean
         get() = !isProductUnderCreation && navArgs.isTrashEnabled
+
+    /**
+     * Provides the currencyCode for views who requires display prices
+     */
+    val currencyCode: String
+        get() = parameters.currencyCode.orEmpty()
 
     init {
         start()
@@ -705,7 +715,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     private fun pickProductUpdateSuccessText() =
         if (isAddFlowEntryPoint) string.product_detail_publish_product_success
-        else string.product_detail_update_product_success
+        else string.product_detail_save_product_success
 
     private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
         if (productWasAdded) {
@@ -1624,7 +1634,8 @@ class ProductDetailViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImageUploaded) {
         if (event.isError) {
-            triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
+            val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(getRemoteProductId())
+            triggerEvent(ShowActionSnackbar(errorMsg, { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }))
         } else {
             event.media?.let { media ->
                 addProductImageToDraft(media.toAppModel())
@@ -2037,6 +2048,8 @@ class ProductDetailViewModel @Inject constructor(
         )
 
         object ExitAttributesAdded : ProductExitEvent(shouldShowDiscardDialog = false)
+
+        object ExitProductAddons : ProductExitEvent(shouldShowDiscardDialog = false)
     }
 
     object RefreshMenu : Event()

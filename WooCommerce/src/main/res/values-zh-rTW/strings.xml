@@ -1,22 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-08 09:54:58+0000
+Translation-Revision-Date: 2021-08-05 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="settings_card_reader_payments">親自收款</string>
+    <string name="card_reader_tutorial_charged_detail">你的讀卡機需要約三小時才能充飽電</string>
+    <string name="card_reader_tutorial_charged_label">請讓你的讀卡機保持充電狀態</string>
+    <string name="card_reader_tutorial_reconnect_detail">你的讀卡機會在閒置 10 分鐘後進入睡眠模式。 只要按下電源鍵即可重新連結讀卡機。</string>
+    <string name="card_reader_tutorial_reconnect_label">自動重新連結</string>
+    <string name="card_reader_tutorial_collect_detail">若要收取款項，只要在讀卡機上滑動、點選或插入卡片即可</string>
+    <string name="card_reader_tutorial_collect_label">滑動、點選或插入卡片</string>
+    <string name="card_reader_tutorial_connected_detail">恭喜，你現在已可接受簽帳金融卡和信用卡付款！</string>
+    <string name="card_reader_tutorial_connected_label">已連結讀卡機</string>
+    <string name="card_reader_onboarding_contact_support">需要幫助嗎？ &lt;a href=\'\'&gt;聯絡支援團隊&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;瞭解更多&lt;/a&gt;有關使用行動裝置接受付款及訂購讀卡機的資訊</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">測試模式下無法親自收款。 請關閉測試模式以繼續。</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">目前無法親自收款</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">你的帳號中有待處理的要求。 請在 %1$s 前完成這些要求，以便繼續使用親自收款功能。</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">你的 WooCommerce Payments 帳號有待處理的要求</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">你的帳號中有至少一個逾期要求。 請處理該要求以繼續使用親自收款功能</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">目前無法親自收款</string>
+    <string name="card_reader_onboarding_account_under_review_hint">我們審核完你的帳號後，你即可隨即開始親自收款。</string>
+    <string name="card_reader_onboarding_account_under_review_header">目前無法親自收款</string>
+    <string name="card_reader_onboarding_account_rejected_hint">很抱歉，此商店不支援使用親自收款功能。</string>
+    <string name="card_reader_onboarding_account_rejected_header">此商店無法使用親自收款功能</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">在更新後重新整理</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">貴店安裝的 WooCommerce Payments 擴充功能版本已過期。 若要使用親自收款功能，請更新擴充功能。</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">重新整理</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">快完成了！ 請完成 WooCommerce Payments 設定以開始接受卡片付款。</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">在商店管理員中完成 WooCommerce Payments 設定</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">在啟用後重新整理</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">貴店已安裝 WooCommerce Payments 擴充功能，但尚未啟用。 若要使用親自收款功能，請啟用此擴充功能。</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">啟用 WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">在安裝後重新整理</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">你需要在商店中安裝免費的 WooCommerce Payments 擴充功能，才能使用親自收款功能。</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">安裝 WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;瞭解更多&lt;/a&gt;有關使用行動裝置接受付款及訂購讀卡機的資訊</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">需要幫助嗎？ &lt;a href=\'\'&gt;聯絡支援團隊&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">你仍可採用「親自收取現金」，只要為商店啟用「貨到付款」付款方式即可</string>
+    <string name="card_reader_onboarding_country_not_supported_header">%1$s不支援親自收款功能</string>
+    <string name="card_reader_onboarding_loading">連結你的帳號</string>
+    <string name="card_reader_onboarding_title">親自收款</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">請再次檢查包裹尺寸和重量，或嘗試使用「包裹詳細資訊」中的其他包裹</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">沒有可用的運費</string>
+    <string name="shipping_label_activate_service_package_empty_title">所有可用包裹均已啟用</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">啟用包裹</string>
+    <string name="shipping_label_create_service_package_nothing_selected">請選取要啟用的包裹。</string>
+    <string name="error_required_field">必填欄位</string>
+    <string name="close">關閉</string>
+    <string name="variation_created_title">已建立款式</string>
+    <string name="variation_list_generate_new_variation">產生新款式</string>
+    <string name="product_wip_message_variations">現在你可以建立和管理產品款式！</string>
+    <string name="product_attributes_created_generate_action_text">產生款式</string>
+    <string name="product_attributes_created_description">現在你已新增屬性，可以建立第一個款式了！</string>
+    <string name="product_attributes_created_title">已建立屬性</string>
+    <string name="card_reader_software_update_progress_cancel_warning">不建議取消正在進行的軟體更新</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">抱歉，無法處理此付款</string>
+    <string name="card_reader_payment_failed_server_error_state">未連線至伺服器</string>
+    <string name="card_reader_payment_failed_no_network_state">沒有網際網路連線</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">以原包裝出貨</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">加入新包裹</string>
+    <string name="shipping_label_move_item_dialog_description">該項目現在在 %s。 你想移到哪裡？</string>
+    <string name="shipping_label_move_item_dialog_cancel">取消</string>
+    <string name="shipping_label_move_item_dialog_move">移動</string>
+    <string name="shipping_label_move_item_dialog_title">移動項目</string>
+    <string name="shipping_label_create_custom_package_success_message">已儲存「%1$s」</string>
+    <string name="shipping_label_create_custom_package_generic_failure">包裹建立失敗。 請再試一次。</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">包裹建立失敗：未知的 API 問題。</string>
+    <string name="shipping_label_create_custom_package_api_failure">包裹建立失敗：%1$s</string>
+    <string name="shipping_label_create_package_saving_progress_message">請稍候…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">正在建立新包裹</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">無效值。</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">此欄位為必填。</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">空包裹重量</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">空包裹重量 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">高度 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">寬度 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">長度 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">包裹名稱</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">信封</string>
+    <string name="shipping_label_create_custom_package_field_type_box">便利箱</string>
+    <string name="shipping_label_create_custom_package_field_type_info">選擇包裹類型</string>
+    <string name="shipping_label_create_custom_package_field_type">包裹類型</string>
+    <string name="shipping_label_create_package_field_info">請設定要用於產品出貨的包裹。 我們會儲存設定以供日後訂單使用。</string>
+    <string name="shipping_label_create_package_title">新增包裹</string>
+    <string name="shipping_label_create_new_package_button">建立新包裹</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">包裹尺寸必須大於零。 請在產品頁面的「出貨」部分更新產品尺寸以繼續操作。</string>
+    <string name="shipping_label_package_details_individual_package_title">原包裝</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">項目尺寸</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">個別出貨項目</string>
+    <string name="order_status_updated">已更新訂單狀態</string>
+    <string name="receipt_preview_send_menu_item">傳送</string>
+    <string name="receipt_preview_print_menu_item">列印</string>
+    <string name="orderdetail_see_receipt_button">查看收據</string>
+    <string name="cancel_anyway">仍然要取消</string>
     <string name="card_reader_detail_connected_update_failed">讀卡機軟體更新失敗</string>
     <string name="card_reader_detail_connected_update_check_failed">軟體版本更新檢查失敗</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;接受行動支付及訂購讀卡機的資訊</string>
     <string name="card_reader_connect_open_bluetooth_settings">開啟藍牙</string>
-    <string name="card_reader_connect_scanning_failed_header">找不到讀卡機</string>
+    <string name="card_reader_connect_scanning_failed_header">沒有連接的讀取器</string>
     <string name="card_reader_connect_failed_header">無法連線至讀卡機</string>
     <string name="card_reader_connect_connect_button">連線</string>
     <string name="card_reader_connect_multiple_readers_found_header">找到數個讀卡機</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">此訂單已付款</string>
     <string name="card_reader_payment_receipt_email_content">感謝你的購買！ 點按下方連結即可查看付款收據。\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">付款失敗</string>
     <string name="card_reader_payment_failed_card_declined_state">卡片遭到拒絕</string>
     <string name="shipping_label_print_customs_form_download_failed">下載海關表格時發生錯誤</string>
     <string name="shipping_label_print_customs_form_screen_title">列印海關發票</string>
@@ -53,7 +144,6 @@ Language: zh_TW
     <string name="product_create_attribute_helper">若要建立款式，需要先設定其屬性 (即「顏色」、「尺寸」)</string>
     <string name="product_variation_single_count">1 種款式</string>
     <string name="product_variation_multiple_count">%1$s 種款式</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s 追蹤中</string>
     <string name="card_reader_software_update_in_progress_title">正在更新讀卡機軟體</string>
     <string name="card_reader_software_update_title">軟體更新</string>
     <string name="card_reader_software_update_description">你的讀卡機軟體需要更新才能正常執行功能。 是否要立即更新？</string>
@@ -194,7 +284,6 @@ Language: zh_TW
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">向 WooCommerce 購買運送標籤，費率會比郵局低 5% 至 40%。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">什麼是 WooCommerce Services 折扣？</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">載入運送選項時發生錯誤</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">沒有適合所選地址和包裹的運送選項</string>
     <string name="shipping_label_shipping_carriers_title">貨運業者和費率</string>
     <string name="shipping_label_create_purchase">購買運送標籤</string>
     <string name="shipping_label_create_mark_order_complete">將此訂單標示為完成並通知客戶</string>
@@ -257,11 +346,9 @@ Language: zh_TW
     <string name="shipping_label_address_suggestion_use_selected_address">使用所選地址</string>
     <string name="shipping_label_edit_address_loading_progress_title">正在載入地址資料</string>
     <string name="product_wip_title_m5">現已推出新功能！</string>
-    <string name="product_wip_message_m5">你現在可將可下載檔案新增到產品，並連結追加銷售和交叉銷售產品。 不再需要某個產品了嗎？ 移至垃圾桶！</string>
     <string name="shipping_label_validation_view_map">開啟地圖</string>
     <string name="shipping_label_validation_contact_customer">聯絡客戶</string>
     <string name="shipping_label_validation_error_template">驗證失敗：%s</string>
-    <string name="shipping_label_error_required_field">必填欄位</string>
     <string name="shipping_label_error_address_invalid_street">街道名稱無效</string>
     <string name="shipping_label_error_address_house_number_missing">缺少門牌號碼</string>
     <string name="shipping_label_error_address_not_found">找不到地址</string>
@@ -341,7 +428,6 @@ Language: zh_TW
     <string name="product_downloadable_files_add">新增檔案</string>
     <string name="product_downloadable_files_value_single">1 個檔案</string>
     <string name="product_downloadable_files_value_multiple">%1$d 個檔案</string>
-    <string name="product_wip_message_m4">你現在可以透過 Woo 應用程式隨時隨地新增簡單、連結和組合產品。尚未建立完成嗎？ 將它們儲存為草稿！</string>
     <string name="print_shipping_label_info_step_4">你可能必須&lt;b&gt;在印表機上直接設定 WiFi 列印。&lt;/b&gt;請確認已更新印表機韌體，並參閱印表機文件以取得指示。</string>
     <string name="print_shipping_label_info_step_3">你可以選擇裝置的&lt;b&gt;預設列印服務&lt;/b&gt;或安裝&lt;b&gt;印表機的品牌應用程式&lt;/b&gt; (應顯示為建議選項)</string>
     <string name="print_shipping_label_info_step_1">請確認你的印表機和裝置已連接到&lt;b&gt;同樣的 WiFi 網路&lt;/b&gt;</string>
@@ -663,10 +749,10 @@ Language: zh_TW
     <string name="orderlist_loading">查詢你的訂單…</string>
     <string name="product_detail_editable_text_hint">輸入文字</string>
     <string name="product_detail_title_hint">請輸入商品標題</string>
-    <string name="product_detail_update_product_success">商品已更新</string>
+    <string name="product_detail_save_product_success">商品已更新</string>
     <string name="product_detail_update_product_error">更新商品時發生錯誤</string>
     <string name="product_update_dialog_message">請稍候…</string>
-    <string name="product_update_dialog_title">更新商品</string>
+    <string name="product_save_dialog_title">更新商品</string>
     <string name="product_description_empty">請描述你的產品</string>
     <string name="product_description">說明</string>
     <string name="product_edit_description">編輯說明</string>
@@ -679,7 +765,7 @@ Language: zh_TW
     <string name="order_refunds_select_quantity">選取數量</string>
     <string name="order_refunds_shipping_refund">運費退款</string>
     <string name="order_refunds_products_refund">產品退款</string>
-    <string name="order_refunds_item_description">%s x %s (每個)</string>
+    <string name="order_refunds_item_description">每個 %s x %s</string>
     <string name="order_refunds_items_selected">已選取 %d 個項目</string>
     <string name="order_refunds_items_select_none">全部不選</string>
     <string name="order_refunds_items_select_all">全部選取</string>
@@ -1153,7 +1239,6 @@ Language: zh_TW
     <string name="site_picker_title">挑選商店</string>
     <string name="settings_signout">登出</string>
     <string name="orderstatus_select_status">變更訂單狀態</string>
-    <string name="order_status_changed_to">訂單狀態已變更為「%s」</string>
     <string name="orderdetail_change_order_status">按一下即可變更訂單狀態</string>
     <string name="apply">套用</string>
     <string name="app_rating_rate_never">不用了，謝謝</string>
@@ -1475,5 +1560,9 @@ Language: zh_TW
     <string-array name="order_list_tabs">
         <item>處理中</item>
         <item>全部訂單</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>自訂包裹</item>
+        <item>服務包裹</item>
     </string-array>
 </resources>

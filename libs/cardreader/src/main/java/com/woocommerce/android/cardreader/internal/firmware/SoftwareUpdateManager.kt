@@ -1,9 +1,9 @@
 package com.woocommerce.android.cardreader.internal.firmware
 
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.Initializing
-import com.woocommerce.android.cardreader.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.Initializing
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction

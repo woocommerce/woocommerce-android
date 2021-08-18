@@ -13,7 +13,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.ServerError
 
-class PaymentErrorMapper {
+internal class PaymentErrorMapper {
     fun mapTerminalError(
         originalPaymentIntent: PaymentIntent?,
         exception: TerminalException

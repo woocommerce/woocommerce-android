@@ -1,22 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-08 09:55:08+0000
+Translation-Revision-Date: 2021-08-05 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="settings_card_reader_payments">オフラインでの支払い</string>
+    <string name="card_reader_tutorial_charged_detail">リーダーのフル充電には約3時間かかります</string>
+    <string name="card_reader_tutorial_charged_label">リーダーは常に充電しておいてください</string>
+    <string name="card_reader_tutorial_reconnect_detail">10分間使用しないと、リーダーはスリープ状態になります。 再接続するには、電源ボタンを押します。</string>
+    <string name="card_reader_tutorial_reconnect_label">Automattic の再接続</string>
+    <string name="card_reader_tutorial_collect_detail">支払いを受け取るには、リーダーをスワイプまたはタップするか、カードを挿入します。</string>
+    <string name="card_reader_tutorial_collect_label">スワイプまたはタップするか、カードを挿入する</string>
+    <string name="card_reader_tutorial_connected_detail">デビットカードやクレジットカードでの支払いを受け取ることができるようになりました。</string>
+    <string name="card_reader_tutorial_connected_label">リーダー接続済み</string>
+    <string name="card_reader_onboarding_contact_support">ヘルプが必要ですか ? &lt;a href=\'\'&gt;サポートに問い合わせる&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">モバイルデバイスや注文用カードリーダーでの支払いの受領方法について&lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">テストモードではオフラインの支払いを利用できません。 電源をオフにして続行します。</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">オフラインでの支払いは現在利用できません</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">口座に保留中の要件があります。 引き続きオフラインでのお支払いを受け取る場合は、%1$sまでに要件を完了させてください。</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">WooCommerce Payments アカウントに保留中の要件があります</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">ご使用のアカウントに期限切れの要件があります。 オフラインでの支払いを再開するには、この要件を処理してください</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">オフラインでの支払いは現在利用できません</string>
+    <string name="card_reader_onboarding_account_under_review_hint">アカウントのレビューが完了すると、すぐにオフラインでの支払いを受け取れるようになります。</string>
+    <string name="card_reader_onboarding_account_under_review_header">オフラインでの支払いは現在利用できません</string>
+    <string name="card_reader_onboarding_account_rejected_hint">このストアはオフラインでの支払いに対応していません。</string>
+    <string name="card_reader_onboarding_account_rejected_header">このストアではオフラインでの支払いを使用できません</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">更新後に再読み込みする</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">再読み込み</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">あともう少しです。 カードを使用した支払いを開始するには、WooCommerce Payments のセットアップを完了させてください。</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">ストア管理で WooCommerce Payments のセットアップを完了させる</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">有効化後に再読み込みする</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">ご使用のストアには WooCommerce Payments 拡張機能はインストールされていますが、有効化されていません。 オフラインでの支払いを受け取るには、この拡張機能を有効化してください。</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">WooCommerce Payments を有効化する</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">インストール後に再読み込みする</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">オフラインでの支払いを受け取るには、無料の WooCommerce Payments 拡張機能をストアにインストールする必要があります。</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">WooCommerce Payments をインストールする</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">モバイルデバイスや注文用カードリーダーでの支払いの受領方法について&lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">ヘルプが必要ですか ? &lt;a href=\'\'&gt;サポートに問い合わせる&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">ストアで「代金引換」の支払い方法を有効にすれば、オフラインでの現金支払いを受け取ることもできます。</string>
+    <string name="card_reader_onboarding_country_not_supported_header">%1$s ではオフラインでの支払いがサポートされていません</string>
+    <string name="card_reader_onboarding_loading">アカウントへの接続</string>
+    <string name="card_reader_onboarding_title">オフラインでの支払い</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">荷物の寸法と重量を再度ご確認いただくか、「荷物の詳細」で別の荷物のご利用をお試しください。</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">利用できる配送料金がありません</string>
+    <string name="shipping_label_activate_service_package_empty_title">利用可能なすべての荷物が有効化されました</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">荷物の有効化</string>
+    <string name="shipping_label_create_service_package_nothing_selected">有効化する荷物を選択します。</string>
+    <string name="error_required_field">必須項目</string>
+    <string name="close">閉じる</string>
+    <string name="variation_created_title">バリエーションを作成しました</string>
+    <string name="variation_list_generate_new_variation">新しいバリエーションを生成</string>
+    <string name="product_wip_message_variations">商品のバリエーションを作成、管理できるようになりました。</string>
+    <string name="product_attributes_created_generate_action_text">バリエーションを生成</string>
+    <string name="product_attributes_created_description">属性の追加が完了しました。最初のバリエーションを作成してください。</string>
+    <string name="product_attributes_created_title">属性を作成しました</string>
+    <string name="card_reader_software_update_progress_cancel_warning">実行中のソフトウェア更新をキャンセルすることは推奨されません</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">支払いを処理できませんでした</string>
+    <string name="card_reader_payment_failed_server_error_state">サーバーに接続していません</string>
+    <string name="card_reader_payment_failed_no_network_state">インターネットに接続していません</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">初期の梱包で配送する</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">新しい荷物を追加</string>
+    <string name="shipping_label_move_item_dialog_description">この項目は現在%sにあります。 どこに移動しますか ?</string>
+    <string name="shipping_label_move_item_dialog_cancel">キャンセル</string>
+    <string name="shipping_label_move_item_dialog_move">移動</string>
+    <string name="shipping_label_move_item_dialog_title">項目を移動</string>
+    <string name="shipping_label_create_custom_package_success_message">「%1$s」を保存しました</string>
+    <string name="shipping_label_create_custom_package_generic_failure">荷物を作成できませんでした。 もう一度お試しください。</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">荷物を作成できませんでした。不明な API エラーが発生しました。</string>
+    <string name="shipping_label_create_custom_package_api_failure">荷物を作成できませんでした。%1$s</string>
+    <string name="shipping_label_create_package_saving_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">新しい荷物を作成しています</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">無効な値。</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">この欄は入力必須です。</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">空の荷物の重量</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">空の荷物の重量 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_height">高さ (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_width">幅 (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_length">長さ (%1$s)</string>
+    <string name="shipping_label_create_custom_package_field_name">荷物の名称</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">封筒</string>
+    <string name="shipping_label_create_custom_package_field_type_box">ボックス</string>
+    <string name="shipping_label_create_custom_package_field_type_info">荷物の種類を選択する</string>
+    <string name="shipping_label_create_custom_package_field_type">荷物の種類</string>
+    <string name="shipping_label_create_package_field_info">商品の配送に使用する荷物を設定します。 今後の注文用に保存されます。</string>
+    <string name="shipping_label_create_package_title">新しい荷物を追加する</string>
+    <string name="shipping_label_create_new_package_button">新しい荷物を作成する</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">荷物の寸法は0以上にする必要があります。 商品ページの「配送」セクションで商品の寸法を更新して続行します。</string>
+    <string name="shipping_label_package_details_individual_package_title">初期の梱包</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">商品の寸法</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">個別に配送した商品</string>
+    <string name="order_status_updated">注文ステータスを更新しました</string>
+    <string name="receipt_preview_send_menu_item">送信</string>
+    <string name="receipt_preview_print_menu_item">印刷</string>
+    <string name="orderdetail_see_receipt_button">領収書を表示</string>
+    <string name="cancel_anyway">キャンセルする</string>
     <string name="card_reader_detail_connected_update_failed">Reader のソフトウェアを更新できませんでした</string>
     <string name="card_reader_detail_connected_update_check_failed">ソフトウェアのバージョンの更新チェックができませんでした。</string>
     <string name="card_reader_detail_learn_more">モバイルでの支払いと注文用カードリーダーの承認について&lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
     <string name="card_reader_connect_open_bluetooth_settings">Bluetooth をオンにする</string>
-    <string name="card_reader_connect_scanning_failed_header">Reader が見つかりません</string>
+    <string name="card_reader_connect_scanning_failed_header">Reader が接続されていません</string>
     <string name="card_reader_connect_failed_header">Reader に接続できませんでした</string>
     <string name="card_reader_connect_connect_button">連携</string>
     <string name="card_reader_connect_multiple_readers_found_header">複数の Reader が見つかりました</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">この注文のお支払いは完了しています</string>
     <string name="card_reader_payment_receipt_email_content">ご購入ありがとうございます。 以下のリンクをクリックしてお支払いのレシートをご確認ください。\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">お支払いが完了しませんでした</string>
     <string name="card_reader_payment_failed_card_declined_state">カードが拒否されました</string>
     <string name="shipping_label_print_customs_form_download_failed">税関申告書をダウンロードする際にエラーが発生しました</string>
     <string name="shipping_label_print_customs_form_screen_title">税関送り状を印刷</string>
@@ -53,7 +144,6 @@ Language: ja_JP
     <string name="product_create_attribute_helper">バリエーションを作るには、最初にその属性 (「色」、「サイズ」など) を設定する必要があります</string>
     <string name="product_variation_single_count">1個のバリエーション</string>
     <string name="product_variation_multiple_count">%1$s個のバリエーション</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s追跡</string>
     <string name="card_reader_software_update_in_progress_title">Reader のソフトウェアを更新しています</string>
     <string name="card_reader_software_update_title">ソフトウェア更新</string>
     <string name="card_reader_software_update_description">カードリーダーのソフトウェアを更新して順調な稼働が続くようにする必要があります。 今すぐ更新しますか ? </string>
@@ -194,7 +284,6 @@ Language: ja_JP
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce で配送ラベルを購入すると、郵便局の価格と比べて5%～40% お得です。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  サービスの割引はどのくらいですか ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">配送オプションの読み込みでエラーが発生しました</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">選択したアドレスと荷物に対応した配送オプションがありません</string>
     <string name="shipping_label_shipping_carriers_title">配送業者と金額</string>
     <string name="shipping_label_create_purchase">配送ラベルを購入</string>
     <string name="shipping_label_create_mark_order_complete">この注文に完了のマークを付けてお客様に通知</string>
@@ -232,7 +321,7 @@ Language: ja_JP
     <string name="product_add_attribute">属性を追加</string>
     <string name="product_variation_attributes">属性</string>
     <string name="product_variations_edit_attr">属性を編集</string>
-    <string name="shipping_label_multi_packages_total_weight">荷物の総重量: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_total_weight">荷物の合計重量: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%2$d個の荷物内に%1$d個のアイテム</string>
     <string name="shipping_label_single_package_total_weight">荷物の総重量: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">カスタム荷物</string>
@@ -257,11 +346,9 @@ Language: ja_JP
     <string name="shipping_label_address_suggestion_use_selected_address">選択した住所を使用</string>
     <string name="shipping_label_edit_address_loading_progress_title">住所データを読み込んでいます</string>
     <string name="product_wip_title_m5">新機能を利用できます。</string>
-    <string name="product_wip_message_m5">商品にダウンロード可能なファイルを追加して、アップセルとクロスセルの商品をリンクできるようになりました。 商品が不要になりましたか ? ゴミ箱に移動しましょう。</string>
     <string name="shipping_label_validation_view_map">マップを開く</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
     <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
-    <string name="shipping_label_error_required_field">必須のフィールド</string>
     <string name="shipping_label_error_address_invalid_street">無効な住所</string>
     <string name="shipping_label_error_address_house_number_missing">番地が見つかりません</string>
     <string name="shipping_label_error_address_not_found">住所が見つかりませんでした</string>
@@ -341,7 +428,6 @@ Language: ja_JP
     <string name="product_downloadable_files_add">ファイルを追加</string>
     <string name="product_downloadable_files_value_single">1件のファイル</string>
     <string name="product_downloadable_files_value_multiple">%1$d ファイル</string>
-    <string name="product_wip_message_m4">Woo アプリで、シンプルでリンクおよびグループ化された商品を外出先でも作成できるようになりました。ぜひインストールしてください。 下書きとして保存しましょう !</string>
     <string name="print_shipping_label_info_step_4">&lt;b&gt;プリンター自体で WiFi 印刷を直接設定する必要があるようです。&lt;/b&gt;プリンターのファームウェアが最新であることを確認し、プリンターの説明書をお読みになることをおすすめします。</string>
     <string name="print_shipping_label_info_step_3">端末の&lt;b&gt;デフォルトの印刷サービス&lt;/b&gt;を選択するか、&lt;b&gt;プリンターのブランドのアプリ&lt;/b&gt;をインストールできます (これは推奨オプションとして表示)</string>
     <string name="print_shipping_label_info_step_1">お使いのプリンターと端末が&lt;b&gt;同じ WiFi ネットワーク&lt;/b&gt;に接続されていることを確認してください</string>
@@ -663,10 +749,10 @@ Language: ja_JP
     <string name="orderlist_loading">注文を検索しています…</string>
     <string name="product_detail_editable_text_hint">テキストを入力</string>
     <string name="product_detail_title_hint">商品名を入力</string>
-    <string name="product_detail_update_product_success">商品更新</string>
+    <string name="product_detail_save_product_success">商品更新</string>
     <string name="product_detail_update_product_error">商品の更新中にエラーが発生しました。</string>
     <string name="product_update_dialog_message">しばらくお待ちください…</string>
-    <string name="product_update_dialog_title">商品を更新しています</string>
+    <string name="product_save_dialog_title">商品を更新しています</string>
     <string name="product_description_empty">商品を説明</string>
     <string name="product_description">説明</string>
     <string name="product_edit_description">説明を編集</string>
@@ -679,7 +765,7 @@ Language: ja_JP
     <string name="order_refunds_select_quantity">数量を選択</string>
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
-    <string name="order_refunds_item_description">各%s x %s</string>
+    <string name="order_refunds_item_description">各 %s x %s</string>
     <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>
@@ -1153,7 +1239,6 @@ Language: ja_JP
     <string name="site_picker_title">ストアを選択</string>
     <string name="settings_signout">ログアウト</string>
     <string name="orderstatus_select_status">注文ステータスを変更</string>
-    <string name="order_status_changed_to">注文ステータスを %s に変更しました</string>
     <string name="orderdetail_change_order_status">クリックすると注文ステータスを変更できます</string>
     <string name="apply">適用</string>
     <string name="app_rating_rate_never">結構です</string>
@@ -1475,5 +1560,9 @@ Language: ja_JP
     <string-array name="order_list_tabs">
         <item>処理中</item>
         <item>すべての注文</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>カスタムパッケージ</item>
+        <item>サービスパッケージ</item>
     </string-array>
 </resources>

@@ -1,22 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-07-07 13:54:04+0000
+Translation-Revision-Date: 2021-08-04 20:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="settings_card_reader_payments">תשלומים באופן אישי</string>
+    <string name="card_reader_tutorial_charged_detail">הקורא זקוק לכשלוש שעות כדי לבצע חיוב מלא</string>
+    <string name="card_reader_tutorial_charged_label">כדאי לשמור על הקורא טעון</string>
+    <string name="card_reader_tutorial_reconnect_detail">הקורא שלך יעבור למצב שינה לאחר 10 דקות של חוסר פעילות. צריך פשוט ללחוץ על לחצן ההפעלה כדי לחברו מחדש.</string>
+    <string name="card_reader_tutorial_reconnect_label">חיבור מחדש אוטומטי</string>
+    <string name="card_reader_tutorial_collect_detail">כדי לגבות תשלומים, צריך פשוט להחליק, לקרב או להכניס את הכרטיס לקורא</string>
+    <string name="card_reader_tutorial_collect_label">החלקה, קירוב או הכנסה של כרטיס</string>
+    <string name="card_reader_tutorial_connected_detail">ברכותינו, כעת באפשרותך לקבל תשלומים בכרטיס אשראי ובכרטיס חיוב!</string>
+    <string name="card_reader_tutorial_connected_label">הקורא חובר</string>
+    <string name="card_reader_onboarding_contact_support">נדרשת לך עזרה? &lt;a href=\'\'&gt;כדאי לפנות לתמיכה&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;למידע נוסף&lt;/a&gt; על קבלת תשלומים באמצעות המכשיר הנייד והזמנה של קוראי כרטיסים</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">תשלומים באופן אישי אינם זמינים במצב בדיקה. יש לכבות את המכשיר כדי להמשיך.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">תשלומים באופן אישי אינם זמינים כרגע</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">ישנן דרישות ממתינות בחשבון שלך. כדי להמשיך ולקבל תשלומים באופן אישי, על ⁦%1$s⁩ להשלים את הדרישות הללו.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">חשבון WooCommerce Payments שלך כולל דרישות ממתינות</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">יש לך לפחות דרישה אחת בחשבונך שעבר המועד שלה. יש לטפל בה כדי לחדש פעולת התשלומים באופן אישי</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">תשלומים באופן אישי אינם זמינים כרגע</string>
+    <string name="card_reader_onboarding_account_under_review_hint">ניתן יהיה לקבל תשלומים באופן אישי ברגע שנסיים לבחון את חשבונך.</string>
+    <string name="card_reader_onboarding_account_under_review_header">תשלומים באופן אישי אינם זמינים כרגע</string>
+    <string name="card_reader_onboarding_account_rejected_hint">אנחנו מצטערים, אבל אין באפשרותנו לתמוך בתשלומים באופן אישי עבור חנות זו.</string>
+    <string name="card_reader_onboarding_account_rejected_header">תשלומים באופן אישי אינם זמינים עבור חנות זו</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">לרענן לאחר עדכון</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">בחנות שלך הותקנה גרסה מיושנת של ההרחבה WooCommerce Payments. יש לעדכן אותה כדי לקבל תשלומים באופן אישי.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">עדכון WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">רענון</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">כמעט סיימת! על מנת להתחיל לקבל תשלומים בהצגת כרטיס, יש לסיים את ההגדרה של WooCommerce Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">השלמת ההגדרה של WooCommerce Payments במנהל המערכת של החנות שלך</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">לרענן לאחר עדכון</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">בחנות שלך הותקנה ההרחבה WooCommerce Payments אך היא לא הופעלה. יש להפעיל אותה כדי לקבל תשלומים באופן אישי.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">הפעלת WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">לרענן לאחר התקנה</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">יש להתקין את ההרחבה בחינם WooCommerce Payments בחנות שלך כדי לקבל תשלומים באופן אישי.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">התקנת WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;למידע נוסף&lt;/a&gt; על קבלת תשלומים באמצעות המכשיר הנייד והזמנה של קוראי כרטיסים</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">נדרשת לך עזרה? &lt;a href=\'\'&gt;כדאי לפנות לתמיכה&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">עדיין אפשר לקבל תשלומי מזומן באופן אישי על ידי הפעלת אמצעי התשלום \"מזומן בעת מסירה\" בחנות שלך</string>
+    <string name="card_reader_onboarding_country_not_supported_header">איננו תומכים בתשלומים באופן אישי ב-⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_loading">התחברות לחשבונך</string>
+    <string name="card_reader_onboarding_title">תשלומים באופן אישי</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">כדאי לבדוק שוב את מידות האריזה ומשקלה או לנסות להשתמש באריזה שונה ב\'פרטי החבילה\'</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">תעריפי המשלוח אינם זמינים</string>
+    <string name="shipping_label_activate_service_package_empty_title">כל האריזות הזמינות הופעלו</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">הפעלת אריזה</string>
+    <string name="shipping_label_create_service_package_nothing_selected">בחירת חבילה להפעלה.</string>
+    <string name="error_required_field">שדה חובה</string>
+    <string name="close">לסגור</string>
+    <string name="variation_created_title">סוג נוצר</string>
+    <string name="variation_list_generate_new_variation">ליצור סוג חדש</string>
+    <string name="product_wip_message_variations">כעת אפשר ליצור ולנהל סוגי מוצרים!</string>
+    <string name="product_attributes_created_generate_action_text">יצירת סוג</string>
+    <string name="product_attributes_created_description">לאחר הוספת המאפיינים, באפשרותך ליצור את הסוג הראשון שלך!</string>
+    <string name="product_attributes_created_title">המאפיינים נוספו</string>
+    <string name="card_reader_software_update_progress_cancel_warning">לא מומלץ לבטל עדכון תוכנה בזמן פעולתו</string>
+    <string name="card_reader_payment_failed_unexpected_error_state">אנו מתנצלים, לא ניתן היה לעבד תשלום זה</string>
+    <string name="card_reader_payment_failed_server_error_state">אין חיבור לשרת</string>
+    <string name="card_reader_payment_failed_no_network_state">אין חיבור אינטרנט</string>
+    <string name="shipping_label_move_item_dialog_original_packaging_option">משלוח באריזה מקורית</string>
+    <string name="shipping_label_move_item_dialog_new_package_option">הוספת אריזה חדשה</string>
+    <string name="shipping_label_move_item_dialog_description">פריט זה נמצא כעת ב-%s. לאן ברצונך להעביר אותו?</string>
+    <string name="shipping_label_move_item_dialog_cancel">לבטל</string>
+    <string name="shipping_label_move_item_dialog_move">להעביר</string>
+    <string name="shipping_label_move_item_dialog_title">העבר פריט</string>
+    <string name="shipping_label_create_custom_package_success_message">\"⁦%1$s⁩\" נשמר</string>
+    <string name="shipping_label_create_custom_package_generic_failure">יצירת האריזה נכשלה. יש לנסות שוב.</string>
+    <string name="shipping_label_create_custom_package_api_unknown_failure">יצירת האריזה נכשלה: בעיית API לא מוכרת</string>
+    <string name="shipping_label_create_custom_package_api_failure">יצירת האריזה נכשלה: ⁦%1$s⁩</string>
+    <string name="shipping_label_create_package_saving_progress_message">רק רגע…</string>
+    <string name="shipping_label_create_custom_package_saving_progress_title">יצירת אריזה חדשה</string>
+    <string name="shipping_label_create_custom_package_field_invalid_hint">ערך לא חוקי.</string>
+    <string name="shipping_label_create_custom_package_field_empty_hint">חובה להזין שדה זה.</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight_helper">משקל האריזה הריקה</string>
+    <string name="shipping_label_create_custom_package_field_empty_weight">משקל האריזה הריקה (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_height">גובה (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_width">רוחב (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_length">אורך (⁦%1$s⁩)</string>
+    <string name="shipping_label_create_custom_package_field_name">שם האריזה</string>
+    <string name="shipping_label_create_custom_package_field_type_envelope">מעטפה</string>
+    <string name="shipping_label_create_custom_package_field_type_box">קופסה</string>
+    <string name="shipping_label_create_custom_package_field_type_info">בחירת סוג אריזה</string>
+    <string name="shipping_label_create_custom_package_field_type">סוג אריזה</string>
+    <string name="shipping_label_create_package_field_info">הגדרת האריזה שבה תשתמש כדי לשלוח את המוצרים שלך. אנחנו נשמור אותה להזמנות עתידיות.</string>
+    <string name="shipping_label_create_package_title">הוספת אריזה חדשה.</string>
+    <string name="shipping_label_create_new_package_button">יצירת אריזה חדשה</string>
+    <string name="shipping_label_package_details_individual_package_dimensions_error">ממדי האריזה חייבים להיות גדולים מאפס כדי להמשיך עדכן את ממדי הפריט שלך בחלק ה\'משלוח\' של דף המוצר.</string>
+    <string name="shipping_label_package_details_individual_package_title">אריזה מקורית</string>
+    <string name="shipping_label_package_details_individual_package_dimensions">ממדי הפריט</string>
+    <string name="shipping_label_package_details_individual_package_subtitle">פריט הנשלח באופן נפרד</string>
+    <string name="order_status_updated">מצב ההזמנה עודכן</string>
+    <string name="receipt_preview_send_menu_item">שלח</string>
+    <string name="receipt_preview_print_menu_item">להדפיס</string>
+    <string name="orderdetail_see_receipt_button">להצגת הקבלה</string>
+    <string name="cancel_anyway">בטל בכל זאת</string>
     <string name="card_reader_detail_connected_update_failed">העדכון של תוכנת הקורא נכשל</string>
     <string name="card_reader_detail_connected_update_check_failed">הבדיקה של עדכון גרסת התוכנה נכשלה</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;למידע נוסף&lt;/a&gt; על קבלת תשלומים באמצעות המכשיר נייד והזמנת קוראי כרטיסים</string>
     <string name="card_reader_connect_open_bluetooth_settings">יש להפעיל את חיבור ה-Bluetooth</string>
-    <string name="card_reader_connect_scanning_failed_header">לא נמצא Reader</string>
+    <string name="card_reader_connect_scanning_failed_header">לא מחובר קורא</string>
     <string name="card_reader_connect_failed_header">לא הצלחנו להתחבר לקורא</string>
     <string name="card_reader_connect_connect_button">להתחבר</string>
     <string name="card_reader_connect_multiple_readers_found_header">נמצאו כמה קוראים</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">ההזמנה כבר שולמה</string>
     <string name="card_reader_payment_receipt_email_content">תודה שרכשת אצלנו! ניתן ללחוץ על הקישור שלמטה כדי לקבל את התשלום.\n\n%s</string>
-    <string name="card_reader_payment_failed_unexpected_error_state">התשלום נכשל</string>
     <string name="card_reader_payment_failed_card_declined_state">הכרטיס נדחה</string>
     <string name="shipping_label_print_customs_form_download_failed">שגיאה בהורדת טופס המכס</string>
     <string name="shipping_label_print_customs_form_screen_title">הדפסת חשבונית מכס</string>
@@ -53,7 +144,6 @@ Language: he_IL
     <string name="product_create_attribute_helper">כדי ליצור סוג, עליך קודם כל להגדיר את המאפיינים שלו (למשל, \'צבע\', \'מידה\')</string>
     <string name="product_variation_single_count">סוג אחד</string>
     <string name="product_variation_multiple_count">⁦%1$s⁩ סוגים</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">מבצע מעקב של %s</string>
     <string name="card_reader_software_update_in_progress_title">מעדכן את התוכנה של הקורא שלך</string>
     <string name="card_reader_software_update_title">עדכון תוכנה</string>
     <string name="card_reader_software_update_description">עליך לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח את הפעילות התקינה שלה. האם ברצונך לעדכן כעת?</string>
@@ -194,7 +284,6 @@ Language: he_IL
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">כאשר רוכשים תוויות משלוח עם WooCommerce, אפשר לחסוך בין 5% ל-40% לעומת תעריפי המשלוח דרך הדואר.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">מהי  הנחת השירותים של WooCommerce?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">אירעה שגיאה בטעינת אפשרויות המשלוח</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">אין אפשרויות משלוח לכתובת ולחבילות שבחרת</string>
     <string name="shipping_label_shipping_carriers_title">ספקים ותעריפים</string>
     <string name="shipping_label_create_purchase">לרכוש תווית משלוח</string>
     <string name="shipping_label_create_mark_order_complete">לסמן את ההזמנה כ\'הושלמה\' ולהודיע ללקוח</string>
@@ -257,11 +346,9 @@ Language: he_IL
     <string name="shipping_label_address_suggestion_use_selected_address">להשתמש בכתובת שנבחרה</string>
     <string name="shipping_label_edit_address_loading_progress_title">טוען את הנתונים של הכתובת</string>
     <string name="product_wip_title_m5">אפשרויות חדשות זמינות!</string>
-    <string name="product_wip_message_m5">כעת אפשר להוסיף קבצים שניתנים להורדה למוצר ולקשר מוצרים של שדרוגי מכירות ושל מכירות משלימות. אין לך עוד צורך במוצר מסוים? אפשר להעביר אותו לפח!</string>
     <string name="shipping_label_validation_view_map">לפתוח את המפה</string>
     <string name="shipping_label_validation_contact_customer">ליצור קשר עם הלקוח</string>
     <string name="shipping_label_validation_error_template">האימות נכשל: %s</string>
-    <string name="shipping_label_error_required_field">שדה חובה</string>
     <string name="shipping_label_error_address_invalid_street">רחוב לא חוקי</string>
     <string name="shipping_label_error_address_house_number_missing">מספר הבית חסר</string>
     <string name="shipping_label_error_address_not_found">הכתובת לא נמצאה</string>
@@ -341,7 +428,6 @@ Language: he_IL
     <string name="product_downloadable_files_add">להוסיף קובץ</string>
     <string name="product_downloadable_files_value_single">קובץ אחד</string>
     <string name="product_downloadable_files_value_multiple">⁦%1$d⁩ קבצים</string>
-    <string name="product_wip_message_m4">מעכשיו אפשר ליצור מוצרים פשוטים, מקושרים ומקובצים חדשים מכל מקום, דרך האפליקציה של WooCommerce. לא מתאים לך כרגע? אפשר לשמור אותם כטיוטה!</string>
     <string name="print_shipping_label_info_step_4">ייתכן שיהיה עליך &lt;b&gt;להגדיר את ההדפסת מה-WiFi ישירות מהמדפסת עצמה.&lt;/b&gt; יש לוודא שהקושחה של המדפסת מעודכנת ולבדוק את ההוראות בתיעוד של המדפסת.</string>
     <string name="print_shipping_label_info_step_3">אפשר לבחור את &lt;b&gt;שירות ההדפסה בברירת מחדל&lt;/b&gt; של המכשיר או להתקין את &lt;b&gt;אפליקציית המותג של המדפסת&lt;/b&gt; (היא אמורה להופיע כאפשרות מומלצת)</string>
     <string name="print_shipping_label_info_step_1">יש לוודא שהמדפסת והמכשיר מחוברים אל &lt;b&gt;אותן רשתות WiFi‏ &lt;/b&gt;</string>
@@ -663,10 +749,10 @@ Language: he_IL
     <string name="orderlist_loading">מחפש את ההזמנות שלך…</string>
     <string name="product_detail_editable_text_hint">להזין טקסט</string>
     <string name="product_detail_title_hint">להזין את שם המוצר</string>
-    <string name="product_detail_update_product_success">המוצר עודכן</string>
+    <string name="product_detail_save_product_success">המוצר עודכן</string>
     <string name="product_detail_update_product_error">שגיאה בעדכון המוצר</string>
     <string name="product_update_dialog_message">נא להמתין…</string>
-    <string name="product_update_dialog_title">מעדכן את המוצר</string>
+    <string name="product_save_dialog_title">מעדכן את המוצר</string>
     <string name="product_description_empty">יש לתאר את המוצר שלך</string>
     <string name="product_description">תיאור</string>
     <string name="product_edit_description">לערוך את התיאור</string>
@@ -1153,7 +1239,6 @@ Language: he_IL
     <string name="site_picker_title">בחירת חנות</string>
     <string name="settings_signout">התנתקות</string>
     <string name="orderstatus_select_status">שינוי מצב ההזמנה</string>
-    <string name="order_status_changed_to">מצב ההזמנה שונה ל-%s</string>
     <string name="orderdetail_change_order_status">ללחוץ לשנוי מצב ההזמנה</string>
     <string name="apply">החלה</string>
     <string name="app_rating_rate_never">לא תודה</string>
@@ -1475,5 +1560,9 @@ Language: he_IL
     <string-array name="order_list_tabs">
         <item>בטיפול</item>
         <item>כל ההזמנות</item>
+    </string-array>
+    <string-array name="shipping_label_create_new_package_tabs">
+        <item>חבילות מותאמות אישית</item>
+        <item>חבילת שירות</item>
     </string-array>
 </resources>

@@ -37,9 +37,8 @@
             android:defaultValue="0L"
             app:argType="long" />
         <argument
-            android:name="shippingLabelId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="shippingLabelIds"
+            app:argType="long[]" />
         <argument
             android:name="isReprint"
             android:defaultValue="true"
@@ -78,8 +77,8 @@
         android:label="PrintShippingLabelCustomsFormFragment"
         tools:layout="@layout/fragment_print_label_customs_form">
         <argument
-            android:name="url"
-            app:argType="string" />
+            android:name="invoices"
+            app:argType="string[]" />
         <argument
             android:name="isReprint"
             app:argType="boolean" />
@@ -269,7 +268,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -472,7 +471,7 @@
     </fragment>
     <dialog
         android:id="@+id/cardReaderPaymentDialog"
-        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog"
+        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
         android:label="CardReaderPaymentDialog">
         <argument
             android:name="orderIdentifier"
@@ -480,9 +479,33 @@
     </dialog>
     <dialog
         android:id="@+id/cardReaderConnectDialog"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
         android:label="CardReaderConnectDialog">
+        <argument
+            android:name="skipOnboarding"
+            app:argType="boolean"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"
+            app:destination="@id/cardReaderTutorialDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </dialog>
+    <dialog
+        android:id="@+id/cardReaderTutorialDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
+        android:label="CardReaderTutorialDialogFragment" />
+    <fragment
+        android:id="@+id/cardReaderOnboardingFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
+        android:label="CardReaderOnboardingFragment" />
     <fragment
         android:id="@+id/receiptPreviewFragment"
         android:name="com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewFragment"

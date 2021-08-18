@@ -32,8 +32,8 @@ internal class CheckSoftwareUpdatesAction(
             }
 
             override fun onFailure(e: TerminalException) {
-                // todo cardreader log the exception stack trace
                 logWrapper.e("CardReader", "Checking for updates failed: ${e.errorMessage}")
+                logWrapper.e("CardReader", e.stackTraceToString())
                 continuation.resume(Failed(e))
             }
         })

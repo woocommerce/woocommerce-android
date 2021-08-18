@@ -1,14 +1,14 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.clearInvocations
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
@@ -18,6 +18,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -70,6 +71,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
+
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private val savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
@@ -163,6 +166,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 productTagsRepository,
                 mediaFilesRepository,
                 variationRepository,
+                mediaFileUploadHandler,
                 prefs
             )
         )
@@ -248,8 +252,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onUpdateButtonClicked()
 
         // then
-        assertThat(successSnackbarShown).isTrue
-        assertThat(productData?.isProgressDialogShown).isFalse
+        assertThat(successSnackbarShown).isTrue()
+        assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
     @Test
@@ -316,7 +320,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             verify(productRepository, times(1)).updateProduct(any())
 
             viewModel.event.observeForever {
-                if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
+                if (it is ShowSnackbar && it.message == R.string.product_detail_save_product_success) {
                     successSnackbarShown = true
                 }
             }

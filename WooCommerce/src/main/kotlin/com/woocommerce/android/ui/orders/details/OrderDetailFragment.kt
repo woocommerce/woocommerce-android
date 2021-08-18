@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
@@ -24,7 +25,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABELS_M1
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABELS_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
@@ -43,7 +44,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialog
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
@@ -51,7 +52,8 @@ import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectFragment
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -149,10 +151,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 showProductListMenuButton(it)
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it, false)
-            }
-            new.isReprintShippingLabelBannerVisible.takeIfNotEqualTo(old?.isReprintShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it, true)
+                displayShippingLabelsWIPCard(it)
             }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
@@ -221,8 +220,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
-        handleDialogResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT, R.id.orderDetailFragment) {
-            viewModel.onOrderStatusChanged(it, OrderStatusUpdateSource.DIALOG)
+        handleDialogResult<OrderStatusUpdateSource>(
+            key = OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT,
+            entryId = R.id.orderDetailFragment
+        ) { updateSource ->
+            viewModel.onOrderStatusChanged(updateSource)
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
             viewModel.onNewOrderNoteAdded(it)
@@ -233,18 +235,21 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleResult<OrderShipmentTracking>(AddOrderShipmentTrackingFragment.KEY_ADD_SHIPMENT_TRACKING_RESULT) {
             viewModel.onNewShipmentTrackingAdded(it)
         }
-        handleResult<String>(OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT) {
-            viewModel.onOrderStatusChanged(it, OrderStatusUpdateSource.FULFILL_SCREEN)
+        handleResult<OrderStatusUpdateSource>(OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT) { updateSource ->
+            viewModel.onOrderStatusChanged(updateSource)
         }
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
         }
-        handleResult<Boolean>(CardReaderConnectFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
+        handleResult<Boolean>(CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
             if (FeatureFlag.CARD_READER.isEnabled()) {
                 viewModel.onConnectToReaderResultReceived(connected)
             }
         }
-        handleNotice(CardReaderPaymentDialog.KEY_CARD_PAYMENT_RESULT) {
+        handleDialogNotice<String>(
+            key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
+            entryId = R.id.orderDetailFragment
+        ) {
             if (FeatureFlag.CARD_READER.isEnabled()) {
                 viewModel.onCardReaderPaymentCompleted()
             }
@@ -254,6 +259,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
         handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
             viewModel.onShippingLabelsPurchased()
+        }
+        handleNotice(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_SUCCESS) {
+            viewModel.onOnboardingSuccess()
         }
     }
 
@@ -424,30 +432,21 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
     }
 
-    private fun displayShippingLabelsWIPCard(show: Boolean, isReprintBanner: Boolean) {
+    private fun displayShippingLabelsWIPCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
             binding.orderDetailShippingLabelsWipCard.isVisible = true
-            val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner) {
-                R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
-            } else {
-                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m3_wip_message
-            }
 
             binding.orderDetailShippingLabelsWipCard.initView(
-                getString(wipCardTitleId),
-                getString(wipCardMessageId),
-                onGiveFeedbackClick = { onGiveFeedbackClicked(isReprintBanner) },
-                onDismissClick = { onDismissProductWIPNoticeCardClicked(isReprintBanner) }
+                getString(R.string.orderdetail_shipping_label_m2_wip_title),
+                getString(R.string.orderdetail_shipping_label_m3_wip_message),
+                onGiveFeedbackClick = { onGiveFeedbackClicked() },
+                onDismissClick = { onDismissProductWIPNoticeCardClicked() }
             )
         } else binding.orderDetailShippingLabelsWipCard.isVisible = false
     }
 
-    private fun onGiveFeedbackClicked(isM1: Boolean) {
-        val context = if (isM1) {
-            AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
-        } else {
-            AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
-        }
+    private fun onGiveFeedbackClicked() {
+        val context = AnalyticsTracker.VALUE_SHIPPING_LABELS_M4_FEEDBACK
 
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER,
@@ -462,12 +461,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             .apply { findNavController().navigateSafely(this) }
     }
 
-    private fun onDismissProductWIPNoticeCardClicked(isM1: Boolean) {
-        val context = if (isM1) {
-            AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
-        } else {
-            AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
-        }
+    private fun onDismissProductWIPNoticeCardClicked() {
+        val context = AnalyticsTracker.VALUE_SHIPPING_LABELS_M4_FEEDBACK
 
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER,
@@ -477,11 +472,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             )
         )
         registerFeedbackSetting(DISMISSED)
-        displayShippingLabelsWIPCard(false, isM1)
+        displayShippingLabelsWIPCard(false)
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(SHIPPING_LABELS_M1.name, state)
+        FeatureFeedbackSettings(SHIPPING_LABELS_M4.name, state)
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 

@@ -8,14 +8,14 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.CardReader
+import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderStatus.Connected
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.CheckForUpdatesFailed
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.Initializing
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.UpToDate
-import com.woocommerce.android.cardreader.SoftwareUpdateAvailability.UpdateAvailable
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.CheckForUpdatesFailed
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.Initializing
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.UpToDate
+import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.UpdateAvailable
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -38,6 +38,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
+
+private const val PERCENT_100 = 100
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
@@ -85,6 +87,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 ),
                 readerName = readerStatus.cardReader.getReadersName(),
                 readerBattery = readerStatus.cardReader.getReadersBatteryLevel(),
+                readerFirmwareVersion = readerStatus.cardReader.getReaderFirmwareVersion(),
                 primaryButtonState = ButtonState(
                     onActionClicked = ::onUpdateReaderClicked,
                     text = UiStringRes(R.string.card_reader_detail_connected_update_software)
@@ -99,6 +102,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 enforceReaderUpdate = null,
                 readerName = readerStatus.cardReader.getReadersName(),
                 readerBattery = readerStatus.cardReader.getReadersBatteryLevel(),
+                readerFirmwareVersion = readerStatus.cardReader.getReaderFirmwareVersion(),
                 primaryButtonState = ButtonState(
                     onActionClicked = ::onDisconnectClicked,
                     text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
@@ -146,25 +150,6 @@ class CardReaderDetailViewModel @Inject constructor(
         appPrefs.removeLastConnectedCardReaderId()
     }
 
-    private fun CardReader.getReadersName(): UiString {
-        return with(id) {
-            if (isNullOrEmpty()) {
-                UiStringRes(R.string.card_reader_detail_connected_reader_unknown)
-            } else {
-                UiStringText(this)
-            }
-        }
-    }
-
-    private fun CardReader.getReadersBatteryLevel(): UiString? {
-        return currentBatteryLevel?.let {
-            UiStringRes(
-                R.string.card_reader_detail_connected_battery_percentage,
-                listOf(UiStringText((it * 100).roundToInt().toString()))
-            )
-        }
-    }
-
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
         data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
@@ -175,7 +160,9 @@ class CardReaderDetailViewModel @Inject constructor(
             val onPrimaryActionClicked: (() -> Unit)
         ) : ViewState() {
             val headerLabel = UiStringRes(R.string.card_reader_detail_not_connected_header)
-            @DrawableRes val illustration = R.drawable.img_card_reader_not_connected
+
+            @DrawableRes
+            val illustration = R.drawable.img_card_reader_not_connected
             val firstHintNumber = UiStringText("1")
             val secondHintNumber = UiStringText("2")
             val thirdHintNumber = UiStringText("3")
@@ -190,6 +177,7 @@ class CardReaderDetailViewModel @Inject constructor(
             val enforceReaderUpdate: UiString?,
             val readerName: UiString,
             val readerBattery: UiString?,
+            val readerFirmwareVersion: UiString,
             val primaryButtonState: ButtonState?,
             val secondaryButtonState: ButtonState?
         ) : ViewState() {
@@ -203,4 +191,30 @@ class CardReaderDetailViewModel @Inject constructor(
 
         object Loading : ViewState()
     }
+}
+
+private fun CardReader.getReadersName(): UiString {
+    return with(id) {
+        if (isNullOrEmpty()) {
+            UiStringRes(R.string.card_reader_detail_connected_reader_unknown)
+        } else {
+            UiStringText(this)
+        }
+    }
+}
+
+private fun CardReader.getReadersBatteryLevel(): UiString? {
+    return currentBatteryLevel?.let {
+        UiStringRes(
+            R.string.card_reader_detail_connected_battery_percentage,
+            listOf(UiStringText((it * PERCENT_100).roundToInt().toString()))
+        )
+    }
+}
+
+private fun CardReader.getReaderFirmwareVersion(): UiString {
+    return UiStringRes(
+        R.string.card_reader_detail_connected_firmware_version,
+        listOf(UiStringText(this.firmwareVersion.substringBefore("-")))
+    )
 }

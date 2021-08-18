@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -17,6 +16,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAddonsDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -95,6 +96,7 @@ class ProductDetailCardBuilder(
                 product.price(),
                 product.productReviews(),
                 product.inventory(SIMPLE),
+                product.addons(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -113,6 +115,7 @@ class ProductDetailCardBuilder(
                 product.groupedProducts(),
                 product.productReviews(),
                 product.inventory(GROUPED),
+                product.addons(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -130,6 +133,7 @@ class ProductDetailCardBuilder(
                 product.productReviews(),
                 product.externalLink(),
                 product.inventory(EXTERNAL),
+                product.addons(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -147,6 +151,7 @@ class ProductDetailCardBuilder(
                 product.variationAttributes(),
                 product.productReviews(),
                 product.inventory(VARIABLE),
+                product.addons(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -166,6 +171,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.productReviews(),
+                product.addons(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -425,7 +431,12 @@ class ProductDetailCardBuilder(
         val showTitle = groupedProductsSize > 0
 
         val groupedProductsDesc = if (showTitle) {
-            StringUtils.getPluralString(resources, groupedProductsSize, R.plurals.product_count)
+            StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = groupedProductsSize,
+                default = string.product_count_many,
+                one = string.product_count_one,
+            )
         } else {
             resources.getString(string.grouped_product_empty)
         }
@@ -446,15 +457,17 @@ class ProductDetailCardBuilder(
     private fun Product.linkedProducts(): ProductProperty? {
         if (!hasLinkedProducts()) return null
 
-        val upsellDesc = StringUtils.getPluralString(
-            resources,
-            this.upsellProductIds.size,
-            R.plurals.upsell_product_count
+        val upsellDesc = StringUtils.getQuantityString(
+            resourceProvider = resources,
+            quantity = this.upsellProductIds.size,
+            one = string.upsell_product_count_one,
+            default = string.upsell_product_count_many,
         )
-        val crossSellDesc = StringUtils.getPluralString(
-            resources,
-            this.crossSellProductIds.size,
-            R.plurals.cross_sell_product_count
+        val crossSellDesc = StringUtils.getQuantityString(
+            resourceProvider = resources,
+            quantity = this.crossSellProductIds.size,
+            one = string.cross_sell_product_count_one,
+            default = string.cross_sell_product_count_many,
         )
 
         return ComplexProperty(
@@ -601,4 +614,14 @@ class ProductDetailCardBuilder(
             null
         }
     }
+
+    private fun Product.addons(): ProductProperty? =
+        takeIf { addons.isNotEmpty() && FeatureFlag.PRODUCT_ADD_ONS.isEnabled() }?.let {
+            ComplexProperty(
+                value = resources.getString(string.product_add_ons_card_button_title),
+                icon = drawable.ic_gridicon_circle_plus,
+                showTitle = false,
+                onClick = { viewModel.onEditProductCardClicked(ViewProductAddonsDetails) }
+            )
+        }
 }

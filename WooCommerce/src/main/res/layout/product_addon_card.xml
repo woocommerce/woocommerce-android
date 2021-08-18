@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/minor_100">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/addon_name"
+            style="@style/Woo.Card.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:includeFontPadding="false"
+            android:textStyle="bold"
+            tools:text="Addon Name" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/addon_description"
+            style="@style/Woo.Card.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:includeFontPadding="false"
+            android:visibility="gone"
+            tools:text="Addon Description" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/options_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            tools:itemCount="3"
+            tools:listitem="@layout/product_addon_option_item" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

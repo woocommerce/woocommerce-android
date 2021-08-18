@@ -229,6 +229,18 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED,
         SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
         SHIPPING_LABEL_ORDER_FULFILL_FAILED,
+        SHIPPING_LABEL_MOVE_ITEM_TAPPED,
+        SHIPPING_LABEL_ITEM_MOVED,
+        SHIPPING_LABEL_ADD_PAYMENT_METHOD_TAPPED,
+        SHIPPING_LABEL_PAYMENT_METHOD_ADDED,
+        SHIPPING_LABEL_ADD_PACKAGE_TAPPED,
+        SHIPPING_LABEL_PACKAGE_ADDED_SUCCESSFULLY,
+        SHIPPING_LABEL_ADD_PACKAGE_FAILED,
+        SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
+
+        // -- Card Present Payments - onboarding
+        CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED,
+        CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
 
         // -- Card Present Payments - collection
         CARD_PRESENT_COLLECT_PAYMENT_TAPPED,
@@ -720,8 +732,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
         const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
-        const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
-        const val VALUE_SHIPPING_LABELS_M2_FEEDBACK = "shipping_labels_m2"
+        const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
