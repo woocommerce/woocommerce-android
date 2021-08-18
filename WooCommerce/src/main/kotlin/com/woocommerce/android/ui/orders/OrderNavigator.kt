@@ -168,7 +168,8 @@ class OrderNavigator @Inject constructor() {
                 OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderedAddonFragment(
                         orderId = target.remoteOrderID,
-                        orderItemId = target.orderItemID
+                        orderItemId = target.orderItemID,
+                        addonsProductId = target.addonsProductID
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
         }
