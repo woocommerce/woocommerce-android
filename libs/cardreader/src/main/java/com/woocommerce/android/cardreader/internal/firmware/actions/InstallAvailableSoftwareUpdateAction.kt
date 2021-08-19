@@ -4,6 +4,7 @@ import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.flow.callbackFlow
 
 internal class InstallAvailableSoftwareUpdateAction(
     private val terminal: TerminalWrapper,
@@ -16,7 +17,7 @@ internal class InstallAvailableSoftwareUpdateAction(
     }
 
     @Suppress("EmptyFunctionBlock")
-    fun installUpdate() {}
+    fun installUpdate() = callbackFlow<InstallSoftwareUpdateStatus> {}
 }
 
 @Suppress("EmptyFunctionBlock")

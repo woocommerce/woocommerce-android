@@ -72,7 +72,7 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `when udpate available, then installation is started`() = runBlockingTest {
+    fun `when update available, then installation is started`() = runBlockingTest {
         whenever(checkUpdatesAction.checkUpdates())
             .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock()))
 
