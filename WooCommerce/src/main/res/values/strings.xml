@@ -918,6 +918,7 @@
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
+    <string name="pending_review_label">Pending Review</string>
     <!--
         Products
     -->
