@@ -15,9 +15,11 @@ internal class InstallAvailableSoftwareUpdateAction(
         data class Failed(val e: TerminalException) : InstallSoftwareUpdateStatus()
     }
 
+    @Suppress("EmptyFunctionBlock")
     fun installUpdate() {}
 }
 
+@Suppress("EmptyFunctionBlock")
 private val noopCallback = object : Callback {
     override fun onFailure(e: TerminalException) {}
 
