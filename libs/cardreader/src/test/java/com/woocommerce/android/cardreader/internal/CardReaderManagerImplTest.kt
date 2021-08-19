@@ -1,13 +1,13 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
+import com.stripe.stripeterminal.TerminalApplicationDelegate
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.TerminalLifecycleObserver
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
@@ -27,7 +27,7 @@ class CardReaderManagerImplTest {
     private lateinit var cardReaderManager: CardReaderManagerImpl
     private val terminalWrapper: TerminalWrapper = mock()
     private val tokenProvider: TokenProvider = mock()
-    private val lifecycleObserver: TerminalLifecycleObserver = mock()
+    private val lifecycleObserver: TerminalApplicationDelegate = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
     private val connectionManager: ConnectionManager = mock()
@@ -44,13 +44,6 @@ class CardReaderManagerImplTest {
             softwareUpdateManager
         )
         whenever(terminalWrapper.getLifecycleObserver()).thenReturn(lifecycleObserver)
-    }
-
-    @Test
-    fun `when manager gets initialized, then terminal gets registered to activity lifecycle`() {
-        cardReaderManager.initialize(application)
-
-        verify(application, atLeastOnce()).registerActivityLifecycleCallbacks(lifecycleObserver)
     }
 
     @Test

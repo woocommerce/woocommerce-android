@@ -1,13 +1,13 @@
 package com.woocommerce.android.cardreader.internal.connection.actions
 
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.Cancelable
+import com.stripe.stripeterminal.external.callable.DiscoveryListener
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.Cancelable
-import com.stripe.stripeterminal.callable.DiscoveryListener
 import com.stripe.stripeterminal.external.models.Reader
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders

@@ -1,13 +1,10 @@
 package com.woocommerce.android.cardreader.internal.firmware
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus
@@ -23,6 +20,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
 class SoftwareUpdateManagerTest {
@@ -36,7 +36,7 @@ class SoftwareUpdateManagerTest {
 
         whenever(checkUpdatesAction.checkUpdates())
             .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock()))
-        whenever(installAvailableSoftwareUpdatesAction.installSoftwareUpdate(any()))
+        whenever(installAvailableSoftwareUpdatesAction.installUpdate())
             .thenAnswer {
                 flow<InstallSoftwareUpdateStatus> {}
             }
@@ -78,12 +78,12 @@ class SoftwareUpdateManagerTest {
 
         updateManager.updateSoftware().toList().last()
 
-        verify(installAvailableSoftwareUpdatesAction).installSoftwareUpdate(any())
+        verify(installAvailableSoftwareUpdatesAction).installUpdate()
     }
 
     @Test
     fun `when installation progresses, then Installing state with progress emitted`() = runBlockingTest {
-        whenever(installAvailableSoftwareUpdatesAction.installSoftwareUpdate(any())).thenAnswer {
+        whenever(installAvailableSoftwareUpdatesAction.installUpdate()).thenAnswer {
             flow<InstallSoftwareUpdateStatus> {
                 emit(Installing(0.1f))
             }
@@ -96,7 +96,7 @@ class SoftwareUpdateManagerTest {
 
     @Test
     fun `when installation succeeds, then Success state emitted`() = runBlockingTest {
-        whenever(installAvailableSoftwareUpdatesAction.installSoftwareUpdate(any())).thenAnswer {
+        whenever(installAvailableSoftwareUpdatesAction.installUpdate()).thenAnswer {
             flow<InstallSoftwareUpdateStatus> {
                 emit(Success)
             }
@@ -112,7 +112,7 @@ class SoftwareUpdateManagerTest {
         val terminalException = mock<TerminalException>().also {
             whenever(it.errorMessage).thenReturn("dummy message")
         }
-        whenever(installAvailableSoftwareUpdatesAction.installSoftwareUpdate(any())).thenAnswer {
+        whenever(installAvailableSoftwareUpdatesAction.installUpdate()).thenAnswer {
             flow<InstallSoftwareUpdateStatus> {
                 emit(Failed(terminalException))
             }
