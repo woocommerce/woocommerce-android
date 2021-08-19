@@ -366,6 +366,7 @@
     <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
+    <string name="ordered_add_ons_details_info_notice">If renaming an add-on in your web dashboard, please note that previous orders will no longer show that add-on within the app.</string>
     <!--
         Shipping label Refunds
     -->
