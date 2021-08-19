@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -18,10 +19,24 @@ import javax.inject.Inject
 class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    private val addonsRepository: AddonRepository
+    private val addonsRepository: AddonRepository,
+    parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
+    companion object {
+        private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+    }
+
     private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
     val orderedAddonsData: LiveData<List<ProductAddon>> = _orderedAddons
+
+    /**
+     * Provides the currencyCode for views who requires display prices
+     */
+    val currencyCode =
+        parameterRepository
+            .getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+            .currencyCode
+            .orEmpty()
 
     fun start(
         orderID: Long,

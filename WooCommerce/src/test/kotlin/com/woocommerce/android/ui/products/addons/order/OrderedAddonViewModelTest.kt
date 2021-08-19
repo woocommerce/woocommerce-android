@@ -1,14 +1,17 @@
 package com.woocommerce.android.ui.products.addons.order
 
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderedAddonList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultProductAddonList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.emptyProductAddon
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.listWithSingleAddonAndTwoValidOptions
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -31,10 +34,20 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
+        val savedStateMock = mock<SavedStateHandle>()
+        val storeParametersMock = mock<SiteParameters>().apply {
+            whenever(currencyCode).doReturn("currency-code")
+        }
+        val parameterRepositoryMock = mock<ParameterRepository>().apply {
+            whenever(getParameters("key_product_parameters", savedStateMock))
+                .doReturn(storeParametersMock)
+        }
+
         viewModelUnderTest = OrderedAddonViewModel(
-            mock(),
+            savedStateMock,
             coroutinesTestRule.testDispatchers,
-            addonRepositoryMock
+            addonRepositoryMock,
+            parameterRepositoryMock
         )
     }
 
