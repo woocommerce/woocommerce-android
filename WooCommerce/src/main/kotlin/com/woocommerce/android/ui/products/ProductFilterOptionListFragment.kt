@@ -42,8 +42,7 @@ class ProductFilterOptionListFragment :
             addItemDecoration(
                 AlignedDividerDecoration(
                     requireActivity(),
-                    DividerItemDecoration.VERTICAL,
-                    alignStartToStartOf = R.id.filterOptionItem_name
+                    DividerItemDecoration.VERTICAL
                 )
             )
             layoutManager = LinearLayoutManager(activity)
