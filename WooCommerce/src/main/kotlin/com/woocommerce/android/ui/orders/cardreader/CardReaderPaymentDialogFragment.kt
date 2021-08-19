@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.CardReaderPaymentEvent.NavigateToCardReaderConnectFragment
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.util.ActivityUtils
@@ -75,10 +74,6 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                     )
                     is SendReceipt -> composeEmail(event.address, event.subject, event.content)
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    NavigateToCardReaderConnectFragment ->
-                        findNavController().navigateSafely(
-                            R.id.action_cardReaderPaymentDialogFragment_to_cardReaderConnectDialogFragment
-                        )
                     else -> event.isHandled = false
                 }
             }

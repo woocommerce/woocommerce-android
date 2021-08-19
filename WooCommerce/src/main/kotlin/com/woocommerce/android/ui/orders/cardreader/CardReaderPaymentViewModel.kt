@@ -51,7 +51,6 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -95,9 +94,8 @@ class CardReaderPaymentViewModel
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
             initPaymentFlow(isRetry = false)
         } else {
-            triggerEvent(CardReaderPaymentEvent.NavigateToCardReaderConnectFragment)
-//            triggerEvent(ShowSnackbar(R.string.card_reader_payment_reader_not_connected))
-//            triggerEvent(Exit)
+            triggerEvent(ShowSnackbar(R.string.card_reader_payment_reader_not_connected))
+            triggerEvent(Exit)
         }
     }
 
@@ -351,10 +349,6 @@ class CardReaderPaymentViewModel
         .formatAmountWithCurrency(this.currency, this.total.toDouble())
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
-
-    sealed class CardReaderPaymentEvent : Event() {
-        object NavigateToCardReaderConnectFragment : CardReaderPaymentEvent()
-    }
 
     sealed class ViewState(
         @StringRes val hintLabel: Int? = null,
