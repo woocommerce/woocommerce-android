@@ -24,7 +24,7 @@ internal class PaymentErrorMapper {
             }
         val type = when (exception.errorCode) {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CARD_READ_TIMED_OUT
-            TerminalErrorCode.PAYMENT_DECLINED_BY_STRIPE_API -> PAYMENT_DECLINED
+            TerminalErrorCode.DECLINED_BY_STRIPE_API -> PAYMENT_DECLINED
             TerminalErrorCode.REQUEST_TIMED_OUT -> NO_NETWORK
             else -> GENERIC_ERROR
         }

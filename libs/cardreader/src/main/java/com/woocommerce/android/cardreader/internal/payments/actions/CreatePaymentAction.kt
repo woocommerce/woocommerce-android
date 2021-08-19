@@ -51,7 +51,7 @@ internal class CreatePaymentAction(
     }
 
     private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
-        val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToIntegerInCents(paymentInfo.amount)
+        val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToLongInCents(paymentInfo.amount)
         val builder = paymentIntentParametersFactory.createBuilder()
             .setDescription(paymentInfo.paymentDescription)
             .setAmount(amountInSmallestCurrencyUnit)

@@ -8,13 +8,12 @@ import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus
-import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
@@ -29,15 +28,15 @@ import org.mockito.junit.MockitoJUnitRunner
 class SoftwareUpdateManagerTest {
     private lateinit var updateManager: SoftwareUpdateManager
     private val checkUpdatesAction: CheckSoftwareUpdatesAction = mock()
-    private val installSoftwareUpdatesAction: InstallSoftwareUpdateAction = mock()
+    private val installAvailableSoftwareUpdatesAction: InstallAvailableSoftwareUpdateAction = mock()
 
     @Before
     fun setUp() = runBlockingTest {
-        updateManager = SoftwareUpdateManager(checkUpdatesAction, installSoftwareUpdatesAction)
+        updateManager = SoftwareUpdateManager(checkUpdatesAction, installAvailableSoftwareUpdatesAction)
 
         whenever(checkUpdatesAction.checkUpdates())
             .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock()))
-        whenever(installSoftwareUpdatesAction.installUpdate(any()))
+        whenever(installAvailableSoftwareUpdatesAction.installSoftwareUpdate(any()))
             .thenAnswer {
                 flow<InstallSoftwareUpdateStatus> {}
             }
@@ -79,12 +78,12 @@ class SoftwareUpdateManagerTest {
 
         updateManager.updateSoftware().toList().last()
 
-        verify(installSoftwareUpdatesAction).installUpdate(any())
+        verify(installAvailableSoftwareUpdatesAction).installSoftwareUpdate(any())
     }
 
     @Test
     fun `when installation progresses, then Installing state with progress emitted`() = runBlockingTest {
-        whenever(installSoftwareUpdatesAction.installUpdate(any())).thenAnswer {
+        whenever(installAvailableSoftwareUpdatesAction.installSoftwareUpdate(any())).thenAnswer {
             flow<InstallSoftwareUpdateStatus> {
                 emit(Installing(0.1f))
             }
@@ -97,7 +96,7 @@ class SoftwareUpdateManagerTest {
 
     @Test
     fun `when installation succeeds, then Success state emitted`() = runBlockingTest {
-        whenever(installSoftwareUpdatesAction.installUpdate(any())).thenAnswer {
+        whenever(installAvailableSoftwareUpdatesAction.installSoftwareUpdate(any())).thenAnswer {
             flow<InstallSoftwareUpdateStatus> {
                 emit(Success)
             }
@@ -113,7 +112,7 @@ class SoftwareUpdateManagerTest {
         val terminalException = mock<TerminalException>().also {
             whenever(it.errorMessage).thenReturn("dummy message")
         }
-        whenever(installSoftwareUpdatesAction.installUpdate(any())).thenAnswer {
+        whenever(installAvailableSoftwareUpdatesAction.installSoftwareUpdate(any())).thenAnswer {
             flow<InstallSoftwareUpdateStatus> {
                 emit(Failed(terminalException))
             }

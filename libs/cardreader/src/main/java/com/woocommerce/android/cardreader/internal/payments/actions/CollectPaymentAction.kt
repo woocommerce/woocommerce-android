@@ -1,7 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.external.callable.ReaderDisplayListener
+import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
@@ -31,17 +30,6 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
         return callbackFlow {
             val cancelable = terminal.collectPaymentMethod(
                 paymentIntent,
-                object : ReaderDisplayListener {
-                    override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
-                        logWrapper.d("CardReader", message.toString())
-                        this@callbackFlow.sendBlockingIfOpen(DisplayMessageRequested(message))
-                    }
-
-                    override fun onRequestReaderInput(options: ReaderInputOptions) {
-                        logWrapper.d("CardReader", "Waiting for input: $options")
-                        this@callbackFlow.sendBlockingIfOpen(ReaderInputRequested(options))
-                    }
-                },
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         logWrapper.d("CardReader", "Payment collected")
@@ -60,10 +48,6 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                 if (!cancelable.isCompleted) cancelable.cancel(noop)
             }
         }
-    }
-
-    private fun <E> SendChannel<E>.sendBlockingIfOpen(element: E) {
-        if (!isClosedForSend) sendBlocking(element)
     }
 }
 

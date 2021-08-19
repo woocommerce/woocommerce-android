@@ -37,7 +37,8 @@ internal class TerminalWrapper {
         config: DiscoveryConfiguration,
         discoveryListener: DiscoveryListener,
         callback: Callback
-    ): Cancelable = Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
+    ): Cancelable =
+        Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
 
     fun connectToReader(
         reader: Reader,

@@ -5,7 +5,7 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 
-internal class InstallSoftwareUpdateAction(
+internal class InstallAvailableSoftwareUpdateAction(
     private val terminal: TerminalWrapper,
     private val logWrapper: LogWrapper
 ) {

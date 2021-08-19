@@ -1,10 +1,9 @@
 package com.woocommerce.android.cardreader.internal.connection.actions
 
 import com.stripe.stripeterminal.external.callable.Callback
-import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
-import com.stripe.stripeterminal.external.models.DeviceType.CHIPPER_2X
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.DiscoveryMethod
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
@@ -32,7 +31,11 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
     fun discoverReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> {
         return callbackFlow {
             this.sendBlocking(Started)
-            val config = DiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, CHIPPER_2X, isSimulated)
+            val config = DiscoveryConfiguration(
+                DISCOVERY_TIMEOUT_IN_SECONDS,
+                DiscoveryMethod.BLUETOOTH_SCAN,
+                isSimulated,
+            )
             var foundReaders: List<Reader>? = null
             val cancelable = terminal.discoverReaders(
                 config,

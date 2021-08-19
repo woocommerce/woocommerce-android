@@ -9,15 +9,11 @@ import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
@@ -29,14 +25,14 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-internal class InstallSoftwareUpdateActionTest {
-    private lateinit var action: InstallSoftwareUpdateAction
+internal class InstallAvailableSoftwareUpdateActionTest {
+    private lateinit var action: InstallAvailableSoftwareUpdateAction
     private val terminal: TerminalWrapper = mock()
     private val updateData: ReaderSoftwareUpdate = mock()
 
     @Before
     fun setUp() {
-        action = InstallSoftwareUpdateAction(terminal, mock())
+        action = InstallAvailableSoftwareUpdateAction(terminal, mock())
     }
 
     @Test
@@ -49,7 +45,7 @@ internal class InstallSoftwareUpdateActionTest {
             mock<Cancelable>()
         }
 
-        val result = action.installUpdate(mock()).take(progressValues.size).toList()
+        val result = action.installSoftwareUpdate(mock()).take(progressValues.size).toList()
 
         assertThat(result).isEqualTo(progressValues.map { Installing(it) })
     }
@@ -61,7 +57,7 @@ internal class InstallSoftwareUpdateActionTest {
             mock<Cancelable>()
         }
 
-        val result = action.installUpdate(mock()).single()
+        val result = action.installSoftwareUpdate(mock()).single()
 
         assertThat(result).isEqualTo(Success)
     }
@@ -73,7 +69,7 @@ internal class InstallSoftwareUpdateActionTest {
             mock<Cancelable>()
         }
 
-        val result = action.installUpdate(mock()).single()
+        val result = action.installSoftwareUpdate(mock()).single()
 
         assertThat(result).isInstanceOf(Failed::class.java)
     }
@@ -84,7 +80,7 @@ internal class InstallSoftwareUpdateActionTest {
         whenever(cancelable.isCompleted).thenReturn(false)
         whenever(terminal.installSoftwareUpdate(any(), any(), any())).thenAnswer { cancelable }
         val job = launch {
-            action.installUpdate(mock()).collect { }
+            action.installSoftwareUpdate(mock()).collect { }
         }
 
         job.cancel()
@@ -102,7 +98,7 @@ internal class InstallSoftwareUpdateActionTest {
             cancelable
         }
         val job = launch {
-            action.installUpdate(mock()).collect { }
+            action.installSoftwareUpdate(mock()).collect { }
         }
 
         job.cancel()
