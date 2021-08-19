@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.addons.order
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
@@ -32,10 +33,16 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private var _binding: FragmentOrderedAddonBinding? = null
     private val binding get() = _binding!!
     private var layoutManager: LayoutManager? = null
+    private val supportActionBar
+        get() = activity
+            ?.let { it as? AppCompatActivity }
+            ?.supportActionBar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentOrderedAddonBinding.bind(view)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
+
         setupObservers()
         viewModel.start(
             navArgs.orderId,
