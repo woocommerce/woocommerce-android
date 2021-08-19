@@ -44,6 +44,8 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         )
     }
 
+    override fun getFragmentTitle() = getString(R.string.product_add_ons_title)
+
     private fun setupObservers() {
         viewModel.orderedAddonsData
             .observe(viewLifecycleOwner, Observer(::onOrderedAddonsReceived))
