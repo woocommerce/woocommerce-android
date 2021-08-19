@@ -54,7 +54,7 @@ class AddonRepositoryTest {
         configureSuccessfulOrderResponse()
         configureSuccessfulProductResponse()
 
-        repositoryUnderTest.fetchOrderAddonsData(123, 999, 333)
+        repositoryUnderTest.getOrderAddonsData(123, 999, 333)
             ?.let { (productAddons, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
@@ -75,7 +75,7 @@ class AddonRepositoryTest {
 
         val expectedAddons = defaultOrderAttributes
 
-        repositoryUnderTest.fetchOrderAddonsData(123, 999, 333)
+        repositoryUnderTest.getOrderAddonsData(123, 999, 333)
             ?.let { (_, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
@@ -89,23 +89,43 @@ class AddonRepositoryTest {
     }
 
     @Test
+    fun `getAddonsFrom should return addons successfully`() {
+        configureSuccessfulProductResponse()
+
+        val expectedAddons = defaultWCProductModel.addons!!
+
+        val actualAddons = repositoryUnderTest.getAddonsFrom(333)
+
+        assertThat(actualAddons).isEqualTo(expectedAddons)
+    }
+
+    @Test
+    fun `getAddonsFrom should return null when the requested with wrong ID`() {
+        configureSuccessfulProductResponse()
+
+        val actualAddons = repositoryUnderTest.getAddonsFrom(999)
+
+        assertThat(actualAddons).isNull()
+    }
+
+    @Test
     fun `fetchOrderAddonsData should return null if product addon data fails`() {
         configureSuccessfulOrderResponse()
-        val response = repositoryUnderTest.fetchOrderAddonsData(123, 999, 333)
+        val response = repositoryUnderTest.getOrderAddonsData(123, 999, 333)
         assertThat(response).isNull()
     }
 
     @Test
     fun `fetchOrderAddonsData should return null if order addon data fails`() {
         configureSuccessfulProductResponse()
-        val response = repositoryUnderTest.fetchOrderAddonsData(123, 999, 333)
+        val response = repositoryUnderTest.getOrderAddonsData(123, 999, 333)
         assertThat(response).isNull()
     }
 
     @Test
     fun `fetchOrderAddonsData should return null if order item ID is incorrect`() {
         configureSuccessfulProductResponse()
-        val response = repositoryUnderTest.fetchOrderAddonsData(123, 0, 333)
+        val response = repositoryUnderTest.getOrderAddonsData(123, 0, 333)
         assertThat(response).isNull()
     }
 
