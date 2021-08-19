@@ -53,7 +53,7 @@ class ProductAddonCard @JvmOverloads constructor(
     ) = with(binding) {
         addonName.text = addon.name
         bindOptionList(addon, formatCurrencyForDisplay)
-        if(orderMode.not()) bindDescription(addon)
+        if (orderMode.not()) bindDescription(addon)
     }
 
     private fun ProductAddonCardBinding.bindDescription(
