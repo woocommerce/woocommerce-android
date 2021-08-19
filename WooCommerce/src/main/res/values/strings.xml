@@ -766,7 +766,7 @@
     <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
     <string name="card_reader_payment_remove_card_prompt">Remove the card</string>
     <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Multiple cards detected. Try again with a single card</string>
-    <string name="card_reader_payment_try_another_read_method_prompt">Retry tapping/inserting/swiping</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Retry tapping, inserting or swiping your card</string>
     <string name="card_reader_payment_try_another_card_prompt">Retry with another card</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
