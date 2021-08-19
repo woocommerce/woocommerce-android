@@ -48,11 +48,12 @@ class ProductAddonCard @JvmOverloads constructor(
 
     fun bind(
         addon: ProductAddon,
-        formatCurrencyForDisplay: (BigDecimal) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        orderMode: Boolean
     ) = with(binding) {
         addonName.text = addon.name
-        bindDescription(addon)
         bindOptionList(addon, formatCurrencyForDisplay)
+        if(orderMode.not()) bindDescription(addon)
     }
 
     private fun ProductAddonCardBinding.bindDescription(

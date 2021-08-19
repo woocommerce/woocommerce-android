@@ -62,7 +62,8 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         binding.addonsList.layoutManager = layoutManager
         binding.addonsList.adapter = AddonListAdapter(
             addonList,
-            currencyFormatter.buildBigDecimalFormatter(viewModel.currencyCode)
+            currencyFormatter.buildBigDecimalFormatter(viewModel.currencyCode),
+            orderMode = true
         )
     }
 }
