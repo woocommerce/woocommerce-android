@@ -6,9 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.VIRTUAL
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -17,18 +20,22 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.CATEGORY
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductFilterListViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val productCategoriesRepository: ProductCategoriesRepository,
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -49,6 +56,8 @@ class ProductFilterListViewModel @Inject constructor(
         LiveDataDelegate(savedState, ProductFilterOptionListViewState())
     private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
+    private lateinit var productCategories: List<ProductCategory>
+
     /**
      * Holds the filter properties (stock_status, status, type) already selected by the user in a [Map]
      * where the key is the [ProductFilterOption] and value is the slug associated with the property.
@@ -61,29 +70,43 @@ class ProductFilterListViewModel @Inject constructor(
         arguments.selectedStockStatus?.let { params.put(STOCK_STATUS, it) }
         arguments.selectedProductType?.let { params.put(TYPE, it) }
         arguments.selectedProductStatus?.let { params.put(STATUS, it) }
+        arguments.selectedProductCategory?.let { params.put(CATEGORY, it) }
         savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
         params
     }
 
     fun getFilterString() = productFilterOptions.values.joinToString(", ")
 
-    fun getFilterByStockStatus() = productFilterOptions[STOCK_STATUS]
+    private fun getFilterByStockStatus() = productFilterOptions[STOCK_STATUS]
 
-    fun getFilterByProductStatus() = productFilterOptions[STATUS]
+    private fun getFilterByProductStatus() = productFilterOptions[STATUS]
 
-    fun getFilterByProductType() = productFilterOptions[TYPE]
+    private fun getFilterByProductType() = productFilterOptions[TYPE]
+
+    private fun getFilterByProductCategory() = productFilterOptions[CATEGORY]
+
+    private suspend fun loadCategories() {
+        productCategories = if (networkStatus.isConnected()) {
+            productCategoriesRepository.fetchProductCategories()
+        } else {
+            productCategoriesRepository.getProductCategoriesList()
+        }
+    }
 
     fun loadFilters() {
-        _filterListItems.value = buildFilterListItemUiModel()
+        launch {
+            loadCategories()
+            _filterListItems.value = buildFilterListItemUiModel()
 
-        val screenTitle = if (productFilterOptions.isNotEmpty()) {
-            resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
-        } else resourceProvider.getString(string.product_list_filters)
+            val screenTitle = if (productFilterOptions.isNotEmpty()) {
+                resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
+            } else resourceProvider.getString(string.product_list_filters)
 
-        productFilterListViewState = productFilterListViewState.copy(
-            screenTitle = screenTitle,
-            displayClearButton = productFilterOptions.isNotEmpty()
-        )
+            productFilterListViewState = productFilterListViewState.copy(
+                screenTitle = screenTitle,
+                displayClearButton = productFilterOptions.isNotEmpty()
+            )
+        }
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
@@ -148,13 +171,14 @@ class ProductFilterListViewModel @Inject constructor(
         val result = ProductFilterResult(
             productStatus = getFilterByProductStatus(),
             stockStatus = getFilterByStockStatus(),
-            productType = getFilterByProductType()
+            productType = getFilterByProductType(),
+            productCategory = getFilterByProductCategory()
         )
         triggerEvent(ExitWithResult(result))
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
-        return listOf(
+        val filterListItems = mutableListOf(
             FilterListItemUiModel(
                 STOCK_STATUS,
                 resourceProvider.getString(string.product_stock_status),
@@ -196,6 +220,26 @@ class ProductFilterListViewModel @Inject constructor(
                     }.toMutableList(),
                     productFilterOptions[TYPE].isNullOrEmpty()
                 )
+            )
+        )
+        filterListItems.add(buildCategoryFilterListItemUiModel())
+
+        return filterListItems
+    }
+
+    private fun buildCategoryFilterListItemUiModel(): FilterListItemUiModel {
+        return FilterListItemUiModel(
+            CATEGORY,
+            resourceProvider.getString(string.product_category),
+            addDefaultFilterOption(
+                productCategories.map {
+                    FilterListOptionItemUiModel(
+                        it.name,
+                        it.remoteCategoryId.toString(),
+                        isSelected = productFilterOptions[CATEGORY] == it.remoteCategoryId.toString()
+                    )
+                }.toMutableList(),
+                productFilterOptions[CATEGORY].isNullOrEmpty()
             )
         )
     }

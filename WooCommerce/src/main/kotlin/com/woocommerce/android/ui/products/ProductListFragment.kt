@@ -291,7 +291,8 @@ class ProductListFragment :
                     is ShowProductFilterScreen -> showProductFilterScreen(
                         event.stockStatusFilter,
                         event.productTypeFilter,
-                        event.productStatusFilter
+                        event.productStatusFilter,
+                        event.productCategoryFilter
                     )
                     is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                     else -> event.isHandled = false
@@ -313,7 +314,8 @@ class ProductListFragment :
             viewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,
                 productStatus = result.productStatus,
-                productType = result.productType
+                productType = result.productType,
+                productCategory = result.productCategory
             )
         }
     }
@@ -448,8 +450,18 @@ class ProductListFragment :
         viewModel.onLoadMoreRequested()
     }
 
-    private fun showProductFilterScreen(stockStatus: String?, productType: String?, productStatus: String?) {
-        (activity as? MainNavigationRouter)?.showProductFilters(stockStatus, productType, productStatus)
+    private fun showProductFilterScreen(
+        stockStatus: String?,
+        productType: String?,
+        productStatus: String?,
+        productCategory: String?
+    ) {
+        (activity as? MainNavigationRouter)?.showProductFilters(
+            stockStatus,
+            productType,
+            productStatus,
+            productCategory
+        )
     }
 
     override fun onFilterOptionSelected() {
