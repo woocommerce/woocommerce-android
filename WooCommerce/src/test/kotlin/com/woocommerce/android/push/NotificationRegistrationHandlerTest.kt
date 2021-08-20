@@ -1,6 +1,7 @@
 package com.woocommerce.android.push
 
 import org.mockito.kotlin.*
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferencesWrapper
 import org.junit.Before
 import org.junit.Test
@@ -15,6 +16,7 @@ class NotificationRegistrationHandlerTest {
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
+    private val selectedSite: SelectedSite = mock()
     private val preferencesWrapper: PreferencesWrapper = mock()
 
     @Before
@@ -24,7 +26,7 @@ class NotificationRegistrationHandlerTest {
             accountStore = accountStore,
             notificationStore = mock(),
             preferencesWrapper = preferencesWrapper,
-            selectedSite = mock()
+            selectedSite = selectedSite
         )
     }
 
@@ -41,8 +43,23 @@ class NotificationRegistrationHandlerTest {
     }
 
     @Test
+    fun `do not register new fcm token if site does not exist`() {
+        doReturn(true).whenever(accountStore).hasAccessToken()
+        doReturn(false).whenever(selectedSite).exists()
+
+        val fcmToken = "123456"
+        notificationRegistrationHandler.onNewFCMTokenReceived(token = fcmToken)
+
+        verify(accountStore, atLeastOnce()).hasAccessToken()
+        verify(selectedSite, atLeastOnce()).exists()
+        verify(preferencesWrapper, never()).setFCMToken(any())
+        verify(dispatcher, never()).dispatch(any())
+    }
+
+    @Test
     fun `new fcm token is registered successfully only if user is logged in`() {
         doReturn(true).whenever(accountStore).hasAccessToken()
+        doReturn(true).whenever(selectedSite).exists()
 
         val fcmToken = "123456"
         notificationRegistrationHandler.onNewFCMTokenReceived(token = fcmToken)

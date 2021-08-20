@@ -217,7 +217,7 @@ class VariationDetailFragment :
             }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
-                showProgressDialog(it, R.string.product_update_dialog_title)
+                showProgressDialog(it, R.string.product_save_dialog_title)
             }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) {
                 doneOrUpdateMenuItem?.isVisible = it

@@ -1,0 +1,66 @@
+[
+  {
+    "id": 999,
+    "name": "Pizza",
+    "product_id": 333,
+    "meta_data": [
+      {
+        "id": 448,
+        "key": "Topping ($3,00)",
+        "value": "Peperoni",
+        "display_key": "Topping ($3,00)",
+        "display_value": "Peperoni"
+      },
+      {
+        "id": 449,
+        "key": "Topping ($4,00)",
+        "value": "Extra cheese",
+        "display_key": "Topping ($4,00)",
+        "display_value": "Extra cheese"
+      },
+      {
+        "id": 450,
+        "key": "Topping ($3,00)",
+        "value": "Salami",
+        "display_key": "Topping ($3,00)",
+        "display_value": "Salami"
+      },
+      {
+        "id": 451,
+        "key": "Soda ($8,00)",
+        "value": "4",
+        "display_key": "Soda ($8,00)",
+        "display_value": "4"
+      },
+      {
+        "id": 452,
+        "key": "Delivery ($5,00)",
+        "value": "Yes",
+        "display_key": "Delivery ($5,00)",
+        "display_value": "Yes"
+      },
+      {
+        "id": 453,
+        "key": "_reduced_stock",
+        "value": "1",
+        "display_key": "_reduced_stock",
+        "display_value": "1"
+      }
+    ],
+    "sku": "",
+    "price": 73,
+    "parent_name": null
+  },
+  {
+    "id": 50,
+    "name": "",
+    "product_id": 999,
+    "meta_data": []
+  },
+  {
+    "id": 51,
+    "name": "",
+    "product_id": 888,
+    "meta_data": []
+  }
+]

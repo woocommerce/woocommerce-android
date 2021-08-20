@@ -749,10 +749,10 @@ Language: ru
     <string name="orderlist_loading">Просмотр информации о ваших заказах…</string>
     <string name="product_detail_editable_text_hint">Введите текст</string>
     <string name="product_detail_title_hint">Введите название товара</string>
-    <string name="product_detail_update_product_success">Продукт обновлен</string>
+    <string name="product_detail_save_product_success">Продукт обновлен</string>
     <string name="product_detail_update_product_error">Ошибка обновления продукта</string>
     <string name="product_update_dialog_message">Пожалуйста, подождите…</string>
-    <string name="product_update_dialog_title">Обновление продукта</string>
+    <string name="product_save_dialog_title">Обновление продукта</string>
     <string name="product_description_empty">Опишите продукт</string>
     <string name="product_description">Описание</string>
     <string name="product_edit_description">Редактировать описание</string>

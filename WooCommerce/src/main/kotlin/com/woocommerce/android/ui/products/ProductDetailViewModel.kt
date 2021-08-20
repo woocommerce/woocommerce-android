@@ -715,7 +715,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     private fun pickProductUpdateSuccessText() =
         if (isAddFlowEntryPoint) string.product_detail_publish_product_success
-        else string.product_detail_update_product_success
+        else string.product_detail_save_product_success
 
     private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
         if (productWasAdded) {

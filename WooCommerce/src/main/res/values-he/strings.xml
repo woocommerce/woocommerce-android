@@ -749,10 +749,10 @@ Language: he_IL
     <string name="orderlist_loading">מחפש את ההזמנות שלך…</string>
     <string name="product_detail_editable_text_hint">להזין טקסט</string>
     <string name="product_detail_title_hint">להזין את שם המוצר</string>
-    <string name="product_detail_update_product_success">המוצר עודכן</string>
+    <string name="product_detail_save_product_success">המוצר עודכן</string>
     <string name="product_detail_update_product_error">שגיאה בעדכון המוצר</string>
     <string name="product_update_dialog_message">נא להמתין…</string>
-    <string name="product_update_dialog_title">מעדכן את המוצר</string>
+    <string name="product_save_dialog_title">מעדכן את המוצר</string>
     <string name="product_description_empty">יש לתאר את המוצר שלך</string>
     <string name="product_description">תיאור</string>
     <string name="product_edit_description">לערוך את התיאור</string>

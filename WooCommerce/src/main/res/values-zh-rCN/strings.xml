@@ -749,10 +749,10 @@ Language: zh_CN
     <string name="orderlist_loading">正在查找您的订单…</string>
     <string name="product_detail_editable_text_hint">输入文本</string>
     <string name="product_detail_title_hint">输入产品标题</string>
-    <string name="product_detail_update_product_success">产品已更新</string>
+    <string name="product_detail_save_product_success">产品已更新</string>
     <string name="product_detail_update_product_error">更新产品时出错</string>
     <string name="product_update_dialog_message">请稍候…</string>
-    <string name="product_update_dialog_title">正在更新产品</string>
+    <string name="product_save_dialog_title">正在更新产品</string>
     <string name="product_description_empty">描述您的产品</string>
     <string name="product_description">描述</string>
     <string name="product_edit_description">编辑描述</string>

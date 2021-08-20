@@ -8,13 +8,14 @@ import java.math.BigDecimal
 
 class AddonListAdapter(
     private val addons: List<ProductAddon>,
-    private val formatCurrencyForDisplay: (BigDecimal) -> String
+    private val formatCurrencyForDisplay: (BigDecimal) -> String,
+    private val orderMode: Boolean = false
 ) : RecyclerView.Adapter<AddonsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         AddonsViewHolder(ProductAddonCard(parent.context))
 
     override fun onBindViewHolder(holder: AddonsViewHolder, position: Int) {
-        holder.addonCard.bind(addons[position], formatCurrencyForDisplay)
+        holder.addonCard.bind(addons[position], formatCurrencyForDisplay, orderMode)
     }
 
     override fun getItemCount() = addons.size
