@@ -44,7 +44,6 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private var _binding: FragmentOrderedAddonBinding? = null
     private val binding get() = _binding!!
-    private var layoutManager: LayoutManager? = null
 
     private val supportActionBar
         get() = activity
@@ -68,6 +67,8 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
 
         setupObservers()
+        setupViews()
+
         viewModel.start(
             navArgs.orderId,
             navArgs.orderItemId,
@@ -82,18 +83,27 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
             .observe(viewLifecycleOwner, Observer(::onOrderedAddonsReceived))
     }
 
+    private fun setupViews() {
+        binding.addonsWipCard.initView(
+            title = getString(R.string.ordered_add_ons_wip_title),
+            message = getString(R.string.ordered_add_ons_wip_message),
+            onGiveFeedbackClick = ::onGiveFeedbackClicked,
+            onDismissClick = ::onDismissWIPCardClicked
+        )
+
+        binding.addonsList.layoutManager = LinearLayoutManager(
+            activity,
+            RecyclerView.VERTICAL,
+            false
+        )
+    }
+
     private fun onOrderedAddonsReceived(orderedAddons: List<ProductAddon>) {
         showWIPNoticeCard(true)
         setupRecyclerViewWith(orderedAddons)
     }
 
     private fun setupRecyclerViewWith(addonList: List<ProductAddon>) {
-        layoutManager = LinearLayoutManager(
-            activity,
-            RecyclerView.VERTICAL,
-            false
-        )
-        binding.addonsList.layoutManager = layoutManager
         binding.addonsList.adapter = AddonListAdapter(
             addonList,
             currencyFormatter.buildBigDecimalFormatter(viewModel.currencyCode),
@@ -101,19 +111,11 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         )
     }
 
-    private fun showWIPNoticeCard(shouldBeVisible: Boolean) =
-        with(binding.addonsWipCard) {
-            initView(
-                title = getString(R.string.ordered_add_ons_wip_title),
-                message = getString(R.string.ordered_add_ons_wip_message),
-                onGiveFeedbackClick = ::onGiveFeedbackClicked,
-                onDismissClick = ::onDismissWIPCardClicked
-            )
-
-            visibility =
-                if (shouldBeVisible && shouldRequestFeedback) VISIBLE
-                else GONE
-        }
+    private fun showWIPNoticeCard(shouldBeVisible: Boolean) {
+        binding.addonsWipCard.visibility =
+            if (shouldBeVisible && shouldRequestFeedback) VISIBLE
+            else GONE
+    }
 
     private fun onGiveFeedbackClicked() {
         // should send track event
