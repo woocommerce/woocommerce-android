@@ -268,7 +268,8 @@ class ProductFilterListViewModel @Inject constructor(
         return (
             arguments.selectedProductStatus != getFilterByProductStatus() ||
                 arguments.selectedProductType != getFilterByProductType() ||
-                arguments.selectedStockStatus != getFilterByStockStatus()
+                arguments.selectedStockStatus != getFilterByStockStatus() ||
+                arguments.selectedProductCategory != getFilterByProductCategory()
             )
     }
 
