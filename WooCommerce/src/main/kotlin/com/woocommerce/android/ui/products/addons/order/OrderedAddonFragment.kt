@@ -9,8 +9,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
@@ -22,6 +24,7 @@ import javax.inject.Inject
 class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     companion object {
         val TAG: String = OrderedAddonFragment::class.java.simpleName
+        val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.PRODUCT_ADDONS
     }
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -33,10 +36,17 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private var _binding: FragmentOrderedAddonBinding? = null
     private val binding get() = _binding!!
     private var layoutManager: LayoutManager? = null
+
     private val supportActionBar
         get() = activity
             ?.let { it as? AppCompatActivity }
             ?.supportActionBar
+
+    private val shouldRequestFeedback
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)
+                ?.takeIf { it.name == CURRENT_WIP_NOTICE_FEATURE.name }
+                ?.shouldRequestFeedback
+                ?: false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
