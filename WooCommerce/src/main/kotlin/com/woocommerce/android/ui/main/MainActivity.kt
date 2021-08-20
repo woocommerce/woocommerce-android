@@ -31,9 +31,6 @@ import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.navigation.KeepStateNavigator
-import com.woocommerce.android.push.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.push.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.push.getWooType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -42,6 +39,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.*
+import com.woocommerce.android.ui.main.MainActivityViewModel.*
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -60,12 +58,6 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -751,29 +743,6 @@ class MainActivity :
                 }
             }
         )
-    }
-
-    override fun showNotificationDetail(remoteNoteId: Long) {
-        showBottomNav()
-
-        (presenter.getNotificationByRemoteNoteId(remoteNoteId))?.let { note ->
-            when (note.getWooType()) {
-                NEW_ORDER -> {
-                    selectedSite.getIfExists()?.let { site ->
-                        note.getRemoteOrderId()?.let { orderId ->
-                            showOrderDetail(site.id, remoteOrderId = orderId, remoteNoteId = note.remoteNoteId)
-                        }
-                    }
-                }
-                PRODUCT_REVIEW -> showReviewDetail(
-                    note.getCommentId(),
-                    launchedFromNotification = true,
-                    enableModeration = true
-                )
-                else -> { /* do nothing */
-                }
-            }
-        }
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {

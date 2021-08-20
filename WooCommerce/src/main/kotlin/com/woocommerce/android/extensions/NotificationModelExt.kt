@@ -1,23 +1,8 @@
 package com.woocommerce.android.extensions
 
 import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.WooNotificationType
-import com.woocommerce.android.push.getWooType
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Kind.COMMENT
-
-/**
- * Parse and return the remote order id.
- *
- * Returns null if the notification is not of type new-order or if an ID cannot be parsed.
- */
-fun NotificationModel.getRemoteOrderId(): Long? {
-    if (this.getWooType() != WooNotificationType.NEW_ORDER) {
-        return null
-    }
-
-    return this.meta?.ids?.order
-}
 
 /**
  * Returns the remote comment_id associated with this notification. Product reviews are comments under the
