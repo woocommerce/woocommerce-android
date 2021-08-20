@@ -59,7 +59,7 @@ class ProductFilterListViewModel @Inject constructor(
     private lateinit var productCategories: List<ProductCategory>
 
     /**
-     * Holds the filter properties (stock_status, status, type) already selected by the user in a [Map]
+     * Holds the filter properties (stock_status, status, type, category) already selected by the user in a [Map]
      * where the key is the [ProductFilterOption] and value is the slug associated with the property.
      *
      * If no filters are previously selected, the map is empty.
@@ -284,7 +284,7 @@ class ProductFilterListViewModel @Inject constructor(
     ) : Parcelable
 
     /**
-     * [filterItemKey] includes the [ProductFilterOption] which can be [STATUS], [TYPE] or [STOCK_STATUS]
+     * [filterItemKey] includes the [ProductFilterOption] which can be [STATUS], [TYPE], [CATEGORY], or [STOCK_STATUS]
      * [filterItemName] is the display name of the filter list item i.e Product Status, Stock Status
      * [filterOptionListItems] includes a list of [FilterListOptionItemUiModel]
      */
@@ -334,6 +334,7 @@ class ProductFilterListViewModel @Inject constructor(
      * Eg: for stock status, this would be instock, outofstock
      * for product type, this would be simple, grouped, variable
      * for product status, this would be pending, draft
+     * for category, this would be category ID
      */
     @Parcelize
     data class FilterListOptionItemUiModel(
