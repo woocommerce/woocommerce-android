@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
@@ -12,6 +13,8 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.util.PreferenceUtils
 import java.util.Date
 
+// Guaranteed to hold a reference to the application context, which is safe
+@SuppressLint("StaticFieldLeak")
 object FeedbackPrefs {
     private lateinit var context: Context
     private val gson by lazy { Gson() }
@@ -61,9 +64,8 @@ object FeedbackPrefs {
     }
 
     private fun getString(key: FeedbackPrefKey, defaultValue: String = ""): String {
-        return PreferenceUtils.getString(sharedPreferences, key.toString(), defaultValue)?.let {
-            it
-        } ?: defaultValue
+        return PreferenceUtils.getString(sharedPreferences, key.toString(), defaultValue)
+            ?: defaultValue
     }
 
     private fun setString(key: FeedbackPrefKey, value: String) =
