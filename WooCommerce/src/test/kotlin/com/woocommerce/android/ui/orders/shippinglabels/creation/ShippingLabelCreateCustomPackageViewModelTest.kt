@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import androidx.lifecycle.SavedStateHandle
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
@@ -99,6 +99,38 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
         assertThat(state!!.widthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
         assertThat(state!!.heightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
         assertThat(state!!.weightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+    }
+
+    @Test
+    fun `given a dot length, width, height, or weight value, when value is entered, then display error message`() {
+        setup()
+        var state: ShippingLabelCreateCustomPackageViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> state = new }
+        viewModel.onFieldTextChanged(".", InputName.LENGTH)
+        viewModel.onFieldTextChanged(".", InputName.WIDTH)
+        viewModel.onFieldTextChanged(".", InputName.HEIGHT)
+        viewModel.onFieldTextChanged(".", InputName.EMPTY_WEIGHT)
+
+        assertThat(state!!.lengthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state!!.widthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state!!.heightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state!!.weightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+    }
+
+    @Test
+    fun `given a dot-something length,width,height,or weight value, when entered, then don't display error message`() {
+        setup()
+        var state: ShippingLabelCreateCustomPackageViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> state = new }
+        viewModel.onFieldTextChanged(".5", InputName.LENGTH)
+        viewModel.onFieldTextChanged(".5", InputName.WIDTH)
+        viewModel.onFieldTextChanged(".5", InputName.HEIGHT)
+        viewModel.onFieldTextChanged(".5", InputName.EMPTY_WEIGHT)
+
+        assertThat(state!!.lengthErrorMessage).isEqualTo(null)
+        assertThat(state!!.widthErrorMessage).isEqualTo(null)
+        assertThat(state!!.heightErrorMessage).isEqualTo(null)
+        assertThat(state!!.weightErrorMessage).isEqualTo(null)
     }
 
     @Test
