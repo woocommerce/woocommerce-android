@@ -156,7 +156,11 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     }
 
     private fun inputToFloat(input: String): Float {
-        return if (input.isBlank()) Float.NaN else input.trim('.').toFloat()
+        return when {
+            input.isBlank() -> Float.NaN
+            input == "." -> Float.NaN
+            else -> input.toFloat()
+        }
     }
 
     @Parcelize
