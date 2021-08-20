@@ -14,7 +14,11 @@ class AddonRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    fun fetchOrderAddonsData(
+    fun getAddonsFrom(productID: Long) =
+        productStore.getProductByRemoteId(selectedSite.get(), productID)
+            ?.addons
+
+    fun getOrderAddonsData(
         orderID: Long,
         orderItemID: Long,
         productID: Long
@@ -34,8 +38,7 @@ class AddonRepository @Inject constructor(
             ?.filter { it.isNotInternalAttributeData }
 
     private fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
-        productStore
-            .getProductByRemoteId(selectedSite.get(), productID)
-            ?.addons?.map { it.toAppModel() }
+        getAddonsFrom(productID)
+            ?.map { it.toAppModel() }
             ?.let { addons -> Pair(addons, this) }
 }

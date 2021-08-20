@@ -748,10 +748,10 @@ Language: pt_BR
     <string name="orderlist_loading">Procurando por pedidos…</string>
     <string name="product_detail_editable_text_hint">Inserir texto</string>
     <string name="product_detail_title_hint">Insira o título do produto</string>
-    <string name="product_detail_update_product_success">Produto atualizado</string>
+    <string name="product_detail_save_product_success">Produto atualizado</string>
     <string name="product_detail_update_product_error">Erro ao atualizar produto</string>
     <string name="product_update_dialog_message">Aguarde…</string>
-    <string name="product_update_dialog_title">Atualizando produto</string>
+    <string name="product_save_dialog_title">Atualizando produto</string>
     <string name="product_description_empty">Descreva o produto</string>
     <string name="product_description">Descrição</string>
     <string name="product_edit_description">Editar descrição</string>

@@ -749,10 +749,10 @@ Language: ja_JP
     <string name="orderlist_loading">注文を検索しています…</string>
     <string name="product_detail_editable_text_hint">テキストを入力</string>
     <string name="product_detail_title_hint">商品名を入力</string>
-    <string name="product_detail_update_product_success">商品更新</string>
+    <string name="product_detail_save_product_success">商品更新</string>
     <string name="product_detail_update_product_error">商品の更新中にエラーが発生しました。</string>
     <string name="product_update_dialog_message">しばらくお待ちください…</string>
-    <string name="product_update_dialog_title">商品を更新しています</string>
+    <string name="product_save_dialog_title">商品を更新しています</string>
     <string name="product_description_empty">商品を説明</string>
     <string name="product_description">説明</string>
     <string name="product_edit_description">説明を編集</string>

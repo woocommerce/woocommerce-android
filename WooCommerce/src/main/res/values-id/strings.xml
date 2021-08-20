@@ -749,10 +749,10 @@ Language: id
     <string name="orderlist_loading">Mencari pesanan Anda…</string>
     <string name="product_detail_editable_text_hint">Masukkan teks</string>
     <string name="product_detail_title_hint">Masukkan Nama Produk</string>
-    <string name="product_detail_update_product_success">Produk diperbarui</string>
+    <string name="product_detail_save_product_success">Produk diperbarui</string>
     <string name="product_detail_update_product_error">Error saat memperbarui produk</string>
     <string name="product_update_dialog_message">Harap tunggu…</string>
-    <string name="product_update_dialog_title">Memperbarui produk</string>
+    <string name="product_save_dialog_title">Memperbarui produk</string>
     <string name="product_description_empty">Deskripsikan produk Anda</string>
     <string name="product_description">Deskripsi</string>
     <string name="product_edit_description">Sunting deskripsi</string>
