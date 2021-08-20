@@ -282,11 +282,7 @@ class NotificationMessageHandler @Inject constructor(
 
         clearNotifications()
         ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
-
-        if (!hasNotifications()) {
-            notificationBuilder.cancelAllNotifications()
-            setHasUnseenReviewNotifs(false)
-        }
+        updateNotificationsState()
     }
 
     @Synchronized
@@ -303,11 +299,7 @@ class NotificationMessageHandler @Inject constructor(
 
         clearNotifications()
         ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
-
-        if (!hasNotifications()) {
-            notificationBuilder.cancelAllNotifications()
-            setHasUnseenReviewNotifs(false)
-        }
+        updateNotificationsState()
     }
 
     @Synchronized
@@ -324,9 +316,16 @@ class NotificationMessageHandler @Inject constructor(
         ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
 
         if (!hasNotifications()) {
-            notificationBuilder.cancelNotification(type.getGroupId())
+            notificationBuilder.cancelAllNotifications()
         }
         if (type == NotificationChannelType.REVIEW) {
+            setHasUnseenReviewNotifs(false)
+        }
+    }
+
+    private fun updateNotificationsState() {
+        if (!hasNotifications()) {
+            notificationBuilder.cancelAllNotifications()
             setHasUnseenReviewNotifs(false)
         }
     }

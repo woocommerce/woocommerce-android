@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
-import com.woocommerce.android.push.getGroupId
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +27,7 @@ class MainActivityViewModel @Inject constructor(
     fun handleIncomingNotification(localPushId: Int, notification: Notification?) {
         notification?.let {
             when (localPushId) {
-                it.channelType.getGroupId() -> onGroupMessageOpened(it.channelType)
+                it.getGroupPushId() -> onGroupMessageOpened(it.channelType)
                 it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
                 else -> onSingleNotificationOpened(localPushId, it)
             }
