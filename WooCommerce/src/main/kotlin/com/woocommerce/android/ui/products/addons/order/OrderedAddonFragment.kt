@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.ProductAddon
@@ -51,10 +52,15 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
             ?.let { it as? AppCompatActivity }
             ?.supportActionBar
 
-    private val shouldRequestFeedback
+    private val currentFeedbackSettings
         get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)
-            ?.takeIf { it.name == CURRENT_WIP_NOTICE_FEATURE.name }
-            ?.shouldRequestFeedback
+            ?: FeatureFeedbackSettings(CURRENT_WIP_NOTICE_FEATURE.name)
+                .apply { registerItselfWith(TAG) }
+
+    private val shouldRequestFeedback
+        get() = currentFeedbackSettings
+            .takeIf { it.name == CURRENT_WIP_NOTICE_FEATURE.name }
+            ?.let { it.state != DISMISSED }
             ?: false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -113,8 +119,10 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private fun onGiveFeedbackClicked() {
         // should send track event
 
-        FeatureFeedbackSettings(CURRENT_WIP_NOTICE_FEATURE.name, GIVEN)
-            .let { FeedbackPrefs.setFeatureFeedbackSettings(TAG, it) }
+        FeatureFeedbackSettings(
+            CURRENT_WIP_NOTICE_FEATURE.name,
+            GIVEN
+        ).registerItselfWith(TAG)
 
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
