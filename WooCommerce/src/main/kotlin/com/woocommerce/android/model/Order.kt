@@ -107,16 +107,11 @@ data class Order(
         @IgnoredOnParcel
         val isVariation: Boolean = variationId != 0L
 
-        @Parcelize
-        data class Attribute(
-            val key: String,
-            val value: String
-        ) : Parcelable {
-            // Don't include empty or the "_reduced_stock" key
-            // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
-            val isNotInternalAttributeData
-                get() = key.first().toString() != "_"
-        }
+        @IgnoredOnParcel
+        var containsAddons = false
+
+        @IgnoredOnParcel
+        val attributesNames = attributesList.map { it.addonName }
 
         /**
          * @return a comma-separated list of attribute values for display
@@ -125,6 +120,42 @@ data class Order(
             get() = attributesList.filter {
                 it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
             }.joinToString { it.value.capitalize(Locale.getDefault()) }
+
+        @Parcelize
+        data class Attribute(
+            val key: String,
+            val value: String
+        ) : Parcelable {
+            companion object {
+                private const val addonAttributeGroupSize = 3
+            }
+
+            @IgnoredOnParcel
+            private val attributeAddonKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
+
+            @IgnoredOnParcel
+            private val keyAsAddonRegexGroup = attributeAddonKeyRegex
+                .findAll(key)
+                .firstOrNull()?.groupValues
+                ?.takeIf { it.size == addonAttributeGroupSize }
+                ?.toMutableList()
+                ?.apply { removeFirst() }
+
+            @IgnoredOnParcel
+            val addonName = keyAsAddonRegexGroup
+                ?.first()
+                ?: key
+
+            @IgnoredOnParcel
+            val asAddonPrice = keyAsAddonRegexGroup
+                ?.last()
+                .orEmpty()
+
+            // Don't include empty or the "_reduced_stock" key
+            // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
+            val isNotInternalAttributeData
+                get() = key.first().toString() != "_"
+        }
     }
 
     @Parcelize

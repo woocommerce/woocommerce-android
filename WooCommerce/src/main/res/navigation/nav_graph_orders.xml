@@ -269,6 +269,13 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_orderedAddonFragment"
+            app:destination="@id/orderedAddonFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -572,4 +579,22 @@
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <fragment
+        android:id="@+id/orderedAddonFragment"
+        android:name="com.woocommerce.android.ui.products.addons.order.OrderedAddonFragment"
+        android:label="OrderedAddonFragment"
+        tools:layout="@layout/fragment_ordered_addon">
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            app:nullable="false" />
+        <argument
+            android:name="orderItemId"
+            app:argType="long"
+            app:nullable="false" />
+        <argument
+            android:name="addonsProductId"
+            app:argType="long"
+            app:nullable="false" />
+    </fragment>
 </navigation>

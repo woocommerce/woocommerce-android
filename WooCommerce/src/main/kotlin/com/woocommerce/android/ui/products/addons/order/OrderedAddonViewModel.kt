@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -18,23 +19,31 @@ import javax.inject.Inject
 class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    private val addonsRepository: AddonRepository
+    private val addonsRepository: AddonRepository,
+    parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val addonAttributeGroupSize = 3
+        private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
     private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
     val orderedAddonsData: LiveData<List<ProductAddon>> = _orderedAddons
 
-    private val orderAttributesKeyRegex = "(.*?) \\((.*?)\\)".toRegex()
+    /**
+     * Provides the currencyCode for views who requires display prices
+     */
+    val currencyCode =
+        parameterRepository
+            .getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+            .currencyCode
+            .orEmpty()
 
     fun start(
         orderID: Long,
         orderItemID: Long,
         productID: Long
     ) = launch(dispatchers.computation) {
-        addonsRepository.fetchOrderAddonsData(orderID, orderItemID, productID)
+        addonsRepository.getOrderAddonsData(orderID, orderItemID, productID)
             ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
             ?.let { dispatchResult(it) }
     }
@@ -46,7 +55,7 @@ class OrderedAddonViewModel @Inject constructor(
 
     private fun Order.Item.Attribute.findMatchingAddon(
         addons: List<ProductAddon>
-    ) = addons.find { it.name == key.asAddonName }
+    ) = addons.find { it.name == addonName }
         ?.asAddonWithSingleSelectedOption(this)
 
     private fun ProductAddon.asAddonWithSingleSelectedOption(
@@ -73,7 +82,7 @@ class OrderedAddonViewModel @Inject constructor(
             ProductAddonOption(
                 priceType = addon.priceType,
                 label = attribute.value,
-                price = attribute.key.asAddonPrice,
+                price = attribute.asAddonPrice,
                 image = ""
             )
         )
@@ -84,22 +93,4 @@ class OrderedAddonViewModel @Inject constructor(
             _orderedAddons.value = result
         }
     }
-
-    private val String.toAddonRegexGroup
-        get() = orderAttributesKeyRegex
-            .findAll(this)
-            .first().groupValues
-            .takeIf { it.size == addonAttributeGroupSize }
-            ?.toMutableList()
-            ?.apply { removeFirst() }
-
-    private val String.asAddonName
-        get() = toAddonRegexGroup
-            ?.first()
-            .orEmpty()
-
-    private val String.asAddonPrice
-        get() = toAddonRegexGroup
-            ?.last()
-            .orEmpty()
 }

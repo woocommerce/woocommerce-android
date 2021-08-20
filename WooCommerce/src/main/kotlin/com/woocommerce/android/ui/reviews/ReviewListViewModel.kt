@@ -232,6 +232,7 @@ class ReviewListViewModel @Inject constructor(
     fun onEventMainThread(event: OnRequestModerateReviewEvent) {
         if (networkStatus.isConnected()) {
             // Send the request to the UI to show the UNDO snackbar
+            viewState = viewState.copy(isRefreshing = true)
             _moderateProductReview.value = event.request
         } else {
             // Network not connected
@@ -260,6 +261,7 @@ class ReviewListViewModel @Inject constructor(
                 sendReviewModerationUpdate(ActionStatus.ERROR)
             } else {
                 sendReviewModerationUpdate(ActionStatus.SUCCESS)
+                reloadReviewsFromCache()
             }
         }
     }
