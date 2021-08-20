@@ -1,7 +1,10 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import com.stripe.stripeterminal.external.callable.BluetoothReaderListener
 import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionStatus
 import com.stripe.stripeterminal.external.models.ConnectionStatus.CONNECTED
 import com.stripe.stripeterminal.external.models.ConnectionStatus.CONNECTING
@@ -49,7 +52,21 @@ internal class ConnectionManager(
 
     suspend fun connectToReader(cardReader: CardReader) = suspendCoroutine<Boolean> { continuation ->
         (cardReader as CardReaderImpl).let {
-            continuation.resumeWith(Result.success(true))
+            val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration("")
+            terminal.connectToReader(
+                cardReader.cardReader,
+                configuration,
+                object : ReaderCallback {
+                    override fun onFailure(e: TerminalException) {
+                        continuation.resume(false)
+                    }
+
+                    override fun onSuccess(reader: Reader) {
+                        continuation.resume(true)
+                    }
+                },
+                object : BluetoothReaderListener {},
+            )
         }
     }
 
