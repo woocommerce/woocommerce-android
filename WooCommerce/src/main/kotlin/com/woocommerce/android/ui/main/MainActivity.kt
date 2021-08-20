@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -22,27 +23,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.NavGraphMainDirections
-import com.woocommerce.android.R
+import com.woocommerce.android.*
 import com.woocommerce.android.R.dimen
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.Notification
+import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.push.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.push.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.extensions.active
-import com.woocommerce.android.extensions.getCommentId
-import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.push.getWooType
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
-import com.woocommerce.android.navigation.KeepStateNavigator
-import com.woocommerce.android.push.NotificationHandler
-import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -50,10 +41,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
-import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
-import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
-import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.*
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -72,7 +60,12 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
-import java.util.Locale
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -117,6 +110,8 @@ class MainActivity :
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private val viewModel: MainActivityViewModel by viewModels()
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
@@ -644,7 +639,7 @@ class MainActivity :
 
     override fun hideReviewsBadge() {
         binding.bottomNav.showReviewsBadge(false)
-        NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
+        viewModel.removeReviewNotifications()
     }
 
     override fun showReviewsBadge() {
@@ -678,9 +673,9 @@ class MainActivity :
         AnalyticsTracker.track(stat)
 
         if (navPos == REVIEWS) {
-            NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
+            viewModel.removeReviewNotifications()
         } else if (navPos == ORDERS) {
-            NotificationHandler.removeAllOrderNotifsFromSystemBar(this)
+            viewModel.removeOrderNotifications()
         }
     }
 
@@ -708,6 +703,7 @@ class MainActivity :
 
     // region Fragment Processing
     private fun initFragment(savedInstanceState: Bundle?) {
+        setupObservers()
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
 
         if (savedInstanceState != null) {
@@ -720,70 +716,42 @@ class MainActivity :
 
             menu?.close()
 
-            if (intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH_GROUP, false)) {
-                // Reset this flag now that it's being processed
-                intent.removeExtra(FIELD_OPENED_FROM_PUSH_GROUP)
+            val localPushId = intent.getIntExtra(FIELD_PUSH_ID, 0)
+            val notification = intent.getParcelableExtra<Notification>(FIELD_REMOTE_NOTIFICATION)
+            // Reset this flag now that it's being processed
+            intent.removeExtra(FIELD_REMOTE_NOTIFICATION)
+            intent.removeExtra(FIELD_PUSH_ID)
 
-                // Send analytics for viewing all notifications
-                NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
-
-                // Clear unread messages from the system bar
-                NotificationHandler.removeAllNotificationsFromSystemBar(this)
-
-                // User clicked on a group of notifications. Redirect to the order list screen if
-                // the last notification received is a new order. Otherwise, redirect to the reviews screen
-                val notificationChannelType = intent.getStringExtra(FIELD_NOTIFICATION_TYPE)?.let {
-                    NotificationChannelType.valueOf(it.toUpperCase(Locale.US))
-                } ?: NotificationChannelType.REVIEW
-
-                binding.bottomNav.currentPosition = when (notificationChannelType) {
-                    NotificationChannelType.NEW_ORDER -> ORDERS
-                    else -> REVIEWS
-                }
-            } else if (intent.getBooleanExtra(FIELD_OPENED_FROM_ZENDESK, false)) {
-                // Reset this flag now that it's being processed
-                intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)
-
-                // Send track event for the zendesk notification id
-                val remoteNoteId = intent.getIntExtra(FIELD_REMOTE_NOTE_ID, 0)
-                NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
-
-                // Remove single notification from the system bar
-                NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
-
-                // leave the Main activity showing the Dashboard tab, so when the user comes back from Help & Support,
-                // the app is in the right section
-                binding.bottomNav.currentPosition = MY_STORE
-
-                // launch 'Tickets' page of Zendesk
-                startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
-            } else {
-                // Check for a notification ID - if one is present, open notification
-                val remoteNoteId = intent.getLongExtra(FIELD_REMOTE_NOTE_ID, 0)
-                if (remoteNoteId > 0) {
-                    // Send track event
-                    NotificationHandler.bumpPushNotificationsTappedAnalytics(this, remoteNoteId.toString())
-
-                    // Remove single notification from the system bar
-                    NotificationHandler.removeNotificationWithNoteIdFromSystemBar(this, remoteNoteId.toString())
-
-                    showNotificationDetail(remoteNoteId)
-                } else {
-                    // Send analytics for viewing all notifications
-                    NotificationHandler.bumpPushNotificationsTappedAllAnalytics(this)
-
-                    // Clear unread messages from the system bar
-                    NotificationHandler.removeAllNotificationsFromSystemBar(this)
-
-                    // Just open the notifications tab
-                    binding.bottomNav.currentPosition = REVIEWS
-                }
-            }
-        } else {
-            binding.bottomNav.currentPosition = MY_STORE
+            viewModel.handleIncomingNotification(localPushId, notification)
         }
     }
     // endregion
+
+    private fun setupObservers() {
+        viewModel.event.observe(
+            this,
+            { event ->
+                when (event) {
+                    is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
+                    is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
+                    is ViewReviewList -> binding.bottomNav.currentPosition = REVIEWS
+                    is ViewZendeskTickets -> {
+                        startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
+                    }
+                    is ViewOrderDetail -> {
+                        showOrderDetail(
+                            event.localSiteId,
+                            remoteOrderId = event.uniqueId,
+                            remoteNoteId = event.remoteNoteId
+                        )
+                    }
+                    is ViewReviewDetail -> {
+                        showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
+                    }
+                }
+            }
+        )
+    }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()

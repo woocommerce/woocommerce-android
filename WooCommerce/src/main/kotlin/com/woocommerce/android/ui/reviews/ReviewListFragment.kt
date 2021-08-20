@@ -20,7 +20,8 @@ import com.woocommerce.android.databinding.FragmentReviewsListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.push.NotificationChannelType
+import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -54,6 +55,7 @@ class ReviewListFragment :
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private lateinit var reviewsAdapter: ReviewListAdapter
 
@@ -220,7 +222,7 @@ class ReviewListFragment :
                 showMarkAllReadMenuItem(show = false)
 
                 // Remove all active notifications from the system bar
-                context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
+                notificationMessageHandler.removeNotificationsOfTypeFromSystemsBar(NotificationChannelType.REVIEW)
             }
             ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
             else -> {
