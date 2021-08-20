@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderDetailProductItemView
 import com.woocommerce.android.ui.orders.OrderProductActionListener
+import com.woocommerce.android.ui.orders.ViewAddonClickListener
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
@@ -15,7 +16,8 @@ class OrderDetailProductListAdapter(
     private val orderItems: List<Order.Item>,
     private val productImageMap: ProductImageMap,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
-    private val productItemListener: OrderProductActionListener
+    private val productItemListener: OrderProductActionListener,
+    private val onViewAddonsClick: ViewAddonClickListener? = null
 ) : RecyclerView.Adapter<OrderDetailProductListAdapter.ViewHolder>() {
     class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
 
@@ -30,7 +32,7 @@ class OrderDetailProductListAdapter(
         val item = orderItems[position]
         val imageSize = holder.view.resources.getDimensionPixelSize(R.dimen.image_minor_100)
         val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
-        holder.view.initView(orderItems[position], productImage, formatCurrencyForDisplay)
+        holder.view.initView(orderItems[position], productImage, formatCurrencyForDisplay, onViewAddonsClick)
         holder.view.setOnClickListener {
             if (item.isVariation) {
                 productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)

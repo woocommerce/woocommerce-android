@@ -2,6 +2,8 @@
 
 During development, adding a string in the [`values/strings.xml`](../WooCommerce/src/main/res/values/strings.xml) resource and using it in the code or layout file should be enough.
 
+**Important:** `plurals` are not supported at the moment. Use `StringUtils::getQuantityString` method.
+
 ```xml
 <!-- strings.xml -->
 <string name="orderdetail_shipping_details">Shipping details</string>

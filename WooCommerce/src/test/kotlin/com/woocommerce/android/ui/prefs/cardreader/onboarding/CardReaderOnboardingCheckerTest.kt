@@ -126,7 +126,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(buildWCPayPluginInfo(version = "2.4.0"))
+                .thenReturn(buildWCPayPluginInfo(version = "2.8.1"))
 
             val result = checker.getOnboardingState()
 

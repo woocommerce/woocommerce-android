@@ -15,6 +15,7 @@ import com.woocommerce.android.databinding.OrderDetailProductListBinding
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
+import com.woocommerce.android.ui.orders.ViewAddonClickListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductListAdapter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -32,7 +33,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,
-        onProductMenuItemClicked: () -> Unit
+        onProductMenuItemClicked: () -> Unit,
+        onViewAddonsClick: ViewAddonClickListener? = null
     ) {
         binding.productListLblProduct.text = StringUtils.getQuantityString(
             context = context,
@@ -46,7 +48,11 @@ class OrderDetailProductListView @JvmOverloads constructor(
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             adapter = OrderDetailProductListAdapter(
-                orderItems, productImageMap, formatCurrencyForDisplay, productClickListener
+                orderItems,
+                productImageMap,
+                formatCurrencyForDisplay,
+                productClickListener,
+                onViewAddonsClick
             )
 
             if (itemDecorationCount == 0) {

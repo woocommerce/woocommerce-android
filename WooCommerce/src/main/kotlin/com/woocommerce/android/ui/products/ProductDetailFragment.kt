@@ -84,7 +84,7 @@ class ProductDetailFragment :
     private var detailSnackbar: Snackbar? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
-    private val updateTitleId = R.string.update
+    private val saveTitleId = R.string.save
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
@@ -218,7 +218,7 @@ class ProductDetailFragment :
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
-                    showProgressDialog(R.string.product_update_dialog_title, R.string.product_update_dialog_message)
+                    showProgressDialog(R.string.product_save_dialog_title, R.string.product_update_dialog_message)
                 } else {
                     hideProgressDialog()
                 }
@@ -385,7 +385,7 @@ class ProductDetailFragment :
         menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.canBeStoredAsDraft && viewModel.hasChanges()
 
         updateMenuItem?.let {
-            it.title = if (viewModel.isAddFlowEntryPoint) getString(publishTitleId) else getString(updateTitleId)
+            it.title = if (viewModel.isAddFlowEntryPoint) getString(publishTitleId) else getString(saveTitleId)
             it.isVisible = viewModel.hasChanges() or viewModel.isProductUnderCreation
         }
     }

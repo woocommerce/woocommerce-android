@@ -8,7 +8,6 @@ import android.os.Build
 import android.text.Html
 import android.text.Spanned
 import android.util.Patterns
-import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.util.WooLog.T.UTILS
@@ -80,14 +79,6 @@ object StringUtils {
             1 -> resourceProvider.getString(one ?: default, quantity)
             else -> resourceProvider.getString(default, quantity)
         }
-    }
-
-    fun getPluralString(
-        resourceProvider: ResourceProvider,
-        quantity: Int,
-        @PluralsRes pluralId: Int
-    ): String {
-        return resourceProvider.getPluralString(pluralId, quantity)
     }
 
     /**

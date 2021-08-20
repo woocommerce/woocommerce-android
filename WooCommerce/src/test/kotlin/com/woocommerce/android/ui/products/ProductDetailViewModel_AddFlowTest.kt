@@ -320,7 +320,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             verify(productRepository, times(1)).updateProduct(any())
 
             viewModel.event.observeForever {
-                if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
+                if (it is ShowSnackbar && it.message == R.string.product_detail_save_product_success) {
                     successSnackbarShown = true
                 }
             }

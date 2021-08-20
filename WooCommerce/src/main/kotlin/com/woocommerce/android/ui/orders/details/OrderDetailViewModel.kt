@@ -41,12 +41,15 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -77,11 +80,13 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderDetailViewModel @Inject constructor(
     private val dispatcher: Dispatcher,
+    private val coroutineDispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository,
+    private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
 ) : ScopedViewModel(savedState) {
@@ -456,6 +461,17 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(ViewOrderFulfillInfo(order.identifier))
     }
 
+    fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
+        // track add-ons event
+        triggerEvent(
+            ViewOrderedAddons(
+                orderIdSet.remoteOrderId,
+                orderItem.itemId,
+                orderItem.productId
+            )
+        )
+    }
+
     private fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
@@ -494,8 +510,23 @@ class OrderDetailViewModel @Inject constructor(
         refunds: ListInfo<Refund>
     ): ListInfo<Order.Item> {
         val products = refunds.list.getNonRefundedProducts(order.items)
+        checkAddonAvailability(products)
         return ListInfo(isVisible = products.isNotEmpty(), list = products)
     }
+
+    private fun checkAddonAvailability(products: List<Order.Item>) {
+        launch(coroutineDispatchers.computation) {
+            products.forEach { product ->
+                product.containsAddons = containsAddons(product)
+            }
+        }
+    }
+
+    private fun containsAddons(product: Order.Item) =
+        addonsRepository
+            .getAddonsFrom(product.productId)
+            ?.any { addon -> product.attributesList.any { it.addonName == addon.name } }
+            ?: false
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
     private fun fetchOrderProductsAsync() = async {
