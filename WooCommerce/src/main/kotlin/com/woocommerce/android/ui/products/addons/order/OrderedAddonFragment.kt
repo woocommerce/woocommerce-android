@@ -105,8 +105,8 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private fun showWIPNoticeCard(shouldBeVisible: Boolean) =
         with(binding.addonsWipCard) {
             initView(
-                title = "View add-ons from your device!",
-                message = "We are working on making it easier for you to see product add-ons from your device! For now, you’ll be able to see the add-ons for your orders. You can create and edit these add-ons in your web dashbaord.",
+                title = getString(R.string.ordered_add_ons_wip_title),
+                message = getString(R.string.ordered_add_ons_wip_message),
                 onGiveFeedbackClick = ::onGiveFeedbackClicked,
                 onDismissClick = ::onDismissWIPCardClicked
             )
