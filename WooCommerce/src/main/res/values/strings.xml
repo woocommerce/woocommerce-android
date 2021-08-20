@@ -737,8 +737,8 @@
     -->
     <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
     <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
-    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
-    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/card_reader_payment_remove_card_prompt</string>
+    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/card_reader_payment_remove_card_prompt</string>
 
     <string name="card_reader_payment_collect_payment_loading_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
@@ -763,6 +763,12 @@
     <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
+
+    <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
+    <string name="card_reader_payment_remove_card_prompt">Remove the card</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Multiple cards detected. Try again with a single card</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Retry tapping, inserting or swiping your card</string>
+    <string name="card_reader_payment_try_another_card_prompt">Retry with another card</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
