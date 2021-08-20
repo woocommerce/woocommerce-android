@@ -1,9 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.FileUtils
@@ -13,10 +9,13 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import java.io.File
 
@@ -34,7 +33,7 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
         initViewModel()
     }
 
-    fun initViewModel() {
+    private fun initViewModel() {
         viewModel = PrintShippingLabelCustomsFormViewModel(
             savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(urls.toTypedArray(), true)
                 .initSavedStateHandle(),
@@ -58,6 +57,25 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
         viewModel.onPrintButtonClicked()
 
         assertThat(viewModel.event.value).isInstanceOf(PrintCustomsForm::class.java)
+    }
+
+    @Test
+    fun `when dialog is dismissed, then cancel download`() = testBlocking {
+        whenever(fileDownloader.downloadFile(any(), any())).doSuspendableAnswer {
+            try {
+                delay(1000L)
+                true
+            } catch (e: CancellationException) {
+                false
+            }
+        }
+
+        viewModel.onPrintButtonClicked()
+        viewModel.onDownloadCanceled()
+
+        val viewState = viewModel.viewStateData.liveData.value!!
+        assertThat(viewState.isProgressDialogShown).isFalse
+        assertThat(viewModel.event.value).isNull()
     }
 
     @Test

@@ -15,11 +15,10 @@ data class ProductAddon(
     val required: Boolean,
     val description: String,
     val descriptionEnabled: Boolean,
-    val max: String,
-    val min: String,
-    val position: String,
-    val adjustPrice: String,
-    val restrictions: String,
+    val max: Long,
+    val min: Long,
+    val position: Int,
+    val adjustPrice: Int,
     val titleFormat: AddOnTitleFormat?,
     val restrictionsType: AddOnRestrictionsType?,
     val priceType: AddOnPriceType?,
@@ -36,9 +35,12 @@ data class ProductAddon(
      * this property parses this detached [ProductAddon] information to an option list
      */
     val options
-        get() = takeIf { (rawOptions.size == 1) && rawOptions.single().price.isEmpty() }
+        get() = takeIf { isNoPriceAvailableAtOptions }
             ?.let { listOf(rawOptions.single().copy(priceType = priceType, price = price)) }
             ?: rawOptions
+
+    private val isNoPriceAvailableAtOptions
+        get() = (rawOptions.size == 1) && rawOptions.single().price.isEmpty()
 }
 
 @Parcelize
@@ -53,14 +55,13 @@ fun WCProductAddonModel.toAppModel() =
     ProductAddon(
         name = name ?: "",
         description = description ?: "",
-        descriptionEnabled = descriptionEnabled?.toIntOrNull().toBoolean(),
-        max = max ?: "",
-        min = min ?: "",
-        position = position ?: "",
+        descriptionEnabled = descriptionEnabled.toBoolean(),
+        max = max,
+        min = min,
+        position = position,
         price = price ?: "",
-        adjustPrice = adjustPrice ?: "",
-        required = required?.toIntOrNull().toBoolean(),
-        restrictions = restrictions ?: "",
+        adjustPrice = adjustPrice,
+        required = required.toBoolean(),
         titleFormat = titleFormat,
         restrictionsType = restrictionsType,
         priceType = priceType,

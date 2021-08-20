@@ -142,11 +142,18 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 val validationErrorMessage = getAddressErrorStringRes(result.message)
                 viewState = viewState.copy(
                     address1Field = viewState.address1Field.copy(validationError = validationErrorMessage).validate(),
-                    bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
+                    bannerMessage = resourceProvider.getString(
+                        if (arguments.addressType == ORIGIN) R.string.shipping_label_edit_origin_address_error_warning
+                        else R.string.shipping_label_edit_address_error_warning
+                    )
                 )
             }
             is ValidationResult.SuggestedChanges -> {
-                triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
+                if (result.isTrivial) {
+                    triggerEvent(ExitWithResult(result.suggested))
+                } else {
+                    triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
+                }
             }
             is ValidationResult.NotFound -> {
                 viewState = viewState.copy(
@@ -312,6 +319,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        private val addressType: AddressType,
         val bannerMessage: String? = null,
         val isValidationProgressDialogVisible: Boolean? = null,
         val isLoadingProgressDialogVisible: Boolean? = null,
@@ -328,6 +336,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         @StringRes val title: Int? = null
     ) : Parcelable {
         constructor(args: EditShippingLabelAddressFragmentArgs) : this(
+            addressType = args.addressType,
             nameField = NameField(
                 content = "${args.address.firstName} ${args.address.lastName}".trim(),
                 companyContent = args.address.company
@@ -338,12 +347,13 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType),
             cityField = RequiredField(args.address.city),
             zipField = RequiredField(args.address.postcode),
-            stateField = LocationField(Location(code = args.address.state, name = "")),
+            stateField = LocationField(Location(code = args.address.state, name = args.address.state)),
             countryField = LocationField(Location(code = args.address.country, name = ""), isRequired = true)
         )
 
         @IgnoredOnParcel
-        val isContactCustomerButtonVisible = phoneField.content.isNotBlank()
+        val isContactCustomerButtonVisible
+            get() = addressType == DESTINATION && phoneField.content.isNotBlank()
 
         @IgnoredOnParcel
         val areAllRequiredFieldsValid

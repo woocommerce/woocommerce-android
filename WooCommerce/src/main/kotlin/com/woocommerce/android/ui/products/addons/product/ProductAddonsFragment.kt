@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.addons
+package com.woocommerce.android.ui.products.addons.product
 
 import android.os.Bundle
 import android.view.View
@@ -12,6 +12,7 @@ import com.woocommerce.android.databinding.FragmentProductAddonsBinding
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddons
+import com.woocommerce.android.ui.products.addons.AddonListAdapter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +48,7 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.product_add_ons_card_button_title)
+    override fun getFragmentTitle() = getString(R.string.product_add_ons_title)
 
     private fun setupRecyclerViewWith(addonList: List<ProductAddon>, currencyCode: String) {
         layoutManager = LinearLayoutManager(

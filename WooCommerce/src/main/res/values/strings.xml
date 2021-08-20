@@ -107,6 +107,7 @@
     <string name="type">Type</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
+    <string name="save">Save</string>
     <string name="skip">Skip</string>
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
@@ -282,6 +283,7 @@
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">View Add-ons</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_multiple">Products</string>
@@ -364,6 +366,7 @@
     <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
+    <string name="ordered_add_ons_details_info_notice">If renaming an add-on in your web dashboard, please note that previous orders will no longer show that add-on within the app.</string>
     <!--
         Shipping label Refunds
     -->
@@ -473,13 +476,14 @@
     <string name="shipping_label_edit_address_loading_progress_title">Loading address data</string>
     <string name="shipping_label_edit_address_progress_message">Please wait…</string>
     <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
+    <string name="shipping_label_edit_origin_address_error_warning">We were unable to automatically verify the origin address. View it on Google Maps to make sure the address is correct.</string>
     <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View it on Google Maps or try contacting the customer to make sure the address is correct.</string>
     <string name="shipping_label_error_address_not_found">Address was not found</string>
     <string name="shipping_label_error_address_house_number_missing">House number missing</string>
     <string name="shipping_label_error_address_invalid_street">Invalid street</string>
-    <string name="shipping_label_validation_error_template">Validation failed: %s</string>
+    <string name="shipping_label_validation_error_template">We were unable to automatically verify the shipping address: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
-    <string name="shipping_label_validation_view_map">Open Map</string>
+    <string name="shipping_label_validation_view_map">Find on Map</string>
     <string name="shipping_label_address_suggestion_use_selected_address">Use selected address</string>
     <string name="shipping_label_address_suggestion_edit_selected_address">Edit selected address</string>
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
@@ -496,10 +500,8 @@
     <string name="shipping_label_package_details_weight_hint">Total package weight (%1$s)</string>
     <string name="shipping_label_package_details_weight_info">Includes package weight</string>
     <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
-    <plurals name="shipping_label_package_details_items_count">
-        <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
-    </plurals>
+    <string name="shipping_label_package_details_items_count_one">%d item</string>
+    <string name="shipping_label_package_details_items_count_many">%d items</string>
     <string name="shipping_label_package_details_individual_package_subtitle">Individually Shipped Item</string>
     <string name="shipping_label_package_details_individual_package_dimensions">Item Dimensions</string>
     <string name="shipping_label_package_details_individual_package_title">Original packaging</string>
@@ -560,10 +562,8 @@
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_title">No shipping rates available</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Please double check your package dimensions and weight or try using a different package in Package Details</string>
-    <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
-        <item quantity="one">%d business day</item>
-        <item quantity="other">%d business days</item>
-    </plurals>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d business day</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d business days</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
     <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates.</string>
@@ -662,10 +662,8 @@
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
-    <plurals name="order_refunds_refund_info_description">
-        <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
-    </plurals>
+    <string name="order_refunds_refund_info_description_one">%d item</string>
+    <string name="order_refunds_refund_info_description_many">%d items</string>
     <string name="order_refunds_refund_info_title">Refunded products</string>
     <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
@@ -921,6 +919,7 @@
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
+    <string name="pending_review_label">Pending Review</string>
     <!--
         Products
     -->
@@ -1045,11 +1044,11 @@
     <string name="product_description_empty">Describe your product</string>
     <string name="product_short_description">Short description</string>
     <string name="product_short_description_empty">Brief summary about the product</string>
-    <string name="product_update_dialog_title">Updating product</string>
+    <string name="product_save_dialog_title">Saving your product</string>
     <string name="product_delete_dialog_title">Deleting product</string>
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
-    <string name="product_detail_update_product_success">Product updated</string>
+    <string name="product_detail_save_product_success">Product saved</string>
     <string name="product_detail_update_product_password_error">Error updating password</string>
     <string name="product_detail_title_hint">Enter Product Title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
@@ -1135,21 +1134,14 @@
     <string name="edit_products_button">Edit products</string>
     <string name="empty_product_add_product_button">Add product</string>
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
-    <string name="product_add_ons_card_button_title">Product Add-ons</string>
+    <string name="product_add_ons_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
-
-    <plurals name="product_count">
-        <item quantity="one">%d product</item>
-        <item quantity="other">%d products</item>
-    </plurals>
-    <plurals name="cross_sell_product_count">
-        <item quantity="one">%d cross-sell product</item>
-        <item quantity="other">%d cross-sell products</item>
-    </plurals>
-    <plurals name="upsell_product_count">
-        <item quantity="one">%d upsell product</item>
-        <item quantity="other">%d upsell products</item>
-    </plurals>
+    <string name="product_count_one">%d product</string>
+    <string name="product_count_many">%d products</string>
+    <string name="cross_sell_product_count_one">%d cross-sell product</string>
+    <string name="cross_sell_product_count_many">%d cross-sell products</string>
+    <string name="upsell_product_count_one">%d upsell product</string>
+    <string name="upsell_product_count_many">%d upsell products</string>
 
     <!--
         Product Add more details Bottom sheet

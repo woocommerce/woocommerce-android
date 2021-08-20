@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -126,7 +126,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(buildWCPayPluginInfo(version = "2.4.0"))
+                .thenReturn(buildWCPayPluginInfo(version = "2.8.1"))
 
             val result = checker.getOnboardingState()
 
@@ -295,10 +295,72 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
         }
 
+    @Test
+    fun `when test mode enabled on site with live account, then WcpayInTestModeWithLiveStripeAccount returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(liveAccount = true, testModeEnabled = true)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
+    @Test
+    fun `when test mode disabled on site with live account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(liveAccount = true, testModeEnabled = false)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
+    @Test
+    fun `when test mode disabled on site with test account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(liveAccount = false, testModeEnabled = false)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
+    @Test
+    fun `when test mode enabled on site with test account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(liveAccount = false, testModeEnabled = true)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
+    @Test
+    fun `when test mode flag not supported, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(testModeEnabled = null)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+        }
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE,
         hasPendingRequirements: Boolean = false,
-        hadOverdueRequirements: Boolean = false
+        hadOverdueRequirements: Boolean = false,
+        liveAccount: Boolean = true,
+        testModeEnabled: Boolean? = false,
     ) = WooResult(
         WCPaymentAccountResult(
             status,
@@ -309,7 +371,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
             country = "US",
             isCardPresentEligible = true,
-            isLive = true
+            isLive = liveAccount,
+            testMode = testModeEnabled
         )
     )
 
