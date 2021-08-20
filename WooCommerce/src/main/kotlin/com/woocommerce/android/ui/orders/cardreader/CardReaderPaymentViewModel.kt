@@ -38,6 +38,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -101,9 +102,10 @@ class CardReaderPaymentViewModel
     private var refetchOrderJob: Job? = null
 
     fun start() {
-        // TODO cardreader Make sure a reader is connected
-        if (paymentFlowJob == null) {
+        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
             initPaymentFlow(isRetry = false)
+        } else {
+            exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
         }
     }
 
@@ -115,8 +117,7 @@ class CardReaderPaymentViewModel
             }
             fetchOrder()?.let { order ->
                 if (!paymentCollectibilityChecker.isCollectable(order)) {
-                    triggerEvent(ShowSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled))
-                    triggerEvent(Exit)
+                    exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
                 collectPaymentFlow(cardReaderManager, order)
@@ -344,12 +345,16 @@ class CardReaderPaymentViewModel
                 viewState.value = ReFetchingOrderState
             } else {
                 // show "data might be outdated" and exit the flow when the user presses back on FetchingOrder screen
-                triggerEvent(ShowSnackbar(R.string.card_reader_refetching_order_failed))
-                triggerEvent(Exit)
+                exitWithSnackbar(R.string.card_reader_refetching_order_failed)
             }
         } else {
             triggerEvent(Exit)
         }
+    }
+
+    private fun exitWithSnackbar(@StringRes message: Int) {
+        triggerEvent(ShowSnackbar(message))
+        triggerEvent(Exit)
     }
 
     private fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
