@@ -1,5 +1,6 @@
 package com.woocommerce.android.model
 
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
 data class FeatureFeedbackSettings(
@@ -19,5 +20,9 @@ data class FeatureFeedbackSettings(
         SHIPPING_LABELS_M4("shipping_labels_m4"),
         PRODUCTS_VARIATIONS("products_variations"),
         PRODUCT_ADDONS("product_addons")
+    }
+
+    fun registerItselfWith(featureKey: String) {
+        FeedbackPrefs.setFeatureFeedbackSettings(featureKey, this)
     }
 }
