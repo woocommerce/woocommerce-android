@@ -63,7 +63,6 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentOrderedAddonBinding.bind(view)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
 
         setupObservers()
         setupViews()
@@ -83,6 +82,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun setupViews() {
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
         binding.addonsWipCard.initView(
             title = getString(R.string.ordered_add_ons_wip_title),
             message = getString(R.string.ordered_add_ons_wip_message),
