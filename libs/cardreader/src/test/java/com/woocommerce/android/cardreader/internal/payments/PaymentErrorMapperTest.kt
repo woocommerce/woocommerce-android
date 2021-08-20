@@ -2,10 +2,10 @@ package com.woocommerce.android.cardreader.internal.payments
 
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.TerminalException
-import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode
-import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode.PAYMENT_DECLINED_BY_READER
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.DECLINED_BY_READER
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
@@ -23,7 +23,7 @@ class PaymentErrorMapperTest {
     private lateinit var mapper: PaymentErrorMapper
 
     private val terminalException = mock<TerminalException>().also {
-        whenever(it.errorCode).thenReturn(PAYMENT_DECLINED_BY_READER)
+        whenever(it.errorCode).thenReturn(DECLINED_BY_READER)
         whenever(it.errorMessage).thenReturn("Dummy error message")
     }
 
@@ -65,7 +65,7 @@ class PaymentErrorMapperTest {
 
     @Test
     fun `when PAYMENT_DECLINED_BY_STRIPE_API Terminal exception thrown, then PAYMENT_DECLINED type returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.PAYMENT_DECLINED_BY_STRIPE_API)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 

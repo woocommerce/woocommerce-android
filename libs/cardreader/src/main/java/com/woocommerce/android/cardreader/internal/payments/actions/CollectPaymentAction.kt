@@ -1,19 +1,15 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.PaymentIntentCallback
-import com.stripe.stripeterminal.callable.ReaderDisplayListener
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage
-import com.stripe.stripeterminal.model.external.ReaderInputOptions
-import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
+import com.stripe.stripeterminal.external.models.ReaderInputOptions
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.ReaderInputRequested
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -31,17 +27,6 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
         return callbackFlow {
             val cancelable = terminal.collectPaymentMethod(
                 paymentIntent,
-                object : ReaderDisplayListener {
-                    override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
-                        logWrapper.d("CardReader", message.toString())
-                        this@callbackFlow.sendBlockingIfOpen(DisplayMessageRequested(message))
-                    }
-
-                    override fun onRequestReaderInput(options: ReaderInputOptions) {
-                        logWrapper.d("CardReader", "Waiting for input: $options")
-                        this@callbackFlow.sendBlockingIfOpen(ReaderInputRequested(options))
-                    }
-                },
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         logWrapper.d("CardReader", "Payment collected")
@@ -60,10 +45,6 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                 if (!cancelable.isCompleted) cancelable.cancel(noop)
             }
         }
-    }
-
-    private fun <E> SendChannel<E>.sendBlockingIfOpen(element: E) {
-        if (!isClosedForSend) sendBlocking(element)
     }
 }
 

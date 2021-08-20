@@ -1,9 +1,9 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.stripe.stripeterminal.callable.PaymentIntentCallback
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.PaymentIntentParameters
-import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.PaymentIntentParameters
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
@@ -51,7 +51,7 @@ internal class CreatePaymentAction(
     }
 
     private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
-        val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToIntegerInCents(paymentInfo.amount)
+        val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToLongInCents(paymentInfo.amount)
         val builder = paymentIntentParametersFactory.createBuilder()
             .setDescription(paymentInfo.paymentDescription)
             .setAmount(amountInSmallestCurrencyUnit)

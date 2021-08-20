@@ -1,14 +1,9 @@
 package com.woocommerce.android.cardreader.internal.firmware.actions
 
-import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateCallback
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
-import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.Failed
-import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.UpToDate
-import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates.UpdateAvailable
+import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 internal class CheckSoftwareUpdatesAction(
@@ -22,25 +17,5 @@ internal class CheckSoftwareUpdatesAction(
     }
 
     suspend fun checkUpdates() = suspendCoroutine<CheckSoftwareUpdates> { continuation ->
-        terminal.checkForUpdate(object : ReaderSoftwareUpdateCallback {
-            override fun onSuccess(updateData: ReaderSoftwareUpdate?) {
-                if (isUpdateAvailable(updateData)) {
-                    continuation.resume(UpdateAvailable(requireNotNull(updateData)))
-                } else {
-                    continuation.resume(UpToDate)
-                }
-            }
-
-            override fun onFailure(e: TerminalException) {
-                logWrapper.e("CardReader", "Checking for updates failed: ${e.errorMessage}")
-                logWrapper.e("CardReader", e.stackTraceToString())
-                continuation.resume(Failed(e))
-            }
-        })
     }
-
-    private fun isUpdateAvailable(updateData: ReaderSoftwareUpdate?): Boolean =
-        updateData
-            ?.let { updateData.hasConfigUpdate || updateData.hasFirmwareUpdate || updateData.hasKeyUpdate }
-            ?: false
 }

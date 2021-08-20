@@ -1,20 +1,18 @@
 package com.woocommerce.android.cardreader.internal.firmware
 
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.Initializing
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus
+import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
 internal class SoftwareUpdateManager(
     private val checkUpdatesAction: CheckSoftwareUpdatesAction,
-    private val installSoftwareUpdateAction: InstallSoftwareUpdateAction
+    private val installAvailableSoftwareUpdateAction: InstallAvailableSoftwareUpdateAction
 ) {
     suspend fun updateSoftware() = flow {
         emit(SoftwareUpdateStatus.Initializing)
@@ -22,7 +20,7 @@ internal class SoftwareUpdateManager(
         when (val updateStatus = checkUpdatesAction.checkUpdates()) {
             CheckSoftwareUpdates.UpToDate -> emit(SoftwareUpdateStatus.UpToDate)
             is CheckSoftwareUpdates.Failed -> emit(SoftwareUpdateStatus.Failed(updateStatus.e.errorMessage))
-            is CheckSoftwareUpdates.UpdateAvailable -> installUpdate(updateStatus.updateData)
+            is CheckSoftwareUpdates.UpdateAvailable -> installUpdate()
         }
     }
 
@@ -36,12 +34,20 @@ internal class SoftwareUpdateManager(
         }
     }
 
-    private suspend fun FlowCollector<SoftwareUpdateStatus>.installUpdate(updateData: ReaderSoftwareUpdate) {
-        installSoftwareUpdateAction.installUpdate(updateData).collect { status ->
+    private suspend fun FlowCollector<SoftwareUpdateStatus>.installUpdate() {
+        installAvailableSoftwareUpdateAction.installUpdate().collect { status ->
             when (status) {
-                is InstallSoftwareUpdateStatus.Failed -> emit(SoftwareUpdateStatus.Failed(status.e.errorMessage))
-                is InstallSoftwareUpdateStatus.Installing -> emit(SoftwareUpdateStatus.Installing(status.progress))
-                InstallSoftwareUpdateStatus.Success -> emit(SoftwareUpdateStatus.Success)
+                is InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed -> emit(
+                    SoftwareUpdateStatus.Failed(
+                        status.e.errorMessage
+                    )
+                )
+                is InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing -> emit(
+                    SoftwareUpdateStatus.Installing(status.progress)
+                )
+                InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success -> emit(
+                    SoftwareUpdateStatus.Success
+                )
             }
         }
     }

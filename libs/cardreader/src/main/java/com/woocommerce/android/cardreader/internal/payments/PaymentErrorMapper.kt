@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.TerminalException
-import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
@@ -24,7 +24,7 @@ internal class PaymentErrorMapper {
             }
         val type = when (exception.errorCode) {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CARD_READ_TIMED_OUT
-            TerminalErrorCode.PAYMENT_DECLINED_BY_STRIPE_API -> PAYMENT_DECLINED
+            TerminalErrorCode.DECLINED_BY_STRIPE_API -> PAYMENT_DECLINED
             TerminalErrorCode.REQUEST_TIMED_OUT -> NO_NETWORK
             else -> GENERIC_ERROR
         }
