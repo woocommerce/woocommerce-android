@@ -900,7 +900,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is connecting,when payment screen is shown,then make sure NOT to initiate payment `() =
+    fun `given reader status is connecting, when payment screen is shown, then make sure NOT to initiate payment`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
@@ -913,7 +913,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is NOT connected,when payment screen is shown,then make sure NOT to initiate payment `() =
+    fun `given reader status is NOT connected, when payment screen is shown, then make sure NOT to initiate payment`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
@@ -926,7 +926,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is connected,when payment screen is shown,then proceed to initiate payment `() =
+    fun `given reader status is connected, when payment screen is shown, then proceed to initiate payment`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
@@ -939,7 +939,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is NOT connected,when payment screen is shown,then show error Snackbar `() =
+    fun `given reader status is NOT connected, when payment screen is shown, then show error Snackbar`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val events = mutableListOf<Event>()
@@ -956,7 +956,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is NOT connected,when payment screen is shown,then Snackbar is shown with message`() =
+    fun `given reader status is NOT connected, when payment screen is shown, then Snackbar is shown with message`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val events = mutableListOf<Event>()
@@ -974,7 +974,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is NOT connected,when payment screen is shown,then exit event is triggered `() =
+    fun `given reader status is NOT connected, when payment screen is shown, then exit event is triggered`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
@@ -988,7 +988,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is connecting,when payment screen is shown,then show error Snackbar `() =
+    fun `given reader status is connecting, when payment screen is shown, then show error Snackbar`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val events = mutableListOf<Event>()
@@ -1005,7 +1005,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is connecting,when payment screen is shown,then Snackbar is shown with the message`() =
+    fun `given reader status is connecting, when payment screen is shown, then Snackbar is shown with the message`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val events = mutableListOf<Event>()
@@ -1023,7 +1023,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given reader status is connecting,when payment screen is shown,then exit event is triggered `() =
+    fun `given reader status is connecting, when payment screen is shown, then exit event is triggered`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
