@@ -49,6 +49,7 @@ internal class ConnectionManager(
 
     suspend fun connectToReader(cardReader: CardReader) = suspendCoroutine<Boolean> { continuation ->
         (cardReader as CardReaderImpl).let {
+            continuation.resumeWith(Result.success(true))
         }
     }
 

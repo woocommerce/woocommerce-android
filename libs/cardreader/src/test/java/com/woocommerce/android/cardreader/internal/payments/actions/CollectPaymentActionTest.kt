@@ -37,7 +37,7 @@ internal class CollectPaymentActionTest {
     @Test
     fun `when collecting payment succeeds, then Success is emitted`() = runBlockingTest {
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock())
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
             mock<Cancelable>()
         }
 
@@ -49,7 +49,7 @@ internal class CollectPaymentActionTest {
     @Test
     fun `when collecting payment fails, then Failure is emitted`() = runBlockingTest {
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onFailure(mock())
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
             mock<Cancelable>()
         }
 
@@ -62,7 +62,7 @@ internal class CollectPaymentActionTest {
     fun `when collecting payment succeeds, then updated paymentIntent is returned`() = runBlockingTest {
         val updatedPaymentIntent = mock<PaymentIntent>()
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
             mock<Cancelable>()
         }
 
@@ -74,7 +74,7 @@ internal class CollectPaymentActionTest {
     @Test
     fun `when collecting payment succeeds, then flow is terminated`() = runBlockingTest {
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock())
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
             mock<Cancelable>()
         }
 
@@ -86,7 +86,7 @@ internal class CollectPaymentActionTest {
     @Test
     fun `when collecting payment fails, then flow is terminated`() = runBlockingTest {
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onFailure(mock())
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
             mock<Cancelable>()
         }
 

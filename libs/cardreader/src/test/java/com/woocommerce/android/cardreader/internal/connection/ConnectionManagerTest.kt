@@ -128,17 +128,6 @@ class ConnectionManagerTest {
     }
 
     @Test
-    fun `when connectToReader fails, then false is returned`() = runBlockingTest {
-        whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderCallback).onFailure(mock())
-        }
-
-        val result = connectionManager.connectToReader(CardReaderImpl(mock()))
-
-        assertThat(result).isFalse()
-    }
-
-    @Test
     fun `when disconnect succeeds, then true is returned`() = runBlockingTest {
         whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
             (it.arguments[0] as Callback).onSuccess()

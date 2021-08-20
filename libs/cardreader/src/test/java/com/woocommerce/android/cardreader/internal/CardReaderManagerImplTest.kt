@@ -43,7 +43,6 @@ class CardReaderManagerImplTest {
             connectionManager,
             softwareUpdateManager
         )
-        whenever(terminalWrapper.getLifecycleObserver()).thenReturn(lifecycleObserver)
     }
 
     @Test
@@ -99,13 +98,6 @@ class CardReaderManagerImplTest {
 
             cardReaderManager.connectToReader(mock())
         }
-
-    @Test
-    fun `software update status calls software update manager`() = runBlockingTest {
-        cardReaderManager.softwareUpdateAvailability()
-
-        verify(softwareUpdateManager).softwareUpdateStatus()
-    }
 
     @Test
     fun `given terminal not initialized when disconnect from reader, then exception is thrown`() {
