@@ -2,7 +2,7 @@
 
 7.4
 -----
-
+- [*] Fixed a bug where a new order notification opened incorrect order detail info. [https://github.com/woocommerce/woocommerce-android/pull/4635]
 
 7.3
 -----
