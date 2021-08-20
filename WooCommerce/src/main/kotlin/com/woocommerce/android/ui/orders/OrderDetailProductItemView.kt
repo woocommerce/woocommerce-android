@@ -56,7 +56,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
                 if (item.containsAddons && PRODUCT_ADD_ONS.isEnabled()) VISIBLE
                 else GONE
             binding.productInfoAddons.setOnClickListener { it(item) }
-        } ?: binding.productInfoAddons.let { visibility = GONE }
+        } ?: binding.productInfoAddons.let { it.visibility = GONE }
 
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
