@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-04 12:54:04+0000
+Translation-Revision-Date: 2021-08-19 20:50:50+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="support_contact_payments_detail">Contacter nos Happiness Engineers pour toutes les questions relatives aux paiements</string>
+    <string name="support_contact_payments">Contacter l’assistance sur les paiements</string>
+    <string name="product_images_error_detail_title">Charger des détails (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">%d fichiers n’ont pas pu être chargés</string>
+    <string name="product_image_service_error_uploading_single">%d fichier n’a pas pu être chargé</string>
+    <string name="product_image_service_error_media_null">Média introuvable</string>
+    <string name="product_add_ons_details_info_notice">Vous pouvez modifier des modules produits dans le tableau de bord Web.</string>
+    <string name="product_add_ons_card_button_title">Modules produits</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur le chargement d’images</string>
+    <string name="card_reader_onboarding_generic_error_hint">Désolé, nous n’avons pas pu vérifier les paiements en personne pour cette boutique</string>
+    <string name="card_reader_onboarding_generic_error_header">Impossible de vérifier les paiements en personne pour cette boutique</string>
+    <string name="card_reader_detail_connected_firmware_version">Micrologiciel : %s</string>
+    <string name="card_reader_payment_save_for_later">Enregistrer pour plus tard</string>
+    <string name="card_reader_purchase_card_reader">Commander un lecteur de carte</string>
+    <string name="card_reader_manage_card_reader">Gérer le lecteur de carte</string>
+    <string name="shipping_label_multiple_customs_form_print_button">Imprimer</string>
+    <string name="shipping_label_edit_address_state">Région/Département</string>
+    <string name="shipping_label_edit_address_line2">Adresse ligne 2</string>
+    <string name="shipping_label_edit_address_line1">Adresse ligne 1</string>
+    <string name="shipping_label_print_multiple_screen_title">Imprimer des étiquettes d’expédition</string>
+    <string name="shipping_label_print_multiple_purchase_success">Étiquettes d’expédition achetées !</string>
+    <string name="shipping_label_print_multiple_button">Imprimer des étiquettes d’expédition</string>
     <string name="settings_card_reader_payments">Paiements en personne</string>
     <string name="card_reader_tutorial_charged_detail">La charge complète de votre Lecteur nécessite environ trois heures</string>
     <string name="card_reader_tutorial_charged_label">Conservez votre Lecteur chargé</string>
@@ -144,6 +166,7 @@ Language: fr
     <string name="product_create_attribute_helper">Pour créer une variante, vous devez d’abord définir ses attributs (« Couleur », « Taille »)</string>
     <string name="product_variation_single_count">1 variante</string>
     <string name="product_variation_multiple_count">%1$s variantes</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">Suivi USPS</string>
     <string name="card_reader_software_update_in_progress_title">Mise à jour du logiciel de votre lecteur</string>
     <string name="card_reader_software_update_title">Mise à jour du logiciel</string>
     <string name="card_reader_software_update_description">Le logiciel de votre lecteur de carte doit être mis à jour pour continuer à fonctionner parfaitement. Voulez-vous le mettre à jour maintenant ?</string>
@@ -360,9 +383,7 @@ Language: fr
     <string name="shipping_label_edit_address_use_address_as_is">Utiliser l’adresse saisie</string>
     <string name="shipping_label_edit_address_country">Pays</string>
     <string name="shipping_label_edit_address_zip">Code postal</string>
-    <string name="shipping_label_edit_address_state">État</string>
     <string name="shipping_label_edit_address_city">Ville</string>
-    <string name="shipping_label_edit_address_address">Adresse</string>
     <string name="shipping_label_edit_address_phone">Téléphone</string>
     <string name="shipping_label_edit_address_company">Entreprise</string>
     <string name="shipping_label_edit_address_name">Nom</string>
