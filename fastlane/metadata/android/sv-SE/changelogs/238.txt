@@ -1,0 +1,4 @@
+7.3:
+Vi har gjort två förbättringar som handlare som använder utökningen WooCommerce Shipping & Tax kommer att uppskatta. Du kan skapa anpassade paket när du skapar en etikett. Du kan också skapa flera fraktetiketter för en enskild beställning!
+
+Dessa och andra små förbättringar har gjorts för att göra din upplevelse smidigare. Vi hoppas att du kommer att märka hur mycket arbete vi lägger ned på vår programvara.

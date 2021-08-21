@@ -1,2 +1,0 @@
-7.2 :
-Nous faisons tout notre possible afin de vous proposer cette fois un produit plus stable et plus fiable. Nous avons pris en compte et corrigé plusieurs bugs, notamment celui qui générait parfois une liste de produits vide lorsque la valeur du total des ventes d’un des produits était inattendue. Merci d’avoir procédé à la mise à jour, et n’hésitez pas à nous faire part de vos commentaires !
