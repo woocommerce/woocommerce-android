@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val siteStore: SiteStore,
+    private val selectedSite: SelectedSite,
     private val notificationHandler: NotificationMessageHandler
 ) : ScopedViewModel(savedState) {
     fun removeReviewNotifications() {
@@ -26,6 +28,14 @@ class MainActivityViewModel @Inject constructor(
 
     fun handleIncomingNotification(localPushId: Int, notification: Notification?) {
         notification?.let {
+            // update current selectSite based on the current notification
+            val currentSite = selectedSite.get()
+            if (it.remoteSiteId != currentSite.siteId) {
+                siteStore.getSiteBySiteId(it.remoteSiteId)?.let { updatedSite ->
+                    selectedSite.set(updatedSite)
+                }
+            }
+
             when (localPushId) {
                 it.getGroupPushId() -> onGroupMessageOpened(it.channelType)
                 it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
