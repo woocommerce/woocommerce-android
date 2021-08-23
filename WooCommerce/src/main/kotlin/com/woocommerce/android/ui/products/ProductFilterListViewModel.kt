@@ -227,18 +227,47 @@ class ProductFilterListViewModel @Inject constructor(
         return filterListItems
     }
 
+    private fun isComingFromProductListWithExistingFilterByCategory(): Boolean {
+        return getFilterByProductCategory() != null && productCategories.isEmpty()
+    }
+
     private fun buildCategoryFilterListItemUiModel(): FilterListItemUiModel {
-        return FilterListItemUiModel(
-            CATEGORY,
-            resourceProvider.getString(string.product_category),
-            addDefaultFilterOption(
+        // Three different possibilities to build category options:
+        // 1. Coming from product list, and there's existing filter by category.
+        //    Here the app hasn't fetched the category list yet. To show the existing filter by category as being
+        //    selected, we use that existing category as option.
+        // 2. Coming from product list, but no existing filter by category.
+        //    Here the app also hasn't fetched the category list, so we use an empty list (will show "Any").
+        // 3. Coming from filter options screen.
+        //    Here the app already fetched the category list, so we can use that list to build the options.
+
+        val categoryOptions = when {
+            isComingFromProductListWithExistingFilterByCategory() -> {
+                listOf(
+                    FilterListOptionItemUiModel(
+                        getFilterByProductCategory()!!, // TODO: We need to show category name here, instead of ID.
+                        getFilterByProductCategory()!!,
+                        true
+                    )
+                )
+            }
+            productCategories.isEmpty() -> emptyList()
+            else -> {
                 productCategories.map {
                     FilterListOptionItemUiModel(
                         it.name,
                         it.remoteCategoryId.toString(),
                         isSelected = productFilterOptions[CATEGORY] == it.remoteCategoryId.toString()
                     )
-                }.toMutableList(),
+                }
+            }
+        }
+
+        return FilterListItemUiModel(
+            CATEGORY,
+            resourceProvider.getString(string.product_category),
+            addDefaultFilterOption(
+                categoryOptions.toMutableList(),
                 productFilterOptions[CATEGORY].isNullOrEmpty()
             )
         )
@@ -293,7 +322,7 @@ class ProductFilterListViewModel @Inject constructor(
     data class FilterListItemUiModel(
         val filterItemKey: ProductFilterOption,
         val filterItemName: String,
-        val filterOptionListItems: List<FilterListOptionItemUiModel>
+        var filterOptionListItems: List<FilterListOptionItemUiModel>
     ) : Parcelable {
         fun isSameFilter(updatedFilterOption: FilterListItemUiModel): Boolean {
             if (this.filterItemName == updatedFilterOption.filterItemName &&
