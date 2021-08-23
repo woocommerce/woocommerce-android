@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.AppPrefs
@@ -14,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
@@ -50,11 +52,16 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { createNewZendeskTicket() }
-        binding.identityContainer.setOnClickListener { showIdentityDialog() }
+        binding.contactContainer.setOnClickListener { createNewZendeskTicket(TicketType.General) }
+        binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener { showZendeskFaq() }
         binding.appLogContainer.setOnClickListener { showApplicationLog() }
+
+        with(binding.contactPaymentsContainer) {
+            visibility = if (FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+            setOnClickListener { createNewZendeskTicket(TicketType.Payments) }
+        }
 
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
@@ -93,16 +100,22 @@ class HelpActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun createNewZendeskTicket() {
+    private fun createNewZendeskTicket(ticketType: TicketType) {
         if (!AppPrefs.hasSupportEmail()) {
-            showIdentityDialog()
+            showIdentityDialog(ticketType)
             return
         }
 
-        zendeskHelper.createNewTicket(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
+        zendeskHelper.createNewTicket(
+            context = this,
+            origin = originFromExtras,
+            selectedSite = selectedSiteOrNull(),
+            extraTags = extraTagsFromExtras,
+            ticketType = ticketType,
+        )
     }
 
-    private fun showIdentityDialog() {
+    private fun showIdentityDialog(ticketType: TicketType) {
         val emailSuggestion = if (AppPrefs.hasSupportEmail()) {
             AppPrefs.getSupportEmail()
         } else {
@@ -113,7 +126,7 @@ class HelpActivity : AppCompatActivity() {
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
             zendeskHelper.setSupportEmail(email)
             AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_SET)
-            createNewZendeskTicket()
+            createNewZendeskTicket(ticketType)
         }
         AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_FORM_VIEWED)
     }
@@ -161,6 +174,7 @@ class HelpActivity : AppCompatActivity() {
     enum class Origin(private val stringValue: String) {
         UNKNOWN("origin:unknown"),
         SETTINGS("origin:settings"),
+        CARD_READER_ONBOARDING("origin:card_reader_onboarding"),
         FEEDBACK_SURVEY("origin:feedback_survey"),
         USER_ELIGIBILITY_ERROR("origin:user_eligibility_error"),
         MY_STORE("origin:my_store"),
@@ -194,7 +208,7 @@ class HelpActivity : AppCompatActivity() {
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)
-            if (extraSupportTags != null && !extraSupportTags.isEmpty()) {
+            if (extraSupportTags != null && extraSupportTags.isNotEmpty()) {
                 intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
             }
             return intent

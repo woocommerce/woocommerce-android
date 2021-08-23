@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
@@ -47,6 +48,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     fun onFieldTextChanged(value: String, field: InputName) {
         when (field) {
             InputName.NAME -> validateNameField(value)
+            InputName.EMPTY_WEIGHT -> validateFloatInput(value, field, isZeroAllowed = true)
             else -> validateFloatInput(value, field)
         }
         updateInputInViewState(value, field)
@@ -60,11 +62,17 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         }
     }
 
-    private fun validateFloatInput(input: String, name: InputName) {
+    private fun validateFloatInput(input: String, name: InputName, isZeroAllowed: Boolean = false) {
         val acc = inputToFloat(input)
         when {
             acc.isNaN() -> updateErrorInViewState(name, emptyInputError)
-            acc == 0f -> updateErrorInViewState(name, invalidInputError)
+            acc == 0f -> {
+                if (isZeroAllowed) {
+                    updateErrorInViewState(name, null)
+                } else {
+                    updateErrorInViewState(name, invalidInputError)
+                }
+            }
             else -> updateErrorInViewState(name, null)
         }
     }
@@ -95,7 +103,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
         validateFloatInput(viewState.length, InputName.LENGTH)
         validateFloatInput(viewState.width, InputName.WIDTH)
         validateFloatInput(viewState.height, InputName.HEIGHT)
-        validateFloatInput(viewState.weight, InputName.EMPTY_WEIGHT)
+        validateFloatInput(viewState.weight, InputName.EMPTY_WEIGHT, isZeroAllowed = true)
 
         if (!viewState.areAllRequiredFieldsValid) return
 
@@ -117,6 +125,14 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
             val result = shippingLabelRepository.createCustomPackage(packageToCreate)
             when {
                 result.isError -> {
+                    AnalyticsTracker.track(
+                        stat = AnalyticsTracker.Stat.SHIPPING_LABEL_ADD_PACKAGE_FAILED,
+                        properties = mapOf(
+                            "type" to "custom",
+                            "error" to result.error.message
+                        )
+                    )
+
                     val errorMsg = if (result.error.message != null) {
                         result.error.message
                     } else {
@@ -140,7 +156,11 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
     }
 
     private fun inputToFloat(input: String): Float {
-        return if (input.isBlank()) Float.NaN else input.trim('.').toFloat()
+        return when {
+            input.isBlank() -> Float.NaN
+            input == "." -> Float.NaN
+            else -> input.toFloat()
+        }
     }
 
     @Parcelize

@@ -25,14 +25,14 @@ data class ShippingLabelPackage(
     data class Item(
         val productId: Long,
         val name: String,
-        val attributesList: String,
+        val attributesDescription: String,
         val quantity: Int,
         val weight: Float,
         val value: BigDecimal
     ) : Parcelable {
         fun isSameProduct(otherItem: Item): Boolean {
             return productId == otherItem.productId &&
-                attributesList == otherItem.attributesList
+                attributesDescription == otherItem.attributesDescription
         }
     }
 }

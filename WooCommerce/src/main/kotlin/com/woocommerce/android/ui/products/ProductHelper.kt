@@ -87,7 +87,8 @@ object ProductHelper {
             groupedProductIds = listOf(),
             crossSellProductIds = listOf(),
             upsellProductIds = listOf(),
-            downloads = listOf()
+            downloads = listOf(),
+            addons = listOf()
         )
     }
 }

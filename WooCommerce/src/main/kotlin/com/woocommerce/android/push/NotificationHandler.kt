@@ -30,6 +30,7 @@ import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.REVIEW
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.NotificationsUtils
+import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.text.StringEscapeUtils
@@ -208,7 +209,7 @@ class NotificationHandler @Inject constructor(
                 }
 
                 val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-                val latestGCMToken = preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
+                val latestGCMToken = preferences.getString(PreferencesWrapper.WPCOM_PUSH_DEVICE_TOKEN, null)
                 properties["push_notification_token"] = latestGCMToken ?: ""
                 AnalyticsTracker.track(stat, properties)
             }

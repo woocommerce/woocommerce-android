@@ -39,7 +39,7 @@
     <LinearLayout
         android:id="@+id/store_settings_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:visibility="gone"
         android:orientation="vertical">
 
@@ -54,12 +54,6 @@
         <!--
             Card Reader
         -->
-        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-            android:id="@+id/option_card_reader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:optionTitle="@string/settings_card_reader" />
-
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
             android:id="@+id/option_card_reader_payments"
             android:layout_width="match_parent"

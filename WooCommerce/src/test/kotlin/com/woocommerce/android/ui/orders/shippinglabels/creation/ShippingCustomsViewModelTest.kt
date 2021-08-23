@@ -79,7 +79,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                 Item(
                     productId = it.uniqueId,
                     name = it.name,
-                    attributesList = it.attributesList,
+                    attributesDescription = it.attributesDescription,
                     weight = 0f,
                     value = it.price,
                     quantity = ceil(it.quantity).toInt()

@@ -8,6 +8,7 @@ import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.DataLoaded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
@@ -154,5 +155,61 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
         val newData = data.copy(stepsState = newStepsState)
 
         assertThat(stateMachine.transitions.value.state).isEqualTo(State.WaitingForInput(newData))
+    }
+
+    @Test
+    fun `when the origin address is a US military state, then require a customs form`() = testBlocking {
+        val originAddress = originAddress.copy(
+            state = "AA",
+            country = "US"
+        )
+        stateMachine.start(order.identifier)
+        stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
+
+        val machineState = stateMachine.transitions.value.state
+        assertThat(machineState.data?.stepsState?.customsStep?.isVisible).isTrue
+    }
+
+    @Test
+    fun `when the shipping address is a US military state, then require a customs form`() = testBlocking {
+        val shippingAddress = shippingAddress.copy(
+            state = "AA",
+            country = "US"
+        )
+        stateMachine.start(order.identifier)
+        stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
+
+        val machineState = stateMachine.transitions.value.state
+        assertThat(machineState.data?.stepsState?.customsStep?.isVisible).isTrue
+    }
+
+    @Test
+    fun `when the origin and shipping address have same country, then don't require a customs form`() = testBlocking {
+        val originAddress = originAddress.copy(
+            country = "UK"
+        )
+        val shippingAddress = shippingAddress.copy(
+            country = "UK"
+        )
+        stateMachine.start(order.identifier)
+        stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
+
+        val machineState = stateMachine.transitions.value.state
+        assertThat(machineState.data?.stepsState?.customsStep?.isVisible).isFalse()
+    }
+
+    @Test
+    fun `when the origin and shipping address have different countries, then require a customs form`() = testBlocking {
+        val originAddress = originAddress.copy(
+            country = "US"
+        )
+        val shippingAddress = shippingAddress.copy(
+            country = "UK"
+        )
+        stateMachine.start(order.identifier)
+        stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
+
+        val machineState = stateMachine.transitions.value.state
+        assertThat(machineState.data?.stepsState?.customsStep?.isVisible).isTrue
     }
 }

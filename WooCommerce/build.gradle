@@ -26,6 +26,8 @@ repositories {
         url 'https://a8c-libs.s3.amazonaws.com/android'
         content {
             includeGroup "org.wordpress"
+            includeGroup "org.wordpress.fluxc"
+            includeGroup "org.wordpress.fluxc.plugins"
         }
     }
     maven {
@@ -53,9 +55,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "7.2"
+            versionName "7.3"
         }
-        versionCode 235
+        versionCode 238
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -176,17 +178,20 @@ dependencies {
         }
     }
 
-    implementation("$gradle.ext.fluxCBinaryPath:fluxc:$fluxCVersion") {
+    implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("$gradle.ext.fluxCBinaryPath:woocommerce:$fluxCVersion") {
+    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
 
     implementation ("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
         exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
+        exclude group: "org.wordpress", module: "fluxc"
+        exclude group: "org.wordpress.fluxc"
+        exclude group: "org.wordpress.fluxc.plugins"
         exclude group: "org.wordpress", module: "utils"
     }
 

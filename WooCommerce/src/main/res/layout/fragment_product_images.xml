@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/color_surface"
     tools:context="com.woocommerce.android.ui.products.ProductImagesFragment">
 
     <com.google.android.material.button.MaterialButton
@@ -16,6 +17,16 @@
         android:layout_marginTop="@dimen/margin_extra_large"
         android:layout_marginEnd="@dimen/margin_extra_large"
         android:text="@string/product_add_photos" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/learnMoreButton"
+        style="@style/Woo.ListItem.Body"
+        android:gravity="center"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="@dimen/minor_75"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="@string/product_images_learn_more_button"/>
 
     <View
         android:id="@+id/divider"

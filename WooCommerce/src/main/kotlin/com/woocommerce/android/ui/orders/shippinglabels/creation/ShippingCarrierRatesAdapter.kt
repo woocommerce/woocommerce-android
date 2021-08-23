@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.RateListViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.*
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.*
@@ -69,20 +68,16 @@ class ShippingCarrierRatesAdapter(
                 }
             }
 
-            if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
-                binding.expandIcon.isVisible = false
-            } else {
-                // expand items by default
-                binding.expandIcon.rotation = 180f
-                binding.rateOptions.isVisible = true
-                binding.titleLayout.setOnClickListener {
-                    if (isExpanded) {
-                        binding.expandIcon.animate().rotation(0f).start()
-                        binding.rateOptions.collapse()
-                    } else {
-                        binding.expandIcon.animate().rotation(180f).start()
-                        binding.rateOptions.expand()
-                    }
+            // expand items by default
+            binding.expandIcon.rotation = 180f
+            binding.rateOptions.isVisible = true
+            binding.titleLayout.setOnClickListener {
+                if (isExpanded) {
+                    binding.expandIcon.animate().rotation(0f).start()
+                    binding.rateOptions.collapse()
+                } else {
+                    binding.expandIcon.animate().rotation(180f).start()
+                    binding.rateOptions.expand()
                 }
             }
         }
@@ -133,16 +128,24 @@ class ShippingCarrierRatesAdapter(
             fun bind(rateItem: ShippingRateItem) {
                 binding.carrierServiceName.text = rateItem.title
 
-                if (rateItem.deliveryDate != null) {
-                    binding.deliveryTime.text = dateUtils.getShortMonthDayString(
-                        dateUtils.getYearMonthDayStringFromDate(rateItem.deliveryDate)
-                    )
-                } else {
-                    binding.deliveryTime.text = binding.root.resources.getQuantityString(
-                        R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
-                        rateItem.deliveryEstimate,
-                        rateItem.deliveryEstimate
-                    )
+                when {
+                    rateItem.deliveryDate != null -> {
+                        binding.deliveryTime.isVisible = true
+                        binding.deliveryTime.text = dateUtils.getShortMonthDayString(
+                            dateUtils.getYearMonthDayStringFromDate(rateItem.deliveryDate)
+                        )
+                    }
+                    rateItem.deliveryEstimate != 0 -> {
+                        binding.deliveryTime.isVisible = true
+                        binding.deliveryTime.text = binding.root.resources.getQuantityString(
+                            R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
+                            rateItem.deliveryEstimate,
+                            rateItem.deliveryEstimate
+                        )
+                    }
+                    else -> {
+                        binding.deliveryTime.isVisible = false
+                    }
                 }
 
                 binding.servicePrice.text = rateItem.options[rateItem.selectedOption ?: DEFAULT]?.formattedPrice

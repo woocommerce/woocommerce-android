@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-05 09:54:04+0000
+Translation-Revision-Date: 2021-08-19 20:49:49+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="support_contact_payments_detail">請聯絡我們的 happiness engineer，他們很樂於協助解決有關付款的問題</string>
+    <string name="support_contact_payments">聯絡付款支援團隊</string>
+    <string name="product_images_error_detail_title">上傳詳細資訊 (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">%d 個檔案無法上傳</string>
+    <string name="product_image_service_error_uploading_single">%d 個檔案無法上傳</string>
+    <string name="product_image_service_error_media_null">找不到媒體</string>
+    <string name="product_add_ons_details_info_notice">你可以在 Web 儀表板中編輯產品附加元件。</string>
+    <string name="product_add_ons_card_button_title">產品附加元件</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;如何上傳圖片</string>
+    <string name="card_reader_onboarding_generic_error_hint">不好意思，我們無法驗證此商店的親自收款方式</string>
+    <string name="card_reader_onboarding_generic_error_header">無法驗證此商店的親自收款方式</string>
+    <string name="card_reader_detail_connected_firmware_version">韌體：%s</string>
+    <string name="card_reader_payment_save_for_later">儲存以供稍後使用</string>
+    <string name="card_reader_purchase_card_reader">訂購讀卡機</string>
+    <string name="card_reader_manage_card_reader">管理讀卡機</string>
+    <string name="shipping_label_multiple_customs_form_print_button">列印</string>
+    <string name="shipping_label_edit_address_state">縣 / 市</string>
+    <string name="shipping_label_edit_address_line2">地址第 2 行</string>
+    <string name="shipping_label_edit_address_line1">地址第 1 行</string>
+    <string name="shipping_label_print_multiple_screen_title">列印郵寄標籤</string>
+    <string name="shipping_label_print_multiple_purchase_success">已購買郵寄標籤！</string>
+    <string name="shipping_label_print_multiple_button">列印郵寄標籤</string>
     <string name="settings_card_reader_payments">親自收款</string>
     <string name="card_reader_tutorial_charged_detail">你的讀卡機需要約三小時才能充飽電</string>
     <string name="card_reader_tutorial_charged_label">請讓你的讀卡機保持充電狀態</string>
@@ -144,7 +166,7 @@ Language: zh_TW
     <string name="product_create_attribute_helper">若要建立款式，需要先設定其屬性 (即「顏色」、「尺寸」)</string>
     <string name="product_variation_single_count">1 種款式</string>
     <string name="product_variation_multiple_count">%1$s 種款式</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s 追蹤中</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">USPS 追蹤中</string>
     <string name="card_reader_software_update_in_progress_title">正在更新讀卡機軟體</string>
     <string name="card_reader_software_update_title">軟體更新</string>
     <string name="card_reader_software_update_description">你的讀卡機軟體需要更新才能正常執行功能。 是否要立即更新？</string>
@@ -361,9 +383,7 @@ Language: zh_TW
     <string name="shipping_label_edit_address_use_address_as_is">使用輸入的地址</string>
     <string name="shipping_label_edit_address_country">國家/地區</string>
     <string name="shipping_label_edit_address_zip">郵遞區號</string>
-    <string name="shipping_label_edit_address_state">州</string>
     <string name="shipping_label_edit_address_city">城市</string>
-    <string name="shipping_label_edit_address_address">地址</string>
     <string name="shipping_label_edit_address_phone">電話</string>
     <string name="shipping_label_edit_address_company">公司</string>
     <string name="shipping_label_edit_address_name">名稱</string>

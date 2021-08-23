@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-04 14:54:05+0000
+Translation-Revision-Date: 2021-08-19 20:49:52+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="support_contact_payments_detail">Neem contact op met onze Happiness Engineers, die alle lastige vragen met betrekking tot betalingen kunnen beantwoorden</string>
+    <string name="support_contact_payments">Contact opnemen met de ondersteuning van Payments</string>
+    <string name="product_images_error_detail_title">Details uploaden (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">%d bestanden konden niet worden geüpload</string>
+    <string name="product_image_service_error_uploading_single">%d bestand kon niet worden geüpload</string>
+    <string name="product_image_service_error_media_null">Kan media niet vinden</string>
+    <string name="product_add_ons_details_info_notice">Je kunt productadd-ons bewerken vanaf je webdashboard.</string>
+    <string name="product_add_ons_card_button_title">Productadd-ons</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over afbeeldingen uploaden</string>
+    <string name="card_reader_onboarding_generic_error_hint">We kunnen fysieke betalingen helaas niet verifiëren voor deze winkel</string>
+    <string name="card_reader_onboarding_generic_error_header">Fysieke betalingen kunnen niet worden geverifieerd voor deze winkel</string>
+    <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
+    <string name="card_reader_payment_save_for_later">Opslaan voor later</string>
+    <string name="card_reader_purchase_card_reader">Kaartlezer bestellen</string>
+    <string name="card_reader_manage_card_reader">Kaartlezer beheren</string>
+    <string name="shipping_label_multiple_customs_form_print_button">Afdrukken</string>
+    <string name="shipping_label_edit_address_state">Staat / Graafschap</string>
+    <string name="shipping_label_edit_address_line2">Adresregel 2</string>
+    <string name="shipping_label_edit_address_line1">Adresregel 1</string>
+    <string name="shipping_label_print_multiple_screen_title">Verzendlabels afdrukken</string>
+    <string name="shipping_label_print_multiple_purchase_success">Verzendlabels aangeschaft!</string>
+    <string name="shipping_label_print_multiple_button">Verzendlabels afdrukken</string>
     <string name="settings_card_reader_payments">Fysieke betalingen</string>
     <string name="card_reader_tutorial_charged_detail">Je lezer heeft zo\'n drie uur nodig om op te laden.</string>
     <string name="card_reader_tutorial_charged_label">Houd je lezer opgeladen</string>
@@ -144,7 +166,7 @@ Language: nl
     <string name="product_create_attribute_helper">Om een variatie aan te maken moet je de eigenschappen (bv. \'kleur\', \'maat\') eerst instellen</string>
     <string name="product_variation_single_count">1 variatie</string>
     <string name="product_variation_multiple_count">%1$s Variaties</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s volgen</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">USPS zendingen volgen</string>
     <string name="card_reader_software_update_in_progress_title">De software van je lezer wordt bijgewerkt</string>
     <string name="card_reader_software_update_title">Software-update</string>
     <string name="card_reader_software_update_description">De software van je kaartlezer moet bijgewerkt worden om alles soepel te laten verlopen. Wil je nu bijwerken?</string>
@@ -361,9 +383,7 @@ Language: nl
     <string name="shipping_label_edit_address_use_address_as_is">Gebruik het adres zoals het is ingevoerd</string>
     <string name="shipping_label_edit_address_country">Land</string>
     <string name="shipping_label_edit_address_zip">Postcode</string>
-    <string name="shipping_label_edit_address_state">Provincie</string>
     <string name="shipping_label_edit_address_city">Plaats</string>
-    <string name="shipping_label_edit_address_address">Adres</string>
     <string name="shipping_label_edit_address_phone">Telefoonnummer</string>
     <string name="shipping_label_edit_address_company">Bedrijf</string>
     <string name="shipping_label_edit_address_name">Naam</string>

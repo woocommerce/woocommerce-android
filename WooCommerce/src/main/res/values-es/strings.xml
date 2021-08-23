@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-04 14:54:04+0000
+Translation-Revision-Date: 2021-08-19 20:49:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="support_contact_payments_detail">Ponte en contacto con nuestros Happiness Engineers para que te ayuden a resolver tus dudas sobre los pagos</string>
+    <string name="support_contact_payments">Contactar con el equipo de soporte de pagos</string>
+    <string name="product_images_error_detail_title">Subir datos (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">No se han podido subir %d archivos</string>
+    <string name="product_image_service_error_uploading_single">No se ha podido subir %d archivo</string>
+    <string name="product_image_service_error_media_null">No se ha podido encontrar el archivo multimedia</string>
+    <string name="product_add_ons_details_info_notice">Puedes editar los complementos para los productos en el escritorio del sitio web.</string>
+    <string name="product_add_ons_card_button_title">Complementos de producto</string>
+    <string name="product_images_learn_more_button">Consulta &lt;a href=\'\'&gt;más información&lt;/a&gt; sobre subir imágenes</string>
+    <string name="card_reader_onboarding_generic_error_hint">No hemos podido verificar Pagos en Persona para esta tienda</string>
+    <string name="card_reader_onboarding_generic_error_header">No se ha podido verificar Pagos en Persona para esta tienda</string>
+    <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
+    <string name="card_reader_payment_save_for_later">Guardar para más adelante</string>
+    <string name="card_reader_purchase_card_reader">Pedir el lector de tarjetas</string>
+    <string name="card_reader_manage_card_reader">Gestionar el lector de tarjetas</string>
+    <string name="shipping_label_multiple_customs_form_print_button">Imprimir</string>
+    <string name="shipping_label_edit_address_state">Región / Provincia</string>
+    <string name="shipping_label_edit_address_line2">Dirección, línea 2</string>
+    <string name="shipping_label_edit_address_line1">Dirección, línea 1</string>
+    <string name="shipping_label_print_multiple_screen_title">Imprimir etiquetas de envío</string>
+    <string name="shipping_label_print_multiple_purchase_success">¡Se han comprado las etiquetas de envío!</string>
+    <string name="shipping_label_print_multiple_button">Imprimir etiquetas de envío</string>
     <string name="settings_card_reader_payments">Pagos en Persona</string>
     <string name="card_reader_tutorial_charged_detail">El lector tarda unas tres horas en cargarse por completo</string>
     <string name="card_reader_tutorial_charged_label">Mantén cargado el lector</string>
@@ -144,7 +166,7 @@ Language: es
     <string name="product_create_attribute_helper">Para crear una variación, antes debes especificar los atributos (p. ej., \"Color\" y \"Talla\")</string>
     <string name="product_variation_single_count">1 variación</string>
     <string name="product_variation_multiple_count">%1$s variaciones</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s seguimiento</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">Seguimiento de USPS</string>
     <string name="card_reader_software_update_in_progress_title">Actualizar el software del lector</string>
     <string name="card_reader_software_update_title">Actualización del software</string>
     <string name="card_reader_software_update_description">El software de tu lector de tarjetas tiene que estar actualizado para que funcione correctamente. ¿Quieres actualizarlo ahora?</string>
@@ -361,9 +383,7 @@ Language: es
     <string name="shipping_label_edit_address_use_address_as_is">Usar la dirección especificada</string>
     <string name="shipping_label_edit_address_country">País</string>
     <string name="shipping_label_edit_address_zip">Código postal</string>
-    <string name="shipping_label_edit_address_state">Provincia</string>
     <string name="shipping_label_edit_address_city">Ciudad</string>
-    <string name="shipping_label_edit_address_address">Dirección</string>
     <string name="shipping_label_edit_address_phone">Teléfono</string>
     <string name="shipping_label_edit_address_company">Empresa</string>
     <string name="shipping_label_edit_address_name">Nombre</string>

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-04 12:54:15+0000
+Translation-Revision-Date: 2021-08-19 20:50:33+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="support_contact_payments_detail">Kontakta våra supporttekniker för att få svar på frågor rörande betalningar</string>
+    <string name="support_contact_payments">Kontakta supporten för betalningar</string>
+    <string name="product_images_error_detail_title">Ladda upp information (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">%d filer kunde inte laddas upp</string>
+    <string name="product_image_service_error_uploading_single">%d fil kunde inte laddas upp</string>
+    <string name="product_image_service_error_media_null">Media kunde inte hittas</string>
+    <string name="product_add_ons_details_info_notice">Du kan redigera produkttillägg i webbadminpanelen.</string>
+    <string name="product_add_ons_card_button_title">Produktutökningar</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om att ladda upp bilder</string>
+    <string name="card_reader_onboarding_generic_error_hint">Vi kunde inte verifiera personliga betalningar för den här butiken.</string>
+    <string name="card_reader_onboarding_generic_error_header">Det gick inte att verifiera personliga betalningar för den här butiken.</string>
+    <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
+    <string name="card_reader_payment_save_for_later">Spara till senare</string>
+    <string name="card_reader_purchase_card_reader">Beställ kortläsare</string>
+    <string name="card_reader_manage_card_reader">Hantera kortläsare</string>
+    <string name="shipping_label_multiple_customs_form_print_button">Skriv ut</string>
+    <string name="shipping_label_edit_address_state">Delstat/län</string>
+    <string name="shipping_label_edit_address_line2">Adressrad 2</string>
+    <string name="shipping_label_edit_address_line1">Adressrad 1</string>
+    <string name="shipping_label_print_multiple_screen_title">Skriv ut fraktetikett</string>
+    <string name="shipping_label_print_multiple_purchase_success">Fraktetikett köpt!</string>
+    <string name="shipping_label_print_multiple_button">Skriv ut fraktetiketter</string>
     <string name="settings_card_reader_payments">Personliga betalningar</string>
     <string name="card_reader_tutorial_charged_detail">Det tar ungefär tre timmar att ladda din läsare</string>
     <string name="card_reader_tutorial_charged_label">Håll din läsare laddad</string>
@@ -145,7 +167,7 @@ Language: sv_SE
     <string name="product_create_attribute_helper">För att skapa en variation måste du först ställa in dess attribut (dvs. \"Färg\", \"Storlek\")</string>
     <string name="product_variation_single_count">1 variation</string>
     <string name="product_variation_multiple_count">%1$s variationer</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s-spårning</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">USPS-spårning</string>
     <string name="card_reader_software_update_in_progress_title">Uppdaterar din läsares programvara</string>
     <string name="card_reader_software_update_title">Programvaruuppdatering</string>
     <string name="card_reader_software_update_description">Din kortläsares programvara behöver uppdateras för att fungera korrekt. Vill du uppdatera den nu?</string>
@@ -362,9 +384,7 @@ Language: sv_SE
     <string name="shipping_label_edit_address_use_address_as_is">Använd adressen som angavs</string>
     <string name="shipping_label_edit_address_country">Land</string>
     <string name="shipping_label_edit_address_zip">Postnummer</string>
-    <string name="shipping_label_edit_address_state">Delstat</string>
     <string name="shipping_label_edit_address_city">Ort</string>
-    <string name="shipping_label_edit_address_address">Adress</string>
     <string name="shipping_label_edit_address_phone">Telefon</string>
     <string name="shipping_label_edit_address_company">Företag</string>
     <string name="shipping_label_edit_address_name">Namn</string>

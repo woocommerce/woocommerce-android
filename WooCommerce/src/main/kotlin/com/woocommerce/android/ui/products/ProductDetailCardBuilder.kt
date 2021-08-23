@@ -17,6 +17,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAddonsDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -48,6 +49,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -95,6 +97,7 @@ class ProductDetailCardBuilder(
                 product.price(),
                 product.productReviews(),
                 product.inventory(SIMPLE),
+                product.addons(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -113,6 +116,7 @@ class ProductDetailCardBuilder(
                 product.groupedProducts(),
                 product.productReviews(),
                 product.inventory(GROUPED),
+                product.addons(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -130,6 +134,7 @@ class ProductDetailCardBuilder(
                 product.productReviews(),
                 product.externalLink(),
                 product.inventory(EXTERNAL),
+                product.addons(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -147,6 +152,7 @@ class ProductDetailCardBuilder(
                 product.variationAttributes(),
                 product.productReviews(),
                 product.inventory(VARIABLE),
+                product.addons(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -166,6 +172,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.productReviews(),
+                product.addons(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -601,4 +608,14 @@ class ProductDetailCardBuilder(
             null
         }
     }
+
+    private fun Product.addons(): ProductProperty? =
+        takeIf { addons.isNotEmpty() && FeatureFlag.PRODUCT_ADD_ONS.isEnabled() }?.let {
+            ComplexProperty(
+                value = resources.getString(string.product_add_ons_card_button_title),
+                icon = drawable.ic_gridicon_circle_plus,
+                showTitle = false,
+                onClick = { viewModel.onEditProductCardClicked(ViewProductAddonsDetails) }
+            )
+        }
 }

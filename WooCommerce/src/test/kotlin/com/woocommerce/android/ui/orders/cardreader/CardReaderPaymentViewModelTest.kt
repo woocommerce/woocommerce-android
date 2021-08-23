@@ -85,7 +85,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
 
-    private val savedState: SavedStateHandle = CardReaderPaymentDialogArgs(ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
+        ORDER_IDENTIFIER
+    ).initSavedStateHandle()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -110,7 +112,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(address.firstName).thenReturn("Tester")
         whenever(address.lastName).thenReturn("Test")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
-        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(mockedOrder)
+        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
@@ -127,7 +129,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given fetching order fails, when payment screen shown, then FailedPayment state is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
 
             viewModel.start()
 
@@ -137,7 +139,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when fetching order fails, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
 
             viewModel.start()
 
@@ -149,7 +151,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER, false)).thenReturn(null)
+            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
 
             viewModel.start()
 
@@ -345,7 +347,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         viewModel.start()
         val viewState = viewModel.viewStateData.value!!
 
-        assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isTrue()
+        assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isTrue
         assertThat(viewState.headerLabel).describedAs("headerLabel")
             .isEqualTo(R.string.card_reader_payment_collect_payment_loading_header)
         assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isNull()
@@ -370,7 +372,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
@@ -409,7 +411,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
@@ -448,7 +450,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
@@ -487,7 +489,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse()
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
 
@@ -593,6 +595,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_payment_print_receipt)
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
                 .isEqualTo(R.string.card_reader_payment_send_receipt)
+            assertThat(viewState.tertiaryActionLabel).describedAs("tertiaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_save_for_later)
         }
 
     @Test
@@ -742,6 +746,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when user clicks on save for later button, then Exit event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onTertiaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
     fun `when email activity not found, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             viewModel.onEmailActivityNotFound()
@@ -755,6 +772,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             simulateFetchOrderJobState(inProgress = true)
 
             viewModel.onBackPressed()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReFetchingOrderState::class.java)
+        }
+
+    @Test
+    fun `given re-fetching order, when user clicks on save for later button, then ReFetchingOrderState shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+            simulateFetchOrderJobState(inProgress = true)
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReFetchingOrderState::class.java)
         }
@@ -835,7 +866,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when re-fetching order fails, then SnackBar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(any(), any())).thenReturn(null)
+            whenever(orderRepository.fetchOrder(any())).thenReturn(null)
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)

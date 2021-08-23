@@ -48,7 +48,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         productId = 15,
         name = "test",
         quantity = 1,
-        attributesList = "",
+        attributesDescription = "",
         weight = 1f,
         value = BigDecimal.TEN
     )

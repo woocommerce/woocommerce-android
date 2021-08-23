@@ -1,12 +1,29 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.model.external.Charge
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.*
+import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
+import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CAPTURE
+import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CONFIRMATION
+import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
 import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.CardPaymentStatus.*
+import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
+import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.PaymentInfo
@@ -19,7 +36,15 @@ import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPayme
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -95,7 +120,7 @@ class PaymentManagerTest {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
-        whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull<String>()))
+        whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
     }
@@ -158,6 +183,27 @@ class PaymentManagerTest {
 
         verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
     }
+
+    @Test
+    fun `given customer id returns, when creating payment finishes, then payment info enriched`() =
+        runBlockingTest {
+            whenever(createPaymentAction.createPaymentIntent(anyOrNull()))
+                .thenReturn(flow { emit(CreatePaymentStatus.Success(mock())) })
+            val customerId = "customerId"
+            whenever(cardReaderStore.fetchCustomerIdByOrderId(any()))
+                .thenReturn(customerId)
+
+            val result = withTimeoutOrNull(TIMEOUT) {
+                manager
+                    .acceptPayment(createPaymentInfo())
+                    .toList()
+            }
+
+            assertThat(result).isNotNull // verify the flow did not timeout
+            val paymentInfoCaptor = argumentCaptor<PaymentInfo>()
+            verify(createPaymentAction).createPaymentIntent(paymentInfoCaptor.capture())
+            assertThat(paymentInfoCaptor.firstValue.customerId).isEqualTo(customerId)
+        }
 
     @Test
     fun `given status not REQUIRES_PAYMENT_METHOD, when creating payment finishes, then flow terminates`() =
@@ -509,6 +555,7 @@ class PaymentManagerTest {
         customerName: String? = DUMMY_CUSTOMER_NAME,
         storeName: String? = DUMMY_STORE_NAME,
         siteUrl: String? = DUMMY_SITE_URL,
+        customerId: String? = null,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -518,6 +565,7 @@ class PaymentManagerTest {
             customerEmail = customerEmail,
             customerName = customerName,
             storeName = storeName,
-            siteUrl = siteUrl
+            siteUrl = siteUrl,
+            customerId = customerId,
         )
 }

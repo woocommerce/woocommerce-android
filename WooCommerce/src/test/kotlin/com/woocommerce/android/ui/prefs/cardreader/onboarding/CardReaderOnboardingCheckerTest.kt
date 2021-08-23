@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import com.nhaarman.mockitokotlin2.*
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,12 +22,20 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
     private val wcPayStore: WCPayStore = mock()
+    private val networkStatus: NetworkStatus = mock()
 
     private val site = SiteModel()
 
     @Before
     fun setUp() = testBlocking {
-        checker = CardReaderOnboardingChecker(selectedSite, wooStore, wcPayStore, coroutinesTestRule.testDispatchers)
+        checker = CardReaderOnboardingChecker(
+            selectedSite,
+            wooStore,
+            wcPayStore,
+            coroutinesTestRule.testDispatchers,
+            networkStatus
+        )
+        whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
         whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult())
@@ -36,12 +45,30 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when not connected to network, then NO_CONNECTION returned`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(false)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.NoConnectionError::class.java)
+    }
+
+    @Test
+    fun `when connected to network, then NO_CONNECTION not returned`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.NoConnectionError::class.java)
+    }
+
+    @Test
     fun `when store country not supported, then COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("unsupported country abc")
 
         val result = checker.getOnboardingState()
 
-        assertThat(result).isEqualTo(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
     }
 
     @Test
@@ -50,7 +77,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         val result = checker.getOnboardingState()
 
-        assertThat(result).isNotEqualTo(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
     }
 
     @Test
@@ -60,7 +87,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
+            assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
         }
 
     @Test
@@ -70,7 +97,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.COUNTRY_NOT_SUPPORTED)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
         }
 
     @Test
@@ -91,7 +118,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.WCPAY_NOT_INSTALLED)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayNotInstalled)
         }
 
     @Test
@@ -103,7 +130,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.WCPAY_UNSUPPORTED_VERSION)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayUnsupportedVersion)
         }
 
     @Test
@@ -115,7 +142,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.WCPAY_NOT_ACTIVATED)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayNotActivated)
         }
 
     @Test
@@ -129,7 +156,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.WCPAY_SETUP_NOT_COMPLETED)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpaySetupNotCompleted)
         }
 
     @Test
@@ -145,7 +172,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_UNDER_REVIEW)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountUnderReview)
         }
 
     @Test
@@ -161,7 +188,23 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_PENDING_REQUIREMENT)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountPendingRequirement::class.java)
+        }
+
+    @Test
+    fun `when stripe account restricted soon, then STRIPE_ACCOUNT_PENDING_REQUIREMENT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(
+                    WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED_SOON,
+                    hasPendingRequirements = false,
+                    hadOverdueRequirements = false
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountPendingRequirement::class.java)
         }
 
     @Test
@@ -177,7 +220,23 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_OVERDUE_REQUIREMENT)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountOverdueRequirement)
+        }
+
+    @Test
+    fun `when stripe account has both pending and overdue requirements, then OVERDUE_REQUIREMENT returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(
+                    WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                    hasPendingRequirements = true,
+                    hadOverdueRequirements = true
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountOverdueRequirement)
         }
 
     @Test
@@ -191,7 +250,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
         }
 
     @Test
@@ -205,7 +264,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
         }
 
     @Test
@@ -219,7 +278,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
         }
 
     @Test
@@ -233,7 +292,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.STRIPE_ACCOUNT_REJECTED)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
         }
 
     private fun buildPaymentAccountResult(
@@ -249,7 +308,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             statementDescriptor = "",
             storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
             country = "US",
-            isCardPresentEligible = true
+            isCardPresentEligible = true,
+            isLive = false
         )
     )
 

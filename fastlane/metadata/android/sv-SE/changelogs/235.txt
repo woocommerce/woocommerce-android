@@ -1,2 +1,0 @@
-7.2:
-Den här gången har vi fokuserat på att göra produkten mer stabil och tillförlitlig. Flera fel har adresserats och åtgärdats, inklusive ett fel som gjorde att listan med produkter ibland var tom när en produkt innehöll ett oväntat värde för total försäljning. Tack för att du håller dig uppdaterad. Hör gärna av dig med feedback!

@@ -5,47 +5,42 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductImagesFragment :
@@ -58,6 +53,8 @@ class ProductImagesFragment :
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
+    @Inject lateinit var navigator: ProductNavigator
+
     private var _binding: FragmentProductImagesBinding? = null
     private val binding get() = _binding!!
 
@@ -66,6 +63,7 @@ class ProductImagesFragment :
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
+    private var detailSnackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -138,6 +136,16 @@ class ProductImagesFragment :
         binding.addImageButton.setOnClickListener {
             viewModel.onImageSourceButtonClicked()
         }
+        with(binding.learnMoreButton) {
+            text = HtmlCompat.fromHtml(
+                context.getString(R.string.product_images_learn_more_button),
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
+            movementMethod = LinkMovementMethod.getInstance()
+            setOnClickListener {
+                ChromeCustomTabUtils.launchUrl(it.context, AppUrls.PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING)
+            }
+        }
     }
 
     override fun onGalleryImageDeleteIconClicked(image: Image) {
@@ -178,9 +186,12 @@ class ProductImagesFragment :
 
         viewModel.event.observe(
             viewLifecycleOwner,
-            Observer { event ->
+            { event ->
                 when (event) {
+                    is Exit -> findNavController().navigateUp()
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                    is ProductNavigationTarget -> navigator.navigate(this, event)
                     is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
                     is ShowDialog -> event.showDialog()
                     ShowImageSourceDialog -> showImageSourceDialog()
@@ -201,6 +212,22 @@ class ProductImagesFragment :
             onPositiveButton = { viewModel.onDeleteImageConfirmed(image) },
             onNegativeButton = { /* no-op */ }
         ).show()
+    }
+
+    private fun displayProductImageUploadErrorSnackBar(
+        message: String,
+        actionListener: View.OnClickListener
+    ) {
+        if (detailSnackbar == null) {
+            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+                message = message,
+                actionText = getString(R.string.details),
+                actionListener = actionListener
+            )
+        } else {
+            detailSnackbar?.setText(message)
+        }
+        detailSnackbar?.show()
     }
 
     private fun updateImages(images: List<Image>, uris: List<Uri>?) {

@@ -57,7 +57,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 when (event) {
                     is CardReaderConnectScreen ->
                         findNavController()
-                            .navigateSafely(R.id.action_cardReaderDetailFragment_to_cardReaderConnectFragment)
+                            .navigateSafely(
+                                CardReaderDetailFragmentDirections
+                                    .actionCardReaderDetailFragmentToCardReaderConnectFragment(skipOnboarding = true)
+                            )
                     is CardReaderUpdateScreen ->
                         findNavController().navigateSafely(
                             CardReaderDetailFragmentDirections
@@ -88,6 +91,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                             enforcedUpdateDivider.visibility = enforcedUpdateTv.visibility
                             UiHelpers.setTextOrHide(readerNameTv, state.readerName)
                             UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
+                            UiHelpers.setTextOrHide(readerFirmwareVersionTv, state.readerFirmwareVersion)
                             UiHelpers.setTextOrHide(primaryActionBtn, state.primaryButtonState?.text)
                             primaryActionBtn.setOnClickListener { state.primaryButtonState?.onActionClicked?.invoke() }
                             UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState?.text)

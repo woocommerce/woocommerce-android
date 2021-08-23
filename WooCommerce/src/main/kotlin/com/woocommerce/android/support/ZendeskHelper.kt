@@ -2,18 +2,18 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.net.ConnectivityManager
-import androidx.preference.PreferenceManager
 import android.telephony.TelephonyManager
 import android.text.TextUtils
+import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
-import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.zendesk.logger.Logger
@@ -62,7 +62,7 @@ class ZendeskHelper(
     private val wcPushNotificationDeviceToken: String?
         get() {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            return preferences.getString(FCMRegistrationIntentService.WPCOM_PUSH_DEVICE_TOKEN, null)
+            return preferences.getString(PreferencesWrapper.WPCOM_PUSH_DEVICE_TOKEN, null)
         }
 
     private val timer: Timer by lazy {
@@ -120,7 +120,8 @@ class ZendeskHelper(
         context: Context,
         origin: Origin?,
         selectedSite: SiteModel?,
-        extraTags: List<String>? = null
+        extraTags: List<String>? = null,
+        ticketType: TicketType = TicketType.General,
     ) {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
@@ -132,7 +133,17 @@ class ZendeskHelper(
             .withShowConversationsMenuButton(isIdentitySet)
         AnalyticsTracker.track(Stat.SUPPORT_HELP_CENTER_VIEWED)
         if (isIdentitySet) {
-            builder.show(context, buildZendeskConfig(context, siteStore.sites, origin, selectedSite, extraTags))
+            builder.show(
+                context,
+                buildZendeskConfig(
+                    context,
+                    ticketType,
+                    siteStore.sites,
+                    origin,
+                    selectedSite,
+                    extraTags
+                )
+            )
         } else {
             builder.show(context)
         }
@@ -148,13 +159,21 @@ class ZendeskHelper(
         context: Context,
         origin: Origin?,
         selectedSite: SiteModel?,
-        extraTags: List<String>? = null
+        extraTags: List<String>? = null,
+        ticketType: TicketType = TicketType.General,
     ) {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
         }
         requireIdentity(context, selectedSite) {
-            val config = buildZendeskConfig(context, siteStore.sites, origin, selectedSite, extraTags)
+            val config = buildZendeskConfig(
+                context,
+                ticketType,
+                siteStore.sites,
+                origin,
+                selectedSite,
+                extraTags
+            )
             RequestActivity.builder().show(context, config)
         }
     }
@@ -168,14 +187,18 @@ class ZendeskHelper(
         context: Context,
         origin: Origin?,
         selectedSite: SiteModel? = null,
-        extraTags: List<String>? = null
+        extraTags: List<String>? = null,
+        ticketType: TicketType = TicketType.General,
     ) {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
         }
         requireIdentity(context, selectedSite) {
             RequestListActivity.builder()
-                .show(context, buildZendeskConfig(context, siteStore.sites, origin, selectedSite, extraTags))
+                .show(
+                    context,
+                    buildZendeskConfig(context, ticketType, siteStore.sites, origin, selectedSite, extraTags)
+                )
         }
     }
 
@@ -353,16 +376,18 @@ class ZendeskHelper(
  */
 private fun buildZendeskConfig(
     context: Context,
+    ticketType: TicketType,
     allSites: List<SiteModel>?,
     origin: Origin?,
     selectedSite: SiteModel? = null,
     extraTags: List<String>? = null
 ): Configuration {
-    val customFields = buildZendeskCustomFields(context, allSites, selectedSite)
+    val customFields = buildZendeskCustomFields(context, ticketType, allSites, selectedSite)
+    val extraTagsWithTicketTypeTags = (extraTags ?: emptyList()) + ticketType.tags
     return RequestActivity.builder()
-        .withTicketForm(TicketFieldIds.form, customFields)
+        .withTicketForm(ticketType.form, customFields)
         .withRequestSubject(ZendeskConstants.ticketSubject)
-        .withTags(buildZendeskTags(allSites, origin ?: Origin.UNKNOWN, extraTags))
+        .withTags(buildZendeskTags(allSites, origin ?: Origin.UNKNOWN, extraTagsWithTicketTypeTags))
         .config()
 }
 
@@ -380,6 +405,7 @@ private fun getHomeURLOrHostName(site: SiteModel): String {
  */
 private fun buildZendeskCustomFields(
     context: Context,
+    ticketType: TicketType,
     allSites: List<SiteModel>?,
     selectedSite: SiteModel?
 ): List<CustomField> {
@@ -390,7 +416,7 @@ private fun buildZendeskCustomFields(
     }
     return listOf(
         CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
-        CustomField(TicketFieldIds.subcategoryId, ZendeskConstants.subcategoryValue),
+        CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
         CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
         CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
         CustomField(TicketFieldIds.currentSite, currentSiteInformation),
@@ -440,7 +466,7 @@ private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String
  * This is a helper function which returns a set of pre-defined tags depending on some conditions. It accepts a list of
  * custom tags to be added for special cases.
  */
-private fun buildZendeskTags(allSites: List<SiteModel>?, origin: Origin, extraTags: List<String>?): List<String> {
+private fun buildZendeskTags(allSites: List<SiteModel>?, origin: Origin, extraTags: List<String>): List<String> {
     val tags = ArrayList<String>()
     allSites?.let { it ->
         // Add wpcom tag if at least one site is WordPress.com site
@@ -461,9 +487,7 @@ private fun buildZendeskTags(allSites: List<SiteModel>?, origin: Origin, extraTa
     tags.add(origin.toString())
     // Add Android tag to make it easier to filter tickets by platform
     tags.add(ZendeskConstants.platformTag)
-    extraTags?.let {
-        tags.addAll(it)
-    }
+    tags.addAll(extraTags)
     return tags
 }
 
@@ -493,13 +517,15 @@ private object ZendeskConstants {
     const val jetpackTag = "jetpack"
     const val mobileHelpCategoryId = 360000041586
     const val categoryValue = "Support"
-    const val subcategoryValue = "WooCommerce Mobile Apps"
+    const val subcategoryGeneralValue = "WooCommerce Mobile Apps"
+    const val subcategoryPaymentsValue = "payment"
     const val networkWifi = "WiFi"
     const val networkWWAN = "Mobile"
     const val networkTypeLabel = "Network Type:"
     const val networkCarrierLabel = "Carrier:"
     const val networkCountryCodeLabel = "Country Code:"
     const val noneValue = "none"
+
     // We rely on this platform tag to filter tickets in Zendesk, so should be kept separate from the `articleLabel`
     const val platformTag = "Android"
     const val sourcePlatform = "Mobile_-_Woo_Android"
@@ -512,16 +538,44 @@ private object TicketFieldIds {
     const val appVersion = 360000086866L
     const val blogList = 360000087183L
     const val deviceFreeSpace = 360000089123L
-    const val form = 360000010286L
+    const val formGeneral = 360000010286L
+    const val formPayments = 189946L
+    const val categoryId = 25176003L
+    const val subcategoryId = 25176023L
     const val logs = 22871957L
     const val networkInformation = 360000086966L
     const val currentSite = 360000103103L
     const val appLanguage = 360008583691L
     const val sourcePlatform = 360009311651L
-    const val categoryId = 25176003L
-    const val subcategoryId = 25176023L
+}
+
+sealed class TicketType(
+    val form: Long,
+    val subcategoryName: String,
+    val tags: List<String> = emptyList(),
+) {
+    object General : TicketType(
+        form = TicketFieldIds.formGeneral,
+        subcategoryName = ZendeskConstants.subcategoryGeneralValue,
+    )
+
+    object Payments : TicketType(
+        form = TicketFieldIds.formPayments,
+        subcategoryName = ZendeskConstants.subcategoryPaymentsValue,
+        tags = arrayListOf(
+            ZendeskExtraTags.paymentsProduct,
+            ZendeskExtraTags.paymentsCategory,
+            ZendeskExtraTags.paymentsSubcategory,
+            ZendeskExtraTags.paymentsProductArea
+        )
+    )
 }
 
 object ZendeskExtraTags {
     const val connectingJetpack = "connecting_jetpack"
+
+    const val paymentsCategory = "support"
+    const val paymentsSubcategory = "payment"
+    const val paymentsProduct = "woocommerce_payments"
+    const val paymentsProductArea = "product_area_woo_payment_gateway"
 }

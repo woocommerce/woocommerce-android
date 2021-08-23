@@ -183,6 +183,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     fun onUseAddressAsIsButtonClicked() {
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
+        // Clear remote validation error of `address1`
+        viewState = viewState.copy(address1Field = viewState.address1Field.copy(validationError = null))
+        // Validate fields locally
         viewState = viewState.validateAllFields()
         if (viewState.areAllRequiredFieldsValid) {
             triggerEvent(ExitWithResult(viewState.getAddress()))
@@ -338,7 +341,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType),
             cityField = RequiredField(args.address.city),
             zipField = RequiredField(args.address.postcode),
-            stateField = LocationField(Location(code = args.address.state, name = "")),
+            stateField = LocationField(Location(code = args.address.state, name = args.address.state)),
             countryField = LocationField(Location(code = args.address.country, name = ""), isRequired = true)
         )
 

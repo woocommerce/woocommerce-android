@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -20,6 +21,12 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
     private val arguments: ShippingLabelCreatePackageFragmentArgs by savedState.navArgs()
 
     fun onPackageCreated(madePackage: ShippingPackage) {
+        val type = if (madePackage.category == ShippingPackage.CUSTOM_PACKAGE_CATEGORY) "custom" else "predefined"
+        AnalyticsTracker.track(
+            stat = AnalyticsTracker.Stat.SHIPPING_LABEL_PACKAGE_ADDED_SUCCESSFULLY,
+            properties = mapOf("type" to type)
+        )
+
         triggerEvent(
             ShowSnackbar(
                 message = R.string.shipping_label_create_custom_package_success_message,

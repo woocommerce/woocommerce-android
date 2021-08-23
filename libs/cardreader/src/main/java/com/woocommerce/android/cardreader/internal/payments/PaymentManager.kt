@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "TooManyFunctions")
 internal class PaymentManager(
     private val terminalWrapper: TerminalWrapper,
     private val cardReaderStore: CardReaderStore,
@@ -38,14 +38,8 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper
 ) {
     suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
-        if (!paymentUtils.isSupportedCurrency(paymentInfo.currency)) {
-            emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
-            return@flow
-        }
-        if (!terminalWrapper.isInitialized()) {
-            emit(errorMapper.mapError(errorMessage = "Reader not connected"))
-            return@flow
-        }
+        if (isInvalidState(paymentInfo)) return@flow
+
         val paymentIntent = createPaymentIntent(paymentInfo)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
@@ -106,7 +100,7 @@ internal class PaymentManager(
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(paymentInfo: PaymentInfo): PaymentIntent? {
         var paymentIntent: PaymentIntent? = null
         emit(InitializingPayment)
-        createPaymentAction.createPaymentIntent(paymentInfo).collect {
+        createPaymentAction.createPaymentIntent(enrichPaymentInfoWithCustomerId(paymentInfo)).collect {
             when (it) {
                 is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent
@@ -156,6 +150,24 @@ internal class PaymentManager(
             is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
+    }
+
+    private suspend fun FlowCollector<CardPaymentStatus>.isInvalidState(paymentInfo: PaymentInfo) =
+        when {
+            !paymentUtils.isSupportedCurrency(paymentInfo.currency) -> {
+                emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
+                true
+            }
+            !terminalWrapper.isInitialized() -> {
+                emit(errorMapper.mapError(errorMessage = "Reader not connected"))
+                true
+            }
+            else -> false
+        }
+
+    private suspend fun enrichPaymentInfoWithCustomerId(paymentInfo: PaymentInfo): PaymentInfo {
+        val customerId = cardReaderStore.fetchCustomerIdByOrderId(paymentInfo.orderId)
+        return paymentInfo.copy(customerId = customerId)
     }
 }
 

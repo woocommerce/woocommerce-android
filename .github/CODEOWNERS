@@ -1,6 +1,3 @@
-# All files in repository
-* @woocommerce/android-developers
-
 # Build tools
 /.buildkite/        @woocommerce/owl-team
 /.bundle/           @woocommerce/owl-team

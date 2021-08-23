@@ -241,8 +241,12 @@ class OrderDetailViewModel @Inject constructor(
         if (cardReaderManager.readerStatus.value is Connected) {
             triggerEvent(StartCardReaderPaymentFlow(order.identifier))
         } else {
-            triggerEvent(StartCardReaderConnectFlow)
+            triggerEvent(StartCardReaderConnectFlow(skipOnboarding = false))
         }
+    }
+
+    fun onOnboardingSuccess() {
+        triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
     }
 
     fun onSeeReceiptClicked() {
@@ -291,7 +295,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
         shippingLabel.commercialInvoiceUrl?.let {
-            triggerEvent(ViewPrintCustomsForm(it, isReprint = true))
+            triggerEvent(ViewPrintCustomsForm(listOf(it), isReprint = true))
         }
     }
 
@@ -576,6 +580,20 @@ class OrderDetailViewModel @Inject constructor(
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId)
 
+        if (isOrderEligibleForSLCreation &&
+            viewState.isCreateShippingLabelButtonVisible != true &&
+            viewState.isProductListMenuVisible != true
+        ) {
+            // we check against the viewstate to avoid sending the event multiple times
+            // if the eligibility was cached, and we had the same value after re-fetching it
+            AnalyticsTracker.track(
+                stat = Stat.SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
+                properties = mapOf(
+                    "order_status" to order.status.value
+                )
+            )
+        }
+
         viewState = viewState.copy(
             isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !shippingLabels.isVisible,
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
@@ -631,9 +649,6 @@ class OrderDetailViewModel @Inject constructor(
 
         val isCreateShippingLabelBannerVisible: Boolean
             get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
-
-        val isReprintShippingLabelBannerVisible: Boolean
-            get() = !isCreateShippingLabelBannerVisible && areShippingLabelsVisible == true
     }
 
     @Parcelize

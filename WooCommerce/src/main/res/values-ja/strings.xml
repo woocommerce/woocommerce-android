@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-05 14:54:04+0000
+Translation-Revision-Date: 2021-08-19 20:49:57+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="support_contact_payments_detail">サポートスタッフにお問い合わせください。お支払いに関する質問にお答えします</string>
+    <string name="support_contact_payments">支払いサポートに連絡</string>
+    <string name="product_images_error_detail_title">詳細のアップロード (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">%d 個のファイルをアップロードできませんでした</string>
+    <string name="product_image_service_error_uploading_single">%d 個のファイルをアップロードできませんでした</string>
+    <string name="product_image_service_error_media_null">メディアを検出できませんでした</string>
+    <string name="product_add_ons_details_info_notice">ウェブダッシュボードで製品アドオンを編集できます。</string>
+    <string name="product_add_ons_card_button_title">製品アドイン</string>
+    <string name="product_images_learn_more_button">画像のアップロードに関する&lt;a href=\'\'&gt;詳細&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_generic_error_hint">このストアのオフラインでの支払いを検証できませんでした</string>
+    <string name="card_reader_onboarding_generic_error_header">このストアのオフラインでの支払いを検証できません</string>
+    <string name="card_reader_detail_connected_firmware_version">ファームウェア: %s</string>
+    <string name="card_reader_payment_save_for_later">保存して後で使用</string>
+    <string name="card_reader_purchase_card_reader">カードリーダーを注文</string>
+    <string name="card_reader_manage_card_reader">カードリーダーを管理</string>
+    <string name="shipping_label_multiple_customs_form_print_button">印刷</string>
+    <string name="shipping_label_edit_address_state">都道府県 / 州 / 郡</string>
+    <string name="shipping_label_edit_address_line2">住所2行目</string>
+    <string name="shipping_label_edit_address_line1">住所1行目</string>
+    <string name="shipping_label_print_multiple_screen_title">配送ラベルを印刷</string>
+    <string name="shipping_label_print_multiple_purchase_success">配送ラベルを購入しました</string>
+    <string name="shipping_label_print_multiple_button">配送ラベルを印刷</string>
     <string name="settings_card_reader_payments">オフラインでの支払い</string>
     <string name="card_reader_tutorial_charged_detail">リーダーのフル充電には約3時間かかります</string>
     <string name="card_reader_tutorial_charged_label">リーダーは常に充電しておいてください</string>
@@ -144,7 +166,7 @@ Language: ja_JP
     <string name="product_create_attribute_helper">バリエーションを作るには、最初にその属性 (「色」、「サイズ」など) を設定する必要があります</string>
     <string name="product_variation_single_count">1個のバリエーション</string>
     <string name="product_variation_multiple_count">%1$s個のバリエーション</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">%s追跡</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">USPS の追跡</string>
     <string name="card_reader_software_update_in_progress_title">Reader のソフトウェアを更新しています</string>
     <string name="card_reader_software_update_title">ソフトウェア更新</string>
     <string name="card_reader_software_update_description">カードリーダーのソフトウェアを更新して順調な稼働が続くようにする必要があります。 今すぐ更新しますか ? </string>
@@ -361,9 +383,7 @@ Language: ja_JP
     <string name="shipping_label_edit_address_use_address_as_is">入力した住所を使用</string>
     <string name="shipping_label_edit_address_country">国名</string>
     <string name="shipping_label_edit_address_zip">郵便番号</string>
-    <string name="shipping_label_edit_address_state">都道府県</string>
     <string name="shipping_label_edit_address_city">市区町村</string>
-    <string name="shipping_label_edit_address_address">アドレス</string>
     <string name="shipping_label_edit_address_phone">電話</string>
     <string name="shipping_label_edit_address_company">会社</string>
     <string name="shipping_label_edit_address_name">名前</string>

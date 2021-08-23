@@ -20,6 +20,8 @@ ENV["PROJECT_ROOT_FOLDER"]="./"
 REPOSITORY_NAME="woocommerce-android"
 GH_ORG_NAME="woocommerce"
 
+UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-android', 'secrets', 'google-upload-credentials.json')
+
 SUPPORTED_LOCALES = [
   { glotpress: "ar", android: "ar", google_play: "ar",  promo_config: {}},
   { glotpress: "de", android: "de", google_play: "de-DE",  promo_config: {} },
@@ -163,19 +165,33 @@ platform :android do
   #####################################################################################
   # new_hotfix_release
   # -----------------------------------------------------------------------------------
-  # This lane updates the release branch for a new hotix release.
+  # This lane updates the release branch for a new hotfix release.
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane new_hotfix_release [skip_confirm:<skip confirm>] [version:<version>]
+  # bundle exec fastlane new_hotfix_release [skip_confirm:<skip confirm>] [version_name:<x.y.z>] [version_code:<nnnn>]
   #
   # Example:
-  # bundle exec fastlane new_hotfix_release version:10.6.1
-  # bundle exec fastlane new_hotfix_release skip_confirm:true version:10.6.1
+  # bundle exec fastlane new_hotfix_release version_name:10.6.1 version_code:1070
   #####################################################################################
-  desc "Creates a new hotfix branch from the given tag"
-  lane :new_hotfix_release do | options |
-    prev_ver = android_hotfix_prechecks(version_name: options[:version_name], skip_confirm: options[:skip_confirm])
-    android_bump_version_hotfix(previous_version_name: prev_ver, version_name: options[:version_name], version_code: options[:version_code])
+  desc "Prepare a new hotfix branch cut from the previous tag, and bump the version"
+  lane :new_hotfix_release do |options|
+    hotfix_version = options[:version_name] || UI.input('Version number for the new hotfix?')
+    previous_tag = android_hotfix_prechecks(version_name: hotfix_version, skip_confirm: options[:skip_confirm])
+    android_bump_version_hotfix(previous_version_name: previous_tag, version_name: hotfix_version, version_code: options[:version_code])
+  end
+
+  #####################################################################################
+  # finalize_hotfix_release
+  # -----------------------------------------------------------------------------------
+  # This lane finalizes the hotfix branch.
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane finalize_hotfix_release
+  #
+  # Example:
+  # bundle exec fastlane finalize_hotfix_release
+  desc "Finalizes a hotfix release by triggering a release build"
+  lane :finalize_hotfix_release do |options|
     new_version = android_get_app_version()
     trigger_release_build(branch_to_build: "release/#{new_version}")
   end
@@ -212,27 +228,27 @@ platform :android do
   #####################################################################################
   desc "Updates store metadata and runs the release checks"
   lane :finalize_release do | options |
+    UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix
+
     android_finalize_prechecks(options)
     configure_apply(force: is_ci)
-    hotfix = android_current_branch_is_hotfix
-    unless hotfix
-      UI.message('Checking app strings translation status...')
-      check_translation_progress(
-        glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
-        abort_on_violations: false
-      )
 
-      UI.message("Checking release notes strings translation status...")
-      check_translation_progress(
-        glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/',
-        abort_on_violations: false
-      )
+    UI.message('Checking app strings translation status...')
+    check_translation_progress(
+      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
+      abort_on_violations: false
+    )
+    UI.message("Checking release notes strings translation status...")
+    check_translation_progress(
+      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/',
+      abort_on_violations: false
+    )
 
-      download_translations(options)
-      android_bump_version_final_release()
-    end 
+    download_translations(options)
+    android_bump_version_final_release()
+
     version = android_get_release_version()
-    download_metadata_strings(version: version["name"], build_number: version["code"]) unless hotfix
+    download_metadata_strings(version: version["name"], build_number: version["code"])
 
     # Wrap up
     removebranchprotection(repository:GHHELPER_REPO, branch: "release/#{version["name"]}")
@@ -282,7 +298,7 @@ platform :android do
       skip_upload_changelogs: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key: './google-upload-credentials.json',
+      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
     create_gh_release(version: version) if options[:create_release]
@@ -325,7 +341,7 @@ platform :android do
       skip_upload_changelogs: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key: './google-upload-credentials.json',
+      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
     create_gh_release(version: version, prerelease: true) if options[:create_release]

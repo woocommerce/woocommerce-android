@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.extensions.semverCompareTo
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
+import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult.WCPayAccountStatusEnum.*
 import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
 import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -23,39 +25,50 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooStore: WooCommerceStore,
     private val wcPayStore: WCPayStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val networkStatus: NetworkStatus,
 ) {
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "ComplexMethod")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
-        if (!isCountrySupported()) return COUNTRY_NOT_SUPPORTED
+        if (!networkStatus.isConnected()) return NoConnectionError
+        val countryCode = getCountryCode()
+        if (!isCountrySupported(countryCode)) return CountryNotSupported(countryCode)
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
-        if (fetchSitePluginsResult.isError) return GENERIC_ERROR
+        if (fetchSitePluginsResult.isError) return GenericError
         val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
 
-        if (!isWCPayInstalled(pluginInfo)) return WCPAY_NOT_INSTALLED
-        if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WCPAY_UNSUPPORTED_VERSION
-        if (!isWCPayActivated(pluginInfo)) return WCPAY_NOT_ACTIVATED
+        if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
+        if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
+        if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
 
-        val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GENERIC_ERROR
+        val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
-        if (!isWCPaySetupCompleted(paymentAccount)) return WCPAY_SETUP_NOT_COMPLETED
-        if (isWCPayInTestModeWithLiveStripeAccount()) return WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT
-        if (isStripeAccountUnderReview(paymentAccount)) return STRIPE_ACCOUNT_UNDER_REVIEW
-        if (isStripeAccountPendingRequirements(paymentAccount)) return STRIPE_ACCOUNT_PENDING_REQUIREMENT
-        if (isStripeAccountOverdueRequirements(paymentAccount)) return STRIPE_ACCOUNT_OVERDUE_REQUIREMENT
-        if (isStripeAccountRejected(paymentAccount)) return STRIPE_ACCOUNT_REJECTED
-        if (isInUndefinedState(paymentAccount)) return GENERIC_ERROR
+        if (!isWCPaySetupCompleted(paymentAccount)) return WcpaySetupNotCompleted
+        if (isWCPayInTestModeWithLiveStripeAccount()) return WcpayInTestModeWithLiveStripeAccount
+        if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
+        if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
+        if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
+            paymentAccount.currentDeadline
+        )
+        if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
+        if (isInUndefinedState(paymentAccount)) return GenericError
 
-        return ONBOARDING_COMPLETED
+        return OnboardingCompleted
     }
 
-    private suspend fun isCountrySupported(): Boolean {
+    private suspend fun getCountryCode(): String? {
         return withContext(dispatchers.io) {
-            wooStore.getStoreCountryCode(selectedSite.get())?.let { storeCountryCode ->
-                SUPPORTED_COUNTRIES.any { it.equals(storeCountryCode, ignoreCase = true) }
-            } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
+            wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
+                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
+            }
         }
+    }
+
+    private fun isCountrySupported(countryCode: String?): Boolean {
+        return countryCode?.let { storeCountryCode ->
+            SUPPORTED_COUNTRIES.any { it.equals(storeCountryCode, ignoreCase = true) }
+        } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
     }
 
     private fun isWCPayInstalled(pluginInfo: WCPluginSqlUtils.WCPluginModel?): Boolean = pluginInfo != null
@@ -66,101 +79,101 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isWCPayActivated(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean = pluginInfo.active
 
     private fun isWCPaySetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status != WCPaymentAccountResult.WCPayAccountStatusEnum.NO_ACCOUNT
+        paymentAccount.status != NO_ACCOUNT
 
     // TODO cardreader Implement
     @Suppress("FunctionOnlyReturningConstant")
     private fun isWCPayInTestModeWithLiveStripeAccount(): Boolean = false
 
     private fun isStripeAccountUnderReview(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
+        paymentAccount.status == RESTRICTED &&
             !paymentAccount.hasPendingRequirements &&
             !paymentAccount.hasOverdueRequirements
 
     private fun isStripeAccountPendingRequirements(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
-            paymentAccount.hasPendingRequirements
+        (paymentAccount.status == RESTRICTED && paymentAccount.hasPendingRequirements) ||
+            paymentAccount.status == RESTRICTED_SOON
 
     private fun isStripeAccountOverdueRequirements(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED &&
+        paymentAccount.status == RESTRICTED &&
             paymentAccount.hasOverdueRequirements
 
     private fun isStripeAccountRejected(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_FRAUD ||
-            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_LISTED ||
-            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE ||
-            paymentAccount.status == WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_OTHER
+        paymentAccount.status == REJECTED_FRAUD ||
+            paymentAccount.status == REJECTED_LISTED ||
+            paymentAccount.status == REJECTED_TERMS_OF_SERVICE ||
+            paymentAccount.status == REJECTED_OTHER
 }
 
 private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
-    paymentAccount.status != WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE
+    paymentAccount.status != COMPLETE
 
-enum class CardReaderOnboardingState {
-    ONBOARDING_COMPLETED,
+sealed class CardReaderOnboardingState {
+    object OnboardingCompleted : CardReaderOnboardingState()
 
     /**
      * Store is not located in one of the supported countries.
      */
-    COUNTRY_NOT_SUPPORTED,
+    data class CountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
 
     /**
      * WCPay plugin is not installed on the store.
      */
-    WCPAY_NOT_INSTALLED,
+    object WcpayNotInstalled : CardReaderOnboardingState()
 
     /**
      * WCPay plugin is installed on the store, but the version is out-dated and doesn't contain required APIs
      * for card present payments.
      */
-    WCPAY_UNSUPPORTED_VERSION,
+    object WcpayUnsupportedVersion : CardReaderOnboardingState()
 
     /**
      * WCPay is installed on the store but is not activated.
      */
-    WCPAY_NOT_ACTIVATED,
+    object WcpayNotActivated : CardReaderOnboardingState()
 
     /**
      * WCPay is installed and activated but requires to be setup first.
      */
-    WCPAY_SETUP_NOT_COMPLETED,
+    object WcpaySetupNotCompleted : CardReaderOnboardingState()
 
     /**
      * This is a bit special case: WCPay is set to "dev mode" but the connected Stripe account is in live mode.
      * Connecting to a reader or accepting payments is not supported in this state.
      */
-    WCPAY_IN_TEST_MODE_WITH_LIVE_STRIPE_ACCOUNT,
+    object WcpayInTestModeWithLiveStripeAccount : CardReaderOnboardingState()
 
     /**
      * The connected Stripe account has not been reviewed by Stripe yet. This is a temporary state and
      * the user needs to wait.
      */
-    STRIPE_ACCOUNT_UNDER_REVIEW,
+    object StripeAccountUnderReview : CardReaderOnboardingState()
 
     /**
      * There are some pending requirements on the connected Stripe account. The merchant still has some time before the
-     * deadline to fix them expires. In-person payments should work without issues.
+     * deadline to fix them expires. In-Person Payments should work without issues.
      */
-    STRIPE_ACCOUNT_PENDING_REQUIREMENT,
+    data class StripeAccountPendingRequirement(val dueDate: Long?) : CardReaderOnboardingState()
 
     /**
      * There are some overdue requirements on the connected Stripe account. Connecting to a reader or accepting
      * payments is not supported in this state.
      */
-    STRIPE_ACCOUNT_OVERDUE_REQUIREMENT,
+    object StripeAccountOverdueRequirement : CardReaderOnboardingState()
 
     /**
      * The Stripe account was rejected by Stripe. This can happen for example when the account is flagged as fraudulent
      * or the merchant violates the terms of service
      */
-    STRIPE_ACCOUNT_REJECTED,
+    object StripeAccountRejected : CardReaderOnboardingState()
 
     /**
      * Generic error - for example, one of the requests failed.
      */
-    GENERIC_ERROR,
+    object GenericError : CardReaderOnboardingState()
 
     /**
      * Internet connection is not available.
      */
-    NO_CONNECTION_ERROR
+    object NoConnectionError : CardReaderOnboardingState()
 }

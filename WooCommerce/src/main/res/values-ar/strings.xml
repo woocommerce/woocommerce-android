@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-04 18:54:04+0000
+Translation-Revision-Date: 2021-08-19 20:51:18+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="support_contact_payments_detail">تواصل مع أعضاء فريق الدعم لدينا الذين يمكنهم مساعدتك على الإجابة عن الأسئلة المتعلقة بالمدفوعات</string>
+    <string name="support_contact_payments">الاتصال بدعم المدفوعات</string>
+    <string name="product_images_error_detail_title">رفع التفاصيل (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">يتعذر رفع %d من الملفات</string>
+    <string name="product_image_service_error_uploading_single">يتعذر رفع %d ملف</string>
+    <string name="product_image_service_error_media_null">يتعذر العثور على الوسائط</string>
+    <string name="product_add_ons_details_info_notice">يمكنك تحرير وظائف المنتج الإضافية في لوحة تحكم الويب.</string>
+    <string name="product_add_ons_card_button_title">الوظائف الإضافية للمنتجات</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول رفع الصور</string>
+    <string name="card_reader_onboarding_generic_error_hint">عذرًا، يتعذر علينا التحقُّق من المدفوعات الشخصية لهذا المخزن</string>
+    <string name="card_reader_onboarding_generic_error_header">يتعذر التحقُّق من المدفوعات الشخصية لهذا المخزن</string>
+    <string name="card_reader_detail_connected_firmware_version">البرنامج الثابت: %s</string>
+    <string name="card_reader_payment_save_for_later">حفظ لوقت لاحق</string>
+    <string name="card_reader_purchase_card_reader">طلب قارئ البطاقة</string>
+    <string name="card_reader_manage_card_reader">إدارة قارئ البطاقة</string>
+    <string name="shipping_label_multiple_customs_form_print_button">اطبع</string>
+    <string name="shipping_label_edit_address_state">المنطقة</string>
+    <string name="shipping_label_edit_address_line2">سطر العنوان 2</string>
+    <string name="shipping_label_edit_address_line1">سطر العنوان 1</string>
+    <string name="shipping_label_print_multiple_screen_title">طباعة ملصقات الشحن</string>
+    <string name="shipping_label_print_multiple_purchase_success">تم شراء ملصقات الشحن!</string>
+    <string name="shipping_label_print_multiple_button">طباعة ملصقات الشحن</string>
     <string name="settings_card_reader_payments">المدفوعات الشخصية</string>
     <string name="card_reader_tutorial_charged_detail">سيستغرق قارئك ثلاث ساعات تقريبًا ليتم شحنه بالكامل</string>
     <string name="card_reader_tutorial_charged_label">أبق قارئك مشحونًا</string>
@@ -144,7 +166,7 @@ Language: ar
     <string name="product_create_attribute_helper">لإنشاء مجموعة، ستحتاج إلى تعيين سماتها (أي \"اللون\"، \"والحجم\") أولاً</string>
     <string name="product_variation_single_count">مجموعة واحدة</string>
     <string name="product_variation_multiple_count">⁦%1$s⁩ من المجموعات</string>
-    <string name="shipping_label_rate_included_options_usps_tracking">تعقُّب %s</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">تعقب الخدمة البريدية للولايات المتحدة</string>
     <string name="card_reader_software_update_in_progress_title">تحديث برنامج قارئك</string>
     <string name="card_reader_software_update_title">تحديث برنامج</string>
     <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يعمل بسلاسة. هل ترغب في تحديثه الآن؟</string>
@@ -361,9 +383,7 @@ Language: ar
     <string name="shipping_label_edit_address_use_address_as_is">استخدام العنوان كما تم إدخاله</string>
     <string name="shipping_label_edit_address_country">البلد</string>
     <string name="shipping_label_edit_address_zip">الرمز البريدي</string>
-    <string name="shipping_label_edit_address_state">الولاية</string>
     <string name="shipping_label_edit_address_city">المدينة</string>
-    <string name="shipping_label_edit_address_address">العنوان</string>
     <string name="shipping_label_edit_address_phone">الهاتف</string>
     <string name="shipping_label_edit_address_company">الشركة</string>
     <string name="shipping_label_edit_address_name">الاسم</string>

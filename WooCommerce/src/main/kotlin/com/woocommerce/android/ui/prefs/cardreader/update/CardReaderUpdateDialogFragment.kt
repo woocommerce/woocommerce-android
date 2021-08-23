@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.DialogCardReaderUpdateBinding
+import com.woocommerce.android.databinding.CardReaderUpdateDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
@@ -18,7 +18,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reader_update) {
+class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_update_dialog) {
     val viewModel: CardReaderUpdateViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -40,12 +40,12 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.dialog_card_reade
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = DialogCardReaderUpdateBinding.bind(view)
+        val binding = CardReaderUpdateDialogBinding.bind(view)
 
         initObservers(binding)
     }
 
-    private fun initObservers(binding: DialogCardReaderUpdateBinding) {
+    private fun initObservers(binding: CardReaderUpdateDialogBinding) {
         viewModel.event.observe(
             viewLifecycleOwner,
             { event ->
