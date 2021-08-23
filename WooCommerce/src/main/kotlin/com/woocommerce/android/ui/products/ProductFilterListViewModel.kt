@@ -56,7 +56,7 @@ class ProductFilterListViewModel @Inject constructor(
         LiveDataDelegate(savedState, ProductFilterOptionListViewState())
     private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
-    private lateinit var productCategories: List<ProductCategory>
+    private var productCategories: List<ProductCategory> = emptyList()
 
     /**
      * Holds the filter properties (stock_status, status, type, category) already selected by the user in a [Map]
@@ -85,34 +85,51 @@ class ProductFilterListViewModel @Inject constructor(
 
     private fun getFilterByProductCategory() = productFilterOptions[CATEGORY]
 
-    private suspend fun loadCategories() {
-        productCategories = if (networkStatus.isConnected()) {
-            productCategoriesRepository.fetchProductCategories()
-        } else {
-            productCategoriesRepository.getProductCategoriesList()
+    private suspend fun loadCategoriesIfEmpty() {
+        if (productCategories.isEmpty()) {
+            productCategories = if (networkStatus.isConnected()) {
+                productCategoriesRepository.fetchProductCategories()
+            } else {
+                productCategoriesRepository.getProductCategoriesList()
+            }
         }
     }
 
     fun loadFilters() {
-        launch {
-            loadCategories()
-            _filterListItems.value = buildFilterListItemUiModel()
+        _filterListItems.value = buildFilterListItemUiModel()
 
-            val screenTitle = if (productFilterOptions.isNotEmpty()) {
-                resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
-            } else resourceProvider.getString(string.product_list_filters)
+        val screenTitle = if (productFilterOptions.isNotEmpty()) {
+            resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
+        } else resourceProvider.getString(string.product_list_filters)
 
-            productFilterListViewState = productFilterListViewState.copy(
-                screenTitle = screenTitle,
-                displayClearButton = productFilterOptions.isNotEmpty()
-            )
-        }
+        productFilterListViewState = productFilterListViewState.copy(
+            screenTitle = screenTitle,
+            displayClearButton = productFilterOptions.isNotEmpty()
+        )
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
-        _filterListItems.value?.let {
-            val filterItem = it[selectedFilterListItemPosition]
-            _filterOptionListItems.value = filterItem.filterOptionListItems
+        _filterListItems.value?.let { filterListItem ->
+            val filterItem = filterListItem[selectedFilterListItemPosition]
+            if (filterItem.filterItemKey == CATEGORY) {
+                launch {
+                    loadCategoriesIfEmpty()
+
+                    val categoryOptions = productCategories.map { category ->
+                        FilterListOptionItemUiModel(
+                            category.name,
+                            category.remoteCategoryId.toString(),
+                            isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString()
+                        )
+                    }
+
+                    filterItem.filterOptionListItems = categoryOptions
+                    _filterOptionListItems.value = categoryOptions
+                }
+            } else {
+                _filterOptionListItems.value = filterItem.filterOptionListItems
+            }
+
             productFilterOptionListViewState = productFilterOptionListViewState.copy(
                 screenTitle = filterItem.filterItemName
             )
