@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-04 10:54:03+0000
+Translation-Revision-Date: 2021-08-19 20:52:24+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="support_contact_payments_detail">Hubungi happiness engineers kami yang dapat membantu menjawab pertanyaan terkait pembayaran</string>
+    <string name="support_contact_payments">Hubungi Dukungan Pembayaran</string>
+    <string name="product_images_error_detail_title">Unggah detail (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">File %d tidak dapat diunggah</string>
+    <string name="product_image_service_error_uploading_single">File %d tidak dapat diunggah</string>
+    <string name="product_image_service_error_media_null">Media tidak ditemukan</string>
+    <string name="product_add_ons_details_info_notice">Anda dapat menyunting add-on produk di dasbor web.</string>
+    <string name="product_add_ons_card_button_title">Add-on Produk</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Baca Selengkapnya&lt;/a&gt; tentang mengunggah gambar</string>
+    <string name="card_reader_onboarding_generic_error_hint">Maaf, kami tidak dapat memverifikasi Pembayaran Langsung untuk toko ini</string>
+    <string name="card_reader_onboarding_generic_error_header">Tidak dapat memverifikasi Pembayaran Langsung untuk toko ini</string>
+    <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
+    <string name="card_reader_payment_save_for_later">Simpan untuk nanti</string>
+    <string name="card_reader_purchase_card_reader">Pesan Pembaca Kartu</string>
+    <string name="card_reader_manage_card_reader">Kelola Pembaca Kartu</string>
+    <string name="shipping_label_multiple_customs_form_print_button">Cetak</string>
+    <string name="shipping_label_edit_address_state">Provinsi</string>
+    <string name="shipping_label_edit_address_line2">Baris alamat 2</string>
+    <string name="shipping_label_edit_address_line1">Baris alamat 1</string>
+    <string name="shipping_label_print_multiple_screen_title">Cetak label pengiriman</string>
+    <string name="shipping_label_print_multiple_purchase_success">Label pengiriman dibeli!</string>
+    <string name="shipping_label_print_multiple_button">Cetak label pengiriman</string>
     <string name="settings_card_reader_payments">Pembayaran langsung</string>
     <string name="card_reader_tutorial_charged_detail">Pembaca Anda memerlukan waktu sekitar tiga jam untuk terisi penuh</string>
     <string name="card_reader_tutorial_charged_label">Pastikan pembaca selalu memiliki daya</string>
@@ -144,6 +166,7 @@ Language: id
     <string name="product_create_attribute_helper">Untuk membuat variasi, Anda perlu mengatur atributnya (yaitu \"Warna\", \"Ukuran\") terlebih dahulu</string>
     <string name="product_variation_single_count">1 variasi</string>
     <string name="product_variation_multiple_count">%1$s variasi</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">Pelacakan USPS</string>
     <string name="card_reader_software_update_in_progress_title">Memperbarui perangkat lunak pembaca Anda</string>
     <string name="card_reader_software_update_title">Pembaruan perangkat lunak</string>
     <string name="card_reader_software_update_description">Perangkat lunak pembaca kartu Anda perlu diperbarui agar dapat berfungsi normal. Apakah Anda ingin memperbaruinya sekarang?</string>
@@ -360,9 +383,7 @@ Language: id
     <string name="shipping_label_edit_address_use_address_as_is">Gunakan alamat yang dimasukkan</string>
     <string name="shipping_label_edit_address_country">Negara</string>
     <string name="shipping_label_edit_address_zip">Kode Pos</string>
-    <string name="shipping_label_edit_address_state">Provinsi</string>
     <string name="shipping_label_edit_address_city">Kota</string>
-    <string name="shipping_label_edit_address_address">Alamat</string>
     <string name="shipping_label_edit_address_phone">Telepon</string>
     <string name="shipping_label_edit_address_company">Perusahaan</string>
     <string name="shipping_label_edit_address_name">Nama</string>

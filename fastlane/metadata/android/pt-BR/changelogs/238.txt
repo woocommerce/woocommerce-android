@@ -1,0 +1,4 @@
+7.3:
+Os comerciantes que usam a extensão WooCommerce Shipping & Tax ficarão felizes em saber de duas melhorias que fizemos. Você pode criar pacotes personalizados ao criar uma etiqueta. E também pode criar várias etiquetas de envio para um único pedido!
+
+Essa e muitas outras pequenas melhorias foram feitas para tornar sua experiência mais agradável. Esperamos que você perceba todo o amor que colocamos no nosso software.
