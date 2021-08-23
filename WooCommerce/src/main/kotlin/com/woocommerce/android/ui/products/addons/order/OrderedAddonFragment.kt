@@ -19,7 +19,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -55,10 +54,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
                 .apply { registerItselfWith(TAG) }
 
     private val shouldRequestFeedback
-        get() = currentFeedbackSettings
-            .takeIf { it.name == CURRENT_WIP_NOTICE_FEATURE.name }
-            ?.let { it.state != DISMISSED }
-            ?: false
+        get() = currentFeedbackSettings.state != DISMISSED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -139,7 +135,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
         FeatureFeedbackSettings(
             CURRENT_WIP_NOTICE_FEATURE.name,
-            UNANSWERED
+            DISMISSED
         ).registerItselfWith(TAG)
 
         showWIPNoticeCard(false)
