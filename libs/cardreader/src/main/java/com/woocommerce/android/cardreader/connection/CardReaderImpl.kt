@@ -11,4 +11,6 @@ class CardReaderImpl(val cardReader: Reader) : CardReader {
         get() = cardReader.batteryLevel
     override val firmwareVersion: String
         get() = cardReader.softwareVersion
+    override val locationId: String?
+        get() = cardReader.location?.id
 }

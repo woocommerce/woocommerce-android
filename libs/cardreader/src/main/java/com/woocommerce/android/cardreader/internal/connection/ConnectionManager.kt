@@ -52,6 +52,7 @@ internal class ConnectionManager(
 
     suspend fun connectToReader(cardReader: CardReader) = suspendCoroutine<Boolean> { continuation ->
         (cardReader as CardReaderImpl).let {
+
             val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration("")
             terminal.connectToReader(
                 cardReader.cardReader,
