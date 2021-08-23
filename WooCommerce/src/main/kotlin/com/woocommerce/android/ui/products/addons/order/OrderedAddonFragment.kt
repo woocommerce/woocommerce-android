@@ -74,6 +74,11 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.addonsWipCard.isExpanded = false
+    }
+
     override fun getFragmentTitle() = getString(R.string.product_add_ons_title)
 
     private fun setupObservers() {
