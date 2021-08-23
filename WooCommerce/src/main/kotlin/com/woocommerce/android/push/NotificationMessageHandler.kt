@@ -55,24 +55,7 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     fun onNotificationDismissed(localPushId: Int) {
-        when {
-            NotificationChannelType.isOrderNotification(localPushId) -> {
-                removeNotificationsOfTypeFromSystemsBar(NotificationChannelType.NEW_ORDER)
-            }
-            NotificationChannelType.isReviewNotification(localPushId) -> {
-                removeNotificationsOfTypeFromSystemsBar(NotificationChannelType.REVIEW)
-            }
-            NotificationChannelType.isOtherNotification(localPushId) -> {
-                removeNotificationsOfTypeFromSystemsBar(NotificationChannelType.OTHER)
-            }
-            else -> {
-                removeNotificationByPushId(localPushId)
-                // Dismiss notifications if a user dismisses all notifications from a wear device
-                if (!hasNotifications()) {
-                    notificationBuilder.cancelAllNotifications()
-                }
-            }
-        }
+        removeNotificationByPushIdFromSystemsBar(localPushId)
     }
 
     @Suppress("ReturnCount", "ComplexMethod")
@@ -237,7 +220,6 @@ class NotificationMessageHandler @Inject constructor(
 
     private fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
     private fun clearNotifications() = ACTIVE_NOTIFICATIONS_MAP.clear()
-    private fun removeNotificationByPushId(localPushId: Int) = ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
 
     /**
      * Find the matching notification and send a track event for [PUSH_NOTIFICATION_TAPPED].
@@ -303,10 +285,10 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     @Synchronized
-    fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType) {
+    fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { row ->
-            if (row.value.channelType == type) {
+            if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
             } else {
                 keptNotifs[row.key] = row.value
@@ -314,13 +296,7 @@ class NotificationMessageHandler @Inject constructor(
         }
         clearNotifications()
         ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
-
-        if (!hasNotifications()) {
-            notificationBuilder.cancelAllNotifications()
-        }
-        if (type == NotificationChannelType.REVIEW) {
-            setHasUnseenReviewNotifs(false)
-        }
+        updateNotificationsState()
     }
 
     private fun updateNotificationsState() {

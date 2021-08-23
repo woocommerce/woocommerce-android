@@ -19,11 +19,15 @@ class MainActivityViewModel @Inject constructor(
     private val notificationHandler: NotificationMessageHandler
 ) : ScopedViewModel(savedState) {
     fun removeReviewNotifications() {
-        notificationHandler.removeNotificationsOfTypeFromSystemsBar(NotificationChannelType.REVIEW)
+        notificationHandler.removeNotificationsOfTypeFromSystemsBar(
+            NotificationChannelType.REVIEW, selectedSite.get().siteId
+        )
     }
 
     fun removeOrderNotifications() {
-        notificationHandler.removeNotificationsOfTypeFromSystemsBar(NotificationChannelType.NEW_ORDER)
+        notificationHandler.removeNotificationsOfTypeFromSystemsBar(
+            NotificationChannelType.NEW_ORDER, selectedSite.get().siteId
+        )
     }
 
     fun handleIncomingNotification(localPushId: Int, notification: Notification?) {
@@ -37,7 +41,7 @@ class MainActivityViewModel @Inject constructor(
             }
 
             when (localPushId) {
-                it.getGroupPushId() -> onGroupMessageOpened(it.channelType)
+                it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
                 it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
                 else -> onSingleNotificationOpened(localPushId, it)
             }
@@ -46,9 +50,9 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun onGroupMessageOpened(notificationChannelType: NotificationChannelType) {
+    private fun onGroupMessageOpened(notificationChannelType: NotificationChannelType, remoteSiteId: Long) {
         notificationHandler.markNotificationsOfTypeTapped(notificationChannelType)
-        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notificationChannelType)
+        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notificationChannelType, remoteSiteId)
         when (notificationChannelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
