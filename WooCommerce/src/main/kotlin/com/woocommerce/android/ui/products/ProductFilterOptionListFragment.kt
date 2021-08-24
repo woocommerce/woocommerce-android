@@ -24,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ProductFilterOptionListFragment :
     BaseFragment(R.layout.fragment_product_filter_option_list),
+    OnLoadMoreListener,
     OnProductFilterOptionClickListener {
     private val viewModel: ProductFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_product_filters)
 
@@ -37,7 +38,7 @@ class ProductFilterOptionListFragment :
         val binding = FragmentProductFilterOptionListBinding.bind(view)
         setupObservers(viewModel)
 
-        mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this)
+        mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this, this)
         with(binding.filterOptionList) {
             addItemDecoration(
                 AlignedDividerDecoration(
@@ -94,5 +95,9 @@ class ProductFilterOptionListFragment :
 
     override fun onFilterOptionClick(selectedFilter: FilterListOptionItemUiModel) {
         viewModel.onFilterOptionItemSelected(arguments.selectedFilterItemPosition, selectedFilter)
+    }
+
+    override fun onRequestLoadMore() {
+        viewModel.onLoadMoreCategoriesRequested()
     }
 }

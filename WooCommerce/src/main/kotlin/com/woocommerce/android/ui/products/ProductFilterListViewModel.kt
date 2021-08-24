@@ -324,6 +324,10 @@ class ProductFilterListViewModel @Inject constructor(
             )
     }
 
+    fun onLoadMoreCategoriesRequested() {
+        TODO("Not yet implemented")
+    }
+
     @Parcelize
     data class ProductFilterListViewState(
         val screenTitle: String? = null,

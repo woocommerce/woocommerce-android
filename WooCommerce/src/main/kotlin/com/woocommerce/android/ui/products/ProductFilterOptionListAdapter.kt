@@ -10,7 +10,8 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterList
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.ProductFilterOptionViewHolder
 
 class ProductFilterOptionListAdapter(
-    private val clickListener: OnProductFilterOptionClickListener
+    private val clickListener: OnProductFilterOptionClickListener,
+    private val loadMoreListener: OnLoadMoreListener
 ) : RecyclerView.Adapter<ProductFilterOptionViewHolder>() {
     var filterList = listOf<FilterListOptionItemUiModel>()
         set(value) {
@@ -42,6 +43,10 @@ class ProductFilterOptionListAdapter(
         holder.bind(filterList[position])
         holder.itemView.setOnClickListener {
             clickListener.onFilterOptionClick(filterList[position])
+        }
+
+        if (position == itemCount - 1) {
+            loadMoreListener.onRequestLoadMore()
         }
     }
 
