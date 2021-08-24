@@ -14,7 +14,7 @@ class FeatureWIPNoticeCard @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = FeatureWipNoticeBinding.inflate(LayoutInflater.from(ctx), this)
 
-    private var isExpanded: Boolean
+    var isExpanded: Boolean
         set(value) {
             binding.featureWipViewMore.isChecked = value
             if (value) {

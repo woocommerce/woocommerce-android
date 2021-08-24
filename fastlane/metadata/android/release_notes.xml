@@ -1,68 +1,101 @@
 <ar>
-7.2:
-ركزنا على جعل المنتج أكثر استقرارًا وموثوقية بالنسبة إليك في هذه المرة. تمت معالجة أخطاء عديدة وإصلاحها، بما في ذلك الخطأ حيث تكون قائمة المنتجات فارغة أحيانًا عندما كان يحتوي المنتج على قيمة في إجمالي المبيعات لم تكن متوقعة. شكرًا على بقائك على اطلاع، وأخبرنا دومًا إذا كانت لديك ملاحظات!
+7.3:
+سيسر التجار الذين يستخدمون إضافة شحن وضرائب WooCommerce أن يسمعوا عن اثنين من التحسينات التي أجريناها. يمكنك إنشاء حزم مخصصة عند إنشاء ملصق. يمكنك كذلك إنشاء ملصقات شحن متعددة لطلب واحد!
+
+تم إجراء هذه التحسينات والعديد من التحسينات الطفيفة الأخرى لجعل تجربتك أكثر سلاسة. نأمل أن تلاحظ الحب الذي وضعناه في برنامجنا.
 </ar>
 <de-DE>
-7.2:
-Wir haben uns diesmal darauf konzentriert, das Produkt für dich noch stabiler und zuverlässiger zu machen. Es wurden einige Bugs behoben, darunter einer, bei dem die Produktliste manchmal leer war, wenn ein Produkt im Gesamtumsatz einen unerwarteten Wert enthielt. Danke, dass du dich auf dem Laufenden hältst, und immer her mit deinem Feedback!
+7.3:
+Verkäufer, die WooCommerce Shipping & Tax verwenden, werden sich sehr über die neuesten Verbesserungen freuen. Du kannst beim Erstellen eines Versandetiketts nun individuelle Pakete erstellen. Du kannst zudem mehrere Versandetiketten für eine einzelne Bestellung erstellen!
+
+Diese und viele weitere kleine Verbesserungen sorgen insgesamt für ein reibungsloses Erlebnis. Wir hoffen, dass dir unsere Bemühungen auffallen und sie dir weiterhelfen.
 </de-DE>
 <es-ES>
-7.2:
-Esta vez nuestra prioridad ha sido hacer el producto más estable y fiable para ti. Se han localizado y resuelto varios errores, incluido uno por el que la lista de productos aparecía vacía a veces cuando un producto tenía un valor inesperado en las ventas totales. Gracias por estar al tanto de las novedades. Si tienes algún comentario, ¡habla con nosotros!
+7.3:
+A los vendedores que utilizan la extensión WooCommerce Shipping & Tax les encantará saber las dos cosas que hemos mejorado. Puedes crear paquetes personalizados al crear etiquetas. También puedes crear varias etiquetas de envío para un único pedido.
+
+Hemos mejorado esta función y otras muchas pequeñas cosas para hacer que tu experiencia sea más fluida. Esperamos que seas consciente del cariño que le ponemos a nuestro software.
 </es-ES>
 <fr-FR>
-7.2 :
-Nous faisons tout notre possible afin de vous proposer cette fois un produit plus stable et plus fiable. Nous avons pris en compte et corrigé plusieurs bugs, notamment celui qui générait parfois une liste de produits vide lorsque la valeur du total des ventes d’un des produits était inattendue. Merci d’avoir procédé à la mise à jour, et n’hésitez pas à nous faire part de vos commentaires !
+7.3 :
+Les marchands utilisant l’extension WooCommerce Shipping & Tax seront ravis de découvrir deux améliorations que nous avons apportées. Vous pouvez créer des colis personnalisés lors de la création d’une étiquette. Vous pouvez également créer plusieurs étiquettes d’expédition pour une seule commande !
+
+Cette amélioration et d’autres plus petites ont été apportées pour rendre votre expérience plus fluide. Nous espérons que vous remarquerez tout l’amour que nous mettons dans notre logiciel.
 </fr-FR>
 <iw-IL>
-7.2:
-בשלב זה התמקדנו בשיפור יציבות ואמינות המוצר עבורך. טיפלנו בכמה באגים ותיקנו אותם, כולל באג שבו רשימת המוצרים הייתה ריקה לעתים כאשר מוצר הכיל ערך בסה"כ המכירות שלא היה צפוי. אנו מודים לך על ההתעדכנות, ונשמח תמיד על כל משוב שיתקבל ממך!
+7.3:
+סוחרים שמשתמשים בהרחבה WooCommerce Shipping & Tax ישמחו לשמוע על שני השיפורים שהוספנו. אפשר ליצור אריזות מותאמות אישית כאשר יוצרים תווית. אפשר גם ליצור מספר תוויות משלוח להזמנה יחידה!
+
+בנוסף, ביצענו עוד כמה שיפורים קטנים כדי לאפשר חוויית שימוש יעילה יותר. אנחנו מקווים שאפשר לראות כמה אנחנו אוהבים לבנות את התוכנה שלנו.
 </iw-IL>
 <id>
-7.2:
-Kali ini kami fokus membuat produk lebih stabil dan lebih andal. Beberapa bug telah kami tangani dan perbaiki, termasuk yang kadang membuat daftar produk kosong saat nilai total penjualan sebuah produk di luar perkiraan. Terima kasih telah melakukan pembaruan, jangan lupa beri tahu kami jika Anda memiliki umpan balik!
+7.3:
+Penjual yang menggunakan Ekstensi Pengiriman & Pajak WooCommerce pasti senang mendengar dua peningkatan yang kami lakukan. Anda dapat membuat paket khusus saat membuat label. Anda juga dapat membuat beberapa label pengiriman untuk satu pesanan!
+
+Kami melakukan peningkatan ini dan peningkatan kecil lainnya agar pengalaman Anda makin mulus.  Kami harap Anda menyadari perhatian yang kami berikan pada perangkat lunak kami.
 </id>
 <it-IT>
-7.2:
-Questa volta, ci siamo concentrati sul miglioramento della stabilità e dell'affidabilità del prodotto. Sono stati esaminati e corretti diversi bug, tra cui la presenza di un elenco di prodotti talvolta vuoto quando un prodotto conteneva un valore inatteso nelle vendite totali. Grazie per restare al passo con gli aggiornamenti e ricorda che siamo sempre lieti di ricevere un tuo feedback.
+7,3:
+I venditori che usano l'estensione WooCommerce Shipping & Tax saranno felici dei miglioramenti che abbiamo apportato. Puoi creare pacchetti personalizzati durante la creazione di un'etichetta. Puoi anche creare più etichette di spedizione per un unico ordine.
+
+Questi miglioramenti sono stati pensati per semplificare ancora di più la tua esperienza Speriamo si noti l'amore che mettiamo nel nostro software.
 </it-IT>
 <ja-JP>
-7.2:
-今回は、より安定した信頼性の高い製品を提供することに注力しました。 いくつかのバグに対応し修正しました。製品の総売上高に予想外の値が含まれている場合に、製品のリストが空になることがあるというバグも修正されています。 アップデートをご利用いただきありがとうございます。また、引き続き皆様からのご意見・ご感想もお待ちしております。
+7.3
+WooCommerce Shipping と Tax Extension を利用しているマーチャントは2つの機能改善を利用できます。 ラベル作成時にカスタムパッケージを作成できます。 1つの注文に対して複数の出荷ラベルを作成することもできます。
+
+スムーズな操作環境を実現するために、こうした小さいながらもさまざまな改善が施されています。 当社のソフトウェアに対する愛を感じていただければ幸いです。
 </ja-JP>
 <ko-KR>
-7.2:
-이번에는 상품이 더 안정적이고 신뢰할 수 있게 표시되도록 하는 데 집중했습니다. 상품에 예기치 않은 총 판매 금액이 포함되면 가끔 상품 목록이 비어 있는 버그를 포함하여 몇 가지 버그를 해결하고 수정했습니다. 최신 정보를 제공해 주셔서 감사합니다. 피드백이 있으면 언제든지 알려 주세요.
+7.3:
+WooCommerce 배송 및 세금 확장 기능을 사용하는 판매자에게 반가운 개선 사항 두 가지 소식을 알려드립니다. 레이블을 생성할 때 사용자 정의 패키지를 생성하실 수 있습니다. 단일 주문에 대한 배송 레이블을 여러 개 생성하실 수도 있습니다.
+
+더 원활한 환경을 위해 이 개선 사항을 포함하여 소소한 부분을 많이 개선했습니다. 당사에서 소프트웨어에 쏟는 애정을 알아주시면 좋겠습니다.
 </ko-KR>
 <nl-NL>
-7.2:
-We hebben deze keer energie gestoken in het product stabieler en betrouwbaarder maken. We hebben verschillende bugs verholpen, waaronder een waarbij de lijst met producten soms leeg zou zijn wanneer een product totale verkoopcijfers bevatte die voor het systeem onverwachts waren. Bedankt dat je up-to-date blijft, en laat ons altijd weten als je feedback hebt!
+7.3:
+Verkopers die gebruikmaken van de extensie WooCommerce Shipping en Tax zullen blij zijn met de twee verbeteringen die we hebben doorgevoerd. Je kunt aangepaste pakketten maken wanneer je een label maakt. En je kunt meerdere verzendlabels maken voor één bestelling!
+
+Verder hebben we nog wat kleine dingen verbeterd, zodat je ervaring nog soepeler verloopt. We hopen dat je merkt dat we dit met liefde doen.
 </nl-NL>
 <pt-BR>
-7.2:
-Nós nos concentramos em tornar o produto mais estável e confiável para você dessa vez. Corrigimos vários bugs, inclusive um que fazia com que a lista de produtos ficasse vazia quando o valor de um produto nas vendas totais fosse diferente do esperado. Agradecemos por manter o aplicativo atualizado. Entre em contato conosco sempre que quiser dar feedback!
+7.3:
+Os comerciantes que usam a extensão WooCommerce Shipping & Tax ficarão felizes em saber de duas melhorias que fizemos. Você pode criar pacotes personalizados ao criar uma etiqueta. E também pode criar várias etiquetas de envio para um único pedido!
+
+Essa e muitas outras pequenas melhorias foram feitas para tornar sua experiência mais agradável. Esperamos que você perceba todo o amor que colocamos no nosso software.
 </pt-BR>
 <ru-RU>
-7.2:
-В этот раз основное внимание мы уделили тому, чтобы сделать работу продукта более стабильной и надёжной. Проанализированы и устранены некоторые ошибки. Среди них непредвиденная ситуация, когда список товаров оказывался пуст, а какой-либо товар содержал непредвиденное значение в общем объёме продаж. Спасибо, что следите за обновлениями. Мы всегда рады вашим отзывам!
+7.3:
+Продавцы, пользующиеся расширением WooCommerce Shipping & Tax будут рады услышать о двух новых усовершенствованиях. При создании этикетки можно создавать посылки с настраиваемыми параметрами. Кроме того, можно создавать несколько транспортных этикеток для одного заказа!
+
+Эти и другие небольшие усовершенствования обеспечат дополнительное удобство работы. Надеемся, вы оцените наши старания.
 </ru-RU>
 <sv-SE>
-7.2:
-Den här gången har vi fokuserat på att göra produkten mer stabil och tillförlitlig. Flera fel har adresserats och åtgärdats, inklusive ett fel som gjorde att listan med produkter ibland var tom när en produkt innehöll ett oväntat värde för total försäljning. Tack för att du håller dig uppdaterad. Hör gärna av dig med feedback!
+7.3:
+Vi har gjort två förbättringar som handlare som använder utökningen WooCommerce Shipping & Tax kommer att uppskatta. Du kan skapa anpassade paket när du skapar en etikett. Du kan också skapa flera fraktetiketter för en enskild beställning!
+
+Dessa och andra små förbättringar har gjorts för att göra din upplevelse smidigare. Vi hoppas att du kommer att märka hur mycket arbete vi lägger ned på vår programvara.
 </sv-SE>
 <tr-TR>
-7.2:
-Bu sefer ürünü sizler için daha kararlı ve güvenilir hale getirmeye odaklandık. Bir ürün toplam satışlarda beklenmedik bir değer içerdiğinde bazen ürün listesini boş gösteren bir hata da dahil olmak üzere çeşitli hatalar giderildi ve düzeltildi. Güncel kaldığınız için teşekkür ederiz ve geri bildirimlerinizi her zaman bize yazabilirsiniz!
+7.3:
+WooCommerce Gönderim ve Vergi Uzantısını kullanan satıcılar, yaptığımız iki iyileştirmeyi duymaktan mutlu olacaklardır. Bir etiket oluştururken özel paketler oluşturabilirsiniz. Tek bir sipariş için birden fazla gönderim etiketi de oluşturabilirsiniz!
+
+Bu ve diğer birçok küçük iyileştirme, deneyiminizi daha sorunsuz hale getirmek için yapıldı. Yazılımımıza gönlümüzden kattığımız sevgiyi fark edeceğinizi umuyoruz.
 </tr-TR>
 <zh-CN>
-7.2：
-这次，我们致力于提升产品的稳定性和可靠性。 解决并修复了多个错误，其中包括当产品的总销售额中包含意外值时，产品列表有时会为空的问题。 感谢您及时更新，如有任何反馈，请随时告知我们！
+7.3：
+使用 WooCommerce Shipping & Tax 扩展程序的商家会很高兴听到我们进行的两项改进。 您在创建标签时可以创建定制包裹。 您还能够为单个订单创建多个配送标签！
+
+这项改进和许多其他细微的改进是为了让您的体验更加流畅。 希望您能够在软件中感受到我们的关怀。
 </zh-CN>
 <zh-TW>
-7.2：
-本次更新著重於提供更穩定可靠的產品。 我們處理並修正了一些錯誤，包括當產品在銷售總額中包含一筆未知金額時，產品清單有時會空白的問題。 感謝你更新至最新版本，歡迎隨時提供意見回饋！
+7.3：
+使用 WooCommerce Shipping & Tax 擴充功能的商家會很高興得知我們所做的兩項改善。 你可在建立標籤時建立自訂包裹。 也可以為單一訂單建立多個郵寄標籤！
+
+除此之外，我們還做出其他許多小幅改善，讓你享有更順暢的體驗。 希望你能感受到我們對軟體投注的熱忱。
 </zh-TW>
 <en-US>
-7.2:
-We focused on making the product more stable and reliable for you this time. Several bugs were addressed and fixed, including one where the list of products would be empty sometimes when a product contained a value in total sales that was unexpected. Thanks for keeping up to date, and always let us know if you have feedback!
+7.3:
+- [***] Shipping Labels: merchants can add new payment methods and create packages directly from the app, the labels can also contain multiple packages [https://github.com/woocommerce/woocommerce-android/pull/4529]
+
 </en-US>

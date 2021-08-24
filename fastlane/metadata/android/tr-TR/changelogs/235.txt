@@ -1,2 +1,0 @@
-7.2:
-Bu sefer ürünü sizler için daha kararlı ve güvenilir hale getirmeye odaklandık. Bir ürün toplam satışlarda beklenmedik bir değer içerdiğinde bazen ürün listesini boş gösteren bir hata da dahil olmak üzere çeşitli hatalar giderildi ve düzeltildi. Güncel kaldığınız için teşekkür ederiz ve geri bildirimlerinizi her zaman bize yazabilirsiniz!

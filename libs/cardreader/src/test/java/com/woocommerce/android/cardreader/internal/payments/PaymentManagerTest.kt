@@ -15,6 +15,7 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CA
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
@@ -79,6 +80,7 @@ class PaymentManagerTest {
     private val cancelPaymentAction: CancelPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
     private val paymentUtils: PaymentUtils = mock()
+    private val additionalInfoMapper: AdditionalInfoMapper = mock()
 
     private val expectedSequence = listOf(
         InitializingPayment::class,
@@ -98,7 +100,8 @@ class PaymentManagerTest {
             processPaymentAction,
             cancelPaymentAction,
             paymentUtils,
-            paymentErrorMapper
+            paymentErrorMapper,
+            additionalInfoMapper
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(createPaymentAction.createPaymentIntent(any()))
@@ -123,6 +126,7 @@ class PaymentManagerTest {
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
         whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
+        whenever(additionalInfoMapper.map(any())).thenReturn(INSERT_CARD)
     }
 
     // BEGIN - Arguments validation and conversion
