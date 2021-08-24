@@ -1,14 +1,15 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage.INSERT_CARD
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage.INSERT_OR_SWIPE_CARD
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage.MULTIPLE_CONTACTLESS_CARDS_DETECTED
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage.REMOVE_CARD
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage.RETRY_CARD
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage.SWIPE_CARD
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage.TRY_ANOTHER_CARD
-import com.stripe.stripeterminal.model.external.ReaderDisplayMessage.TRY_ANOTHER_READ_METHOD
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.CHECK_MOBILE_DEVICE
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.INSERT_CARD
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.INSERT_OR_SWIPE_CARD
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.MULTIPLE_CONTACTLESS_CARDS_DETECTED
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.REMOVE_CARD
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.RETRY_CARD
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.SWIPE_CARD
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.TRY_ANOTHER_CARD
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType
 
 class AdditionalInfoMapper {
@@ -22,5 +23,6 @@ class AdditionalInfoMapper {
             MULTIPLE_CONTACTLESS_CARDS_DETECTED -> AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
             TRY_ANOTHER_READ_METHOD -> AdditionalInfoType.TRY_ANOTHER_READ_METHOD
             TRY_ANOTHER_CARD -> AdditionalInfoType.TRY_ANOTHER_CARD
+            CHECK_MOBILE_DEVICE -> AdditionalInfoType.TRY_ANOTHER_CARD // TODO cardreader handle the properly
         }
 }
