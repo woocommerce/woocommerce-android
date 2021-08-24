@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
@@ -162,6 +163,14 @@ class OrderNavigator @Inject constructor() {
                         orderId = target.orderId
                     )
                 fragment.findNavController().navigateSafely(action)
+            }
+            is ViewOrderedAddons -> {
+                OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToOrderedAddonFragment(
+                        orderId = target.remoteOrderID,
+                        orderItemId = target.orderItemID,
+                        addonsProductId = target.addonsProductID
+                    ).let { fragment.findNavController().navigateSafely(it) }
             }
         }
     }

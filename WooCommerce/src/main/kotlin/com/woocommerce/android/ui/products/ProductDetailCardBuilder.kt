@@ -618,7 +618,7 @@ class ProductDetailCardBuilder(
     private fun Product.addons(): ProductProperty? =
         takeIf { addons.isNotEmpty() && FeatureFlag.PRODUCT_ADD_ONS.isEnabled() }?.let {
             ComplexProperty(
-                value = resources.getString(string.product_add_ons_card_button_title),
+                value = resources.getString(string.product_add_ons_title),
                 icon = drawable.ic_gridicon_circle_plus,
                 showTitle = false,
                 onClick = { viewModel.onEditProductCardClicked(ViewProductAddonsDetails) }

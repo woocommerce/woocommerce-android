@@ -1,0 +1,4 @@
+7.3:
+Penjual yang menggunakan Ekstensi Pengiriman & Pajak WooCommerce pasti senang mendengar dua peningkatan yang kami lakukan. Anda dapat membuat paket khusus saat membuat label. Anda juga dapat membuat beberapa label pengiriman untuk satu pesanan!
+
+Kami melakukan peningkatan ini dan peningkatan kecil lainnya agar pengalaman Anda makin mulus.  Kami harap Anda menyadari perhatian yang kami berikan pada perangkat lunak kami.

@@ -1,2 +1,0 @@
-7.2:
-We hebben deze keer energie gestoken in het product stabieler en betrouwbaarder maken. We hebben verschillende bugs verholpen, waaronder een waarbij de lijst met producten soms leeg zou zijn wanneer een product totale verkoopcijfers bevatte die voor het systeem onverwachts waren. Bedankt dat je up-to-date blijft, en laat ons altijd weten als je feedback hebt!
