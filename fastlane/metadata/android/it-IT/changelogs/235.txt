@@ -1,2 +1,0 @@
-7.2:
-Questa volta, ci siamo concentrati sul miglioramento della stabilità e dell'affidabilità del prodotto. Sono stati esaminati e corretti diversi bug, tra cui la presenza di un elenco di prodotti talvolta vuoto quando un prodotto conteneva un valore inatteso nelle vendite totali. Grazie per restare al passo con gli aggiornamenti e ricorda che siamo sempre lieti di ricevere un tuo feedback.

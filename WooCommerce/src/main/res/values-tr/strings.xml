@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-03 11:54:04+0000
+Translation-Revision-Date: 2021-08-19 20:51:37+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="support_contact_payments_detail">Ödemelerle ilgili sorularınızda size yardımcı olabilecek mutluluk mühendislerimize ulaşın</string>
+    <string name="support_contact_payments">Ödeme Desteği ile iletişime geçin</string>
+    <string name="product_images_error_detail_title">Yükleme ayrıntıları (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">%d dosya yüklenemedi</string>
+    <string name="product_image_service_error_uploading_single">%d dosya yüklenemedi</string>
+    <string name="product_image_service_error_media_null">Ortam bulunamadı</string>
+    <string name="product_add_ons_details_info_notice">Ürün eklentilerini web panosunda düzenleyebilirsiniz.</string>
+    <string name="product_add_ons_card_button_title">Ürün Eklentileri</string>
+    <string name="product_images_learn_more_button">Resim yükleme hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_generic_error_hint">Maalesef bu mağaza için Şahsen Ödemeleri doğrulayamadık</string>
+    <string name="card_reader_onboarding_generic_error_header">Bu mağaza için Şahsen Ödemeler doğrulanamıyor</string>
+    <string name="card_reader_detail_connected_firmware_version">Ürün Yazılımı: %s</string>
+    <string name="card_reader_payment_save_for_later">Daha sonra kullanmak için kaydet</string>
+    <string name="card_reader_purchase_card_reader">Kart Okuyucu Siparişi</string>
+    <string name="card_reader_manage_card_reader">Kart Okuyucuyu Yönet</string>
+    <string name="shipping_label_multiple_customs_form_print_button">Yazdır</string>
+    <string name="shipping_label_edit_address_state">Şehir</string>
+    <string name="shipping_label_edit_address_line2">Adres satırı 2</string>
+    <string name="shipping_label_edit_address_line1">Adres satırı 1</string>
+    <string name="shipping_label_print_multiple_screen_title">Gönderi etiketleri yazdır</string>
+    <string name="shipping_label_print_multiple_purchase_success">Gönderi etiketleri satın alındı!</string>
+    <string name="shipping_label_print_multiple_button">Gönderi etiketleri yazdır</string>
     <string name="settings_card_reader_payments">Şahsen ödemeler</string>
     <string name="card_reader_tutorial_charged_detail">Okuyucunuzun tamamen şarj olması yaklaşık üç saat sürer</string>
     <string name="card_reader_tutorial_charged_label">Okuyucunuzu her zaman şarjlı tutun</string>
@@ -144,6 +166,7 @@ Language: tr
     <string name="product_create_attribute_helper">Bir varyasyon oluşturmak için önce niteliklerini (yani \"Renk\", \"Boyut\") ayarlamanız gerekir.</string>
     <string name="product_variation_single_count">1 varyasyon</string>
     <string name="product_variation_multiple_count">%1$s varyasyon</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">USPS takibi</string>
     <string name="card_reader_software_update_in_progress_title">Okuyucunuzun yazılımını güncelleme</string>
     <string name="card_reader_software_update_title">Yazılım güncellemesi</string>
     <string name="card_reader_software_update_description">Sorunsuz çalışmaya devam etmesi için kart okuyucunuzun yazılımının güncellenmesi gerekir. Şimdi güncellemek istiyor musunuz?</string>
@@ -360,9 +383,7 @@ Language: tr
     <string name="shipping_label_edit_address_use_address_as_is">Adresi girildiği gibi kullan</string>
     <string name="shipping_label_edit_address_country">Ülke</string>
     <string name="shipping_label_edit_address_zip">Posta Kodu</string>
-    <string name="shipping_label_edit_address_state">Eyalet</string>
     <string name="shipping_label_edit_address_city">Şehir</string>
-    <string name="shipping_label_edit_address_address">Adres</string>
     <string name="shipping_label_edit_address_phone">Telefon</string>
     <string name="shipping_label_edit_address_company">Firma</string>
     <string name="shipping_label_edit_address_name">İsim</string>
