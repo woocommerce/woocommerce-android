@@ -90,7 +90,7 @@ class ProductFilterOptionListFragment :
     }
 
     private fun showProductFilterList(productFilterOptionList: List<FilterListOptionItemUiModel>) {
-        mProductFilterOptionListAdapter.filterList = productFilterOptionList
+        mProductFilterOptionListAdapter.updateData(productFilterOptionList)
     }
 
     override fun onFilterOptionClick(selectedFilter: FilterListOptionItemUiModel) {
