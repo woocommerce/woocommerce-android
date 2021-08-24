@@ -7,6 +7,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
+            android:id="@+id/addons_wip_card"
+            style="@style/Woo.Card.Expandable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/minor_100"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/addons_list"

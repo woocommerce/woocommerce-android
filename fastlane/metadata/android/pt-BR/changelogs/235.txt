@@ -1,2 +1,0 @@
-7.2:
-Nós nos concentramos em tornar o produto mais estável e confiável para você dessa vez. Corrigimos vários bugs, inclusive um que fazia com que a lista de produtos ficasse vazia quando o valor de um produto nas vendas totais fosse diferente do esperado. Agradecemos por manter o aplicativo atualizado. Entre em contato conosco sempre que quiser dar feedback!

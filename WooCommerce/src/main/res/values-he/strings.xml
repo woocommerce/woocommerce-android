@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-04 20:54:04+0000
+Translation-Revision-Date: 2021-08-19 20:53:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="support_contact_payments_detail">ניתן ליצור קשר עם נציגי התמיכה שישמחו לענות על שאלות לגבי תשלומים</string>
+    <string name="support_contact_payments">לפנות לתמיכת תשלומים</string>
+    <string name="product_images_error_detail_title">להעלות פרטים (%d)</string>
+    <string name="product_image_service_error_uploading_multiple">לא ניתן היה להעלות %d קבצים</string>
+    <string name="product_image_service_error_uploading_single">לא ניתן היה להעלות קובץ %d</string>
+    <string name="product_image_service_error_media_null">לא ניתן היה למצוא פריטי מדיה</string>
+    <string name="product_add_ons_details_info_notice">ניתן לערוך את התוספים למוצר בלוח הבקרה באינטרנט.</string>
+    <string name="product_add_ons_card_button_title">תוספי מוצר</string>
+    <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;למידע נוסף בנושא&lt;/a&gt; העלאת תמונות</string>
+    <string name="card_reader_onboarding_generic_error_hint">מצטערים, לא הצלחנו לאמת תשלומים באופן אישי בחנות זו</string>
+    <string name="card_reader_onboarding_generic_error_header">לא ניתן לאמת תשלומים באופן אישי בחנות זו</string>
+    <string name="card_reader_detail_connected_firmware_version">קושחה: %s</string>
+    <string name="card_reader_payment_save_for_later">שמירה למועד מאוחר יותר</string>
+    <string name="card_reader_purchase_card_reader">להזמין קורא כרטיסים</string>
+    <string name="card_reader_manage_card_reader">לנהל את קורא הכרטיסים</string>
+    <string name="shipping_label_multiple_customs_form_print_button">להדפיס</string>
+    <string name="shipping_label_edit_address_state">מדינה / מחוז</string>
+    <string name="shipping_label_edit_address_line2">שורת כתובת 2</string>
+    <string name="shipping_label_edit_address_line1">שורת כתובת 1</string>
+    <string name="shipping_label_print_multiple_screen_title">להדפיס תוויות משלוח</string>
+    <string name="shipping_label_print_multiple_purchase_success">תוויות המשלוח נרכשו!</string>
+    <string name="shipping_label_print_multiple_button">להדפיס תוויות משלוח</string>
     <string name="settings_card_reader_payments">תשלומים באופן אישי</string>
     <string name="card_reader_tutorial_charged_detail">הקורא זקוק לכשלוש שעות כדי לבצע חיוב מלא</string>
     <string name="card_reader_tutorial_charged_label">כדאי לשמור על הקורא טעון</string>
@@ -144,6 +166,7 @@ Language: he_IL
     <string name="product_create_attribute_helper">כדי ליצור סוג, עליך קודם כל להגדיר את המאפיינים שלו (למשל, \'צבע\', \'מידה\')</string>
     <string name="product_variation_single_count">סוג אחד</string>
     <string name="product_variation_multiple_count">⁦%1$s⁩ סוגים</string>
+    <string name="shipping_label_rate_included_options_usps_tracking">מעקב של USPS</string>
     <string name="card_reader_software_update_in_progress_title">מעדכן את התוכנה של הקורא שלך</string>
     <string name="card_reader_software_update_title">עדכון תוכנה</string>
     <string name="card_reader_software_update_description">עליך לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח את הפעילות התקינה שלה. האם ברצונך לעדכן כעת?</string>
@@ -360,9 +383,7 @@ Language: he_IL
     <string name="shipping_label_edit_address_use_address_as_is">להשתמש בכתובת כפי שהוזנה</string>
     <string name="shipping_label_edit_address_country">ארץ</string>
     <string name="shipping_label_edit_address_zip">מיקוד</string>
-    <string name="shipping_label_edit_address_state">מדינה</string>
     <string name="shipping_label_edit_address_city">עיר</string>
-    <string name="shipping_label_edit_address_address">כתובת</string>
     <string name="shipping_label_edit_address_phone">טלפון</string>
     <string name="shipping_label_edit_address_company">חברה</string>
     <string name="shipping_label_edit_address_name">שם</string>
