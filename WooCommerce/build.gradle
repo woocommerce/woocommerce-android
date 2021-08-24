@@ -57,7 +57,7 @@ android {
         } else {
             versionName "7.3.1"
         }
-        versionCode 7.3.1
+        versionCode 240
 
         minSdkVersion 21
         targetSdkVersion 30
