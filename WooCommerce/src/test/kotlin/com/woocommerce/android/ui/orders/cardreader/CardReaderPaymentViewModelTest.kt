@@ -100,6 +100,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(address.email).thenReturn("test@test.test")
         whenever(address.firstName).thenReturn("Tester")
         whenever(address.lastName).thenReturn("Test")
+        whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
         whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -910,6 +911,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onCleared()
 
             verify(cardReaderManager, never()).cancelPayment(any())
+        }
+
+    @Test
+    fun `when flow started, then correct order key is propagated to CardReaderManager`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.orderKey).isEqualTo("wc_order_j0LMK3bFhalEL")
         }
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {

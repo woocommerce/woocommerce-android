@@ -556,6 +556,7 @@ class PaymentManagerTest {
         storeName: String? = DUMMY_STORE_NAME,
         siteUrl: String? = DUMMY_SITE_URL,
         customerId: String? = null,
+        orderKey: String? = null,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -567,5 +568,6 @@ class PaymentManagerTest {
             storeName = storeName,
             siteUrl = siteUrl,
             customerId = customerId,
+            orderKey = orderKey
         )
 }
