@@ -40,7 +40,7 @@ class ProductFilterOptionListFragment :
         mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this)
         with(binding.filterOptionList) {
             addItemDecoration(
-                AlignedDividerDecoration(
+                DividerItemDecoration(
                     requireActivity(),
                     DividerItemDecoration.VERTICAL
                 )

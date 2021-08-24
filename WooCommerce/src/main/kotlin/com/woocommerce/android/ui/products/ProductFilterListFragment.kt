@@ -53,7 +53,7 @@ class ProductFilterListFragment :
         productFilterListAdapter = ProductFilterListAdapter(this)
         with(binding.filterList) {
             addItemDecoration(
-                AlignedDividerDecoration(
+                DividerItemDecoration(
                     requireActivity(),
                     DividerItemDecoration.VERTICAL
                 )
