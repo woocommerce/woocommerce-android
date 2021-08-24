@@ -10,11 +10,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTW
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Initializing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.UpToDate
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -72,10 +71,10 @@ class CardReaderUpdateViewModel @Inject constructor(
             cardReaderManager.updateSoftware().collect { status ->
                 when (status) {
                     is Failed -> onUpdateFailed(status)
-                    Initializing -> viewState.value = UpdatingState(0)
                     is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))
                     Success -> onUpdateSucceeded()
                     UpToDate -> onUpdateUpToDate()
+                    else -> {} // todo cardreader #4660
                 }.exhaustive
             }
         }

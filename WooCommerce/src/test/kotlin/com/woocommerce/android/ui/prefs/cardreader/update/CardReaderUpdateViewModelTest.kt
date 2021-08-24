@@ -12,11 +12,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTW
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Initializing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.UpToDate
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Initializing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult

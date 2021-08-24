@@ -34,7 +34,7 @@ private const val DUMMY_FIRMWARE_VERSION_SIMPLIFIED = "1.0.0.123"
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
-        onBlocking { softwareUpdateAvailability() }
+        onBlocking { softwareUpdateStatus() }
             .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.Initializing))
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
@@ -185,7 +185,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             createViewModel()
 
             // THEN
-            verify(cardReaderManager).softwareUpdateAvailability()
+            verify(cardReaderManager).softwareUpdateStatus()
         }
 
     @Test
@@ -481,7 +481,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
         val status = MutableStateFlow(CardReaderStatus.Connected(reader))
         whenever(cardReaderManager.readerStatus).thenReturn(status)
-        whenever(cardReaderManager.softwareUpdateAvailability()).thenReturn(MutableStateFlow(updateAvailable))
+        whenever(cardReaderManager.softwareUpdateStatus()).thenReturn(MutableStateFlow(updateAvailable))
     }
 
     private fun createViewModel() = CardReaderDetailViewModel(
