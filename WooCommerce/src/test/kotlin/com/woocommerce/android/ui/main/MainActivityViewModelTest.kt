@@ -27,11 +27,16 @@ import org.wordpress.android.fluxc.store.SiteStore
 @RunWith(RobolectricTestRunner::class)
 class MainActivityViewModelTest : BaseUnitTest() {
     companion object {
+        private const val TEST_REMOTE_SITE_ID_1 = 1023456789L
+        private const val TEST_REMOTE_SITE_ID_2 = 9876543210L
+
         private const val TEST_NEW_ORDER_REMOTE_NOTE_ID = 5473011602
         private const val TEST_NEW_ORDER_ID_1 = 1915L
+        private const val TEST_NEW_ORDER_ID_2 = 1915L
 
         private const val TEST_NEW_REVIEW_REMOTE_NOTE_ID = 5604993863
         private const val TEST_NEW_REVIEW_ID_1 = 4418L
+        private const val TEST_NEW_REVIEW_ID_2 = 4418L
 
         private const val TEST_ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
     }
@@ -43,7 +48,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
         id = 1
-        siteId = 123456789
+        siteId = TEST_REMOTE_SITE_ID_1
     }
 
     private val notificationMessageHandler: NotificationMessageHandler = mock()
@@ -190,6 +195,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
 
         viewModel.handleIncomingNotification(groupOrderPushId, testOrderNotification)
+
+        verify(selectedSite, never()).set(any())
         verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
             eq(testOrderNotification.channelType)
         )
@@ -201,7 +208,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming multiple review notifications to open review list`() {
+    fun `incoming multiple review notifications for same store to open review list`() {
         val reviewPushId = testReviewNotification.getGroupPushId()
         var event: ViewReviewList? = null
         viewModel.event.observeForever {
@@ -209,12 +216,62 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
 
         viewModel.handleIncomingNotification(reviewPushId, testReviewNotification)
+
+        verify(selectedSite, never()).set(any())
         verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
             eq(testReviewNotification.channelType)
         )
         verify(notificationMessageHandler, atLeastOnce()).removeNotificationsOfTypeFromSystemsBar(
             eq(testReviewNotification.channelType),
             eq(testReviewNotification.remoteSiteId)
+        )
+        assertThat(event).isEqualTo(ViewReviewList)
+    }
+
+    @Test
+    fun `incoming order notifications for different store opens order list for that store`() {
+        val orderNotification2 = testOrderNotification.copy(
+            remoteSiteId = TEST_REMOTE_SITE_ID_2, uniqueId = TEST_NEW_ORDER_ID_2
+        )
+        val groupOrderPushId = orderNotification2.getGroupPushId()
+        var event: ViewOrderList? = null
+        viewModel.event.observeForever {
+            if (it is ViewOrderList) event = it
+        }
+
+        viewModel.handleIncomingNotification(groupOrderPushId, orderNotification2)
+
+        verify(selectedSite, atLeastOnce()).set(any())
+        verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
+            eq(orderNotification2.channelType)
+        )
+        verify(notificationMessageHandler, atLeastOnce()).removeNotificationsOfTypeFromSystemsBar(
+            eq(orderNotification2.channelType),
+            eq(orderNotification2.remoteSiteId)
+        )
+        assertThat(event).isEqualTo(ViewOrderList)
+    }
+
+    @Test
+    fun `incoming multiple review notifications for different stores to open review list for that store`() {
+        val reviewNotification2 = testReviewNotification.copy(
+            remoteSiteId = TEST_REMOTE_SITE_ID_2, uniqueId = TEST_NEW_REVIEW_ID_2
+        )
+        val reviewPushId = reviewNotification2.getGroupPushId()
+        var event: ViewReviewList? = null
+        viewModel.event.observeForever {
+            if (it is ViewReviewList) event = it
+        }
+
+        viewModel.handleIncomingNotification(reviewPushId, reviewNotification2)
+
+        verify(selectedSite, atLeastOnce()).set(any())
+        verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
+            eq(reviewNotification2.channelType)
+        )
+        verify(notificationMessageHandler, atLeastOnce()).removeNotificationsOfTypeFromSystemsBar(
+            eq(reviewNotification2.channelType),
+            eq(reviewNotification2.remoteSiteId)
         )
         assertThat(event).isEqualTo(ViewReviewList)
     }
