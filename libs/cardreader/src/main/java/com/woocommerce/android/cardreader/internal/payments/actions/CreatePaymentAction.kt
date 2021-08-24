@@ -78,6 +78,9 @@ internal class CreatePaymentAction(
         paymentInfo.siteUrl.takeUnless { it.isNullOrBlank() }
             ?.let { map[MetaDataKeys.SITE_URL.key] = it }
 
+        paymentInfo.orderKey.takeUnless { it.isNullOrBlank() }
+            ?.let { map[MetaDataKeys.ORDER_KEY.key] = it }
+
         val readerId = terminal.getConnectedReader()?.id
         if (readerId == null) {
             logWrapper.e("CardReader", "collecting payment with reader without serial number")
@@ -86,6 +89,7 @@ internal class CreatePaymentAction(
         }
 
         map[MetaDataKeys.ORDER_ID.key] = paymentInfo.orderId.toString()
+
         // TODO cardreader Needs to be fixed when we add support for recurring payments
         map[MetaDataKeys.PAYMENT_TYPE.key] = MetaDataKeys.PaymentTypes.SINGLE.key
         return map
