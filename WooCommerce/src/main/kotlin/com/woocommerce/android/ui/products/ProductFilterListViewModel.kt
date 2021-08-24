@@ -56,7 +56,7 @@ class ProductFilterListViewModel @Inject constructor(
         LiveDataDelegate(savedState, ProductFilterOptionListViewState())
     private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
-    private val productCategories = mutableListOf<ProductCategory>()
+    private var productCategories: List<ProductCategory> = emptyList()
 
     /**
      * Holds the filter properties (stock_status, status, type, category) already selected by the user in a [Map]
@@ -87,12 +87,11 @@ class ProductFilterListViewModel @Inject constructor(
 
     private suspend fun loadCategoriesIfEmpty() {
         if (productCategories.isEmpty()) {
-            val result = if (networkStatus.isConnected()) {
+            productCategories = if (networkStatus.isConnected()) {
                 productCategoriesRepository.fetchProductCategories()
             } else {
                 productCategoriesRepository.getProductCategoriesList()
             }
-            productCategories.addAll(result)
         }
     }
 
@@ -325,7 +324,12 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     fun onLoadMoreCategoriesRequested() {
-        TODO("Not yet implemented")
+        if (productCategoriesRepository.canLoadMoreProductCategories) {
+            launch {
+                productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
+                _filterOptionListItems.value = productCategoriesToOptionListItems()
+            }
+        }
     }
 
     @Parcelize
