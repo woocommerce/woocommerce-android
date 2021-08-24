@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.media
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.woocommerce.android.R
@@ -12,6 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.store.MediaStore
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -21,7 +23,10 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         private const val REMOTE_SITE_ID = 1L
     }
 
-    private val resources: ResourceProvider = mock()
+    private val resources: ResourceProvider = mock {
+        on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
+        on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
+    }
     private val testMediaModel = ProductTestUtils.generateProductMedia(REMOTE_PRODUCT_ID, REMOTE_SITE_ID)
     private val testMediaModelError = ProductTestUtils.generateMediaUploadErrorModel()
     private lateinit var mediaFileUploadHandler: MediaFileUploadHandler
@@ -36,6 +41,18 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         assertThat(mediaFileUploadHandler.getMediaUploadErrorCount(testMediaModel.postId)).isEqualTo(0)
 
         mediaFileUploadHandler.handleMediaUploadFailure(testMediaModel, testMediaModelError)
+        assertThat(mediaFileUploadHandler.getMediaUploadErrorCount(testMediaModel.postId)).isEqualTo(1)
+        assertThat(mediaFileUploadHandler.getMediaUploadErrorMessage(testMediaModel.postId)).isEqualTo(
+            resources.getString(R.string.product_image_service_error_uploading_single)
+        )
+    }
+
+    @Test
+    fun `Handles empty error message in mediaModelError correctly`() {
+        val mediaErrorModel = MediaStore.MediaError(MediaStore.MediaErrorType.GENERIC_ERROR)
+        assertThat(mediaFileUploadHandler.getMediaUploadErrorCount(testMediaModel.postId)).isEqualTo(0)
+
+        mediaFileUploadHandler.handleMediaUploadFailure(testMediaModel, mediaErrorModel)
         assertThat(mediaFileUploadHandler.getMediaUploadErrorCount(testMediaModel.postId)).isEqualTo(1)
         assertThat(mediaFileUploadHandler.getMediaUploadErrorMessage(testMediaModel.postId)).isEqualTo(
             resources.getString(R.string.product_image_service_error_uploading_single)
