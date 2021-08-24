@@ -57,15 +57,7 @@ internal class ConnectionManager(
             terminal.connectToReader(
                 cardReader.cardReader,
                 configuration,
-                object : ReaderCallback {
-                    override fun onFailure(e: TerminalException) {
-                        continuation.resume(false)
-                    }
-
-                    override fun onSuccess(reader: Reader) {
-                        continuation.resume(true)
-                    }
-                },
+                readerCallback,
                 object : BluetoothReaderListener {},
             )
         }
