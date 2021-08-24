@@ -56,7 +56,7 @@ class ProductFilterListViewModel @Inject constructor(
         LiveDataDelegate(savedState, ProductFilterOptionListViewState())
     private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
-    private var productCategories: List<ProductCategory> = emptyList()
+    private val productCategories = mutableListOf<ProductCategory>()
 
     /**
      * Holds the filter properties (stock_status, status, type, category) already selected by the user in a [Map]
@@ -87,11 +87,12 @@ class ProductFilterListViewModel @Inject constructor(
 
     private suspend fun loadCategoriesIfEmpty() {
         if (productCategories.isEmpty()) {
-            productCategories = if (networkStatus.isConnected()) {
+            val result = if (networkStatus.isConnected()) {
                 productCategoriesRepository.fetchProductCategories()
             } else {
                 productCategoriesRepository.getProductCategoriesList()
             }
+            productCategories.addAll(result)
         }
     }
 
@@ -115,13 +116,7 @@ class ProductFilterListViewModel @Inject constructor(
                 launch {
                     loadCategoriesIfEmpty()
 
-                    val categoryOptions = productCategories.map { category ->
-                        FilterListOptionItemUiModel(
-                            category.name,
-                            category.remoteCategoryId.toString(),
-                            isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString()
-                        )
-                    }
+                    val categoryOptions = productCategoriesToOptionListItems()
 
                     filterItem.filterOptionListItems = categoryOptions
                     _filterOptionListItems.value = categoryOptions
@@ -132,6 +127,16 @@ class ProductFilterListViewModel @Inject constructor(
 
             productFilterOptionListViewState = productFilterOptionListViewState.copy(
                 screenTitle = filterItem.filterItemName
+            )
+        }
+    }
+
+    private fun productCategoriesToOptionListItems(): List<FilterListOptionItemUiModel> {
+        return productCategories.map { category ->
+            FilterListOptionItemUiModel(
+                category.name,
+                category.remoteCategoryId.toString(),
+                isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString()
             )
         }
     }
