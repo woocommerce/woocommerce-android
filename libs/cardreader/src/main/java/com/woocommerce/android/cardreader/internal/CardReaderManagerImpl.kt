@@ -4,7 +4,10 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
-import com.woocommerce.android.cardreader.*
+import com.woocommerce.android.cardreader.BuildConfig
+import com.woocommerce.android.cardreader.CardPaymentStatus
+import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -18,6 +21,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -47,16 +51,13 @@ internal class CardReaderManagerImpl(
         if (!terminal.isInitialized()) {
             application = app
 
-            // Register the observer for all lifecycle hooks
-            app.registerActivityLifecycleCallbacks(terminal.getLifecycleObserver())
-
             app.registerComponentCallbacks(object : ComponentCallbacks2 {
                 override fun onConfigurationChanged(newConfig: Configuration) {}
 
                 override fun onLowMemory() {}
 
                 override fun onTrimMemory(level: Int) {
-                    terminal.getLifecycleObserver().onTrimMemory(level, application)
+                    terminal.getLifecycleObserver().onTrimMemory(application, level)
                 }
             })
 
@@ -92,12 +93,11 @@ internal class CardReaderManagerImpl(
 
     override fun cancelPayment(paymentData: PaymentData) = paymentManager.cancelPayment(paymentData)
 
+    override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> = emptyFlow()
+
     private fun initStripeTerminal(logLevel: LogLevel) {
         terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
     }
-
-    override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> =
-        softwareUpdateManager.softwareUpdateStatus()
 
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
 

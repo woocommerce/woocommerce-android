@@ -1,16 +1,17 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.ReaderCallback
-import com.stripe.stripeterminal.callable.TerminalListener
-import com.stripe.stripeterminal.model.external.ConnectionStatus
-import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
-import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
-import com.stripe.stripeterminal.model.external.ConnectionStatus.NOT_CONNECTED
-import com.stripe.stripeterminal.model.external.PaymentStatus
-import com.stripe.stripeterminal.model.external.Reader
-import com.stripe.stripeterminal.model.external.ReaderEvent
-import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.external.callable.BluetoothReaderListener
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.callable.TerminalListener
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration
+import com.stripe.stripeterminal.external.models.ConnectionStatus
+import com.stripe.stripeterminal.external.models.ConnectionStatus.CONNECTED
+import com.stripe.stripeterminal.external.models.ConnectionStatus.CONNECTING
+import com.stripe.stripeterminal.external.models.ConnectionStatus.NOT_CONNECTED
+import com.stripe.stripeterminal.external.models.PaymentStatus
+import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -51,17 +52,24 @@ internal class ConnectionManager(
 
     suspend fun connectToReader(cardReader: CardReader) = suspendCoroutine<Boolean> { continuation ->
         (cardReader as CardReaderImpl).let {
-            terminal.connectToReader(
-                it.cardReader,
-                object : ReaderCallback {
-                    override fun onFailure(e: TerminalException) {
-                        continuation.resume(false)
-                    }
-
-                    override fun onSuccess(reader: Reader) {
-                        continuation.resume(true)
-                    }
+            val locationId = cardReader.locationId ?: throw IllegalStateException(
+                "Only attached to a location readers are supported at the moment"
+            )
+            val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration(locationId)
+            val readerCallback = object : ReaderCallback {
+                override fun onSuccess(reader: Reader) {
+                    continuation.resume(true)
                 }
+
+                override fun onFailure(e: TerminalException) {
+                    continuation.resume(false)
+                }
+            }
+            terminal.connectToReader(
+                cardReader.cardReader,
+                configuration,
+                readerCallback,
+                object : BluetoothReaderListener {},
             )
         }
     }
@@ -97,17 +105,5 @@ internal class ConnectionManager(
         super.onPaymentStatusChange(status)
         // TODO cardreader: Not Implemented
         logWrapper.d("CardReader", "onPaymentStatusChange: ${status.name}")
-    }
-
-    override fun onReportLowBatteryWarning() {
-        super.onReportLowBatteryWarning()
-        // TODO cardreader: Not Implemented
-        logWrapper.d("CardReader", "onReportLowBatteryWarning")
-    }
-
-    override fun onReportReaderEvent(event: ReaderEvent) {
-        super.onReportReaderEvent(event)
-        // TODO cardreader: Not Implemented
-        logWrapper.d("CardReader", "onReportReaderEvent: $event.name")
     }
 }

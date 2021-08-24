@@ -1,15 +1,12 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.ReaderCallback
-import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
-import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
-import com.stripe.stripeterminal.model.external.ConnectionStatus.NOT_CONNECTED
-import com.stripe.stripeterminal.model.external.Reader
-import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.models.ConnectionStatus.CONNECTED
+import com.stripe.stripeterminal.external.models.ConnectionStatus.CONNECTING
+import com.stripe.stripeterminal.external.models.ConnectionStatus.NOT_CONNECTED
+import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -29,6 +26,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class ConnectionManagerTest {
@@ -117,23 +117,45 @@ class ConnectionManagerTest {
     }
 
     @Test
-    fun `when connectToReader succeeds, then true is returned`() = runBlockingTest {
-        whenever(terminalWrapper.connectToReader(any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderCallback).onSuccess(it.arguments[0] as Reader)
+    fun `given reader with location id, when connectToReader succeeds, then true is returned`() = runBlockingTest {
+        val reader: Reader = mock()
+        val cardReader: CardReaderImpl = mock {
+            on { locationId }.thenReturn("location_id")
+            on { cardReader }.thenReturn(reader)
         }
-
-        val result = connectionManager.connectToReader(CardReaderImpl(mock()))
+        whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+            (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
+        }
+        val result = connectionManager.connectToReader(cardReader)
 
         assertThat(result).isTrue()
     }
 
-    @Test
-    fun `when connectToReader fails, then false is returned`() = runBlockingTest {
-        whenever(terminalWrapper.connectToReader(any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderCallback).onFailure(mock())
+    @Test(expected = IllegalStateException::class)
+    fun `given reader without location id, when connectToReader, then IllegalStateException is thrown`() =
+        runBlockingTest {
+            val reader: Reader = mock()
+            val cardReader: CardReaderImpl = mock {
+                on { cardReader }.thenReturn(reader)
+            }
+            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
+            }
+            connectionManager.connectToReader(cardReader)
         }
 
-        val result = connectionManager.connectToReader(CardReaderImpl(mock()))
+    @Test
+    fun `given reader with location id, when connectToReader fails, then false is returned`() = runBlockingTest {
+        val reader: Reader = mock()
+        val cardReader: CardReaderImpl = mock {
+            on { locationId }.thenReturn("location_id")
+            on { cardReader }.thenReturn(reader)
+        }
+        whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+            (it.arguments[2] as ReaderCallback).onFailure(mock())
+        }
+
+        val result = connectionManager.connectToReader(cardReader)
 
         assertThat(result).isFalse()
     }
