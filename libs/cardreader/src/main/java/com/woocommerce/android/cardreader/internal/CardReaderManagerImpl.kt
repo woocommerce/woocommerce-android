@@ -3,6 +3,9 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
+import com.stripe.stripeterminal.Terminal
+import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
+import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardPaymentStatus
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
  */
+@Suppress("LongParameterList")
 internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider,
@@ -66,6 +70,8 @@ internal class CardReaderManagerImpl(
             val logLevel = if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.ERROR
 
             initStripeTerminal(logLevel)
+
+            setupSimulator()
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
@@ -104,5 +110,11 @@ internal class CardReaderManagerImpl(
     override suspend fun clearCachedCredentials() {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         terminal.clearCachedCredentials()
+    }
+
+    private fun setupSimulator() {
+        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
+            update = SimulateReaderUpdate.REQUIRED,
+        )
     }
 }

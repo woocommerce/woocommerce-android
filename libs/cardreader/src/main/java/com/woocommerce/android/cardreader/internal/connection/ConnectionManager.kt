@@ -24,7 +24,7 @@ internal class ConnectionManager(
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
     private val discoverReadersAction: DiscoverReadersAction,
 ) {
-    val softwareUpdateStatus: Flow<SoftwareUpdateStatus> = bluetoothReaderListener.events.filterIsInstance()
+    val softwareUpdateStatus = bluetoothReaderListener.events.filterIsInstance<SoftwareUpdateStatus>()
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability> = bluetoothReaderListener.events.filterIsInstance()
 
     fun discoverReaders(isSimulated: Boolean) =

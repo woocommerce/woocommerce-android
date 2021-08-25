@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
 ) : BluetoothReaderListener {
-    private val _events = MutableStateFlow<CardReaderEvent>(CardReaderEvent.Init)
+    private val _events = MutableStateFlow<CardReaderEvent>(CardReaderEvent.Initialisation)
     val events: StateFlow<CardReaderEvent> = _events
 
     override fun onFinishInstallingUpdate(update: ReaderSoftwareUpdate?, e: TerminalException?) {
@@ -37,10 +37,12 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onReportReaderSoftwareUpdateProgress(progress: Float) {
         logWrapper.d(LOG_TAG, "onReportReaderSoftwareUpdateProgress: $progress")
+        _events.value = SoftwareUpdateStatus.Installing(progress)
     }
 
     override fun onStartInstallingUpdate(update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
-        logWrapper.d(LOG_TAG, "onReportReaderSoftwareUpdateProgress: $update $cancelable")
+        logWrapper.d(LOG_TAG, "onStartInstallingUpdate: $update $cancelable")
+        _events.value = SoftwareUpdateStatus.InstallationStarted
     }
 
     override fun onReportLowBatteryWarning() {
