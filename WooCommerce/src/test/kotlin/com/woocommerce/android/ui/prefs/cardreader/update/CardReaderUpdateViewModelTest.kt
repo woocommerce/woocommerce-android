@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTW
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Initializing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.UpToDate
@@ -75,11 +74,11 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when click on primary btn explanation state with initializing should emit updating state`() =
+    fun `when click on primary btn explanation state with uptodate should emit updating state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
@@ -95,7 +94,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(
                 flow {
-                    emit(Initializing)
+                    emit(UpToDate)
                     emit(Installing(0f))
                 }
             )
@@ -112,7 +111,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
@@ -185,7 +184,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
@@ -267,7 +266,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
 
             // WHEN
@@ -284,7 +283,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(
                 flow {
-                    emit(Initializing)
+                    emit(UpToDate)
                     emit(Installing(0f))
                 }
             )
@@ -304,7 +303,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(
                 flow {
-                    emit(Initializing)
+                    emit(UpToDate)
                     emit(Installing(0f))
                 }
             )
@@ -326,7 +325,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(
                 flow {
-                    emit(Initializing)
+                    emit(UpToDate)
                     emit(Installing(currentProgress))
                 }
             )
@@ -347,7 +346,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             whenever(cardReaderManager.updateSoftware()).thenReturn(
                 flow {
-                    emit(Initializing)
+                    emit(UpToDate)
                     emit(Installing(currentProgress))
                 }
             )
