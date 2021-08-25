@@ -6,7 +6,9 @@
 
 7.4
 -----
-
+- [*] Reviews Tab: Added a pending review label to unapproved reviews [https://github.com/woocommerce/woocommerce-android/pull/4644]
+- [*] Shipping Labels: Fixed a rare crash that occurred when adding a new package with decimal weight quantity [https://github.com/woocommerce/woocommerce-android/pull/4657]
+- [*] Shipping Labels: Updated error messages when validating origin and shipping addresses  [https://github.com/woocommerce/woocommerce-android/pull/4612]
 
 7.3
 -----
