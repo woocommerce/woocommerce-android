@@ -114,11 +114,9 @@ class ProductFilterListViewModel @Inject constructor(
             if (filterItem.filterItemKey == CATEGORY) {
                 launch {
                     loadCategoriesIfEmpty()
-
                     val categoryOptions = productCategoriesToOptionListItems()
-
-                    filterItem.filterOptionListItems = categoryOptions
                     _filterOptionListItems.value = categoryOptions
+                    updateCategoryFilterListItem(categoryOptions)
                 }
             } else {
                 _filterOptionListItems.value = filterItem.filterOptionListItems
@@ -327,9 +325,13 @@ class ProductFilterListViewModel @Inject constructor(
         if (productCategoriesRepository.canLoadMoreProductCategories) {
             launch {
                 productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
-                _filterOptionListItems.value = productCategoriesToOptionListItems()
+                updateCategoryFilterListItem(productCategoriesToOptionListItems())
             }
         }
+    }
+
+    private fun updateCategoryFilterListItem(categoryOptions: List<FilterListOptionItemUiModel>) {
+        _filterListItems.value?.find { it.filterItemKey == CATEGORY }?.filterOptionListItems = categoryOptions
     }
 
     @Parcelize
