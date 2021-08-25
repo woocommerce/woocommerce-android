@@ -262,6 +262,38 @@ internal class CreatePaymentActionTest {
         assertThat(captor.firstValue).isEqualTo(customerId)
     }
 
+    @Test
+    fun `given payment info with order key, when creating payment intent, then order key is set`() {
+        runBlockingTest {
+            whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+                (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+            }
+            val captor = argumentCaptor<Map<String, String>>()
+            val orderKey = "order_key"
+
+            action.createPaymentIntent(createPaymentInfo(orderKey = orderKey)).toList()
+            verify(intentParametersBuilder).setMetadata(captor.capture())
+
+            assertThat(captor.firstValue[MetaDataKeys.ORDER_KEY.key]).isEqualTo(orderKey)
+        }
+    }
+
+    @Test
+    fun `given payment info with order key is empty, when creating payment intent, then order key is not set`() {
+        runBlockingTest {
+            whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+                (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+            }
+            val captor = argumentCaptor<Map<String, String>>()
+            val orderKey = ""
+
+            action.createPaymentIntent(createPaymentInfo(orderKey = orderKey)).toList()
+            verify(intentParametersBuilder).setMetadata(captor.capture())
+
+            assertThat(captor.firstValue[MetaDataKeys.ORDER_KEY.key]).isNull()
+        }
+    }
+
     private fun createPaymentInfo(
         paymentDescription: String = "",
         orderId: Long = 1L,
@@ -272,6 +304,7 @@ internal class CreatePaymentActionTest {
         storeName: String? = "",
         siteUrl: String? = "",
         customerId: String? = null,
+        orderKey: String? = null,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -283,5 +316,6 @@ internal class CreatePaymentActionTest {
             storeName = storeName,
             siteUrl = siteUrl,
             customerId = customerId,
+            orderKey = orderKey
         )
 }
