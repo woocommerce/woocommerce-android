@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.extensions.exhaustive
@@ -26,7 +27,6 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.StateWithProgress
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -63,18 +63,26 @@ class CardReaderUpdateViewModel @Inject constructor(
                 )
             )
         )
+
+        listenToSoftwareUpdateStatus()
     }
 
     private fun onUpdateClicked() {
         tracker.track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
+        // todo cardreader #4660
+    }
+
+    private fun listenToSoftwareUpdateStatus() {
         launch {
-            cardReaderManager.updateSoftware().collect { status ->
+            cardReaderManager.softwareUpdateStatus.collect { status ->
                 when (status) {
                     is Failed -> onUpdateFailed(status)
+                    is InstallationStarted -> updateProgress(viewState.value, 0)
                     is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))
                     Success -> onUpdateSucceeded()
                     UpToDate -> onUpdateUpToDate()
-                    else -> {} // todo cardreader #4660
+                    else -> {
+                    } // todo cardreader #4660
                 }.exhaustive
             }
         }
@@ -126,7 +134,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         if (currentState is StateWithProgress<*>) {
             viewState.value = currentState.copyWithUpdatedProgress(progress)
         } else {
-            WooLog.e(WooLog.T.CARD_READER, "Trying to update progress, but not in any of the updating states.")
+            viewState.value = UpdatingState(progress)
         }
     }
 

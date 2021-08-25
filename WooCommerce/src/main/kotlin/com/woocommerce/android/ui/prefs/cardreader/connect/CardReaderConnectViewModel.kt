@@ -18,7 +18,6 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.F
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -44,7 +43,6 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -56,7 +54,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -99,8 +96,7 @@ class CardReaderConnectViewModel @Inject constructor(
             // this workaround needs to be here since the navigation component hasn't finished the previous
             // transaction when a result is received
             delay(1)
-            val softwareUpdateStatus = cardReaderManager.softwareUpdateStatus.stateIn(this).value
-            handleConnectionFlowExit(softwareUpdateStatus)
+            exitFlow(connected = true)
         }
     }
 
@@ -294,6 +290,13 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
+            launch {
+                cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
+                    if (updateStatus is SoftwareUpdateStatus.InstallationStarted) {
+                        triggerEvent(ShowUpdateInProgress)
+                    }
+                }
+            }
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
                 tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
@@ -323,8 +326,7 @@ class CardReaderConnectViewModel @Inject constructor(
         exitFlow(connected = false)
     }
 
-    private suspend fun onReaderConnected(cardReader: CardReader) {
-        val softwareUpdateStatus = cardReaderManager.softwareUpdateStatus.stateIn(this).value
+    private fun onReaderConnected(cardReader: CardReader) {
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)
 
@@ -332,14 +334,6 @@ class CardReaderConnectViewModel @Inject constructor(
         if (appPrefs.getShowCardReaderConnectedTutorial()) {
             triggerEvent(ShowCardReaderTutorial)
             appPrefs.setShowCardReaderConnectedTutorial(false)
-        } else {
-            handleConnectionFlowExit(softwareUpdateStatus)
-        }
-    }
-
-    private fun handleConnectionFlowExit(softwareUpdateStatus: SoftwareUpdateStatus) {
-        if (softwareUpdateStatus is SoftwareUpdateInProgress) {
-            triggerEvent(ShowUpdateInProgress)
         } else {
             exitFlow(connected = true)
         }
@@ -507,9 +501,5 @@ class CardReaderConnectViewModel @Inject constructor(
         ) : ListItemViewState() {
             val connectLabel: UiString = UiStringRes(R.string.card_reader_connect_connect_button)
         }
-    }
-
-    interface StateWithProgress<T : ViewState> {
-        fun copyWithUpdatedProgress(progress: Int): T
     }
 }
