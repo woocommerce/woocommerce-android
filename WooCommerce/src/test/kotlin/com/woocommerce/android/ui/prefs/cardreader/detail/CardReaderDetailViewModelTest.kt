@@ -35,8 +35,6 @@ private const val DUMMY_FIRMWARE_VERSION_SIMPLIFIED = "1.0.0.123"
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
-        onBlocking { softwareUpdateStatus }
-            .thenReturn(MutableStateFlow(SoftwareUpdateStatus.UpToDate))
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
@@ -186,7 +184,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             createViewModel()
 
             // THEN
-            verify(cardReaderManager).softwareUpdateStatus
+            verify(cardReaderManager).softwareUpdateAvailability
         }
 
     @Test
@@ -421,7 +419,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         readersName: String? = READER_NAME,
         batteryLevel: Float? = 0.65F,
         firmwareVersion: String = DUMMY_FIRMWARE_VERSION,
-        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.Available
+        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.NotAvailable
     ) = coroutinesTestRule.testDispatcher.runBlockingTest {
         val reader: CardReader = mock {
             on { this.id }.thenReturn(readersName)
