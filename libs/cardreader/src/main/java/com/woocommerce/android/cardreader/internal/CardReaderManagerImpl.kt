@@ -114,7 +114,7 @@ internal class CardReaderManagerImpl(
 
     private fun setupSimulator() {
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            update = SimulateReaderUpdate.REQUIRED,
+            update = SimulateReaderUpdate.RANDOM,
         )
     }
 }
