@@ -57,7 +57,7 @@ android {
         } else {
             versionName "7.4-rc-2"
         }
-        versionCode 240
+        versionCode 241
 
         minSdkVersion 21
         targetSdkVersion 30
