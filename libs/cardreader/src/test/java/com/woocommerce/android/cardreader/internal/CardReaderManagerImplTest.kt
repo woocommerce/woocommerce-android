@@ -1,14 +1,8 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
-import com.stripe.stripeterminal.TerminalApplicationDelegate
-import org.mockito.kotlin.any
-import org.mockito.kotlin.atLeastOnce
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -20,6 +14,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -27,11 +27,11 @@ class CardReaderManagerImplTest {
     private lateinit var cardReaderManager: CardReaderManagerImpl
     private val terminalWrapper: TerminalWrapper = mock()
     private val tokenProvider: TokenProvider = mock()
-    private val lifecycleObserver: TerminalApplicationDelegate = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
     private val connectionManager: ConnectionManager = mock()
     private val softwareUpdateManager: SoftwareUpdateManager = mock()
+    private val terminalListener: TerminalListenerImpl = mock()
 
     @Before
     fun setUp() {
@@ -41,7 +41,8 @@ class CardReaderManagerImplTest {
             logWrapper,
             mock(),
             connectionManager,
-            softwareUpdateManager
+            softwareUpdateManager,
+            terminalListener,
         )
     }
 

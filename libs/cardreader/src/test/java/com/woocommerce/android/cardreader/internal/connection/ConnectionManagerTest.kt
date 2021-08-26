@@ -2,20 +2,15 @@ package com.woocommerce.android.cardreader.internal.connection
 
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
-import com.stripe.stripeterminal.external.models.ConnectionStatus.CONNECTED
-import com.stripe.stripeterminal.external.models.ConnectionStatus.CONNECTING
-import com.stripe.stripeterminal.external.models.ConnectionStatus.NOT_CONNECTED
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -33,14 +28,14 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class ConnectionManagerTest {
     private val terminalWrapper: TerminalWrapper = mock()
-    private val logWrapper: LogWrapper = mock()
+    private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
     private val discoverReadersAction: DiscoverReadersAction = mock()
 
     private lateinit var connectionManager: ConnectionManager
 
     @Before
     fun setUp() {
-        connectionManager = ConnectionManager(terminalWrapper, logWrapper, discoverReadersAction)
+        connectionManager = ConnectionManager(terminalWrapper, bluetoothReaderListener, discoverReadersAction)
     }
 
     @Test
@@ -78,42 +73,6 @@ class ConnectionManagerTest {
         val result = connectionManager.discoverReaders(true).single()
 
         assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Succeeded::class.java)
-    }
-
-    @Test
-    fun `when reader unexpectedly disconnected, then observers get notified`() {
-        connectionManager.onUnexpectedReaderDisconnect(mock())
-
-        assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.NotConnected
-        )
-    }
-
-    @Test
-    fun `when reader disconnected, then observers get notified`() {
-        connectionManager.onConnectionStatusChange(NOT_CONNECTED)
-
-        assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.NotConnected
-        )
-    }
-
-    @Test
-    fun `when connecting to reader, then observers get notified`() {
-        connectionManager.onConnectionStatusChange(CONNECTING)
-
-        assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.Connecting
-        )
-    }
-
-    @Test
-    fun `when reader connection established, then observers get notified`() {
-        val cardReader = CardReaderImpl(mock())
-        whenever(terminalWrapper.getConnectedReader()).thenReturn(cardReader)
-        connectionManager.onConnectionStatusChange(CONNECTED)
-
-        assertThat(connectionManager.readerStatus.value).isEqualTo(CardReaderStatus.Connected(cardReader))
     }
 
     @Test
