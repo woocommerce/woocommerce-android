@@ -3,7 +3,6 @@ package com.woocommerce.android.di
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.wordpress.android.fluxc.di.WCDatabaseModule
 import org.wordpress.android.fluxc.module.OkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
 
@@ -11,8 +10,7 @@ import org.wordpress.android.fluxc.module.ReleaseNetworkModule
 @Module(
     includes = [
         ReleaseNetworkModule::class,
-        OkHttpClientModule::class,
-        WCDatabaseModule::class
+        OkHttpClientModule::class
     ]
 )
 abstract class FluxCModule
