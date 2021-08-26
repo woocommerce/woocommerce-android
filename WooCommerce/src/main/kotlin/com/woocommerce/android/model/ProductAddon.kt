@@ -3,6 +3,7 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.model.ProductAddon.*
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.addons.WCProductAddonModel
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonWithOptions
 
@@ -111,3 +112,32 @@ fun AddonOptionEntity.toAppModel() =
         price = price ?: "",
         image = image ?: ""
     )
+
+fun WCProductAddonModel.toAppModel() =
+    ProductAddon(
+        name = name,
+        description = description,
+        descriptionEnabled = descriptionEnabled.toBoolean(),
+        max = max,
+        min = min,
+        position = position,
+        price = price ?: "",
+        required = required.toBoolean(),
+        adjustPrice = adjustPrice.toBoolean(),
+        titleFormat = TitleFormat.valueOf(titleFormat.toString()),
+        restrictionsType = Restrictions.valueOf(restrictionsType.toString()),
+        priceType = PriceType.valueOf(priceType.toString()),
+        type = Type.valueOf(type.toString()),
+        display = Display.valueOf(display.toString()),
+        rawOptions = options?.map { it.toAppModel() } ?: emptyList()
+    )
+
+fun WCProductAddonModel.ProductAddonOption.toAppModel() =
+    ProductAddonOption(
+        priceType = PriceType.valueOf(priceType.toString()),
+        label = label ?: "",
+        price = price ?: "",
+        image = image ?: ""
+    )
+
+private fun Int?.toBoolean() = this == 1
