@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products.addons.order
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
+import com.woocommerce.android.model.ProductAddon.PriceType.FlatFee
+import com.woocommerce.android.model.ProductAddon.PriceType.QuantityBased
 import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -23,8 +25,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType.FlatFee
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType.QuantityBased
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
