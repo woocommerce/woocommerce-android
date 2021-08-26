@@ -11,8 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTW
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.extensions.exhaustive
@@ -69,7 +69,11 @@ class CardReaderUpdateViewModel @Inject constructor(
 
     private fun onUpdateClicked() {
         tracker.track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
-        // todo cardreader #4660
+        launch {
+            cardReaderManager.updateSoftware().collect {
+                // todo cardreader #4660
+            }
+        }
     }
 
     private fun listenToSoftwareUpdateStatus() {
