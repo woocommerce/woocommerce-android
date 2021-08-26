@@ -83,7 +83,6 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.INVALID_RESPONSE))
             )
 
-
             var actualResult: List<ProductAddon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
