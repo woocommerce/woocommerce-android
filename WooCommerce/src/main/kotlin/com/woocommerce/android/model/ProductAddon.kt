@@ -124,17 +124,22 @@ fun WCProductAddonModel.toAppModel() =
         price = price ?: "",
         required = required.toBoolean(),
         adjustPrice = adjustPrice.toBoolean(),
-        titleFormat = TitleFormat.valueOf(titleFormat.toString()),
-        restrictionsType = Restrictions.valueOf(restrictionsType.toString()),
-        priceType = PriceType.valueOf(priceType.toString()),
-        type = Type.valueOf(type.toString()),
-        display = Display.valueOf(display.toString()),
+        titleFormat = TitleFormat.values()
+            .find { it.toString() == titleFormat?.toString() },
+        restrictionsType = Restrictions.values()
+            .find { it.toString() == restrictionsType?.toString() },
+        priceType = PriceType.values()
+            .find { it.toString() == priceType?.toString() },
+        type = Type.values().find { it.toString() == type?.toString() },
+        display = Display.values()
+            .find { it.toString() == display?.toString() },
         rawOptions = options?.map { it.toAppModel() } ?: emptyList()
     )
 
 fun WCProductAddonModel.ProductAddonOption.toAppModel() =
     ProductAddonOption(
-        priceType = PriceType.valueOf(priceType.toString()),
+        priceType = PriceType.values()
+            .find { it.toString() == priceType?.toString() },
         label = label ?: "",
         price = price ?: "",
         image = image ?: ""
