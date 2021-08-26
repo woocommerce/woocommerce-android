@@ -25,6 +25,9 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
@@ -69,6 +72,26 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             viewModelUnderTest.start(321, 999, 123)
 
             assertThat(actualResult).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `should return null if fetchGlobalAddons returns an error`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
+            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(
+                WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.INVALID_RESPONSE))
+            )
+
+
+            var actualResult: List<ProductAddon>? = null
+            viewModelUnderTest.orderedAddonsData.observeForever {
+                actualResult = it
+            }
+
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(actualResult).isNull()
         }
 
     @Test
