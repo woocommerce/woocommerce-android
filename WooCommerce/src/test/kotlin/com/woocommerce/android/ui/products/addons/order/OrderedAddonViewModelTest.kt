@@ -25,6 +25,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -34,12 +35,12 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        val savedStateMock = mock<SavedStateHandle>()
-        val storeParametersMock = mock<SiteParameters>().apply {
-            whenever(currencyCode).doReturn("currency-code")
+        val storeParametersMock = mock<SiteParameters> {
+            on { currencyCode }.doReturn("currency-code")
         }
-        val parameterRepositoryMock = mock<ParameterRepository>().apply {
-            whenever(getParameters("key_product_parameters", savedStateMock))
+        val savedStateMock = mock<SavedStateHandle>()
+        val parameterRepositoryMock = mock<ParameterRepository> {
+            on { getParameters("key_product_parameters", savedStateMock) }
                 .doReturn(storeParametersMock)
         }
 
@@ -54,8 +55,9 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should trigger a successful parse to all data at once`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(WooResult(Unit))
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
-                .doReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
+                .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
             val expectedResult = defaultOrderedAddonList
 
@@ -84,6 +86,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .doReturn(mockResponse)
+            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(WooResult(Unit))
 
             val expectedResult = emptyProductAddon.copy(
                 name = "Delivery",
@@ -112,7 +115,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     fun `should return Addon with single option when matching option is found`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
-                .doReturn(
+                .thenReturn(
                     Pair(
                         listWithSingleAddonAndTwoValidOptions,
                         listOf(
@@ -123,6 +126,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                         )
                     )
                 )
+            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(WooResult(Unit))
 
             val expectedResult = emptyProductAddon.copy(
                 name = "test-name",
@@ -166,6 +170,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                         )
                     )
                 )
+            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(WooResult(Unit))
 
             val expectedResult = listOf(
                 emptyProductAddon.copy(
