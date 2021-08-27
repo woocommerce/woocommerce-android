@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal|top"
         android:orientation="vertical"
+        android:background="@color/color_surface"
         android:padding="@dimen/major_200">
 
         <com.google.android.material.textview.MaterialTextView

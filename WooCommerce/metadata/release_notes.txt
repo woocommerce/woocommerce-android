@@ -1,3 +1,2 @@
-Merchants using the WooCommerce Shipping & Tax Extension will be happy to hear of two improvements we’ve made. You can create custom packages when creating a label. You can also create multiple shipping labels for a single order!
 
-This and many other tiny improvements were made to make your experience smoother. We hope you notice the love we put into our software.
+
