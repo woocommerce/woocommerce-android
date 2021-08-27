@@ -416,7 +416,8 @@ class MainActivity :
             showCrossIcon = false
         } else {
             binding.appBarLayout.elevation =
-                resources.getDimensionPixelSize(R.dimen.appbar_elevation_secondary).toFloat()
+                resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
                 R.id.issueRefundFragment,
