@@ -131,13 +131,16 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     private fun productCategoriesToOptionListItems(): List<FilterListOptionItemUiModel> {
-        return productCategories.map { category ->
-            FilterListOptionItemUiModel(
-                category.name,
-                category.remoteCategoryId.toString(),
-                isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString()
-            )
-        }
+        return addDefaultFilterOption(
+            productCategories.map { category ->
+                FilterListOptionItemUiModel(
+                    category.name,
+                    category.remoteCategoryId.toString(),
+                    isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString()
+                )
+            }.toMutableList(),
+            productFilterOptions[CATEGORY].isNullOrEmpty()
+        )
     }
 
     fun onBackButtonClicked(): Boolean {
@@ -250,6 +253,8 @@ class ProductFilterListViewModel @Inject constructor(
         )
         filterListItems.add(buildCategoryFilterListItemUiModel())
 
+        val a = filterListItems
+
         return filterListItems
     }
 
@@ -289,7 +294,7 @@ class ProductFilterListViewModel @Inject constructor(
             }
         }
 
-        return FilterListItemUiModel(
+        val x = FilterListItemUiModel(
             CATEGORY,
             resourceProvider.getString(string.product_category),
             addDefaultFilterOption(
@@ -297,6 +302,7 @@ class ProductFilterListViewModel @Inject constructor(
                 productFilterOptions[CATEGORY].isNullOrEmpty()
             )
         )
+        return x
     }
 
     /**
