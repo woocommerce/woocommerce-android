@@ -45,6 +45,7 @@ class ProductListViewModel @Inject constructor(
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
+        private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
 
     private val _productList = MutableLiveData<List<Product>>()
@@ -70,6 +71,8 @@ class ProductListViewModel @Inject constructor(
             loadProducts()
         }
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
+
+        selectedCategoryName = savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)
     }
 
     override fun onCleared() {
@@ -112,7 +115,10 @@ class ProductListViewModel @Inject constructor(
             productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
             productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
             productCategory?.let { productFilterOptions[ProductFilterOption.CATEGORY] = it }
-            productCategoryName?. let { selectedCategoryName = it }
+            productCategoryName?. let {
+                selectedCategoryName = it
+                savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = it
+            }
 
             viewState = viewState.copy(filterCount = productFilterOptions.size)
             refreshProducts()
