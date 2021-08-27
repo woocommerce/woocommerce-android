@@ -39,6 +39,7 @@ class ProductFilterListViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
+        private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
@@ -75,7 +76,7 @@ class ProductFilterListViewModel @Inject constructor(
         params
     }
 
-    private var selectedCategoryName: String? = arguments.selectedProductCategoryName
+    private var selectedCategoryName: String? = null
 
     fun getFilterString() = productFilterOptions.values.joinToString(", ")
 
@@ -97,7 +98,14 @@ class ProductFilterListViewModel @Inject constructor(
         }
     }
 
+    private fun initOrRestoreSelectedCategoryName() {
+        selectedCategoryName = savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)
+        arguments.selectedProductCategoryName?. let { selectedCategoryName = it }
+        savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
+    }
+
     fun loadFilters() {
+        initOrRestoreSelectedCategoryName()
         _filterListItems.value = buildFilterListItemUiModel()
 
         val screenTitle = if (productFilterOptions.isNotEmpty()) {
@@ -181,6 +189,7 @@ class ProductFilterListViewModel @Inject constructor(
 
             if (filterItem.filterItemKey == CATEGORY) {
                 selectedCategoryName = selectedFilterItem.filterOptionItemName
+                savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
             }
 
             // update the filter options map - which is used to load the filter list screen
@@ -252,9 +261,6 @@ class ProductFilterListViewModel @Inject constructor(
             )
         )
         filterListItems.add(buildCategoryFilterListItemUiModel())
-
-        val a = filterListItems
-
         return filterListItems
     }
 
@@ -294,7 +300,7 @@ class ProductFilterListViewModel @Inject constructor(
             }
         }
 
-        val x = FilterListItemUiModel(
+        return FilterListItemUiModel(
             CATEGORY,
             resourceProvider.getString(string.product_category),
             addDefaultFilterOption(
@@ -302,7 +308,6 @@ class ProductFilterListViewModel @Inject constructor(
                 productFilterOptions[CATEGORY].isNullOrEmpty()
             )
         )
-        return x
     }
 
     /**
