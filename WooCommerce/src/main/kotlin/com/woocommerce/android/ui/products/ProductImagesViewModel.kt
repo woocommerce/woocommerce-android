@@ -11,12 +11,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadUiModel
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
@@ -190,7 +189,7 @@ class ProductImagesViewModel @Inject constructor(
         mediaFileUploadHandler.onCleanup()
     }
 
-    fun handleImageUploadEvent(event: ProductImageUploadUiModel) {
+    fun handleImageUploadEvent(event: ProductImageUploadData) {
         when (event.uploadStatus) {
             is Failed -> {
                 val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteId)

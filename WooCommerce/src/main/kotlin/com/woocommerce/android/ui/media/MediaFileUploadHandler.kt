@@ -26,9 +26,9 @@ class MediaFileUploadHandler @Inject constructor(
     private val productImagesServiceWrapper: ProductImagesServiceWrapper
 ) {
     // array of ID / images that have failed to upload for that product
-    private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadUiModel>())
+    private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
 
-    private val events = MutableSharedFlow<ProductImageUploadUiModel>(extraBufferCapacity = Int.MAX_VALUE)
+    private val events = MutableSharedFlow<ProductImageUploadData>(extraBufferCapacity = Int.MAX_VALUE)
 
     init {
         EventBus.getDefault().register(this)
@@ -45,7 +45,7 @@ class MediaFileUploadHandler @Inject constructor(
 
     fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
         val newUploads = uris.map {
-            ProductImageUploadUiModel(
+            ProductImageUploadData(
                 remoteProductId = remoteProductId,
                 localUri = it,
                 uploadStatus = UploadStatus.InProgress
@@ -69,7 +69,7 @@ class MediaFileUploadHandler @Inject constructor(
             }
     }
 
-    fun observeUploadEvents(remoteProductId: Long): Flow<ProductImageUploadUiModel> {
+    fun observeUploadEvents(remoteProductId: Long): Flow<ProductImageUploadData> {
         return events.filter { it.remoteProductId == remoteProductId }
     }
 
@@ -95,7 +95,7 @@ class MediaFileUploadHandler @Inject constructor(
     fun onEventMainThread(event: OnProductImageUploaded) {
         val productId = event.media.postId
         events.tryEmit(
-            ProductImageUploadUiModel(
+            ProductImageUploadData(
                 remoteProductId = productId,
                 localUri = event.localUri,
                 uploadStatus = UploadStatus.UploadSuccess(media = event.media)
@@ -111,7 +111,7 @@ class MediaFileUploadHandler @Inject constructor(
     fun onEventMainThread(event: OnProductImageUploadFailed) {
         val productId = event.media.postId
         events.tryEmit(
-            ProductImageUploadUiModel(
+            ProductImageUploadData(
                 remoteProductId = productId,
                 localUri = event.localUri,
                 uploadStatus = UploadStatus.Failed(event.media, event.error.type, event.error.message)
@@ -120,7 +120,7 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     @Parcelize
-    data class ProductImageUploadUiModel(
+    data class ProductImageUploadData(
         val remoteProductId: Long,
         val localUri: Uri,
         val uploadStatus: UploadStatus

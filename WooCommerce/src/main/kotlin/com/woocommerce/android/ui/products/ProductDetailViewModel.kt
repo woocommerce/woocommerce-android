@@ -19,7 +19,7 @@ import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadUiModel
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
@@ -1550,7 +1550,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun handleImageUploadEvent(event: ProductImageUploadUiModel) {
+    fun handleImageUploadEvent(event: ProductImageUploadData) {
         when (event.uploadStatus) {
             is UploadSuccess -> addProductImageToDraft(event.uploadStatus.media.toAppModel())
             is Failed -> {

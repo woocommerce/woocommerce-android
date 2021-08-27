@@ -21,7 +21,7 @@ import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadUiModel
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -381,7 +381,7 @@ class VariationDetailViewModel @Inject constructor(
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.variation?.shippingClass ?: ""
 
-    private fun handleImageUploadEvent(event: ProductImageUploadUiModel) {
+    private fun handleImageUploadEvent(event: ProductImageUploadData) {
         when (event.uploadStatus) {
             is UploadSuccess -> {
                 viewState.variation?.let {
