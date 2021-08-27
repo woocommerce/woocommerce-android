@@ -75,6 +75,8 @@ class ProductFilterListViewModel @Inject constructor(
         params
     }
 
+    private var selectedCategoryName: String? = arguments.selectedProductCategoryName
+
     fun getFilterString() = productFilterOptions.values.joinToString(", ")
 
     private fun getFilterByStockStatus() = productFilterOptions[STOCK_STATUS]
@@ -174,6 +176,10 @@ class ProductFilterListViewModel @Inject constructor(
             }
             _filterOptionListItems.value = filterOptionItemList
 
+            if (filterItem.filterItemKey == CATEGORY) {
+                selectedCategoryName = selectedFilterItem.filterOptionItemName
+            }
+
             // update the filter options map - which is used to load the filter list screen
             // if the selected filter option item is the default filter item i.e. ANY,
             // then remove the filter from the map, since this means the filter for that option has been cleared,
@@ -191,7 +197,8 @@ class ProductFilterListViewModel @Inject constructor(
             productStatus = getFilterByProductStatus(),
             stockStatus = getFilterByStockStatus(),
             productType = getFilterByProductType(),
-            productCategory = getFilterByProductCategory()
+            productCategory = getFilterByProductCategory(),
+            productCategoryName = selectedCategoryName
         )
         triggerEvent(ExitWithResult(result))
     }
@@ -264,7 +271,7 @@ class ProductFilterListViewModel @Inject constructor(
             isComingFromProductListWithExistingFilterByCategory() -> {
                 listOf(
                     FilterListOptionItemUiModel(
-                        getFilterByProductCategory()!!, // TODO: We need to show category name here, instead of ID.
+                        selectedCategoryName!!,
                         getFilterByProductCategory()!!,
                         true
                     )

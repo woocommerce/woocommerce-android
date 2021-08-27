@@ -20,7 +20,15 @@ interface MainNavigationRouter {
         enableModeration: Boolean,
         tempStatus: String? = null
     )
-    fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?, productCategory: String?)
+
+    fun showProductFilters(
+        stockStatus: String?,
+        productType: String?,
+        productStatus: String?,
+        productCategory: String?,
+        productCategoryName: String?
+    )
+
     fun showFeedbackSurvey()
     fun showProductAddBottomSheet()
     fun showSettingsScreen()

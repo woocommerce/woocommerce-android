@@ -24,6 +24,10 @@
             android:name="selectedProductCategory"
             app:nullable="true"
             app:argType="string" />
+        <argument
+            android:name="selectedProductCategoryName"
+            app:nullable="true"
+            app:argType="string" />
         <action
             android:id="@+id/action_productFilterListFragment_to_productFilterOptionListFragment"
             app:destination="@id/productFilterOptionListFragment"
