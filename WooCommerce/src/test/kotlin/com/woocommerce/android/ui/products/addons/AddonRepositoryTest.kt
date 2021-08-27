@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonWithOptionsList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
@@ -95,6 +96,26 @@ class AddonRepositoryTest {
                     .getProductByRemoteId(siteModelMock, 333)
 
                 assertThat(orderAddons).isEqualTo(expectedAddons)
+            } ?: fail("non-null Pair with valid data was expected")
+    }
+
+    @Test
+    fun `fetchOrderAddonsData should map productAddons correctly`() = runBlockingTest {
+        configureSuccessfulOrderResponse()
+        configureSuccessfulAddonResponse()
+
+        val expectedAddons = defaultAddonWithOptionsList.map { it.toAppModel() }
+
+        repositoryUnderTest.getOrderAddonsData(123, 999, 333)
+            ?.let { (productAddons, _) ->
+
+                verify(productStoreMock, times(1))
+                    .getProductByRemoteId(siteModelMock, 333)
+
+                verify(addonStoreMock, times(1))
+                    .observeAddonsForProduct(321, defaultWCProductModel)
+
+                assertThat(productAddons).isEqualTo(expectedAddons)
             } ?: fail("non-null Pair with valid data was expected")
     }
 
