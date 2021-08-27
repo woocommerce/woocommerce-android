@@ -98,14 +98,13 @@ class ProductFilterListViewModel @Inject constructor(
         }
     }
 
-    private fun initOrRestoreSelectedCategoryName() {
-        selectedCategoryName = savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)
-        arguments.selectedProductCategoryName?. let { selectedCategoryName = it }
-        savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
+    init {
+        arguments.selectedProductCategoryName?.let { selectedCategoryName = it }
     }
 
     fun loadFilters() {
-        initOrRestoreSelectedCategoryName()
+        savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)?. let { selectedCategoryName = it }
+
         _filterListItems.value = buildFilterListItemUiModel()
 
         val screenTitle = if (productFilterOptions.isNotEmpty()) {
