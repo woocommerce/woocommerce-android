@@ -8,14 +8,10 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.CheckForUpdatesFailed
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.Initializing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.UpToDate
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.UpdateAvailable
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -55,7 +51,9 @@ class CardReaderDetailViewModel @Inject constructor(
         launch {
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
-                    is Connected -> cardReaderManager.softwareUpdateAvailability().collect(::handleSoftwareUpdateStatus)
+                    is Connected -> cardReaderManager.softwareUpdateAvailability.collect(
+                        ::handleSoftwareUpdateAvailability
+                    )
                     else -> showNotConnectedState()
                 }
             }.exhaustive
@@ -65,7 +63,7 @@ class CardReaderDetailViewModel @Inject constructor(
     fun onUpdateReaderResult(updateResult: UpdateResult) {
         when (updateResult) {
             SUCCESS -> {
-                handleSoftwareUpdateStatus(UpToDate)
+                handleSoftwareUpdateAvailability(SoftwareUpdateAvailability.NotAvailable)
                 triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
             }
             FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
@@ -133,16 +131,12 @@ class CardReaderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun handleSoftwareUpdateStatus(updateStatus: SoftwareUpdateAvailability) {
+    private fun handleSoftwareUpdateAvailability(updateStatus: SoftwareUpdateAvailability) {
         val readerStatus = cardReaderManager.readerStatus.value
         if (readerStatus !is Connected) return
         when (updateStatus) {
-            Initializing -> viewState.value = Loading
-            UpToDate -> showConnectedState(readerStatus)
-            is UpdateAvailable -> showConnectedState(readerStatus, updateAvailable = true)
-            CheckForUpdatesFailed -> showConnectedState(readerStatus).also {
-                triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
-            }
+            SoftwareUpdateAvailability.Available -> showConnectedState(readerStatus, updateAvailable = true)
+            SoftwareUpdateAvailability.NotAvailable -> showConnectedState(readerStatus)
         }.exhaustive
     }
 

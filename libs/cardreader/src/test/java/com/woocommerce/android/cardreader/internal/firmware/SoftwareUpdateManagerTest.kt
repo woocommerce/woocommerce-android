@@ -1,9 +1,7 @@
 package com.woocommerce.android.cardreader.internal.firmware
 
-import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction
@@ -12,7 +10,6 @@ import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvail
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -37,16 +34,7 @@ class SoftwareUpdateManagerTest {
         whenever(checkUpdatesAction.checkUpdates())
             .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock()))
         whenever(installAvailableSoftwareUpdatesAction.installUpdate())
-            .thenAnswer {
-                flow<InstallSoftwareUpdateStatus> {}
-            }
-    }
-
-    @Test
-    fun `when check for udpate started, then Initializing emitted`() = runBlockingTest {
-        val result = updateManager.updateSoftware().single()
-
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Initializing)
+            .thenAnswer { flow<InstallSoftwareUpdateStatus> { emit(Success) } }
     }
 
     @Test
@@ -121,55 +109,5 @@ class SoftwareUpdateManagerTest {
         val result = updateManager.updateSoftware().toList().last()
 
         assertThat(result).isEqualTo(SoftwareUpdateStatus.Failed("dummy message"))
-    }
-
-    @Test
-    fun `when software update check starts then initializing emitted`() = runBlockingTest {
-        // GIVEN
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.UpToDate)
-
-        // WHEN
-        val status = updateManager.softwareUpdateStatus().toList().first()
-
-        // THEN
-        assertThat(status).isEqualTo(SoftwareUpdateAvailability.Initializing)
-    }
-
-    @Test
-    fun `when software update check returns up to date then uptodate emitted`() = runBlockingTest {
-        // GIVEN
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.UpToDate)
-
-        // WHEN
-        val status = updateManager.softwareUpdateStatus().toList().last()
-
-        // THEN
-        assertThat(status).isEqualTo(SoftwareUpdateAvailability.UpToDate)
-    }
-
-    @Test
-    fun `when software update check returns update available then updateavailable emitted`() = runBlockingTest {
-        // GIVEN
-        val updateData: ReaderSoftwareUpdate = mock()
-        val updateStatus = CheckSoftwareUpdates.UpdateAvailable(updateData)
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(updateStatus)
-
-        // WHEN
-        val status = updateManager.softwareUpdateStatus().toList().last()
-
-        // THEN
-        assertThat(status).isInstanceOf(SoftwareUpdateAvailability.UpdateAvailable::class.java)
-    }
-
-    @Test
-    fun `when software update check returns failed then check failed emitted`() = runBlockingTest {
-        // GIVEN
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.Failed(mock()))
-
-        // WHEN
-        val status = updateManager.softwareUpdateStatus().toList().last()
-
-        // THEN
-        assertThat(status).isEqualTo(SoftwareUpdateAvailability.CheckForUpdatesFailed)
     }
 }

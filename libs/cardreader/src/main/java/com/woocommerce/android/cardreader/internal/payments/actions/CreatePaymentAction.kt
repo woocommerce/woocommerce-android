@@ -4,6 +4,7 @@ import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
@@ -34,13 +35,13 @@ internal class CreatePaymentAction(
                 createParams(paymentInfo),
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
-                        logWrapper.d("CardReader", "Creating payment intent succeeded")
+                        logWrapper.d(LOG_TAG, "Creating payment intent succeeded")
                         this@callbackFlow.sendBlocking(Success(paymentIntent))
                         this@callbackFlow.close()
                     }
 
                     override fun onFailure(e: TerminalException) {
-                        logWrapper.d("CardReader", "Creating payment intent failed")
+                        logWrapper.d(LOG_TAG, "Creating payment intent failed")
                         this@callbackFlow.sendBlocking(Failure(e))
                         this@callbackFlow.close()
                     }
@@ -83,7 +84,7 @@ internal class CreatePaymentAction(
 
         val readerId = terminal.getConnectedReader()?.id
         if (readerId == null) {
-            logWrapper.e("CardReader", "collecting payment with reader without serial number")
+            logWrapper.e(LOG_TAG, "collecting payment with reader without serial number")
         } else {
             map[MetaDataKeys.READER_ID.key] = readerId
         }

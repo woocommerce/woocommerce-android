@@ -198,11 +198,19 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 }
                 is ShowCardReaderTutorial -> {
                     findNavController()
-                        .navigateSafely(R.id.action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment)
+                        .navigateSafely(R.id.action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment)
+                }
+                is CardReaderConnectViewModel.CardReaderConnectEvent.ShowUpdateInProgress -> {
+                    findNavController().navigateSafely(
+                        CardReaderConnectDialogFragmentDirections
+                            .actionCardReaderConnectDialogFragmentToCardReaderUpdateDialogFragment(
+                                startedByUser = false
+                            )
+                    )
                 }
                 is CardReaderConnectViewModel.CardReaderConnectEvent.NavigateToOnboardingFlow -> {
                     findNavController()
-                        .navigateSafely(R.id.action_cardReaderConnectFragment_to_cardReaderOnboardingFragment)
+                        .navigateSafely(R.id.action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment)
                 }
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_CONNECT_TO_READER_RESULT, event.data as Boolean)

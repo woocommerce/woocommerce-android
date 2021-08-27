@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -34,8 +34,6 @@ private const val DUMMY_FIRMWARE_VERSION_SIMPLIFIED = "1.0.0.123"
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
-        onBlocking { softwareUpdateAvailability() }
-            .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.Initializing))
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
@@ -185,14 +183,14 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             createViewModel()
 
             // THEN
-            verify(cardReaderManager).softwareUpdateAvailability()
+            verify(cardReaderManager).softwareUpdateAvailability
         }
 
     @Test
     fun `when view model init with connected state and update available should emit connected state with update`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.Available)
 
             // WHEN
             val viewModel = createViewModel()
@@ -211,34 +209,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when view model init with connected state and check failed should emit connected state without update`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
-
-            // WHEN
-            val viewModel = createViewModel()
-
-            // THEN
-            verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
-                    R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
-                ),
-                updateAvailable = false
-            )
-            assertThat(viewModel.event.value)
-                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
-        }
-
-    @Test
     fun `when view model init with connected state and update available should send card reader update screen event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.Available)
 
             // WHEN
             val viewModel = createViewModel()
@@ -288,7 +262,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.Available)
 
             // WHEN
             viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
@@ -304,34 +278,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 updateAvailable = false
             )
-        }
-    }
-
-    @Test
-    fun `given software update check failed, when on update result successful, then connected state with snackbar`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            val viewModel = createViewModel()
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
-
-            // WHEN
-            val events = mutableListOf<Event>()
-            viewModel.event.observeForever { events.add(it) }
-            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
-
-            // THEN
-            verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
-                    R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
-                ),
-                updateAvailable = false
-            )
-            assertThat(events[0])
-                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
         }
     }
 
@@ -472,7 +418,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         readersName: String? = READER_NAME,
         batteryLevel: Float? = 0.65F,
         firmwareVersion: String = DUMMY_FIRMWARE_VERSION,
-        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.UpToDate
+        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.NotAvailable
     ) = coroutinesTestRule.testDispatcher.runBlockingTest {
         val reader: CardReader = mock {
             on { this.id }.thenReturn(readersName)
@@ -481,7 +427,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
         val status = MutableStateFlow(CardReaderStatus.Connected(reader))
         whenever(cardReaderManager.readerStatus).thenReturn(status)
-        whenever(cardReaderManager.softwareUpdateAvailability()).thenReturn(MutableStateFlow(updateAvailable))
+        whenever(cardReaderManager.softwareUpdateAvailability).thenReturn(MutableStateFlow(updateAvailable))
     }
 
     private fun createViewModel() = CardReaderDetailViewModel(

@@ -1,10 +1,5 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED
@@ -12,11 +7,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTW
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Initializing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.UpToDate
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.UpToDate
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.NotAvailable
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
@@ -28,17 +25,24 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class CardReaderUpdateViewModelTest : BaseUnitTest() {
-    private val cardReaderManager: CardReaderManager = mock()
+    private val softwareStatus = MutableStateFlow<SoftwareUpdateStatus>(NotAvailable)
+    private val cardReaderManager: CardReaderManager = mock {
+        on { softwareUpdateStatus }.thenReturn(softwareStatus)
+    }
     private val tracker: AnalyticsTrackerWrapper = mock()
 
     @Test
@@ -75,14 +79,14 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when click on primary btn explanation state with initializing should emit updating state`() =
+    fun `when click on primary btn explanation state with uptodate should emit updating state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = InstallationStarted
 
             // THEN
             assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
@@ -93,29 +97,24 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(0f))
-                }
-            )
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Installing(0f)
 
             // THEN
             assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
         }
 
     @Test
-    fun `when click on primary btn explanation state with initializing should emit updating state with values`() =
+    fun `when click on primary btn explanation state with installation start should emit updating state with values`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = InstallationStarted
 
             // THEN
             verifyUpdatingState(viewModel)
@@ -126,10 +125,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Success))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Success
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
@@ -141,10 +140,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = UpToDate
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
@@ -156,10 +155,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Failed("")))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Failed("")
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
@@ -185,7 +184,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
@@ -199,10 +198,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Success))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Success
 
             // THEN
             verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
@@ -213,10 +212,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Failed("")))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Failed("")
 
             // THEN
             verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
@@ -231,6 +230,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = UpToDate
 
             // THEN
             verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
@@ -267,8 +267,8 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = InstallationStarted
 
             // WHEN
             viewModel.onBackPressed()
@@ -282,13 +282,8 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(0f))
-                }
-            )
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Installing(0f)
 
             // WHEN
             viewModel.onBackPressed()
@@ -302,13 +297,8 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(0f))
-                }
-            )
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Installing(0f)
             viewModel.onBackPressed()
 
             // WHEN
@@ -324,15 +314,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // GIVEN
             val currentProgress = 0.2f
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(currentProgress))
-                }
-            )
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Installing(currentProgress)
 
             // THEN
             assertThat((viewModel.viewStateData.value as UpdatingState).progress)
@@ -345,13 +330,8 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // GIVEN
             val currentProgress = 0.2f
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(currentProgress))
-                }
-            )
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Installing(currentProgress)
 
             // WHEN
             viewModel.onBackPressed()

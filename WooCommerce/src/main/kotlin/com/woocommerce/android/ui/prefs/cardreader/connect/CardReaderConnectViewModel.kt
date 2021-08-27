@@ -11,13 +11,14 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
-import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -30,8 +31,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowCardReaderTutorial
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.ShowUpdateInProgress
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
@@ -66,6 +66,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val onboardingChecker: CardReaderOnboardingChecker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
+
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
      * When multiple events are send synchronously to MultiLiveEvent only the first one gets handled
@@ -88,6 +89,21 @@ class CardReaderConnectViewModel @Inject constructor(
 
     init {
         startFlow()
+    }
+
+    fun onTutorialClosed() {
+        launch {
+            // this workaround needs to be here since the navigation component hasn't finished the previous
+            // transaction when a result is received
+            delay(1)
+            exitFlow(connected = true)
+        }
+    }
+
+    fun onScreenResumed() {
+        if (viewState.value is MissingPermissionsError) {
+            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+        }
     }
 
     private fun startFlow() {
@@ -253,12 +269,12 @@ class CardReaderConnectViewModel @Inject constructor(
         val listItems: MutableList<ListItemViewState> = availableReaders
             .map { mapReaderToListItem(it) }
             .toMutableList()
-            .also { it.add(ScanningInProgressListItem) }
+            .also { it.add(ListItemViewState.ScanningInProgressListItem) }
         return MultipleReadersFoundState(listItems, ::onCancelClicked)
     }
 
     private fun mapReaderToListItem(reader: CardReader): ListItemViewState =
-        CardReaderListItem(
+        ListItemViewState.CardReaderListItem(
             readerId = reader.id.orEmpty(),
             readerType = reader.type,
             onConnectClicked = {
@@ -274,6 +290,13 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
+            launch {
+                cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
+                    if (updateStatus is SoftwareUpdateStatus.InstallationStarted) {
+                        triggerEvent(ShowUpdateInProgress)
+                    }
+                }
+            }
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
                 tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
@@ -316,15 +339,6 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    fun onTutorialClosed() {
-        launch {
-            // this workaround needs to be here since the navigation component hasn't finished the previous
-            // transaction when a result is received
-            delay(1)
-            exitFlow(connected = true)
-        }
-    }
-
     private fun exitFlow(connected: Boolean) {
         triggerEvent(ExitWithResult(connected))
     }
@@ -335,12 +349,6 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun findLastKnowReader(readers: List<CardReader>): CardReader? {
         return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
-    }
-
-    fun onScreenResumed() {
-        if (viewState.value is MissingPermissionsError) {
-            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
-        }
     }
 
     sealed class CardReaderConnectEvent : Event() {
@@ -364,6 +372,8 @@ class CardReaderConnectViewModel @Inject constructor(
         data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
 
         object ShowCardReaderTutorial : CardReaderConnectEvent()
+
+        object ShowUpdateInProgress : CardReaderConnectEvent()
 
         object NavigateToOnboardingFlow : CardReaderConnectEvent()
     }

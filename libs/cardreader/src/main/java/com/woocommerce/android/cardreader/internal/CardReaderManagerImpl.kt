@@ -10,29 +10,28 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
  */
+@Suppress("LongParameterList")
 internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider,
     private val logWrapper: LogWrapper,
     private val paymentManager: PaymentManager,
     private val connectionManager: ConnectionManager,
-    private val softwareUpdateManager: SoftwareUpdateManager
+    private val softwareUpdateManager: SoftwareUpdateManager,
+    private val terminalListener: TerminalListenerImpl,
 ) : CardReaderManager {
     companion object {
         private const val TAG = "CardReaderManager"
@@ -45,7 +44,11 @@ internal class CardReaderManagerImpl(
             return terminal.isInitialized()
         }
 
-    override val readerStatus: MutableStateFlow<CardReaderStatus> = connectionManager.readerStatus
+    override val readerStatus = terminalListener.readerStatus
+
+    override val softwareUpdateStatus = connectionManager.softwareUpdateStatus
+
+    override val softwareUpdateAvailability = connectionManager.softwareUpdateAvailability
 
     override fun initialize(app: Application) {
         if (!terminal.isInitialized()) {
@@ -64,6 +67,8 @@ internal class CardReaderManagerImpl(
             val logLevel = if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.ERROR
 
             initStripeTerminal(logLevel)
+
+            terminal.setupSimulator()
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
@@ -93,10 +98,8 @@ internal class CardReaderManagerImpl(
 
     override fun cancelPayment(paymentData: PaymentData) = paymentManager.cancelPayment(paymentData)
 
-    override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> = emptyFlow()
-
     private fun initStripeTerminal(logLevel: LogLevel) {
-        terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
+        terminal.initTerminal(application, logLevel, tokenProvider, terminalListener)
     }
 
     override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
