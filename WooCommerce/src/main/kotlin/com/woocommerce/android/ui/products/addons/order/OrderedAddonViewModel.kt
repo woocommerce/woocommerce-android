@@ -43,8 +43,7 @@ class OrderedAddonViewModel @Inject constructor(
         orderItemID: Long,
         productID: Long
     ) = launch(dispatchers.computation) {
-        addonsRepository.fetchGlobalAddons()
-            .takeUnless { it.isError }
+            takeIf { addonsRepository.updateGlobalAddonsSuccessfully() }
             ?.let { addonsRepository.getOrderAddonsData(orderID, orderItemID, productID) }
             ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
             ?.let { dispatchResult(it) }

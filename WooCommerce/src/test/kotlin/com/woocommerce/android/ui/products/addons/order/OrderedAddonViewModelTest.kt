@@ -25,10 +25,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -58,7 +54,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should trigger a successful parse to all data at once`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(WooResult(Unit))
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
@@ -79,9 +75,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
-            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(
-                WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.INVALID_RESPONSE))
-            )
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
 
             var actualResult: List<ProductAddon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
@@ -108,7 +102,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .doReturn(mockResponse)
-            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(WooResult(Unit))
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
 
             val expectedResult = emptyProductAddon.copy(
                 name = "Delivery",
@@ -148,7 +142,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                         )
                     )
                 )
-            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(WooResult(Unit))
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
 
             val expectedResult = emptyProductAddon.copy(
                 name = "test-name",
@@ -192,7 +186,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                         )
                     )
                 )
-            whenever(addonRepositoryMock.fetchGlobalAddons()).thenReturn(WooResult(Unit))
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
 
             val expectedResult = listOf(
                 emptyProductAddon.copy(
