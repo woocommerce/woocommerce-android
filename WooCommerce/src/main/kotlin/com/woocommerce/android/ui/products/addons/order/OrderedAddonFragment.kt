@@ -37,8 +37,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.PRODUCT_ADDONS
     }
 
-    @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderedAddonViewModel by viewModels()
 
