@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.addons.order
 
+import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -9,10 +10,12 @@ import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +28,9 @@ class OrderedAddonViewModel @Inject constructor(
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
+
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateLiveData
 
     private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
     val orderedAddonsData: LiveData<List<ProductAddon>> = _orderedAddons
@@ -42,11 +48,14 @@ class OrderedAddonViewModel @Inject constructor(
         orderID: Long,
         orderItemID: Long,
         productID: Long
-    ) = launch(dispatchers.computation) {
+    ) = viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
+        launch(dispatchers.computation) {
             takeIf { addonsRepository.updateGlobalAddonsSuccessfully() }
-            ?.let { addonsRepository.getOrderAddonsData(orderID, orderItemID, productID) }
-            ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
-            ?.let { dispatchResult(it) }
+                ?.let { addonsRepository.getOrderAddonsData(orderID, orderItemID, productID) }
+                ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
+                ?.let { dispatchResult(it) }
+                ?: viewState.copy(isSkeletonShown = false).let { viewState = it }
+        }
     }
 
     private fun mapAddonsFromOrderAttributes(
@@ -91,7 +100,13 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun dispatchResult(result: List<ProductAddon>) {
         withContext(dispatchers.main) {
+            viewState = viewState.copy(isSkeletonShown = false)
             _orderedAddons.value = result
         }
     }
+
+    @Parcelize
+    data class ViewState(
+        val isSkeletonShown: Boolean? = null
+    ) : Parcelable
 }
