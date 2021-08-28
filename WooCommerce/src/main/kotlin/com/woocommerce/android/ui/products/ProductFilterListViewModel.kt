@@ -122,10 +122,12 @@ class ProductFilterListViewModel @Inject constructor(
             val filterItem = filterListItem[selectedFilterListItemPosition]
             if (filterItem.filterItemKey == CATEGORY) {
                 launch {
+                    productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = true)
                     loadCategoriesIfEmpty()
                     val categoryOptions = productCategoriesToOptionListItems()
                     _filterOptionListItems.value = categoryOptions
                     updateCategoryFilterListItem(categoryOptions)
+                    productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = false)
                 }
             } else {
                 _filterOptionListItems.value = filterItem.filterOptionListItems
@@ -361,7 +363,8 @@ class ProductFilterListViewModel @Inject constructor(
 
     @Parcelize
     data class ProductFilterOptionListViewState(
-        val screenTitle: String? = null
+        val screenTitle: String? = null,
+        val isSkeletonShown: Boolean? = null
     ) : Parcelable
 
     /**
