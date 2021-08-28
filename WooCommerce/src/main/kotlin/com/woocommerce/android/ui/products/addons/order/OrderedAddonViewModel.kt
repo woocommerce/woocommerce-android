@@ -54,7 +54,7 @@ class OrderedAddonViewModel @Inject constructor(
                 ?.let { addonsRepository.getOrderAddonsData(orderID, orderItemID, productID) }
                 ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
                 ?.let { dispatchResult(it) }
-                ?: viewState.copy(isSkeletonShown = false).let { viewState = it }
+                ?: dispatchFailure()
         }
     }
 
@@ -102,6 +102,12 @@ class OrderedAddonViewModel @Inject constructor(
         withContext(dispatchers.main) {
             viewState = viewState.copy(isSkeletonShown = false)
             _orderedAddons.value = result
+        }
+    }
+
+    private suspend fun dispatchFailure() {
+        withContext(dispatchers.main) {
+            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 
