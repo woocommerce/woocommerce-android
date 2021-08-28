@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
@@ -12,7 +13,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductFilterOptionListBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
@@ -74,7 +77,12 @@ class ProductFilterOptionListFragment :
     ) {
         viewModel.productFilterOptionListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it, binding) }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
+                showSkeleton(it, binding)
+            }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) {
+                showLoadMoreProgress(it, binding)
+            }
         }
 
         viewModel.filterOptionListItems.observe(
@@ -103,9 +111,15 @@ class ProductFilterOptionListFragment :
                 R.layout.skeleton_product_filter_options_categories_list,
                 delayed = true
             )
+            binding.filterOptionListBtnFrame.hide()
         } else {
             skeletonView.hide()
+            binding.filterOptionListBtnFrame.show()
         }
+    }
+
+    private fun showLoadMoreProgress(show: Boolean, binding: FragmentProductFilterOptionListBinding) {
+        binding.loadMoreProgress.isVisible = show
     }
 
     private fun showProductFilterList(productFilterOptionList: List<FilterListOptionItemUiModel>) {

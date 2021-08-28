@@ -343,10 +343,12 @@ class ProductFilterListViewModel @Inject constructor(
     fun onLoadMoreCategoriesRequested() {
         if (productCategoriesRepository.canLoadMoreProductCategories) {
             launch {
+                productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = true)
                 productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
                 val categoryOptions = productCategoriesToOptionListItems()
                 _filterOptionListItems.value = categoryOptions
                 updateCategoryFilterListItem(categoryOptions)
+                productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = false)
             }
         }
     }
@@ -364,7 +366,8 @@ class ProductFilterListViewModel @Inject constructor(
     @Parcelize
     data class ProductFilterOptionListViewState(
         val screenTitle: String? = null,
-        val isSkeletonShown: Boolean? = null
+        val isSkeletonShown: Boolean? = null,
+        val isLoadingMore: Boolean? = null
     ) : Parcelable
 
     /**
