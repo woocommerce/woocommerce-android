@@ -342,7 +342,9 @@ class ProductFilterListViewModel @Inject constructor(
         if (productCategoriesRepository.canLoadMoreProductCategories) {
             launch {
                 productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
-                updateCategoryFilterListItem(productCategoriesToOptionListItems())
+                val categoryOptions = productCategoriesToOptionListItems()
+                _filterOptionListItems.value = categoryOptions
+                updateCategoryFilterListItem(categoryOptions)
             }
         }
     }
