@@ -340,15 +340,20 @@ class ProductFilterListViewModel @Inject constructor(
             )
     }
 
-    fun onLoadMoreCategoriesRequested() {
-        if (productCategoriesRepository.canLoadMoreProductCategories) {
-            launch {
-                productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = true)
-                productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
-                val categoryOptions = productCategoriesToOptionListItems()
-                _filterOptionListItems.value = categoryOptions
-                updateCategoryFilterListItem(categoryOptions)
-                productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = false)
+    fun onLoadMoreRequested(selectedFilterItemPosition: Int) {
+        _filterListItems.value?.let {
+            val filterItem = it[selectedFilterItemPosition]
+
+            // Load more is only needed for Category filter item.
+            if (filterItem.filterItemKey == CATEGORY && productCategoriesRepository.canLoadMoreProductCategories) {
+                launch {
+                    productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = true)
+                    productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
+                    val categoryOptions = productCategoriesToOptionListItems()
+                    _filterOptionListItems.value = categoryOptions
+                    updateCategoryFilterListItem(categoryOptions)
+                    productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = false)
+                }
             }
         }
     }

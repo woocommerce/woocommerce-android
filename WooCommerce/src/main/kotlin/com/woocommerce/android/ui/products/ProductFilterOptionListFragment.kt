@@ -131,7 +131,7 @@ class ProductFilterOptionListFragment :
     }
 
     override fun onRequestLoadMore() {
-        viewModel.onLoadMoreCategoriesRequested()
+        viewModel.onLoadMoreRequested(arguments.selectedFilterItemPosition)
     }
 
     override fun onDestroyView() {
