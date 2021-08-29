@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products.addons.order
 
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddon.PriceType.FlatFee
@@ -37,14 +37,19 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         val storeParametersMock = mock<SiteParameters> {
             on { currencyCode }.doReturn("currency-code")
         }
-        val savedStateMock = mock<SavedStateHandle>()
+        val savedState = OrderedAddonFragmentArgs(
+            orderId = 321,
+            orderItemId = 999,
+            addonsProductId = 123
+        ).initSavedStateHandle()
+
         val parameterRepositoryMock = mock<ParameterRepository> {
-            on { getParameters("key_product_parameters", savedStateMock) }
+            on { getParameters("key_product_parameters", savedState) }
                 .doReturn(storeParametersMock)
         }
 
         viewModelUnderTest = OrderedAddonViewModel(
-            savedStateMock,
+            savedState,
             coroutinesTestRule.testDispatchers,
             addonRepositoryMock,
             parameterRepositoryMock
