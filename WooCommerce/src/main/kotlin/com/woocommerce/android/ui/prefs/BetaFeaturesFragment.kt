@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.prefs
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -27,6 +29,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         binding.switchAddonsToggle.setOnCheckedChangeListener { _, isChecked ->
             // trigger track event
             settingsListener?.onProductAddonsOptionChanged(isChecked)
+                ?: binding.handleToggleChangeFailure(isChecked)
         }
     }
 
@@ -35,5 +38,14 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         AnalyticsTracker.trackViewShown(this)
 
         activity?.setTitle(R.string.beta_features)
+    }
+
+    private fun FragmentSettingsBetaBinding.handleToggleChangeFailure(isChecked: Boolean) {
+        switchAddonsToggle.isChecked = !isChecked
+        Snackbar.make(
+            mainView,
+            R.string.settings_enable_beta_feature_failed_snackbar_text,
+            BaseTransientBottomBar.LENGTH_LONG
+        ).show()
     }
 }
