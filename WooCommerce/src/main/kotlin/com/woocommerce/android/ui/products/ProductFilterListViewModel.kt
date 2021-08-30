@@ -88,6 +88,10 @@ class ProductFilterListViewModel @Inject constructor(
 
     private fun getFilterByProductCategory() = productFilterOptions[CATEGORY]
 
+    init {
+        arguments.selectedProductCategoryName?.let { selectedCategoryName = it }
+    }
+
     private suspend fun loadCategoriesIfEmpty() {
         if (productCategories.isEmpty()) {
             productCategories = if (networkStatus.isConnected()) {
@@ -98,12 +102,24 @@ class ProductFilterListViewModel @Inject constructor(
         }
     }
 
-    init {
-        arguments.selectedProductCategoryName?.let { selectedCategoryName = it }
+    private fun isFromProductListWithExistingCategoryFilter(): Boolean {
+        return getFilterByProductCategory() != null && selectedCategoryName != null && productCategories.isEmpty()
     }
 
     fun loadFilters() {
-        savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)?. let { selectedCategoryName = it }
+        savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)?.let { selectedCategoryName = it }
+
+        // If filter item screen is opened from product list screen, and there is existing filter by category,
+        // then we use that single category as the content of productCategories. This will help in displaying
+        // that category's name next to the "Category" name filter item.
+        if (isFromProductListWithExistingCategoryFilter()) {
+            productCategories = listOf(
+                ProductCategory(
+                    getFilterByProductCategory()!!.toLong(),
+                    selectedCategoryName!!
+                )
+            )
+        }
 
         _filterListItems.value = buildFilterListItemUiModel()
 
@@ -265,49 +281,11 @@ class ProductFilterListViewModel @Inject constructor(
         return filterListItems
     }
 
-    private fun isComingFromProductListWithExistingFilterByCategory(): Boolean {
-        return getFilterByProductCategory() != null && productCategories.isEmpty()
-    }
-
     private fun buildCategoryFilterListItemUiModel(): FilterListItemUiModel {
-        // Three different possibilities to build category options:
-        // 1. Coming from product list, and there's existing filter by category.
-        //    Here the app hasn't fetched the category list yet. To show the existing filter by category as being
-        //    selected, we use that existing category as option.
-        // 2. Coming from product list, but no existing filter by category.
-        //    Here the app also hasn't fetched the category list, so we use an empty list (will show "Any").
-        // 3. Coming from filter options screen.
-        //    Here the app already fetched the category list, so we can use that list to build the options.
-
-        val categoryOptions = when {
-            isComingFromProductListWithExistingFilterByCategory() -> {
-                listOf(
-                    FilterListOptionItemUiModel(
-                        selectedCategoryName!!,
-                        getFilterByProductCategory()!!,
-                        true
-                    )
-                )
-            }
-            productCategories.isEmpty() -> emptyList()
-            else -> {
-                productCategories.map {
-                    FilterListOptionItemUiModel(
-                        it.name,
-                        it.remoteCategoryId.toString(),
-                        isSelected = productFilterOptions[CATEGORY] == it.remoteCategoryId.toString()
-                    )
-                }
-            }
-        }
-
         return FilterListItemUiModel(
             CATEGORY,
             resourceProvider.getString(string.product_category),
-            addDefaultFilterOption(
-                categoryOptions.toMutableList(),
-                productFilterOptions[CATEGORY].isNullOrEmpty()
-            )
+            productCategoriesToOptionListItems()
         )
     }
 
