@@ -82,12 +82,8 @@ class MainActivity :
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
-        const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
         const val FIELD_REMOTE_NOTIFICATION = "remote-notification"
         const val FIELD_PUSH_ID = "local-push-id"
-        const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
-        const val FIELD_OPENED_FROM_ZENDESK = "opened-from-zendesk"
-        const val FIELD_NOTIFICATION_TYPE = "notification-type"
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -728,6 +724,7 @@ class MainActivity :
                     is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
                     is ViewReviewList -> binding.bottomNav.currentPosition = REVIEWS
                     is ViewZendeskTickets -> {
+                        binding.bottomNav.currentPosition = MY_STORE
                         startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
                     }
                     is ViewOrderDetail -> {

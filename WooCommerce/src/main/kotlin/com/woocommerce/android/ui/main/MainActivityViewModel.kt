@@ -50,7 +50,6 @@ class MainActivityViewModel @Inject constructor(
     private fun onZendeskNotificationOpened(localPushId: Int, remoteNoteId: Long) {
         notificationHandler.markNotificationTapped(remoteNoteId)
         notificationHandler.removeNotificationByPushIdFromSystemsBar(localPushId)
-        triggerEvent(ViewMyStoreStats)
         triggerEvent(ViewZendeskTickets)
     }
 
