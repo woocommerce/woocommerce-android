@@ -319,6 +319,10 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     fun onLoadMoreRequested(selectedFilterItemPosition: Int) {
+        if (!networkStatus.isConnected()) {
+            return
+        }
+
         _filterListItems.value?.let {
             val filterItem = it[selectedFilterItemPosition]
 
