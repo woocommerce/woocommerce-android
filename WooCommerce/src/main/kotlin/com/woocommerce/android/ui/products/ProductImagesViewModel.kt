@@ -186,7 +186,7 @@ class ProductImagesViewModel @Inject constructor(
 
     private fun clearImageUploadErrors() {
         // clear existing image upload errors from the backlog
-        mediaFileUploadHandler.onCleanup()
+        mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
     }
 
     fun handleImageUploadEvent(event: ProductImageUploadData) {

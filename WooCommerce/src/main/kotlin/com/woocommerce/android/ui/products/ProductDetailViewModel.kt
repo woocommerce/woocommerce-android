@@ -581,7 +581,7 @@ class ProductDetailViewModel @Inject constructor(
                 ShowDialog.buildDiscardDialogEvent(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
+                        mediaFileUploadHandler.cancelUpload(getRemoteProductId())
                         triggerEvent(ExitProduct)
                     }
                 )

@@ -159,6 +159,7 @@ class VariationDetailViewModel @Inject constructor(
                     ShowDialog.buildDiscardDialogEvent(
                         messageId = string.discard_images_message,
                         positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                            mediaFileUploadHandler.cancelUpload(navArgs.remoteVariationId)
                             triggerEvent(Exit)
                         }
                     )

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.media
 import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploadFailed
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -35,8 +36,10 @@ class MediaFileUploadHandler @Inject constructor(
         events
             .onEach { event ->
                 val statusList = uploadsStatus.value.toMutableList()
-                val index =
-                    statusList.indexOfFirst { it.remoteProductId == event.remoteProductId && it.localUri == event.localUri }
+                val index = statusList.indexOfFirst {
+                    it.remoteProductId == event.remoteProductId && it.localUri == event.localUri
+                }
+                if (index == -1) return@onEach
                 statusList[index] = event
                 uploadsStatus.value = statusList
             }
@@ -55,6 +58,19 @@ class MediaFileUploadHandler @Inject constructor(
         productImagesServiceWrapper.uploadProductMedia(remoteProductId, ArrayList(uris))
     }
 
+    fun cancelUpload(remoteProductId: Long) {
+        uploadsStatus.value = uploadsStatus.value.filterNot { it.remoteProductId == remoteProductId }
+
+        // TODO update the service to cancel upload per product
+        ProductImagesService.cancel()
+    }
+
+    fun clearImageErrors(remoteProductId: Long) {
+        uploadsStatus.value = uploadsStatus.value.filterNot {
+            it.remoteProductId == remoteProductId && it.uploadStatus is Failed
+        }
+    }
+
     fun observeCurrentUploadErrors(remoteProductId: Long): Flow<List<ProductImageUploadData>> =
         uploadsStatus.map { list ->
             list.filter { it.remoteProductId == remoteProductId && it.uploadStatus is Failed }
@@ -70,10 +86,6 @@ class MediaFileUploadHandler @Inject constructor(
 
     fun observeUploadEvents(remoteProductId: Long): Flow<ProductImageUploadData> {
         return events.filter { it.remoteProductId == remoteProductId }
-    }
-
-    fun onCleanup() {
-        uploadsStatus.value = emptyList()
     }
 
     fun getMediaUploadErrorMessage(remoteProductId: Long): String {
