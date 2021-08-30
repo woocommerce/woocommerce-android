@@ -6,17 +6,6 @@
     android:background="?attr/colorSurface">
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-        android:id="@+id/switchProductsUI"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:toggleOptionDesc="@string/settings_enable_product_adding_teaser_message"
-        app:toggleOptionTitle="@string/settings_enable_product_adding_teaser_title" />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchAddonsToggle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
