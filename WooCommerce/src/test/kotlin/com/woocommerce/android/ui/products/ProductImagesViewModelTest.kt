@@ -11,6 +11,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
@@ -24,6 +25,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     private val networkStatus: NetworkStatus = mock()
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     private fun savedState(productImages: List<Image>) = ProductImagesFragmentArgs(
         remoteId = 0,
@@ -37,6 +39,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel = ProductImagesViewModel(
             networkStatus,
             mediaFileUploadHandler,
+            resourceProvider,
             savedState(productImages)
         ).apply {
             viewStateData.observeForever { _, _ -> }
