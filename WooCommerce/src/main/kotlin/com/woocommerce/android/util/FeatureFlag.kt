@@ -21,8 +21,8 @@ enum class FeatureFlag {
             ORDER_CREATION -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
             CARD_READER -> CardPresentEligibleFeatureChecker.isCardPresentEligible
             PRODUCT_ADD_ONS ->
-                (PackageUtils.isDebugBuild() || PackageUtils.isTesting())
-                    && AppPrefs.isProductAddonsEnabled
+                (PackageUtils.isDebugBuild() || PackageUtils.isTesting()) &&
+                    AppPrefs.isProductAddonsEnabled
         }
     }
 }
