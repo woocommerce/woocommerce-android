@@ -26,7 +26,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         binding.switchAddonsToggle.isChecked = AppPrefs.isProductAddonsEnabled
         binding.switchAddonsToggle.setOnCheckedChangeListener { _, isChecked ->
             // trigger track event
-            settingsListener?.onProductsFeatureOptionChanged(isChecked)
+            settingsListener?.onProductAddonsOptionChanged(isChecked)
         }
     }
 

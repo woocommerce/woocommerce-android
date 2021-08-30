@@ -63,7 +63,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onSiteChanged()
-        fun onProductsFeatureOptionChanged(enabled: Boolean)
+        fun onProductAddonsOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
