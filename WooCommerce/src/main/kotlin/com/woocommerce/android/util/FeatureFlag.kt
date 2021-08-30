@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 
 /**
@@ -17,8 +18,11 @@ enum class FeatureFlag {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
-            ORDER_CREATION, PRODUCT_ADD_ONS -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
+            ORDER_CREATION -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
             CARD_READER -> CardPresentEligibleFeatureChecker.isCardPresentEligible
+            PRODUCT_ADD_ONS ->
+                (PackageUtils.isDebugBuild() || PackageUtils.isTesting())
+                    && AppPrefs.isProductAddonsEnabled
         }
     }
 }
