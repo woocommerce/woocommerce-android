@@ -1,0 +1,4 @@
+7.3 :
+Les marchands utilisant l’extension WooCommerce Shipping & Tax seront ravis de découvrir deux améliorations que nous avons apportées. Vous pouvez créer des colis personnalisés lors de la création d’une étiquette. Vous pouvez également créer plusieurs étiquettes d’expédition pour une seule commande !
+
+Cette amélioration et d’autres plus petites ont été apportées pour rendre votre expérience plus fluide. Nous espérons que vous remarquerez tout l’amour que nous mettons dans notre logiciel.

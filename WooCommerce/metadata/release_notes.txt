@@ -1,3 +1,3 @@
-Merchants using the WooCommerce Shipping & Tax Extension will be happy to hear of two improvements we’ve made. You can create custom packages when creating a label. You can also create multiple shipping labels for a single order!
+Product reviews requiring your approval have a new label to make it easier for you to distinguish them from already approved reviews.
 
-This and many other tiny improvements were made to make your experience smoother. We hope you notice the love we put into our software.
+This update also includes several enhancements to the shipping label feature using the WooCommerce Shipping & Tax Extension. We value all of your feedback on this newer feature!

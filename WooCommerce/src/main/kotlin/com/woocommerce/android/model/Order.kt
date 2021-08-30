@@ -46,6 +46,7 @@ data class Order(
     val refundTotal: BigDecimal,
     val feesTotal: BigDecimal,
     val currency: String,
+    val orderKey: String,
     val customerNote: String,
     val discountCodes: String,
     val paymentMethod: String,
@@ -277,6 +278,7 @@ fun WCOrderModel.toAppModel(): Order {
         feesTotal = this.getFeeLineList()
             .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
         currency = this.currency,
+        orderKey = this.orderKey,
         customerNote = this.customerNote,
         discountCodes = this.discountCodes,
         paymentMethod = this.paymentMethod,

@@ -4,7 +4,7 @@ sealed class CardPaymentStatus {
     object InitializingPayment : CardPaymentStatus()
     object CollectingPayment : CardPaymentStatus()
     object WaitingForInput : CardPaymentStatus()
-    object ShowAdditionalInfo : CardPaymentStatus()
+    data class ShowAdditionalInfo(val type: AdditionalInfoType) : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
     object CapturingPayment : CardPaymentStatus()
     data class PaymentCompleted(val receiptUrl: String) : CardPaymentStatus()
@@ -21,6 +21,17 @@ sealed class CardPaymentStatus {
         SERVER_ERROR,
         PAYMENT_DECLINED,
         GENERIC_ERROR
+    }
+
+    enum class AdditionalInfoType {
+        RETRY_CARD,
+        INSERT_CARD,
+        INSERT_OR_SWIPE_CARD,
+        SWIPE_CARD,
+        REMOVE_CARD,
+        MULTIPLE_CONTACTLESS_CARDS_DETECTED,
+        TRY_ANOTHER_READ_METHOD,
+        TRY_ANOTHER_CARD;
     }
 }
 

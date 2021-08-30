@@ -1,2 +1,0 @@
-7.2:
-Esta vez nuestra prioridad ha sido hacer el producto más estable y fiable para ti. Se han localizado y resuelto varios errores, incluido uno por el que la lista de productos aparecía vacía a veces cuando un producto tenía un valor inesperado en las ventas totales. Gracias por estar al tanto de las novedades. Si tienes algún comentario, ¡habla con nosotros!
