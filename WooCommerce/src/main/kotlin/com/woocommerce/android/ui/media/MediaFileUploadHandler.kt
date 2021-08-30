@@ -125,11 +125,15 @@ class MediaFileUploadHandler @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImageUploadFailed) {
         val productId = event.media.postId
+        val errorMessage = event.error.message
+            ?: event.error.logMessage
+            ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
+
         events.tryEmit(
             ProductImageUploadData(
                 remoteProductId = productId,
                 localUri = event.localUri,
-                uploadStatus = Failed(event.media, event.error.type, event.error.message)
+                uploadStatus = Failed(event.media, event.error.type, errorMessage)
             )
         )
     }

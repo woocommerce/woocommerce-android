@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,10 +39,9 @@ class ProductFilterOptionListFragment :
         mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this)
         with(binding.filterOptionList) {
             addItemDecoration(
-                AlignedDividerDecoration(
+                DividerItemDecoration(
                     requireActivity(),
-                    DividerItemDecoration.VERTICAL,
-                    alignStartToStartOf = R.id.filterOptionItem_name
+                    DividerItemDecoration.VERTICAL
                 )
             )
             layoutManager = LinearLayoutManager(activity)
