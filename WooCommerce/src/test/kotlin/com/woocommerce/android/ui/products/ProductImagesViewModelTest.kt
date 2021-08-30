@@ -26,8 +26,6 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
-
     private fun savedState(productImages: List<Image>) = ProductImagesFragmentArgs(
         remoteId = 0,
         images = productImages.toTypedArray(),
@@ -39,7 +37,6 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     private fun initialize(productImages: List<Image> = generateProductImagesList()) {
         viewModel = ProductImagesViewModel(
             networkStatus,
-            productImagesServiceWrapper,
             mediaFileUploadHandler,
             savedState(productImages)
         ).apply {
