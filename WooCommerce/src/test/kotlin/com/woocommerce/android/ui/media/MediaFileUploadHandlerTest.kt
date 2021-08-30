@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.media
 
+import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
@@ -17,17 +21,18 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     }
 
     private val resources: ResourceProvider = mock()
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val testMediaModel = ProductTestUtils.generateProductMedia(REMOTE_PRODUCT_ID, REMOTE_SITE_ID)
     private val testMediaModelError = ProductTestUtils.generateMediaUploadErrorModel()
     private lateinit var mediaFileUploadHandler: MediaFileUploadHandler
 
-//    @Before
-//    fun setup() {
-//        mediaFileUploadHandler = spy(MediaFileUploadHandler(resources))
-//    }
-//
-//    @Test
-//    fun `Handles product image upload error correctly`() {
+    @Before
+    fun setup() {
+        mediaFileUploadHandler = spy(MediaFileUploadHandler(resources, productImagesServiceWrapper))
+    }
+
+    @Test
+    fun `Handles product image upload error correctly`() {
 //        assertThat(mediaFileUploadHandler.getMediaUploadErrorCount(testMediaModel.postId)).isEqualTo(0)
 //
 //        mediaFileUploadHandler.handleMediaUploadFailure(testMediaModel, testMediaModelError)
@@ -35,5 +40,5 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
 //        assertThat(mediaFileUploadHandler.getMediaUploadErrorMessage(testMediaModel.postId)).isEqualTo(
 //            resources.getString(R.string.product_image_service_error_uploading_single)
 //        )
-//    }
+    }
 }
