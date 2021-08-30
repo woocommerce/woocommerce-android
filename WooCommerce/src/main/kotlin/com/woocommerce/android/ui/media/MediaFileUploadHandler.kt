@@ -9,6 +9,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.InProgress
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.GlobalScope
@@ -40,7 +41,12 @@ class MediaFileUploadHandler @Inject constructor(
                     it.remoteProductId == event.remoteProductId && it.localUri == event.localUri
                 }
                 if (index == -1) return@onEach
-                statusList[index] = event
+
+                if (event.uploadStatus is UploadSuccess) {
+                    statusList.removeAt(index)
+                } else {
+                    statusList[index] = event
+                }
                 uploadsStatus.value = statusList
             }
             .launchIn(GlobalScope)
@@ -84,22 +90,9 @@ class MediaFileUploadHandler @Inject constructor(
             }
     }
 
-    fun observeUploadEvents(remoteProductId: Long): Flow<ProductImageUploadData> {
-        return events.filter { it.remoteProductId == remoteProductId }
-    }
-
-    fun getMediaUploadErrorMessage(remoteProductId: Long): String {
-        val errorsCount = uploadsStatus.value
-            .filter { it.remoteProductId == remoteProductId && it.uploadStatus is Failed }
-            .size
-
-        return StringUtils.getQuantityString(
-            resourceProvider = resourceProvider,
-            quantity = errorsCount,
-            default = R.string.product_image_service_error_uploading_multiple,
-            one = R.string.product_image_service_error_uploading_single,
-            zero = R.string.product_image_service_error_uploading
-        )
+    fun observeSuccessfulUploads(remoteProductId: Long): Flow<MediaModel> {
+        return events.filter { it.remoteProductId == remoteProductId && it.uploadStatus is UploadSuccess }
+            .map { (it.uploadStatus as UploadSuccess).media }
     }
 
     /**
@@ -159,4 +152,14 @@ class MediaFileUploadHandler @Inject constructor(
         @Parcelize
         data class UploadSuccess(val media: MediaModel) : UploadStatus()
     }
+}
+
+fun ResourceProvider.getMediaUploadErrorMessage(errorsCount: Int): String {
+    return StringUtils.getQuantityString(
+        resourceProvider = this,
+        quantity = errorsCount,
+        default = R.string.product_image_service_error_uploading_multiple,
+        one = R.string.product_image_service_error_uploading_single,
+        zero = R.string.product_image_service_error_uploading
+    )
 }

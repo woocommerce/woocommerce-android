@@ -21,9 +21,7 @@ import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
+import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -39,6 +37,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -111,14 +110,8 @@ class VariationDetailViewModel @Inject constructor(
         originalVariation?.let {
             showVariation(it.copy())
         }
-        mediaFileUploadHandler.observeCurrentUploads(navArgs.remoteVariationId)
-            .onEach {
-                viewState = viewState.copy(uploadingImageUri = it.firstOrNull(), isDoneButtonEnabled = it.isEmpty())
-            }
-            .launchIn(this)
-        mediaFileUploadHandler.observeUploadEvents(navArgs.remoteVariationId)
-            .onEach { handleImageUploadEvent(it) }
-            .launchIn(this)
+
+        observeImageUploadEvents()
     }
 
     /**
@@ -382,24 +375,31 @@ class VariationDetailViewModel @Inject constructor(
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.variation?.shippingClass ?: ""
 
-    private fun handleImageUploadEvent(event: ProductImageUploadData) {
-        when (event.uploadStatus) {
-            is UploadSuccess -> {
+    private fun observeImageUploadEvents() {
+        mediaFileUploadHandler.observeCurrentUploads(navArgs.remoteVariationId)
+            .onEach {
+                viewState = viewState.copy(uploadingImageUri = it.firstOrNull(), isDoneButtonEnabled = it.isEmpty())
+            }
+            .launchIn(this)
+
+        mediaFileUploadHandler.observeSuccessfulUploads(navArgs.remoteVariationId)
+            .onEach { media ->
                 viewState.variation?.let {
-                    val variation = it.copy(image = event.uploadStatus.media.toAppModel())
+                    val variation = it.copy(image = media.toAppModel())
                     showVariation(variation)
                 }
             }
-            is Failed -> {
-                val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteVariationId)
+            .launchIn(this)
+
+        mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteVariationId)
+            .filter { it.isNotEmpty() }
+            .onEach {
+                val errorMsg = resources.getMediaUploadErrorMessage(it.size)
                 triggerEvent(
                     ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) }
                 )
             }
-            else -> {
-                // No OP
-            }
-        }
+            .launchIn(this)
     }
 
     @Parcelize

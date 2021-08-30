@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
+import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.*
 import com.woocommerce.android.ui.products.ProductNavigationTarget.*
@@ -46,6 +47,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -236,12 +238,7 @@ class ProductDetailViewModel @Inject constructor(
             true -> startAddNewProduct()
             else -> loadRemoteProduct(navArgs.remoteProductId)
         }
-        mediaFileUploadHandler.observeCurrentUploads(getRemoteProductId())
-            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
-            .launchIn(this)
-        mediaFileUploadHandler.observeUploadEvents(getRemoteProductId())
-            .onEach { handleImageUploadEvent(it) }
-            .launchIn(this)
+        observeImageUploadEvents()
     }
 
     private fun startAddNewProduct() {
@@ -944,6 +941,9 @@ class ProductDetailViewModel @Inject constructor(
         viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
         _addedProductTags.clearList()
 
+        // Make sure to cancel any remaining image uploads
+        mediaFileUploadHandler.cancelUpload(getRemoteProductId())
+
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
         updateProductEditAction()
@@ -1550,19 +1550,24 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun handleImageUploadEvent(event: ProductImageUploadData) {
-        when (event.uploadStatus) {
-            is UploadSuccess -> addProductImageToDraft(event.uploadStatus.media.toAppModel())
-            is Failed -> {
-                val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(getRemoteProductId())
+    private fun observeImageUploadEvents() {
+        mediaFileUploadHandler.observeCurrentUploads(getRemoteProductId())
+            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+            .launchIn(this)
+
+        mediaFileUploadHandler.observeSuccessfulUploads(getRemoteProductId())
+            .onEach { addProductImageToDraft(it.toAppModel()) }
+            .launchIn(this)
+
+        mediaFileUploadHandler.observeCurrentUploadErrors(getRemoteProductId())
+            .filter { it.isNotEmpty() }
+            .onEach {
+                val errorMsg = resources.getMediaUploadErrorMessage(it.size)
                 triggerEvent(
                     ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }
                 )
             }
-            else -> {
-                // No OP
-            }
-        }
+            .launchIn(this)
     }
 
     /**

@@ -15,9 +15,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
+import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
@@ -28,9 +26,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
@@ -40,6 +40,7 @@ import javax.inject.Inject
 class ProductImagesViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
+    private val resourceProvider: ResourceProvider,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
@@ -78,12 +79,7 @@ class ProductImagesViewModel @Inject constructor(
             triggerEvent(ShowImageDetail(navArgs.selectedImage!!, true))
         }
 
-        mediaFileUploadHandler.observeCurrentUploads(navArgs.remoteId)
-            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
-            .launchIn(this)
-        mediaFileUploadHandler.observeUploadEvents(navArgs.remoteId)
-            .onEach { handleImageUploadEvent(it) }
-            .launchIn(this)
+        observeImageUploadEvents()
     }
 
     fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
@@ -189,23 +185,31 @@ class ProductImagesViewModel @Inject constructor(
         mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
     }
 
-    fun handleImageUploadEvent(event: ProductImageUploadData) {
-        when (event.uploadStatus) {
-            is Failed -> {
-                val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteId)
-                triggerEvent(ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(navArgs.remoteId)) })
-            }
-            is UploadSuccess -> {
+    private fun observeImageUploadEvents() {
+        val remoteProductId = navArgs.remoteId
+        mediaFileUploadHandler.observeCurrentUploads(remoteProductId)
+            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+            .launchIn(this)
+
+        mediaFileUploadHandler.observeSuccessfulUploads(remoteProductId)
+            .onEach { media ->
                 viewState = if (isMultiSelectionAllowed) {
-                    viewState.copy(images = images + event.uploadStatus.media.toAppModel())
+                    viewState.copy(images = images + media.toAppModel())
                 } else {
-                    viewState.copy(images = listOf(event.uploadStatus.media.toAppModel()))
+                    viewState.copy(images = listOf(media.toAppModel()))
                 }
             }
-            else -> {
-                // No OP
+            .launchIn(this)
+
+        mediaFileUploadHandler.observeCurrentUploadErrors(remoteProductId)
+            .filter { it.isNotEmpty() }
+            .onEach {
+                val errorMsg = resourceProvider.getMediaUploadErrorMessage(it.size)
+                triggerEvent(
+                    ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(remoteProductId)) }
+                )
             }
-        }
+            .launchIn(this)
     }
 
     fun onGalleryImageDragStarted() {
