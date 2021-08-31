@@ -44,7 +44,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -522,7 +521,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onBackButtonClickedProductDetail(): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated ?: false
-        val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
+        val isUploadingImages = viewState.uploadingImageUris?.isNotEmpty() == true
 
         if (isProductDetailUpdated) {
             val positiveAction = DialogInterface.OnClickListener { _, _ ->
@@ -552,18 +551,8 @@ class ProductDetailViewModel @Inject constructor(
             )
             return false
         } else if (isUploadingImages) {
-            // images can't be assigned to the product until they finish uploading so ask whether
-            // to discard the uploading images
-            triggerEvent(
-                ShowDialog.buildDiscardDialogEvent(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        mediaFileUploadHandler.cancelUpload(getRemoteProductId())
-                        triggerEvent(ExitProduct)
-                    }
-                )
-            )
-            return false
+            // TODO check if we need a SnackBar to let users know about background image upload
+            return true
         } else {
             return true
         }
