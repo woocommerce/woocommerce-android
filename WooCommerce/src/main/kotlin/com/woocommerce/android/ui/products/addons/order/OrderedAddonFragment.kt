@@ -14,6 +14,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_DISMISSED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_GIVEN
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_ADDONS_FEEDBACK
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -118,7 +123,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun onGiveFeedbackClicked() {
-        // should send track event
+        trackFeedback(VALUE_FEEDBACK_GIVEN)
 
         FeatureFeedbackSettings(
             CURRENT_WIP_NOTICE_FEATURE.name,
@@ -131,7 +136,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun onDismissWIPCardClicked() {
-        // should send track event
+        trackFeedback(VALUE_FEEDBACK_DISMISSED)
 
         FeatureFeedbackSettings(
             CURRENT_WIP_NOTICE_FEATURE.name,
@@ -139,5 +144,15 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         ).registerItselfWith(TAG)
 
         showWIPNoticeCard(false)
+    }
+
+    private fun trackFeedback(feedbackAction: String) {
+        AnalyticsTracker.track(
+            FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to VALUE_PRODUCT_ADDONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to feedbackAction
+            )
+        )
     }
 }
