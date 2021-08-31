@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
@@ -12,7 +13,6 @@ import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.util.FeatureFlag.PRODUCT_ADD_ONS
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
@@ -55,7 +55,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
 
         onViewAddonsClick?.let {
             binding.productInfoAddons.visibility =
-                if (item.containsAddons && PRODUCT_ADD_ONS.isEnabled()) VISIBLE
+                if (item.containsAddons && AppPrefs.isProductAddonsEnabled) VISIBLE
                 else GONE
             binding.productInfoAddons.setOnClickListener {
                 AnalyticsTracker.track(PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
