@@ -34,6 +34,8 @@ class MediaFileUploadHandler @Inject constructor(
 
     private val events = MutableSharedFlow<ProductImageUploadData>(extraBufferCapacity = Int.MAX_VALUE)
 
+    private val externalObservers = mutableSetOf<Long>()
+
     init {
         EventBus.getDefault().register(this)
         events
@@ -93,7 +95,10 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     fun observeSuccessfulUploads(remoteProductId: Long): Flow<MediaModel> {
-        return events.filter { it.remoteProductId == remoteProductId && it.uploadStatus is UploadSuccess }
+        return events
+            .onSubscription { externalObservers.add(remoteProductId) }
+            .onCompletion { externalObservers.remove(remoteProductId) }
+            .filter { it.remoteProductId == remoteProductId && it.uploadStatus is UploadSuccess }
             .map { (it.uploadStatus as UploadSuccess).media }
     }
 
