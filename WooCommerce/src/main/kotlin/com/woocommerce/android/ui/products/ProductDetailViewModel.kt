@@ -19,9 +19,6 @@ import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.*
@@ -58,23 +55,6 @@ import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.distinct
-import kotlin.collections.emptyList
-import kotlin.collections.filter
-import kotlin.collections.filterNot
-import kotlin.collections.firstOrNull
-import kotlin.collections.forEach
-import kotlin.collections.indexOfFirst
-import kotlin.collections.isNotEmpty
-import kotlin.collections.map
-import kotlin.collections.mapOf
-import kotlin.collections.minus
-import kotlin.collections.mutableListOf
-import kotlin.collections.plus
-import kotlin.collections.toList
-import kotlin.collections.toMutableList
 
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
