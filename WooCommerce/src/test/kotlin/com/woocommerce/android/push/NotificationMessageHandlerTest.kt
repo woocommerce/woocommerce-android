@@ -228,7 +228,7 @@ class NotificationMessageHandlerTest {
     @Test
     fun `display zendesk notification details correctly`() {
         val notificationPayload = mapOf("type" to "zendesk")
-        val zendeskNote = NotificationModel(noteId = 1999999999).toAppModel(resourceProvider)
+        val zendeskNote = NotificationModel(noteId = 1999999999, remoteNoteId = 1999999999).toAppModel(resourceProvider)
 
         notificationMessageHandler.onNewMessageReceived(notificationPayload)
 
