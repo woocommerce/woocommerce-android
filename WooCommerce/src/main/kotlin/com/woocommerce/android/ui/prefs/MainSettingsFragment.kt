@@ -161,7 +161,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_adding_teaser_title)
+        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_addons_teaser_title)
 
         binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
