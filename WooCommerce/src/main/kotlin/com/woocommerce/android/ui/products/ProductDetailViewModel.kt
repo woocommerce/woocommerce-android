@@ -1540,7 +1540,6 @@ class ProductDetailViewModel @Inject constructor(
             .launchIn(this)
 
         mediaFileUploadHandler.observeCurrentUploadErrors(getRemoteProductId())
-            .filter { it.isNotEmpty() }
             .onEach {
                 val errorMsg = resources.getMediaUploadErrorMessage(it.size)
                 triggerEvent(

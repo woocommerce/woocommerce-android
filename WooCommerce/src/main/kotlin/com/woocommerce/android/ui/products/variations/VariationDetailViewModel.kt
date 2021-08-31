@@ -392,7 +392,6 @@ class VariationDetailViewModel @Inject constructor(
             .launchIn(this)
 
         mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteVariationId)
-            .filter { it.isNotEmpty() }
             .onEach {
                 val errorMsg = resources.getMediaUploadErrorMessage(it.size)
                 triggerEvent(

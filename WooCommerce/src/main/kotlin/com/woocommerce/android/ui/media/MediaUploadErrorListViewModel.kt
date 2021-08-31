@@ -29,10 +29,16 @@ class MediaUploadErrorListViewModel @Inject constructor(
     init {
         mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteId)
             .onEach { errors ->
+                val currentErrors = viewState.uploadErrorList + errors.map { ErrorUiModel(it.uploadStatus as Failed) }
                 viewState = viewState.copy(
-                    uploadErrorList = errors.map { ErrorUiModel(it.uploadStatus as Failed) },
-                    toolBarTitle = resourceProvider.getString(R.string.product_images_error_detail_title, errors.size)
+                    uploadErrorList = currentErrors,
+                    toolBarTitle = resourceProvider.getString(
+                        R.string.product_images_error_detail_title,
+                        currentErrors.size
+                    )
                 )
+                // Remove errors from mediaFileUploadHandler to avoid duplicate notifications
+                mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
             }
             .launchIn(this)
     }
