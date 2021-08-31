@@ -8,8 +8,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
+import com.woocommerce.android.util.AnalyticsUtils
 
 class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
@@ -27,7 +29,14 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
         binding.switchAddonsToggle.isChecked = AppPrefs.isProductAddonsEnabled
         binding.switchAddonsToggle.setOnCheckedChangeListener { _, isChecked ->
-            // trigger track event
+            AnalyticsTracker.track(
+                PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED,
+                mapOf(
+                    AnalyticsTracker.KEY_STATE to
+                        AnalyticsUtils.getToggleStateLabel(binding.switchAddonsToggle.isChecked)
+                )
+            )
+
             settingsListener?.onProductAddonsOptionChanged(isChecked)
                 ?: binding.handleToggleChangeFailure(isChecked)
         }
