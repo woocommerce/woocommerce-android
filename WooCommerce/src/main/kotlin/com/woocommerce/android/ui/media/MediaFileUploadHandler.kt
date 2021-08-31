@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.media
 import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploadFailed
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
@@ -12,7 +13,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.InPr
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -26,7 +27,8 @@ import javax.inject.Singleton
 @Singleton
 class MediaFileUploadHandler @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
 
@@ -49,7 +51,7 @@ class MediaFileUploadHandler @Inject constructor(
                 }
                 uploadsStatus.value = statusList
             }
-            .launchIn(GlobalScope)
+            .launchIn(appCoroutineScope)
     }
 
     fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
