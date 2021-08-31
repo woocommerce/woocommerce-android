@@ -1,9 +1,9 @@
 package com.woocommerce.android.model
 
+import com.woocommerce.android.model.ProductAddon.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel
 
 internal class ProductAddonTest {
     private lateinit var addonUnderTest: ProductAddon
@@ -11,7 +11,7 @@ internal class ProductAddonTest {
     private val addonPriceFake = "test-price"
     private val rawOptionsFake = listOf(
         ProductAddonOption(
-            priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
+            priceType = PriceType.FlatFee,
             label = "test-option-label",
             price = "test-option-price",
             image = "test-option-image"
@@ -28,12 +28,12 @@ internal class ProductAddonTest {
             max = 0,
             min = 0,
             position = 0,
-            adjustPrice = 0,
-            titleFormat = WCProductAddonModel.AddOnTitleFormat.Label,
-            restrictionsType = WCProductAddonModel.AddOnRestrictionsType.OnlyLettersNumbers,
-            priceType = WCProductAddonModel.AddOnPriceType.FlatFee,
-            type = WCProductAddonModel.AddOnType.CustomPrice,
-            display = WCProductAddonModel.AddOnDisplay.RadioButton,
+            adjustPrice = false,
+            titleFormat = TitleFormat.Label,
+            restrictionsType = Restrictions.OnlyLettersNumbers,
+            priceType = PriceType.FlatFee,
+            type = Type.CustomPrice,
+            display = Display.RadioButton,
             price = addonPriceFake,
             rawOptions = rawOptionsFake
         )
