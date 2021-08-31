@@ -24,7 +24,7 @@ class BluetoothReaderListenerImplTest {
         listener.onFinishInstallingUpdate(mock(), exception)
 
         // THEN
-        assertThat(listener.events.value).isEqualTo(SoftwareUpdateStatus.Failed(expectedMessage))
+        assertThat(listener.updateStatusEvents.value).isEqualTo(SoftwareUpdateStatus.Failed(expectedMessage))
     }
 
     @Test
@@ -33,7 +33,16 @@ class BluetoothReaderListenerImplTest {
         listener.onFinishInstallingUpdate(mock(), null)
 
         // THEN
-        assertThat(listener.events.value).isEqualTo(SoftwareUpdateStatus.Success)
+        assertThat(listener.updateStatusEvents.value).isEqualTo(SoftwareUpdateStatus.Success)
+    }
+
+    @Test
+    fun `when finishes installing update without error, then update available emitted`() {
+        // WHEN
+        listener.onFinishInstallingUpdate(mock(), null)
+
+        // THEN
+        assertThat(listener.updateAvailabilityEvents.value).isEqualTo(SoftwareUpdateAvailability.NotAvailable)
     }
 
     @Test
@@ -42,11 +51,11 @@ class BluetoothReaderListenerImplTest {
         listener.onReportAvailableUpdate(mock())
 
         // THEN
-        assertThat(listener.events.value).isEqualTo(SoftwareUpdateAvailability.Available)
+        assertThat(listener.updateAvailabilityEvents.value).isEqualTo(SoftwareUpdateAvailability.Available)
     }
 
     @Test
-    fun `when on report reader update prgoress called, then installing emitted`() {
+    fun `when on report reader update progress called, then installing emitted`() {
         // GIVEN
         val progress = 0.3f
 
@@ -54,7 +63,7 @@ class BluetoothReaderListenerImplTest {
         listener.onReportReaderSoftwareUpdateProgress(progress)
 
         // THEN
-        assertThat(listener.events.value).isEqualTo(SoftwareUpdateStatus.Installing(progress))
+        assertThat(listener.updateStatusEvents.value).isEqualTo(SoftwareUpdateStatus.Installing(progress))
     }
 
     @Test
@@ -63,6 +72,6 @@ class BluetoothReaderListenerImplTest {
         listener.onStartInstallingUpdate(mock(), mock())
 
         // THEN
-        assertThat(listener.events.value).isEqualTo(SoftwareUpdateStatus.InstallationStarted)
+        assertThat(listener.updateStatusEvents.value).isEqualTo(SoftwareUpdateStatus.InstallationStarted)
     }
 }

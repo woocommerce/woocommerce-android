@@ -26,11 +26,11 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onFinishInstallingUpdate(update: ReaderSoftwareUpdate?, e: TerminalException?) {
         logWrapper.d(LOG_TAG, "onFinishInstallingUpdate: $update $e")
-        _updateStatusEvents.value = if (e == null) {
+        if (e == null) {
             _updateAvailabilityEvents.value = SoftwareUpdateAvailability.NotAvailable
-            SoftwareUpdateStatus.Success
+            _updateStatusEvents.value = SoftwareUpdateStatus.Success
         } else {
-            SoftwareUpdateStatus.Failed(e.message)
+            _updateStatusEvents.value = SoftwareUpdateStatus.Failed(e.message)
         }
     }
 
