@@ -14,7 +14,6 @@ import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.RUNTIME
 
-
 @InstallIn(SingletonComponent::class)
 @Module(
     includes = [

@@ -84,7 +84,6 @@ class MediaFileUploadHandler @Inject constructor(
             list.filter { it.remoteProductId == remoteProductId && it.uploadStatus is Failed }
         }.filter { it.isNotEmpty() }
 
-
     fun observeCurrentUploads(remoteProductId: Long): Flow<List<Uri>> {
         return uploadsStatus
             .map { list ->

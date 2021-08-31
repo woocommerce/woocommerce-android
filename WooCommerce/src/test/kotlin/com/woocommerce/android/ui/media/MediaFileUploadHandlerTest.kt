@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +29,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        mediaFileUploadHandler = spy(MediaFileUploadHandler(resources, productImagesServiceWrapper))
+        mediaFileUploadHandler = spy(MediaFileUploadHandler(resources, productImagesServiceWrapper, GlobalScope))
     }
 
     @Test
