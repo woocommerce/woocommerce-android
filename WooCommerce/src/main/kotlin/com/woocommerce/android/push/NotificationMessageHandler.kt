@@ -71,7 +71,10 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         if (messageData["type"] == PUSH_TYPE_ZENDESK) {
-            val zendeskNote = NotificationModel(noteId = ZENDESK_PUSH_NOTIFICATION_ID).toAppModel(resourceProvider)
+            val zendeskNote = NotificationModel(
+                noteId = ZENDESK_PUSH_NOTIFICATION_ID,
+                remoteNoteId = ZENDESK_PUSH_NOTIFICATION_ID.toLong()
+            ).toAppModel(resourceProvider)
             notificationBuilder.buildAndDisplayZendeskNotification(
                 channelId = resourceProvider.getString(zendeskNote.channelType.getChannelId()),
                 notification = zendeskNote
