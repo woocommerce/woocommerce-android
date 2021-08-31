@@ -3,7 +3,6 @@
 7.5
 -----
 - [***] Merchants using WooCommerce Product Add-ons in their store can view Add-on information at Orders and Products views [https://github.com/woocommerce/woocommerce-android/pull/4689]
-- [***] Merchants using WooCommerce Product Add-ons in their store can view Add-on information at Orders and Products [https://github.com/woocommerce/woocommerce-android/pull/4689]
 
 7.4
 -----
