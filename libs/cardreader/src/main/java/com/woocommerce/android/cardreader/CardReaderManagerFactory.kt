@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction
+import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
@@ -33,7 +34,8 @@ object CardReaderManagerFactory {
                 ProcessPaymentAction(terminal, logWrapper),
                 CancelPaymentAction(terminal),
                 PaymentUtils(),
-                PaymentErrorMapper()
+                PaymentErrorMapper(),
+                AdditionalInfoMapper()
             ),
             ConnectionManager(terminal, logWrapper, DiscoverReadersAction(terminal)),
             SoftwareUpdateManager(

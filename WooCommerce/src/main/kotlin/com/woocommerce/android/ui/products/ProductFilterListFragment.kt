@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterList
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -53,10 +52,9 @@ class ProductFilterListFragment :
         productFilterListAdapter = ProductFilterListAdapter(this)
         with(binding.filterList) {
             addItemDecoration(
-                AlignedDividerDecoration(
+                DividerItemDecoration(
                     requireActivity(),
-                    DividerItemDecoration.VERTICAL,
-                    alignStartToStartOf = R.id.filterItemName
+                    DividerItemDecoration.VERTICAL
                 )
             )
             layoutManager = LinearLayoutManager(activity)

@@ -167,11 +167,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
     @Test
     fun `incoming new zendesk notification to open zendesk tickets`() {
-        var event1: ViewMyStoreStats? = null
-        var event2: ViewZendeskTickets? = null
+        var event1: ViewZendeskTickets? = null
         viewModel.event.observeForever {
-            if (it is ViewMyStoreStats) event1 = it
-            else if (it is ViewZendeskTickets) event2 = it
+            if (it is ViewZendeskTickets) event1 = it
         }
 
         viewModel.handleIncomingNotification(TEST_ZENDESK_PUSH_NOTIFICATION_ID, testZendeskNotification)
@@ -182,8 +180,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(
             eq(TEST_ZENDESK_PUSH_NOTIFICATION_ID)
         )
-        assertThat(event1).isEqualTo(ViewMyStoreStats)
-        assertThat(event2).isEqualTo(ViewZendeskTickets)
+        assertThat(event1).isEqualTo(ViewZendeskTickets)
     }
 
     @Test

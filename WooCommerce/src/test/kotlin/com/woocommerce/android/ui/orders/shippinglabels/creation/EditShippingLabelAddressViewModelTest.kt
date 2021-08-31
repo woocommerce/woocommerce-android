@@ -350,4 +350,16 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         assertThat(viewState?.phoneField?.error).isEqualTo(UiStringRes(string.shipping_label_address_phone_required))
     }
+
+    @Test
+    fun `given there is an address1 remote error, when use address as entered is clicked, then skip the error`() =
+        testBlocking {
+            validationResult = ValidationResult.Invalid("House number is missing")
+            createViewModel()
+
+            viewModel.onUseAddressAsIsButtonClicked()
+
+            val viewState = viewModel.viewStateData.liveData.value!!
+            assertThat(viewState.areAllRequiredFieldsValid).isTrue()
+        }
 }

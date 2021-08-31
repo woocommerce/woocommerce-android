@@ -18,6 +18,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.RETRY_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.SWIPE_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
@@ -29,6 +38,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -51,6 +61,7 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -91,9 +102,10 @@ class CardReaderPaymentViewModel
     private var refetchOrderJob: Job? = null
 
     fun start() {
-        // TODO cardreader Make sure a reader is connected
-        if (paymentFlowJob == null) {
+        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
             initPaymentFlow(isRetry = false)
+        } else {
+            exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
         }
     }
 
@@ -105,8 +117,7 @@ class CardReaderPaymentViewModel
             }
             fetchOrder()?.let { order ->
                 if (!paymentCollectibilityChecker.isCollectable(order)) {
-                    triggerEvent(ShowSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled))
-                    triggerEvent(Exit)
+                    exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
                 collectPaymentFlow(cardReaderManager, order)
@@ -146,6 +157,7 @@ class CardReaderPaymentViewModel
                 orderId = order.remoteId,
                 amount = order.total,
                 currency = order.currency,
+                orderKey = order.orderKey,
                 customerEmail = customerEmail.ifEmpty { null },
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
@@ -172,8 +184,8 @@ class CardReaderPaymentViewModel
                 tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
                 onPaymentCompleted(paymentStatus, orderId)
             }
-            ShowAdditionalInfo -> {
-                // TODO cardreader prompt the user to take certain action eg. Remove card
+            is ShowAdditionalInfo -> {
+                handleAdditionalInfo(paymentStatus.type)
             }
             WaitingForInput -> {
                 // noop
@@ -241,6 +253,24 @@ class CardReaderPaymentViewModel
         }
     }
 
+    private fun handleAdditionalInfo(type: AdditionalInfoType) {
+        (viewState.value as? CollectPaymentState)?.let { collectPaymentState ->
+            when (type) {
+                RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
+                INSERT_CARD -> null // noop - collect payment screen is currently shown
+                INSERT_OR_SWIPE_CARD -> null // noop - collect payment screen is currently shown
+                SWIPE_CARD -> null // noop - collect payment screen is currently shown
+                REMOVE_CARD -> null // noop - processing payment screen always shows "remove card" message
+                MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
+                    R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
+                TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
+                TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
+            }?.let { hint ->
+                viewState.value = collectPaymentState.copy(hintLabel = hint)
+            }
+        }
+    }
+
     private fun onSaveForLaterClicked() {
         onBackPressed()
     }
@@ -286,7 +316,7 @@ class CardReaderPaymentViewModel
 
     fun onEmailActivityNotFound() {
         tracker.track(RECEIPT_EMAIL_FAILED)
-        triggerEvent(ShowSnackbar(R.string.card_reader_payment_email_client_not_found))
+        triggerEvent(ShowSnackbarInDialog(R.string.card_reader_payment_email_client_not_found))
     }
 
     fun onPrintResult(result: PrintJobResult) {
@@ -316,12 +346,16 @@ class CardReaderPaymentViewModel
                 viewState.value = ReFetchingOrderState
             } else {
                 // show "data might be outdated" and exit the flow when the user presses back on FetchingOrder screen
-                triggerEvent(ShowSnackbar(R.string.card_reader_refetching_order_failed))
-                triggerEvent(Exit)
+                exitWithSnackbar(R.string.card_reader_refetching_order_failed)
             }
         } else {
             triggerEvent(Exit)
         }
+    }
+
+    private fun exitWithSnackbar(@StringRes message: Int) {
+        triggerEvent(ShowSnackbar(message))
+        triggerEvent(Exit)
     }
 
     private fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
@@ -349,11 +383,13 @@ class CardReaderPaymentViewModel
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
 
+    class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
+
     object PlayChaChing : MultiLiveEvent.Event()
 
     sealed class ViewState(
-        @StringRes val hintLabel: Int? = null,
-        @StringRes val headerLabel: Int? = null,
+        @StringRes open val hintLabel: Int? = null,
+        @StringRes open val headerLabel: Int? = null,
         @StringRes val paymentStateLabel: Int? = null,
         @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
         @DrawableRes val illustration: Int? = null,
@@ -387,9 +423,11 @@ class CardReaderPaymentViewModel
             illustration = R.drawable.img_products_error
         )
 
-        data class CollectPaymentState(override val amountWithCurrencyLabel: String) : ViewState(
-            hintLabel = R.string.card_reader_payment_collect_payment_hint,
-            headerLabel = R.string.card_reader_payment_collect_payment_header,
+        data class CollectPaymentState(
+            override val amountWithCurrencyLabel: String,
+            override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
+            override val headerLabel: Int = R.string.card_reader_payment_collect_payment_header,
+        ) : ViewState(
             paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
             illustration = R.drawable.img_card_reader_available
         )

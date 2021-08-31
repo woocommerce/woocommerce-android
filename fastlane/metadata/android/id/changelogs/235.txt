@@ -1,2 +1,0 @@
-7.2:
-Kali ini kami fokus membuat produk lebih stabil dan lebih andal. Beberapa bug telah kami tangani dan perbaiki, termasuk yang kadang membuat daftar produk kosong saat nilai total penjualan sebuah produk di luar perkiraan. Terima kasih telah melakukan pembaruan, jangan lupa beri tahu kami jika Anda memiliki umpan balik!
