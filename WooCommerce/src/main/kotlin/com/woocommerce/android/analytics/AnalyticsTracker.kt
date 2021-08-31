@@ -690,6 +690,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FILTERS = "filters"
         const val KEY_FULFILL_ORDER = "fulfill_order"
         const val KEY_STEP = "step"
+        const val KEY_ADDONS = "addons"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"

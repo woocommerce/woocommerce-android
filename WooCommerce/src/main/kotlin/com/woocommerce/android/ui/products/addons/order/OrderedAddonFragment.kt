@@ -18,7 +18,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_GIVEN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_ADDONS_FEEDBACK
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -106,6 +107,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private fun onOrderedAddonsReceived(orderedAddons: List<ProductAddon>) {
         showWIPNoticeCard(true)
         setupRecyclerViewWith(orderedAddons)
+        track(orderedAddons)
     }
 
     private fun setupRecyclerViewWith(addonList: List<ProductAddon>) {
@@ -155,4 +157,16 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
             )
         )
     }
+
+    private fun track(addons: List<ProductAddon>) =
+        addons.distinctBy { it.name }
+            .map { it.name }
+            .filter { it.isNotEmpty() }
+            .joinToString(",")
+            .let {
+                AnalyticsTracker.track(
+                    PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
+                    mapOf(AnalyticsTracker.KEY_ADDONS to it)
+                )
+            }
 }
