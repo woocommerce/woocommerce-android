@@ -66,7 +66,7 @@ class ProductImagesService : JobIntentService() {
             val media: MediaModel
         )
 
-        // posted when a single image has been uploaded
+        // posted when a single image upload failed
         class OnProductImageUploadFailed(
             val localUri: Uri,
             val media: MediaModel,

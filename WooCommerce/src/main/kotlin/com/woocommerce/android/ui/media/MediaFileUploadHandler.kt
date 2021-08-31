@@ -133,6 +133,10 @@ class MediaFileUploadHandler @Inject constructor(
         )
     }
 
+    /***
+     * Identifies both an event and status.
+     * Holds a reference to the productId and localUri to keep track of each upload
+     */
     @Parcelize
     data class ProductImageUploadData(
         val remoteProductId: Long,
