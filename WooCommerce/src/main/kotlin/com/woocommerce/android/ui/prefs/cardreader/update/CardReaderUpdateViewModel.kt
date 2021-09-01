@@ -87,8 +87,6 @@ class CardReaderUpdateViewModel @Inject constructor(
                     is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))
                     Success -> onUpdateSucceeded()
                     Unknown -> onUpdateStatusUnknown()
-                    else -> {
-                    }
                 }.exhaustive
             }
         }
