@@ -253,4 +253,25 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             assertThat(timesCalled).isEqualTo(2)
         }
+
+    @Test
+    fun `should enable and disable skeleton view when loading the view data fails`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+            var timesCalled = 0
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                when(timesCalled) {
+                    0 -> assertThat(new.isSkeletonShown).isTrue
+                    1 -> assertThat(new.isSkeletonShown).isFalse
+                    else -> fail("View state is expected to be changed exactly two times")
+                }
+
+                timesCalled++
+            }
+
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
 }
