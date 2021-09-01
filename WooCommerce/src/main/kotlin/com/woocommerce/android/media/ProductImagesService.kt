@@ -107,37 +107,20 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
-    @Inject
-    lateinit var dispatcher: Dispatcher
-
-    @Inject
-    lateinit var siteStore: SiteStore
-
-    @Inject
-    lateinit var mediaStore: MediaStore
-
-    @Inject
-    lateinit var productStore: WCProductStore
-
-    @Inject
-    lateinit var selectedSite: SelectedSite
-
-    @Inject
-    lateinit var productImageMap: ProductImageMap
-
-    @Inject
-    lateinit var networkStatus: NetworkStatus
-
-    @Inject
-    lateinit var mediaFileUploadHandler: MediaFileUploadHandler
-
-    @Inject
-    lateinit var productDetailRepository: ProductDetailRepository
+    @Inject lateinit var dispatcher: Dispatcher
+    @Inject lateinit var siteStore: SiteStore
+    @Inject lateinit var mediaStore: MediaStore
+    @Inject lateinit var productStore: WCProductStore
+    @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var networkStatus: NetworkStatus
+    @Inject lateinit var mediaFileUploadHandler: MediaFileUploadHandler
+    @Inject lateinit var productDetailRepository: ProductDetailRepository
+    @Inject lateinit var notifHandler: ProductImagesNotificationHandler
 
     private var doneSignal: CountDownLatch? = null
     private var currentMediaUpload: MediaModel? = null
     private lateinit var currentUploadUri: Uri
-    private lateinit var notifHandler: ProductImagesNotificationHandler
 
     override fun onCreate() {
         super.onCreate()
@@ -161,7 +144,7 @@ class ProductImagesService : JobIntentService() {
             return
         }
 
-        notifHandler = ProductImagesNotificationHandler(this, id)
+        notifHandler.attachToService(this)
 
         when (intent.action) {
             ACTION_UPLOAD_IMAGES -> uploadImages(intent, id)

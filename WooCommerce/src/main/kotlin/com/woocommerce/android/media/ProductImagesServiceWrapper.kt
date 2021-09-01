@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.core.app.JobIntentService
 import com.woocommerce.android.JobServiceIds
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,7 +16,10 @@ import javax.inject.Singleton
  */
 @Singleton
 class ProductImagesServiceWrapper
-@Inject constructor(private val context: Context) {
+@Inject constructor(
+    private val context: Context,
+    private val productImagesNotificationHandler: ProductImagesNotificationHandler
+) {
     fun uploadProductMedia(remoteProductId: Long, localMediaUriList: ArrayList<Uri>) {
         val intent = Intent(context, ProductImagesService::class.java).also {
             it.action = ProductImagesService.ACTION_UPLOAD_IMAGES
@@ -42,5 +46,9 @@ class ProductImagesServiceWrapper
             JobServiceIds.JOB_PRODUCT_IMAGES_SERVICE_ID,
             intent
         )
+    }
+
+    fun showUploadFailureNotification(productId: Long, failuresCount: Int) {
+        productImagesNotificationHandler.postUploadFailureNotification(productId, failuresCount)
     }
 }

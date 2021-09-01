@@ -54,6 +54,9 @@ class MediaFileUploadHandler @Inject constructor(
                 }
                 uploadsStatus.value = statusList
 
+                if (event.uploadStatus is Failed && !externalObservers.contains(event.remoteProductId)) {
+                    uploadFailureNotification(event.remoteProductId, statusList)
+                }
                 updateProductIfNeeded(event.remoteProductId, statusList)
             }
             .launchIn(appCoroutineScope)
@@ -71,6 +74,11 @@ class MediaFileUploadHandler @Inject constructor(
 
             uploadsStatus.value -= productImages
         }
+    }
+
+    private fun uploadFailureNotification(productId: Long, state: List<ProductImageUploadData>) {
+        val errorsCount = state.filter { it.remoteProductId == productId && it.uploadStatus is Failed }.size
+        productImagesServiceWrapper.showUploadFailureNotification(productId, errorsCount)
     }
 
     fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
