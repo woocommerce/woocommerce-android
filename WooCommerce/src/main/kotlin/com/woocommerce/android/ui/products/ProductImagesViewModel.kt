@@ -87,10 +87,10 @@ class ProductImagesViewModel @Inject constructor(
             triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
             return
         }
-        if (ProductImagesService.isBusy()) {
-            triggerEvent(ShowSnackbar(string.product_image_service_busy))
-            return
-        }
+//        if (ProductImagesService.isBusy()) {
+//            triggerEvent(ShowSnackbar(string.product_image_service_busy))
+//            return
+//        }
         mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList)
     }
 

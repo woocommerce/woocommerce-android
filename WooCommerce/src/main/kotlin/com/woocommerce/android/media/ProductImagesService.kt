@@ -7,13 +7,17 @@ import androidx.core.app.JobIntentService
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_UPLOAD_FAILED
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -38,8 +42,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductImagesService : JobIntentService() {
     companion object {
+        const val ACTION_UPLOAD_IMAGES = "action_upload_images"
+        const val ACTION_UPDATE_PRODUCT = "action_update_product"
         const val KEY_ID = "key_id"
         const val KEY_LOCAL_URI_LIST = "key_local_uri_list"
+        const val KEY_UPLOADED_IMAGES = "key_uploaded_images"
 
         private const val STRIP_LOCATION = true
         private const val TIMEOUT_PER_UPLOAD = 120L
@@ -101,14 +108,24 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
-    @Inject lateinit var dispatcher: Dispatcher
-    @Inject lateinit var siteStore: SiteStore
-    @Inject lateinit var mediaStore: MediaStore
-    @Inject lateinit var productStore: WCProductStore
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var networkStatus: NetworkStatus
-    @Inject lateinit var mediaFileUploadHandler: MediaFileUploadHandler
+    @Inject
+    lateinit var dispatcher: Dispatcher
+    @Inject
+    lateinit var siteStore: SiteStore
+    @Inject
+    lateinit var mediaStore: MediaStore
+    @Inject
+    lateinit var productStore: WCProductStore
+    @Inject
+    lateinit var selectedSite: SelectedSite
+    @Inject
+    lateinit var productImageMap: ProductImageMap
+    @Inject
+    lateinit var networkStatus: NetworkStatus
+    @Inject
+    lateinit var mediaFileUploadHandler: MediaFileUploadHandler
+    @Inject
+    lateinit var productDetailRepository: ProductDetailRepository
 
     private var doneSignal: CountDownLatch? = null
     private var currentMediaUpload: MediaModel? = null
@@ -137,6 +154,16 @@ class ProductImagesService : JobIntentService() {
             return
         }
 
+        notifHandler = ProductImagesNotificationHandler(this, id)
+
+        when (intent.action) {
+            ACTION_UPLOAD_IMAGES -> uploadImages(intent, id)
+            ACTION_UPDATE_PRODUCT -> updateProduct(intent, id)
+        }
+        uploadImages(intent, id)
+    }
+
+    private fun uploadImages(intent: Intent, id: Long) {
         val localUriList = intent.getParcelableArrayListExtra<Uri>(KEY_LOCAL_URI_LIST)
         if (localUriList.isNullOrEmpty()) {
             WooLog.w(T.MEDIA, "productImagesService > null media list")
@@ -151,7 +178,6 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(event)
 
         val totalUploads = localUriList.size
-        notifHandler = ProductImagesNotificationHandler(this, id)
 
         isCancelled = false
 
@@ -220,6 +246,56 @@ class ProductImagesService : JobIntentService() {
         EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(id, isCancelled))
     }
 
+    private fun updateProduct(intent: Intent, productId: Long) {
+        val images = intent.getParcelableArrayListExtra<Image>(KEY_UPLOADED_IMAGES)
+
+        // TODO update foreground notification
+
+        if (images.isNullOrEmpty()) {
+            // TODO log
+            return
+        }
+
+        runBlocking {
+            val product = fetchProductWithRetries(productId)
+            if (product == null) {
+                // TODO post a notification
+                return@runBlocking
+            }
+
+            val result = updateProductWithRetries(product.copy(images = product.images + images))
+            if (result) {
+                // TODO post success notification
+            } else {
+                // TODO post failure notification
+            }
+        }
+    }
+
+    private suspend fun fetchProductWithRetries(productId: Long): Product? {
+        var retries = 0
+        while (retries < 3) {
+            val product = productDetailRepository.fetchProduct(productId)
+            if (product != null && productDetailRepository.lastFetchProductErrorType == null) {
+                return product
+            }
+            retries++
+        }
+        return null
+    }
+
+    private suspend fun updateProductWithRetries(product: Product): Boolean {
+        var retries = 0
+        while (retries < 3) {
+            val result = productDetailRepository.updateProduct(product)
+            if (result) {
+                return true
+            }
+            retries++
+        }
+        return false
+    }
+
     override fun onStopCurrentWork(): Boolean {
         super.onStopCurrentWork()
         WooLog.i(T.MEDIA, "productImagesService > onStopCurrentWork")
@@ -251,7 +327,8 @@ class ProductImagesService : JobIntentService() {
             event.completed -> {
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
                 handleSuccess(event.media)
-            } else -> {
+            }
+            else -> {
                 // otherwise this is an upload progress event
                 if (!isCancelled) {
                     val progress = (event.progress * 100).toInt()

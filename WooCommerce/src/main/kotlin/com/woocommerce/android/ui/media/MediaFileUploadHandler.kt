@@ -8,6 +8,7 @@ import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploadFailed
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.InProgress
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
@@ -46,14 +47,30 @@ class MediaFileUploadHandler @Inject constructor(
                 }
                 if (index == -1) return@onEach
 
-                if (event.uploadStatus is UploadSuccess) {
+                if (event.uploadStatus is UploadSuccess && externalObservers.contains(event.remoteProductId)) {
                     statusList.removeAt(index)
                 } else {
                     statusList[index] = event
                 }
                 uploadsStatus.value = statusList
+
+                updateProductIfNeeded(event.remoteProductId, statusList)
             }
             .launchIn(appCoroutineScope)
+    }
+
+    private fun updateProductIfNeeded(productId: Long, state: List<ProductImageUploadData>) {
+        val productImages = state.filter { it.remoteProductId == productId && it.uploadStatus !is Failed }
+        if (productImages.none { it.uploadStatus == InProgress }) {
+            val uploadedImages = productImages.filter { it.uploadStatus is UploadSuccess }
+                .map { (it.uploadStatus as UploadSuccess).media.toAppModel() }
+
+            if (uploadedImages.isNotEmpty()) {
+                productImagesServiceWrapper.addImagesToProduct(productId, uploadedImages)
+            }
+
+            uploadsStatus.value -= productImages
+        }
     }
 
     fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
