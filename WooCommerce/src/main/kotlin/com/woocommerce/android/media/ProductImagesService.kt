@@ -51,7 +51,7 @@ class ProductImagesService : JobIntentService() {
         private const val STRIP_LOCATION = true
         private const val TIMEOUT_PER_UPLOAD = 120L
 
-        private var isCancelled: Boolean = false
+        private val canceledProducts = mutableSetOf<Long>()
 
         // array of ID / uploading image uris for that product
         private val currentUploads = LongSparseArray<ArrayList<Uri>>()
@@ -63,8 +63,7 @@ class ProductImagesService : JobIntentService() {
 
         // posted when the list of images finishes uploading
         class OnProductImagesUpdateCompletedEvent(
-            val id: Long,
-            val isCancelled: Boolean
+            val id: Long
         )
 
         // posted when a single image has been uploaded
@@ -81,10 +80,10 @@ class ProductImagesService : JobIntentService() {
         )
 
         // posted when the upload is cancelled
-        class OnUploadCancelled
+        class OnUploadCancelled(val productId: Long)
 
         fun isUploadingForProduct(id: Long): Boolean {
-            return if (isCancelled) {
+            return if (canceledProducts.contains(id)) {
                 false
             } else {
                 currentUploads.containsKey(id)
@@ -102,28 +101,36 @@ class ProductImagesService : JobIntentService() {
          * to stop continuing its work when the current task is done, and post an event the service
          * can use to cancel the upload
          */
-        fun cancel() {
-            isCancelled = true
-            EventBus.getDefault().post(OnUploadCancelled())
+        fun cancel(productId: Long) {
+            canceledProducts.add(productId)
+            EventBus.getDefault().post(OnUploadCancelled(productId))
         }
     }
 
     @Inject
     lateinit var dispatcher: Dispatcher
+
     @Inject
     lateinit var siteStore: SiteStore
+
     @Inject
     lateinit var mediaStore: MediaStore
+
     @Inject
     lateinit var productStore: WCProductStore
+
     @Inject
     lateinit var selectedSite: SelectedSite
+
     @Inject
     lateinit var productImageMap: ProductImageMap
+
     @Inject
     lateinit var networkStatus: NetworkStatus
+
     @Inject
     lateinit var mediaFileUploadHandler: MediaFileUploadHandler
+
     @Inject
     lateinit var productDetailRepository: ProductDetailRepository
 
@@ -160,7 +167,6 @@ class ProductImagesService : JobIntentService() {
             ACTION_UPLOAD_IMAGES -> uploadImages(intent, id)
             ACTION_UPDATE_PRODUCT -> updateProduct(intent, id)
         }
-        uploadImages(intent, id)
     }
 
     private fun uploadImages(intent: Intent, id: Long) {
@@ -179,7 +185,7 @@ class ProductImagesService : JobIntentService() {
 
         val totalUploads = localUriList.size
 
-        isCancelled = false
+        canceledProducts.remove(id)
 
         for (index in 0 until totalUploads) {
             notifHandler.update(index + 1, totalUploads)
@@ -220,7 +226,7 @@ class ProductImagesService : JobIntentService() {
                 }
             }
 
-            if (isCancelled) {
+            if (canceledProducts.contains(id)) {
                 break
             }
 
@@ -234,16 +240,12 @@ class ProductImagesService : JobIntentService() {
             }
         }
 
-        if (isCancelled) {
-            currentUploads.clear()
-        } else {
-            notifHandler.remove()
-            currentUploads.remove(id)
-            productImageMap.remove(id)
-        }
+        notifHandler.remove()
+        currentUploads.remove(id)
+        productImageMap.remove(id)
 
         currentMediaUpload = null
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(id, isCancelled))
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(id))
     }
 
     private fun updateProduct(intent: Intent, productId: Long) {
@@ -323,6 +325,7 @@ class ProductImagesService : JobIntentService() {
             }
             event.canceled -> {
                 WooLog.d(T.MEDIA, "productImagesService > upload media cancelled")
+                countDown()
             }
             event.completed -> {
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
@@ -330,7 +333,7 @@ class ProductImagesService : JobIntentService() {
             }
             else -> {
                 // otherwise this is an upload progress event
-                if (!isCancelled) {
+                if (!canceledProducts.contains(event.media?.postId)) {
                     val progress = (event.progress * 100).toInt()
                     notifHandler.setProgress(progress)
                 }
@@ -340,7 +343,9 @@ class ProductImagesService : JobIntentService() {
 
     private fun handleSuccess(uploadedMedia: MediaModel) {
         countDown()
-        EventBus.getDefault().post(OnProductImageUploaded(currentUploadUri, uploadedMedia))
+        if (!canceledProducts.contains(uploadedMedia.postId)) {
+            EventBus.getDefault().post(OnProductImageUploaded(currentUploadUri, uploadedMedia))
+        }
     }
 
     private fun handleFailure(
@@ -348,7 +353,9 @@ class ProductImagesService : JobIntentService() {
         mediaUploadError: MediaError
     ) {
         countDown()
-        EventBus.getDefault().post(OnProductImageUploadFailed(currentUploadUri, mediaModel, mediaUploadError))
+        if (!canceledProducts.contains(mediaModel.postId)) {
+            EventBus.getDefault().post(OnProductImageUploadFailed(currentUploadUri, mediaModel, mediaUploadError))
+        }
     }
 
     private fun countDown() {
@@ -360,21 +367,14 @@ class ProductImagesService : JobIntentService() {
     }
 
     /**
-     * Posted above when we want the upload cancelled - removes the upload notification and
+     * Posted above when we want to cancel upload for a specific product
      * dispatches a request to cancel the upload
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnUploadCancelled) {
-        notifHandler.remove()
-        doneSignal?.let {
-            while (it.count > 0) {
-                it.countDown()
-            }
-        }
-
-        currentMediaUpload?.let {
-            val payload = CancelMediaPayload(selectedSite.get(), it, true)
+        if (event.productId == currentMediaUpload?.postId) {
+            val payload = CancelMediaPayload(selectedSite.get(), currentMediaUpload, true)
             dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(payload))
         }
     }

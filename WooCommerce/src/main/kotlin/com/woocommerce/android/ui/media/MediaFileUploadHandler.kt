@@ -88,8 +88,7 @@ class MediaFileUploadHandler @Inject constructor(
     fun cancelUpload(remoteProductId: Long) {
         uploadsStatus.value = uploadsStatus.value.filterNot { it.remoteProductId == remoteProductId }
 
-        // TODO update the service to cancel upload per product
-        ProductImagesService.cancel()
+        ProductImagesService.cancel(remoteProductId)
     }
 
     fun clearImageErrors(remoteProductId: Long) {

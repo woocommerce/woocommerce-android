@@ -1031,7 +1031,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun isUploadingImages(remoteProductId: Long) = ProductImagesService.isUploadingForProduct(remoteProductId)
+    fun isUploadingImages(remoteProductId: Long) = !viewState.uploadingImageUris.isNullOrEmpty()
 
     /**
      * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
