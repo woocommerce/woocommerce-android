@@ -10,11 +10,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTW
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -166,8 +166,7 @@ class CardReaderUpdateViewModel @Inject constructor(
 
     sealed class ViewState(
         val title: UiString? = null,
-        val description: UiString? = null,
-        open val cancelWarning: UiString? = null,
+        open val description: UiString? = null,
         open val progress: Int? = null,
         open val progressText: UiString? = null,
         open val primaryButton: ButtonState? = null,
@@ -198,13 +197,15 @@ class CardReaderUpdateViewModel @Inject constructor(
         data class UpdatingCancelingState(
             override val progress: Int,
             override val secondaryButton: ButtonState,
+            override val description: UiStringRes = UiStringRes(
+                R.string.card_reader_software_update_progress_cancel_warning
+            ),
         ) : StateWithProgress<UpdatingCancelingState>, ViewState(
             title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
             progressText = UiStringRes(
                 R.string.card_reader_software_update_progress_indicator,
                 listOf(UiStringText(progress.toString()))
             ),
-            cancelWarning = UiStringRes(R.string.card_reader_software_update_progress_cancel_warning)
         ) {
             override fun copyWithUpdatedProgress(progress: Int): UpdatingCancelingState {
                 return this.copy(progress = progress)
