@@ -7,42 +7,46 @@ import com.stripe.stripeterminal.external.models.ReaderEvent
 import com.stripe.stripeterminal.external.models.ReaderInputOptions
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.woocommerce.android.cardreader.connection.event.CardReaderEvent
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
 ) : BluetoothReaderListener {
-    private val _events = MutableStateFlow<CardReaderEvent>(CardReaderEvent.Initialisation)
-    val events: StateFlow<CardReaderEvent> = _events
+    private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
+    val updateStatusEvents = _updateStatusEvents.asStateFlow()
+
+    private val _updateAvailabilityEvents =
+        MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
+    val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
 
     override fun onFinishInstallingUpdate(update: ReaderSoftwareUpdate?, e: TerminalException?) {
         logWrapper.d(LOG_TAG, "onFinishInstallingUpdate: $update $e")
-        _events.value = if (e == null) {
-            SoftwareUpdateStatus.Success
+        if (e == null) {
+            _updateAvailabilityEvents.value = SoftwareUpdateAvailability.NotAvailable
+            _updateStatusEvents.value = SoftwareUpdateStatus.Success
         } else {
-            SoftwareUpdateStatus.Failed(e.message)
+            _updateStatusEvents.value = SoftwareUpdateStatus.Failed(e.message)
         }
     }
 
     override fun onReportAvailableUpdate(update: ReaderSoftwareUpdate) {
         logWrapper.d(LOG_TAG, "onReportAvailableUpdate: $update")
-        _events.value = SoftwareUpdateAvailability.Available
+        _updateAvailabilityEvents.value = SoftwareUpdateAvailability.Available
     }
 
     override fun onReportReaderSoftwareUpdateProgress(progress: Float) {
         logWrapper.d(LOG_TAG, "onReportReaderSoftwareUpdateProgress: $progress")
-        _events.value = SoftwareUpdateStatus.Installing(progress)
+        _updateStatusEvents.value = SoftwareUpdateStatus.Installing(progress)
     }
 
     override fun onStartInstallingUpdate(update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
         logWrapper.d(LOG_TAG, "onStartInstallingUpdate: $update $cancelable")
-        _events.value = SoftwareUpdateStatus.InstallationStarted
+        _updateStatusEvents.value = SoftwareUpdateStatus.InstallationStarted
     }
 
     override fun onReportLowBatteryWarning() {

@@ -12,8 +12,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.UpToDate
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.NotAvailable
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
@@ -39,7 +38,7 @@ import org.robolectric.RobolectricTestRunner
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class CardReaderUpdateViewModelTest : BaseUnitTest() {
-    private val softwareStatus = MutableStateFlow<SoftwareUpdateStatus>(NotAvailable)
+    private val softwareStatus = MutableStateFlow<SoftwareUpdateStatus>(Unknown)
     private val cardReaderManager: CardReaderManager = mock {
         on { softwareUpdateStatus }.thenReturn(softwareStatus)
     }
@@ -79,7 +78,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when click on primary btn explanation state with uptodate should emit updating state`() =
+    fun `when click on primary btn explanation state with unknown should emit updating state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
@@ -143,7 +142,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
-            softwareStatus.value = UpToDate
+            softwareStatus.value = Unknown
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
@@ -184,7 +183,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Unknown))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
@@ -212,25 +211,25 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(InstallationStarted))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
-            softwareStatus.value = Failed("")
 
             // THEN
             verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
         }
 
     @Test
-    fun `when click on primary btn explanation state with up to date should track error event`() =
+    fun `when click on primary btn explanation state with unknown should track error event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Unknown))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
-            softwareStatus.value = UpToDate
+            softwareStatus.value = Unknown
 
             // THEN
             verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())

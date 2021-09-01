@@ -8,13 +8,9 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -24,8 +20,8 @@ internal class ConnectionManager(
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
     private val discoverReadersAction: DiscoverReadersAction,
 ) {
-    val softwareUpdateStatus = bluetoothReaderListener.events.filterIsInstance<SoftwareUpdateStatus>()
-    val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability> = bluetoothReaderListener.events.filterIsInstance()
+    val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
+    val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
 
     fun discoverReaders(isSimulated: Boolean) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->

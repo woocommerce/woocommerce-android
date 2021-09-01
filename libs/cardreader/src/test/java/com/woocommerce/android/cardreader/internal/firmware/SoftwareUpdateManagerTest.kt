@@ -38,15 +38,6 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `when update not available, then UpToDate emitted`() = runBlockingTest {
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.UpToDate)
-
-        val result = updateManager.updateSoftware().toList().last()
-
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.UpToDate)
-    }
-
-    @Test
     fun `when check for updates fails, then CheckForUpdatesFailed emitted`() = runBlockingTest {
         val message = "error"
         val terminalException: TerminalException = mock {
