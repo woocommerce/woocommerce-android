@@ -51,12 +51,18 @@ class OrderedAddonViewModel @Inject constructor(
     ) = viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
         launch(dispatchers.computation) {
             takeIf { addonsRepository.updateGlobalAddonsSuccessfully() }
-                ?.let { addonsRepository.getOrderAddonsData(orderID, orderItemID, productID) }
-                ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
+                ?.let { loadOrderAddonsData(orderID, orderItemID, productID) }
                 ?.let { dispatchResult(it) }
-                ?: dispatchFailure()
+                ?: handleFailure()
         }
     }
+
+    private suspend fun loadOrderAddonsData(
+        orderID: Long,
+        orderItemID: Long,
+        productID: Long
+    ) = addonsRepository.getOrderAddonsData(orderID, orderItemID, productID)
+            ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
 
     private fun mapAddonsFromOrderAttributes(
         productAddons: List<ProductAddon>,
@@ -105,7 +111,7 @@ class OrderedAddonViewModel @Inject constructor(
         }
     }
 
-    private suspend fun dispatchFailure() {
+    private suspend fun handleFailure() {
         withContext(dispatchers.main) {
             viewState = viewState.copy(isSkeletonShown = false)
         }
