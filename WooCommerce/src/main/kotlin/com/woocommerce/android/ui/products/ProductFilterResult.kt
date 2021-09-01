@@ -8,5 +8,6 @@ data class ProductFilterResult(
     val stockStatus: String?,
     val productType: String?,
     val productStatus: String?,
-    val productCategory: String?
+    val productCategory: String?,
+    val productCategoryName: String?
 ) : Parcelable

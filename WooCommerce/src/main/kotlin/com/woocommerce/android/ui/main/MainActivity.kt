@@ -854,10 +854,11 @@ class MainActivity :
         stockStatus: String?,
         productType: String?,
         productStatus: String?,
-        productCategory: String?
+        productCategory: String?,
+        productCategoryName: String?
     ) {
         val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
-            stockStatus, productStatus, productType, productCategory
+            stockStatus, productStatus, productType, productCategory, productCategoryName
         )
         navController.navigateSafely(action)
     }

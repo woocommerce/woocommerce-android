@@ -292,7 +292,8 @@ class ProductListFragment :
                         event.stockStatusFilter,
                         event.productTypeFilter,
                         event.productStatusFilter,
-                        event.productCategoryFilter
+                        event.productCategoryFilter,
+                        event.selectedCategoryName
                     )
                     is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                     else -> event.isHandled = false
@@ -315,7 +316,8 @@ class ProductListFragment :
                 stockStatus = result.stockStatus,
                 productStatus = result.productStatus,
                 productType = result.productType,
-                productCategory = result.productCategory
+                productCategory = result.productCategory,
+                productCategoryName = result.productCategoryName
             )
         }
     }
@@ -454,13 +456,15 @@ class ProductListFragment :
         stockStatus: String?,
         productType: String?,
         productStatus: String?,
-        productCategory: String?
+        productCategory: String?,
+        productCategoryName: String?
     ) {
         (activity as? MainNavigationRouter)?.showProductFilters(
             stockStatus,
             productType,
             productStatus,
-            productCategory
+            productCategory,
+            productCategoryName
         )
     }
 

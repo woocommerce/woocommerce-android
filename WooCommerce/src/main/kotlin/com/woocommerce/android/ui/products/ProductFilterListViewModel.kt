@@ -39,6 +39,7 @@ class ProductFilterListViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
+        private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
@@ -56,10 +57,10 @@ class ProductFilterListViewModel @Inject constructor(
         LiveDataDelegate(savedState, ProductFilterOptionListViewState())
     private var productFilterOptionListViewState by productFilterOptionListViewStateData
 
-    private lateinit var productCategories: List<ProductCategory>
+    private var productCategories: List<ProductCategory> = emptyList()
 
     /**
-     * Holds the filter properties (stock_status, status, type) already selected by the user in a [Map]
+     * Holds the filter properties (stock_status, status, type, category) already selected by the user in a [Map]
      * where the key is the [ProductFilterOption] and value is the slug associated with the property.
      *
      * If no filters are previously selected, the map is empty.
@@ -70,10 +71,12 @@ class ProductFilterListViewModel @Inject constructor(
         arguments.selectedStockStatus?.let { params.put(STOCK_STATUS, it) }
         arguments.selectedProductType?.let { params.put(TYPE, it) }
         arguments.selectedProductStatus?.let { params.put(STATUS, it) }
-        arguments.selectedProductCategory?.let { params.put(CATEGORY, it) }
+        arguments.selectedProductCategoryId?.let { params.put(CATEGORY, it) }
         savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
         params
     }
+
+    private var selectedCategoryName: String? = null
 
     fun getFilterString() = productFilterOptions.values.joinToString(", ")
 
@@ -85,38 +88,96 @@ class ProductFilterListViewModel @Inject constructor(
 
     private fun getFilterByProductCategory() = productFilterOptions[CATEGORY]
 
-    private suspend fun loadCategories() {
-        productCategories = if (networkStatus.isConnected()) {
-            productCategoriesRepository.fetchProductCategories()
-        } else {
-            productCategoriesRepository.getProductCategoriesList()
+    init {
+        arguments.selectedProductCategoryName?.let { selectedCategoryName = it }
+    }
+
+    private suspend fun maybeLoadCategories() {
+        if (productCategories.isEmpty() || isProductCategoriesPartiallyFilled()) {
+            productCategories = if (networkStatus.isConnected()) {
+                productCategoriesRepository.fetchProductCategories()
+            } else {
+                productCategoriesRepository.getProductCategoriesList()
+            }
         }
+    }
+
+    private fun isFromProductListWithExistingCategoryFilter(): Boolean {
+        return getFilterByProductCategory() != null && selectedCategoryName != null && productCategories.isEmpty()
+    }
+
+    // Check whether productCategories list is only filled with a single, previously selected category.
+    // This can result in a false positive if the site only has 1 category, but it should be OK
+    // for the sake of simplicity, and because filtering by category is likely rarely done on sites with
+    // just one category.
+    private fun isProductCategoriesPartiallyFilled(): Boolean {
+        selectedCategoryName?.let {
+            return productCategories.size == 1
+        } ?: return false
     }
 
     fun loadFilters() {
-        launch {
-            loadCategories()
-            _filterListItems.value = buildFilterListItemUiModel()
+        savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)?.let { selectedCategoryName = it }
 
-            val screenTitle = if (productFilterOptions.isNotEmpty()) {
-                resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
-            } else resourceProvider.getString(string.product_list_filters)
-
-            productFilterListViewState = productFilterListViewState.copy(
-                screenTitle = screenTitle,
-                displayClearButton = productFilterOptions.isNotEmpty()
+        // If filter item screen is opened from product list screen, and there is existing filter by category,
+        // then we partially fill productCategories with just that category.
+        // This will allows displaying that category's name next to the "Category" name filter item.
+        //
+        // Also related: isProductCategoriesPartiallyFilled()
+        if (isFromProductListWithExistingCategoryFilter()) {
+            productCategories = listOf(
+                ProductCategory(
+                    getFilterByProductCategory()!!.toLong(),
+                    selectedCategoryName!!
+                )
             )
         }
+
+        _filterListItems.value = buildFilterListItemUiModel()
+
+        val screenTitle = if (productFilterOptions.isNotEmpty()) {
+            resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
+        } else resourceProvider.getString(string.product_list_filters)
+
+        productFilterListViewState = productFilterListViewState.copy(
+            screenTitle = screenTitle,
+            displayClearButton = productFilterOptions.isNotEmpty()
+        )
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
-        _filterListItems.value?.let {
-            val filterItem = it[selectedFilterListItemPosition]
-            _filterOptionListItems.value = filterItem.filterOptionListItems
+        _filterListItems.value?.let { filterListItem ->
+            val filterItem = filterListItem[selectedFilterListItemPosition]
+            if (filterItem.filterItemKey == CATEGORY) {
+                launch {
+                    productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = true)
+                    maybeLoadCategories()
+                    val categoryOptions = productCategoriesToOptionListItems()
+                    _filterOptionListItems.value = categoryOptions
+                    updateCategoryFilterListItem(categoryOptions)
+                    productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = false)
+                }
+            } else {
+                _filterOptionListItems.value = filterItem.filterOptionListItems
+            }
+
             productFilterOptionListViewState = productFilterOptionListViewState.copy(
                 screenTitle = filterItem.filterItemName
             )
         }
+    }
+
+    private fun productCategoriesToOptionListItems(): List<FilterListOptionItemUiModel> {
+        return addDefaultFilterOption(
+            productCategories.map { category ->
+                FilterListOptionItemUiModel(
+                    category.name,
+                    category.remoteCategoryId.toString(),
+                    isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString()
+                )
+            }.toMutableList(),
+            productFilterOptions[CATEGORY].isNullOrEmpty()
+        )
     }
 
     fun onBackButtonClicked(): Boolean {
@@ -155,6 +216,11 @@ class ProductFilterListViewModel @Inject constructor(
             }
             _filterOptionListItems.value = filterOptionItemList
 
+            if (filterItem.filterItemKey == CATEGORY) {
+                selectedCategoryName = selectedFilterItem.filterOptionItemName
+                savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
+            }
+
             // update the filter options map - which is used to load the filter list screen
             // if the selected filter option item is the default filter item i.e. ANY,
             // then remove the filter from the map, since this means the filter for that option has been cleared,
@@ -172,7 +238,8 @@ class ProductFilterListViewModel @Inject constructor(
             productStatus = getFilterByProductStatus(),
             stockStatus = getFilterByStockStatus(),
             productType = getFilterByProductType(),
-            productCategory = getFilterByProductCategory()
+            productCategory = getFilterByProductCategory(),
+            productCategoryName = selectedCategoryName
         )
         triggerEvent(ExitWithResult(result))
     }
@@ -223,7 +290,6 @@ class ProductFilterListViewModel @Inject constructor(
             )
         )
         filterListItems.add(buildCategoryFilterListItemUiModel())
-
         return filterListItems
     }
 
@@ -231,16 +297,7 @@ class ProductFilterListViewModel @Inject constructor(
         return FilterListItemUiModel(
             CATEGORY,
             resourceProvider.getString(string.product_category),
-            addDefaultFilterOption(
-                productCategories.map {
-                    FilterListOptionItemUiModel(
-                        it.name,
-                        it.remoteCategoryId.toString(),
-                        isSelected = productFilterOptions[CATEGORY] == it.remoteCategoryId.toString()
-                    )
-                }.toMutableList(),
-                productFilterOptions[CATEGORY].isNullOrEmpty()
-            )
+            productCategoriesToOptionListItems()
         )
     }
 
@@ -268,8 +325,35 @@ class ProductFilterListViewModel @Inject constructor(
         return (
             arguments.selectedProductStatus != getFilterByProductStatus() ||
                 arguments.selectedProductType != getFilterByProductType() ||
-                arguments.selectedStockStatus != getFilterByStockStatus()
+                arguments.selectedStockStatus != getFilterByStockStatus() ||
+                arguments.selectedProductCategoryId != getFilterByProductCategory()
             )
+    }
+
+    fun onLoadMoreRequested(selectedFilterItemPosition: Int) {
+        if (!networkStatus.isConnected()) {
+            return
+        }
+
+        _filterListItems.value?.let {
+            val filterItem = it[selectedFilterItemPosition]
+
+            // Load more is only needed for Category filter item.
+            if (filterItem.filterItemKey == CATEGORY && productCategoriesRepository.canLoadMoreProductCategories) {
+                launch {
+                    productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = true)
+                    productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
+                    val categoryOptions = productCategoriesToOptionListItems()
+                    _filterOptionListItems.value = categoryOptions
+                    updateCategoryFilterListItem(categoryOptions)
+                    productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = false)
+                }
+            }
+        }
+    }
+
+    private fun updateCategoryFilterListItem(categoryOptions: List<FilterListOptionItemUiModel>) {
+        _filterListItems.value?.find { it.filterItemKey == CATEGORY }?.filterOptionListItems = categoryOptions
     }
 
     @Parcelize
@@ -280,11 +364,13 @@ class ProductFilterListViewModel @Inject constructor(
 
     @Parcelize
     data class ProductFilterOptionListViewState(
-        val screenTitle: String? = null
+        val screenTitle: String? = null,
+        val isSkeletonShown: Boolean? = null,
+        val isLoadingMore: Boolean? = null
     ) : Parcelable
 
     /**
-     * [filterItemKey] includes the [ProductFilterOption] which can be [STATUS], [TYPE] or [STOCK_STATUS]
+     * [filterItemKey] includes the [ProductFilterOption] which can be [STATUS], [TYPE], [CATEGORY], or [STOCK_STATUS]
      * [filterItemName] is the display name of the filter list item i.e Product Status, Stock Status
      * [filterOptionListItems] includes a list of [FilterListOptionItemUiModel]
      */
@@ -292,7 +378,7 @@ class ProductFilterListViewModel @Inject constructor(
     data class FilterListItemUiModel(
         val filterItemKey: ProductFilterOption,
         val filterItemName: String,
-        val filterOptionListItems: List<FilterListOptionItemUiModel>
+        var filterOptionListItems: List<FilterListOptionItemUiModel>
     ) : Parcelable {
         fun isSameFilter(updatedFilterOption: FilterListItemUiModel): Boolean {
             if (this.filterItemName == updatedFilterOption.filterItemName &&
@@ -334,6 +420,7 @@ class ProductFilterListViewModel @Inject constructor(
      * Eg: for stock status, this would be instock, outofstock
      * for product type, this would be simple, grouped, variable
      * for product status, this would be pending, draft
+     * for category, this would be category ID
      */
     @Parcelize
     data class FilterListOptionItemUiModel(
