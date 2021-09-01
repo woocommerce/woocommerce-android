@@ -12,7 +12,6 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.UpToDate
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.NotAvailable
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -136,21 +135,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when click on primary btn explanation state with up to date should emit exit with skip result`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            val viewModel = createViewModel()
-
-            // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
-            softwareStatus.value = UpToDate
-
-            // THEN
-            assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
-            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(UpdateResult.SKIPPED)
-        }
-
-    @Test
     fun `when click on primary btn explanation state with failed should emit exit with failed result`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
@@ -184,7 +168,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
@@ -216,21 +199,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
             softwareStatus.value = Failed("")
-
-            // THEN
-            verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
-        }
-
-    @Test
-    fun `when click on primary btn explanation state with up to date should track error event`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
-
-            // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
-            softwareStatus.value = UpToDate
 
             // THEN
             verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())

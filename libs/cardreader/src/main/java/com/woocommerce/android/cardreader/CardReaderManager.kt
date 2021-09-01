@@ -18,6 +18,7 @@ interface CardReaderManager {
     val readerStatus: StateFlow<CardReaderStatus>
     val softwareUpdateStatus: Flow<SoftwareUpdateStatus>
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability>
+    fun resetSoftwareUpdateStatus()
 
     fun initialize(app: Application)
     fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
@@ -29,6 +30,6 @@ interface CardReaderManager {
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
     fun cancelPayment(paymentData: PaymentData)
 
-    suspend fun updateSoftware(): Flow<SoftwareUpdateStatus>
+    fun installSoftwareUpdate()
     suspend fun clearCachedCredentials()
 }
