@@ -52,7 +52,7 @@
                 app:argType="string"
                 app:nullable="true" />
             <argument
-                android:name="selectedProductCategory"
+                android:name="selectedProductCategoryId"
                 app:argType="string"
                 app:nullable="true" />
             <argument

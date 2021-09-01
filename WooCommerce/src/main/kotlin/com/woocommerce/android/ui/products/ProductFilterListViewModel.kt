@@ -71,7 +71,7 @@ class ProductFilterListViewModel @Inject constructor(
         arguments.selectedStockStatus?.let { params.put(STOCK_STATUS, it) }
         arguments.selectedProductType?.let { params.put(TYPE, it) }
         arguments.selectedProductStatus?.let { params.put(STATUS, it) }
-        arguments.selectedProductCategory?.let { params.put(CATEGORY, it) }
+        arguments.selectedProductCategoryId?.let { params.put(CATEGORY, it) }
         savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
         params
     }
@@ -314,7 +314,7 @@ class ProductFilterListViewModel @Inject constructor(
             arguments.selectedProductStatus != getFilterByProductStatus() ||
                 arguments.selectedProductType != getFilterByProductType() ||
                 arguments.selectedStockStatus != getFilterByStockStatus() ||
-                arguments.selectedProductCategory != getFilterByProductCategory()
+                arguments.selectedProductCategoryId != getFilterByProductCategory()
             )
     }
 
