@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Product
 import org.wordpress.android.util.SystemServiceFactory
 import java.util.Random
 
@@ -65,6 +66,25 @@ class ProductImagesNotificationHandler(
 
         notificationBuilder.setContentTitle(title)
         notificationManager.notify(notificationId, notificationBuilder.build())
+    }
+
+    fun postProductUpdateNotification(product: Product?) {
+        val title = context.getString(R.string.product_update_notification, product?.name.orEmpty())
+        notificationBuilder.setContentTitle(title)
+        notificationBuilder.setProgress(0, 0, true)
+        notificationManager.notify(notificationId, notificationBuilder.build())
+    }
+
+    fun postUpdateFailureNotification(productId: Long, product: Product?) {
+        val notificationBuilder = NotificationCompat.Builder(
+            context,
+            CHANNEL_ID
+        ).apply {
+            color = ContextCompat.getColor(context, R.color.woo_gray_40)
+            setSmallIcon(android.R.drawable.stat_notify_error)
+            setContentTitle(context.getString(R.string.product_update_failure_notification, product?.name.orEmpty()))
+        }
+        notificationManager.notify(productId.toInt(), notificationBuilder.build())
     }
 
     /**

@@ -249,7 +249,7 @@ class ProductImagesService : JobIntentService() {
     private fun updateProduct(intent: Intent, productId: Long) {
         val images = intent.getParcelableArrayListExtra<Image>(KEY_UPLOADED_IMAGES)
 
-        // TODO update foreground notification
+        notifHandler.postProductUpdateNotification(null)
 
         if (images.isNullOrEmpty()) {
             // TODO log
@@ -259,7 +259,7 @@ class ProductImagesService : JobIntentService() {
         runBlocking {
             val product = fetchProductWithRetries(productId)
             if (product == null) {
-                // TODO post a notification
+                notifHandler.postUpdateFailureNotification(productId, null)
                 return@runBlocking
             }
 
@@ -267,7 +267,7 @@ class ProductImagesService : JobIntentService() {
             if (result) {
                 // TODO post success notification
             } else {
-                // TODO post failure notification
+                notifHandler.postUpdateFailureNotification(productId, product)
             }
         }
     }
