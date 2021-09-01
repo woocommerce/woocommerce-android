@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
 ) : BluetoothReaderListener {
-    private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.NotAvailable)
+    private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
     val updateStatusEvents = _updateStatusEvents.asStateFlow()
 
     private val _updateAvailabilityEvents =
