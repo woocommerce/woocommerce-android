@@ -14,7 +14,6 @@ internal class SoftwareUpdateManager(
 ) {
     suspend fun updateSoftware() = flow {
         when (val updateStatus = checkUpdatesAction.checkUpdates()) {
-            CheckSoftwareUpdates.UpToDate -> emit(SoftwareUpdateStatus.UpToDate)
             is CheckSoftwareUpdates.Failed -> emit(SoftwareUpdateStatus.Failed(updateStatus.e.errorMessage))
             is CheckSoftwareUpdates.UpdateAvailable -> installUpdate()
         }

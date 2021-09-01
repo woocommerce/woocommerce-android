@@ -7,6 +7,5 @@ sealed class SoftwareUpdateStatus {
     data class Installing(val progress: Float) : SoftwareUpdateStatus(), SoftwareUpdateInProgress
     object Success : SoftwareUpdateStatus()
     data class Failed(val message: String?) : SoftwareUpdateStatus()
-    object UpToDate : SoftwareUpdateStatus()
-    object NotAvailable : SoftwareUpdateStatus()
+    object Unknown : SoftwareUpdateStatus()
 }
