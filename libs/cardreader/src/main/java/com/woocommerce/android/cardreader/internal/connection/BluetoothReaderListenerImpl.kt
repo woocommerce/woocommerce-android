@@ -66,6 +66,6 @@ internal class BluetoothReaderListenerImpl(
     }
 
     fun resetSoftwareUpdateStatus() {
-        _updateStatusEvents.value = SoftwareUpdateStatus.NotAvailable
+        _updateStatusEvents.value = SoftwareUpdateStatus.Unknown
     }
 }

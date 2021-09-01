@@ -32,7 +32,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.never
 import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
@@ -162,6 +162,46 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
             assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(FAILED)
+        }
+
+    @Test
+    fun `when force update, software update status listener must be initialised on start`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            softwareStatus.value = Success
+
+            // THEN
+            verify(cardReaderManager).softwareUpdateStatus
+        }
+
+    @Test
+    fun `when optional update, software update status listener must not be initialised on start`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            createViewModel(startedByUser = true)
+
+            // WHEN
+            softwareStatus.value = Success
+
+            // THEN
+            verify(cardReaderManager, never()).softwareUpdateStatus
+        }
+
+    @Test
+    fun `when optional update, software update status listener must be initialised on primary btn click`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val viewModel = createViewModel(startedByUser = true)
+
+            // WHEN
+            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Success
+
+            // THEN
+            verify(cardReaderManager).softwareUpdateStatus
         }
 
     @Test

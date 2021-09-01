@@ -63,14 +63,18 @@ class CardReaderUpdateViewModel @Inject constructor(
                 )
             )
         )
-
-        listenToSoftwareUpdateStatus()
+        if (navArgs.startedByUser.not()) {
+            listenToSoftwareUpdateStatus()
+        }
     }
 
     private fun onUpdateClicked() {
         tracker.track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
         launch {
             cardReaderManager.installSoftwareUpdate()
+            if (navArgs.startedByUser) {
+                listenToSoftwareUpdateStatus()
+            }
         }
     }
 
