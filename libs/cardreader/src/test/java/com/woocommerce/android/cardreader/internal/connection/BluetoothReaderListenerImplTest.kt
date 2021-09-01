@@ -37,7 +37,7 @@ class BluetoothReaderListenerImplTest {
     }
 
     @Test
-    fun `when finishes installing update without error, then update available emitted`() {
+    fun `when finishes installing update without error, then update not available emitted`() {
         // WHEN
         listener.onFinishInstallingUpdate(mock(), null)
 
