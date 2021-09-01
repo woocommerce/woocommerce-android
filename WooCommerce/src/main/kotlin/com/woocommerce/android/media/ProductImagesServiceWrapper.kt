@@ -51,4 +51,8 @@ class ProductImagesServiceWrapper
     fun showUploadFailureNotification(productId: Long, failuresCount: Int) {
         productImagesNotificationHandler.postUploadFailureNotification(productId, failuresCount)
     }
+
+    fun removeUploadFailureNotification(productId: Long) {
+        productImagesNotificationHandler.removeUploadFailureNotification(productId)
+    }
 }

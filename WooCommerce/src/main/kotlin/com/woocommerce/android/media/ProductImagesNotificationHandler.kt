@@ -25,6 +25,8 @@ class ProductImagesNotificationHandler @Inject constructor(
 ) {
     companion object {
         private const val CHANNEL_ID = "image_upload_channel"
+        private const val PRODUCT_UPDATE_NOTIFICATION_ID = 1
+        private const val UPLOAD_FAILURE_NOTIFICATION_ID = 2
     }
 
     private val notificationManager =
@@ -72,11 +74,24 @@ class ProductImagesNotificationHandler @Inject constructor(
         notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
-    fun postProductUpdateNotification(product: Product?) {
+    fun shopUpdatingProductNotification(product: Product?) {
         val title = context.getString(R.string.product_update_notification, product?.name.orEmpty())
         notificationBuilder.setContentTitle(title)
         notificationBuilder.setProgress(0, 0, true)
         notificationManager.notify(notificationId, notificationBuilder.build())
+    }
+
+    fun postUpdateSuccessNotification(productId: Long, product: Product, imagesCount: Int) {
+        val notificationBuilder = NotificationCompat.Builder(
+            context,
+            CHANNEL_ID
+        ).apply {
+            color = ContextCompat.getColor(context, R.color.woo_gray_40)
+            setSmallIcon(R.drawable.ic_done_secondary)
+            setContentTitle(context.getString(R.string.product_update_success_notification_title))
+            setContentText(context.getString(R.string.product_update_success_notification_content, imagesCount, product.name))
+        }
+        notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun postUpdateFailureNotification(productId: Long, product: Product?) {
@@ -88,7 +103,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             setSmallIcon(android.R.drawable.stat_notify_error)
             setContentTitle(context.getString(R.string.product_update_failure_notification, product?.name.orEmpty()))
         }
-        notificationManager.notify(productId.toInt(), notificationBuilder.build())
+        notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun postUploadFailureNotification(productId: Long, failuresCount: Int) {
@@ -115,7 +130,11 @@ class ProductImagesNotificationHandler @Inject constructor(
             setContentText(message)
             setContentIntent(pendingIntent)
         }
-        notificationManager.notify(productId.toInt(), notificationBuilder.build())
+        notificationManager.notify(productId.toInt() + UPLOAD_FAILURE_NOTIFICATION_ID, notificationBuilder.build())
+    }
+
+    fun removeUploadFailureNotification(productId: Long) {
+        notificationManager.cancel(productId.toInt() + UPLOAD_FAILURE_NOTIFICATION_ID)
     }
 
     /**

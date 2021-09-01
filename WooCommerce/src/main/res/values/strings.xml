@@ -1207,6 +1207,8 @@
     <string name="product_image_service_error_uploading_multiple">%d files couldn\'t be uploaded</string>
     <string name="product_images_error_detail_title">Upload details (%d)</string>
     <string name="product_update_notification">Updating product %1$s</string>
+    <string name="product_update_success_notification_title">Product Updated</string>
+    <string name="product_update_success_notification_content">%1$d images have been added to the product %2$s</string>
     <string name="product_update_failure_notification">Updating product %1$s failed</string>
 
     <!--

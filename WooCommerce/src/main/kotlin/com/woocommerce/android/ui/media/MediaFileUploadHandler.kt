@@ -103,6 +103,7 @@ class MediaFileUploadHandler @Inject constructor(
         uploadsStatus.value = uploadsStatus.value.filterNot {
             it.remoteProductId == remoteProductId && it.uploadStatus is Failed
         }
+        productImagesServiceWrapper.removeUploadFailureNotification(remoteProductId)
     }
 
     fun observeCurrentUploadErrors(remoteProductId: Long): Flow<List<ProductImageUploadData>> =

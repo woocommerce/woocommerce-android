@@ -234,10 +234,10 @@ class ProductImagesService : JobIntentService() {
     private fun updateProduct(intent: Intent, productId: Long) {
         val images = intent.getParcelableArrayListExtra<Image>(KEY_UPLOADED_IMAGES)
 
-        notifHandler.postProductUpdateNotification(null)
+        notifHandler.shopUpdatingProductNotification(null)
 
         if (images.isNullOrEmpty()) {
-            // TODO log
+            WooLog.w(T.MEDIA, "productImagesService > images passed for updating product is empty")
             return
         }
 
@@ -250,7 +250,7 @@ class ProductImagesService : JobIntentService() {
 
             val result = updateProductWithRetries(product.copy(images = product.images + images))
             if (result) {
-                // TODO post success notification
+                notifHandler.postUpdateSuccessNotification(productId, product, images.size)
             } else {
                 notifHandler.postUpdateFailureNotification(productId, product)
             }
