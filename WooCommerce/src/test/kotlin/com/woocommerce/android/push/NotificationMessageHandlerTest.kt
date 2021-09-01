@@ -87,7 +87,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `do not process notification if user is not logged in`() {
+    fun `when the user is not logged in, then do not process the incoming notification`() {
         doReturn(false).whenever(accountStore).hasAccessToken()
 
         notificationMessageHandler.onNewMessageReceived(emptyMap())
@@ -96,7 +96,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `do not process notification if payload data is empty`() {
+    fun `when the notification payload data is empty, then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLogWrapper, only()).e(
@@ -106,7 +106,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `do not process notification if user id mismatch`() {
+    fun `when the user id does not match, then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLogWrapper, only()).e(
@@ -116,7 +116,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `do not process notification if payload is empty`() {
+    fun `when the notification payload is empty then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(
             mapOf(
                 "type" to "new_order",
@@ -128,7 +128,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `should update incoming notification to local cache`() {
+    fun `when an incoming notification is received, then we should update that notification to local cache`() {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
@@ -140,7 +140,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `should request new notification fetch from api`() {
+    fun `when an incoming notification is received, then we should request the notification fetch from api`() {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
@@ -152,7 +152,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `do not request all orders diff fetch for review notifications`() {
+    fun `when review notifications are received, then do not request all orders diff fetch from api`() {
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
@@ -163,7 +163,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `do not request all orders diff fetch when site is not found`() {
+    fun `when order notification is received for a non existent site, then do not request all orders diff fetch`() {
         doReturn(null).whenever(siteStore).getSiteBySiteId(any())
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
@@ -179,7 +179,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `should request all orders diff fetch when dispatching new order events`() {
+    fun `when order notifications are received, then we should request all orders diff fetch from api`() {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
@@ -191,7 +191,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `should request processing orders diff fetch when dispatching new order events`() {
+    fun `when order notifications are received, then we should request processing orders diff fetch from api`() {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
@@ -204,7 +204,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `do not display notification if the option for orders is not enabled`() {
+    fun `when order notification is received but not enabled, then do not display notification`() {
         doReturn(false).whenever(appPrefsWrapper).isOrderNotificationsEnabled()
 
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
@@ -215,7 +215,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `do not display notification if the option for reviews is not enabled`() {
+    fun `when review notification is received but not enabled, then do not display notification`() {
         doReturn(false).whenever(appPrefsWrapper).isReviewNotificationsEnabled()
 
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
@@ -226,7 +226,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `display zendesk notification details correctly`() {
+    fun `when zendesk notification is received, then display notification details correctly`() {
         val notificationPayload = mapOf("type" to "zendesk")
         val zendeskNote = NotificationModel(noteId = 1999999999, remoteNoteId = 1999999999).toAppModel(resourceProvider)
 
@@ -239,7 +239,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `display new order and review notification details correctly`() {
+    fun `when order and review notifications are received together, then display notification details correctly`() {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
@@ -293,7 +293,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `display two new order notification details for same store correctly`() {
+    fun `when two new order notifications are received for the same store, then display the notification correctly`() {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
@@ -350,7 +350,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `display two new review notification details for same store correctly`() {
+    fun `when two new review notifications are received for the same store, then display the notification correctly`() {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
@@ -407,7 +407,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `display two new order notification details for different stores correctly`() {
+    fun `when two new order notifications are received for different stores display the notification correctly`() {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
@@ -464,7 +464,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `display two new review notification details for different stores correctly`() {
+    fun `when two new review notifications are received for different stores, display the notification correctly`() {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
@@ -521,7 +521,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `mark new notification as tapped correctly`() {
+    fun `when notification is clicked, then mark new notification as tapped correctly`() {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
         notificationMessageHandler.markNotificationTapped(orderNotification.remoteNoteId)
 
@@ -531,7 +531,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `mark only new order notification as tapped correctly`() {
+    fun `when new order notification is clicked, then mark only new order notification as tapped correctly`() {
         doReturn(true).whenever(notificationBuilder).isNotificationsEnabled()
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
         notificationMessageHandler.markNotificationsOfTypeTapped(orderNotification.channelType)

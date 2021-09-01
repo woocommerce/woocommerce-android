@@ -100,7 +100,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `blank notification to open my store`() {
+    fun `when a blank notification is clicked, then the my store tab is opened`() {
         val localPushId = 1000
         var event: ViewMyStoreStats? = null
         viewModel.event.observeForever {
@@ -112,7 +112,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming new order notification to open order detail`() {
+    fun `when a new order notification is clicked, then the order detail screen for that order is opened`() {
         val localPushId = 1000
         var event: ViewOrderDetail? = null
         viewModel.event.observeForever {
@@ -133,7 +133,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming new order notification for non existent site to open my store`() {
+    fun `when a new order notification for non existent site is clicked, then the my store tab is opened`() {
         doReturn(null).whenever(siteStore).getSiteBySiteId(any())
 
         val localPushId = 1000
@@ -150,7 +150,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming new review notification to open review detail`() {
+    fun `when a new review notification is clicked, then the review detail screen for that review is opened`() {
         val localPushId = 1001
         var event: ViewReviewDetail? = null
         viewModel.event.observeForever {
@@ -166,7 +166,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming new zendesk notification to open zendesk tickets`() {
+    fun `when a new zendesk notification is clicked, then the my tickets screen of zendesk is opened`() {
         var event1: ViewZendeskTickets? = null
         viewModel.event.observeForever {
             if (it is ViewZendeskTickets) event1 = it
@@ -184,7 +184,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming multiple order notifications for same store to open order list`() {
+    fun `when multiple order notifications for the same store is clicked, then the order list screen is opened`() {
         val groupOrderPushId = testOrderNotification.getGroupPushId()
         var event: ViewOrderList? = null
         viewModel.event.observeForever {
@@ -205,7 +205,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming multiple review notifications for same store to open review list`() {
+    fun `when multiple review notifications for the same store is clicked, then the review list screen is opened`() {
         val reviewPushId = testReviewNotification.getGroupPushId()
         var event: ViewReviewList? = null
         viewModel.event.observeForever {
@@ -226,7 +226,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming order notifications for different store opens order list for that store`() {
+    fun `when order notifications for a second store is clicked then the order list screen for that store is opened`() {
         val orderNotification2 = testOrderNotification.copy(
             remoteSiteId = TEST_REMOTE_SITE_ID_2, uniqueId = TEST_NEW_ORDER_ID_2
         )
@@ -250,7 +250,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming multiple review notifications for different stores to open review list for that store`() {
+    fun `when review notifications for second store is clicked then the review list screen for that store is opened`() {
         val reviewNotification2 = testReviewNotification.copy(
             remoteSiteId = TEST_REMOTE_SITE_ID_2, uniqueId = TEST_NEW_REVIEW_ID_2
         )
@@ -274,7 +274,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `incoming multiple zendesk notifications to open my store`() {
+    fun `when multiple zendesk notifications is clicked, then the my store tab is opened`() {
         val localPushId = testZendeskNotification.getGroupPushId()
         var event: ViewMyStoreStats? = null
         viewModel.event.observeForever {
