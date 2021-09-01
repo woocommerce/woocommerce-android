@@ -92,8 +92,8 @@ class ProductFilterListViewModel @Inject constructor(
         arguments.selectedProductCategoryName?.let { selectedCategoryName = it }
     }
 
-    private suspend fun loadCategoriesIfEmpty() {
-        if (productCategories.isEmpty()) {
+    private suspend fun maybeLoadCategories() {
+        if (productCategories.isEmpty() || isProductCategoriesPartiallyFilled()) {
             productCategories = if (networkStatus.isConnected()) {
                 productCategoriesRepository.fetchProductCategories()
             } else {
@@ -106,12 +106,24 @@ class ProductFilterListViewModel @Inject constructor(
         return getFilterByProductCategory() != null && selectedCategoryName != null && productCategories.isEmpty()
     }
 
+    // Check whether productCategories list is only filled with a single, previously selected category.
+    // This can result in a false positive if the site only has 1 category, but it should be OK
+    // for the sake of simplicity, and because filtering by category is likely rarely done on sites with
+    // just one category.
+    private fun isProductCategoriesPartiallyFilled(): Boolean {
+        selectedCategoryName?.let {
+            return productCategories.size == 1
+        } ?: return false
+    }
+
     fun loadFilters() {
         savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)?.let { selectedCategoryName = it }
 
         // If filter item screen is opened from product list screen, and there is existing filter by category,
-        // then we use that single category as the content of productCategories. This will help in displaying
-        // that category's name next to the "Category" name filter item.
+        // then we partially fill productCategories with just that category.
+        // This will allows displaying that category's name next to the "Category" name filter item.
+        //
+        // Also related: isProductCategoriesPartiallyFilled()
         if (isFromProductListWithExistingCategoryFilter()) {
             productCategories = listOf(
                 ProductCategory(
@@ -139,7 +151,7 @@ class ProductFilterListViewModel @Inject constructor(
             if (filterItem.filterItemKey == CATEGORY) {
                 launch {
                     productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = true)
-                    loadCategoriesIfEmpty()
+                    maybeLoadCategories()
                     val categoryOptions = productCategoriesToOptionListItems()
                     _filterOptionListItems.value = categoryOptions
                     updateCategoryFilterListItem(categoryOptions)
