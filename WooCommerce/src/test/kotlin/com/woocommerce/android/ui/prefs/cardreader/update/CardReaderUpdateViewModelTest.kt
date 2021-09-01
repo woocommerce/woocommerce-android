@@ -211,10 +211,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
+            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(InstallationStarted))
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
-            softwareStatus.value = Failed("")
 
             // THEN
             verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
