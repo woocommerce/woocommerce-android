@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.core.app.JobIntentService
 import com.woocommerce.android.JobServiceIds
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 

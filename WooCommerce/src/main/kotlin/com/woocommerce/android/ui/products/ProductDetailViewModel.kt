@@ -15,7 +15,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.media.MediaFilesRepository
-import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler

@@ -55,7 +55,6 @@ class ProductImagesNotificationHandler @Inject constructor(
         notificationId = (Random()).nextInt()
         service.startForeground(notificationId, notification)
         notificationManager.notify(notificationId, notification)
-
     }
 
     fun setProgress(progress: Int) {
@@ -89,7 +88,13 @@ class ProductImagesNotificationHandler @Inject constructor(
             color = ContextCompat.getColor(context, R.color.woo_gray_40)
             setSmallIcon(R.drawable.ic_done_secondary)
             setContentTitle(context.getString(R.string.product_update_success_notification_title))
-            setContentText(context.getString(R.string.product_update_success_notification_content, imagesCount, product.name))
+            setContentText(
+                context.getString(
+                    R.string.product_update_success_notification_content,
+                    imagesCount,
+                    product.name
+                )
+            )
         }
         notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
     }

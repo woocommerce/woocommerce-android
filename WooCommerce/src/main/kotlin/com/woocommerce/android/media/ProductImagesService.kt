@@ -49,7 +49,7 @@ class ProductImagesService : JobIntentService() {
         const val KEY_UPLOADED_IMAGES = "key_uploaded_images"
 
         private const val STRIP_LOCATION = true
-        private const val TIMEOUT_PER_UPLOAD = 120L
+        private const val TIMEOUT_PER_UPLOAD = 10L
 
         private val canceledProducts = mutableSetOf<Long>()
 
@@ -257,6 +257,7 @@ class ProductImagesService : JobIntentService() {
         }
     }
 
+    @Suppress("MagicNumber")
     private suspend fun fetchProductWithRetries(productId: Long): Product? {
         var retries = 0
         while (retries < 3) {
@@ -269,6 +270,7 @@ class ProductImagesService : JobIntentService() {
         return null
     }
 
+    @Suppress("MagicNumber")
     private suspend fun updateProductWithRetries(product: Product): Boolean {
         var retries = 0
         while (retries < 3) {

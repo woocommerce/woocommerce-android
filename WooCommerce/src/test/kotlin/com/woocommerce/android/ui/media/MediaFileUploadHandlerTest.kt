@@ -5,20 +5,13 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
-import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +23,6 @@ import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.FAILED
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.UPLOADED
 import org.wordpress.android.fluxc.store.MediaStore.MediaError
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
-import org.wordpress.android.fluxc.utils.DateUtils
 import org.wordpress.android.util.DateTimeUtils
 import java.util.*
 
@@ -99,23 +91,24 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given there is no external observer, when multiple uploads finish, then start product update`() = testBlocking {
-        val testUri2 = Uri.parse("file:///test2")
-        mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI, testUri2))
+    fun `given there is no external observer, when multiple uploads finish, then start product update`() =
+        testBlocking {
+            val testUri2 = Uri.parse("file:///test2")
+            mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI, testUri2))
 
-        val mediaModel = MediaModel().apply {
-            postId = REMOTE_PRODUCT_ID
-            fileName = "test"
-            url = "url"
-            uploadDate = DateTimeUtils.iso8601FromDate(Date())
-            setUploadState(UPLOADED)
+            val mediaModel = MediaModel().apply {
+                postId = REMOTE_PRODUCT_ID
+                fileName = "test"
+                url = "url"
+                uploadDate = DateTimeUtils.iso8601FromDate(Date())
+                setUploadState(UPLOADED)
+            }
+            mediaFileUploadHandler.onEventMainThread(OnProductImageUploaded(TEST_URI, mediaModel))
+            mediaFileUploadHandler.onEventMainThread(OnProductImageUploaded(testUri2, mediaModel))
+
+            verify(productImagesServiceWrapper)
+                .addImagesToProduct(REMOTE_PRODUCT_ID, listOf(mediaModel.toAppModel(), mediaModel.toAppModel()))
         }
-        mediaFileUploadHandler.onEventMainThread(OnProductImageUploaded(TEST_URI, mediaModel))
-        mediaFileUploadHandler.onEventMainThread(OnProductImageUploaded(testUri2, mediaModel))
-
-        verify(productImagesServiceWrapper)
-            .addImagesToProduct(REMOTE_PRODUCT_ID, listOf(mediaModel.toAppModel(), mediaModel.toAppModel()))
-    }
 
     @Test
     fun `given there is external observer, when an upload fails, then skip handler's notification`() = testBlocking {
