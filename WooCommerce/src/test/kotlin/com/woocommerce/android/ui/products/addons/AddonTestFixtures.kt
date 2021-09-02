@@ -2,14 +2,19 @@ package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.model.ProductAddon
+import com.woocommerce.android.model.ProductAddon.PriceType.FlatFee
+import com.woocommerce.android.model.ProductAddon.PriceType.QuantityBased
 import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
 import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType.FlatFee
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType.QuantityBased
+import org.wordpress.android.fluxc.persistence.entity.AddonEntity
+import org.wordpress.android.fluxc.persistence.entity.AddonEntity.*
+import org.wordpress.android.fluxc.persistence.entity.AddonEntity.Type.*
+import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
+import org.wordpress.android.fluxc.persistence.entity.AddonWithOptions
 
 object AddonTestFixtures {
     val defaultWCOrderItemList: List<LineItem> by lazy {
@@ -42,6 +47,44 @@ object AddonTestFixtures {
         defaultWCProductModel
             .toAppModel()
             .addons
+    }
+
+    val defaultAddonWithOptionsList by lazy {
+        listOf(
+            AddonWithOptions(
+                defaultAddonEntity.copy(
+                    name = "Topping",
+                    description = "Pizza topping",
+                    priceType = PriceType.FlatFee
+                ),
+                options = listOf(
+                    emptyAddonOptions.copy(
+                        label = "Peperoni",
+                        price = "3",
+                        image = "",
+                        priceType = PriceType.FlatFee
+                    ),
+                    emptyAddonOptions.copy(
+                        label = "Extra cheese",
+                        price = "4",
+                        image = "",
+                        priceType = PriceType.FlatFee
+                    ),
+                    emptyAddonOptions.copy(
+                        label = "Salami",
+                        price = "3",
+                        image = "",
+                        priceType = PriceType.FlatFee
+                    ),
+                    emptyAddonOptions.copy(
+                        label = "Ham",
+                        price = "3",
+                        image = "",
+                        priceType = PriceType.FlatFee
+                    )
+                )
+            )
+        )
     }
 
     val defaultOrderedAddonList by lazy {
@@ -145,7 +188,7 @@ object AddonTestFixtures {
             max = 0,
             min = 0,
             position = 0,
-            adjustPrice = 0,
+            adjustPrice = false,
             titleFormat = null,
             restrictionsType = null,
             priceType = null,
@@ -153,6 +196,35 @@ object AddonTestFixtures {
             display = null,
             price = "",
             rawOptions = listOf()
+        )
+    }
+
+    val defaultAddonEntity by lazy {
+        AddonEntity(
+            name = "",
+            required = false,
+            description = "",
+            descriptionEnabled = true,
+            max = 0,
+            min = 0,
+            position = 0,
+            priceAdjusted = false,
+            titleFormat = TitleFormat.Label,
+            restrictions = Restrictions.AnyText,
+            priceType = PriceType.FlatFee,
+            type = Checkbox,
+            display = Display.Select,
+            price = ""
+        )
+    }
+
+    val emptyAddonOptions by lazy {
+        AddonOptionEntity(
+            label = "",
+            price = "",
+            image = "",
+            priceType = PriceType.FlatFee,
+            addonLocalId = 0
         )
     }
 }

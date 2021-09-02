@@ -13,9 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
 import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
@@ -24,27 +21,29 @@ import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.products.*
+import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductBackorderStatus
+import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.*
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -106,12 +105,12 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     init {
-        EventBus.getDefault().register(this)
-
         viewState = viewState.copy(parentProduct = productRepository.getProduct(navArgs.remoteProductId))
         originalVariation?.let {
             showVariation(it.copy())
         }
+
+        observeImageUploadEvents()
     }
 
     /**
@@ -152,6 +151,7 @@ class VariationDetailViewModel @Inject constructor(
                     ShowDialog.buildDiscardDialogEvent(
                         messageId = string.discard_images_message,
                         positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                            mediaFileUploadHandler.cancelUpload(navArgs.remoteVariationId)
                             triggerEvent(Exit)
                         }
                     )
@@ -347,7 +347,6 @@ class VariationDetailViewModel @Inject constructor(
         super.onCleared()
         productRepository.onCleanup()
         variationRepository.onCleanup()
-        EventBus.getDefault().unregister(this)
     }
 
     private fun updateCards(variation: ProductVariation) {
@@ -375,69 +374,30 @@ class VariationDetailViewModel @Inject constructor(
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.variation?.shippingClass ?: ""
 
-    /**
-     * Checks whether product images are uploading and ensures the view state reflects any currently
-     * uploading images
-     */
-    private fun checkImageUploads(remoteProductId: Long) {
-        viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
-            val uri = ProductImagesService.getUploadingImageUris(remoteProductId)?.firstOrNull()
-            viewState.copy(
-                uploadingImageUri = uri,
-                isDoneButtonEnabled = false
-            )
-        } else {
-            viewState.copy(
-                uploadingImageUri = null,
-                isDoneButtonEnabled = true
-            )
-        }
-    }
+    private fun observeImageUploadEvents() {
+        mediaFileUploadHandler.observeCurrentUploads(navArgs.remoteVariationId)
+            .onEach {
+                viewState = viewState.copy(uploadingImageUri = it.firstOrNull(), isDoneButtonEnabled = it.isEmpty())
+            }
+            .launchIn(this)
 
-    /**
-     * The list of product images has started uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
-        checkImageUploads(event.id)
-    }
-
-    /**
-     * The list of product images has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        if (event.isCancelled) {
-            viewState = viewState.copy(
-                uploadingImageUri = null,
-                isDoneButtonEnabled = true
-            )
-        }
-        checkImageUploads(event.id)
-    }
-
-    /**
-     * A single product image has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImageUploaded) {
-        if (event.isError) {
-            val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteVariationId)
-            triggerEvent(
-                ShowActionSnackbar(errorMsg, { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) })
-            )
-        } else {
-            event.media?.let { media ->
+        mediaFileUploadHandler.observeSuccessfulUploads(navArgs.remoteVariationId)
+            .onEach { media ->
                 viewState.variation?.let {
                     val variation = it.copy(image = media.toAppModel())
                     showVariation(variation)
                 }
             }
-        }
-        checkImageUploads(navArgs.remoteVariationId)
+            .launchIn(this)
+
+        mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteVariationId)
+            .onEach {
+                val errorMsg = resources.getMediaUploadErrorMessage(it.size)
+                triggerEvent(
+                    ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) }
+                )
+            }
+            .launchIn(this)
     }
 
     @Parcelize

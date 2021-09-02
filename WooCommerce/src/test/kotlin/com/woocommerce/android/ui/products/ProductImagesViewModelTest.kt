@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import org.mockito.kotlin.mock
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -13,10 +11,12 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -25,8 +25,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     private val networkStatus: NetworkStatus = mock()
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
-
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     private fun savedState(productImages: List<Image>) = ProductImagesFragmentArgs(
         remoteId = 0,
@@ -39,8 +38,8 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     private fun initialize(productImages: List<Image> = generateProductImagesList()) {
         viewModel = ProductImagesViewModel(
             networkStatus,
-            productImagesServiceWrapper,
             mediaFileUploadHandler,
+            resourceProvider,
             savedState(productImages)
         ).apply {
             viewStateData.observeForever { _, _ -> }

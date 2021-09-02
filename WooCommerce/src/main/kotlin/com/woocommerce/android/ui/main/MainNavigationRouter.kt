@@ -11,7 +11,8 @@ interface MainNavigationRouter {
         localSiteId: Int,
         localOrderId: Int = 0,
         remoteOrderId: Long,
-        remoteNoteId: Long = 0
+        remoteNoteId: Long = 0,
+        launchedFromNotification: Boolean = false
     )
     fun showAddProduct()
     fun showReviewDetail(

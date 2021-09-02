@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
@@ -29,7 +30,9 @@ import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
+import com.woocommerce.android.ui.products.addons.order.OrderedAddonViewModel.*
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -48,6 +51,19 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private var _binding: FragmentOrderedAddonBinding? = null
     private val binding get() = _binding!!
+
+    private val skeletonView = SkeletonView()
+
+    private var isLoadingSkeletonVisible: Boolean = false
+        set(show) {
+            field = show
+            if (show) skeletonView.show(
+                viewActual = binding.contentContainer,
+                layoutId = R.layout.skeleton_ordered_addon_list,
+                delayed = true
+            )
+            else skeletonView.hide()
+        }
 
     private val supportActionBar
         get() = activity
@@ -86,6 +102,11 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private fun setupObservers() {
         viewModel.orderedAddonsData
             .observe(viewLifecycleOwner, Observer(::onOrderedAddonsReceived))
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
+    }
+
+    private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
+        new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
     }
 
     private fun setupViews() {
