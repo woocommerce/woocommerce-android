@@ -12,7 +12,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.SystemServiceFactory
-import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,15 +24,15 @@ class ProductImagesNotificationHandler @Inject constructor(
 ) {
     companion object {
         private const val CHANNEL_ID = "image_upload_channel"
-        private const val PRODUCT_UPDATE_NOTIFICATION_ID = 1
-        private const val UPLOAD_FAILURE_NOTIFICATION_ID = 2
+        private const val FOREGROUND_NOTIFICATION_ID = 1
+        private const val PRODUCT_UPDATE_NOTIFICATION_ID = 2
+        private const val UPLOAD_FAILURE_NOTIFICATION_ID = 3
     }
 
     private val notificationManager =
         SystemServiceFactory.get(context, Context.NOTIFICATION_SERVICE) as NotificationManager
 
     private lateinit var notificationBuilder: NotificationCompat.Builder
-    private var notificationId: Int = 0
 
     init {
         createChannel()
@@ -52,14 +51,13 @@ class ProductImagesNotificationHandler @Inject constructor(
         }
 
         val notification = notificationBuilder.build()
-        notificationId = (Random()).nextInt()
-        service.startForeground(notificationId, notification)
-        notificationManager.notify(notificationId, notification)
+        service.startForeground(FOREGROUND_NOTIFICATION_ID, notification)
+        notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notification)
     }
 
     fun setProgress(progress: Int) {
         notificationBuilder.setProgress(100, progress, false)
-        notificationManager.notify(notificationId, notificationBuilder.build())
+        notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun update(currentUpload: Int, totalUploads: Int) {
@@ -70,14 +68,14 @@ class ProductImagesNotificationHandler @Inject constructor(
         }
 
         notificationBuilder.setContentTitle(title)
-        notificationManager.notify(notificationId, notificationBuilder.build())
+        notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun shopUpdatingProductNotification(product: Product?) {
         val title = context.getString(R.string.product_update_notification, product?.name.orEmpty())
         notificationBuilder.setContentTitle(title)
         notificationBuilder.setProgress(0, 0, true)
-        notificationManager.notify(notificationId, notificationBuilder.build())
+        notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun postUpdateSuccessNotification(productId: Long, product: Product, imagesCount: Int) {
@@ -140,13 +138,6 @@ class ProductImagesNotificationHandler @Inject constructor(
 
     fun removeUploadFailureNotification(productId: Long) {
         notificationManager.cancel(productId.toInt() + UPLOAD_FAILURE_NOTIFICATION_ID)
-    }
-
-    /**
-     * Removes the notification, called after all images have been uploaded
-     */
-    fun remove() {
-        notificationManager.cancel(notificationId)
     }
 
     /**

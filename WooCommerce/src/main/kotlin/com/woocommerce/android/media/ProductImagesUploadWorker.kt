@@ -23,6 +23,7 @@ class ProductImagesUploadWorker @Inject constructor(
     private val productDetailRepository: ProductDetailRepository,
     private val resourceProvider: ResourceProvider,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    private val notificationHandler: ProductImagesNotificationHandler,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
     private val queue = MutableSharedFlow<Work>(extraBufferCapacity = Int.MAX_VALUE)
@@ -34,14 +35,15 @@ class ProductImagesUploadWorker @Inject constructor(
     private val cancelledProducts = mutableSetOf<Long>()
     private val currentJobs = mutableMapOf<Long, List<Job>>()
 
+    // A reference to all images being uploaded to update the notification with the correct index
+    private val listOfImagesToUpload = mutableListOf<Pair<Long, Uri>>()
+
     private val mutex = Mutex()
 
     init {
         queue
             .onEach {
                 currentWorkListCount.value += it
-            }
-            .onEach {
                 handleWork(it)
             }
             .launchIn(appCoroutineScope)
@@ -60,6 +62,7 @@ class ProductImagesUploadWorker @Inject constructor(
                 .collectLatest { done ->
                     if (done) {
                         productImagesServiceWrapper.stopService()
+                        listOfImagesToUpload.clear()
                     } else {
                         productImagesServiceWrapper.startService()
                     }
@@ -122,11 +125,14 @@ class ProductImagesUploadWorker @Inject constructor(
                     fetchedMedia = fetchedMedia
                 )
             )
+            listOfImagesToUpload.add(Pair(work.productId, work.localUri))
         }
     }
 
     private suspend fun uploadMedia(work: Work.UploadMedia) {
         mutex.withLock {
+            val indexOfCurrentUpload = listOfImagesToUpload.indexOf(Pair(work.productId, work.localUri))
+            notificationHandler.update(indexOfCurrentUpload + 1, listOfImagesToUpload.size)
             try {
                 val uploadedMedia = mediaFilesRepository.uploadMedia(work.fetchedMedia)
                 _events.emit(
@@ -168,6 +174,7 @@ class ProductImagesUploadWorker @Inject constructor(
         currentJobs[productId]?.forEach {
             it.cancel()
         }
+        listOfImagesToUpload.removeAll { it.first == productId }
     }
 
     @Suppress("MagicNumber")
@@ -198,15 +205,18 @@ class ProductImagesUploadWorker @Inject constructor(
         mutex.withLock {
             val images = work.addedImages.map { it.toAppModel() }
 
+            notificationHandler.shopUpdatingProductNotification(null)
+
             val product = fetchProductWithRetries(work.productId)
             if (product == null) {
-                // TODO post failure notification notifHandler.postUpdateFailureNotification(productId, null)
+                notificationHandler.postUpdateFailureNotification(work.productId, null)
             } else {
+                notificationHandler.shopUpdatingProductNotification(product)
                 val result = updateProductWithRetries(product.copy(images = product.images + images))
                 if (result) {
-                    // TODO post success notification notifHandler.postUpdateSuccessNotification(productId, product, images.size)
+                    notificationHandler.postUpdateSuccessNotification(work.productId, product, images.size)
                 } else {
-                    // TODO post failure notification notifHandler.postUpdateFailureNotification(productId, product)
+                    notificationHandler.postUpdateFailureNotification(work.productId, product)
                 }
             }
         }
