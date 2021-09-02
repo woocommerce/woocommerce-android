@@ -48,13 +48,13 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             setHasFixedSize(true)
         }
 
-        if (order.isOrderPaid) {
+        if (order.paymentMethodTitle.isEmpty() && order.datePaid == null) {
             binding.paymentInfoPaymentMsg.hide()
             binding.paymentInfoPaidSection.hide()
         } else {
             binding.paymentInfoPaymentMsg.show()
 
-            if (order.isAwaitingPayment) {
+            if (order.status == Order.Status.Pending || order.status == Order.Status.OnHold || order.datePaid == null) {
                 binding.paymentInfoPaid.text = formatCurrencyForDisplay(BigDecimal.ZERO)
                 binding.paymentInfoPaymentMsg.text = context.getString(
                     R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
