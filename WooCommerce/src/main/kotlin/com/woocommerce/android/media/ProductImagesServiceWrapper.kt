@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.app.JobIntentService
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.JobServiceIds
 import com.woocommerce.android.model.Product
 import javax.inject.Inject
@@ -19,32 +20,12 @@ class ProductImagesServiceWrapper
     private val context: Context,
     private val productImagesNotificationHandler: ProductImagesNotificationHandler
 ) {
-    fun uploadProductMedia(remoteProductId: Long, localMediaUriList: ArrayList<Uri>) {
-        val intent = Intent(context, ProductImagesService::class.java).also {
-            it.action = ProductImagesService.ACTION_UPLOAD_IMAGES
-            it.putExtra(ProductImagesService.KEY_ID, remoteProductId)
-            it.putParcelableArrayListExtra(ProductImagesService.KEY_LOCAL_URI_LIST, localMediaUriList)
-        }
-        JobIntentService.enqueueWork(
-            context,
-            ProductImagesService::class.java,
-            JobServiceIds.JOB_PRODUCT_IMAGES_SERVICE_ID,
-            intent
-        )
+    fun startService() {
+        ContextCompat.startForegroundService(context, Intent(context, ProductImagesService::class.java))
     }
 
-    fun addImagesToProduct(remoteProductId: Long, images: List<Product.Image>) {
-        val intent = Intent(context, ProductImagesService::class.java).also {
-            it.action = ProductImagesService.ACTION_UPDATE_PRODUCT
-            it.putExtra(ProductImagesService.KEY_ID, remoteProductId)
-            it.putParcelableArrayListExtra(ProductImagesService.KEY_UPLOADED_IMAGES, ArrayList(images))
-        }
-        JobIntentService.enqueueWork(
-            context,
-            ProductImagesService::class.java,
-            JobServiceIds.JOB_PRODUCT_IMAGES_SERVICE_ID,
-            intent
-        )
+    fun stopService() {
+        context.stopService(Intent(context, ProductImagesService::class.java))
     }
 
     fun showUploadFailureNotification(productId: Long, failuresCount: Int) {

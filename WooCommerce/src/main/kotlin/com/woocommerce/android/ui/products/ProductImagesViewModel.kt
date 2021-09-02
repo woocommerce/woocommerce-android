@@ -51,7 +51,7 @@ class ProductImagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
-            uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
+            uploadingImageUris = emptyList(),
             isImageDeletingAllowed = true,
             images = navArgs.images.toList(),
             isWarningVisible = !isMultiSelectionAllowed,

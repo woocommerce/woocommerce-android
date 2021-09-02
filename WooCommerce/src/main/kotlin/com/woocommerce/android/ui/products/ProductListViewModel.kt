@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
@@ -379,11 +378,12 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        loadProducts()
-    }
+    // TODO
+//    @Suppress("unused")
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+//        loadProducts()
+//    }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

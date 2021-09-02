@@ -183,7 +183,7 @@ class VariationDetailViewModel @Inject constructor(
         triggerEvent(ViewImageGallery(navArgs.remoteVariationId, images, showChooser = true))
     }
 
-    fun isUploadingImages(remoteId: Long) = ProductImagesService.isUploadingForProduct(remoteId)
+    fun isUploadingImages(remoteId: Long) = viewState.uploadingImageUri != null
 
     fun onVariationVisibilitySwitchChanged(isVisible: Boolean) {
         AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED)

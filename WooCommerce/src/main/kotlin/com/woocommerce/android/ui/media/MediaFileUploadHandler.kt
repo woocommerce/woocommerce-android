@@ -4,22 +4,15 @@ import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploadFailed
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesServiceWrapper
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.InProgress
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
+import com.woocommerce.android.media.ProductImagesUploadWorker
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import javax.inject.Inject
@@ -29,23 +22,27 @@ import javax.inject.Singleton
 class MediaFileUploadHandler @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    private val worker: ProductImagesUploadWorker,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
 
-    private val events = MutableSharedFlow<ProductImageUploadData>(extraBufferCapacity = Int.MAX_VALUE)
-
     private val externalObservers = mutableSetOf<Long>()
 
     init {
-        EventBus.getDefault().register(this)
-        events
+        worker.events
             .onEach { event ->
+                println("worker -> received event $event")
                 val statusList = uploadsStatus.value.toMutableList()
                 val index = statusList.indexOfFirst {
                     it.remoteProductId == event.remoteProductId && it.localUri == event.localUri
                 }
-                if (index == -1) return@onEach
+
+                if (index == -1) {
+                    statusList.add(event)
+                    uploadsStatus.value = statusList
+                    return@onEach
+                }
 
                 if (event.uploadStatus is UploadSuccess && externalObservers.contains(event.remoteProductId)) {
                     statusList.removeAt(index)
@@ -66,10 +63,10 @@ class MediaFileUploadHandler @Inject constructor(
         val productImages = state.filter { it.remoteProductId == productId && it.uploadStatus !is Failed }
         if (productImages.none { it.uploadStatus == InProgress }) {
             val uploadedImages = productImages.filter { it.uploadStatus is UploadSuccess }
-                .map { (it.uploadStatus as UploadSuccess).media.toAppModel() }
+                .map { (it.uploadStatus as UploadSuccess).media }
 
             if (uploadedImages.isNotEmpty()) {
-                productImagesServiceWrapper.addImagesToProduct(productId, uploadedImages)
+                worker.addImagesToProduct(productId, uploadedImages)
             }
 
             uploadsStatus.value -= productImages
@@ -82,21 +79,13 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
-        val newUploads = uris.map {
-            ProductImageUploadData(
-                remoteProductId = remoteProductId,
-                localUri = it,
-                uploadStatus = InProgress
-            )
-        }
-        uploadsStatus.value += newUploads
-        productImagesServiceWrapper.uploadProductMedia(remoteProductId, ArrayList(uris))
+        worker.enqueueImagesUpload(remoteProductId, uris)
     }
 
     fun cancelUpload(remoteProductId: Long) {
         uploadsStatus.value = uploadsStatus.value.filterNot { it.remoteProductId == remoteProductId }
 
-        ProductImagesService.cancel(remoteProductId)
+        // TODO ProductImagesService.cancel(remoteProductId)
     }
 
     fun clearImageErrors(remoteProductId: Long) {
@@ -120,47 +109,11 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     fun observeSuccessfulUploads(remoteProductId: Long): Flow<MediaModel> {
-        return events
+        return worker.events
             .onSubscription { externalObservers.add(remoteProductId) }
             .onCompletion { externalObservers.remove(remoteProductId) }
             .filter { it.remoteProductId == remoteProductId && it.uploadStatus is UploadSuccess }
             .map { (it.uploadStatus as UploadSuccess).media }
-    }
-
-    /**
-     * A single product image has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImageUploaded) {
-        val productId = event.media.postId
-        events.tryEmit(
-            ProductImageUploadData(
-                remoteProductId = productId,
-                localUri = event.localUri,
-                uploadStatus = UploadStatus.UploadSuccess(media = event.media)
-            )
-        )
-    }
-
-    /**
-     * image upload failed
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImageUploadFailed) {
-        val productId = event.media.postId
-        val errorMessage = event.error.message
-            ?: event.error.logMessage
-            ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
-
-        events.tryEmit(
-            ProductImageUploadData(
-                remoteProductId = productId,
-                localUri = event.localUri,
-                uploadStatus = Failed(event.media, event.error.type, errorMessage)
-            )
-        )
     }
 
     /***
