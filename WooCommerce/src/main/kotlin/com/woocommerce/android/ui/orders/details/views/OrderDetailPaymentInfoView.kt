@@ -26,7 +26,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailPaymentInfoBinding.inflate(LayoutInflater.from(ctx), this)
 
-    @Suppress("LongParameterList", "LongMethod")
+    @Suppress("LongParameterList")
     fun updatePaymentInfo(
         order: Order,
         isReceiptAvailable: Boolean,
@@ -73,7 +73,18 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             }
         }
 
-        // Populate or hide discounts section
+        updateDiscountsSection(order, formatCurrencyForDisplay)
+        updateFeesSection(order, formatCurrencyForDisplay)
+        updateRefundSection(order, formatCurrencyForDisplay, onIssueRefundClickListener)
+        updateCollectPaymentSection(isPaymentCollectableWithCardReader, onCollectCardPresentPaymentClickListener)
+        updateSeeReceiptSection(isReceiptAvailable, onSeeReceiptClickListener)
+        updatePrintingInstructionSection(isPaymentCollectableWithCardReader, onPrintingInstructionsClickListener)
+    }
+
+    private fun updateDiscountsSection(
+        order: Order,
+        formatCurrencyForDisplay: (BigDecimal) -> String
+    ) {
         if (order.discountTotal isEqualTo BigDecimal.ZERO) {
             binding.paymentInfoDiscountSection.hide()
         } else {
@@ -87,16 +98,25 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
                 order.discountCodes
             )
         }
+    }
 
-        // Populate or hide the fees section
+    private fun updateFeesSection(
+        order: Order,
+        formatCurrencyForDisplay: (BigDecimal) -> String
+    ) {
         if (order.feesTotal isEqualTo BigDecimal.ZERO) {
             binding.paymentInfoFeesSection.hide()
         } else {
             binding.paymentInfoFeesSection.show()
             binding.paymentInfoFees.text = formatCurrencyForDisplay(order.feesTotal)
         }
+    }
 
-        // Populate or hide refund section
+    private fun updateRefundSection(
+        order: Order,
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        onIssueRefundClickListener: (view: View) -> Unit
+    ) {
         if (order.refundTotal > BigDecimal.ZERO) {
             binding.paymentInfoRefundSection.show()
             val newTotal = order.total - order.refundTotal
@@ -106,30 +126,46 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         }
 
         binding.paymentInfoIssueRefundButton.setOnClickListener(onIssueRefundClickListener)
+    }
+
+    private fun updateCollectPaymentSection(
+        isPaymentCollectableWithCardReader: Boolean,
+        onCollectCardPresentPaymentClickListener: (view: View) -> Unit
+    ) {
         if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
-            binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.VISIBLE
+            binding.paymentInfoCollectCardPresentPaymentButton.visibility = VISIBLE
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
                 onCollectCardPresentPaymentClickListener
             )
         } else {
-            binding.paymentInfoCollectCardPresentPaymentButton.visibility = View.GONE
+            binding.paymentInfoCollectCardPresentPaymentButton.visibility = GONE
         }
+    }
 
+    private fun updateSeeReceiptSection(
+        isReceiptAvailable: Boolean,
+        onSeeReceiptClickListener: (view: View) -> Unit
+    ) {
         if (FeatureFlag.CARD_READER.isEnabled() && isReceiptAvailable) {
-            binding.paymentInfoSeeReceiptButton.visibility = View.VISIBLE
+            binding.paymentInfoSeeReceiptButton.visibility = VISIBLE
             binding.paymentInfoSeeReceiptButton.setOnClickListener(
                 onSeeReceiptClickListener
             )
         } else {
-            binding.paymentInfoSeeReceiptButton.visibility = View.GONE
+            binding.paymentInfoSeeReceiptButton.visibility = GONE
         }
+    }
 
+    private fun updatePrintingInstructionSection(
+        isPaymentCollectableWithCardReader: Boolean,
+        onPrintingInstructionsClickListener: (view: View) -> Unit
+    ) {
         if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
             binding.paymentInfoPrintingInstructions.setOnClickListener(
                 onPrintingInstructionsClickListener
             )
         } else {
-            binding.paymentInfoPrintingInstructions.visibility = View.GONE
+            binding.paymentInfoPrintingInstructions.visibility = GONE
         }
     }
 
