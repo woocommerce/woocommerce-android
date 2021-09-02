@@ -22,7 +22,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -49,6 +49,7 @@ import javax.inject.Inject
 class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
+    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val viewModel: ReviewDetailViewModel by viewModels()
 
@@ -126,9 +127,8 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is MarkNotificationAsRead -> {
-                        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(
-                            requireContext(),
-                            event.remoteNoteId.toString()
+                        notificationMessageHandler.removeNotificationByRemoteIdFromSystemsBar(
+                            event.remoteNoteId
                         )
                     }
                     is Exit -> exitDetailView()

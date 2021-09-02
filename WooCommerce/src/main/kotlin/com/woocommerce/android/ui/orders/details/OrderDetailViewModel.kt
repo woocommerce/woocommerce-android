@@ -146,11 +146,7 @@ class OrderDetailViewModel @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    init {
-        start()
-    }
-
-    final fun start() {
+    fun start() {
         dispatcher.register(this)
 
         val orderInDb = orderDetailRepository.getOrder(navArgs.orderId)

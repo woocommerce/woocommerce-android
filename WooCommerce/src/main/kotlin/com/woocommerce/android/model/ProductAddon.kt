@@ -1,13 +1,11 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.model.ProductAddon.*
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.addons.WCProductAddonModel
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnDisplay
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnPriceType
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnRestrictionsType
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnTitleFormat
-import org.wordpress.android.fluxc.model.addons.WCProductAddonModel.AddOnType
+import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
+import org.wordpress.android.fluxc.persistence.entity.AddonWithOptions
 
 @Parcelize
 data class ProductAddon(
@@ -18,12 +16,12 @@ data class ProductAddon(
     val max: Long,
     val min: Long,
     val position: Int,
-    val adjustPrice: Int,
-    val titleFormat: AddOnTitleFormat?,
-    val restrictionsType: AddOnRestrictionsType?,
-    val priceType: AddOnPriceType?,
-    val type: AddOnType?,
-    val display: AddOnDisplay?,
+    val adjustPrice: Boolean,
+    val titleFormat: TitleFormat?,
+    val restrictionsType: Restrictions?,
+    val priceType: PriceType?,
+    val type: Type?,
+    val display: Display?,
     private val price: String,
     private val rawOptions: List<ProductAddonOption>
 ) : Parcelable {
@@ -41,38 +39,107 @@ data class ProductAddon(
 
     private val isNoPriceAvailableAtOptions
         get() = (rawOptions.size == 1) && rawOptions.single().price.isEmpty()
+
+    enum class Type {
+        MultipleChoice,
+        Checkbox,
+        CustomText,
+        CustomTextArea,
+        FileUpload,
+        CustomPrice,
+        InputMultiplier,
+        Heading
+    }
+
+    enum class Display {
+        Select,
+        RadioButton,
+        Images
+    }
+
+    enum class TitleFormat {
+        Label,
+        Heading,
+        Hide
+    }
+
+    enum class Restrictions {
+        AnyText,
+        OnlyLetters,
+        OnlyNumbers,
+        OnlyLettersNumbers,
+        Email
+    }
+
+    enum class PriceType {
+        FlatFee,
+        QuantityBased,
+        PercentageBased
+    }
 }
 
 @Parcelize
 data class ProductAddonOption(
-    val priceType: AddOnPriceType?,
+    val priceType: PriceType?,
     val label: String,
     val price: String,
     val image: String
 ) : Parcelable
 
+fun AddonWithOptions.toAppModel() =
+    ProductAddon(
+        name = addon.name,
+        description = addon.description,
+        descriptionEnabled = addon.descriptionEnabled,
+        max = addon.max ?: 0,
+        min = addon.min ?: 0,
+        position = addon.position,
+        price = addon.price ?: "",
+        adjustPrice = addon.priceAdjusted ?: false,
+        required = addon.required,
+        titleFormat = TitleFormat.valueOf(addon.titleFormat.toString()),
+        restrictionsType = Restrictions.valueOf(addon.restrictions.toString()),
+        priceType = PriceType.valueOf(addon.priceType.toString()),
+        type = Type.valueOf(addon.type.toString()),
+        display = Display.valueOf(addon.display.toString()),
+        rawOptions = options.map { it.toAppModel() }
+    )
+
+fun AddonOptionEntity.toAppModel() =
+    ProductAddonOption(
+        priceType = PriceType.valueOf(priceType.toString()),
+        label = label ?: "",
+        price = price ?: "",
+        image = image ?: ""
+    )
+
 fun WCProductAddonModel.toAppModel() =
     ProductAddon(
-        name = name ?: "",
-        description = description ?: "",
+        name = name,
+        description = description,
         descriptionEnabled = descriptionEnabled.toBoolean(),
         max = max,
         min = min,
         position = position,
         price = price ?: "",
-        adjustPrice = adjustPrice,
         required = required.toBoolean(),
-        titleFormat = titleFormat,
-        restrictionsType = restrictionsType,
-        priceType = priceType,
-        type = type,
-        display = display,
+        adjustPrice = adjustPrice.toBoolean(),
+        titleFormat = TitleFormat.values()
+            .find { it.toString() == titleFormat?.toString() },
+        restrictionsType = Restrictions.values()
+            .find { it.toString() == restrictionsType?.toString() },
+        priceType = PriceType.values()
+            .find { it.toString() == priceType?.toString() },
+        type = Type.values().find { it.toString() == type?.toString() },
+        display = Display.values()
+            .find { it.toString() == display?.toString() },
         rawOptions = options?.map { it.toAppModel() } ?: emptyList()
     )
 
 fun WCProductAddonModel.ProductAddonOption.toAppModel() =
     ProductAddonOption(
-        priceType = priceType,
+        priceType = PriceType.values()
+            .find { it.toString() == priceType?.toString() },
         label = label ?: "",
         price = price ?: "",
         image = image ?: ""

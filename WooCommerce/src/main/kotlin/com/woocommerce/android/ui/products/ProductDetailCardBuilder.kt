@@ -621,7 +621,12 @@ class ProductDetailCardBuilder(
                 value = resources.getString(string.product_add_ons_title),
                 icon = drawable.ic_gridicon_circle_plus,
                 showTitle = false,
-                onClick = { viewModel.onEditProductCardClicked(ViewProductAddonsDetails) }
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductAddonsDetails,
+                        Stat.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+                    )
+                }
             )
         }
 }

@@ -14,8 +14,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_DISMISSED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_GIVEN
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_ADDONS_FEEDBACK
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
@@ -23,7 +30,9 @@ import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
+import com.woocommerce.android.ui.products.addons.order.OrderedAddonViewModel.*
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,6 +51,19 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private var _binding: FragmentOrderedAddonBinding? = null
     private val binding get() = _binding!!
+
+    private val skeletonView = SkeletonView()
+
+    private var isLoadingSkeletonVisible: Boolean = false
+        set(show) {
+            field = show
+            if (show) skeletonView.show(
+                viewActual = binding.contentContainer,
+                layoutId = R.layout.skeleton_ordered_addon_list,
+                delayed = true
+            )
+            else skeletonView.hide()
+        }
 
     private val supportActionBar
         get() = activity
@@ -80,6 +102,11 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private fun setupObservers() {
         viewModel.orderedAddonsData
             .observe(viewLifecycleOwner, Observer(::onOrderedAddonsReceived))
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
+    }
+
+    private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
+        new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
     }
 
     private fun setupViews() {
@@ -101,6 +128,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private fun onOrderedAddonsReceived(orderedAddons: List<ProductAddon>) {
         showWIPNoticeCard(true)
         setupRecyclerViewWith(orderedAddons)
+        track(orderedAddons)
     }
 
     private fun setupRecyclerViewWith(addonList: List<ProductAddon>) {
@@ -118,7 +146,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun onGiveFeedbackClicked() {
-        // should send track event
+        trackFeedback(VALUE_FEEDBACK_GIVEN)
 
         FeatureFeedbackSettings(
             CURRENT_WIP_NOTICE_FEATURE.name,
@@ -131,7 +159,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun onDismissWIPCardClicked() {
-        // should send track event
+        trackFeedback(VALUE_FEEDBACK_DISMISSED)
 
         FeatureFeedbackSettings(
             CURRENT_WIP_NOTICE_FEATURE.name,
@@ -140,4 +168,26 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
         showWIPNoticeCard(false)
     }
+
+    private fun trackFeedback(feedbackAction: String) {
+        AnalyticsTracker.track(
+            FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to VALUE_PRODUCT_ADDONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to feedbackAction
+            )
+        )
+    }
+
+    private fun track(addons: List<ProductAddon>) =
+        addons.distinctBy { it.name }
+            .map { it.name }
+            .filter { it.isNotEmpty() }
+            .joinToString(",")
+            .let {
+                AnalyticsTracker.track(
+                    PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
+                    mapOf(AnalyticsTracker.KEY_ADDONS to it)
+                )
+            }
 }
