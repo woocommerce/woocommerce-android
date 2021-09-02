@@ -139,4 +139,22 @@ class CardReaderManagerImplTest {
 
             assertThat(cardReaderManager.disconnectReader()).isFalse()
         }
+
+    @Test(expected = IllegalStateException::class)
+    fun `given terminal not initialized, when installing software update, then exception is thrown`() =
+        runBlockingTest {
+            whenever(terminalWrapper.isInitialized()).thenReturn(false)
+
+            cardReaderManager.installSoftwareUpdate()
+        }
+
+    @Test
+    fun `given terminal is initialized, when installing software update, installSoftwareUpdate is called`() =
+        runBlockingTest {
+            whenever(terminalWrapper.isInitialized()).thenReturn(true)
+
+            cardReaderManager.installSoftwareUpdate()
+
+            verify(terminalWrapper).installSoftwareUpdate()
+        }
 }

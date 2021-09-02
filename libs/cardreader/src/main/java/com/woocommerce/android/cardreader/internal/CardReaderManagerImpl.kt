@@ -10,7 +10,6 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -49,6 +48,10 @@ internal class CardReaderManagerImpl(
     override val softwareUpdateStatus = connectionManager.softwareUpdateStatus
 
     override val softwareUpdateAvailability = connectionManager.softwareUpdateAvailability
+
+    override fun resetSoftwareUpdateStatus() {
+        connectionManager.resetSoftwareUpdateStatus()
+    }
 
     override fun initialize(app: Application) {
         if (!terminal.isInitialized()) {
@@ -102,7 +105,10 @@ internal class CardReaderManagerImpl(
         terminal.initTerminal(application, logLevel, tokenProvider, terminalListener)
     }
 
-    override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
+    override fun installSoftwareUpdate() {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        terminal.installSoftwareUpdate()
+    }
 
     override suspend fun clearCachedCredentials() {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
