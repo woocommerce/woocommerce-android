@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -48,7 +49,6 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -616,7 +616,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.addons(): ProductProperty? =
-        takeIf { addons.isNotEmpty() && FeatureFlag.PRODUCT_ADD_ONS.isEnabled() }?.let {
+        takeIf { addons.isNotEmpty() && AppPrefs.isProductAddonsEnabled }?.let {
             ComplexProperty(
                 value = resources.getString(string.product_add_ons_title),
                 icon = drawable.ic_gridicon_circle_plus,
