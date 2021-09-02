@@ -2,7 +2,9 @@
 
 7.5
 -----
+- [*] Products: Filtering by category is now available. [https://github.com/woocommerce/woocommerce-android/pull/4715]
 - [*] Fixed a bug where a new order notification opened incorrect order detail info. [https://github.com/woocommerce/woocommerce-android/pull/4635]
+
 
 7.4
 -----
