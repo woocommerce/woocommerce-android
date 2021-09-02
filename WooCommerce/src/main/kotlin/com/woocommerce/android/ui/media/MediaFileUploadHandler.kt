@@ -12,7 +12,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import javax.inject.Inject
@@ -32,7 +31,6 @@ class MediaFileUploadHandler @Inject constructor(
     init {
         worker.events
             .onEach { event ->
-                println("worker -> received event $event")
                 val statusList = uploadsStatus.value.toMutableList()
                 val index = statusList.indexOfFirst {
                     it.remoteProductId == event.remoteProductId && it.localUri == event.localUri
@@ -85,7 +83,7 @@ class MediaFileUploadHandler @Inject constructor(
     fun cancelUpload(remoteProductId: Long) {
         uploadsStatus.value = uploadsStatus.value.filterNot { it.remoteProductId == remoteProductId }
 
-        // TODO ProductImagesService.cancel(remoteProductId)
+        worker.cancelUpload(remoteProductId)
     }
 
     fun clearImageErrors(remoteProductId: Long) {

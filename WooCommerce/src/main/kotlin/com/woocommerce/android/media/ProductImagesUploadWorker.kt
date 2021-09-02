@@ -8,11 +8,8 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.MediaModel
@@ -34,6 +31,9 @@ class ProductImagesUploadWorker @Inject constructor(
     private val _events = MutableSharedFlow<MediaFileUploadHandler.ProductImageUploadData>()
     val events = _events.asSharedFlow()
 
+    private val cancelledProducts = mutableSetOf<Long>()
+    private val currentJobs = mutableMapOf<Long, List<Job>>()
+
     private val mutex = Mutex()
 
     init {
@@ -53,7 +53,8 @@ class ProductImagesUploadWorker @Inject constructor(
                 .distinctUntilChanged()
                 .onEach { isEmpty ->
                     if (isEmpty) {
-                        delay(500L)
+                        // Add a delay to ensure to avoid stopping the service if there is an event coming to the queue
+                        delay(1000L)
                     }
                 }
                 .collectLatest { done ->
@@ -67,13 +68,28 @@ class ProductImagesUploadWorker @Inject constructor(
     }
 
     private fun handleWork(work: Work) {
-        appCoroutineScope.launch {
-            when (work) {
-                is Work.FetchMedia -> fetchMedia(work)
-                is Work.UploadMedia -> uploadMedia(work)
-                is Work.UpdateProduct -> updateProduct(work)
+        if (cancelledProducts.contains(work.productId)) return
+
+        val job = appCoroutineScope.launch {
+            try {
+                when (work) {
+                    is Work.FetchMedia -> fetchMedia(work)
+                    is Work.UploadMedia -> uploadMedia(work)
+                    is Work.UpdateProduct -> updateProduct(work)
+                }
+            } catch (cancellationException: CancellationException) {
+                // Continue
             }
+
             currentWorkListCount.value -= work
+        }
+
+        // Save a reference to the job for cancelling it if needed
+        currentJobs[work.productId] = currentJobs.getOrElse(work.productId) { emptyList() } + job
+
+        job.invokeOnCompletion {
+            // Remove the job from the list jobs
+            currentJobs[work.productId] = currentJobs[work.productId]!! - job
         }
     }
 
@@ -120,8 +136,6 @@ class ProductImagesUploadWorker @Inject constructor(
                         uploadStatus = MediaFileUploadHandler.UploadStatus.UploadSuccess(uploadedMedia)
                     )
                 )
-            } catch (cancellationException: CancellationException) {
-                // TODO think about this
             } catch (e: MediaFilesRepository.MediaUploadException) {
                 _events.emit(
                     MediaFileUploadHandler.ProductImageUploadData(
@@ -139,6 +153,7 @@ class ProductImagesUploadWorker @Inject constructor(
     }
 
     fun enqueueImagesUpload(productId: Long, uris: List<Uri>) {
+        cancelledProducts.remove(productId)
         uris.forEach {
             queue.tryEmit(Work.FetchMedia(productId, it))
         }
@@ -146,6 +161,13 @@ class ProductImagesUploadWorker @Inject constructor(
 
     fun addImagesToProduct(productId: Long, images: List<MediaModel>) {
         queue.tryEmit(Work.UpdateProduct(productId, images))
+    }
+
+    fun cancelUpload(productId: Long) {
+        cancelledProducts.add(productId)
+        currentJobs[productId]?.forEach {
+            it.cancel()
+        }
     }
 
     @Suppress("MagicNumber")
