@@ -260,9 +260,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CARD_READER_AUTO_CONNECTION_STARTED,
 
         // -- Card Reader - software update
-        CARD_READER_SOFTWARE_UPDATE_TAPPED,
         CARD_READER_SOFTWARE_UPDATE_SUCCESS,
-        CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED,
         CARD_READER_SOFTWARE_UPDATE_FAILED,
 
         // -- Receipts

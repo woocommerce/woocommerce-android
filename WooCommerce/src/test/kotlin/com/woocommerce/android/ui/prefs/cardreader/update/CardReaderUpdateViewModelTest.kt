@@ -396,7 +396,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         assertThat(state.description).isNull()
         assertThat(state.progress).isNotNull
         assertThat(state.progressText).isNotNull
-        assertThat(state.primaryButton).isNull()
+        assertThat(state.button).isNull()
         assertThat(state.secondaryButton).isNull()
     }
 

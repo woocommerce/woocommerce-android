@@ -64,7 +64,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     is CardReaderUpdateScreen ->
                         findNavController().navigateSafely(
                             CardReaderDetailFragmentDirections
-                                .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(event.startedByUser)
+                                .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(requiredUpdate = false)
                         )
                     is ShowSnackbar -> {
                         Snackbar.make(

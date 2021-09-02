@@ -66,12 +66,8 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
                     UiHelpers.setTextOrHide(titleTextView, state.title)
                     UiHelpers.setTextOrHide(descriptionTextView, state.description)
                     UiHelpers.setTextOrHide(progressTextView, state.progressText)
-                    UiHelpers.setTextOrHide(primaryActionButton, state.primaryButton?.text)
-                    primaryActionButton.setOnClickListener { state.primaryButton?.onActionClicked?.invoke() }
-                    UiHelpers.setTextOrHide(secondaryActionButton, state.secondaryButton?.text)
-                    secondaryActionButton.setOnClickListener {
-                        state.secondaryButton?.onActionClicked?.invoke()
-                    }
+                    UiHelpers.setTextOrHide(actionButton, state.button?.text)
+                    actionButton.setOnClickListener { state.button?.onActionClicked?.invoke() }
                 }
             }
         )

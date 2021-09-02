@@ -76,7 +76,7 @@
         android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
         android:label="CardReaderUpdateDialogFragment" >
         <argument
-            android:name="startedByUser"
+            android:name="requiredUpdate"
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>

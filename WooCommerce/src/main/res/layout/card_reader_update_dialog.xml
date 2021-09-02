@@ -11,7 +11,7 @@
         android:layout_height="@dimen/payments_dialog_height"
         android:background="?attr/colorSurface"
         android:keepScreenOn="true"
-        android:paddingVertical="@dimen/major_200">
+        android:paddingVertical="@dimen/major_175">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/titleTextView"
@@ -52,31 +52,19 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/descriptionTextView"
             style="@style/Woo.TextView.Body2"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_125"
-            android:layout_marginTop="@dimen/major_125"
             android:gravity="center_horizontal"
-            android:textColor="@color/color_on_surface_medium"
+            android:textColor="@color/color_on_surface_high"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/progressTextView"
-            tools:text="Your card reader software needs to be updated to keep running smoothly" />
+            app:layout_constraintBottom_toTopOf="@id/actionButton"
+            tools:text="@string/card_reader_software_update_progress_cancel_required_warning" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/primaryActionButton"
-            style="@style/Woo.Button.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            android:layout_marginTop="0dp"
-            app:layout_constraintBottom_toTopOf="@id/secondaryActionButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Update reader" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/secondaryActionButton"
+            android:id="@+id/actionButton"
             style="@style/Woo.Button.Outlined"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

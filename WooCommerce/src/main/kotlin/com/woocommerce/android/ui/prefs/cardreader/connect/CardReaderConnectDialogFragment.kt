@@ -204,7 +204,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                     findNavController().navigateSafely(
                         CardReaderConnectDialogFragmentDirections
                             .actionCardReaderConnectDialogFragmentToCardReaderUpdateDialogFragment(
-                                startedByUser = false
+                                requiredUpdate = true
                             )
                     )
                 }
