@@ -779,8 +779,6 @@ class MainActivity :
                     binding.bottomNav.currentPosition = REVIEWS
                 }
             }
-        } else {
-            binding.bottomNav.currentPosition = MY_STORE
         }
     }
     // endregion
