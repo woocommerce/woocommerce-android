@@ -174,6 +174,7 @@ class MediaFileUploadHandler @Inject constructor(
             .onSubscription { externalObservers.add(remoteProductId) }
             .onCompletion { externalObservers.remove(remoteProductId) }
             .filterIsInstance<ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded>()
+            .filter { it.productId == remoteProductId }
             .map { it.media }
             .onStart {
                 // Start with the pending succeeded uploads, the observer will be able to handle them
