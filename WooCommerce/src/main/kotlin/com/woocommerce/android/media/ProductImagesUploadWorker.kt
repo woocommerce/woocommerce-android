@@ -47,26 +47,25 @@ class ProductImagesUploadWorker @Inject constructor(
             }
             .launchIn(appCoroutineScope)
 
-
-        appCoroutineScope.launch {
-            currentWorkListCount
-                .map { it.isEmpty() }
-                .distinctUntilChanged()
-                .onEach { isEmpty ->
-                    if (isEmpty) {
-                        // Add a delay to ensure to avoid stopping the service if there is an event coming to the queue
-                        delay(1000L)
-                    }
+        currentWorkListCount
+            .transformLatest { list ->
+                val done = list.isEmpty()
+                if (done) {
+                    // Add a delay to avoid stopping the service if there is an event coming to the queue
+                    delay(1000L)
                 }
-                .collectLatest { done ->
-                    if (done) {
-                        productImagesServiceWrapper.stopService()
-                        listOfImagesToUpload.clear()
-                    } else {
-                        productImagesServiceWrapper.startService()
-                    }
+                emit(done)
+            }
+            .distinctUntilChanged()
+            .onEach { done ->
+                if (done) {
+                    productImagesServiceWrapper.stopService()
+                    listOfImagesToUpload.clear()
+                } else {
+                    productImagesServiceWrapper.startService()
                 }
-        }
+            }
+            .launchIn(appCoroutineScope)
     }
 
     private fun handleWork(work: Work) {
@@ -172,7 +171,7 @@ class ProductImagesUploadWorker @Inject constructor(
             val hasMoreUploads = currentWorkListCount.value.any {
                 it != work && it.productId == work.productId && (it is Work.UploadMedia || it is Work.FetchMedia)
             }
-            if(!hasMoreUploads) {
+            if (!hasMoreUploads) {
                 _events.emit(Event.ProductUploadsCompleted(work.productId))
             }
         }
@@ -248,7 +247,7 @@ class ProductImagesUploadWorker @Inject constructor(
 
         data class ProductUploadsCompleted(
             override val productId: Long
-        ): Event()
+        ) : Event()
 
         sealed class MediaUploadEvent : Event() {
             abstract val localUri: Uri
@@ -256,19 +255,19 @@ class ProductImagesUploadWorker @Inject constructor(
             data class UploadStarted(
                 override val productId: Long,
                 override val localUri: Uri
-            ): MediaUploadEvent()
+            ) : MediaUploadEvent()
 
             data class UploadSucceeded(
                 override val productId: Long,
                 override val localUri: Uri,
                 val media: MediaModel
-            ): MediaUploadEvent()
+            ) : MediaUploadEvent()
 
             data class UploadFailed(
                 override val productId: Long,
                 override val localUri: Uri,
                 val error: MediaFilesRepository.MediaUploadException
-            ): MediaUploadEvent()
+            ) : MediaUploadEvent()
         }
 
         sealed class ProductUpdateEvent : Event() {
@@ -276,12 +275,12 @@ class ProductImagesUploadWorker @Inject constructor(
                 override val productId: Long,
                 val product: Product,
                 val imagesCount: Int
-            ): ProductUpdateEvent()
+            ) : ProductUpdateEvent()
 
             data class ProductUpdateFailed(
                 override val productId: Long,
                 val product: Product? = null
-            ): ProductUpdateEvent()
+            ) : ProductUpdateEvent()
         }
     }
 }
