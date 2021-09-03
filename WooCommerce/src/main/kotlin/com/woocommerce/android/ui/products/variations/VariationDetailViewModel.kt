@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.variations
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -376,7 +377,7 @@ class VariationDetailViewModel @Inject constructor(
     private fun observeImageUploadEvents() {
         mediaFileUploadHandler.observeCurrentUploads(navArgs.remoteVariationId)
             .onEach {
-                viewState = viewState.copy(uploadingImageUri = it.firstOrNull(), isDoneButtonEnabled = it.isEmpty())
+                viewState = viewState.copy(uploadingImageUri = it.firstOrNull()?.toUri(), isDoneButtonEnabled = it.isEmpty())
             }
             .launchIn(this)
 

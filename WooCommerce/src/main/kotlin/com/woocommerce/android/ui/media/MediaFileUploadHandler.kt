@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.media
 
-import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
@@ -126,7 +125,7 @@ class MediaFileUploadHandler @Inject constructor(
         notificationHandler.postUploadFailureNotification(productId, errorsCount)
     }
 
-    fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
+    fun enqueueUpload(remoteProductId: Long, uris: List<String>) {
         uploadsStatus.value += uris.map {
             ProductImageUploadData(
                 remoteProductId = remoteProductId,
@@ -155,7 +154,7 @@ class MediaFileUploadHandler @Inject constructor(
             list.filter { it.remoteProductId == remoteProductId && it.uploadStatus is Failed }
         }.filter { it.isNotEmpty() }
 
-    fun observeCurrentUploads(remoteProductId: Long): Flow<List<Uri>> {
+    fun observeCurrentUploads(remoteProductId: Long): Flow<List<String>> {
         return uploadsStatus
             .map { list ->
                 list.filter { it.remoteProductId == remoteProductId && it.uploadStatus == InProgress }
@@ -184,7 +183,7 @@ class MediaFileUploadHandler @Inject constructor(
     @Parcelize
     data class ProductImageUploadData(
         val remoteProductId: Long,
-        val localUri: Uri,
+        val localUri: String,
         val uploadStatus: UploadStatus
     ) : Parcelable
 

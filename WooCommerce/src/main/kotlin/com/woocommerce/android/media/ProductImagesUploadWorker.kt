@@ -1,8 +1,10 @@
 package com.woocommerce.android.media
 
-import android.net.Uri
 import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.update
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event
+import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -49,20 +51,21 @@ class ProductImagesUploadWorker @Inject constructor(
     private val currentJobs = mutableMapOf<Long, List<Job>>()
 
     // A reference to all images being uploaded to update the notification with the correct index
-    private val listOfImagesToUpload = mutableListOf<Pair<Long, Uri>>()
+    private val listOfImagesToUpload = mutableListOf<Pair<Long, String>>()
 
     private val mutex = Mutex()
 
     init {
         queue
-            .onEach {
-                currentWorkListCount.value += it
-                handleWork(it)
+            .onEach { work ->
+                currentWorkListCount.update { list -> list + work }
+                handleWork(work)
             }
             .launchIn(appCoroutineScope)
 
         currentWorkListCount
             .transformLatest { list ->
+                println("images -> worklist changes $list")
                 val done = list.isEmpty()
                 if (done) {
                     // Add a delay to avoid stopping the service if there is an event coming to the queue
@@ -106,7 +109,6 @@ class ProductImagesUploadWorker @Inject constructor(
                     is Work.UpdateProduct -> updateProduct(work)
                 }
             } finally {
-                println("images -> remove work $work")
                 currentWorkListCount.value -= work
             }
         }
@@ -120,7 +122,7 @@ class ProductImagesUploadWorker @Inject constructor(
         }
     }
 
-    fun enqueueImagesUpload(productId: Long, uris: List<Uri>) {
+    fun enqueueImagesUpload(productId: Long, uris: List<String>) {
         cancelledProducts.remove(productId)
         uris.forEach {
             queue.tryEmit(Work.FetchMedia(productId, it))
@@ -271,12 +273,12 @@ class ProductImagesUploadWorker @Inject constructor(
 
         class FetchMedia(
             override val productId: Long,
-            val localUri: Uri
+            val localUri: String
         ) : Work()
 
         data class UploadMedia(
             override val productId: Long,
-            val localUri: Uri,
+            val localUri: String,
             val fetchedMedia: MediaModel,
         ) : Work()
 
@@ -294,22 +296,22 @@ class ProductImagesUploadWorker @Inject constructor(
         ) : Event()
 
         sealed class MediaUploadEvent : Event() {
-            abstract val localUri: Uri
+            abstract val localUri: String
 
             data class UploadStarted(
                 override val productId: Long,
-                override val localUri: Uri
+                override val localUri: String
             ) : MediaUploadEvent()
 
             data class UploadSucceeded(
                 override val productId: Long,
-                override val localUri: Uri,
+                override val localUri: String,
                 val media: MediaModel
             ) : MediaUploadEvent()
 
             data class UploadFailed(
                 override val productId: Long,
-                override val localUri: Uri,
+                override val localUri: String,
                 val error: MediaFilesRepository.MediaUploadException
             ) : MediaUploadEvent()
         }

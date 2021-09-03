@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -44,6 +45,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -428,7 +430,7 @@ class ProductDetailViewModel @Inject constructor(
             ?.let { updateProductDraft(numVariation = variationAmount) }
     }
 
-    fun uploadDownloadableFile(uri: Uri) {
+    fun uploadDownloadableFile(uri: String) {
         launch {
             viewState = viewState.copy(isUploadingDownloadableFile = true)
             productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
@@ -1520,6 +1522,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun observeImageUploadEvents() {
         mediaFileUploadHandler.observeCurrentUploads(getRemoteProductId())
+            .map { list -> list.map { it.toUri() } }
             .onEach { viewState = viewState.copy(uploadingImageUris = it) }
             .launchIn(this)
 

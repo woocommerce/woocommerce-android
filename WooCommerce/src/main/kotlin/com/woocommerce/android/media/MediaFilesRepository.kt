@@ -37,12 +37,12 @@ class MediaFilesRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchMedia(localUri: Uri): MediaModel? {
+    suspend fun fetchMedia(localUri: String): MediaModel? {
         return withContext(dispatchers.io) {
             val mediaModel = ProductImagesUtils.mediaModelFromLocalUri(
                 context,
                 selectedSite.get().id,
-                localUri,
+                Uri.parse(localUri),
                 mediaStore
             )
 
@@ -66,7 +66,7 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
-    suspend fun uploadFile(localUri: Uri): String {
+    suspend fun uploadFile(localUri: String): String {
         val mediaModel = fetchMedia(localUri)
 
         if (mediaModel == null) {
