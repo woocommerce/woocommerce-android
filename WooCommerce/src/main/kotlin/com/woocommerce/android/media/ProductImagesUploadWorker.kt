@@ -248,12 +248,14 @@ class ProductImagesUploadWorker @Inject constructor(
 
             val images = work.addedImages.map { it.toAppModel() }
 
-            notificationHandler.showUpdatingProductNotification(null)
+            val cachedProduct = productDetailRepository.getProduct(work.productId)
+
+            notificationHandler.showUpdatingProductNotification(cachedProduct)
 
             val product = fetchProductWithRetries(work.productId)
             if (product == null) {
                 WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching product ${work.productId} failed")
-                emitEvent(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
+                emitEvent(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, cachedProduct))
             } else {
                 notificationHandler.showUpdatingProductNotification(product)
                 val result = updateProductWithRetries(product.copy(images = product.images + images))
@@ -328,7 +330,7 @@ class ProductImagesUploadWorker @Inject constructor(
 
             data class ProductUpdateFailed(
                 override val productId: Long,
-                val product: Product? = null
+                val product: Product?
             ) : ProductUpdateEvent()
         }
     }
