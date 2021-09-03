@@ -48,14 +48,14 @@ class CardReaderDetailViewModel @Inject constructor(
     private val viewState = MutableLiveData<ViewState>(Loading)
     val viewStateData: LiveData<ViewState> = viewState
 
-    private lateinit var job: Job
+    private lateinit var softwareUpdateAvailabilityJob: Job
 
     init {
         launch {
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> {
-                        job = launch {
+                        softwareUpdateAvailabilityJob = launch {
                             cardReaderManager.softwareUpdateAvailability.collect(
                                 ::handleSoftwareUpdateAvailability
                             )
@@ -80,8 +80,8 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun showNotConnectedState() {
-        if (::job.isInitialized) {
-            job.cancel()
+        if (::softwareUpdateAvailabilityJob.isInitialized) {
+            softwareUpdateAvailabilityJob.cancel()
         }
         cardReaderManager.resetSoftwareUpdateStatus()
         viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
