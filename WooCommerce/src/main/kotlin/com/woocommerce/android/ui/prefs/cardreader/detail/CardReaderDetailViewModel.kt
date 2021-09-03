@@ -72,6 +72,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun showNotConnectedState() {
+        cardReaderManager.resetSoftwareUpdateStatus()
         viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     }
 
@@ -119,7 +120,6 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onDisconnectClicked() {
-        cardReaderManager.resetSoftwareUpdateStatus()
         tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         launch {
             clearLastKnowReader()

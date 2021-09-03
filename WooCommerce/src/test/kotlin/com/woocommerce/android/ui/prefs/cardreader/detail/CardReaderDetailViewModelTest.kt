@@ -338,15 +338,15 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when on disconnect button clicked, then reset software update status is called`() =
+    fun `when not connected state is called, then reset software update status`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             initConnectedState()
-            whenever(cardReaderManager.disconnectReader()).thenReturn(true)
-            val viewModel = createViewModel()
+            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
 
             // WHEN
-            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+            createViewModel()
 
             // THEN
             verify(cardReaderManager).resetSoftwareUpdateStatus()
