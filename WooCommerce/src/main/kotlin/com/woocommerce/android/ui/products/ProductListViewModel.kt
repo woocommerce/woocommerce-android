@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
@@ -23,6 +24,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -39,7 +42,8 @@ import javax.inject.Inject
 class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    mediaFileUploadHandler: MediaFileUploadHandler
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -68,6 +72,11 @@ class ProductListViewModel @Inject constructor(
             loadProducts()
         }
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
+
+        // Reload products if any image changes occur
+        mediaFileUploadHandler.observeProductImageChanges()
+            .onEach { loadProducts() }
+            .launchIn(this)
     }
 
     override fun onCleared() {
@@ -377,13 +386,6 @@ class ProductListViewModel @Inject constructor(
             }
         }
     }
-
-    // TODO
-//    @Suppress("unused")
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-//        loadProducts()
-//    }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

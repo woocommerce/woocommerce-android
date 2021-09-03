@@ -160,6 +160,12 @@ class MediaFileUploadHandler @Inject constructor(
             .map { it.media }
     }
 
+    fun observeProductImageChanges(): Flow<Long> {
+        return worker.events
+            .filterIsInstance<ProductImagesUploadWorker.Event.ProductUploadsCompleted>()
+            .map { it.productId }
+    }
+
     /***
      * Identifies both an event and status.
      * Holds a reference to the productId and localUri to keep track of each upload
