@@ -118,5 +118,5 @@ class MediaFilesRepository @Inject constructor(
         val media: MediaModel,
         val errorType: MediaStore.MediaErrorType,
         val errorMessage: String
-    ): Exception()
+    ) : Exception()
 }

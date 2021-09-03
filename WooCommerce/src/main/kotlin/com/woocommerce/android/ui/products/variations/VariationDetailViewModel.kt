@@ -377,7 +377,10 @@ class VariationDetailViewModel @Inject constructor(
     private fun observeImageUploadEvents() {
         mediaFileUploadHandler.observeCurrentUploads(navArgs.remoteVariationId)
             .onEach {
-                viewState = viewState.copy(uploadingImageUri = it.firstOrNull()?.toUri(), isDoneButtonEnabled = it.isEmpty())
+                viewState = viewState.copy(
+                    uploadingImageUri = it.firstOrNull()?.toUri(),
+                    isDoneButtonEnabled = it.isEmpty()
+                )
             }
             .launchIn(this)
 

@@ -46,7 +46,6 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     private val productDetailRepository: ProductDetailRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
 
-
     @Before
     fun setup() {
         worker = ProductImagesUploadWorker(
@@ -196,7 +195,6 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val updatedProduct = product.copy(images = product.images + UPLOADED_MEDIA.toAppModel())
         verify(productDetailRepository, times(3)).updateProduct(updatedProduct)
     }
-
 
     @Test
     fun `when update product fails, then send an event`() = testBlocking {

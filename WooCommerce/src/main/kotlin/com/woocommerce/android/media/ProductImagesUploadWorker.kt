@@ -20,6 +20,8 @@ import org.wordpress.android.fluxc.store.MediaStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val ONE_SECOND = 1000L
+
 /***
  * This class is responsible for queuing and handling different tasks related to product images upload.
  * It handles three types of works:
@@ -32,6 +34,7 @@ import javax.inject.Singleton
  * Uploading media and updating product is done sequentially (using a [Mutex] lock) because our repositories don't
  * play well with parallel requests, due to the use of a single shared continuation.
  */
+@ExperimentalCoroutinesApi
 @Singleton
 class ProductImagesUploadWorker @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
@@ -69,7 +72,7 @@ class ProductImagesUploadWorker @Inject constructor(
                 val done = list.isEmpty()
                 if (done) {
                     // Add a delay to avoid stopping the service if there is an event coming to the queue
-                    delay(1000L)
+                    delay(ONE_SECOND)
                 }
                 emit(done)
             }
