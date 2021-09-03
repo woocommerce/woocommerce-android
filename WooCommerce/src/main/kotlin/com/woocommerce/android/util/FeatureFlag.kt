@@ -9,14 +9,15 @@ import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 enum class FeatureFlag {
     DB_DOWNGRADE,
     ORDER_CREATION,
-    CARD_READER;
+    CARD_READER,
+    WHATS_NEW;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
-            ORDER_CREATION -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
+            ORDER_CREATION, WHATS_NEW -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
             CARD_READER -> CardPresentEligibleFeatureChecker.isCardPresentEligible
         }
     }

@@ -31,14 +31,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_H
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.AppThemeUtils
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
-import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -176,6 +174,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionAbout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutFragment)
+        }
+
+        if (FeatureFlag.WHATS_NEW.isEnabled()) {
+            binding.optionWhatsNew.show()
         }
 
         binding.optionLicenses.setOnClickListener {
