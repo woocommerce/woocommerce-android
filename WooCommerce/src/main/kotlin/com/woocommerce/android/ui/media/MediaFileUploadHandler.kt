@@ -175,6 +175,18 @@ class MediaFileUploadHandler @Inject constructor(
             .onCompletion { externalObservers.remove(remoteProductId) }
             .filterIsInstance<ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded>()
             .map { it.media }
+            .onStart {
+                // Start with the pending succeeded uploads, the observer will be able to handle them
+                val pendingSuccessUploads = uploadsStatus.value.filter {
+                    it.remoteProductId == remoteProductId && it.uploadStatus is UploadSuccess
+                }
+                if (pendingSuccessUploads.isNotEmpty()) {
+                    uploadsStatus.update { list -> list - pendingSuccessUploads }
+                    pendingSuccessUploads.forEach {
+                        emit((it.uploadStatus as UploadSuccess).media)
+                    }
+                }
+            }
     }
 
     fun observeProductImageChanges(): Flow<Long> {
