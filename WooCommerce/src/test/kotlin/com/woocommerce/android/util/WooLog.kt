@@ -19,7 +19,16 @@ object WooLog {
     enum class T {
         DASHBOARD,
         ORDERS,
+        PRODUCTS,
+        NOTIFS,
         UTILS,
+        DEVICE,
+        SUPPORT,
+        WP,
+        NOTIFICATIONS,
+        LOGIN,
+        REVIEWS,
+        MEDIA,
         CARD_READER
     }
 
