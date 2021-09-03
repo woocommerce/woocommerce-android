@@ -72,7 +72,7 @@ class ProductImagesNotificationHandler @Inject constructor(
         notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
     }
 
-    fun shopUpdatingProductNotification(product: Product?) {
+    fun showUpdatingProductNotification(product: Product?) {
         val title = context.getString(R.string.product_update_notification, product?.name.orEmpty())
         notificationBuilder.setContentTitle(title)
         notificationBuilder.setProgress(0, 0, true)

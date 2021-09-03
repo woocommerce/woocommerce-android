@@ -6,6 +6,8 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -59,9 +61,11 @@ class ProductImagesUploadWorker @Inject constructor(
             .distinctUntilChanged()
             .onEach { done ->
                 if (done) {
+                    WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> stop service")
                     productImagesServiceWrapper.stopService()
                     listOfImagesToUpload.clear()
                 } else {
+                    WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start service")
                     productImagesServiceWrapper.startService()
                 }
             }
@@ -72,17 +76,17 @@ class ProductImagesUploadWorker @Inject constructor(
         if (cancelledProducts.contains(work.productId)) return
 
         val job = appCoroutineScope.launch {
+            WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start work handling $work")
+
             try {
                 when (work) {
                     is Work.FetchMedia -> fetchMedia(work)
                     is Work.UploadMedia -> uploadMedia(work)
                     is Work.UpdateProduct -> updateProduct(work)
                 }
-            } catch (cancellationException: CancellationException) {
-                // Continue
+            } finally {
+                currentWorkListCount.value -= work
             }
-
-            currentWorkListCount.value -= work
         }
 
         // Save a reference to the job for cancelling it if needed
@@ -120,8 +124,12 @@ class ProductImagesUploadWorker @Inject constructor(
                 localUri = work.localUri
             )
         )
+        WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> fetch media ${work.localUri}")
+
         val fetchedMedia = mediaFilesRepository.fetchMedia(work.localUri)
         if (fetchedMedia == null) {
+            WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching media failed")
+
             _events.emit(
                 Event.MediaUploadEvent.UploadFailed(
                     productId = work.productId,
@@ -134,6 +142,7 @@ class ProductImagesUploadWorker @Inject constructor(
                 )
             )
         } else {
+            WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> media fetched, enqueue upload")
             queue.emit(
                 Work.UploadMedia(
                     productId = work.productId,
@@ -147,10 +156,13 @@ class ProductImagesUploadWorker @Inject constructor(
 
     private suspend fun uploadMedia(work: Work.UploadMedia) {
         mutex.withLock {
+            WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start uploading media ${work.localUri}")
+
             val indexOfCurrentUpload = listOfImagesToUpload.indexOf(Pair(work.productId, work.localUri))
             notificationHandler.update(indexOfCurrentUpload + 1, listOfImagesToUpload.size)
             try {
                 val uploadedMedia = mediaFilesRepository.uploadMedia(work.fetchedMedia)
+                WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> upload succeeded for ${work.localUri}")
                 _events.emit(
                     Event.MediaUploadEvent.UploadSucceeded(
                         productId = work.productId,
@@ -159,6 +171,7 @@ class ProductImagesUploadWorker @Inject constructor(
                     )
                 )
             } catch (e: MediaFilesRepository.MediaUploadException) {
+                WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> upload failed for ${work.localUri}")
                 _events.emit(
                     Event.MediaUploadEvent.UploadFailed(
                         productId = work.productId,
@@ -172,6 +185,7 @@ class ProductImagesUploadWorker @Inject constructor(
                 it != work && it.productId == work.productId && (it is Work.UploadMedia || it is Work.FetchMedia)
             }
             if (!hasMoreUploads) {
+                WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> all uploads for product ${work.productId} are done")
                 _events.emit(Event.ProductUploadsCompleted(work.productId))
             }
         }
@@ -203,19 +217,27 @@ class ProductImagesUploadWorker @Inject constructor(
             return false
         }
         mutex.withLock {
+            WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start updating product ${work.productId}")
+
             val images = work.addedImages.map { it.toAppModel() }
 
-            notificationHandler.shopUpdatingProductNotification(null)
+            notificationHandler.showUpdatingProductNotification(null)
 
             val product = fetchProductWithRetries(work.productId)
             if (product == null) {
+                WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching product ${work.productId} failed")
                 _events.emit(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
             } else {
-                notificationHandler.shopUpdatingProductNotification(product)
+                notificationHandler.showUpdatingProductNotification(product)
                 val result = updateProductWithRetries(product.copy(images = product.images + images))
                 if (result) {
+                    WooLog.d(
+                        T.MEDIA,
+                        "ProductImagesUploadWorker -> added ${images.size} images to product ${work.productId}"
+                    )
                     _events.emit(Event.ProductUpdateEvent.ProductUpdateSucceeded(work.productId, product, images.size))
                 } else {
+                    WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> updating product ${work.productId} failed")
                     _events.emit(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
                 }
             }
