@@ -206,18 +206,19 @@ class ProductImagesUploadWorker @Inject constructor(
         mutex.withLock {
             val images = work.addedImages.map { it.toAppModel() }
 
+            _events.emit(Event.ProductUpdateEvent.ProductUpdateStarted(work.productId))
             notificationHandler.shopUpdatingProductNotification(null)
 
             val product = fetchProductWithRetries(work.productId)
             if (product == null) {
-                notificationHandler.postUpdateFailureNotification(work.productId, null)
+                _events.emit(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
             } else {
                 notificationHandler.shopUpdatingProductNotification(product)
                 val result = updateProductWithRetries(product.copy(images = product.images + images))
                 if (result) {
-                    notificationHandler.postUpdateSuccessNotification(work.productId, product, images.size)
+                    _events.emit(Event.ProductUpdateEvent.ProductUpdateSucceeded(work.productId, product, images.size))
                 } else {
-                    notificationHandler.postUpdateFailureNotification(work.productId, product)
+                    _events.emit(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
                 }
             }
         }
@@ -273,15 +274,18 @@ class ProductImagesUploadWorker @Inject constructor(
 
         sealed class ProductUpdateEvent : Event() {
             data class ProductUpdateStarted(
-                override val productId: Long
+                override val productId: Long,
             ): ProductUpdateEvent()
 
             data class ProductUpdateSucceeded(
-                override val productId: Long
+                override val productId: Long,
+                val product: Product,
+                val imagesCount: Int
             ): ProductUpdateEvent()
 
             data class ProductUpdateFailed(
-                override val productId: Long
+                override val productId: Long,
+                val product: Product? = null
             ): ProductUpdateEvent()
         }
     }

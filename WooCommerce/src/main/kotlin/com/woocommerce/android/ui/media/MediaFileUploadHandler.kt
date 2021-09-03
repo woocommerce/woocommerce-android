@@ -4,7 +4,7 @@ import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*
 import com.woocommerce.android.util.StringUtils
@@ -20,7 +20,7 @@ import javax.inject.Singleton
 @Singleton
 class MediaFileUploadHandler @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    private val notificationHandler: ProductImagesNotificationHandler,
     private val worker: ProductImagesUploadWorker,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
@@ -34,7 +34,7 @@ class MediaFileUploadHandler @Inject constructor(
                 when (event) {
                     is ProductImagesUploadWorker.Event.MediaUploadEvent -> handleMediaUploadEvent(event)
                     is ProductImagesUploadWorker.Event.ProductUploadsCompleted -> updateProductIfNeeded(event.productId)
-                    is ProductImagesUploadWorker.Event.ProductUpdateEvent -> TODO()
+                    is ProductImagesUploadWorker.Event.ProductUpdateEvent -> handleProductUpdateEvent(event)
                 }
             }
             .launchIn(appCoroutineScope)
@@ -85,6 +85,18 @@ class MediaFileUploadHandler @Inject constructor(
         uploadsStatus.value = statusList
     }
 
+    private fun handleProductUpdateEvent(event: ProductImagesUploadWorker.Event.ProductUpdateEvent) {
+        when (event) {
+            is ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateStarted -> {
+                // we don't need anything here, the notification will be handled by the foreground service
+            }
+            is ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateFailed ->
+                notificationHandler.postUpdateFailureNotification(event.productId, event.product)
+            is ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded ->
+                notificationHandler.postUpdateSuccessNotification(event.productId, event.product, event.imagesCount)
+        }
+    }
+
     private fun updateProductIfNeeded(productId: Long) {
         val state = uploadsStatus.value
         val productImages = state.filter { it.remoteProductId == productId && it.uploadStatus !is Failed }
@@ -102,7 +114,7 @@ class MediaFileUploadHandler @Inject constructor(
 
     private fun uploadFailureNotification(productId: Long, state: List<ProductImageUploadData>) {
         val errorsCount = state.filter { it.remoteProductId == productId && it.uploadStatus is Failed }.size
-        productImagesServiceWrapper.showUploadFailureNotification(productId, errorsCount)
+        notificationHandler.postUploadFailureNotification(productId, errorsCount)
     }
 
     fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
@@ -119,7 +131,7 @@ class MediaFileUploadHandler @Inject constructor(
         uploadsStatus.value = uploadsStatus.value.filterNot {
             it.remoteProductId == remoteProductId && it.uploadStatus is Failed
         }
-        productImagesServiceWrapper.removeUploadFailureNotification(remoteProductId)
+        notificationHandler.removeUploadFailureNotification(remoteProductId)
     }
 
     fun observeCurrentUploadErrors(remoteProductId: Long): Flow<List<ProductImageUploadData>> =
