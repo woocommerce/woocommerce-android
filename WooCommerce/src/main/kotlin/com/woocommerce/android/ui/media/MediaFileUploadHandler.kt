@@ -19,7 +19,6 @@ import javax.inject.Singleton
 
 @Singleton
 class MediaFileUploadHandler @Inject constructor(
-    private val resourceProvider: ResourceProvider,
     private val notificationHandler: ProductImagesNotificationHandler,
     private val worker: ProductImagesUploadWorker,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope

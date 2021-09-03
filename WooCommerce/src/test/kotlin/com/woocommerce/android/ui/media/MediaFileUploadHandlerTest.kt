@@ -5,7 +5,6 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
@@ -33,7 +32,6 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         private val TEST_URI = Uri.parse("file:///test")
     }
 
-    private val resources: ResourceProvider = mock()
     private val notificationHandler: ProductImagesNotificationHandler = mock()
     private val productImagesUploadWorker: ProductImagesUploadWorker = mock()
     private lateinit var mediaFileUploadHandler: MediaFileUploadHandler
@@ -44,7 +42,6 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     fun setup() {
         whenever(productImagesUploadWorker.events).thenReturn(eventsFlow)
         mediaFileUploadHandler = MediaFileUploadHandler(
-            resourceProvider = resources,
             notificationHandler = notificationHandler,
             worker = productImagesUploadWorker,
             appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher)
