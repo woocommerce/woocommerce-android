@@ -3,9 +3,7 @@
 7.5
 -----
 - [*] Due to popular demand, we have added support to receive push notifications for all the stores that you are logged into from the app. [https://github.com/woocommerce/woocommerce-android/pull/4673]
-
-7.4
------
+- [***] Merchants using WooCommerce Product Add-ons in their store can view Add-on information at Orders and Products views [https://github.com/woocommerce/woocommerce-android/pull/4689]
 - [*] Fixed a bug where a new order notification opened incorrect order detail info. [https://github.com/woocommerce/woocommerce-android/pull/4635]
 
 7.4
