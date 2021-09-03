@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.media
 
-import android.net.Uri
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
@@ -14,9 +13,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.FAILED
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.UPLOADED
@@ -25,11 +22,10 @@ import org.wordpress.android.util.DateTimeUtils
 import java.util.*
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class MediaFileUploadHandlerTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_PRODUCT_ID = 1L
-        private val TEST_URI = Uri.parse("file:///test")
+        private const val TEST_URI = "test"
     }
 
     private val notificationHandler: ProductImagesNotificationHandler = mock()
@@ -104,7 +100,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     @Test
     fun `given there is no external observer, when multiple uploads finish, then start product update`() =
         testBlocking {
-            val testUri2 = Uri.parse("file:///test2")
+            val testUri2 = "file:///test2"
             mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI, testUri2))
 
             val mediaModel = MediaModel().apply {
