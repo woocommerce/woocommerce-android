@@ -30,7 +30,7 @@ class ProductImagesUploadWorker @Inject constructor(
     private val queue = MutableSharedFlow<Work>(extraBufferCapacity = Int.MAX_VALUE)
     private val currentWorkListCount = MutableStateFlow<List<Work>>(emptyList())
 
-    private val _events = MutableSharedFlow<Event>()
+    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = Int.MAX_VALUE)
     val events = _events.asSharedFlow()
 
     private val cancelledProducts = mutableSetOf<Long>()
@@ -72,6 +72,15 @@ class ProductImagesUploadWorker @Inject constructor(
             .launchIn(appCoroutineScope)
     }
 
+    /**
+     * Allows filtering events for cancelled operations.
+     * Please use this instead of accessing [_events] directly
+     */
+    private suspend fun emitEvent(event: Event) {
+        if (cancelledProducts.contains(event.productId)) return
+        _events.emit(event)
+    }
+
     private fun handleWork(work: Work) {
         if (cancelledProducts.contains(work.productId)) return
 
@@ -85,6 +94,7 @@ class ProductImagesUploadWorker @Inject constructor(
                     is Work.UpdateProduct -> updateProduct(work)
                 }
             } finally {
+                println("images -> remove work $work")
                 currentWorkListCount.value -= work
             }
         }
@@ -118,7 +128,7 @@ class ProductImagesUploadWorker @Inject constructor(
     }
 
     private suspend fun fetchMedia(work: Work.FetchMedia) {
-        _events.emit(
+        emitEvent(
             Event.MediaUploadEvent.UploadStarted(
                 productId = work.productId,
                 localUri = work.localUri
@@ -130,7 +140,7 @@ class ProductImagesUploadWorker @Inject constructor(
         if (fetchedMedia == null) {
             WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching media failed")
 
-            _events.emit(
+            emitEvent(
                 Event.MediaUploadEvent.UploadFailed(
                     productId = work.productId,
                     localUri = work.localUri,
@@ -163,7 +173,7 @@ class ProductImagesUploadWorker @Inject constructor(
             try {
                 val uploadedMedia = mediaFilesRepository.uploadMedia(work.fetchedMedia)
                 WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> upload succeeded for ${work.localUri}")
-                _events.emit(
+                emitEvent(
                     Event.MediaUploadEvent.UploadSucceeded(
                         productId = work.productId,
                         localUri = work.localUri,
@@ -172,7 +182,7 @@ class ProductImagesUploadWorker @Inject constructor(
                 )
             } catch (e: MediaFilesRepository.MediaUploadException) {
                 WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> upload failed for ${work.localUri}")
-                _events.emit(
+                emitEvent(
                     Event.MediaUploadEvent.UploadFailed(
                         productId = work.productId,
                         localUri = work.localUri,
@@ -186,7 +196,7 @@ class ProductImagesUploadWorker @Inject constructor(
             }
             if (!hasMoreUploads) {
                 WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> all uploads for product ${work.productId} are done")
-                _events.emit(Event.ProductUploadsCompleted(work.productId))
+                emitEvent(Event.ProductUploadsCompleted(work.productId))
             }
         }
     }
@@ -226,7 +236,7 @@ class ProductImagesUploadWorker @Inject constructor(
             val product = fetchProductWithRetries(work.productId)
             if (product == null) {
                 WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching product ${work.productId} failed")
-                _events.emit(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
+                emitEvent(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
             } else {
                 notificationHandler.showUpdatingProductNotification(product)
                 val result = updateProductWithRetries(product.copy(images = product.images + images))
@@ -235,10 +245,10 @@ class ProductImagesUploadWorker @Inject constructor(
                         T.MEDIA,
                         "ProductImagesUploadWorker -> added ${images.size} images to product ${work.productId}"
                     )
-                    _events.emit(Event.ProductUpdateEvent.ProductUpdateSucceeded(work.productId, product, images.size))
+                    emitEvent(Event.ProductUpdateEvent.ProductUpdateSucceeded(work.productId, product, images.size))
                 } else {
                     WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> updating product ${work.productId} failed")
-                    _events.emit(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
+                    emitEvent(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
                 }
             }
         }
