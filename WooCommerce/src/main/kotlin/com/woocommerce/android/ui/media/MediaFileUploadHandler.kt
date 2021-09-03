@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.media
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.update
 import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*
@@ -23,8 +24,8 @@ class MediaFileUploadHandler @Inject constructor(
     private val worker: ProductImagesUploadWorker,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
-    private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
 
+    private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
     private val externalObservers = mutableListOf<Long>()
 
     init {
@@ -116,7 +117,7 @@ class MediaFileUploadHandler @Inject constructor(
                 worker.addImagesToProduct(productId, uploadedImages)
             }
 
-            uploadsStatus.value -= productImages
+            uploadsStatus.update { list -> list - productImages }
         }
     }
 
@@ -126,25 +127,29 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     fun enqueueUpload(remoteProductId: Long, uris: List<String>) {
-        uploadsStatus.value += uris.map {
-            ProductImageUploadData(
-                remoteProductId = remoteProductId,
-                localUri = it,
-                uploadStatus = InProgress
-            )
+        uploadsStatus.update { list ->
+            list + uris.map {
+                ProductImageUploadData(
+                    remoteProductId = remoteProductId,
+                    localUri = it,
+                    uploadStatus = InProgress
+                )
+            }
         }
         worker.enqueueImagesUpload(remoteProductId, uris)
     }
 
     fun cancelUpload(remoteProductId: Long) {
-        uploadsStatus.value = uploadsStatus.value.filterNot { it.remoteProductId == remoteProductId }
+        uploadsStatus.update { list -> list.filterNot { it.remoteProductId == remoteProductId } }
 
         worker.cancelUpload(remoteProductId)
     }
 
     fun clearImageErrors(remoteProductId: Long) {
-        uploadsStatus.value = uploadsStatus.value.filterNot {
-            it.remoteProductId == remoteProductId && it.uploadStatus is Failed
+        uploadsStatus.update { list ->
+            list.filterNot {
+                it.remoteProductId == remoteProductId && it.uploadStatus is Failed
+            }
         }
         notificationHandler.removeUploadFailureNotification(remoteProductId)
     }

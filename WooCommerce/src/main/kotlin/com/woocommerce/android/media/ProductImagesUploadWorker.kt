@@ -109,7 +109,7 @@ class ProductImagesUploadWorker @Inject constructor(
                     is Work.UpdateProduct -> updateProduct(work)
                 }
             } finally {
-                currentWorkListCount.value -= work
+                currentWorkListCount.update { list -> list - work }
             }
         }
 
