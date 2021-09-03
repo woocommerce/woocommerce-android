@@ -68,13 +68,13 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     @Test
     fun `on view model init with skip update false should emit explanation state`() {
         // GIVEN
-        val startedByUser = false
+        val isOptionalUpdate = false
 
         // WHEN
-        val viewModel = createViewModel(startedByUser)
+        val viewModel = createViewModel(isOptionalUpdate)
 
         // THEN
-        verifyExplanationState(viewModel, startedByUser)
+        verifyExplanationState(viewModel, isOptionalUpdate)
     }
 
     @Test
@@ -181,7 +181,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     fun `when optional update, software update status listener must not be initialised on start`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            createViewModel(startedByUser = true)
+            createViewModel(isOptionalUpdate = true)
 
             // WHEN
             softwareStatus.value = Success
@@ -194,7 +194,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     fun `when optional update, software update status listener must be initialised on primary btn click`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel(startedByUser = true)
+            val viewModel = createViewModel(isOptionalUpdate = true)
 
             // WHEN
             (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
@@ -377,13 +377,13 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
                 .isEqualTo((currentProgress * 100).toInt())
         }
 
-    private fun verifyExplanationState(viewModel: CardReaderUpdateViewModel, startedByUser: Boolean) {
+    private fun verifyExplanationState(viewModel: CardReaderUpdateViewModel, isOptionalUpdate: Boolean) {
         val state = viewModel.viewStateData.value as ExplanationState
         assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_title))
         assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
         assertThat(state.primaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_update))
         assertThat(state.progress).isNull()
-        if (startedByUser) {
+        if (isOptionalUpdate) {
             assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_cancel))
         } else {
             assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_skip))
@@ -401,10 +401,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel(
-        startedByUser: Boolean = false
+        isOptionalUpdate: Boolean = false
     ) = CardReaderUpdateViewModel(
         cardReaderManager,
         tracker,
-        CardReaderUpdateDialogFragmentArgs(startedByUser).initSavedStateHandle()
+        CardReaderUpdateDialogFragmentArgs(isOptionalUpdate).initSavedStateHandle()
     )
 }

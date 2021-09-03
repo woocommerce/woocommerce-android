@@ -73,12 +73,13 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun showNotConnectedState() {
+        cardReaderManager.resetSoftwareUpdateStatus()
         viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     }
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
         viewState.value = if (updateAvailable) {
-            triggerEvent(CardReaderUpdateScreen(startedByUser = false))
+            triggerEvent(CardReaderUpdateScreen(isOptionalUpdate = true))
             ConnectedState(
                 enforceReaderUpdate = UiStringRes(
                     R.string.card_reader_detail_connected_enforced_update_software
@@ -116,11 +117,10 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onUpdateReaderClicked() {
-        triggerEvent(CardReaderUpdateScreen(startedByUser = true))
+        triggerEvent(CardReaderUpdateScreen(isOptionalUpdate = true))
     }
 
     private fun onDisconnectClicked() {
-        cardReaderManager.resetSoftwareUpdateStatus()
         tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         launch {
             clearLastKnowReader()
@@ -147,7 +147,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
-        data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
+        data class CardReaderUpdateScreen(val isOptionalUpdate: Boolean) : NavigationTarget()
     }
 
     sealed class ViewState {

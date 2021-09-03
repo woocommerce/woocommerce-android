@@ -58,12 +58,12 @@ class CardReaderUpdateViewModel @Inject constructor(
             secondaryButton = ButtonState(
                 onActionClicked = ::onSkipClicked,
                 text = UiStringRes(
-                    if (navArgs.startedByUser) R.string.card_reader_software_update_cancel
+                    if (navArgs.isOptionalUpdate) R.string.card_reader_software_update_cancel
                     else R.string.card_reader_software_update_skip
                 )
             )
         )
-        if (navArgs.startedByUser.not()) {
+        if (navArgs.isOptionalUpdate.not()) {
             listenToSoftwareUpdateStatus()
         }
     }
@@ -72,7 +72,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         tracker.track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
         launch {
             cardReaderManager.installSoftwareUpdate()
-            if (navArgs.startedByUser) {
+            if (navArgs.isOptionalUpdate) {
                 listenToSoftwareUpdateStatus()
             }
         }
