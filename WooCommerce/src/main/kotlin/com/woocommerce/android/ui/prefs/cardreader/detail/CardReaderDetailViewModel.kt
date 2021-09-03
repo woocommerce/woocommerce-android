@@ -51,9 +51,11 @@ class CardReaderDetailViewModel @Inject constructor(
         launch {
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
-                    is Connected -> cardReaderManager.softwareUpdateAvailability.collect(
-                        ::handleSoftwareUpdateAvailability
-                    )
+                    is Connected -> launch {
+                        cardReaderManager.softwareUpdateAvailability.collect(
+                            ::handleSoftwareUpdateAvailability
+                        )
+                    }
                     else -> showNotConnectedState()
                 }
             }.exhaustive
