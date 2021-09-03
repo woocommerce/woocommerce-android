@@ -8,6 +8,7 @@ import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
@@ -30,6 +31,7 @@ class MediaFileUploadHandler @Inject constructor(
     init {
         worker.events
             .onEach { event ->
+                WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> handling $event")
                 when (event) {
                     is ProductImagesUploadWorker.Event.MediaUploadEvent -> handleMediaUploadEvent(event)
                     is ProductImagesUploadWorker.Event.ProductUploadsCompleted -> updateProductIfNeeded(event.productId)
@@ -59,8 +61,10 @@ class MediaFileUploadHandler @Inject constructor(
             }
             is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded -> {
                 if (externalObservers.contains(event.productId)) {
+                    WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> Upload successful, while handler is observed")
                     statusList.removeAt(index)
                 } else {
+                    WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> Upload successful with no observers")
                     statusList[index] = ProductImageUploadData(
                         remoteProductId = event.productId,
                         localUri = event.localUri,
@@ -69,6 +73,7 @@ class MediaFileUploadHandler @Inject constructor(
                 }
             }
             is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadFailed -> {
+                WooLog.e(WooLog.T.MEDIA, "MediaFileUploadHandler -> Upload failed", event.error)
                 statusList[index] = ProductImageUploadData(
                     remoteProductId = event.productId,
                     localUri = event.localUri,
@@ -79,7 +84,8 @@ class MediaFileUploadHandler @Inject constructor(
                     )
                 )
                 if (!externalObservers.contains(event.productId)) {
-                    uploadFailureNotification(event.productId, statusList)
+                    WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> post upload failure notification")
+                    showUploadFailureNotification(event.productId, statusList)
                 }
             }
         }
@@ -96,6 +102,10 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     private fun updateProductIfNeeded(productId: Long) {
+        WooLog.d(
+            tag = WooLog.T.MEDIA,
+            message = "MediaFileUploadHandler -> uploads finished for product $productId, check if we need to update it"
+        )
         val state = uploadsStatus.value
         val productImages = state.filter { it.remoteProductId == productId && it.uploadStatus !is Failed }
         if (productImages.none { it.uploadStatus == InProgress }) {
@@ -103,6 +113,7 @@ class MediaFileUploadHandler @Inject constructor(
                 .map { (it.uploadStatus as UploadSuccess).media }
 
             if (uploadedImages.isNotEmpty()) {
+                WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> add ${uploadedImages.size} images to the product")
                 worker.addImagesToProduct(productId, uploadedImages)
             }
 
@@ -110,7 +121,7 @@ class MediaFileUploadHandler @Inject constructor(
         }
     }
 
-    private fun uploadFailureNotification(productId: Long, state: List<ProductImageUploadData>) {
+    private fun showUploadFailureNotification(productId: Long, state: List<ProductImageUploadData>) {
         val errorsCount = state.filter { it.remoteProductId == productId && it.uploadStatus is Failed }.size
         notificationHandler.postUploadFailureNotification(productId, errorsCount)
     }
