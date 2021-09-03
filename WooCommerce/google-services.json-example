@@ -1,7 +1,7 @@
 {
   "project_info": {
     "project_number": "",
-    "project_id": ""
+    "project_id": "project_id"
   },
   "client": [
     {
@@ -27,7 +27,7 @@
       ],
       "api_key": [
         {
-          "current_key": ""
+          "current_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         }
       ],
       "services": {
@@ -69,7 +69,7 @@
       ],
       "api_key": [
         {
-          "current_key": ""
+          "current_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         }
       ],
       "services": {
@@ -111,7 +111,7 @@
       ],
       "api_key": [
         {
-          "current_key": ""
+          "current_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         }
       ],
       "services": {
