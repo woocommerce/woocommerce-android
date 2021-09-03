@@ -57,8 +57,8 @@ class CardReaderDetailViewModel @Inject constructor(
                         )
                     }
                     else -> showNotConnectedState()
-                }
-            }.exhaustive
+                }.exhaustive
+            }
         }
     }
 
