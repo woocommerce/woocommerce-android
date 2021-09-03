@@ -27,7 +27,7 @@ class MediaFilesRepository @Inject constructor(
     private val mediaStore: MediaStore,
     private val dispatchers: CoroutineDispatchers
 ) {
-    private var uploadContinuation = ContinuationWrapper<MediaModel>(WooLog.T.MEDIA)
+    private var uploadContinuation = ContinuationWrapper<MediaModel>(T.MEDIA)
 
     init {
         dispatcher.register(this)
