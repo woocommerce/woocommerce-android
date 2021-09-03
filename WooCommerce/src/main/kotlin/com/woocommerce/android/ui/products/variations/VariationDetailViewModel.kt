@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
-import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
@@ -145,7 +144,7 @@ class VariationDetailViewModel @Inject constructor(
 
     fun onExit() {
         when {
-            isUploadingImages(navArgs.remoteVariationId) -> {
+            isUploadingImages() -> {
                 // images can't be assigned to the product until they finish uploading so ask whether to discard images.
                 triggerEvent(
                     ShowDialog.buildDiscardDialogEvent(
@@ -183,7 +182,7 @@ class VariationDetailViewModel @Inject constructor(
         triggerEvent(ViewImageGallery(navArgs.remoteVariationId, images, showChooser = true))
     }
 
-    fun isUploadingImages(remoteId: Long) = viewState.uploadingImageUri != null
+    fun isUploadingImages() = viewState.uploadingImageUri != null
 
     fun onVariationVisibilitySwitchChanged(isVisible: Boolean) {
         AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED)
