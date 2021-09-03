@@ -10,6 +10,7 @@ import androidx.navigation.NavDeepLinkBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
+import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.SystemServiceFactory
 import javax.inject.Inject
@@ -93,6 +94,8 @@ class ProductImagesNotificationHandler @Inject constructor(
                     product.name
                 )
             )
+            setContentIntent(getProductDetailsIntent(productId))
+            setAutoCancel(true)
         }
         notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
     }
@@ -105,6 +108,8 @@ class ProductImagesNotificationHandler @Inject constructor(
             color = ContextCompat.getColor(context, R.color.woo_gray_40)
             setSmallIcon(android.R.drawable.stat_notify_error)
             setContentTitle(context.getString(R.string.product_update_failure_notification, product?.name.orEmpty()))
+            setContentIntent(getProductDetailsIntent(productId))
+            setAutoCancel(true)
         }
         notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
     }
@@ -139,6 +144,13 @@ class ProductImagesNotificationHandler @Inject constructor(
     fun removeUploadFailureNotification(productId: Long) {
         notificationManager.cancel(productId.toInt() + UPLOAD_FAILURE_NOTIFICATION_ID)
     }
+
+    private fun getProductDetailsIntent(productId: Long) =
+        NavDeepLinkBuilder(context)
+            .setGraph(R.navigation.nav_graph_main)
+            .setDestination(R.id.productDetailFragment)
+            .setArguments(ProductDetailFragmentArgs(remoteProductId = productId).toBundle())
+            .createPendingIntent()
 
     /**
      * Ensures the notification channel for image uploads is created - only required for Android O+
