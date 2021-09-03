@@ -26,7 +26,7 @@ class MediaFileUploadHandler @Inject constructor(
 ) {
     private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
 
-    private val externalObservers = mutableSetOf<Long>()
+    private val externalObservers = mutableListOf<Long>()
 
     init {
         worker.events
