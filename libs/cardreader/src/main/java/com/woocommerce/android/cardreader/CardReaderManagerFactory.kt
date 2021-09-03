@@ -7,7 +7,6 @@ import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallAvailableSoftwareUpdateAction
 import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
@@ -23,6 +22,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 object CardReaderManagerFactory {
     fun createCardReaderManager(cardReaderStore: CardReaderStore, logWrapper: LogWrapper): CardReaderManager {
         val terminal = TerminalWrapper()
+        val bluetoothReaderListener = BluetoothReaderListenerImpl(logWrapper)
 
         return CardReaderManagerImpl(
             terminal,
@@ -41,12 +41,12 @@ object CardReaderManagerFactory {
             ),
             ConnectionManager(
                 terminal,
-                BluetoothReaderListenerImpl(logWrapper),
-                DiscoverReadersAction(terminal)
+                bluetoothReaderListener,
+                DiscoverReadersAction(terminal),
             ),
             SoftwareUpdateManager(
-                CheckSoftwareUpdatesAction(terminal, logWrapper),
-                InstallAvailableSoftwareUpdateAction(terminal, logWrapper)
+                terminal,
+                bluetoothReaderListener,
             ),
             TerminalListenerImpl(terminal, logWrapper)
         )

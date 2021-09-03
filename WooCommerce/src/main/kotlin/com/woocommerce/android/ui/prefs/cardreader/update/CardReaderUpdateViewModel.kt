@@ -80,7 +80,7 @@ class CardReaderUpdateViewModel @Inject constructor(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
             this@CardReaderUpdateViewModel.javaClass.simpleName,
             null,
-            "Already up to date"
+            "Unknown software update status"
         )
         finishFlow(UpdateResult.SKIPPED)
     }
