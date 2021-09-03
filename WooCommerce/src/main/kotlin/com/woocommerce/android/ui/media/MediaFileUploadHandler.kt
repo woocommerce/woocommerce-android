@@ -48,13 +48,15 @@ class MediaFileUploadHandler @Inject constructor(
 
         when (event) {
             is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadStarted -> {
-                statusList.add(
-                    ProductImageUploadData(
-                        remoteProductId = event.productId,
-                        localUri = event.localUri,
-                        uploadStatus = InProgress
+                if (index == -1) {
+                    statusList.add(
+                        ProductImageUploadData(
+                            remoteProductId = event.productId,
+                            localUri = event.localUri,
+                            uploadStatus = InProgress
+                        )
                     )
-                )
+                }
             }
             is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded -> {
                 if (externalObservers.contains(event.productId)) {
@@ -87,9 +89,6 @@ class MediaFileUploadHandler @Inject constructor(
 
     private fun handleProductUpdateEvent(event: ProductImagesUploadWorker.Event.ProductUpdateEvent) {
         when (event) {
-            is ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateStarted -> {
-                // we don't need anything here, the notification will be handled by the foreground service
-            }
             is ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateFailed ->
                 notificationHandler.postUpdateFailureNotification(event.productId, event.product)
             is ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded ->
@@ -118,6 +117,13 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
+        uploadsStatus.value += uris.map {
+            ProductImageUploadData(
+                remoteProductId = remoteProductId,
+                localUri = it,
+                uploadStatus = InProgress
+            )
+        }
         worker.enqueueImagesUpload(remoteProductId, uris)
     }
 

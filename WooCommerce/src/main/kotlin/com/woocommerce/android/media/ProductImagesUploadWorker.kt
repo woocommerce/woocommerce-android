@@ -206,7 +206,6 @@ class ProductImagesUploadWorker @Inject constructor(
         mutex.withLock {
             val images = work.addedImages.map { it.toAppModel() }
 
-            _events.emit(Event.ProductUpdateEvent.ProductUpdateStarted(work.productId))
             notificationHandler.shopUpdatingProductNotification(null)
 
             val product = fetchProductWithRetries(work.productId)
@@ -273,10 +272,6 @@ class ProductImagesUploadWorker @Inject constructor(
         }
 
         sealed class ProductUpdateEvent : Event() {
-            data class ProductUpdateStarted(
-                override val productId: Long,
-            ): ProductUpdateEvent()
-
             data class ProductUpdateSucceeded(
                 override val productId: Long,
                 val product: Product,
