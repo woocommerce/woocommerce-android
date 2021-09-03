@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.media
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -33,13 +32,10 @@ class MediaUploadErrorListFragment : BaseFragment(R.layout.fragment_media_upload
     }
 
     private fun setupObservers(viewModel: MediaUploadErrorListViewModel) {
-        viewModel.mediaUploadErrorList.observe(
-            viewLifecycleOwner,
-            Observer {
-                mediaUploadErrorListAdapter.mediaErrorList = it
-            }
-        )
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.uploadErrorList.takeIfNotEqualTo(old?.uploadErrorList) { errors ->
+                mediaUploadErrorListAdapter.mediaErrorList = errors
+            }
             new.toolBarTitle.takeIfNotEqualTo(old?.toolBarTitle) {
                 activity?.title = it
             }

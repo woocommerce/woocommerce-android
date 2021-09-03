@@ -20,7 +20,8 @@ object WooLog {
         DASHBOARD,
         ORDERS,
         UTILS,
-        CARD_READER
+        CARD_READER,
+        NOTIFS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

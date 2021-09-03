@@ -8,15 +8,9 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven {
-            url 'https://storage.googleapis.com/r8-releases/raw'
-        }
     }
     dependencies {
-        // Use updated version of r8 to fix this issue https://issuetracker.google.com/issues/178045782
-        // We should remove this after updating AGP
-        classpath 'com.android.tools:r8:2.2.64'
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.automattic.android:fetchstyle:1.1'
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
@@ -94,7 +88,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'develop-fd19515fd6de758f9b922495592b3b7b5d147834'
+    fluxCVersion = 'develop-a300bc1eef0fe7ea7e23c9587269737d3d7c66c6'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.3.0'
