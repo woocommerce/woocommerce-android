@@ -31,33 +31,62 @@ class MediaFileUploadHandler @Inject constructor(
     init {
         worker.events
             .onEach { event ->
-                val statusList = uploadsStatus.value.toMutableList()
-                val index = statusList.indexOfFirst {
-                    it.remoteProductId == event.remoteProductId && it.localUri == event.localUri
+                when (event) {
+                    is ProductImagesUploadWorker.Event.MediaUploadEvent -> handleMediaUploadEvent(event)
+                    is ProductImagesUploadWorker.Event.ProductUploadsCompleted -> updateProductIfNeeded(event.productId)
+                    is ProductImagesUploadWorker.Event.ProductUpdateEvent -> TODO()
                 }
-
-                if (index == -1) {
-                    statusList.add(event)
-                    uploadsStatus.value = statusList
-                    return@onEach
-                }
-
-                if (event.uploadStatus is UploadSuccess && externalObservers.contains(event.remoteProductId)) {
-                    statusList.removeAt(index)
-                } else {
-                    statusList[index] = event
-                }
-                uploadsStatus.value = statusList
-
-                if (event.uploadStatus is Failed && !externalObservers.contains(event.remoteProductId)) {
-                    uploadFailureNotification(event.remoteProductId, statusList)
-                }
-                updateProductIfNeeded(event.remoteProductId, statusList)
             }
             .launchIn(appCoroutineScope)
     }
 
-    private fun updateProductIfNeeded(productId: Long, state: List<ProductImageUploadData>) {
+    private fun handleMediaUploadEvent(event: ProductImagesUploadWorker.Event.MediaUploadEvent) {
+        val statusList = uploadsStatus.value.toMutableList()
+        val index = statusList.indexOfFirst {
+            it.remoteProductId == event.productId && it.localUri == event.localUri
+        }
+
+        when (event) {
+            is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadStarted -> {
+                statusList.add(
+                    ProductImageUploadData(
+                        remoteProductId = event.productId,
+                        localUri = event.localUri,
+                        uploadStatus = InProgress
+                    )
+                )
+            }
+            is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded -> {
+                if (externalObservers.contains(event.productId)) {
+                    statusList.removeAt(index)
+                } else {
+                    statusList[index] = ProductImageUploadData(
+                        remoteProductId = event.productId,
+                        localUri = event.localUri,
+                        uploadStatus = UploadSuccess(media = event.media)
+                    )
+                }
+            }
+            is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadFailed -> {
+                statusList[index] = ProductImageUploadData(
+                    remoteProductId = event.productId,
+                    localUri = event.localUri,
+                    uploadStatus = Failed(
+                        media = event.error.media,
+                        mediaErrorMessage = event.error.errorMessage,
+                        mediaErrorType = event.error.errorType
+                    )
+                )
+                if (!externalObservers.contains(event.productId)) {
+                    uploadFailureNotification(event.productId, statusList)
+                }
+            }
+        }
+        uploadsStatus.value = statusList
+    }
+
+    private fun updateProductIfNeeded(productId: Long) {
+        val state = uploadsStatus.value
         val productImages = state.filter { it.remoteProductId == productId && it.uploadStatus !is Failed }
         if (productImages.none { it.uploadStatus == InProgress }) {
             val uploadedImages = productImages.filter { it.uploadStatus is UploadSuccess }
@@ -110,8 +139,8 @@ class MediaFileUploadHandler @Inject constructor(
         return worker.events
             .onSubscription { externalObservers.add(remoteProductId) }
             .onCompletion { externalObservers.remove(remoteProductId) }
-            .filter { it.remoteProductId == remoteProductId && it.uploadStatus is UploadSuccess }
-            .map { (it.uploadStatus as UploadSuccess).media }
+            .filterIsInstance<ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded>()
+            .map { it.media }
     }
 
     /***

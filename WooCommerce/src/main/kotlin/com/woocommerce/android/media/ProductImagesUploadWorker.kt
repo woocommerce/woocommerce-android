@@ -5,7 +5,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.*
@@ -29,7 +28,7 @@ class ProductImagesUploadWorker @Inject constructor(
     private val queue = MutableSharedFlow<Work>(extraBufferCapacity = Int.MAX_VALUE)
     private val currentWorkListCount = MutableStateFlow<List<Work>>(emptyList())
 
-    private val _events = MutableSharedFlow<MediaFileUploadHandler.ProductImageUploadData>()
+    private val _events = MutableSharedFlow<Event>()
     val events = _events.asSharedFlow()
 
     private val cancelledProducts = mutableSetOf<Long>()
@@ -96,24 +95,42 @@ class ProductImagesUploadWorker @Inject constructor(
         }
     }
 
+    fun enqueueImagesUpload(productId: Long, uris: List<Uri>) {
+        cancelledProducts.remove(productId)
+        uris.forEach {
+            queue.tryEmit(Work.FetchMedia(productId, it))
+        }
+    }
+
+    fun addImagesToProduct(productId: Long, images: List<MediaModel>) {
+        queue.tryEmit(Work.UpdateProduct(productId, images))
+    }
+
+    fun cancelUpload(productId: Long) {
+        cancelledProducts.add(productId)
+        currentJobs[productId]?.forEach {
+            it.cancel()
+        }
+        listOfImagesToUpload.removeAll { it.first == productId }
+    }
+
     private suspend fun fetchMedia(work: Work.FetchMedia) {
         _events.emit(
-            MediaFileUploadHandler.ProductImageUploadData(
-                remoteProductId = work.productId,
-                localUri = work.localUri,
-                uploadStatus = MediaFileUploadHandler.UploadStatus.InProgress
+            Event.MediaUploadEvent.UploadStarted(
+                productId = work.productId,
+                localUri = work.localUri
             )
         )
         val fetchedMedia = mediaFilesRepository.fetchMedia(work.localUri)
         if (fetchedMedia == null) {
             _events.emit(
-                MediaFileUploadHandler.ProductImageUploadData(
-                    remoteProductId = work.productId,
+                Event.MediaUploadEvent.UploadFailed(
+                    productId = work.productId,
                     localUri = work.localUri,
-                    uploadStatus = MediaFileUploadHandler.UploadStatus.Failed(
+                    error = MediaFilesRepository.MediaUploadException(
                         media = MediaModel(),
-                        mediaErrorMessage = resourceProvider.getString(R.string.product_image_service_error_media_null),
-                        mediaErrorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
+                        errorMessage = resourceProvider.getString(R.string.product_image_service_error_media_null),
+                        errorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
                     )
                 )
             )
@@ -136,45 +153,29 @@ class ProductImagesUploadWorker @Inject constructor(
             try {
                 val uploadedMedia = mediaFilesRepository.uploadMedia(work.fetchedMedia)
                 _events.emit(
-                    MediaFileUploadHandler.ProductImageUploadData(
-                        remoteProductId = work.productId,
+                    Event.MediaUploadEvent.UploadSucceeded(
+                        productId = work.productId,
                         localUri = work.localUri,
-                        uploadStatus = MediaFileUploadHandler.UploadStatus.UploadSuccess(uploadedMedia)
+                        media = uploadedMedia
                     )
                 )
             } catch (e: MediaFilesRepository.MediaUploadException) {
                 _events.emit(
-                    MediaFileUploadHandler.ProductImageUploadData(
-                        remoteProductId = work.productId,
+                    Event.MediaUploadEvent.UploadFailed(
+                        productId = work.productId,
                         localUri = work.localUri,
-                        uploadStatus = MediaFileUploadHandler.UploadStatus.Failed(
-                            media = e.media,
-                            mediaErrorMessage = e.errorMessage,
-                            mediaErrorType = e.errorType
-                        )
+                        error = e
                     )
                 )
             }
-        }
-    }
 
-    fun enqueueImagesUpload(productId: Long, uris: List<Uri>) {
-        cancelledProducts.remove(productId)
-        uris.forEach {
-            queue.tryEmit(Work.FetchMedia(productId, it))
+            val hasMoreUploads = currentWorkListCount.value.any {
+                it != work && it.productId == work.productId && (it is Work.UploadMedia || it is Work.FetchMedia)
+            }
+            if(!hasMoreUploads) {
+                _events.emit(Event.ProductUploadsCompleted(work.productId))
+            }
         }
-    }
-
-    fun addImagesToProduct(productId: Long, images: List<MediaModel>) {
-        queue.tryEmit(Work.UpdateProduct(productId, images))
-    }
-
-    fun cancelUpload(productId: Long) {
-        cancelledProducts.add(productId)
-        currentJobs[productId]?.forEach {
-            it.cancel()
-        }
-        listOfImagesToUpload.removeAll { it.first == productId }
     }
 
     @Suppress("MagicNumber")
@@ -240,5 +241,48 @@ class ProductImagesUploadWorker @Inject constructor(
             override val productId: Long,
             val addedImages: List<MediaModel>
         ) : Work()
+    }
+
+    sealed class Event {
+        abstract val productId: Long
+
+        data class ProductUploadsCompleted(
+            override val productId: Long
+        ): Event()
+
+        sealed class MediaUploadEvent : Event() {
+            abstract val localUri: Uri
+
+            data class UploadStarted(
+                override val productId: Long,
+                override val localUri: Uri
+            ): MediaUploadEvent()
+
+            data class UploadSucceeded(
+                override val productId: Long,
+                override val localUri: Uri,
+                val media: MediaModel
+            ): MediaUploadEvent()
+
+            data class UploadFailed(
+                override val productId: Long,
+                override val localUri: Uri,
+                val error: MediaFilesRepository.MediaUploadException
+            ): MediaUploadEvent()
+        }
+
+        sealed class ProductUpdateEvent : Event() {
+            data class ProductUpdateStarted(
+                override val productId: Long
+            ): ProductUpdateEvent()
+
+            data class ProductUpdateSucceeded(
+                override val productId: Long
+            ): ProductUpdateEvent()
+
+            data class ProductUpdateFailed(
+                override val productId: Long
+            ): ProductUpdateEvent()
+        }
     }
 }
