@@ -56,11 +56,6 @@ class ProductImagesNotificationHandler @Inject constructor(
         notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notification)
     }
 
-    fun setProgress(progress: Int) {
-        notificationBuilder.setProgress(100, progress, false)
-        notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
-    }
-
     fun update(currentUpload: Int, totalUploads: Int) {
         val title = if (totalUploads == 1) {
             context.getString(R.string.product_images_uploading_single_notif_message)
@@ -74,6 +69,8 @@ class ProductImagesNotificationHandler @Inject constructor(
 
     fun showUpdatingProductNotification(product: Product?) {
         val title = context.getString(R.string.product_update_notification, product?.name.orEmpty())
+            .replace("  ", " ")
+
         notificationBuilder.setContentTitle(title)
         notificationBuilder.setProgress(0, 0, true)
         notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
@@ -101,13 +98,15 @@ class ProductImagesNotificationHandler @Inject constructor(
     }
 
     fun postUpdateFailureNotification(productId: Long, product: Product?) {
+        val title = context.getString(R.string.product_update_failure_notification, product?.name.orEmpty())
+            .replace("  ", " ")
         val notificationBuilder = NotificationCompat.Builder(
             context,
             CHANNEL_ID
         ).apply {
             color = ContextCompat.getColor(context, R.color.woo_gray_40)
             setSmallIcon(android.R.drawable.stat_notify_error)
-            setContentTitle(context.getString(R.string.product_update_failure_notification, product?.name.orEmpty()))
+            setContentTitle(title)
             setContentIntent(getProductDetailsIntent(productId))
             setAutoCancel(true)
         }
