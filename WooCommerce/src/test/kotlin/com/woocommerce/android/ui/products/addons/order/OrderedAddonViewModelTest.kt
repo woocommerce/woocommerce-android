@@ -241,7 +241,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             var timesCalled = 0
             var viewModelStarted = false
             viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
-                if(viewModelStarted) {
+                if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isSkeletonShown).isTrue
                         1 -> assertThat(new.isSkeletonShown).isFalse
@@ -266,7 +266,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             var timesCalled = 0
             var viewModelStarted = false
             viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
-                if(viewModelStarted) {
+                if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isSkeletonShown).isTrue
                         1 -> assertThat(new.isSkeletonShown).isFalse
@@ -281,5 +281,32 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             viewModelUnderTest.start(321, 999, 123)
 
             assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should change isLoadingFailure to true when loading the view data fails`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            coroutinesTestRule.testDispatcher.runBlockingTest {
+                whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+                var timesCalled = 0
+                var viewModelStarted = false
+                viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                    if (viewModelStarted) {
+                        when (timesCalled) {
+                            0 -> assertThat(new.isLoadingFailure).isFalse
+                            1 -> assertThat(new.isLoadingFailure).isTrue
+                            else -> fail("View state is expected to be changed exactly two times")
+                        }
+
+                        timesCalled++
+                    }
+                }
+
+                viewModelStarted = true
+                viewModelUnderTest.start(321, 999, 123)
+
+                assertThat(timesCalled).isEqualTo(2)
+            }
         }
 }
