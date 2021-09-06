@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:52:24+0000
+Translation-Revision-Date: 2021-09-03 00:52:21+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d Item</string>
+    <string name="upsell_product_count_many">%d produk upsell</string>
+    <string name="upsell_product_count_one">%d produk upsell</string>
+    <string name="cross_sell_product_count_many">%d produk cross-sell</string>
+    <string name="cross_sell_product_count_one">%d produk cross-sell</string>
+    <string name="product_count_many">%d produk</string>
+    <string name="product_count_one">%d produk</string>
+    <string name="product_add_ons_title">Add-on Produk</string>
+    <string name="product_save_dialog_title">Menyimpan produk Anda</string>
+    <string name="pending_review_label">Menunggu Peninjauan</string>
+    <string name="card_reader_payment_reader_not_connected">Mohon pastikan pembaca kartu sudah terhubung.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Coba lagi dengan kartu lainnya</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Coba ketuk, masukkan, atau gesek kartu Anda lagi</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Beberapa kartu terdeteksi. Coba lagi dengan satu kartu</string>
+    <string name="card_reader_payment_remove_card_prompt">Ambil kartu</string>
+    <string name="card_reader_payment_retry_card_prompt">Coba lagi dengan kartu yang sama</string>
+    <string name="order_refunds_refund_info_description_many">%d objek</string>
+    <string name="order_refunds_refund_info_description_one">%d item</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d hari kerja</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d hari kerja</string>
+    <string name="shipping_label_validation_error_template">Kami tidak dapat secara otomatis memverifikasi alamat pengiriman: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">Kami tidak dapat memverifikasi alamat pengirim secara otomatis. Lihat di Google Maps untuk memastikan alamat sudah benar.</string>
+    <string name="ordered_add_ons_wip_message">Kami berupaya untuk lebih memudahkan Anda melihat add-on produk dari perangkat! Untuk sekarang, Anda akan dapat melihat add-on untuk pesanan Anda. Anda dapat membuat dan menyunting add-on ini pada dasbor web Anda.</string>
+    <string name="ordered_add_ons_wip_title">Lihat add-on dari perangkat Anda!</string>
+    <string name="ordered_add_ons_details_info_notice">Jika ingin mengubah nama add-on pada dasbor web, harap perhatikan bahwa pesanan sebelumnya tidak akan menampilkan add-on tersebut dalam aplikasi.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Lihat Add-on</string>
+    <string name="save">Simpan</string>
     <string name="support_contact_payments_detail">Hubungi happiness engineers kami yang dapat membantu menjawab pertanyaan terkait pembayaran</string>
     <string name="support_contact_payments">Hubungi Dukungan Pembayaran</string>
     <string name="product_images_error_detail_title">Unggah detail (%d)</string>
@@ -13,7 +40,6 @@ Language: id
     <string name="product_image_service_error_uploading_single">File %d tidak dapat diunggah</string>
     <string name="product_image_service_error_media_null">Media tidak ditemukan</string>
     <string name="product_add_ons_details_info_notice">Anda dapat menyunting add-on produk di dasbor web.</string>
-    <string name="product_add_ons_card_button_title">Add-on Produk</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Baca Selengkapnya&lt;/a&gt; tentang mengunggah gambar</string>
     <string name="card_reader_onboarding_generic_error_hint">Maaf, kami tidak dapat memverifikasi Pembayaran Langsung untuk toko ini</string>
     <string name="card_reader_onboarding_generic_error_header">Tidak dapat memverifikasi Pembayaran Langsung untuk toko ini</string>
@@ -80,6 +106,7 @@ Language: id
     <string name="product_attributes_created_generate_action_text">Buat Variasi</string>
     <string name="product_attributes_created_description">Karena atribut sudah ditambahkan, Anda sekarang bisa membuat variasi pertama Anda!</string>
     <string name="product_attributes_created_title">Atribut dibuat</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">Membatalkan pembaruan perangkat lunak yang sedang berlangsung tidak dianjurkan</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Maaf, pembayaran ini tidak dapat diproses</string>
     <string name="card_reader_payment_failed_server_error_state">Tidak ada koneksi ke server</string>
@@ -355,6 +382,7 @@ Language: id
     <string name="shipping_label_packages_loading_message">Harap tunggu…</string>
     <string name="shipping_label_packages_loading_title">Memuat Paket!</string>
     <string name="shipping_label_package_details_title_template">Paket %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d objek</string>
     <string name="shipping_label_packages_loading_error">Tidak dapat memuat definisi paket</string>
     <string name="shipping_label_package_details_weight_info">Mencakup berat paket</string>
     <string name="shipping_label_package_details_weight_hint">Total berat paket (%1$s)</string>
@@ -369,9 +397,8 @@ Language: id
     <string name="shipping_label_address_suggestion_use_selected_address">Gunakan alamat yang dipilih</string>
     <string name="shipping_label_edit_address_loading_progress_title">Memuat data alamat</string>
     <string name="product_wip_title_m5">Tersedia fitur baru!</string>
-    <string name="shipping_label_validation_view_map">Buka Peta</string>
+    <string name="shipping_label_validation_view_map">Temukan di Peta</string>
     <string name="shipping_label_validation_contact_customer">Hubungi Pelanggan</string>
-    <string name="shipping_label_validation_error_template">Validasi gagal: %s</string>
     <string name="shipping_label_error_address_invalid_street">Nama jalan tidak valid</string>
     <string name="shipping_label_error_address_house_number_missing">Nomor rumah tidak ada</string>
     <string name="shipping_label_error_address_not_found">Alamat tidak ditemukan</string>
@@ -770,10 +797,9 @@ Language: id
     <string name="orderlist_loading">Mencari pesanan Anda…</string>
     <string name="product_detail_editable_text_hint">Masukkan teks</string>
     <string name="product_detail_title_hint">Masukkan Nama Produk</string>
-    <string name="product_detail_update_product_success">Produk diperbarui</string>
+    <string name="product_detail_save_product_success">Produk disimpan</string>
     <string name="product_detail_update_product_error">Error saat memperbarui produk</string>
     <string name="product_update_dialog_message">Harap tunggu…</string>
-    <string name="product_update_dialog_title">Memperbarui produk</string>
     <string name="product_description_empty">Deskripsikan produk Anda</string>
     <string name="product_description">Deskripsi</string>
     <string name="product_edit_description">Sunting deskripsi</string>

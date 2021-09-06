@@ -18,7 +18,7 @@ import javax.inject.Inject
 private val SUPPORTED_COUNTRIES = listOf("US")
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-const val SUPPORTED_WCPAY_VERSION = "2.5.0"
+const val SUPPORTED_WCPAY_VERSION = "2.8.2"
 
 @Suppress("TooManyFunctions")
 class CardReaderOnboardingChecker @Inject constructor(
@@ -45,7 +45,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
         if (!isWCPaySetupCompleted(paymentAccount)) return WcpaySetupNotCompleted
-        if (isWCPayInTestModeWithLiveStripeAccount()) return WcpayInTestModeWithLiveStripeAccount
+        if (isWCPayInTestModeWithLiveStripeAccount(paymentAccount)) return WcpayInTestModeWithLiveStripeAccount
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
@@ -81,9 +81,8 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isWCPaySetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != NO_ACCOUNT
 
-    // TODO cardreader Implement
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun isWCPayInTestModeWithLiveStripeAccount(): Boolean = false
+    private fun isWCPayInTestModeWithLiveStripeAccount(account: WCPaymentAccountResult): Boolean =
+        account.testMode == true && account.isLive
 
     private fun isStripeAccountUnderReview(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status == RESTRICTED &&

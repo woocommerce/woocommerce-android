@@ -657,7 +657,7 @@
     </fragment>
     <fragment
         android:id="@+id/productAddonsFragment"
-        android:name="com.woocommerce.android.ui.products.addons.ProductAddonsFragment"
+        android:name="com.woocommerce.android.ui.products.addons.product.ProductAddonsFragment"
         android:label="ProductAddonsFragment"/>
     <fragment
         android:id="@+id/productDownloadDetailsFragment"

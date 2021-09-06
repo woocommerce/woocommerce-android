@@ -1,6 +1,6 @@
 package com.woocommerce.android.push
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferencesWrapper
 import org.junit.Before

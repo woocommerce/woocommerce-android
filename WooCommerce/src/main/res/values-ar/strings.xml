@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:51:18+0000
+Translation-Revision-Date: 2021-09-01 09:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d العنصر</string>
+    <string name="upsell_product_count_many">%d من المنتجات الموصى بها</string>
+    <string name="upsell_product_count_one">%d منتج موصى به</string>
+    <string name="cross_sell_product_count_many">%d من المنتجات التسويقية</string>
+    <string name="cross_sell_product_count_one">%d منتج تسويقي</string>
+    <string name="product_count_many">%d المنتجات</string>
+    <string name="product_count_one">%d المنتج</string>
+    <string name="product_add_ons_title">الوظائف الإضافية للمنتجات</string>
+    <string name="product_save_dialog_title">حفظ منتجك</string>
+    <string name="pending_review_label">في انتظار المراجعة</string>
+    <string name="card_reader_payment_reader_not_connected">يرجى التأكُّد من اتصال قارئ البطاقة.</string>
+    <string name="card_reader_payment_try_another_card_prompt">إعادة المحاولة باستخدام بطاقة أخرى</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">إعادة محاولة الضغط على بطاقتك أو إدخالها أو تمريرها</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">تم اكتشاف عدة بطاقات. المحاولة مجددًا باستخدام بطاقة واحدة</string>
+    <string name="card_reader_payment_remove_card_prompt">إزالة البطاقة</string>
+    <string name="card_reader_payment_retry_card_prompt">إعادة المحاولة باستخدام البطاقة نفسها</string>
+    <string name="order_refunds_refund_info_description_many">%d العناصر</string>
+    <string name="order_refunds_refund_info_description_one">%d العنصر</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d من أيام العمل</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d يوم عمل</string>
+    <string name="shipping_label_validation_error_template">تعذر علينا التحقُّق من عنوان الشحن تلقائيًا: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">تعذر علينا التحقُّق من العنوان الأصلي تلقائيًا. اعرضه على خرائط غوغل للتأكُّد من صحة العنوان.</string>
+    <string name="ordered_add_ons_wip_message">نعمل على تسهيل اطلاعك على الوظائف الإضافية للمنتج مباشرةً من جهازك! في الوقت الحالي، ستتمكن من الاطلاع على الوظائف الإضافية لطلباتك. يمكنك إنشاء هذه الوظائف الإضافية وتحريرها في لوحة تحكم الويب الخاصة بك.</string>
+    <string name="ordered_add_ons_wip_title">اعرض الوظائف الإضافية من جهازك!</string>
+    <string name="ordered_add_ons_details_info_notice">إذا كنت تقوم بإعادة تسمية وظيفة إضافية في لوحة تحكم الويب الخاصة بك، فيرجى ملاحظة أنه لن تعرض الطلبات السابقة تلك الوظيفة الإضافية داخل التطبيق.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">عرض الوظائف الإضافية</string>
+    <string name="save">حفظ</string>
     <string name="support_contact_payments_detail">تواصل مع أعضاء فريق الدعم لدينا الذين يمكنهم مساعدتك على الإجابة عن الأسئلة المتعلقة بالمدفوعات</string>
     <string name="support_contact_payments">الاتصال بدعم المدفوعات</string>
     <string name="product_images_error_detail_title">رفع التفاصيل (%d)</string>
@@ -13,7 +40,6 @@ Language: ar
     <string name="product_image_service_error_uploading_single">يتعذر رفع %d ملف</string>
     <string name="product_image_service_error_media_null">يتعذر العثور على الوسائط</string>
     <string name="product_add_ons_details_info_notice">يمكنك تحرير وظائف المنتج الإضافية في لوحة تحكم الويب.</string>
-    <string name="product_add_ons_card_button_title">الوظائف الإضافية للمنتجات</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول رفع الصور</string>
     <string name="card_reader_onboarding_generic_error_hint">عذرًا، يتعذر علينا التحقُّق من المدفوعات الشخصية لهذا المخزن</string>
     <string name="card_reader_onboarding_generic_error_header">يتعذر التحقُّق من المدفوعات الشخصية لهذا المخزن</string>
@@ -355,6 +381,7 @@ Language: ar
     <string name="shipping_label_packages_loading_message">يُرجى الانتظار…</string>
     <string name="shipping_label_packages_loading_title">تحميل الحزم!</string>
     <string name="shipping_label_package_details_title_template">الحزمة ⁦%1$d⁩</string>
+    <string name="shipping_label_package_details_items_count_many">%d العناصر</string>
     <string name="shipping_label_packages_loading_error">يتعذر تحميل تعريفات الحزمة</string>
     <string name="shipping_label_package_details_weight_info">يتضمن وزن الحزمة</string>
     <string name="shipping_label_package_details_weight_hint">إجمالي وزن الحزمة (⁦%1$s⁩)</string>
@@ -369,9 +396,8 @@ Language: ar
     <string name="shipping_label_address_suggestion_use_selected_address">استخدام العنوان المحدَّد</string>
     <string name="shipping_label_edit_address_loading_progress_title">تحميل بيانات العنوان</string>
     <string name="product_wip_title_m5">تتوافر ميزات جديدة!</string>
-    <string name="shipping_label_validation_view_map">فتح الخريطة</string>
+    <string name="shipping_label_validation_view_map">بحث على الخريطة</string>
     <string name="shipping_label_validation_contact_customer">الاتصال بالعميل</string>
-    <string name="shipping_label_validation_error_template">فشل التحقُّق: %s</string>
     <string name="shipping_label_error_address_invalid_street">شارع غير صالح</string>
     <string name="shipping_label_error_address_house_number_missing">رقم المنزل مفقود</string>
     <string name="shipping_label_error_address_not_found">لم يتم العثور على العنوان</string>
@@ -770,10 +796,9 @@ Language: ar
     <string name="orderlist_loading">جارٍ البحث عن طلباتك…</string>
     <string name="product_detail_editable_text_hint">إدخال نص</string>
     <string name="product_detail_title_hint">إدخال عنوان الموقع</string>
-    <string name="product_detail_update_product_success">تم تحديث المنتج</string>
+    <string name="product_detail_save_product_success">تم حفظ المنتج.</string>
     <string name="product_detail_update_product_error">خطأ في أثناء تحرير المنتج</string>
     <string name="product_update_dialog_message">يُرجى الانتظار…</string>
-    <string name="product_update_dialog_title">تحديث المنتج</string>
     <string name="product_description_empty">وصف منتجك</string>
     <string name="product_description">الوصف</string>
     <string name="product_edit_description">تحرير الوصف</string>

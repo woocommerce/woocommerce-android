@@ -31,8 +31,11 @@ class MediaFileUploadHandler @Inject constructor(
         mediaUploadError: MediaStore.MediaError
     ) {
         val remoteProductId = mediaModel.postId
+        val errorMessage = mediaUploadError.message
+            ?: mediaUploadError.logMessage
+            ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
         val newErrors = currentUploadErrors.get(remoteProductId, mutableListOf()) +
-            ProductImageUploadUiModel(mediaModel, mediaUploadError.type, mediaUploadError.message)
+            ProductImageUploadUiModel(mediaModel, mediaUploadError.type, errorMessage)
         currentUploadErrors.put(remoteProductId, newErrors)
     }
 

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:51:37+0000
+Translation-Revision-Date: 2021-09-01 11:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d ürün</string>
+    <string name="upsell_product_count_many">%d yukarı satış ürünü</string>
+    <string name="upsell_product_count_one">%d yukarı satış ürünü</string>
+    <string name="cross_sell_product_count_many">%d çapraz satış ürünü</string>
+    <string name="cross_sell_product_count_one">%d çapraz satış ürünü</string>
+    <string name="product_count_many">%d ürünler</string>
+    <string name="product_count_one">%d ürün</string>
+    <string name="product_add_ons_title">Ürün Eklentileri</string>
+    <string name="product_save_dialog_title">Ürününüz kaydediliyor</string>
+    <string name="pending_review_label">İnceleme Bekliyor</string>
+    <string name="card_reader_payment_reader_not_connected">Lütfen kart okuyucunun bağlı olduğundan emin olun.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Başka bir kartla tekrar deneyin</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Kartınızı tekrar yerine oturtun, takın veya kaydırın</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Birden fazla kart algılandı. Tek kartla tekrar deneyin</string>
+    <string name="card_reader_payment_remove_card_prompt">Kartı çıkarın</string>
+    <string name="card_reader_payment_retry_card_prompt">Aynı kartla tekrar deneyin</string>
+    <string name="order_refunds_refund_info_description_many">%d öğeler</string>
+    <string name="order_refunds_refund_info_description_one">%d ürün</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d iş günü</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d iş günü</string>
+    <string name="shipping_label_validation_error_template">Gönderim adresini otomatik olarak doğrulayamadık: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">Gönderen adresini otomatik olarak doğrulayamadık. Adresin doğru olduğundan emin olmak için Google Haritalar\'da görüntüleyin.</string>
+    <string name="ordered_add_ons_wip_message">Ürün eklentilerini cihazınızdan görmenizi kolaylaştırmak için çalışıyoruz. Şimdilik, siparişleriniz için eklentileri görebilirsiniz. Bu eklentileri web yönetim panelinizde oluşturabilir ve düzenleyebilirsiniz.</string>
+    <string name="ordered_add_ons_wip_title">Eklentileri cihazınızdan görüntüleyin.</string>
+    <string name="ordered_add_ons_details_info_notice">Web yönetim panelinizde bir eklentiyi yeniden adlandırıyorsanız, önceki siparişlerin artık uygulama içinde bu eklentiyi göstermeyeceğini lütfen unutmayın.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Eklentileri Görüntüle</string>
+    <string name="save">Kaydet</string>
     <string name="support_contact_payments_detail">Ödemelerle ilgili sorularınızda size yardımcı olabilecek mutluluk mühendislerimize ulaşın</string>
     <string name="support_contact_payments">Ödeme Desteği ile iletişime geçin</string>
     <string name="product_images_error_detail_title">Yükleme ayrıntıları (%d)</string>
@@ -13,7 +40,6 @@ Language: tr
     <string name="product_image_service_error_uploading_single">%d dosya yüklenemedi</string>
     <string name="product_image_service_error_media_null">Ortam bulunamadı</string>
     <string name="product_add_ons_details_info_notice">Ürün eklentilerini web panosunda düzenleyebilirsiniz.</string>
-    <string name="product_add_ons_card_button_title">Ürün Eklentileri</string>
     <string name="product_images_learn_more_button">Resim yükleme hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin&lt;/a&gt;</string>
     <string name="card_reader_onboarding_generic_error_hint">Maalesef bu mağaza için Şahsen Ödemeleri doğrulayamadık</string>
     <string name="card_reader_onboarding_generic_error_header">Bu mağaza için Şahsen Ödemeler doğrulanamıyor</string>
@@ -355,6 +381,7 @@ Language: tr
     <string name="shipping_label_packages_loading_message">Lütfen bekleyin…</string>
     <string name="shipping_label_packages_loading_title">Paketler Yükleniyor.</string>
     <string name="shipping_label_package_details_title_template">Paket %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d öğeler</string>
     <string name="shipping_label_packages_loading_error">Paket tanımları yüklenemiyor</string>
     <string name="shipping_label_package_details_weight_info">Paket ağırlığı dahildir</string>
     <string name="shipping_label_package_details_weight_hint">Toplam paket ağırlığı (%1$s)</string>
@@ -369,9 +396,8 @@ Language: tr
     <string name="shipping_label_address_suggestion_use_selected_address">Seçilen adresi kullan</string>
     <string name="shipping_label_edit_address_loading_progress_title">Adres verileri yükleniyor</string>
     <string name="product_wip_title_m5">Yeni özellikler mevcut.</string>
-    <string name="shipping_label_validation_view_map">Haritayı Aç</string>
+    <string name="shipping_label_validation_view_map">Haritada Bul</string>
     <string name="shipping_label_validation_contact_customer">Müşteri İle İletişime Geç</string>
-    <string name="shipping_label_validation_error_template">Doğrulama başarısız: %s</string>
     <string name="shipping_label_error_address_invalid_street">Geçersiz sokak </string>
     <string name="shipping_label_error_address_house_number_missing">Ev numarası eksik</string>
     <string name="shipping_label_error_address_not_found">Adres bulunamadı</string>
@@ -770,10 +796,9 @@ Language: tr
     <string name="orderlist_loading">Siparişleriniz aranıyor…</string>
     <string name="product_detail_editable_text_hint">Metin girin</string>
     <string name="product_detail_title_hint">Ürün Başlığını Gir</string>
-    <string name="product_detail_update_product_success">Ürün güncellendi</string>
+    <string name="product_detail_save_product_success">Ürün kaydedildi</string>
     <string name="product_detail_update_product_error">Ürün güncellenirken hata oluştu</string>
     <string name="product_update_dialog_message">Lütfen bekleyin…</string>
-    <string name="product_update_dialog_title">Ürün güncelleniyor</string>
     <string name="product_description_empty">Ürününüzü tanımlayın</string>
     <string name="product_description">Tanım</string>
     <string name="product_edit_description">Tanımı düzenle</string>

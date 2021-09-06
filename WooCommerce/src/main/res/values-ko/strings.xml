@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:49:03+0000
+Translation-Revision-Date: 2021-09-01 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d개 아이템</string>
+    <string name="upsell_product_count_many">상향 판매 상품 %d개</string>
+    <string name="upsell_product_count_one">상향 판매 상품 %d개</string>
+    <string name="cross_sell_product_count_many">교차 판매 상품 %d개</string>
+    <string name="cross_sell_product_count_one">교차 판매 상품 %d개</string>
+    <string name="product_count_many">%d개 상품</string>
+    <string name="product_count_one">%d개 상품</string>
+    <string name="product_add_ons_title">상품 애드온</string>
+    <string name="product_save_dialog_title">상품 저장 중…</string>
+    <string name="pending_review_label">검토 대기 중</string>
+    <string name="card_reader_payment_reader_not_connected">카드 리더가 연결되었는지 확인하세요.</string>
+    <string name="card_reader_payment_try_another_card_prompt">다른 카드로 다시 시도</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">카드 누르기, 삽입하기 또는 긋기 다시 시도</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">여러 카드가 감지되었습니다. 카드 하나로 다시 시도</string>
+    <string name="card_reader_payment_remove_card_prompt">카드 제거</string>
+    <string name="card_reader_payment_retry_card_prompt">같은 카드로 다시 시도</string>
+    <string name="order_refunds_refund_info_description_many">%d개 아이템</string>
+    <string name="order_refunds_refund_info_description_one">%d개 아이템</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d영업일</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d영업일</string>
+    <string name="shipping_label_validation_error_template">배송 주소(%s)를 자동으로 확인할 수 없었습니다. </string>
+    <string name="shipping_label_edit_origin_address_error_warning">발송 주소를 자동으로 확인할 수 없었습니다. Google Maps에서 보며 주소가 올바른지 확인하세요.</string>
+    <string name="ordered_add_ons_wip_message">기기에 상품 애드온을 더 쉽게 표시할 수 있도록 작업하는 중입니다. 지금 당장은 주문에 대한 애드온을 보실 수 있습니다. 웹 대시보드에서 이러한 애드온을 생성하고 편집하실 수 있습니다.</string>
+    <string name="ordered_add_ons_wip_title">기기에서 애드온을 보세요!</string>
+    <string name="ordered_add_ons_details_info_notice">웹 대시보드에서 애드온의 이름을 변경하는 경우 이전 주문에서는 앱 내에 해당 주문이 더는 표시되지 않습니다.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">애드온 보기</string>
+    <string name="save">저장</string>
     <string name="support_contact_payments_detail">결제 관련 질문에 대한 답변을 도와드릴 수 있는 해피니스 엔지니어에게 연락하기</string>
     <string name="support_contact_payments">결제 지원 문의</string>
     <string name="product_images_error_detail_title">상세 정보 업로드(%d)</string>
@@ -13,7 +40,6 @@ Language: ko_KR
     <string name="product_image_service_error_uploading_single">%d개 파일을 업로드할 수 없음</string>
     <string name="product_image_service_error_media_null">미디어를 찾을 수 없음</string>
     <string name="product_add_ons_details_info_notice">웹 대시보드에서 상품 애드온을 편집하실 수 있습니다.</string>
-    <string name="product_add_ons_card_button_title">상품 애드온</string>
     <string name="product_images_learn_more_button">이미지 업로드에 대해 &lt;a href=\'\'&gt;더 알아보기&lt;/a&gt;</string>
     <string name="card_reader_onboarding_generic_error_hint">죄송합니다. 이 스토어의 대면 결제를 확인할 수 없었습니다.</string>
     <string name="card_reader_onboarding_generic_error_header">이 스토어의 대면 결제를 확인할 수 없음</string>
@@ -355,6 +381,7 @@ Language: ko_KR
     <string name="shipping_label_packages_loading_message">기다려주세요…</string>
     <string name="shipping_label_packages_loading_title">패키지 로드 중!</string>
     <string name="shipping_label_package_details_title_template">패키지 %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d개 아이템</string>
     <string name="shipping_label_packages_loading_error">패키지 정의를 로드할 수 없음</string>
     <string name="shipping_label_package_details_weight_info">패키지 무게 포함</string>
     <string name="shipping_label_package_details_weight_hint">총 패키지 무게(%1$s)</string>
@@ -369,9 +396,8 @@ Language: ko_KR
     <string name="shipping_label_address_suggestion_use_selected_address">선택한 주소 사용</string>
     <string name="shipping_label_edit_address_loading_progress_title">주소 데이터 로드 중</string>
     <string name="product_wip_title_m5">새 기능을 사용할 수 있습니다!</string>
-    <string name="shipping_label_validation_view_map">지도 열기</string>
+    <string name="shipping_label_validation_view_map">지도에서 찾기</string>
     <string name="shipping_label_validation_contact_customer">고객에게 문의</string>
-    <string name="shipping_label_validation_error_template">유효성 검사 실패: %s</string>
     <string name="shipping_label_error_address_invalid_street">유효하지 않은 도로명</string>
     <string name="shipping_label_error_address_house_number_missing">번지 누락</string>
     <string name="shipping_label_error_address_not_found">주소를 찾을 수 없음</string>
@@ -770,10 +796,9 @@ Language: ko_KR
     <string name="orderlist_loading">주문 검색 중…</string>
     <string name="product_detail_editable_text_hint">텍스트 입력</string>
     <string name="product_detail_title_hint">제품 제목 입력</string>
-    <string name="product_detail_update_product_success">제품 업데이트됨</string>
+    <string name="product_detail_save_product_success">상품 저장됨</string>
     <string name="product_detail_update_product_error">제품을 업데이트하는 중 오류 발생</string>
     <string name="product_update_dialog_message">기다려주세요…</string>
-    <string name="product_update_dialog_title">제품을 업데이트하는 중</string>
     <string name="product_description_empty">제품 설명</string>
     <string name="product_description">설명</string>
     <string name="product_edit_description">설명 수정</string>

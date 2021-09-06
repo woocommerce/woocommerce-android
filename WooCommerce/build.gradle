@@ -55,9 +55,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "7.3"
+            versionName "7.4"
         }
-        versionCode 238
+        versionCode 242
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -188,10 +188,6 @@ dependencies {
     }
 
     implementation ("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
-        exclude group: "com.github.wordpress-mobile.WordPress-FluxC-Android", module: "fluxc"
-        exclude group: "org.wordpress", module: "fluxc"
-        exclude group: "org.wordpress.fluxc"
-        exclude group: "org.wordpress.fluxc.plugins"
         exclude group: "org.wordpress", module: "utils"
     }
 
@@ -241,7 +237,7 @@ dependencies {
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.mockito:mockito-inline:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"

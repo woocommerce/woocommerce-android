@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:49:22+0000
+Translation-Revision-Date: 2021-08-30 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d elemento</string>
+    <string name="upsell_product_count_many">%d ventas dirigidas de productos</string>
+    <string name="upsell_product_count_one">%d venta dirigida de producto</string>
+    <string name="cross_sell_product_count_many">%d ventas cruzadas de productos</string>
+    <string name="cross_sell_product_count_one">%d venta cruzada de producto</string>
+    <string name="product_count_many">%d productos</string>
+    <string name="product_count_one">%d producto</string>
+    <string name="product_add_ons_title">Complementos de producto</string>
+    <string name="product_save_dialog_title">Guardando tu producto</string>
+    <string name="pending_review_label">Pendiente de revisión</string>
+    <string name="card_reader_payment_reader_not_connected">Asegúrate de que el lector de tarjetas está conectado.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Inténtalo de nuevo con otra tarjeta</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Vuelve a tocar, insertar o pasar la tarjeta</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Se han detectado varias tarjetas. Inténtalo de nuevo con una sola tarjeta</string>
+    <string name="card_reader_payment_remove_card_prompt">Quita la tarjeta</string>
+    <string name="card_reader_payment_retry_card_prompt">Inténtalo de nuevo con la misma tarjeta</string>
+    <string name="order_refunds_refund_info_description_many">%d elementos</string>
+    <string name="order_refunds_refund_info_description_one">%d elemento</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d días laborables</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d día laborable</string>
+    <string name="shipping_label_validation_error_template">No hemos podido verificar automáticamente la dirección de envío: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">No hemos podido verificar la dirección de origen automáticamente. Visualízala en Google Maps para comprobar que la dirección es correcta.</string>
+    <string name="ordered_add_ons_wip_message">Estamos trabajando para que sea más sencillo ver complementos de producto directamente con tu dispositivo. A partir de ahora, podrás ver los complementos de tus pedidos. Puedes crear y editar estos complementos en el escritorio web.</string>
+    <string name="ordered_add_ons_wip_title">Puedes ver los complementos con tu dispositivo.</string>
+    <string name="ordered_add_ons_details_info_notice">Si cambias el nombre de un complemento en el escritorio web, recuerda que los pedidos anteriores no mostrarán el complemento en la aplicación.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Ver complementos</string>
+    <string name="save">Guardar</string>
     <string name="support_contact_payments_detail">Ponte en contacto con nuestros Happiness Engineers para que te ayuden a resolver tus dudas sobre los pagos</string>
     <string name="support_contact_payments">Contactar con el equipo de soporte de pagos</string>
     <string name="product_images_error_detail_title">Subir datos (%d)</string>
@@ -13,7 +40,6 @@ Language: es
     <string name="product_image_service_error_uploading_single">No se ha podido subir %d archivo</string>
     <string name="product_image_service_error_media_null">No se ha podido encontrar el archivo multimedia</string>
     <string name="product_add_ons_details_info_notice">Puedes editar los complementos para los productos en el escritorio del sitio web.</string>
-    <string name="product_add_ons_card_button_title">Complementos de producto</string>
     <string name="product_images_learn_more_button">Consulta &lt;a href=\'\'&gt;más información&lt;/a&gt; sobre subir imágenes</string>
     <string name="card_reader_onboarding_generic_error_hint">No hemos podido verificar Pagos en Persona para esta tienda</string>
     <string name="card_reader_onboarding_generic_error_header">No se ha podido verificar Pagos en Persona para esta tienda</string>
@@ -355,6 +381,7 @@ Language: es
     <string name="shipping_label_packages_loading_message">Por favor, espera…</string>
     <string name="shipping_label_packages_loading_title">Cargando paquetes</string>
     <string name="shipping_label_package_details_title_template">Paquete %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d elementos</string>
     <string name="shipping_label_packages_loading_error">No se han podido cargar las definiciones de paquete</string>
     <string name="shipping_label_package_details_weight_info">Incluye el peso del paquete</string>
     <string name="shipping_label_package_details_weight_hint">Peso total del paquete (%1$s)</string>
@@ -369,9 +396,8 @@ Language: es
     <string name="shipping_label_address_suggestion_use_selected_address">Usar la dirección seleccionada</string>
     <string name="shipping_label_edit_address_loading_progress_title">cargando los datos de la dirección</string>
     <string name="product_wip_title_m5">¡Hay nuevas funciones disponibles!</string>
-    <string name="shipping_label_validation_view_map">Abrir mapa</string>
+    <string name="shipping_label_validation_view_map">Buscar en el mapa</string>
     <string name="shipping_label_validation_contact_customer">Contactar con el cliente</string>
-    <string name="shipping_label_validation_error_template">Error de validación: %s</string>
     <string name="shipping_label_error_address_invalid_street">Calle no válida</string>
     <string name="shipping_label_error_address_house_number_missing">Falta el número de la casa</string>
     <string name="shipping_label_error_address_not_found">No se encuentra la dirección</string>
@@ -770,10 +796,9 @@ Language: es
     <string name="orderlist_loading">Buscando tus pedidos…</string>
     <string name="product_detail_editable_text_hint">Introduce texto</string>
     <string name="product_detail_title_hint">Introduce el título del producto</string>
-    <string name="product_detail_update_product_success">Se ha actualizado el producto</string>
+    <string name="product_detail_save_product_success">Producto guardado</string>
     <string name="product_detail_update_product_error">Se ha producido un error al actualizar el producto</string>
     <string name="product_update_dialog_message">Por favor, espera…</string>
-    <string name="product_update_dialog_title">Actualizando el producto</string>
     <string name="product_description_empty">Describe tu producto</string>
     <string name="product_description">Descripción</string>
     <string name="product_edit_description">Editar descripción</string>

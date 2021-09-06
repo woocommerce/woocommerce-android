@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -35,7 +37,7 @@ class ReviewListAdapter(
     private val removedRemoteIds = HashSet<Long>()
 
     interface OnReviewClickListener {
-        fun onReviewClick(review: ProductReview) { }
+        fun onReviewClick(review: ProductReview) {}
     }
 
     fun setReviews(reviews: List<ProductReview>) {
@@ -216,7 +218,7 @@ class ReviewListAdapter(
                 currentPos++
             }
             if (currentPos == position) {
-                return if (review.read ?: true) ItemType.READ else ItemType.UNREAD
+                return if (review.read != false) ItemType.READ else ItemType.UNREAD
             }
             currentPos++
         }
@@ -350,7 +352,12 @@ class ReviewListAdapter(
         override fun onBindItemViewHolder(holder: ViewHolder, position: Int) {
             val review = list[position]
             val itemHolder = holder as ItemViewHolder
-            itemHolder.bind(review, position, getContentItemsTotal())
+            itemHolder.bind(
+                review,
+                position,
+                getContentItemsTotal(),
+                reviewStatus = ProductReviewStatus.fromString(review.status)
+            )
             itemHolder.itemView.setOnClickListener {
                 clickListener.onReviewClick(review)
             }
@@ -383,7 +390,12 @@ class ReviewListAdapter(
 
     private class ItemViewHolder(val viewBinding: NotifsListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(review: ProductReview, position: Int, totalItems: Int) {
+        private val context = viewBinding.root.context
+        private val bullet = "\u2022"
+        private val pendingLabelColor: Int = ContextCompat.getColor(context, R.color.woo_orange_50)
+        private val notifsIconPendingColor: Int = ContextCompat.getColor(context, R.color.woo_purple_60)
+
+        fun bind(review: ProductReview, position: Int, totalItems: Int, reviewStatus: ProductReviewStatus) {
             viewBinding.notifRating.visibility = View.GONE
             viewBinding.notifIcon.setImageResource(R.drawable.ic_comment)
             viewBinding.notifDesc.maxLines = 2
@@ -406,18 +418,32 @@ class ReviewListAdapter(
                 )
             }
 
-            viewBinding.notifDesc.text = StringUtils.getRawTextFromHtml(review.review)
+            val reviewText: String = StringUtils.getRawTextFromHtml(review.review)
 
+            if (reviewStatus == ProductReviewStatus.HOLD) {
+                val pendingReviewText = getPendingReviewLabel()
+                viewBinding.notifDesc.text = HtmlCompat.fromHtml(
+                    "$pendingReviewText $bullet $reviewText",
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                )
+                viewBinding.notifIcon.setColorFilter(notifsIconPendingColor)
+            } else {
+                viewBinding.notifIcon.colorFilter = null
+                viewBinding.notifDesc.text = reviewText
+            }
             if (position == totalItems - 1) {
                 viewBinding.notifDivider.visibility = View.INVISIBLE
             }
         }
-    }
 
-    private class HeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
-        RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(@StringRes headerId: Int) {
-            viewBinding.orderListHeader.text = viewBinding.root.context.getString(headerId)
-        }
+        private fun getPendingReviewLabel() =
+            "<font color=$pendingLabelColor>${context.getString(R.string.pending_review_label)}</font>"
+    }
+}
+
+private class HeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
+    RecyclerView.ViewHolder(viewBinding.root) {
+    fun bind(@StringRes headerId: Int) {
+        viewBinding.orderListHeader.text = viewBinding.root.context.getString(headerId)
     }
 }

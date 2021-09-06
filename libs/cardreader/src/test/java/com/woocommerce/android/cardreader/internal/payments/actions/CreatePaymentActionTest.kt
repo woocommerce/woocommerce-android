@@ -1,11 +1,11 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.stripe.stripeterminal.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentParameters
-import com.woocommerce.android.cardreader.CardReader
-import com.woocommerce.android.cardreader.PaymentInfo
+import com.woocommerce.android.cardreader.connection.CardReader
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
