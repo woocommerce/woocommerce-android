@@ -30,7 +30,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `when order is paid then hide collect button`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val order = getOrder(datePaid = null, paymentMethodTitle = "")
+            val order = getOrder(datePaid = Date())
 
             // WHEN
             val isCollectable = checker.isCollectable(order)
@@ -43,7 +43,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `when order not paid then show collect button`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val order = getOrder(datePaid = Date())
+            val order = getOrder(datePaid = null)
 
             // WHEN
             val isCollectable = checker.isCollectable(order)

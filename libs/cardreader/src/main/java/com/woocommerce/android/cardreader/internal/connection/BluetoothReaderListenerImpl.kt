@@ -64,8 +64,4 @@ internal class BluetoothReaderListenerImpl(
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
     }
-
-    fun resetSoftwareUpdateStatus() {
-        _updateStatusEvents.value = SoftwareUpdateStatus.Unknown
-    }
 }

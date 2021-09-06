@@ -19,7 +19,6 @@
 
     <View
         style="@style/Woo.Divider"
-        android:layout_marginStart="@dimen/major_100"
         app:layout_constraintBottom_toTopOf="@+id/filterList_btnFrame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

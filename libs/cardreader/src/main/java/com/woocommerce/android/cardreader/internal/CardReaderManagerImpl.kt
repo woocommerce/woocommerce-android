@@ -49,10 +49,6 @@ internal class CardReaderManagerImpl(
 
     override val softwareUpdateAvailability = connectionManager.softwareUpdateAvailability
 
-    override fun resetSoftwareUpdateStatus() {
-        connectionManager.resetSoftwareUpdateStatus()
-    }
-
     override fun initialize(app: Application) {
         if (!terminal.isInitialized()) {
             application = app

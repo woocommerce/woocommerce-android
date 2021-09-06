@@ -30,7 +30,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -63,7 +62,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onSiteChanged()
-        fun onProductsFeatureOptionChanged(enabled: Boolean)
+        fun onProductAddonsOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -162,10 +161,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_adding_teaser_title)
-
-        // No beta features currently available
-        binding.optionBetaFeatures.hide()
+        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_addons_teaser_title)
 
         binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)

@@ -62,8 +62,15 @@ class ProductImagesService : JobIntentService() {
 
         // posted when a single image has been uploaded
         class OnProductImageUploaded(
-            val media: MediaModel? = null,
-            val isError: Boolean = false
+            val localUri: Uri,
+            val media: MediaModel
+        )
+
+        // posted when a single image upload failed
+        class OnProductImageUploadFailed(
+            val localUri: Uri,
+            val media: MediaModel,
+            val error: MediaError
         )
 
         // posted when the upload is cancelled
@@ -105,6 +112,7 @@ class ProductImagesService : JobIntentService() {
 
     private var doneSignal: CountDownLatch? = null
     private var currentMediaUpload: MediaModel? = null
+    private lateinit var currentUploadUri: Uri
     private lateinit var notifHandler: ProductImagesNotificationHandler
 
     override fun onCreate() {
@@ -149,13 +157,13 @@ class ProductImagesService : JobIntentService() {
 
         for (index in 0 until totalUploads) {
             notifHandler.update(index + 1, totalUploads)
-            val localUri = localUriList[index]
+            currentUploadUri = localUriList[index]
 
             // create a media model from this local image uri
             currentMediaUpload = ProductImagesUtils.mediaModelFromLocalUri(
                 this,
                 selectedSite.get().id,
-                localUri,
+                currentUploadUri,
                 mediaStore
             )
 
@@ -173,7 +181,7 @@ class ProductImagesService : JobIntentService() {
                 currentMediaUpload!!.setUploadState(MediaModel.MediaUploadState.UPLOADING)
 
                 // dispatch the upload request
-                WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $localUri")
+                WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $currentUploadUri")
                 val payload = UploadMediaPayload(selectedSite.get(), currentMediaUpload!!, STRIP_LOCATION)
                 dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
@@ -194,7 +202,7 @@ class ProductImagesService : JobIntentService() {
             currentUploads.get(id)?.let { oldList ->
                 val newList = ArrayList<Uri>().also {
                     it.addAll(oldList)
-                    it.remove(localUri)
+                    it.remove(currentUploadUri)
                 }
                 currentUploads.put(id, newList)
             }
@@ -255,7 +263,7 @@ class ProductImagesService : JobIntentService() {
 
     private fun handleSuccess(uploadedMedia: MediaModel) {
         countDown()
-        EventBus.getDefault().post(OnProductImageUploaded(uploadedMedia))
+        EventBus.getDefault().post(OnProductImageUploaded(currentUploadUri, uploadedMedia))
     }
 
     private fun handleFailure(
@@ -263,8 +271,7 @@ class ProductImagesService : JobIntentService() {
         mediaUploadError: MediaError
     ) {
         countDown()
-        mediaFileUploadHandler.handleMediaUploadFailure(mediaModel, mediaUploadError)
-        EventBus.getDefault().post(OnProductImageUploaded(isError = true))
+        EventBus.getDefault().post(OnProductImageUploadFailed(currentUploadUri, mediaModel, mediaUploadError))
     }
 
     private fun countDown() {

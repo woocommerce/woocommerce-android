@@ -23,10 +23,6 @@ internal class ConnectionManager(
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
 
-    fun resetSoftwareUpdateStatus() {
-        bluetoothReaderListener.resetSoftwareUpdateStatus()
-    }
-
     fun discoverReaders(isSimulated: Boolean) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->
             when (state) {
