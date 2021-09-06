@@ -3,6 +3,7 @@ package com.woocommerce.android.media
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.update
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ServiceStopped
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.Product
@@ -10,7 +11,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
@@ -38,13 +38,12 @@ private const val ONE_SECOND = 1000L
 class ProductImagesUploadWorker @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
     private val productDetailRepository: ProductDetailRepository,
-    private val resourceProvider: ResourceProvider,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val notificationHandler: ProductImagesNotificationHandler,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
     private val queue = MutableSharedFlow<Work>(extraBufferCapacity = Int.MAX_VALUE)
-    private val currentWorkListCount = MutableStateFlow<List<Work>>(emptyList())
+    private val pendingWorkList = MutableStateFlow<List<Work>>(emptyList())
 
     private val _events = MutableSharedFlow<Event>(extraBufferCapacity = Int.MAX_VALUE)
     val events = _events.asSharedFlow()
@@ -53,22 +52,30 @@ class ProductImagesUploadWorker @Inject constructor(
     private val currentJobs = mutableMapOf<Long, List<Job>>()
 
     // A reference to all images being uploaded to update the notification with the correct index
-    private val listOfImagesToUpload = mutableListOf<Pair<Long, String>>()
+    private val uploadList = mutableListOf<MediaUploadEntry>()
 
     private val mutex = Mutex()
 
     init {
+        observeQueue()
+        handleServiceStatus()
+        updateUploadList()
+    }
+
+    private fun observeQueue() {
         queue
             .onEach { work ->
-                currentWorkListCount.update { list -> list + work }
-                if (work is Work.UploadMedia) {
-                    listOfImagesToUpload.add(Pair(work.productId, work.localUri))
+                pendingWorkList.update { list -> list + work }
+                if (work is Work.FetchMedia) {
+                    uploadList.add(MediaUploadEntry(work.productId, work.localUri))
                 }
                 handleWork(work)
             }
             .launchIn(appCoroutineScope)
+    }
 
-        currentWorkListCount
+    private fun handleServiceStatus() {
+        pendingWorkList
             .transformLatest { list ->
                 val done = list.isEmpty()
                 if (done) {
@@ -82,12 +89,28 @@ class ProductImagesUploadWorker @Inject constructor(
                 if (done) {
                     WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> stop service")
                     productImagesServiceWrapper.stopService()
-                    listOfImagesToUpload.clear()
+                    uploadList.clear()
                     emitEvent(ServiceStopped)
                 } else {
                     WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start service")
                     productImagesServiceWrapper.startService()
                 }
+            }
+            .launchIn(appCoroutineScope)
+    }
+
+    private fun updateUploadList() {
+        events
+            .filterIsInstance<MediaUploadEvent>()
+            .filter {
+                it is MediaUploadEvent.FetchFailed ||
+                    it is MediaUploadEvent.UploadSucceeded ||
+                    it is MediaUploadEvent.UploadFailed
+            }
+            .onEach { event ->
+                val index =
+                    uploadList.indexOfFirst { it.productId == event.productId && it.localUri == event.localUri }
+                uploadList[index] = uploadList[index].copy(isDone = true)
             }
             .launchIn(appCoroutineScope)
     }
@@ -114,7 +137,7 @@ class ProductImagesUploadWorker @Inject constructor(
                     is Work.UpdateProduct -> updateProduct(work)
                 }
             } finally {
-                currentWorkListCount.update { list -> list - work }
+                pendingWorkList.update { list -> list - work }
             }
         }
 
@@ -137,7 +160,7 @@ class ProductImagesUploadWorker @Inject constructor(
         currentJobs[productId]?.forEach {
             it.cancel()
         }
-        listOfImagesToUpload.removeAll { it.first == productId }
+        uploadList.removeAll { it.productId == productId }
     }
 
     private suspend fun fetchMedia(work: Work.FetchMedia) {
@@ -169,8 +192,8 @@ class ProductImagesUploadWorker @Inject constructor(
         mutex.withLock {
             WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start uploading media ${work.localUri}")
 
-            val indexOfCurrentUpload = listOfImagesToUpload.indexOf(Pair(work.productId, work.localUri))
-            notificationHandler.update(indexOfCurrentUpload + 1, listOfImagesToUpload.size)
+            val doneUploads = uploadList.count { it.isDone }
+            notificationHandler.update(doneUploads + 1, uploadList.size)
             try {
                 val uploadedMedia = mediaFilesRepository.uploadMedia(work.fetchedMedia)
                 WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> upload succeeded for ${work.localUri}")
@@ -192,7 +215,7 @@ class ProductImagesUploadWorker @Inject constructor(
                 )
             }
 
-            val hasMoreUploads = currentWorkListCount.value.any {
+            val hasMoreUploads = pendingWorkList.value.any {
                 it != work && it.productId == work.productId && (it is Work.UploadMedia || it is Work.FetchMedia)
             }
             if (!hasMoreUploads) {
@@ -329,4 +352,14 @@ class ProductImagesUploadWorker @Inject constructor(
             ) : ProductUpdateEvent()
         }
     }
+
+    /**
+     * This class is only used to be able to count total of uploads, and number of completed ones, and update
+     * notification accordingly
+     */
+    data class MediaUploadEntry(
+        val productId: Long,
+        val localUri: String,
+        val isDone: Boolean = false
+    )
 }
