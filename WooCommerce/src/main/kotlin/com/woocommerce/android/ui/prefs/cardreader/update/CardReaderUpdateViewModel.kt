@@ -58,20 +58,22 @@ class CardReaderUpdateViewModel @Inject constructor(
             secondaryButton = ButtonState(
                 onActionClicked = ::onSkipClicked,
                 text = UiStringRes(
-                    if (navArgs.startedByUser) R.string.card_reader_software_update_cancel
+                    if (navArgs.isOptionalUpdate) R.string.card_reader_software_update_cancel
                     else R.string.card_reader_software_update_skip
                 )
             )
         )
-
-        listenToSoftwareUpdateStatus()
+        if (navArgs.isOptionalUpdate.not()) {
+            listenToSoftwareUpdateStatus()
+        }
     }
 
     private fun onUpdateClicked() {
         tracker.track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
         launch {
-            cardReaderManager.updateSoftware().collect {
-                // todo cardreader #4660
+            cardReaderManager.installSoftwareUpdate()
+            if (navArgs.isOptionalUpdate) {
+                listenToSoftwareUpdateStatus()
             }
         }
     }
@@ -85,8 +87,6 @@ class CardReaderUpdateViewModel @Inject constructor(
                     is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))
                     Success -> onUpdateSucceeded()
                     Unknown -> onUpdateStatusUnknown()
-                    else -> {
-                    } // todo cardreader #4660
                 }.exhaustive
             }
         }
