@@ -49,6 +49,36 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when total amount less than zero, then hide collect button`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val order = getOrder(total = BigDecimal(-2))
+
+            val isCollectable = checker.isCollectable(order)
+
+            assertThat(isCollectable).isFalse()
+        }
+
+    @Test
+    fun `when total amount equal to zero, then hide collect button`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val order = getOrder(total = BigDecimal(0))
+
+            val isCollectable = checker.isCollectable(order)
+
+            assertThat(isCollectable).isFalse()
+        }
+
+    @Test
+    fun `when total amount greater than zero, then show collect button`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val order = getOrder(total = BigDecimal(2))
+
+            val isCollectable = checker.isCollectable(order)
+
+            assertThat(isCollectable).isTrue()
+        }
+
+    @Test
     fun `when order has empty payment method, then it is not collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(paymentMethod = "")
@@ -203,6 +233,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     private fun getOrder(
+        total: BigDecimal = BigDecimal.ONE,
         currency: String = "USD",
         paymentStatus: Order.Status = Order.Status.Processing,
         paymentMethod: String = "cod",
@@ -211,6 +242,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         datePaid: Date? = null
     ): Order {
         return generatedOrder.copy(
+            total = total,
             currency = currency,
             paymentMethod = paymentMethod,
             paymentMethodTitle = paymentMethodTitle,
