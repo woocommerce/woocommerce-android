@@ -35,6 +35,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment
 import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.widgets.WCPromoTooltip
@@ -178,6 +179,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         if (FeatureFlag.WHATS_NEW.isEnabled()) {
             binding.optionWhatsNew.show()
+            binding.optionWhatsNew.setOnClickListener {
+                FeatureAnnouncementDialogFragment().show(
+                    parentFragmentManager, FeatureAnnouncementDialogFragment.TAG
+                )
+            }
         }
 
         binding.optionLicenses.setOnClickListener {
