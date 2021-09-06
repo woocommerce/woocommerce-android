@@ -65,6 +65,8 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
             else skeletonView.hide()
         }
 
+    private var isLoadingFailure: Boolean = false
+
     private val supportActionBar
         get() = activity
             ?.let { it as? AppCompatActivity }
@@ -107,6 +109,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
         new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
+        new?.isLoadingFailure?.takeIfNotEqualTo(old?.isLoadingFailure) { isLoadingFailure = it }
     }
 
     private fun setupViews() {
