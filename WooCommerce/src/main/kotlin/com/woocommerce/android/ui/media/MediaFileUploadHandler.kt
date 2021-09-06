@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.media
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.extensions.update
 import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event

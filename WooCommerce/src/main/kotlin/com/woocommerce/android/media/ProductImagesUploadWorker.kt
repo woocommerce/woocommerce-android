@@ -1,7 +1,6 @@
 package com.woocommerce.android.media
 
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.extensions.update
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ServiceStopped
