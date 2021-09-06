@@ -10,6 +10,7 @@ import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work.FetchMedia
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -29,6 +30,7 @@ class MediaFileUploadHandler @Inject constructor(
     private val notificationHandler: ProductImagesNotificationHandler,
     private val worker: ProductImagesUploadWorker,
     private val resourceProvider: ResourceProvider,
+    private val productDetailRepository: ProductDetailRepository,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
@@ -141,8 +143,8 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     private fun showUploadFailureNotification(productId: Long, state: List<ProductImageUploadData>) {
-        val errorsCount = state.filter { it.remoteProductId == productId && it.uploadStatus is Failed }.size
-        notificationHandler.postUploadFailureNotification(productId, errorsCount)
+        val errors = state.filter { it.remoteProductId == productId && it.uploadStatus is Failed }
+        notificationHandler.postUploadFailureNotification(productDetailRepository.getProduct(productId), errors)
     }
 
     private fun clearPendingUploads() {

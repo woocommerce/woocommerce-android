@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavDeepLinkBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
 import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
 import com.woocommerce.android.util.StringUtils
@@ -116,16 +117,23 @@ class ProductImagesNotificationHandler @Inject constructor(
         notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
     }
 
-    fun postUploadFailureNotification(productId: Long, failuresCount: Int) {
+    fun postUploadFailureNotification(product: Product?, errors: List<ProductImageUploadData>) {
+        val productId = product?.remoteId ?: errors.first().remoteProductId
+
         val pendingIntent = NavDeepLinkBuilder(context)
             .setGraph(R.navigation.nav_graph_main)
             .setDestination(R.id.mediaUploadErrorsFragment)
-            .setArguments(MediaUploadErrorListFragmentArgs(remoteId = productId).toBundle())
+            .setArguments(
+                MediaUploadErrorListFragmentArgs(
+                    remoteId = productId,
+                    errorList = errors.toTypedArray()
+                ).toBundle()
+            )
             .createPendingIntent()
 
         val message = StringUtils.getQuantityString(
             context = context,
-            quantity = failuresCount,
+            quantity = errors.size,
             default = R.string.product_image_service_error_uploading_multiple,
             one = R.string.product_image_service_error_uploading_single,
             zero = R.string.product_image_service_error_uploading
@@ -137,6 +145,7 @@ class ProductImagesNotificationHandler @Inject constructor(
         ).apply {
             color = ContextCompat.getColor(context, R.color.woo_gray_40)
             setSmallIcon(android.R.drawable.stat_notify_error)
+            setContentTitle(product?.name)
             setContentText(message)
             setContentIntent(pendingIntent)
             setGroup(UPLOAD_FAILURE_NOTIFICATION_ID.toString())
