@@ -239,16 +239,20 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
             var timesCalled = 0
+            var viewModelStarted = false
             viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
-                when(timesCalled) {
-                    0 -> assertThat(new.isSkeletonShown).isTrue
-                    1 -> assertThat(new.isSkeletonShown).isFalse
-                    else -> fail("View state is expected to be changed exactly two times")
-                }
+                if(viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isSkeletonShown).isTrue
+                        1 -> assertThat(new.isSkeletonShown).isFalse
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
 
-                timesCalled++
+                    timesCalled++
+                }
             }
 
+            viewModelStarted = true
             viewModelUnderTest.start(321, 999, 123)
 
             assertThat(timesCalled).isEqualTo(2)
@@ -260,16 +264,20 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
 
             var timesCalled = 0
+            var viewModelStarted = false
             viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
-                when(timesCalled) {
-                    0 -> assertThat(new.isSkeletonShown).isTrue
-                    1 -> assertThat(new.isSkeletonShown).isFalse
-                    else -> fail("View state is expected to be changed exactly two times")
-                }
+                if(viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isSkeletonShown).isTrue
+                        1 -> assertThat(new.isSkeletonShown).isFalse
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
 
-                timesCalled++
+                    timesCalled++
+                }
             }
 
+            viewModelStarted = true
             viewModelUnderTest.start(321, 999, 123)
 
             assertThat(timesCalled).isEqualTo(2)
