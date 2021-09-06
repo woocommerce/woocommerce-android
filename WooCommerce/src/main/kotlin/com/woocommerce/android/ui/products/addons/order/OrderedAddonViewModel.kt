@@ -114,12 +114,16 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun handleFailure() {
         withContext(dispatchers.main) {
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingFailure = true
+            )
         }
     }
 
     @Parcelize
     data class ViewState(
-        val isSkeletonShown: Boolean? = null
+        val isSkeletonShown: Boolean? = null,
+        val isLoadingFailure: Boolean = false
     ) : Parcelable
 }
