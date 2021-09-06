@@ -10,6 +10,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -17,7 +18,12 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -32,6 +38,8 @@ internal class CardReaderManagerImpl(
     private val softwareUpdateManager: SoftwareUpdateManager,
     private val terminalListener: TerminalListenerImpl,
 ) : CardReaderManager {
+    private val connectedScope = CoroutineScope(Dispatchers.Default)
+
     companion object {
         private const val TAG = "CardReaderManager"
     }
@@ -80,6 +88,19 @@ internal class CardReaderManagerImpl(
 
     override suspend fun connectToReader(cardReader: CardReader): Boolean {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+
+        connectedScope.launch {
+            readerStatus.collect { status ->
+                if (status is CardReaderStatus.Connected) {
+                    readerStatus.collect { statusAfterConnected ->
+                        if (statusAfterConnected is CardReaderStatus.NotConnected) {
+                            connectionManager.resetConnectionState()
+                            connectedScope.cancel()
+                        }
+                    }
+                }
+            }
+        }
         return connectionManager.connectToReader(cardReader)
     }
 

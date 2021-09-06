@@ -77,4 +77,8 @@ internal class ConnectionManager(
             }
         })
     }
+
+    fun resetConnectionState() {
+        bluetoothReaderListener.resetConnectionState()
+    }
 }
