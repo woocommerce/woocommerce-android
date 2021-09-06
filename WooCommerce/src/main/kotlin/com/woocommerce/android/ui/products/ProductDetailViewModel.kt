@@ -552,8 +552,24 @@ class ProductDetailViewModel @Inject constructor(
             )
             return false
         } else if (isUploadingImages) {
-            triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
-            triggerEvent(ExitProduct)
+            if (isAddFlowEntryPoint) {
+                // TODO find a way how to handle assigning images when adding a new product
+                // since when adding a product we use a temporary productId, that's different from the actual one
+                triggerEvent(
+                    ShowDialog.buildDiscardDialogEvent(
+                        messageId = string.discard_images_message,
+                        positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                            // Cancel uploads for both the current product ID, and the default product ID
+                            mediaFileUploadHandler.cancelUpload(getRemoteProductId())
+                            mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
+                            triggerEvent(ExitProduct)
+                        }
+                    )
+                )
+            } else {
+                triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
+                triggerEvent(ExitProduct)
+            }
             return false
         } else {
             return true
