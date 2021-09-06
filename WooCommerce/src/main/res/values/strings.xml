@@ -905,6 +905,8 @@
     -->
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
+    <string name="notification_order_title">You have 1 new order! &#127881;</string>
+    <string name="notification_review_title">You have 1 new review! &#127775;</string>
     <!--
         Product Review Detail
     -->
@@ -976,6 +978,7 @@
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
     <string name="product_type">Product type</string>
+    <string name="product_category">Category</string>
     <string name="product_type_description">%s product</string>
     <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
@@ -1241,8 +1244,11 @@
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>
     <string name="settings_enable_product_adding_teaser_title">Creating products</string>
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
+    <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
+    <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -1270,6 +1276,7 @@
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
+    <string name="settings_whats_new">What\'s New in WooCommerce</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>

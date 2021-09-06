@@ -192,6 +192,14 @@
         app:optionTitle="@string/app_name" />
 
     <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+        android:id="@+id/option_whats_new"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:optionTitle="@string/settings_whats_new"
+        android:visibility="gone"
+        tools:visibility="visible"  />
+
+    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
         android:id="@+id/option_licenses"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

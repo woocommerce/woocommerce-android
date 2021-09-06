@@ -30,16 +30,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.AppThemeUtils
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
-import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -63,7 +60,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onSiteChanged()
-        fun onProductsFeatureOptionChanged(enabled: Boolean)
+        fun onProductAddonsOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -162,10 +159,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_adding_teaser_title)
-
-        // No beta features currently available
-        binding.optionBetaFeatures.hide()
+        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_addons_teaser_title)
 
         binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
@@ -180,6 +174,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionAbout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutFragment)
+        }
+
+        if (FeatureFlag.WHATS_NEW.isEnabled()) {
+            binding.optionWhatsNew.show()
         }
 
         binding.optionLicenses.setOnClickListener {

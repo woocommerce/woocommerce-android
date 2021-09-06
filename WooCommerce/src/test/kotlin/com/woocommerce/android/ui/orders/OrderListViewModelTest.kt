@@ -12,9 +12,8 @@ import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.push.NotificationHandler
-import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
-import com.woocommerce.android.push.NotificationHandler.NotificationReceivedEvent
+import com.woocommerce.android.push.NotificationChannelType
+import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
@@ -547,7 +546,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
 
     /**
-     * Ideally, this shouldn't be required as [NotificationHandler.dispatchNewOrderEvents]
+     * Ideally, this shouldn't be required as NotificationMessageHandler.dispatchBackgroundEvents
      * dispatches events that will trigger fetching orders and updating UI state.
      *
      * This doesn't work for search queries though as they use custom [WCOrderListDescriptor]
