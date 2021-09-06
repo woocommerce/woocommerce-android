@@ -1,9 +1,17 @@
 package com.woocommerce.android.ui.media
 
+import com.woocommerce.android.R.string
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event
+import com.woocommerce.android.media.ProductImagesUploadWorker.Work
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
@@ -18,6 +26,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.FAILED
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.UPLOADED
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.NULL_MEDIA_ARG
 import org.wordpress.android.util.DateTimeUtils
 import java.util.*
 
@@ -28,18 +37,25 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         private const val TEST_URI = "test"
     }
 
-    private val notificationHandler: ProductImagesNotificationHandler = mock()
-    private val productImagesUploadWorker: ProductImagesUploadWorker = mock()
-    private lateinit var mediaFileUploadHandler: MediaFileUploadHandler
+    private val eventsFlow = MutableSharedFlow<Event>(extraBufferCapacity = Int.MAX_VALUE)
 
-    private val eventsFlow = MutableSharedFlow<ProductImagesUploadWorker.Event>(extraBufferCapacity = Int.MAX_VALUE)
+    private val notificationHandler: ProductImagesNotificationHandler = mock()
+    private val productImagesUploadWorker: ProductImagesUploadWorker = mock {
+        on { events } doReturn eventsFlow
+    }
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { it.arguments.first().toString() }
+    }
+    private val productDetailRepository: ProductDetailRepository = mock()
+    private lateinit var mediaFileUploadHandler: MediaFileUploadHandler
 
     @Before
     fun setup() {
-        whenever(productImagesUploadWorker.events).thenReturn(eventsFlow)
         mediaFileUploadHandler = MediaFileUploadHandler(
             notificationHandler = notificationHandler,
             worker = productImagesUploadWorker,
+            resourceProvider = resourceProvider,
+            productDetailRepository = productDetailRepository,
             appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher)
         )
     }
@@ -51,6 +67,51 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         val ongoingUploads = mediaFileUploadHandler.observeCurrentUploads(REMOTE_PRODUCT_ID).first()
 
         assertThat(ongoingUploads).contains(TEST_URI)
+    }
+
+    @Test
+    fun `when media is fetched, then start uploading it`() = testBlocking {
+        mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
+
+        val fetchedMedia = MediaModel()
+        eventsFlow.tryEmit(
+            Event.MediaUploadEvent.FetchSucceeded(
+                REMOTE_PRODUCT_ID,
+                TEST_URI,
+                fetchedMedia
+            )
+        )
+
+        verify(productImagesUploadWorker).enqueueWork(
+            Work.UploadMedia(
+                REMOTE_PRODUCT_ID,
+                TEST_URI,
+                fetchedMedia
+            )
+        )
+    }
+
+    @Test
+    fun `given there is no external observer, when fetching media fails, then notify failure`() = testBlocking {
+        mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
+
+        eventsFlow.tryEmit(
+            Event.MediaUploadEvent.FetchFailed(
+                REMOTE_PRODUCT_ID,
+                TEST_URI
+            )
+        )
+
+        val error = ProductImageUploadData(
+            remoteProductId = REMOTE_PRODUCT_ID,
+            localUri = TEST_URI,
+            uploadStatus = Failed(
+                media = MediaModel(),
+                mediaErrorMessage = resourceProvider.getString(string.product_image_service_error_media_null),
+                mediaErrorType = NULL_MEDIA_ARG
+            )
+        )
+        verify(notificationHandler).postUploadFailureNotification(anyOrNull(), eq(listOf(error)))
     }
 
     @Test
@@ -67,7 +128,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             setUploadState(UPLOADED)
         }
         eventsFlow.tryEmit(
-            ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded(
+            Event.MediaUploadEvent.UploadSucceeded(
                 REMOTE_PRODUCT_ID,
                 TEST_URI,
                 mediaModel
@@ -87,14 +148,14 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             setUploadState(UPLOADED)
         }
         eventsFlow.tryEmit(
-            ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded(
+            Event.MediaUploadEvent.UploadSucceeded(
                 REMOTE_PRODUCT_ID,
                 TEST_URI,
                 mediaModel
             )
         )
-        eventsFlow.tryEmit(ProductImagesUploadWorker.Event.ProductUploadsCompleted(REMOTE_PRODUCT_ID))
-        verify(productImagesUploadWorker).addImagesToProduct(REMOTE_PRODUCT_ID, listOf(mediaModel))
+        eventsFlow.tryEmit(Event.ProductUploadsCompleted(REMOTE_PRODUCT_ID))
+        verify(productImagesUploadWorker).enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(mediaModel)))
     }
 
     @Test
@@ -111,22 +172,23 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
                 setUploadState(UPLOADED)
             }
             eventsFlow.tryEmit(
-                ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded(
+                Event.MediaUploadEvent.UploadSucceeded(
                     REMOTE_PRODUCT_ID,
                     TEST_URI,
                     mediaModel
                 )
             )
             eventsFlow.tryEmit(
-                ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded(
+                Event.MediaUploadEvent.UploadSucceeded(
                     REMOTE_PRODUCT_ID,
                     testUri2,
                     mediaModel
                 )
             )
-            eventsFlow.tryEmit(ProductImagesUploadWorker.Event.ProductUploadsCompleted(REMOTE_PRODUCT_ID))
+            eventsFlow.tryEmit(Event.ProductUploadsCompleted(REMOTE_PRODUCT_ID))
 
-            verify(productImagesUploadWorker).addImagesToProduct(REMOTE_PRODUCT_ID, listOf(mediaModel, mediaModel))
+            verify(productImagesUploadWorker)
+                .enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(mediaModel, mediaModel)))
         }
 
     @Test
@@ -141,7 +203,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         }
 
         eventsFlow.tryEmit(
-            ProductImagesUploadWorker.Event.MediaUploadEvent.UploadFailed(
+            Event.MediaUploadEvent.UploadFailed(
                 REMOTE_PRODUCT_ID,
                 TEST_URI,
                 MediaFilesRepository.MediaUploadException(
@@ -166,7 +228,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             setUploadState(FAILED)
         }
         eventsFlow.tryEmit(
-            ProductImagesUploadWorker.Event.MediaUploadEvent.UploadFailed(
+            Event.MediaUploadEvent.UploadFailed(
                 REMOTE_PRODUCT_ID,
                 TEST_URI,
                 MediaFilesRepository.MediaUploadException(
@@ -177,6 +239,16 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             )
         )
 
-        verify(notificationHandler).postUploadFailureNotification(REMOTE_PRODUCT_ID, 1)
+        val errorData = ProductImageUploadData(
+            remoteProductId = REMOTE_PRODUCT_ID,
+            localUri = TEST_URI,
+            uploadStatus = UploadStatus.Failed(
+                media = mediaModel,
+                mediaErrorMessage = "error",
+                mediaErrorType = MediaErrorType.GENERIC_ERROR
+            )
+        )
+
+        verify(notificationHandler).postUploadFailureNotification(anyOrNull(), eq(listOf(errorData)))
     }
 }

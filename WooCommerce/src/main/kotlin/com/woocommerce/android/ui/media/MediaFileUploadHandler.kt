@@ -8,7 +8,6 @@ import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
-import com.woocommerce.android.media.ProductImagesUploadWorker.Work.FetchMedia
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.StringUtils
@@ -41,16 +40,16 @@ class MediaFileUploadHandler @Inject constructor(
             .onEach { event ->
                 WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> handling $event")
                 when (event) {
-                    is ProductImagesUploadWorker.Event.MediaUploadEvent -> handleMediaUploadEvent(event)
-                    is ProductImagesUploadWorker.Event.ProductUploadsCompleted -> updateProductIfNeeded(event.productId)
-                    is ProductImagesUploadWorker.Event.ProductUpdateEvent -> handleProductUpdateEvent(event)
+                    is Event.MediaUploadEvent -> handleMediaUploadEvent(event)
+                    is Event.ProductUploadsCompleted -> updateProductIfNeeded(event.productId)
+                    is Event.ProductUpdateEvent -> handleProductUpdateEvent(event)
                     Event.ServiceStopped -> clearPendingUploads()
                 }
             }
             .launchIn(appCoroutineScope)
     }
 
-    private fun handleMediaUploadEvent(event: ProductImagesUploadWorker.Event.MediaUploadEvent) {
+    private fun handleMediaUploadEvent(event: Event.MediaUploadEvent) {
         val statusList = uploadsStatus.value.toMutableList()
         val index = statusList.indexOfFirst {
             it.remoteProductId == event.productId && it.localUri == event.localUri
@@ -60,7 +59,7 @@ class MediaFileUploadHandler @Inject constructor(
         }
 
         when (event) {
-            is ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded -> {
+            is Event.MediaUploadEvent.FetchSucceeded -> {
                 worker.enqueueWork(
                     Work.UploadMedia(
                         productId = event.productId,
@@ -69,7 +68,7 @@ class MediaFileUploadHandler @Inject constructor(
                     )
                 )
             }
-            is ProductImagesUploadWorker.Event.MediaUploadEvent.FetchFailed -> {
+            is Event.MediaUploadEvent.FetchFailed -> {
                 statusList[index] = ProductImageUploadData(
                     remoteProductId = event.productId,
                     localUri = event.localUri,
@@ -79,8 +78,12 @@ class MediaFileUploadHandler @Inject constructor(
                         mediaErrorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
                     )
                 )
+                if (!externalObservers.contains(event.productId)) {
+                    WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> post upload failure notification")
+                    showUploadFailureNotification(event.productId, statusList)
+                }
             }
-            is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded -> {
+            is Event.MediaUploadEvent.UploadSucceeded -> {
                 if (externalObservers.contains(event.productId)) {
                     WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> Upload successful, while handler is observed")
                     statusList.removeAt(index)
@@ -93,7 +96,7 @@ class MediaFileUploadHandler @Inject constructor(
                     )
                 }
             }
-            is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadFailed -> {
+            is Event.MediaUploadEvent.UploadFailed -> {
                 WooLog.e(WooLog.T.MEDIA, "MediaFileUploadHandler -> Upload failed", event.error)
                 statusList[index] = ProductImageUploadData(
                     remoteProductId = event.productId,
@@ -113,11 +116,11 @@ class MediaFileUploadHandler @Inject constructor(
         uploadsStatus.value = statusList
     }
 
-    private fun handleProductUpdateEvent(event: ProductImagesUploadWorker.Event.ProductUpdateEvent) {
+    private fun handleProductUpdateEvent(event: Event.ProductUpdateEvent) {
         when (event) {
-            is ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateFailed ->
+            is Event.ProductUpdateEvent.ProductUpdateFailed ->
                 notificationHandler.postUpdateFailureNotification(event.productId, event.product)
-            is ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded ->
+            is Event.ProductUpdateEvent.ProductUpdateSucceeded ->
                 notificationHandler.postUpdateSuccessNotification(event.productId, event.product, event.imagesCount)
         }
     }
@@ -166,7 +169,7 @@ class MediaFileUploadHandler @Inject constructor(
             }
         }
         uris.forEach {
-            worker.enqueueWork(FetchMedia(remoteProductId, it))
+            worker.enqueueWork(Work.FetchMedia(remoteProductId, it))
         }
     }
 
@@ -202,7 +205,7 @@ class MediaFileUploadHandler @Inject constructor(
         return worker.events
             .onSubscription { externalObservers.add(remoteProductId) }
             .onCompletion { externalObservers.remove(remoteProductId) }
-            .filterIsInstance<ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded>()
+            .filterIsInstance<Event.MediaUploadEvent.UploadSucceeded>()
             .filter { it.productId == remoteProductId }
             .map { it.media }
             .onStart {
@@ -221,7 +224,7 @@ class MediaFileUploadHandler @Inject constructor(
 
     fun observeProductImageChanges(): Flow<Long> {
         return worker.events
-            .filterIsInstance<ProductImagesUploadWorker.Event.ProductUploadsCompleted>()
+            .filterIsInstance<Event.ProductUploadsCompleted>()
             .map { it.productId }
     }
 
