@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.media
 
 import com.woocommerce.android.media.ProductImagesServiceWrapper
-import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,15 +15,8 @@ import org.robolectric.RobolectricTestRunner
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class MediaFileUploadHandlerTest : BaseUnitTest() {
-    companion object {
-        private const val REMOTE_PRODUCT_ID = 1L
-        private const val REMOTE_SITE_ID = 1L
-    }
-
     private val resources: ResourceProvider = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
-    private val testMediaModel = ProductTestUtils.generateProductMedia(REMOTE_PRODUCT_ID, REMOTE_SITE_ID)
-    private val testMediaModelError = ProductTestUtils.generateMediaUploadErrorModel()
     private lateinit var mediaFileUploadHandler: MediaFileUploadHandler
 
     @Before

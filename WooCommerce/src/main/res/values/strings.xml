@@ -978,6 +978,7 @@
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
     <string name="product_type">Product type</string>
+    <string name="product_category">Category</string>
     <string name="product_type_description">%s product</string>
     <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
@@ -1271,6 +1272,7 @@
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
+    <string name="settings_whats_new">What\'s New in WooCommerce</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>
