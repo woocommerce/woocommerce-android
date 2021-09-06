@@ -49,6 +49,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             it.setOnlyAlertOnce(true)
             it.setOngoing(true)
             it.setProgress(0, 0, true)
+            it.setGroup(FOREGROUND_NOTIFICATION_ID.toString())
         }
 
         val notification = notificationBuilder.build()
@@ -93,6 +94,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             )
             setContentIntent(getProductDetailsIntent(productId))
             setAutoCancel(true)
+            setGroup(PRODUCT_UPDATE_NOTIFICATION_ID.toString())
         }
         notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
     }
@@ -109,6 +111,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             setContentTitle(title)
             setContentIntent(getProductDetailsIntent(productId))
             setAutoCancel(true)
+            setGroup(PRODUCT_UPDATE_NOTIFICATION_ID.toString())
         }
         notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
     }
@@ -136,6 +139,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             setSmallIcon(android.R.drawable.stat_notify_error)
             setContentText(message)
             setContentIntent(pendingIntent)
+            setGroup(UPLOAD_FAILURE_NOTIFICATION_ID.toString())
         }
         notificationManager.notify(productId.toInt() + UPLOAD_FAILURE_NOTIFICATION_ID, notificationBuilder.build())
     }
