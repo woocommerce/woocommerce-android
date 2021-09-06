@@ -19,4 +19,16 @@ class AppPrefsWrapper @Inject constructor() {
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
+
+    fun isOrderNotificationsEnabled() = AppPrefs.isOrderNotificationsEnabled()
+
+    fun isReviewNotificationsEnabled() = AppPrefs.isReviewNotificationsEnabled()
+
+    fun isOrderNotificationsChaChingEnabled() = AppPrefs.isOrderNotificationsChaChingEnabled()
+
+    fun hasUnseenReviews() = AppPrefs.getHasUnseenReviews()
+
+    fun setHasUnseenReviews(hasUnseen: Boolean) {
+        AppPrefs.setHasUnseenReviews(hasUnseen)
+    }
 }

@@ -11,8 +11,6 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.ShippingMethod
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.model.Order.Status.OnHold
-import com.woocommerce.android.model.Order.Status.Pending
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.StringUtils
@@ -62,10 +60,7 @@ data class Order(
     val metaData: List<MetaData<String>>
 ) : Parcelable {
     @IgnoredOnParcel
-    val isOrderPaid = paymentMethodTitle.isEmpty() && datePaid == null
-
-    @IgnoredOnParcel
-    val isAwaitingPayment = status == Pending || status == OnHold || datePaid == null
+    val isOrderPaid = datePaid != null
 
     // Allow refunding only integer quantities
     @IgnoredOnParcel

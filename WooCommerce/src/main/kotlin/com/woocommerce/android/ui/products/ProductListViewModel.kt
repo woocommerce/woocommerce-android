@@ -48,6 +48,7 @@ class ProductListViewModel @Inject constructor(
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
+        private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
 
     private val _productList = MutableLiveData<List<Product>>()
@@ -63,6 +64,7 @@ class ProductListViewModel @Inject constructor(
         params
     }
 
+    private var selectedCategoryName: String? = null
     private var searchJob: Job? = null
     private var loadJob: Job? = null
 
@@ -72,6 +74,8 @@ class ProductListViewModel @Inject constructor(
             loadProducts()
         }
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
+
+        selectedCategoryName = savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)
 
         // Reload products if any image changes occur
         mediaFileUploadHandler.observeProductImageChanges()
@@ -109,20 +113,36 @@ class ProductListViewModel @Inject constructor(
     fun onFiltersChanged(
         stockStatus: String?,
         productStatus: String?,
-        productType: String?
+        productType: String?,
+        productCategory: String?,
+        productCategoryName: String?
     ) {
-        if (stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
-            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
-            productType != productFilterOptions[ProductFilterOption.TYPE]
-        ) {
+        if (areFiltersChanged(stockStatus, productStatus, productType, productCategory)) {
             productFilterOptions.clear()
             stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
             productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
             productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
+            productCategory?.let { productFilterOptions[ProductFilterOption.CATEGORY] = it }
+            productCategoryName?. let {
+                selectedCategoryName = it
+                savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = it
+            }
 
             viewState = viewState.copy(filterCount = productFilterOptions.size)
             refreshProducts()
         }
+    }
+
+    private fun areFiltersChanged(
+        stockStatus: String?,
+        productStatus: String?,
+        productType: String?,
+        productCategory: String?
+    ): Boolean {
+        return stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
+            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
+            productType != productFilterOptions[ProductFilterOption.TYPE] ||
+            productCategory != productFilterOptions[ProductFilterOption.CATEGORY]
     }
 
     fun onFiltersButtonTapped() {
@@ -131,7 +151,9 @@ class ProductListViewModel @Inject constructor(
             ShowProductFilterScreen(
                 productFilterOptions[ProductFilterOption.STOCK_STATUS],
                 productFilterOptions[ProductFilterOption.TYPE],
-                productFilterOptions[ProductFilterOption.STATUS]
+                productFilterOptions[ProductFilterOption.STATUS],
+                productFilterOptions[ProductFilterOption.CATEGORY],
+                selectedCategoryName
             )
         )
     }
@@ -419,7 +441,9 @@ class ProductListViewModel @Inject constructor(
         data class ShowProductFilterScreen(
             val stockStatusFilter: String?,
             val productTypeFilter: String?,
-            val productStatusFilter: String?
+            val productStatusFilter: String?,
+            val productCategoryFilter: String?,
+            val selectedCategoryName: String?
         ) : ProductListEvent()
     }
 }

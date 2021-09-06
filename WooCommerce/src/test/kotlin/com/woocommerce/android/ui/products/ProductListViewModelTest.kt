@@ -220,7 +220,9 @@ class ProductListViewModelTest : BaseUnitTest() {
         val stockStatus = "instock"
         val status = "simple"
         val type = "draft"
-        viewModel.onFiltersChanged(stockStatus, status, type)
+        val category = "hoodie"
+        val categoryName = "Hoodie"
+        viewModel.onFiltersChanged(stockStatus, status, type, category, categoryName)
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
@@ -233,6 +235,8 @@ class ProductListViewModelTest : BaseUnitTest() {
         assertThat(event.productStatusFilter).isEqualTo(status)
         assertThat(event.productTypeFilter).isEqualTo(type)
         assertThat(event.stockStatusFilter).isEqualTo(stockStatus)
+        assertThat(event.productCategoryFilter).isEqualTo(category)
+        assertThat(event.selectedCategoryName).isEqualTo(categoryName)
     }
 
     @Test

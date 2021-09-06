@@ -11,7 +11,8 @@ interface MainNavigationRouter {
         localSiteId: Int,
         localOrderId: Int = 0,
         remoteOrderId: Long,
-        remoteNoteId: Long = 0
+        remoteNoteId: Long = 0,
+        launchedFromNotification: Boolean = false
     )
     fun showAddProduct()
     fun showReviewDetail(
@@ -20,7 +21,15 @@ interface MainNavigationRouter {
         enableModeration: Boolean,
         tempStatus: String? = null
     )
-    fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?)
+
+    fun showProductFilters(
+        stockStatus: String?,
+        productType: String?,
+        productStatus: String?,
+        productCategory: String?,
+        productCategoryName: String?
+    )
+
     fun showFeedbackSurvey()
     fun showProductAddBottomSheet()
     fun showSettingsScreen()

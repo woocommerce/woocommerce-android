@@ -100,8 +100,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     private val orderWithParameters = ViewState(
         orderInfo = orderInfo,
-        isRefreshing = false,
-        isOrderDetailSkeletonShown = false,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
         isShipmentTrackingAvailable = true,
         isCreateShippingLabelButtonVisible = false,
@@ -627,7 +625,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-            assertThat(isSkeletonShown).containsExactly(false, true, false)
+            assertThat(isSkeletonShown).containsExactly(true, false)
         }
 
     @Test
@@ -1012,7 +1010,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
             viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
 
-            assertThat(snackbar?.message).isNotEqualTo(string.order_error_update_general)
+            assertThat(snackbar?.message).isNull()
         }
 
     @Test
@@ -1030,7 +1028,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
             viewModel.onOrderStatusChanged(OrderStatusUpdateSource.FullFillScreen(order.status.value))
 
-            assertThat(snackbar?.message).isNotEqualTo(string.order_error_update_general)
+            assertThat(snackbar?.message).isNull()
         }
 
     @Test
