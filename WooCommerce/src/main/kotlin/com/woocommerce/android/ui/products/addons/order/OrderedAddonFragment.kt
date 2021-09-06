@@ -11,6 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
@@ -66,6 +68,14 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         }
 
     private var isLoadingFailure: Boolean = false
+        set(isFailure) {
+            field = isFailure
+            if(isFailure) Snackbar.make(
+                binding.mainView,
+                R.string.ordered_add_ons_loading_failed_snackbar_text,
+                BaseTransientBottomBar.LENGTH_LONG
+            ).show()
+        }
 
     private val supportActionBar
         get() = activity
