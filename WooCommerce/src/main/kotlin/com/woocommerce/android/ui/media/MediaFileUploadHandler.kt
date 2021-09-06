@@ -49,6 +49,7 @@ class MediaFileUploadHandler @Inject constructor(
             .launchIn(appCoroutineScope)
     }
 
+    @Suppress("LongMethod")
     private fun handleMediaUploadEvent(event: Event.MediaUploadEvent) {
         val statusList = uploadsStatus.value.toMutableList()
         val index = statusList.indexOfFirst {
