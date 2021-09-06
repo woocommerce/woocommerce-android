@@ -30,6 +30,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,16 +48,22 @@ class CardReaderDetailViewModel @Inject constructor(
     private val viewState = MutableLiveData<ViewState>(Loading)
     val viewStateData: LiveData<ViewState> = viewState
 
+    private lateinit var softwareUpdateAvailabilityJob: Job
+
     init {
         launch {
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
-                    is Connected -> cardReaderManager.softwareUpdateAvailability.collect(
-                        ::handleSoftwareUpdateAvailability
-                    )
+                    is Connected -> {
+                        softwareUpdateAvailabilityJob = launch {
+                            cardReaderManager.softwareUpdateAvailability.collect(
+                                ::handleSoftwareUpdateAvailability
+                            )
+                        }
+                    }
                     else -> showNotConnectedState()
-                }
-            }.exhaustive
+                }.exhaustive
+            }
         }
     }
 
@@ -73,6 +80,9 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun showNotConnectedState() {
+        if (::softwareUpdateAvailabilityJob.isInitialized) {
+            softwareUpdateAvailabilityJob.cancel()
+        }
         viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     }
 
