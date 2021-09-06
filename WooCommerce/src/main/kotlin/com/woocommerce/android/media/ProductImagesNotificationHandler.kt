@@ -166,4 +166,8 @@ class ProductImagesNotificationHandler @Inject constructor(
             notificationManager.createNotificationChannel(channel)
         }
     }
+
+    fun removeForegroundNotification() {
+        notificationManager.cancel(FOREGROUND_NOTIFICATION_ID)
+    }
 }
