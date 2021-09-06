@@ -1153,6 +1153,7 @@
     <string name="cross_sell_product_count_many">%d cross-sell products</string>
     <string name="upsell_product_count_one">%d upsell product</string>
     <string name="upsell_product_count_many">%d upsell products</string>
+    <string name="product_detail_background_image_upload">Images upload will continue in background</string>
 
     <!--
         Product Add more details Bottom sheet

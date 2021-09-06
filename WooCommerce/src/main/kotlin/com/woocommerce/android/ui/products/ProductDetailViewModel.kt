@@ -552,8 +552,9 @@ class ProductDetailViewModel @Inject constructor(
             )
             return false
         } else if (isUploadingImages) {
-            // TODO check if we need a SnackBar to let users know about background image upload
-            return true
+            triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
+            triggerEvent(ExitProduct)
+            return false
         } else {
             return true
         }
