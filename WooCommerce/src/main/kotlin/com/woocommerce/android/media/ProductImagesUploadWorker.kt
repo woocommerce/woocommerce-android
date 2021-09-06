@@ -3,6 +3,7 @@ package com.woocommerce.android.media
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.update
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ServiceStopped
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
@@ -82,6 +83,7 @@ class ProductImagesUploadWorker @Inject constructor(
                     WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> stop service")
                     productImagesServiceWrapper.stopService()
                     listOfImagesToUpload.clear()
+                    emitEvent(ServiceStopped)
                 } else {
                     WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start service")
                     productImagesServiceWrapper.startService()
@@ -281,6 +283,11 @@ class ProductImagesUploadWorker @Inject constructor(
         data class ProductUploadsCompleted(
             override val productId: Long
         ) : Event()
+
+        object ServiceStopped : Event() {
+            // This event concerns whole worker, not a single product
+            override val productId: Long = 0L
+        }
 
         sealed class MediaUploadEvent : Event() {
             abstract val localUri: String
