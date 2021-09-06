@@ -63,7 +63,7 @@ class OrderedAddonViewModel @Inject constructor(
         orderItemID: Long,
         productID: Long
     ) = addonsRepository.getOrderAddonsData(orderID, orderItemID, productID)
-            ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
+        ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
 
     private fun mapAddonsFromOrderAttributes(
         productAddons: List<ProductAddon>,
@@ -107,7 +107,10 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun dispatchResult(result: List<ProductAddon>) {
         withContext(dispatchers.main) {
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingFailure = false
+            )
             _orderedAddons.value = result
         }
     }
