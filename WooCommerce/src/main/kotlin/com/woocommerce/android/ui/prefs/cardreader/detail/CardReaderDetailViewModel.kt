@@ -83,7 +83,6 @@ class CardReaderDetailViewModel @Inject constructor(
         if (::softwareUpdateAvailabilityJob.isInitialized) {
             softwareUpdateAvailabilityJob.cancel()
         }
-        cardReaderManager.resetSoftwareUpdateStatus()
         viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     }
 
