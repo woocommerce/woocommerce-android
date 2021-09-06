@@ -1,0 +1,4 @@
+7.4 :
+Les avis de produit nécessitant votre approbation ont une nouvelle étiquette pour vous permettre de les distinguer plus facilement des avis déjà approuvés.
+
+Cette mise à jour inclut également plusieurs améliorations à la fonctionnalité d’étiquette d’expédition utilisant l’extension WooCommerce Shipping & Tax. Nous apprécions tous vos commentaires sur cette nouvelle fonctionnalité !

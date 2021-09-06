@@ -11,9 +11,6 @@ import javax.inject.Singleton
 @Singleton
 class ConnectionChangeReceiver @Inject constructor() : BroadcastReceiver() {
     companion object {
-        private var isFirstReceive = true
-        private var wasConnected = true
-
         private var mockBus: EventBus = mock()
         fun getEventBus() = mockBus
     }

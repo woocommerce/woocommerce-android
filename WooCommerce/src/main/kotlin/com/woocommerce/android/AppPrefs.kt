@@ -121,10 +121,6 @@ object AppPrefs {
             relativeInstallationDate
         }
 
-    var isProductAddonsEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
-
     /**
      * This property informs a installation date relative to the moment the shared preferences data
      * is empty, which can be the accurate installation date or only the moment where the app was updated
@@ -141,6 +137,10 @@ object AppPrefs {
         private set(value) = value
             ?.time.toString()
             .let { setString(UndeletablePrefKey.APP_INSTALATION_DATE, it) }
+
+    var isProductAddonsEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)

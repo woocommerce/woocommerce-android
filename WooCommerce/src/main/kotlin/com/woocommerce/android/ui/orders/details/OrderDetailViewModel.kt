@@ -146,9 +146,11 @@ class OrderDetailViewModel @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    fun start() {
+    init {
         dispatcher.register(this)
+    }
 
+    fun start() {
         val orderInDb = orderDetailRepository.getOrder(navArgs.orderId)
         val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
         launch {
