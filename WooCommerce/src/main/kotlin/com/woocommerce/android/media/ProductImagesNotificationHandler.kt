@@ -65,7 +65,10 @@ class ProductImagesNotificationHandler @Inject constructor(
             context.getString(R.string.product_images_uploading_multi_notif_message, currentUpload, totalUploads)
         }
 
-        notificationBuilder.setContentTitle(title)
+        notificationBuilder.apply {
+            setContentTitle(title)
+            setProgress(0, 0, true)
+        }
         notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
     }
 
