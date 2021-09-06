@@ -171,7 +171,7 @@ class ProductImagesUploadWorker @Inject constructor(
             WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching media failed")
 
             emitEvent(
-                Event.MediaUploadEvent.FetchFailed(
+                MediaUploadEvent.FetchFailed(
                     productId = work.productId,
                     localUri = work.localUri
                 )
@@ -179,7 +179,7 @@ class ProductImagesUploadWorker @Inject constructor(
         } else {
             WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> media fetched, enqueue upload")
             emitEvent(
-                Event.MediaUploadEvent.FetchSucceeded(
+                MediaUploadEvent.FetchSucceeded(
                     productId = work.productId,
                     localUri = work.localUri,
                     fetchedMedia = fetchedMedia

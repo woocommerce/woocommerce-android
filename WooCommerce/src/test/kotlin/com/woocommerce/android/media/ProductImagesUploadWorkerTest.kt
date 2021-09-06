@@ -1,16 +1,16 @@
 package com.woocommerce.android.media
 
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadStarted
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateFailed
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUploadsCompleted
+import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -28,6 +28,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_PRODUCT_ID = 1L
         private const val TEST_URI = "test"
+        private val FETCHED_MEDIA = MediaModel()
         private val UPLOADED_MEDIA = MediaModel().apply {
             fileName = ""
             filePath = ""
@@ -40,18 +41,16 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private lateinit var worker: ProductImagesUploadWorker
     private val mediaFilesRepository: MediaFilesRepository = mock {
-        onBlocking { fetchMedia(TEST_URI) } doReturn MediaModel()
+        onBlocking { fetchMedia(TEST_URI) } doReturn FETCHED_MEDIA
         onBlocking { uploadMedia(any(), any()) } doReturn UPLOADED_MEDIA
     }
     private val productDetailRepository: ProductDetailRepository = mock()
-    private val resourceProvider: ResourceProvider = mock()
 
     @Before
     fun setup() {
         worker = ProductImagesUploadWorker(
             mediaFilesRepository = mediaFilesRepository,
             productDetailRepository = productDetailRepository,
-            resourceProvider = resourceProvider,
             productImagesServiceWrapper = productImagesServiceWrapper,
             notificationHandler = notificationHandler,
             appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher)
@@ -60,14 +59,14 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
 
     @Test
     fun `when there is pending work, then start service`() = testBlocking {
-        worker.enqueueImagesUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
+        worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, TEST_URI))
 
         verify(productImagesServiceWrapper).startService()
     }
 
     @Test
     fun `when there is no pending work, then stop service`() = testBlocking {
-        worker.enqueueImagesUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
+        worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, TEST_URI))
 
         advanceUntilIdle()
         verify(productImagesServiceWrapper).stopService()
@@ -75,12 +74,12 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
 
     @Test
     fun `when work is added before time expiration, then don't stop service`() = testBlocking {
-        worker.enqueueImagesUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
+        worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, TEST_URI))
 
         advanceTimeBy(500L) // The worker waits 1 second before stopping the service
 
         // Enqueue more work
-        worker.enqueueImagesUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
+        worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, "test uri 2"))
 
         advanceTimeBy(500L) // To match the 1 second the worker will wait
 
@@ -88,24 +87,29 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when upload is enqueued, then start by fetching the media`() = testBlocking {
-        worker.enqueueImagesUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
-
-        verify(mediaFilesRepository).fetchMedia(TEST_URI)
-    }
-
-    @Test
-    fun `when media is fetched, then upload it`() = testBlocking {
+    fun `when fetch media work is enqueued, then handle it`() = testBlocking {
         val eventsList = mutableListOf<Event>()
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueImagesUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
+        worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, TEST_URI))
+
+        verify(mediaFilesRepository).fetchMedia(TEST_URI)
+        assertThat(eventsList[0]).isEqualTo(FetchSucceeded(REMOTE_PRODUCT_ID, TEST_URI, FETCHED_MEDIA))
+        job.cancel()
+    }
+
+    @Test
+    fun `when media upload is requested, then handle it`() = testBlocking {
+        val eventsList = mutableListOf<Event>()
+        val job = launch {
+            worker.events.toList(eventsList)
+        }
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
 
         advanceUntilIdle()
         verify(mediaFilesRepository).uploadMedia(any(), any())
-        assertThat(eventsList[0]).isEqualTo(UploadStarted(REMOTE_PRODUCT_ID, TEST_URI))
-        assertThat(eventsList[1]).isEqualTo(UploadSucceeded(REMOTE_PRODUCT_ID, TEST_URI, UPLOADED_MEDIA))
+        assertThat(eventsList[0]).isEqualTo(UploadSucceeded(REMOTE_PRODUCT_ID, TEST_URI, UPLOADED_MEDIA))
         job.cancel()
     }
 
@@ -115,10 +119,10 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueImagesUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
 
         advanceUntilIdle()
-        assertThat(eventsList.last()).isEqualTo(ProductUploadsCompleted(REMOTE_PRODUCT_ID))
+        assertThat(eventsList).contains(ProductUploadsCompleted(REMOTE_PRODUCT_ID))
         job.cancel()
     }
 
@@ -127,7 +131,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
         whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
 
-        worker.addImagesToProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA))
+        worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         verify(productDetailRepository).fetchProduct(REMOTE_PRODUCT_ID)
     }
@@ -136,7 +140,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     fun `when fetching product fails, then retry three times`() = testBlocking {
         whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(null)
 
-        worker.addImagesToProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA))
+        worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         verify(productDetailRepository, times(3)).fetchProduct(REMOTE_PRODUCT_ID)
     }
@@ -150,9 +154,9 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
             worker.events.toList(eventsList)
         }
 
-        worker.addImagesToProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA))
+        worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
-        assertThat(eventsList.last()).isEqualTo(ProductUpdateFailed(REMOTE_PRODUCT_ID))
+        assertThat(eventsList.last()).isEqualTo(ProductUpdateFailed(REMOTE_PRODUCT_ID, null))
         job.cancel()
     }
 
@@ -161,7 +165,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
         whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
 
-        worker.addImagesToProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA))
+        worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         verify(productDetailRepository)
             .updateProduct(product.copy(images = product.images + UPLOADED_MEDIA.toAppModel()))
@@ -178,7 +182,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
             worker.events.toList(eventsList)
         }
 
-        worker.addImagesToProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA))
+        worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         assertThat(eventsList.last()).isEqualTo(ProductUpdateSucceeded(REMOTE_PRODUCT_ID, product, 1))
         job.cancel()
@@ -190,7 +194,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
         whenever(productDetailRepository.updateProduct(any())).thenReturn(false)
 
-        worker.addImagesToProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA))
+        worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         val updatedProduct = product.copy(images = product.images + UPLOADED_MEDIA.toAppModel())
         verify(productDetailRepository, times(3)).updateProduct(updatedProduct)
@@ -207,7 +211,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
             worker.events.toList(eventsList)
         }
 
-        worker.addImagesToProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA))
+        worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         assertThat(eventsList.last()).isEqualTo(ProductUpdateFailed(REMOTE_PRODUCT_ID, product))
         job.cancel()
