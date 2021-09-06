@@ -77,11 +77,13 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `should return null if fetchGlobalAddons returns an error`() =
+    fun `should request data even if fetchGlobalAddons returns an error`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+            val expectedResult = defaultOrderedAddonList
 
             var actualResult: List<ProductAddon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
@@ -90,7 +92,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             viewModelUnderTest.start(321, 999, 123)
 
-            assertThat(actualResult).isNull()
+            assertThat(actualResult).isEqualTo(expectedResult)
         }
 
     @Test
