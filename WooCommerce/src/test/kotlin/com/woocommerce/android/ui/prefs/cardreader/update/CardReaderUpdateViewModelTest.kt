@@ -272,6 +272,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_in_progress_title))
         assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
         assertThat(state.progressText).isEqualTo(buildProgressText(progress))
+        assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_progress)
         assertThat(state.button.text).isEqualTo(UiStringRes(R.string.cancel))
     }
 
@@ -291,6 +292,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
                 UiStringRes(R.string.card_reader_software_update_progress_cancel_warning)
             )
         }
+        assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_progress)
         assertThat(state.progressText).isEqualTo(buildProgressText(progress))
         assertThat(state.button.text).isEqualTo(UiStringRes(R.string.cancel_anyway))
     }

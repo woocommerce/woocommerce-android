@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -159,6 +160,7 @@ class CardReaderUpdateViewModel @Inject constructor(
 
     sealed class ViewState(
         val title: UiString? = null,
+        @DrawableRes val illustration: Int = R.drawable.img_card_reader_update_progress,
         open val description: UiString? = null,
         open val progressText: UiString? = null,
         open val button: ButtonState? = null,

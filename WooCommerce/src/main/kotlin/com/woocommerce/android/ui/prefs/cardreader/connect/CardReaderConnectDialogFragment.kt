@@ -142,7 +142,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
 
     private fun moveToState(binding: CardReaderConnectDialogBinding, viewState: ViewState) {
         UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
-        UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
+        UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.illustration)
         UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
         UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
         UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
