@@ -1,6 +1,5 @@
 package com.woocommerce.android.media
 
-import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.update
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.store.MediaStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -62,13 +60,15 @@ class ProductImagesUploadWorker @Inject constructor(
         queue
             .onEach { work ->
                 currentWorkListCount.update { list -> list + work }
+                if (work is Work.UploadMedia) {
+                    listOfImagesToUpload.add(Pair(work.productId, work.localUri))
+                }
                 handleWork(work)
             }
             .launchIn(appCoroutineScope)
 
         currentWorkListCount
             .transformLatest { list ->
-                println("images -> worklist changes $list")
                 val done = list.isEmpty()
                 if (done) {
                     // Add a delay to avoid stopping the service if there is an event coming to the queue
@@ -125,15 +125,9 @@ class ProductImagesUploadWorker @Inject constructor(
         }
     }
 
-    fun enqueueImagesUpload(productId: Long, uris: List<String>) {
-        cancelledProducts.remove(productId)
-        uris.forEach {
-            queue.tryEmit(Work.FetchMedia(productId, it))
-        }
-    }
-
-    fun addImagesToProduct(productId: Long, images: List<MediaModel>) {
-        queue.tryEmit(Work.UpdateProduct(productId, images))
+    fun enqueueWork(work: Work) {
+        cancelledProducts.remove(work.productId)
+        queue.tryEmit(work)
     }
 
     fun cancelUpload(productId: Long) {
@@ -145,12 +139,6 @@ class ProductImagesUploadWorker @Inject constructor(
     }
 
     private suspend fun fetchMedia(work: Work.FetchMedia) {
-        emitEvent(
-            Event.MediaUploadEvent.UploadStarted(
-                productId = work.productId,
-                localUri = work.localUri
-            )
-        )
         WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> fetch media ${work.localUri}")
 
         val fetchedMedia = mediaFilesRepository.fetchMedia(work.localUri)
@@ -158,26 +146,20 @@ class ProductImagesUploadWorker @Inject constructor(
             WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching media failed")
 
             emitEvent(
-                Event.MediaUploadEvent.UploadFailed(
+                Event.MediaUploadEvent.FetchFailed(
                     productId = work.productId,
-                    localUri = work.localUri,
-                    error = MediaFilesRepository.MediaUploadException(
-                        media = MediaModel(),
-                        errorMessage = resourceProvider.getString(R.string.product_image_service_error_media_null),
-                        errorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
-                    )
+                    localUri = work.localUri
                 )
             )
         } else {
             WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> media fetched, enqueue upload")
-            queue.emit(
-                Work.UploadMedia(
+            emitEvent(
+                Event.MediaUploadEvent.FetchSucceeded(
                     productId = work.productId,
                     localUri = work.localUri,
                     fetchedMedia = fetchedMedia
                 )
             )
-            listOfImagesToUpload.add(Pair(work.productId, work.localUri))
         }
     }
 
@@ -303,7 +285,13 @@ class ProductImagesUploadWorker @Inject constructor(
         sealed class MediaUploadEvent : Event() {
             abstract val localUri: String
 
-            data class UploadStarted(
+            data class FetchSucceeded(
+                override val productId: Long,
+                override val localUri: String,
+                val fetchedMedia: MediaModel
+            ) : MediaUploadEvent()
+
+            data class FetchFailed(
                 override val productId: Long,
                 override val localUri: String
             ) : MediaUploadEvent()

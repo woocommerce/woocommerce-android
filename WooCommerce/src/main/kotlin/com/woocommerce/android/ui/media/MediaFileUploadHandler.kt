@@ -6,6 +6,8 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.update
 import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
+import com.woocommerce.android.media.ProductImagesUploadWorker.Work
+import com.woocommerce.android.media.ProductImagesUploadWorker.Work.FetchMedia
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
@@ -25,6 +27,7 @@ import javax.inject.Singleton
 class MediaFileUploadHandler @Inject constructor(
     private val notificationHandler: ProductImagesNotificationHandler,
     private val worker: ProductImagesUploadWorker,
+    private val resourceProvider: ResourceProvider,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
@@ -48,18 +51,30 @@ class MediaFileUploadHandler @Inject constructor(
         val index = statusList.indexOfFirst {
             it.remoteProductId == event.productId && it.localUri == event.localUri
         }
+        if (index == -1) {
+            WooLog.w(WooLog.T.MEDIA, "MediaFileUploadHandler -> received event for unmatched media")
+        }
 
         when (event) {
-            is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadStarted -> {
-                if (index == -1) {
-                    statusList.add(
-                        ProductImageUploadData(
-                            remoteProductId = event.productId,
-                            localUri = event.localUri,
-                            uploadStatus = InProgress
-                        )
+            is ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded -> {
+                worker.enqueueWork(
+                    Work.UploadMedia(
+                        productId = event.productId,
+                        localUri = event.localUri,
+                        fetchedMedia = event.fetchedMedia
                     )
-                }
+                )
+            }
+            is ProductImagesUploadWorker.Event.MediaUploadEvent.FetchFailed -> {
+                statusList[index] = ProductImageUploadData(
+                    remoteProductId = event.productId,
+                    localUri = event.localUri,
+                    uploadStatus = Failed(
+                        media = MediaModel(),
+                        mediaErrorMessage = resourceProvider.getString(R.string.product_image_service_error_media_null),
+                        mediaErrorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
+                    )
+                )
             }
             is ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded -> {
                 if (externalObservers.contains(event.productId)) {
@@ -116,7 +131,7 @@ class MediaFileUploadHandler @Inject constructor(
 
             if (uploadedImages.isNotEmpty()) {
                 WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> add ${uploadedImages.size} images to the product")
-                worker.addImagesToProduct(productId, uploadedImages)
+                worker.enqueueWork(Work.UpdateProduct(productId, uploadedImages))
             }
 
             uploadsStatus.update { list -> list - productImages }
@@ -138,7 +153,9 @@ class MediaFileUploadHandler @Inject constructor(
                 )
             }
         }
-        worker.enqueueImagesUpload(remoteProductId, uris)
+        uris.forEach {
+            worker.enqueueWork(FetchMedia(remoteProductId, it))
+        }
     }
 
     fun cancelUpload(remoteProductId: Long) {
