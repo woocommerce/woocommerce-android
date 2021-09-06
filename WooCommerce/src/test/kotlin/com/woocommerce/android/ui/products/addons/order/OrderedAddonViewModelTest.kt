@@ -336,5 +336,4 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             assertThat(timesCalled).isEqualTo(2)
         }
-
 }
