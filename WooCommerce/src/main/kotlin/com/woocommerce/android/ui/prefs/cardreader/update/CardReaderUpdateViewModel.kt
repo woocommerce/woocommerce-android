@@ -49,7 +49,7 @@ class CardReaderUpdateViewModel @Inject constructor(
     init {
         launch {
             if (navArgs.requiredUpdate.not()) {
-                cardReaderManager.installSoftwareUpdate()
+                cardReaderManager.startAsyncSoftwareUpdate()
             }
 
             listenToSoftwareUpdateStatus()

@@ -101,9 +101,9 @@ internal class CardReaderManagerImpl(
         terminal.initTerminal(application, logLevel, tokenProvider, terminalListener)
     }
 
-    override suspend fun installSoftwareUpdate() {
+    override suspend fun startAsyncSoftwareUpdate() {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        softwareUpdateManager.updateSoftware()
+        softwareUpdateManager.startAsyncSoftwareUpdate()
     }
 
     override suspend fun clearCachedCredentials() {

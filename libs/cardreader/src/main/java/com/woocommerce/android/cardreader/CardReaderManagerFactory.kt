@@ -47,6 +47,7 @@ object CardReaderManagerFactory {
             SoftwareUpdateManager(
                 terminal,
                 bluetoothReaderListener,
+                logWrapper,
             ),
             TerminalListenerImpl(terminal, logWrapper)
         )

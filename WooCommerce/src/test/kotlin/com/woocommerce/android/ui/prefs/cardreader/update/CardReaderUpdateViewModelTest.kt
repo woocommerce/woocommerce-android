@@ -54,7 +54,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             createViewModel(requiredUpdate = requiredUpdate)
 
             // THEN
-            verify(cardReaderManager, never()).installSoftwareUpdate()
+            verify(cardReaderManager, never()).startAsyncSoftwareUpdate()
         }
 
     @Test
@@ -67,7 +67,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             createViewModel(requiredUpdate = requiredUpdate)
 
             // THEN
-            verify(cardReaderManager).installSoftwareUpdate()
+            verify(cardReaderManager).startAsyncSoftwareUpdate()
         }
 
     @Test

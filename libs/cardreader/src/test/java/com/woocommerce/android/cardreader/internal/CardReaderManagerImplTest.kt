@@ -145,7 +145,7 @@ class CardReaderManagerImplTest {
         runBlockingTest {
             whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-            cardReaderManager.installSoftwareUpdate()
+            cardReaderManager.startAsyncSoftwareUpdate()
         }
 
     @Test
@@ -153,8 +153,8 @@ class CardReaderManagerImplTest {
         runBlockingTest {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-            cardReaderManager.installSoftwareUpdate()
+            cardReaderManager.startAsyncSoftwareUpdate()
 
-            verify(softwareUpdateManager).updateSoftware()
+            verify(softwareUpdateManager).startAsyncSoftwareUpdate()
         }
 }
