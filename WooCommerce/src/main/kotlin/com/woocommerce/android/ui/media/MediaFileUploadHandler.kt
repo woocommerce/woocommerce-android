@@ -1,11 +1,24 @@
 package com.woocommerce.android.ui.media
 
+import android.net.Uri
 import android.os.Parcelable
-import androidx.collection.LongSparseArray
 import com.woocommerce.android.R
+import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.media.ProductImagesService
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploadFailed
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
+import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.InProgress
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.UploadSuccess
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import javax.inject.Inject
@@ -13,43 +26,146 @@ import javax.inject.Singleton
 
 @Singleton
 class MediaFileUploadHandler @Inject constructor(
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
-    // array of ID / images that have failed to upload for that product
-    private val currentUploadErrors = LongSparseArray<List<ProductImageUploadUiModel>>()
+    private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
 
-    fun getMediaUploadErrorCount(remoteProductId: Long) = currentUploadErrors.get(remoteProductId)?.size ?: 0
+    private val events = MutableSharedFlow<ProductImageUploadData>(extraBufferCapacity = Int.MAX_VALUE)
 
-    fun getMediaUploadErrors(remoteProductId: Long) = currentUploadErrors.get(remoteProductId)
+    init {
+        EventBus.getDefault().register(this)
+        events
+            .onEach { event ->
+                val statusList = uploadsStatus.value.toMutableList()
+                val index = statusList.indexOfFirst {
+                    it.remoteProductId == event.remoteProductId && it.localUri == event.localUri
+                }
+                if (index == -1) return@onEach
 
-    fun onCleanup() {
-        currentUploadErrors.clear()
+                if (event.uploadStatus is UploadSuccess) {
+                    statusList.removeAt(index)
+                } else {
+                    statusList[index] = event
+                }
+                uploadsStatus.value = statusList
+            }
+            .launchIn(appCoroutineScope)
     }
 
-    fun handleMediaUploadFailure(
-        mediaModel: MediaModel,
-        mediaUploadError: MediaStore.MediaError
-    ) {
-        val remoteProductId = mediaModel.postId
-        val newErrors = currentUploadErrors.get(remoteProductId, mutableListOf()) +
-            ProductImageUploadUiModel(mediaModel, mediaUploadError.type, mediaUploadError.message)
-        currentUploadErrors.put(remoteProductId, newErrors)
+    fun enqueueUpload(remoteProductId: Long, uris: List<Uri>) {
+        val newUploads = uris.map {
+            ProductImageUploadData(
+                remoteProductId = remoteProductId,
+                localUri = it,
+                uploadStatus = InProgress
+            )
+        }
+        uploadsStatus.value += newUploads
+        productImagesServiceWrapper.uploadProductMedia(remoteProductId, ArrayList(uris))
     }
 
-    fun getMediaUploadErrorMessage(remoteProductId: Long): String {
-        return StringUtils.getQuantityString(
-            resourceProvider = resourceProvider,
-            quantity = getMediaUploadErrorCount(remoteProductId),
-            default = R.string.product_image_service_error_uploading_multiple,
-            one = R.string.product_image_service_error_uploading_single,
-            zero = R.string.product_image_service_error_uploading
+    fun cancelUpload(remoteProductId: Long) {
+        uploadsStatus.value = uploadsStatus.value.filterNot { it.remoteProductId == remoteProductId }
+
+        // TODO update the service to cancel upload per product
+        ProductImagesService.cancel()
+    }
+
+    fun clearImageErrors(remoteProductId: Long) {
+        uploadsStatus.value = uploadsStatus.value.filterNot {
+            it.remoteProductId == remoteProductId && it.uploadStatus is Failed
+        }
+    }
+
+    fun observeCurrentUploadErrors(remoteProductId: Long): Flow<List<ProductImageUploadData>> =
+        uploadsStatus.map { list ->
+            list.filter { it.remoteProductId == remoteProductId && it.uploadStatus is Failed }
+        }.filter { it.isNotEmpty() }
+
+    fun observeCurrentUploads(remoteProductId: Long): Flow<List<Uri>> {
+        return uploadsStatus
+            .map { list ->
+                list.filter { it.remoteProductId == remoteProductId && it.uploadStatus == InProgress }
+                    .map { it.localUri }
+            }
+    }
+
+    fun observeSuccessfulUploads(remoteProductId: Long): Flow<MediaModel> {
+        return events.filter { it.remoteProductId == remoteProductId && it.uploadStatus is UploadSuccess }
+            .map { (it.uploadStatus as UploadSuccess).media }
+    }
+
+    /**
+     * A single product image has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImageUploaded) {
+        val productId = event.media.postId
+        events.tryEmit(
+            ProductImageUploadData(
+                remoteProductId = productId,
+                localUri = event.localUri,
+                uploadStatus = UploadStatus.UploadSuccess(media = event.media)
+            )
         )
     }
 
+    /**
+     * image upload failed
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImageUploadFailed) {
+        val productId = event.media.postId
+        val errorMessage = event.error.message
+            ?: event.error.logMessage
+            ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
+
+        events.tryEmit(
+            ProductImageUploadData(
+                remoteProductId = productId,
+                localUri = event.localUri,
+                uploadStatus = Failed(event.media, event.error.type, errorMessage)
+            )
+        )
+    }
+
+    /***
+     * Identifies both an event and status.
+     * Holds a reference to the productId and localUri to keep track of each upload
+     */
     @Parcelize
-    data class ProductImageUploadUiModel(
-        val media: MediaModel,
-        val mediaErrorType: MediaStore.MediaErrorType,
-        val mediaErrorMessage: String
+    data class ProductImageUploadData(
+        val remoteProductId: Long,
+        val localUri: Uri,
+        val uploadStatus: UploadStatus
     ) : Parcelable
+
+    sealed class UploadStatus : Parcelable {
+        @Parcelize
+        object InProgress : UploadStatus()
+
+        @Parcelize
+        data class Failed(
+            val media: MediaModel,
+            val mediaErrorType: MediaStore.MediaErrorType,
+            val mediaErrorMessage: String
+        ) : UploadStatus()
+
+        @Parcelize
+        data class UploadSuccess(val media: MediaModel) : UploadStatus()
+    }
+}
+
+fun ResourceProvider.getMediaUploadErrorMessage(errorsCount: Int): String {
+    return StringUtils.getQuantityString(
+        resourceProvider = this,
+        quantity = errorsCount,
+        default = R.string.product_image_service_error_uploading_multiple,
+        one = R.string.product_image_service_error_uploading_single,
+        zero = R.string.product_image_service_error_uploading
+    )
 }

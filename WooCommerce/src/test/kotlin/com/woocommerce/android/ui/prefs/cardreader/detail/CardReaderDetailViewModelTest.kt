@@ -337,21 +337,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when not connected state is called, then reset software update status`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initConnectedState()
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
-            whenever(cardReaderManager.readerStatus).thenReturn(status)
-
-            // WHEN
-            createViewModel()
-
-            // THEN
-            verify(cardReaderManager).resetSoftwareUpdateStatus()
-        }
-
-    @Test
     fun `when connect button clicked should track event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN

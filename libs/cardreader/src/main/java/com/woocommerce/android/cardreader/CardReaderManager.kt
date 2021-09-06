@@ -30,6 +30,5 @@ interface CardReaderManager {
     fun cancelPayment(paymentData: PaymentData)
 
     fun installSoftwareUpdate()
-    fun resetSoftwareUpdateStatus()
     suspend fun clearCachedCredentials()
 }
