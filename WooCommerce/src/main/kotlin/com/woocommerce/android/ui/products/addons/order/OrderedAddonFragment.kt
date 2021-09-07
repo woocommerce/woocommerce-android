@@ -140,7 +140,8 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private fun showLoadingFailedDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setMessage(R.string.ordered_add_ons_loading_failed_snackbar_text)
+            .setTitle(R.string.ordered_add_ons_loading_failed_dialog_title)
+            .setMessage(R.string.ordered_add_ons_loading_failed_dialog_message)
             .setCancelable(false)
             .setPositiveButton(R.string.link_dialog_button_ok) { _, _ -> findNavController().navigateUp() }
             .show()
