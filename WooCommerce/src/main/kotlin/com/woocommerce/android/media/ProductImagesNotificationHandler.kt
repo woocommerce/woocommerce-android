@@ -100,7 +100,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             setAutoCancel(true)
             setGroup(PRODUCT_UPDATE_NOTIFICATION_ID.toString())
         }
-        notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
+        notificationManager.notify(calculateProductUpdateNotificationId(productId), notificationBuilder.build())
     }
 
     fun postUpdateFailureNotification(productId: Long, product: Product?) {
@@ -117,7 +117,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             setAutoCancel(true)
             setGroup(PRODUCT_UPDATE_NOTIFICATION_ID.toString())
         }
-        notificationManager.notify(productId.toInt() + PRODUCT_UPDATE_NOTIFICATION_ID, notificationBuilder.build())
+        notificationManager.notify(calculateProductUpdateNotificationId(productId), notificationBuilder.build())
     }
 
     fun postUploadFailureNotification(product: Product?, errors: List<ProductImageUploadData>) {
@@ -153,7 +153,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             setContentIntent(pendingIntent)
             setGroup(UPLOAD_FAILURE_NOTIFICATION_ID.toString())
         }
-        notificationManager.notify(productId.toInt() + UPLOAD_FAILURE_NOTIFICATION_ID, notificationBuilder.build())
+        notificationManager.notify(calculateUploadFailureNotificationId(productId), notificationBuilder.build())
     }
 
     fun removeUploadFailureNotification(productId: Long) {
@@ -186,4 +186,10 @@ class ProductImagesNotificationHandler @Inject constructor(
     fun removeForegroundNotification() {
         notificationManager.cancel(FOREGROUND_NOTIFICATION_ID)
     }
+
+    private fun calculateProductUpdateNotificationId(productId: Long) =
+        "${productId}${PRODUCT_UPDATE_NOTIFICATION_ID}".hashCode()
+
+    private fun calculateUploadFailureNotificationId(productId: Long) =
+        "${productId}${UPLOAD_FAILURE_NOTIFICATION_ID}".hashCode()
 }
