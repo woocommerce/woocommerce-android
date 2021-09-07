@@ -268,8 +268,8 @@ class ProductImagesUploadWorker @Inject constructor(
                 emitEvent(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, cachedProduct))
             } else {
                 notificationHandler.showUpdatingProductNotification(product)
-                val result = updateProductWithRetries(product.copy(images = product.images + images))
-                if (result) {
+                val success = updateProductWithRetries(product.copy(images = product.images + images))
+                if (success) {
                     WooLog.d(
                         T.MEDIA,
                         "ProductImagesUploadWorker -> added ${images.size} images to product ${work.productId}"
