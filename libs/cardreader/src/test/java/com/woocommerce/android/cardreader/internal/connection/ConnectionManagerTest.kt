@@ -48,7 +48,7 @@ class ConnectionManagerTest {
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
 
-        val result = connectionManager.discoverReaders(true).toList()
+        val result = connectionManager.discoverReaders(true, supportedReaders).toList()
 
         assertThat((result.first() as ReadersFound).list.first().id)
             .isEqualTo(dummyReaderId)
@@ -60,7 +60,7 @@ class ConnectionManagerTest {
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(Failure(terminalException)) })
 
-        val result = connectionManager.discoverReaders(true).single()
+        val result = connectionManager.discoverReaders(true, supportedReaders).single()
 
         assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Failed::class.java)
     }
@@ -70,7 +70,7 @@ class ConnectionManagerTest {
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(Success) })
 
-        val result = connectionManager.discoverReaders(true).single()
+        val result = connectionManager.discoverReaders(true, supportedReaders).single()
 
         assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Succeeded::class.java)
     }
