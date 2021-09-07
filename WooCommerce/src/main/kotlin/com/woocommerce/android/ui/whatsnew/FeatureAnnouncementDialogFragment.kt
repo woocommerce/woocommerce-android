@@ -15,7 +15,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
     }
 
     override fun getTheme(): Int {
-        return R.style.Woo_Dialog_Fullscreen
+        return R.style.Theme_Woo
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
