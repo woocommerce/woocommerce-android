@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementDialogFragmentBinding
 
@@ -22,7 +23,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         val binding = FeatureAnnouncementDialogFragmentBinding.bind(view)
 
         binding.closeFeatureAnnouncementButton.setOnClickListener {
-            dismiss()
+            findNavController().popBackStack()
         }
 
         return view
