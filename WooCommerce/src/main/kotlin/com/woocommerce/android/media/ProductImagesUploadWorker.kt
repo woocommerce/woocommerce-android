@@ -3,7 +3,6 @@ package com.woocommerce.android.media
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ServiceStopped
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
@@ -91,7 +90,7 @@ class ProductImagesUploadWorker @Inject constructor(
                     WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> stop service")
                     productImagesServiceWrapper.stopService()
                     uploadList.clear()
-                    emitEvent(ServiceStopped)
+                    emitEvent(Event.ServiceStopped)
                 } else {
                     WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start service")
                     productImagesServiceWrapper.startService()
@@ -104,9 +103,10 @@ class ProductImagesUploadWorker @Inject constructor(
         events
             .filterIsInstance<MediaUploadEvent>()
             .filter {
-                it is MediaUploadEvent.FetchFailed ||
+                val isUploadCompleted = it is MediaUploadEvent.FetchFailed ||
                     it is MediaUploadEvent.UploadSucceeded ||
                     it is MediaUploadEvent.UploadFailed
+                isUploadCompleted
             }
             .onEach { event ->
                 val index =
