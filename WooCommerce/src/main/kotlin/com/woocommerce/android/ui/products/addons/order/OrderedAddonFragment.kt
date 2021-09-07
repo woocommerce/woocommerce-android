@@ -124,6 +124,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun onOrderedAddonsReceived(orderedAddons: List<ProductAddon>) {
+        binding.addonsEditNotice.visibility = VISIBLE
         showWIPNoticeCard(true)
         setupRecyclerViewWith(orderedAddons)
         track(orderedAddons)
