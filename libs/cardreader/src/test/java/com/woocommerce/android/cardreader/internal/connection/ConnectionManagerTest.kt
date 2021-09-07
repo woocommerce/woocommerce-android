@@ -2,11 +2,14 @@ package com.woocommerce.android.cardreader.internal.connection
 
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
@@ -31,6 +34,9 @@ class ConnectionManagerTest {
     private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
     private val discoverReadersAction: DiscoverReadersAction = mock()
 
+    private val supportedReaders =
+        CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
+
     private lateinit var connectionManager: ConnectionManager
 
     @Before
@@ -42,8 +48,10 @@ class ConnectionManagerTest {
     fun `when readers discovered, then observers get notified`() = runBlockingTest {
         val dummyReaderId = "12345"
         val discoveredReaders = listOf(
-            mock<Reader>()
-                .apply { whenever(serialNumber).thenReturn(dummyReaderId) }
+            mock<Reader> {
+                on { serialNumber }.thenReturn(dummyReaderId)
+                on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
+            }
         )
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
@@ -53,6 +61,91 @@ class ConnectionManagerTest {
         assertThat((result.first() as ReadersFound).list.first().id)
             .isEqualTo(dummyReaderId)
     }
+
+    @Test
+    fun `given found readers with specified, when readers discovered, then all readers returned`() =
+        runBlockingTest {
+            val dummyReaderId = "12345"
+            val discoveredReaders = listOf<Reader>(
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
+                },
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
+                },
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.WISEPOS_E)
+                }
+            )
+            whenever(discoverReadersAction.discoverReaders(anyBoolean()))
+                .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
+
+            val result = connectionManager.discoverReaders(true, supportedReaders).toList()
+
+            assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(SpecificReader.Chipper2X.name)
+            assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(SpecificReader.StripeM2.name)
+        }
+
+    @Test
+    fun `given found readers with unspecified, when readers discovered, then required readers returned`() =
+        runBlockingTest {
+            val dummyReaderId = "12345"
+            val discoveredReaders = listOf<Reader>(
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
+                },
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
+                },
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.WISEPOS_E)
+                }
+            )
+            whenever(discoverReadersAction.discoverReaders(anyBoolean()))
+                .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
+
+            val result = connectionManager.discoverReaders(
+                true,
+                CardReaderTypesToDiscover.UnspecifiedReaders
+            ).toList()
+
+            assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(SpecificReader.Chipper2X.name)
+            assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(SpecificReader.StripeM2.name)
+            assertThat((result.first() as ReadersFound).list[2].type).isEqualTo(SpecificReader.WisePadeE.name)
+        }
+
+    @Test
+    fun `given no readers found with specified, when readers discovered, then empty list returned`() =
+        runBlockingTest {
+            val discoveredReaders = listOf<Reader>()
+            whenever(discoverReadersAction.discoverReaders(anyBoolean()))
+                .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
+
+            val result = connectionManager.discoverReaders(true, supportedReaders).toList()
+
+            assertThat((result.first() as ReadersFound).list).isEmpty()
+        }
+
+    @Test
+    fun `given no readers found with unspecified, when readers discovered, then empty list returned`() =
+        runBlockingTest {
+            val discoveredReaders = listOf<Reader>()
+            whenever(discoverReadersAction.discoverReaders(anyBoolean()))
+                .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
+
+            val result = connectionManager.discoverReaders(
+                true,
+                CardReaderTypesToDiscover.UnspecifiedReaders
+            ).toList()
+
+            assertThat((result.first() as ReadersFound).list).isEmpty()
+        }
 
     @Test
     fun `when discovery fails, then observers get notified`() = runBlockingTest {

@@ -1,6 +1,8 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -32,6 +34,9 @@ class CardReaderManagerImplTest {
     private val connectionManager: ConnectionManager = mock()
     private val softwareUpdateManager: SoftwareUpdateManager = mock()
     private val terminalListener: TerminalListenerImpl = mock()
+
+    private val supportedReaders =
+        CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
 
     @Before
     fun setUp() {
@@ -89,7 +94,7 @@ class CardReaderManagerImplTest {
     fun `given terminal not initialized, when reader discovery started, then exception is thrown`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.discoverReaders(true)
+        cardReaderManager.discoverReaders(true, supportedReaders)
     }
 
     @Test(expected = IllegalStateException::class)
