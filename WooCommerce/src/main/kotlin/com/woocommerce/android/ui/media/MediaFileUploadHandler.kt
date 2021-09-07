@@ -214,6 +214,16 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     fun assignUploadsToCreatedProduct(productId: Long) {
+        // Update id for past successful uploads
+        uploadsStatus.update { list ->
+            list.map {
+                if (it.remoteProductId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID && it.uploadStatus is UploadSuccess) {
+                    it.copy(remoteProductId = productId)
+                } else {
+                    it
+                }
+            }
+        }
         // Cancel and reschedule ongoing uploads
         val ongoingUploads = uploadsStatus.value.filter {
             it.remoteProductId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID && it.uploadStatus == InProgress
