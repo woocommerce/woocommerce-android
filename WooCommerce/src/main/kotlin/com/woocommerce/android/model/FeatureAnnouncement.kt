@@ -1,7 +1,10 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.utils.WhatsNewAppVersionUtils
 
+@Parcelize
 data class FeatureAnnouncement(
     val appVersionName: String,
     val announcementVersion: Int,
@@ -11,8 +14,10 @@ data class FeatureAnnouncement(
     val detailsUrl: String?,
     val isLocalized: Boolean = false,
     val features: List<FeatureAnnouncementItem>
-) {
-    private val openEndedVersionBracketIndicator = "-1.0"
+) : Parcelable {
+    companion object {
+        const val openEndedVersionBracketIndicator = "-1.0"
+    }
 
     fun canBeDisplayedOnAppUpgrade(appVersionName: String): Boolean {
         val isTargetingCurrent = if (appVersionTargets.contains(appVersionName)) {
@@ -46,9 +51,10 @@ data class FeatureAnnouncement(
     }
 }
 
+@Parcelize
 data class FeatureAnnouncementItem(
     val title: String,
     val subtitle: String,
     val iconBase64: String,
     val iconUrl: String
-)
+) : Parcelable
