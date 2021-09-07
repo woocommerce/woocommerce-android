@@ -178,6 +178,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         if (FeatureFlag.WHATS_NEW.isEnabled()) {
             binding.optionWhatsNew.show()
+            binding.optionWhatsNew.setOnClickListener {
+                findNavController()
+                    .navigateSafely(R.id.action_mainSettingsFragment_to_featureAnnouncementDialogFragment)
+            }
         }
 
         binding.optionLicenses.setOnClickListener {
