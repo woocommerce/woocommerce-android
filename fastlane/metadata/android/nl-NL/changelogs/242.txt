@@ -1,0 +1,4 @@
+7.4:
+Productbeoordelingen waarvoor je goedkeuring vereist is, hebben een nieuw label om het eenvoudiger te maken ze te onderscheiden van reeds goedgekeurde beoordelingen.
+
+Deze update omvat tevens enkele verbeteringen van de verzendlabel-functie bij het gebruik van WooCommerce Shipping & Tax-extensie. Feedback op deze nieuwe functie is welkom!

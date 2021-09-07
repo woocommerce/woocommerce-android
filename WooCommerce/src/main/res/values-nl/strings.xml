@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:49:52+0000
+Translation-Revision-Date: 2021-08-31 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d artikel</string>
+    <string name="upsell_product_count_many">%d upsell-producten</string>
+    <string name="upsell_product_count_one">%d upsell-product</string>
+    <string name="cross_sell_product_count_many">%d cross-sellproducten</string>
+    <string name="cross_sell_product_count_one">%d cross-sellproduct</string>
+    <string name="product_count_many">%d producten</string>
+    <string name="product_count_one">%d product</string>
+    <string name="product_add_ons_title">Productadd-ons</string>
+    <string name="product_save_dialog_title">Je product wordt opgeslagen</string>
+    <string name="pending_review_label">Wachtend op review</string>
+    <string name="card_reader_payment_reader_not_connected">Zorg ervoor dat de kaartlezer is aangesloten.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Opnieuw proberen met een andere kaart</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Probeer uw kaart opnieuw te tikken, in te voeren of erlangs te halen</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Meerdere kaarten gedetecteerd. Opnieuw proberen met één kaart</string>
+    <string name="card_reader_payment_remove_card_prompt">De kaart verwijderen</string>
+    <string name="card_reader_payment_retry_card_prompt">Opnieuw proberen met dezelfde kaart</string>
+    <string name="order_refunds_refund_info_description_many">%d artikelen</string>
+    <string name="order_refunds_refund_info_description_one">%d artikel</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d werkdagen</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d werkdag</string>
+    <string name="shipping_label_validation_error_template">We konden het verzendadres niet automatisch verifiëren: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">We kunnen het oorspronkelijke verzendadres niet automatisch verifiëren. Bekijken op Google Maps om te controleren of het adres klopt.</string>
+    <string name="ordered_add_ons_wip_message">We zijn bezig om het eenvoudiger voor je te maken om extra opties voor je product vanaf je apparaat te bekijken! Voor nu kun je de extra opties voor je bestellingen weergeven. Je kunt deze extra opties maken en bewerken vanaf je webdashboard.</string>
+    <string name="ordered_add_ons_wip_title">Bekijk extra opties vanaf je apparaat!</string>
+    <string name="ordered_add_ons_details_info_notice">Als je de naam van een extra optie wijzigt in je webdashboard, onthoud dan dat eerdere bestellingen deze extra optie niet langer zullen weergeven in de app.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Add-ons bekijken</string>
+    <string name="save">Opslaan</string>
     <string name="support_contact_payments_detail">Neem contact op met onze Happiness Engineers, die alle lastige vragen met betrekking tot betalingen kunnen beantwoorden</string>
     <string name="support_contact_payments">Contact opnemen met de ondersteuning van Payments</string>
     <string name="product_images_error_detail_title">Details uploaden (%d)</string>
@@ -13,7 +40,6 @@ Language: nl
     <string name="product_image_service_error_uploading_single">%d bestand kon niet worden geüpload</string>
     <string name="product_image_service_error_media_null">Kan media niet vinden</string>
     <string name="product_add_ons_details_info_notice">Je kunt productadd-ons bewerken vanaf je webdashboard.</string>
-    <string name="product_add_ons_card_button_title">Productadd-ons</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over afbeeldingen uploaden</string>
     <string name="card_reader_onboarding_generic_error_hint">We kunnen fysieke betalingen helaas niet verifiëren voor deze winkel</string>
     <string name="card_reader_onboarding_generic_error_header">Fysieke betalingen kunnen niet worden geverifieerd voor deze winkel</string>
@@ -355,6 +381,7 @@ Language: nl
     <string name="shipping_label_packages_loading_message">Een moment geduld…</string>
     <string name="shipping_label_packages_loading_title">Pakketten worden geladen!</string>
     <string name="shipping_label_package_details_title_template">Pakket %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d artikelen</string>
     <string name="shipping_label_packages_loading_error">Kan pakket-afmetingen niet laden</string>
     <string name="shipping_label_package_details_weight_info">Pakketgewicht inbegrepen</string>
     <string name="shipping_label_package_details_weight_hint">Totaal pakketgewicht (%1$s)</string>
@@ -369,9 +396,8 @@ Language: nl
     <string name="shipping_label_address_suggestion_use_selected_address">Het geselecteerde adres gebruiken</string>
     <string name="shipping_label_edit_address_loading_progress_title">Adresgegevens worden geladen</string>
     <string name="product_wip_title_m5">Nieuwe functies beschikbaar!</string>
-    <string name="shipping_label_validation_view_map">Kaart openen</string>
+    <string name="shipping_label_validation_view_map">Zoeken op de kaart</string>
     <string name="shipping_label_validation_contact_customer">Contact opnemen met klant</string>
-    <string name="shipping_label_validation_error_template">Validatie mislukt: %s</string>
     <string name="shipping_label_error_address_invalid_street">Ongeldige straat</string>
     <string name="shipping_label_error_address_house_number_missing">Huisnummer ontbreekt</string>
     <string name="shipping_label_error_address_not_found">Adres is niet gevonden</string>
@@ -770,10 +796,9 @@ Language: nl
     <string name="orderlist_loading">Je bestellingen worden opgezocht …</string>
     <string name="product_detail_editable_text_hint">Voer tekst in</string>
     <string name="product_detail_title_hint">Voer producttitel</string>
-    <string name="product_detail_save_product_success">Product bijgewerkt</string>
+    <string name="product_detail_save_product_success">Product opgeslagen</string>
     <string name="product_detail_update_product_error">Bijwerken product mislukt</string>
     <string name="product_update_dialog_message">Een moment geduld…</string>
-    <string name="product_save_dialog_title">Product wordt bijgewerkt</string>
     <string name="product_description_empty">Beschrijf je product</string>
     <string name="product_description">Beschrijving</string>
     <string name="product_edit_description">Beschrijving bewerken</string>

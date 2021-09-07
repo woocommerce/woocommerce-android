@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:53:07+0000
+Translation-Revision-Date: 2021-08-31 13:54:45+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">פריט %d</string>
+    <string name="upsell_product_count_many">%d מוצרים של שדרוגי מכירות</string>
+    <string name="upsell_product_count_one">מוצר %d של שדרוגי מכירות</string>
+    <string name="cross_sell_product_count_many">%d מוצרים של מכירות משלימות</string>
+    <string name="cross_sell_product_count_one">מוצר %d של מכירות משלימות</string>
+    <string name="product_count_many">%d מוצרים</string>
+    <string name="product_count_one">מוצר %d</string>
+    <string name="product_add_ons_title">הרחבות למוצר</string>
+    <string name="product_save_dialog_title">שומר את המוצר שלך</string>
+    <string name="pending_review_label">ביקורת ממתינה לאישור</string>
+    <string name="card_reader_payment_reader_not_connected">יש לוודא שקורא הכרטיסים מחובר.</string>
+    <string name="card_reader_payment_try_another_card_prompt">יש לנסות שוב עם כרטיס שונה</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">כדאי לנסות שוב להקיש עם הכרטיס על המכשיר, להכניס אותו למכשיר או להחליק אותו במכשיר</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">מספר כרטיסים אותרו. יש לנסות שוב עם כרטיס יחיד</string>
+    <string name="card_reader_payment_remove_card_prompt">יש להסיר את הכרטיס</string>
+    <string name="card_reader_payment_retry_card_prompt">יש לנסות שוב עם אותו הכרטיס</string>
+    <string name="order_refunds_refund_info_description_many">%d פריטים</string>
+    <string name="order_refunds_refund_info_description_one">פריט %d</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d ימי עסקים</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">יום עסקים %d</string>
+    <string name="shipping_label_validation_error_template">לא הצלחנו לאמת באופן אוטומטי את הכתובת למשלוח: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">לא הצלחנו לאמת באופן אוטומטי את כתובת המוצא. ניתן להציג את הכתובת ב-Google Maps כדי לוודא שהיא נכונה.</string>
+    <string name="ordered_add_ons_wip_message">אנחנו עובדים על שיפור התהליך של צפייה בהרחבות המוצרים מהמכשיר שלך! לעת עתה, יש לך אפשרות לראות את ההרחבות שבהזמנות שלך. אפשר ליצור ולערוך את ההרחבות האלה דרך לוח הבקרה במחשב.</string>
+    <string name="ordered_add_ons_wip_title">להציג את ההרחבות מהמכשיר שלך!</string>
+    <string name="ordered_add_ons_details_info_notice">אם בחרת לשנות את שם ההרחבה בלוח הבקרה באתר האינטרנט, כדאי לשים לב שההזמנות הקודמות לא יציגו עוד את ההרחבה הזאת בתוך האפליקציה.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">להציג הרחבות</string>
+    <string name="save">לשמור</string>
     <string name="support_contact_payments_detail">ניתן ליצור קשר עם נציגי התמיכה שישמחו לענות על שאלות לגבי תשלומים</string>
     <string name="support_contact_payments">לפנות לתמיכת תשלומים</string>
     <string name="product_images_error_detail_title">להעלות פרטים (%d)</string>
@@ -13,7 +40,6 @@ Language: he_IL
     <string name="product_image_service_error_uploading_single">לא ניתן היה להעלות קובץ %d</string>
     <string name="product_image_service_error_media_null">לא ניתן היה למצוא פריטי מדיה</string>
     <string name="product_add_ons_details_info_notice">ניתן לערוך את התוספים למוצר בלוח הבקרה באינטרנט.</string>
-    <string name="product_add_ons_card_button_title">תוספי מוצר</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;למידע נוסף בנושא&lt;/a&gt; העלאת תמונות</string>
     <string name="card_reader_onboarding_generic_error_hint">מצטערים, לא הצלחנו לאמת תשלומים באופן אישי בחנות זו</string>
     <string name="card_reader_onboarding_generic_error_header">לא ניתן לאמת תשלומים באופן אישי בחנות זו</string>
@@ -355,6 +381,7 @@ Language: he_IL
     <string name="shipping_label_packages_loading_message">רק רגע…</string>
     <string name="shipping_label_packages_loading_title">טוען את החבילות!</string>
     <string name="shipping_label_package_details_title_template">חבילה ⁦%1$d⁩</string>
+    <string name="shipping_label_package_details_items_count_many">%d פריטים</string>
     <string name="shipping_label_packages_loading_error">אין אפשרות לטעון את הגדרות החבילה</string>
     <string name="shipping_label_package_details_weight_info">כולל המשקל של החבילה</string>
     <string name="shipping_label_package_details_weight_hint">משקל החבילה הכולל (⁦%1$s⁩)</string>
@@ -369,9 +396,8 @@ Language: he_IL
     <string name="shipping_label_address_suggestion_use_selected_address">להשתמש בכתובת שנבחרה</string>
     <string name="shipping_label_edit_address_loading_progress_title">טוען את הנתונים של הכתובת</string>
     <string name="product_wip_title_m5">אפשרויות חדשות זמינות!</string>
-    <string name="shipping_label_validation_view_map">לפתוח את המפה</string>
+    <string name="shipping_label_validation_view_map">למצוא במפה</string>
     <string name="shipping_label_validation_contact_customer">ליצור קשר עם הלקוח</string>
-    <string name="shipping_label_validation_error_template">האימות נכשל: %s</string>
     <string name="shipping_label_error_address_invalid_street">רחוב לא חוקי</string>
     <string name="shipping_label_error_address_house_number_missing">מספר הבית חסר</string>
     <string name="shipping_label_error_address_not_found">הכתובת לא נמצאה</string>
@@ -770,10 +796,9 @@ Language: he_IL
     <string name="orderlist_loading">מחפש את ההזמנות שלך…</string>
     <string name="product_detail_editable_text_hint">להזין טקסט</string>
     <string name="product_detail_title_hint">להזין את שם המוצר</string>
-    <string name="product_detail_save_product_success">המוצר עודכן</string>
+    <string name="product_detail_save_product_success">המוצר נשמר</string>
     <string name="product_detail_update_product_error">שגיאה בעדכון המוצר</string>
     <string name="product_update_dialog_message">נא להמתין…</string>
-    <string name="product_save_dialog_title">מעדכן את המוצר</string>
     <string name="product_description_empty">יש לתאר את המוצר שלך</string>
     <string name="product_description">תיאור</string>
     <string name="product_edit_description">לערוך את התיאור</string>
