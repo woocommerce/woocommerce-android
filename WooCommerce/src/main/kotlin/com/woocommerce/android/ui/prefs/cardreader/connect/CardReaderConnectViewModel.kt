@@ -19,6 +19,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.R
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -43,6 +44,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -98,6 +100,15 @@ class CardReaderConnectViewModel @Inject constructor(
             delay(1)
             exitFlow(connected = true)
         }
+    }
+
+    fun onUpdateReaderResult(updateResult: CardReaderUpdateViewModel.UpdateResult) {
+        when (updateResult) {
+            CardReaderUpdateViewModel.UpdateResult.FAILED -> exitFlow(connected = false)
+            CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
+                // noop
+            }
+        }.exhaustive
     }
 
     fun onScreenResumed() {
