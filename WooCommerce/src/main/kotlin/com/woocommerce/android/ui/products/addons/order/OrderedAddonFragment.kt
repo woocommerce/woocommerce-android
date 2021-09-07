@@ -11,8 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
@@ -30,9 +28,10 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMI
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
-import com.woocommerce.android.ui.products.addons.order.OrderedAddonViewModel.*
+import com.woocommerce.android.ui.products.addons.order.OrderedAddonViewModel.ViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,16 +64,6 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
                 delayed = true
             )
             else skeletonView.hide()
-        }
-
-    private var isLoadingFailure: Boolean = false
-        set(isFailure) {
-            field = isFailure
-            if(isFailure) Snackbar.make(
-                binding.mainView,
-                R.string.ordered_add_ons_loading_failed_snackbar_text,
-                BaseTransientBottomBar.LENGTH_LONG
-            ).show()
         }
 
     private val supportActionBar
@@ -119,7 +108,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
         new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
-        new?.isLoadingFailure?.takeIfNotEqualTo(old?.isLoadingFailure) { isLoadingFailure = it }
+        new?.isLoadingFailure?.takeIfNotEqualTo(old?.isLoadingFailure) { if (it) showLoadingFailedDialog() }
     }
 
     private fun setupViews() {
@@ -149,6 +138,15 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
             addonList,
             currencyFormatter.buildBigDecimalFormatter(viewModel.currencyCode),
             orderMode = true
+        )
+    }
+
+    private fun showLoadingFailedDialog() {
+        WooDialog.showDialog(
+            requireActivity(),
+            messageId = R.string.ordered_add_ons_loading_failed_snackbar_text,
+            positiveButtonId = R.string.link_dialog_button_ok,
+            posBtnAction = { _, _  -> findNavController().navigateUp() }
         )
     }
 
