@@ -29,6 +29,12 @@ class ProductImagesNotificationHandler @Inject constructor(
         private const val FOREGROUND_NOTIFICATION_ID = 1
         private const val PRODUCT_UPDATE_NOTIFICATION_ID = 2
         private const val UPLOAD_FAILURE_NOTIFICATION_ID = 3
+
+        private fun calculateProductUpdateNotificationId(productId: Long) =
+            "$productId$PRODUCT_UPDATE_NOTIFICATION_ID".hashCode()
+
+        private fun calculateUploadFailureNotificationId(productId: Long) =
+            "$productId$UPLOAD_FAILURE_NOTIFICATION_ID".hashCode()
     }
 
     private val notificationManager =
@@ -186,10 +192,4 @@ class ProductImagesNotificationHandler @Inject constructor(
     fun removeForegroundNotification() {
         notificationManager.cancel(FOREGROUND_NOTIFICATION_ID)
     }
-
-    private fun calculateProductUpdateNotificationId(productId: Long) =
-        "${productId}${PRODUCT_UPDATE_NOTIFICATION_ID}".hashCode()
-
-    private fun calculateUploadFailureNotificationId(productId: Long) =
-        "${productId}${UPLOAD_FAILURE_NOTIFICATION_ID}".hashCode()
 }
