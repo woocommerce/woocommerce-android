@@ -83,7 +83,9 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentOrderedAddonBinding.bind(view)
 
-        setupObservers()
+        viewModel.orderedAddonsData.observe(viewLifecycleOwner, Observer(::onOrderedAddonsReceived))
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
+
         setupViews()
 
         viewModel.start(
@@ -99,12 +101,6 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     override fun getFragmentTitle() = getString(R.string.product_add_ons_title)
-
-    private fun setupObservers() {
-        viewModel.orderedAddonsData
-            .observe(viewLifecycleOwner, Observer(::onOrderedAddonsReceived))
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
-    }
 
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
         new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
