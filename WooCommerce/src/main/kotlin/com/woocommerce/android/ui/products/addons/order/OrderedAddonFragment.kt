@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
@@ -28,7 +29,6 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMI
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
 import com.woocommerce.android.ui.products.addons.order.OrderedAddonViewModel.ViewState
@@ -142,12 +142,11 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun showLoadingFailedDialog() {
-        WooDialog.showDialog(
-            requireActivity(),
-            messageId = R.string.ordered_add_ons_loading_failed_snackbar_text,
-            positiveButtonId = R.string.link_dialog_button_ok,
-            posBtnAction = { _, _  -> findNavController().navigateUp() }
-        )
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(R.string.ordered_add_ons_loading_failed_snackbar_text)
+            .setCancelable(false)
+            .setPositiveButton(R.string.link_dialog_button_ok) { _, _ -> findNavController().navigateUp() }
+            .show()
     }
 
     private fun showWIPNoticeCard(shouldBeVisible: Boolean) {
