@@ -1,21 +1,17 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
@@ -27,6 +23,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 private const val DUMMY_FIRMWARE_VERSION = "1.0.0.123-abcd-test-3000"
 private const val DUMMY_FIRMWARE_VERSION_SIMPLIFIED = "1.0.0.123"
@@ -217,7 +216,9 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = createViewModel()
 
-            assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(isOptionalUpdate = true))
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
+            )
         }
 
     @Test

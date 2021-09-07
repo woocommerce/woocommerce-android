@@ -830,14 +830,14 @@
         Card Reader Software update
     -->
     <string name="card_reader_software_update_update" translatable="false">@string/update</string>
-    <string name="card_reader_software_update_skip" translatable="false">@string/skip</string>
     <string name="card_reader_software_update_cancel" translatable="false">@string/cancel</string>
-    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly. Do you want to update it now?</string>
+    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly</string>
     <string name="card_reader_software_update_title">Software update</string>
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Canceling an ongoing software update is not recommended. Cancelling will block your reader connection.</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% complete</string>
 
     <!--
         Card Reader Onboarding
