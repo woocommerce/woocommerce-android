@@ -17,7 +17,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
@@ -88,7 +87,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
         viewState.value = if (updateAvailable) {
-            triggerEvent(CardReaderUpdateScreen(isOptionalUpdate = true))
+            triggerEvent(NavigationTarget.CardReaderUpdateScreen)
             ConnectedState(
                 enforceReaderUpdate = UiStringRes(
                     R.string.card_reader_detail_connected_enforced_update_software
@@ -126,7 +125,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onUpdateReaderClicked() {
-        triggerEvent(CardReaderUpdateScreen(isOptionalUpdate = true))
+        triggerEvent(NavigationTarget.CardReaderUpdateScreen)
     }
 
     private fun onDisconnectClicked() {
@@ -156,7 +155,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
-        data class CardReaderUpdateScreen(val isOptionalUpdate: Boolean) : NavigationTarget()
+        object CardReaderUpdateScreen : NavigationTarget()
     }
 
     sealed class ViewState {

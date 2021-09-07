@@ -145,16 +145,16 @@ class CardReaderManagerImplTest {
         runBlockingTest {
             whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-            cardReaderManager.installSoftwareUpdate()
+            cardReaderManager.startAsyncSoftwareUpdate()
         }
 
     @Test
-    fun `given terminal is initialized, when installing software update, installSoftwareUpdate is called`() =
+    fun `given terminal is initialized, when installing software update, updateSoftware is called`() =
         runBlockingTest {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-            cardReaderManager.installSoftwareUpdate()
+            cardReaderManager.startAsyncSoftwareUpdate()
 
-            verify(terminalWrapper).installSoftwareUpdate()
+            verify(softwareUpdateManager).startAsyncSoftwareUpdate()
         }
 }
