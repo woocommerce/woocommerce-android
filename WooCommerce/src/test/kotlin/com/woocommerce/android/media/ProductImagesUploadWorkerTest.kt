@@ -1,5 +1,6 @@
 package com.woocommerce.android.media
 
+import com.woocommerce.android.media.ProductImagesUploadWorker.Companion.DURATION_BEFORE_STOPPING_SERVICE
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded
@@ -76,12 +77,12 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     fun `when work is added before time expiration, then don't stop service`() = testBlocking {
         worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, TEST_URI))
 
-        advanceTimeBy(500L) // The worker waits 1 second before stopping the service
+        advanceTimeBy(DURATION_BEFORE_STOPPING_SERVICE / 2)
 
         // Enqueue more work
         worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, "test uri 2"))
 
-        advanceTimeBy(500L) // To match the 1 second the worker will wait
+        advanceTimeBy(DURATION_BEFORE_STOPPING_SERVICE / 2)
 
         verify(productImagesServiceWrapper, never()).stopService()
     }
@@ -142,7 +143,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
-        verify(productDetailRepository, times(3)).fetchProduct(REMOTE_PRODUCT_ID)
+        verify(productDetailRepository, times(ProductImagesUploadWorker.PRODUCT_UPDATE_RETRIES))
+            .fetchProduct(REMOTE_PRODUCT_ID)
     }
 
     @Test
@@ -197,7 +199,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         val updatedProduct = product.copy(images = product.images + UPLOADED_MEDIA.toAppModel())
-        verify(productDetailRepository, times(3)).updateProduct(updatedProduct)
+        verify(productDetailRepository, times(ProductImagesUploadWorker.PRODUCT_UPDATE_RETRIES))
+            .updateProduct(updatedProduct)
     }
 
     @Test

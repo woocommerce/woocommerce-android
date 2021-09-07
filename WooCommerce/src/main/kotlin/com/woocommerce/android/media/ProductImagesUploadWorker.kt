@@ -18,8 +18,6 @@ import org.wordpress.android.fluxc.model.MediaModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val ONE_SECOND = 1000L
-
 /***
  * This class is responsible for queuing and handling different tasks related to product images upload.
  * It handles three types of works:
@@ -41,6 +39,10 @@ class ProductImagesUploadWorker @Inject constructor(
     private val notificationHandler: ProductImagesNotificationHandler,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
+    companion object {
+        const val DURATION_BEFORE_STOPPING_SERVICE = 1000L
+        const val PRODUCT_UPDATE_RETRIES = 3
+    }
     private val queue = MutableSharedFlow<Work>(extraBufferCapacity = Int.MAX_VALUE)
     private val pendingWorkList = MutableStateFlow<List<Work>>(emptyList())
 
@@ -79,7 +81,7 @@ class ProductImagesUploadWorker @Inject constructor(
                 val done = list.isEmpty()
                 if (done) {
                     // Add a delay to avoid stopping the service if there is an event coming to the queue
-                    delay(ONE_SECOND)
+                    delay(DURATION_BEFORE_STOPPING_SERVICE)
                 }
                 emit(done)
             }
@@ -224,11 +226,10 @@ class ProductImagesUploadWorker @Inject constructor(
         }
     }
 
-    @Suppress("MagicNumber")
     private suspend fun updateProduct(work: Work.UpdateProduct) {
         suspend fun fetchProductWithRetries(productId: Long): Product? {
             var retries = 0
-            while (retries < 3) {
+            while (retries < PRODUCT_UPDATE_RETRIES) {
                 val product = productDetailRepository.fetchProduct(productId)
                 if (product != null && productDetailRepository.lastFetchProductErrorType == null) {
                     return product
@@ -240,7 +241,7 @@ class ProductImagesUploadWorker @Inject constructor(
 
         suspend fun updateProductWithRetries(product: Product): Boolean {
             var retries = 0
-            while (retries < 3) {
+            while (retries < PRODUCT_UPDATE_RETRIES) {
                 val result = productDetailRepository.updateProduct(product)
                 if (result) {
                     return true
