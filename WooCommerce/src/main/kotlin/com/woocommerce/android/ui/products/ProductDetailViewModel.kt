@@ -534,9 +534,12 @@ class ProductDetailViewModel @Inject constructor(
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
             // button in the discard dialog
             val (neutralAction, neutralBtnId) = if (isProductUnderCreation) {
-                Pair(DialogInterface.OnClickListener { _, _ ->
-                    startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
-                }, string.product_detail_save_as_draft)
+                Pair(
+                    DialogInterface.OnClickListener { _, _ ->
+                        startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
+                    },
+                    string.product_detail_save_as_draft
+                )
             } else {
                 Pair(null, null)
             }

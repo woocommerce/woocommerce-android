@@ -217,7 +217,9 @@ class MediaFileUploadHandler @Inject constructor(
         // Update id for past successful uploads
         uploadsStatus.update { list ->
             list.map {
-                if (it.remoteProductId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID && it.uploadStatus is UploadSuccess) {
+                if (it.remoteProductId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID &&
+                    it.uploadStatus is UploadSuccess
+                ) {
                     it.copy(remoteProductId = productId)
                 } else {
                     it
