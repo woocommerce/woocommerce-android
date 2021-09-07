@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -55,7 +54,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
@@ -536,21 +534,27 @@ class ProductDetailViewModel @Inject constructor(
 
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
             // button in the discard dialog
-            @StringRes val neutralBtnId: Int?
-            val neutralAction = if (isProductUnderCreation) {
-                neutralBtnId = string.product_detail_save_as_draft
-                DialogInterface.OnClickListener { _, _ ->
+            val (neutralAction, neutralBtnId) = if (isProductUnderCreation) {
+                Pair(DialogInterface.OnClickListener { _, _ ->
                     startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
-                }
+                }, string.product_detail_save_as_draft)
             } else {
-                neutralBtnId = null
-                null
+                Pair(null, null)
             }
+
+            val negativeBtnAction = if (isProductUnderCreation) {
+                // If the product is under creation, then we need to stop observing image uploads to let the handler
+                // handles cache them, so that we can assign them to the product if the user decides to save it
+                imageUploadsJob?.cancel()
+                DialogInterface.OnClickListener { _, _ -> observeImageUploadEvents() }
+            } else null
 
             triggerEvent(
                 ShowDialog(
                     positiveBtnAction = positiveAction,
-                    neutralBtnAction = neutralAction
+                    neutralBtnAction = neutralAction,
+                    neutralButtonId = neutralBtnId,
+                    negativeBtnAction = negativeBtnAction
                 )
             )
             return false
