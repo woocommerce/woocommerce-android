@@ -126,7 +126,10 @@ class ProductImagesUploadWorker @Inject constructor(
     }
 
     private fun handleWork(work: Work) {
-        if (cancelledProducts.contains(work.productId)) return
+        if (cancelledProducts.contains(work.productId)) {
+            WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> skipping work $work since it's cancelled")
+            return
+        }
 
         val job = appCoroutineScope.launch {
             WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> start work handling $work")
