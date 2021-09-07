@@ -56,6 +56,7 @@ class MediaFileUploadHandler @Inject constructor(
         }
         if (index == -1) {
             WooLog.w(WooLog.T.MEDIA, "MediaFileUploadHandler -> received event for unmatched media")
+            return
         }
 
         val newStatus = event.toStatus()
