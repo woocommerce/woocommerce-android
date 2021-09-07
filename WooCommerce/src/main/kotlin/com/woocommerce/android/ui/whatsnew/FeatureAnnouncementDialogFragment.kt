@@ -21,6 +21,10 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         val view = inflater.inflate(R.layout.feature_announcement_dialog_fragment, container, false)
         val binding = FeatureAnnouncementDialogFragmentBinding.bind(view)
 
+        binding.closeFeatureAnnouncementButton.setOnClickListener {
+            dismiss()
+        }
+
         return view
     }
 }
