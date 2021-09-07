@@ -110,19 +110,19 @@ class MediaFileUploadHandler @Inject constructor(
             tag = WooLog.T.MEDIA,
             message = "MediaFileUploadHandler -> uploads finished for product $productId, check if we need to update it"
         )
-        val state = uploadsStatus.value
-        val productImages = state.filter { it.remoteProductId == productId && it.uploadStatus !is Failed }
-        if (productImages.none { it.uploadStatus == InProgress }) {
-            val uploadedImages = productImages.filter { it.uploadStatus is UploadSuccess }
-                .map { (it.uploadStatus as UploadSuccess).media }
+        uploadsStatus.value.filter { it.remoteProductId == productId && it.uploadStatus !is Failed }
+            .takeIf { images -> images.none { it.uploadStatus == InProgress } && images.isNotEmpty() }
+            ?.let { productImages ->
+                val uploadedImages = productImages.map { (it.uploadStatus as UploadSuccess).media }
 
-            if (uploadedImages.isNotEmpty()) {
-                WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> add ${uploadedImages.size} images to the product")
+                WooLog.d(
+                    WooLog.T.MEDIA,
+                    "MediaFileUploadHandler -> add ${uploadedImages.size} images to the product"
+                )
                 worker.enqueueWork(Work.UpdateProduct(productId, uploadedImages))
-            }
 
-            uploadsStatus.update { list -> list - productImages }
-        }
+                uploadsStatus.update { list -> list - productImages }
+            }
     }
 
     private fun showUploadFailureNotifIfNoObserver(productId: Long, state: List<ProductImageUploadData>) {
