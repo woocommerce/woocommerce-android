@@ -266,19 +266,20 @@ class ProductImagesUploadWorker @Inject constructor(
             if (product == null) {
                 WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching product ${work.productId} failed")
                 emitEvent(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, cachedProduct))
+                return@withLock
+            }
+
+            notificationHandler.showUpdatingProductNotification(product)
+            val success = updateProductWithRetries(product.copy(images = product.images + images))
+            if (success) {
+                WooLog.d(
+                    T.MEDIA,
+                    "ProductImagesUploadWorker -> added ${images.size} images to product ${work.productId}"
+                )
+                emitEvent(Event.ProductUpdateEvent.ProductUpdateSucceeded(work.productId, product, images.size))
             } else {
-                notificationHandler.showUpdatingProductNotification(product)
-                val success = updateProductWithRetries(product.copy(images = product.images + images))
-                if (success) {
-                    WooLog.d(
-                        T.MEDIA,
-                        "ProductImagesUploadWorker -> added ${images.size} images to product ${work.productId}"
-                    )
-                    emitEvent(Event.ProductUpdateEvent.ProductUpdateSucceeded(work.productId, product, images.size))
-                } else {
-                    WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> updating product ${work.productId} failed")
-                    emitEvent(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
-                }
+                WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> updating product ${work.productId} failed")
+                emitEvent(Event.ProductUpdateEvent.ProductUpdateFailed(work.productId, product))
             }
         }
     }
