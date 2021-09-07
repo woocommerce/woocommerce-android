@@ -44,6 +44,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -208,6 +209,8 @@ class ProductDetailViewModel @Inject constructor(
      */
     val currencyCode: String
         get() = parameters.currencyCode.orEmpty()
+
+    private var imageUploadsJob: Job? = null
 
     init {
         start()
@@ -552,24 +555,8 @@ class ProductDetailViewModel @Inject constructor(
             )
             return false
         } else if (isUploadingImages) {
-            if (isAddFlowEntryPoint) {
-                // TODO find a way how to handle assigning images when adding a new product
-                // since when adding a product we use a temporary productId, that's different from the actual one
-                triggerEvent(
-                    ShowDialog.buildDiscardDialogEvent(
-                        messageId = string.discard_images_message,
-                        positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                            // Cancel uploads for both the current product ID, and the default product ID
-                            mediaFileUploadHandler.cancelUpload(getRemoteProductId())
-                            mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
-                            triggerEvent(ExitProduct)
-                        }
-                    )
-                )
-            } else {
-                triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
-                triggerEvent(ExitProduct)
-            }
+            triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
+            triggerEvent(ExitProduct)
             return false
         } else {
             return true
@@ -1491,6 +1478,11 @@ class ProductDetailViewModel @Inject constructor(
                 )
                 val newProductRemoteId = result.second
                 loadRemoteProduct(newProductRemoteId)
+                if (newProductRemoteId != product.remoteId) {
+                    // Restart observing image uploads using the new product id
+                    observeImageUploadEvents()
+                    mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductRemoteId)
+                }
                 triggerEvent(RefreshMenu)
             }
         }
@@ -1543,23 +1535,26 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun observeImageUploadEvents() {
-        mediaFileUploadHandler.observeCurrentUploads(getRemoteProductId())
-            .map { list -> list.map { it.toUri() } }
-            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
-            .launchIn(this)
+        imageUploadsJob?.cancel()
+        imageUploadsJob = launch {
+            mediaFileUploadHandler.observeCurrentUploads(getRemoteProductId())
+                .map { list -> list.map { it.toUri() } }
+                .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+                .launchIn(this)
 
-        mediaFileUploadHandler.observeSuccessfulUploads(getRemoteProductId())
-            .onEach { addProductImageToDraft(it.toAppModel()) }
-            .launchIn(this)
+            mediaFileUploadHandler.observeSuccessfulUploads(getRemoteProductId())
+                .onEach { addProductImageToDraft(it.toAppModel()) }
+                .launchIn(this)
 
-        mediaFileUploadHandler.observeCurrentUploadErrors(getRemoteProductId())
-            .onEach {
-                val errorMsg = resources.getMediaUploadErrorMessage(it.size)
-                triggerEvent(
-                    ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }
-                )
-            }
-            .launchIn(this)
+            mediaFileUploadHandler.observeCurrentUploadErrors(getRemoteProductId())
+                .onEach {
+                    val errorMsg = resources.getMediaUploadErrorMessage(it.size)
+                    triggerEvent(
+                        ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }
+                    )
+                }
+                .launchIn(this)
+        }
     }
 
     /**
