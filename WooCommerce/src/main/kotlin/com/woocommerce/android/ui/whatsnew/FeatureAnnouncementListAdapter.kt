@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementListItemBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.FeatureAnnouncementItem
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementListAdapter.FeatureAnnouncementViewHolder
+import com.woocommerce.android.util.ImageUtils
 
 class FeatureAnnouncementListAdapter :
     ListAdapter<FeatureAnnouncementItem, FeatureAnnouncementViewHolder>(ItemDiffCallback) {
@@ -40,17 +40,31 @@ class FeatureAnnouncementListAdapter :
             viewBinding.featureTitle.text = item.title
             viewBinding.featureSubtitle.text = item.subtitle
 
-            item.iconUrl.let {
-                val placeholder = ContextCompat.getDrawable(
-                    viewBinding.root.context,
-                    R.drawable.ic_gridicons_credit_card
-                )
+            val placeholder = ContextCompat.getDrawable(
+                viewBinding.root.context,
+                R.drawable.ic_info_outline_24dp
+            )
 
-                GlideApp.with(viewBinding.root.context)
-                    .load(it)
-                    .placeholder(placeholder)
-                    .circleCrop()
-                    .into(viewBinding.featureItemIcon)
+            when {
+                item.iconUrl.isNotEmpty() -> {
+                    ImageUtils.loadUrlIntoCircle(
+                        context = viewBinding.root.context,
+                        imageView = viewBinding.featureItemIcon,
+                        imgUrl = item.iconUrl,
+                        placeholder = placeholder
+                    )
+                }
+                item.iconBase64.isNotEmpty() -> {
+                    ImageUtils.loadBase64IntoCircle(
+                        context = viewBinding.root.context,
+                        imageView = viewBinding.featureItemIcon,
+                        base64ImageData = item.iconBase64,
+                        placeholder = placeholder
+                    )
+                }
+                else -> {
+                    viewBinding.featureItemIcon.setImageDrawable(placeholder)
+                }
             }
         }
     }
