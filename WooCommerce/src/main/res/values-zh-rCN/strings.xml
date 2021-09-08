@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:52:58+0000
+Translation-Revision-Date: 2021-08-31 11:54:45+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d 商品</string>
+    <string name="upsell_product_count_many">%d 个追加销售产品</string>
+    <string name="upsell_product_count_one">%d 个追加销售产品</string>
+    <string name="cross_sell_product_count_many">%d 个交叉销售产品</string>
+    <string name="cross_sell_product_count_one">%d 个交叉销售产品</string>
+    <string name="product_count_many">%d 个产品</string>
+    <string name="product_count_one">%d 个产品</string>
+    <string name="product_add_ons_title">产品加载项</string>
+    <string name="product_save_dialog_title">正在保存您的产品</string>
+    <string name="pending_review_label">待审核</string>
+    <string name="card_reader_payment_reader_not_connected">请确保已连接读卡器。</string>
+    <string name="card_reader_payment_try_another_card_prompt">使用其他卡重试</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">重新尝试点按、插卡或刷卡</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">检测到多张卡。 使用单张卡重试</string>
+    <string name="card_reader_payment_remove_card_prompt">移除卡</string>
+    <string name="card_reader_payment_retry_card_prompt">使用相同的卡重试</string>
+    <string name="order_refunds_refund_info_description_many">%d 个项目</string>
+    <string name="order_refunds_refund_info_description_one">%d 商品</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d 个工作日</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d 个工作日</string>
+    <string name="shipping_label_validation_error_template">我们无法自动验证配送地址：%s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">我们无法自动验证原始地址。 请在 Google Maps 上查看，确保地址正确。</string>
+    <string name="ordered_add_ons_wip_message">我们正竭力让您可以更轻松地直接通过设备查看产品加载项！ 目前，您可以看到适合您的订单的加载项。 您可以在 Web 控制面板中创建并编辑这些加载项。</string>
+    <string name="ordered_add_ons_wip_title">通过您的设备查看加载项！</string>
+    <string name="ordered_add_ons_details_info_notice">如果在您的 Web 控制面板中重命名一个加载项，请注意，在应用程序内，先前的订单将不再显示该加载项。</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">查看插件</string>
+    <string name="save">保存</string>
     <string name="support_contact_payments_detail">请与我们快乐的工程师联系，他们可以帮助解答与付款相关的问题</string>
     <string name="support_contact_payments">联系 Payments 支持人员</string>
     <string name="product_images_error_detail_title">上传详细信息 (%d)</string>
@@ -13,7 +40,6 @@ Language: zh_CN
     <string name="product_image_service_error_uploading_single">%d 个文件无法上传</string>
     <string name="product_image_service_error_media_null">无法找到媒体</string>
     <string name="product_add_ons_details_info_notice">您可以在 Web 仪表盘中编辑产品加载项。</string>
-    <string name="product_add_ons_card_button_title">产品加载项</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;详细了解&lt;/a&gt;上传图像的方法</string>
     <string name="card_reader_onboarding_generic_error_hint">抱歉，我们无法验证此商店的现场付款</string>
     <string name="card_reader_onboarding_generic_error_header">无法验证此商店的现场付款</string>
@@ -355,6 +381,7 @@ Language: zh_CN
     <string name="shipping_label_packages_loading_message">请稍候…</string>
     <string name="shipping_label_packages_loading_title">加载包裹！</string>
     <string name="shipping_label_package_details_title_template">包裹 %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d 个项目</string>
     <string name="shipping_label_packages_loading_error">无法加载包裹定义</string>
     <string name="shipping_label_package_details_weight_info">包含包裹重量</string>
     <string name="shipping_label_package_details_weight_hint">包裹总重 (%1$s)</string>
@@ -369,9 +396,8 @@ Language: zh_CN
     <string name="shipping_label_address_suggestion_use_selected_address">使用选定地址</string>
     <string name="shipping_label_edit_address_loading_progress_title">正在加载地址数据</string>
     <string name="product_wip_title_m5">已推出新功能！</string>
-    <string name="shipping_label_validation_view_map">打开地图</string>
+    <string name="shipping_label_validation_view_map">在地图上查找</string>
     <string name="shipping_label_validation_contact_customer">联系客户</string>
-    <string name="shipping_label_validation_error_template">验证失败：%s</string>
     <string name="shipping_label_error_address_invalid_street">街道无效</string>
     <string name="shipping_label_error_address_house_number_missing">缺少房屋编号</string>
     <string name="shipping_label_error_address_not_found">找不到地址</string>
@@ -770,10 +796,9 @@ Language: zh_CN
     <string name="orderlist_loading">正在查找您的订单…</string>
     <string name="product_detail_editable_text_hint">输入文本</string>
     <string name="product_detail_title_hint">输入产品标题</string>
-    <string name="product_detail_save_product_success">产品已更新</string>
+    <string name="product_detail_save_product_success">产品已保存</string>
     <string name="product_detail_update_product_error">更新产品时出错</string>
     <string name="product_update_dialog_message">请稍候…</string>
-    <string name="product_save_dialog_title">正在更新产品</string>
     <string name="product_description_empty">描述您的产品</string>
     <string name="product_description">描述</string>
     <string name="product_edit_description">编辑描述</string>

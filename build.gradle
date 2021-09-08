@@ -1,9 +1,11 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 buildscript {
     ext.kotlinVersion = '1.5.30'
     ext.navigationVersion = '2.3.5'
-    ext.daggerVersion = '2.35.1'
+    ext.daggerVersion = '2.38.1'
     ext.wordPressLoginVersion = '0.0.4'
-    ext.detektVersion = '1.15.0'
+    ext.detektVersion = '1.18.1'
 
     repositories {
         google()
@@ -50,7 +52,7 @@ subprojects {
 }
 
 
-tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
+tasks.register("detektAll", Detekt) {
     description = "Custom DETEKT build for all modules"
     parallel = true
     ignoreFailures = false

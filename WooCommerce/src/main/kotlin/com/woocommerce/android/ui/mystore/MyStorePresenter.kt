@@ -42,7 +42,8 @@ class MyStorePresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
     private val wcLeaderboardsStore: WCLeaderboardsStore,
     private val wcStatsStore: WCStatsStore,
-    private val wcOrderStore: WCOrderStore, // Required to ensure the WCOrderStore is initialized!
+    @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
+    private val wcOrderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus
 ) : Presenter {

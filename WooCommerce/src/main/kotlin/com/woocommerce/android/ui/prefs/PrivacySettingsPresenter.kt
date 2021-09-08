@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_SUCCESS
-import com.woocommerce.android.tools.SelectedSite
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -21,7 +20,6 @@ import javax.inject.Inject
 class PrivacySettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
-    private val selectedSite: SelectedSite
 ) : PrivacySettingsContract.Presenter {
     companion object {
         private const val SETTING_TRACKS_OPT_OUT = "tracks_opt_out"
