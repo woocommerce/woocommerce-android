@@ -142,6 +142,7 @@ class OrderedAddonViewModel @Inject constructor(
                 isLoadingFailure = false,
                 showWIPNoticeCard = currentFeedbackSettings.state != DISMISSED
             )
+            track(result)
             _orderedAddons.value = result
         }
     }
@@ -165,6 +166,18 @@ class OrderedAddonViewModel @Inject constructor(
             )
         )
     }
+
+    private fun track(addons: List<ProductAddon>) =
+        addons.distinctBy { it.name }
+            .map { it.name }
+            .filter { it.isNotEmpty() }
+            .joinToString(",")
+            .let {
+                AnalyticsTracker.track(
+                    AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
+                    mapOf(AnalyticsTracker.KEY_ADDONS to it)
+                )
+            }
 
     @Parcelize
     data class ViewState(
