@@ -36,8 +36,6 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private val viewModel: OrderedAddonViewModel by viewModels()
 
-    private val navArgs: OrderedAddonFragmentArgs by navArgs()
-
     private var _binding: FragmentOrderedAddonBinding? = null
     private val binding get() = _binding!!
 
@@ -68,11 +66,9 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
         setupViews()
 
-        viewModel.start(
-            navArgs.orderId,
-            navArgs.orderItemId,
-            navArgs.addonsProductId
-        )
+        navArgs<OrderedAddonFragmentArgs>().value.apply {
+            viewModel.start(orderId, orderItemId, addonsProductId)
+        }
     }
 
     override fun onResume() {
