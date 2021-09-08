@@ -555,7 +555,8 @@ class ProductDetailViewModel @Inject constructor(
                 DialogInterface.OnClickListener { _, _ -> observeImageUploadEvents() }
             } else null
 
-            val message = if (isUploadingImages()) string.discard_images_message else string.discard_message
+            val message = if (isUploadingImagesForNonCreatedProduct) string.discard_images_message
+            else string.discard_message
 
             triggerEvent(
                 ShowDialog(
