@@ -654,7 +654,7 @@ class ProductDetailViewModel @Inject constructor(
                     }
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
-                    } else if (it.remoteId != getRemoteProductId()) {
+                    } else if (it.remoteId != newProductId) {
                         // Restart observing image uploads using the new product id
                         observeImageUploadEvents()
                     }
