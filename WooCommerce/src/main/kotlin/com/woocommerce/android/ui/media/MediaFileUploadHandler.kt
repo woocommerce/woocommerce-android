@@ -214,6 +214,7 @@ class MediaFileUploadHandler @Inject constructor(
     }
 
     fun assignUploadsToCreatedProduct(productId: Long) {
+        WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> assign uploads to the created product $productId")
         // Update id for past successful uploads
         uploadsStatus.update { list ->
             list.map {

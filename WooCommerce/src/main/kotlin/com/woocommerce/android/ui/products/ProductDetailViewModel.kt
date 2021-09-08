@@ -523,8 +523,12 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onBackButtonClickedProductDetail(): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated ?: false
+        // Consider a non created product with ongoing uploads same as product with non saved changes
+        val isUploadingImagesForNonCreatedProduct = isProductUnderCreation && isUploadingImages()
 
-        if (isProductDetailUpdated) {
+        if (isProductDetailUpdated ||
+            isUploadingImagesForNonCreatedProduct
+        ) {
             val positiveAction = DialogInterface.OnClickListener { _, _ ->
                 // discard changes made to the product and exit product detail
                 discardEditChanges()
@@ -551,8 +555,13 @@ class ProductDetailViewModel @Inject constructor(
                 DialogInterface.OnClickListener { _, _ -> observeImageUploadEvents() }
             } else null
 
+            val message = if (isUploadingImages()) string.discard_images_message else string.discard_message
+
             triggerEvent(
                 ShowDialog(
+                    messageId = message,
+                    positiveButtonId = string.discard,
+                    negativeButtonId = string.keep_editing,
                     positiveBtnAction = positiveAction,
                     neutralBtnAction = neutralAction,
                     neutralButtonId = neutralBtnId,
@@ -561,21 +570,8 @@ class ProductDetailViewModel @Inject constructor(
             )
             return false
         } else if (isUploadingImages()) {
-            if (isProductUnderCreation) {
-                // if the product doesn't have an id yet, we can't assign the uploaded images to it.
-                triggerEvent(
-                    ShowDialog.buildDiscardDialogEvent(
-                        messageId = string.discard_images_message,
-                        positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                            mediaFileUploadHandler.cancelUpload(getRemoteProductId())
-                            triggerEvent(ExitProduct)
-                        }
-                    )
-                )
-            } else {
-                triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
-                triggerEvent(ExitProduct)
-            }
+            triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
+            triggerEvent(ExitProduct)
             return false
         } else {
             return true
@@ -620,7 +616,7 @@ class ProductDetailViewModel @Inject constructor(
                     (it.type == VARIABLE.value) and
                     (it.status == DRAFT)
             }
-            ?.takeIf { addProduct(it) }
+            ?.takeIf { addProduct(it).first }
             ?.let {
                 AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
             }
@@ -645,17 +641,21 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = true)
 
             launch {
-                val isSuccess = addProduct(it)
+                val (isSuccess, newProductId) = addProduct(it)
+                viewState = viewState.copy(isProgressDialogShown = false)
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+                    if (it.remoteId != newProductId) {
+                        // Assign the current uploads to the new product id
+                        mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductId)
+                    }
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
                     } else if (it.remoteId != getRemoteProductId()) {
                         // Restart observing image uploads using the new product id
                         observeImageUploadEvents()
-                        mediaFileUploadHandler.assignUploadsToCreatedProduct(getRemoteProductId())
                     }
                 } else {
                     AnalyticsTracker.track(ADD_PRODUCT_FAILED)
@@ -1487,24 +1487,22 @@ class ProductDetailViewModel @Inject constructor(
      * Otherwise, an offline snackbar is displayed. Returns true only
      * if product successfully added
      */
-    private suspend fun addProduct(product: Product): Boolean {
-        var isSuccess = false
-        if (checkConnection()) {
-            val result = productRepository.addProduct(product)
-            isSuccess = result.first
-            if (isSuccess) {
-                viewState = viewState.copy(
-                    productDraft = null,
-                    productBeforeEnteringFragment = getProduct().storedProduct,
-                    isProductUpdated = false
-                )
-                val newProductRemoteId = result.second
-                loadRemoteProduct(newProductRemoteId)
-                triggerEvent(RefreshMenu)
-            }
+    private suspend fun addProduct(product: Product): Pair<Boolean, Long> {
+        if (!checkConnection()) return Pair(false, 0L)
+
+        val result = productRepository.addProduct(product)
+        val (isSuccess, newProductRemoteId) = result
+        if (isSuccess) {
+            viewState = viewState.copy(
+                productDraft = null,
+                productBeforeEnteringFragment = getProduct().storedProduct,
+                isProductUpdated = false
+            )
+            loadRemoteProduct(newProductRemoteId)
+            triggerEvent(RefreshMenu)
         }
-        viewState = viewState.copy(isProgressDialogShown = false)
-        return isSuccess
+
+        return result
     }
 
     /**
