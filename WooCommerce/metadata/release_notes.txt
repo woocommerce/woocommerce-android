@@ -1,3 +1,5 @@
-Product reviews requiring your approval have a new label to make it easier for you to distinguish them from already approved reviews.
+- [***] Merchants using WooCommerce Product Add-ons in their store can view Add-on information at Orders and Products views [https://github.com/woocommerce/woocommerce-android/pull/4689]
+- [*] Products: Filtering by category is now available. [https://github.com/woocommerce/woocommerce-android/pull/4715]
+- [*] Fixed a bug where a new order notification opened incorrect order detail info. [https://github.com/woocommerce/woocommerce-android/pull/4635]
 
-This update also includes several enhancements to the shipping label feature using the WooCommerce Shipping & Tax Extension. We value all of your feedback on this newer feature!
+
