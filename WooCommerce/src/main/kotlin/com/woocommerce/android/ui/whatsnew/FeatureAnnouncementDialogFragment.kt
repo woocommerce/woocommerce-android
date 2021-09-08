@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementDialogFragmentBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -42,6 +43,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
 
         listAdapter = FeatureAnnouncementListAdapter()
         binding.featureList.adapter = listAdapter
+        binding.featureList.layoutManager = LinearLayoutManager(activity)
     }
 
     private fun setupObservers() {

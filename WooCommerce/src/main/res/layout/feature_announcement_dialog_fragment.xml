@@ -37,14 +37,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/feature_announcement_dialog_label">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/feature_announcement_version_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_extra_large"
-                    android:text="@string/settings_whats_new"
-                    android:textAppearance="?attr/textAppearanceSubtitle1" />
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/feature_list"
                     android:layout_width="match_parent"
