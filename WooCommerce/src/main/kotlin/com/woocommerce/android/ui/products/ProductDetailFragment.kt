@@ -276,7 +276,7 @@ class ProductDetailFragment :
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId
 
-        if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
+        if (product.images.isEmpty() && !viewModel.isUploadingImages()) {
             binding.imageGallery.hide()
             startAddImageContainer()
         } else {

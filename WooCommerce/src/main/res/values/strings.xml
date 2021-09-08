@@ -1153,6 +1153,7 @@
     <string name="cross_sell_product_count_many">%d cross-sell products</string>
     <string name="upsell_product_count_one">%d upsell product</string>
     <string name="upsell_product_count_many">%d upsell products</string>
+    <string name="product_detail_background_image_upload">Image uploading will continue in the background</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -1209,6 +1210,10 @@
     <string name="product_image_service_error_uploading_single">%d file couldn\'t be uploaded</string>
     <string name="product_image_service_error_uploading_multiple">%d files couldn\'t be uploaded</string>
     <string name="product_images_error_detail_title">Upload details (%d)</string>
+    <string name="product_update_notification">Updating product %1$s</string>
+    <string name="product_update_success_notification_title">Product Updated</string>
+    <string name="product_update_success_notification_content">%1$d images have been added to the product %2$s</string>
+    <string name="product_update_failure_notification">Updating product %1$s failed</string>
 
     <!--
         Empty list messages

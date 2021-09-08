@@ -2,6 +2,7 @@
 
 7.6
 -----
+- [***] Product Images: uploading will continue now in background to allow merchants to continue their other tasks without getting blocked [https://github.com/woocommerce/woocommerce-android/pull/4720]
 
 
 7.5
