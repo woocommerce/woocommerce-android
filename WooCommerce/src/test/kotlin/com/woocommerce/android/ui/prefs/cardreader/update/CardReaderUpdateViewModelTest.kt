@@ -15,10 +15,10 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SKIPPED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -71,7 +71,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given installation started status, when view model created, then updating state with 0 progress`() =
+    fun `given installation started status, when view model created, then update about to start`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val status = InstallationStarted
@@ -81,7 +81,12 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             softwareStatus.value = status
 
             // THEN
-            verifyUpdatingState(viewModel, 0)
+            val state = viewModel.viewStateData.value as UpdateAboutToStart
+            assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_in_progress_title))
+            assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
+            assertThat(state.progressText).isEqualTo(buildProgressText(0))
+            assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_progress)
+            assertThat(state.button?.text).isEqualTo(null)
         }
 
     @Test
@@ -130,7 +135,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given unknown status, when view model created, then exit with skip`() =
+    fun `given unknown status, when view model created, then exit with failed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val status = Unknown
@@ -141,7 +146,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
-            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(SKIPPED)
+            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(FAILED)
         }
 
     @Test
@@ -181,8 +186,8 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     fun `given user presses back, when progress state shown, then dialog not dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
             softwareStatus.value = InstallationStarted
+            val viewModel = createViewModel()
 
             // WHEN
             viewModel.onBackPressed()

@@ -72,7 +72,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         cardReaderManager.softwareUpdateStatus.collect { status ->
             when (status) {
                 is Failed -> onUpdateFailed(status)
-                is InstallationStarted -> viewState.value = ViewState.UpdateAboutToStart(
+                is InstallationStarted -> viewState.value = UpdateAboutToStart(
                     buildProgressText(convertProgressToPercentage(0f))
                 )
                 is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))

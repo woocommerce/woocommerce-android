@@ -73,6 +73,8 @@ internal class TerminalWrapper {
     fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 
     fun setupSimulator() {
-        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(update = SimulateReaderUpdate.UPDATE_AVAILABLE)
+        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
+            update = SimulateReaderUpdate.UPDATE_AVAILABLE
+        )
     }
 }

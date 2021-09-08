@@ -157,4 +157,11 @@ class CardReaderManagerImplTest {
 
             verify(softwareUpdateManager).startAsyncSoftwareUpdate()
         }
+
+    @Test
+    fun `when cancel ongoing update, then update manager called`() {
+        cardReaderManager.cancelOngoingFirmwareUpdate()
+
+        verify(softwareUpdateManager).cancelOngoingFirmwareUpdate()
+    }
 }

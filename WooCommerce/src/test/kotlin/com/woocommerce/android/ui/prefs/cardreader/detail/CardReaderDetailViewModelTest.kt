@@ -296,18 +296,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when on update result with skipped should do nothing`() {
-        // GIVEN
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUpdateReaderResult(UpdateResult.SKIPPED)
-
-        // THEN
-        assertThat(viewModel.event.value).isNull()
-    }
-
-    @Test
     fun `when on disconnect button clicked with success should do nothing`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
