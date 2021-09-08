@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -12,7 +11,6 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.*
@@ -44,13 +42,6 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.emptyList
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mapOf
-import kotlin.collections.toList
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -82,7 +73,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock {
         on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
-        on { it.observeCurrentUploads(any()) } doReturn emptyFlow()
+        on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
 
@@ -703,6 +694,23 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             (viewModel.event.value as ShowDialog).negativeBtnAction!!.onClick(null, 0)
 
             assertThat(isObservingEvents).isTrue()
+        }
+
+    @Test
+    fun `given a product is under creation, when clicking on save product, then assign uploads to the new id`() =
+        testBlocking {
+            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
+            doReturn(product).whenever(productRepository).getProduct(any())
+            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+
+            setup()
+            viewModel.start()
+            // Make some changes to trigger discard changes dialog
+            viewModel.onProductTitleChanged("Product")
+            viewModel.onBackButtonClickedProductDetail()
+            (viewModel.event.value as ShowDialog).neutralBtnAction!!.onClick(null, 0)
+
+            verify(mediaFileUploadHandler).assignUploadsToCreatedProduct(PRODUCT_REMOTE_ID)
         }
 
     private val productsDraft
