@@ -907,10 +907,9 @@ class ProductDetailViewModel @Inject constructor(
         productCategoriesRepository.onCleanup()
         productTagsRepository.onCleanup()
         mediaFilesRepository.onCleanup()
-        if (isAddFlowEntryPoint) {
-            // TODO revisit this once we support background image uploads for the product creation flow
+        if (isProductUnderCreation) {
+            // cancel uploads for the default ID, since we can't assign the uploads to it
             mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
-            mediaFileUploadHandler.cancelUpload(getRemoteProductId())
         }
     }
 
