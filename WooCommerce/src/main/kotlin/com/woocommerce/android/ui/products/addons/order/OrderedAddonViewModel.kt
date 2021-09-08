@@ -4,8 +4,11 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
@@ -37,6 +40,11 @@ class OrderedAddonViewModel @Inject constructor(
     private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
     val orderedAddonsData: LiveData<List<ProductAddon>> = _orderedAddons
 
+    private val currentFeedbackSettings
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(OrderedAddonFragment.TAG)
+            ?: FeatureFeedbackSettings(OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name)
+                .apply { registerItselfWith(OrderedAddonFragment.TAG) }
+
     /**
      * Provides the currencyCode for views who requires display prices
      */
@@ -65,7 +73,7 @@ class OrderedAddonViewModel @Inject constructor(
 
         FeatureFeedbackSettings(
             OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
-            FeatureFeedbackSettings.FeedbackState.GIVEN
+            GIVEN
         ).registerItselfWith(OrderedAddonFragment.TAG)
     }
 
@@ -74,7 +82,7 @@ class OrderedAddonViewModel @Inject constructor(
 
         FeatureFeedbackSettings(
             OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
-            FeatureFeedbackSettings.FeedbackState.DISMISSED
+            DISMISSED
         ).registerItselfWith(OrderedAddonFragment.TAG)
 
         viewState = viewState.copy(showWIPNoticeCard = false)
@@ -131,7 +139,8 @@ class OrderedAddonViewModel @Inject constructor(
         withContext(dispatchers.main) {
             viewState = viewState.copy(
                 isSkeletonShown = false,
-                isLoadingFailure = false
+                isLoadingFailure = false,
+                showWIPNoticeCard = currentFeedbackSettings.state != DISMISSED
             )
             _orderedAddons.value = result
         }
@@ -141,7 +150,8 @@ class OrderedAddonViewModel @Inject constructor(
         withContext(dispatchers.main) {
             viewState = viewState.copy(
                 isSkeletonShown = false,
-                isLoadingFailure = true
+                isLoadingFailure = true,
+                showWIPNoticeCard = false
             )
         }
     }
