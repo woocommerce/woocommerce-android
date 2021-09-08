@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:49:57+0000
+Translation-Revision-Date: 2021-09-01 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d アイテム</string>
+    <string name="upsell_product_count_many">%dアップセル商品</string>
+    <string name="upsell_product_count_one">%dアップセル商品</string>
+    <string name="cross_sell_product_count_many">%dクロスセル商品</string>
+    <string name="cross_sell_product_count_one">%dクロスセル商品</string>
+    <string name="product_count_many">%d 商品</string>
+    <string name="product_count_one">%d 商品</string>
+    <string name="product_add_ons_title">製品アドイン</string>
+    <string name="product_save_dialog_title">商品を保存しています</string>
+    <string name="pending_review_label">レビュー待ち</string>
+    <string name="card_reader_payment_reader_not_connected">カードリーダーが接続されていることを確認してください。</string>
+    <string name="card_reader_payment_try_another_card_prompt">別のカードでもう一度試す</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">カードのタップ、挿入、またはスワイプをもう一度試す</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">複数のカードが検出されました。 1枚のカードでもう一度試す</string>
+    <string name="card_reader_payment_remove_card_prompt">カードを削除</string>
+    <string name="card_reader_payment_retry_card_prompt">同じカードでもう一度試す</string>
+    <string name="order_refunds_refund_info_description_many">%d 項目</string>
+    <string name="order_refunds_refund_info_description_one">%d アイテム</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d営業日</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d営業日</string>
+    <string name="shipping_label_validation_error_template">自動的に次の配送先住所を確認できませんでした: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">自動的に配送元住所を確認できませんでした。 Google マップで表示して住所が正しいことを確認してください。</string>
+    <string name="ordered_add_ons_wip_message">お使いの端末から Product Add-ons をより簡単に確認できるように取り組んでいます。 当面は、注文のアドオンを表示できるようにする予定です。 ウェブダッシュボードでこれらのアドオンを作成および編集できます。</string>
+    <string name="ordered_add_ons_wip_title">お使いの端末でアドオンを表示します。</string>
+    <string name="ordered_add_ons_details_info_notice">ウェブダッシュボードにアドオンが残っている場合に、以前の注文がアプリ内に表示されなくなることにご注意ください。</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">アドオンを表示</string>
+    <string name="save">保存</string>
     <string name="support_contact_payments_detail">サポートスタッフにお問い合わせください。お支払いに関する質問にお答えします</string>
     <string name="support_contact_payments">支払いサポートに連絡</string>
     <string name="product_images_error_detail_title">詳細のアップロード (%d)</string>
@@ -13,7 +40,6 @@ Language: ja_JP
     <string name="product_image_service_error_uploading_single">%d 個のファイルをアップロードできませんでした</string>
     <string name="product_image_service_error_media_null">メディアを検出できませんでした</string>
     <string name="product_add_ons_details_info_notice">ウェブダッシュボードで製品アドオンを編集できます。</string>
-    <string name="product_add_ons_card_button_title">製品アドイン</string>
     <string name="product_images_learn_more_button">画像のアップロードに関する&lt;a href=\'\'&gt;詳細&lt;/a&gt;</string>
     <string name="card_reader_onboarding_generic_error_hint">このストアのオフラインでの支払いを検証できませんでした</string>
     <string name="card_reader_onboarding_generic_error_header">このストアのオフラインでの支払いを検証できません</string>
@@ -355,6 +381,7 @@ Language: ja_JP
     <string name="shipping_label_packages_loading_message">しばらくお待ちください…</string>
     <string name="shipping_label_packages_loading_title">荷物を積み込んでいます。</string>
     <string name="shipping_label_package_details_title_template">荷物 %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d 項目</string>
     <string name="shipping_label_packages_loading_error">荷物の定義を読み込めません</string>
     <string name="shipping_label_package_details_weight_info">荷物の重量を含む</string>
     <string name="shipping_label_package_details_weight_hint">荷物の総重量 (%1$s)</string>
@@ -369,9 +396,8 @@ Language: ja_JP
     <string name="shipping_label_address_suggestion_use_selected_address">選択した住所を使用</string>
     <string name="shipping_label_edit_address_loading_progress_title">住所データを読み込んでいます</string>
     <string name="product_wip_title_m5">新機能を利用できます。</string>
-    <string name="shipping_label_validation_view_map">マップを開く</string>
+    <string name="shipping_label_validation_view_map">地図で検索</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
-    <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
     <string name="shipping_label_error_address_invalid_street">無効な住所</string>
     <string name="shipping_label_error_address_house_number_missing">番地が見つかりません</string>
     <string name="shipping_label_error_address_not_found">住所が見つかりませんでした</string>
@@ -770,10 +796,9 @@ Language: ja_JP
     <string name="orderlist_loading">注文を検索しています…</string>
     <string name="product_detail_editable_text_hint">テキストを入力</string>
     <string name="product_detail_title_hint">商品名を入力</string>
-    <string name="product_detail_save_product_success">商品更新</string>
+    <string name="product_detail_save_product_success">商品を保存しました</string>
     <string name="product_detail_update_product_error">商品の更新中にエラーが発生しました。</string>
     <string name="product_update_dialog_message">しばらくお待ちください…</string>
-    <string name="product_save_dialog_title">商品を更新しています</string>
     <string name="product_description_empty">商品を説明</string>
     <string name="product_description">説明</string>
     <string name="product_edit_description">説明を編集</string>
