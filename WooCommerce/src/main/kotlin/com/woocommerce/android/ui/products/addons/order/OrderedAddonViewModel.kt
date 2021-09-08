@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.addons.order.OrderedAddonFragment.Companion.TAG
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -76,6 +77,8 @@ class OrderedAddonViewModel @Inject constructor(
             OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
             GIVEN
         ).registerItselfWith(TAG)
+
+        triggerEvent(ShowSurveyView)
     }
 
     fun onDismissWIPCardClicked() {
@@ -186,4 +189,6 @@ class OrderedAddonViewModel @Inject constructor(
         val isLoadingFailure: Boolean = false,
         val shouldDisplayFeedbackCard: Boolean = false
     ) : Parcelable
+
+    object ShowSurveyView: Event()
 }
