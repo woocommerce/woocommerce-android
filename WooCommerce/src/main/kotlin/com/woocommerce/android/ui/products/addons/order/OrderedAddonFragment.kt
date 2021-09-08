@@ -134,8 +134,9 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
             .setTitle(R.string.ordered_add_ons_loading_failed_dialog_title)
             .setMessage(R.string.ordered_add_ons_loading_failed_dialog_message)
             .setCancelable(false)
-            .setPositiveButton(R.string.ordered_add_ons_loading_failed_dialog_ok_action)
-            { _, _ -> findNavController().navigateUp() }
+            .setPositiveButton(R.string.ordered_add_ons_loading_failed_dialog_ok_action) { _, _ ->
+                findNavController().navigateUp()
+            }
             .show()
     }
 
