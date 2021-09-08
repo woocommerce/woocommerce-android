@@ -12,15 +12,20 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
+import com.woocommerce.android.ui.products.addons.order.OrderedAddonViewModel.ShowSurveyView
 import com.woocommerce.android.ui.products.addons.order.OrderedAddonViewModel.ViewState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -63,6 +68,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
         viewModel.orderedAddonsData.observe(viewLifecycleOwner, Observer(::onOrderedAddonsReceived))
         viewModel.viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
+        viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
 
         setupViews()
 
@@ -82,6 +88,14 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
         new?.isLoadingFailure?.takeIfNotEqualTo(old?.isLoadingFailure) { if (it) onOrderedAddonsFailed() }
         new?.shouldDisplayFeedbackCard?.takeIfNotEqualTo(old?.shouldDisplayFeedbackCard, ::showWIPNoticeCard)
+    }
+
+    private fun handleViewModelEvents(event: MultiLiveEvent.Event) {
+        when(event) {
+            is ShowSurveyView -> NavGraphMainDirections
+                .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
+                .apply { findNavController().navigateSafely(this) }
+        }
     }
 
     private fun setupViews() {
