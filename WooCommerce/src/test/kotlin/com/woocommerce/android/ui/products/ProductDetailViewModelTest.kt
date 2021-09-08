@@ -2,15 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -40,13 +31,25 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -66,7 +69,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val selectedSite: SelectedSite = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { get() } doReturn SiteModel()
+    }
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
@@ -82,6 +87,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
+    private val addonsStore: WCAddonsStore = mock {
+        on { observeProductSpecificAddons(any(), any()) } doReturn emptyFlow()
+    }
 
     private val savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).initSavedStateHandle()
@@ -231,7 +239,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 mediaFilesRepository,
                 variationRepository,
                 mediaFileUploadHandler,
-                prefs
+                prefs,
+                addonsStore,
+                selectedSite
             )
         )
 

@@ -39,12 +39,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
@@ -56,7 +59,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val selectedSite: SelectedSite = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { get() } doReturn SiteModel()
+    }
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
@@ -91,6 +96,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     private val prefs: AppPrefs = mock {
         on(it.getSelectedProductType()).then { "simple" }
+    }
+    private val addonsStore: WCAddonsStore = mock {
+        on { observeProductSpecificAddons(any(), any()) } doReturn emptyFlow()
     }
 
     private val productUtils = ProductUtils()
@@ -167,7 +175,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mediaFilesRepository,
                 variationRepository,
                 mediaFileUploadHandler,
-                prefs
+                prefs,
+                addonsStore,
+                selectedSite
             )
         )
 
