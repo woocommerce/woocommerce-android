@@ -53,6 +53,7 @@ internal class CardReaderManagerImpl(
     override fun initialize(app: Application) {
         if (!terminal.isInitialized()) {
             application = app
+            terminal.getLifecycleObserver().onCreate(app)
 
             app.registerComponentCallbacks(object : ComponentCallbacks2 {
                 override fun onConfigurationChanged(newConfig: Configuration) {}
