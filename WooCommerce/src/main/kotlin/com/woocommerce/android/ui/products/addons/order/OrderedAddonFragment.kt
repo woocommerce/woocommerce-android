@@ -81,7 +81,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
         new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
         new?.isLoadingFailure?.takeIfNotEqualTo(old?.isLoadingFailure) { if (it) onOrderedAddonsFailed() }
-        new?.showWIPNoticeCard?.takeIfNotEqualTo(old?.showWIPNoticeCard, ::showWIPNoticeCard)
+        new?.shouldDisplayFeedbackCard?.takeIfNotEqualTo(old?.shouldDisplayFeedbackCard, ::showWIPNoticeCard)
     }
 
     private fun setupViews() {
