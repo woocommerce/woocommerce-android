@@ -652,6 +652,10 @@ class ProductDetailViewModel @Inject constructor(
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
+                    } else if (it.remoteId != getRemoteProductId()) {
+                        // Restart observing image uploads using the new product id
+                        observeImageUploadEvents()
+                        mediaFileUploadHandler.assignUploadsToCreatedProduct(getRemoteProductId())
                     }
                 } else {
                     AnalyticsTracker.track(ADD_PRODUCT_FAILED)
@@ -1497,11 +1501,6 @@ class ProductDetailViewModel @Inject constructor(
                 )
                 val newProductRemoteId = result.second
                 loadRemoteProduct(newProductRemoteId)
-                if (newProductRemoteId != product.remoteId) {
-                    // Restart observing image uploads using the new product id
-                    observeImageUploadEvents()
-                    mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductRemoteId)
-                }
                 triggerEvent(RefreshMenu)
             }
         }
