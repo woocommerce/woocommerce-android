@@ -347,6 +347,7 @@ class VariationDetailViewModel @Inject constructor(
         super.onCleared()
         productRepository.onCleanup()
         variationRepository.onCleanup()
+        mediaFileUploadHandler.cancelUpload(navArgs.remoteVariationId)
     }
 
     private fun updateCards(variation: ProductVariation) {
