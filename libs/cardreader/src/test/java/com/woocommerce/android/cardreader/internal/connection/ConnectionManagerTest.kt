@@ -87,6 +87,7 @@ class ConnectionManagerTest {
 
             assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(SpecificReader.Chipper2X.name)
             assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(SpecificReader.StripeM2.name)
+            assertThat((result.first() as ReadersFound).list.size).isEqualTo(2)
         }
 
     @Test
@@ -118,6 +119,7 @@ class ConnectionManagerTest {
             assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(SpecificReader.Chipper2X.name)
             assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(SpecificReader.StripeM2.name)
             assertThat((result.first() as ReadersFound).list[2].type).isEqualTo(SpecificReader.WisePadeE.name)
+            assertThat((result.first() as ReadersFound).list.size).isEqualTo(3)
         }
 
     @Test
