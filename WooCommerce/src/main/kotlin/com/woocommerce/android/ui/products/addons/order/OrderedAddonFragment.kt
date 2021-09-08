@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -86,7 +84,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
         new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
-        new?.isLoadingFailure?.takeIfNotEqualTo(old?.isLoadingFailure) { if (it) showLoadingFailedDialog() }
+        new?.isLoadingFailure?.takeIfNotEqualTo(old?.isLoadingFailure) { if (it) onOrderedAddonsFailed() }
         new?.showWIPNoticeCard?.takeIfNotEqualTo(old?.showWIPNoticeCard, ::showWIPNoticeCard)
     }
 
@@ -106,12 +104,6 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         )
     }
 
-    private fun onOrderedAddonsReceived(orderedAddons: List<ProductAddon>) {
-        binding.addonsEditNotice.visibility = VISIBLE
-        setupRecyclerViewWith(orderedAddons)
-        track(orderedAddons)
-    }
-
     private fun setupRecyclerViewWith(addonList: List<ProductAddon>) {
         binding.addonsList.adapter = AddonListAdapter(
             addonList,
@@ -120,7 +112,13 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         )
     }
 
-    private fun showLoadingFailedDialog() {
+    private fun onOrderedAddonsReceived(orderedAddons: List<ProductAddon>) {
+        binding.addonsEditNotice.visibility = VISIBLE
+        setupRecyclerViewWith(orderedAddons)
+    }
+
+    private fun onOrderedAddonsFailed() {
+        binding.addonsEditNotice.visibility = GONE
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.ordered_add_ons_loading_failed_dialog_title)
             .setMessage(R.string.ordered_add_ons_loading_failed_dialog_message)
@@ -132,16 +130,4 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private fun showWIPNoticeCard(shouldBeVisible: Boolean) {
         binding.addonsWipCard.visibility = if (shouldBeVisible) VISIBLE else GONE
     }
-
-    private fun track(addons: List<ProductAddon>) =
-        addons.distinctBy { it.name }
-            .map { it.name }
-            .filter { it.isNotEmpty() }
-            .joinToString(",")
-            .let {
-                AnalyticsTracker.track(
-                    PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
-                    mapOf(AnalyticsTracker.KEY_ADDONS to it)
-                )
-            }
 }
