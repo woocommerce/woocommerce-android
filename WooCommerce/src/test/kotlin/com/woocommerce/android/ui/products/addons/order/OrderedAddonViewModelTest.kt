@@ -323,6 +323,33 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `should change isLoadingFailure to true when the Ordered Addons data is empty`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(emptyList(), emptyList()))
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isLoadingFailure).isFalse
+                        1 -> assertThat(new.isLoadingFailure).isTrue
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
     fun `should keep isLoadingFailure to false when loading the view data succeeds`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
