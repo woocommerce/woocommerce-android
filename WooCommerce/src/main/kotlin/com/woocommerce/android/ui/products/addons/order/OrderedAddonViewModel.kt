@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -190,5 +191,5 @@ class OrderedAddonViewModel @Inject constructor(
         val shouldDisplayFeedbackCard: Boolean = false
     ) : Parcelable
 
-    object ShowSurveyView: Event()
+    object ShowSurveyView : Event()
 }

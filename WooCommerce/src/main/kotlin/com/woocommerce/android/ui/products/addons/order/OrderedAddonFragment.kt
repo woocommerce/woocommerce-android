@@ -91,10 +91,11 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     }
 
     private fun handleViewModelEvents(event: MultiLiveEvent.Event) {
-        when(event) {
-            is ShowSurveyView -> NavGraphMainDirections
-                .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
-                .apply { findNavController().navigateSafely(this) }
+        when (event) {
+            is ShowSurveyView ->
+                NavGraphMainDirections
+                    .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
+                    .apply { findNavController().navigateSafely(this) }
         }
     }
 
