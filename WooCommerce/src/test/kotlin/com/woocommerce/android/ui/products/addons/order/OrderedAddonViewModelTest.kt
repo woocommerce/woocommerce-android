@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.products.addons.order
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
@@ -21,6 +24,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -47,6 +51,14 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         val parameterRepositoryMock = mock<ParameterRepository> {
             on { getParameters("key_product_parameters", savedState) }
                 .doReturn(storeParametersMock)
+        }
+
+        val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+        val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
+        mock<Context> {
+            whenever(it.applicationContext).thenReturn(it)
+            whenever(it.getSharedPreferences(any(), any())).thenReturn(preferences)
+            FeedbackPrefs.init(it)
         }
 
         viewModelUnderTest = OrderedAddonViewModel(
