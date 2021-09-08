@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -52,16 +53,20 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.flow.firstOrNull
+import org.wordpress.android.fluxc.store.WCAddonsStore
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val parameters: SiteParameters
+    private val parameters: SiteParameters,
+    private val addonsStore: WCAddonsStore,
+    private val selectedSite: SelectedSite
 ) {
     private lateinit var originalSku: String
 
-    fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
+    suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
         this.originalSku = originalSku
 
         val cards = mutableListOf<ProductPropertyCard>()
@@ -89,7 +94,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getSimpleProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getSimpleProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -108,7 +113,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getGroupedProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getGroupedProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -125,7 +130,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getExternalProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getExternalProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -143,7 +148,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getVariableProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getVariableProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -166,7 +171,7 @@ class ProductDetailCardBuilder(
      * Used for product types the app doesn't support yet (ex: subscriptions), uses a subset
      * of properties since we can't be sure pricing, shipping, etc., are applicable
      */
-    private fun getOtherProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getOtherProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -615,8 +620,13 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.addons(): ProductProperty? =
-        takeIf { addons.isNotEmpty() && AppPrefs.isProductAddonsEnabled }?.let {
+    private suspend fun Product.addons(): ProductProperty? =
+        takeIf { product ->
+            addonsStore.observeProductSpecificAddons(
+                siteRemoteId = selectedSite.get().siteId,
+                productRemoteId = product.remoteId
+            ).firstOrNull().isNullOrEmpty().not() && AppPrefs.isProductAddonsEnabled
+        }?.let {
             ComplexProperty(
                 value = resources.getString(string.product_add_ons_title),
                 icon = drawable.ic_gridicon_circle_plus,

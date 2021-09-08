@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.model.Order.Item.Attribute
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.firstOrNull
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -46,8 +45,7 @@ class AddonRepository @Inject constructor(
 
     private suspend fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
         productStore.getProductByRemoteId(selectedSite.get(), productID)
-            ?.let { addonsStore.observeAddonsForProduct(selectedSite.get().siteId, it) }
+            ?.let { addonsStore.observeAllAddonsForProduct(selectedSite.get().siteId, it) }
             ?.firstOrNull()
-            ?.map { it.toAppModel() }
             ?.let { addons -> Pair(addons, this) }
 }

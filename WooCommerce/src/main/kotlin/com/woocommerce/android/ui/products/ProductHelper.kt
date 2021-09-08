@@ -88,7 +88,6 @@ object ProductHelper {
             crossSellProductIds = listOf(),
             upsellProductIds = listOf(),
             downloads = listOf(),
-            addons = listOf()
         )
     }
 }

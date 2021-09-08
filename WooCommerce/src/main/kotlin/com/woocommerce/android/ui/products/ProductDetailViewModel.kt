@@ -4,9 +4,7 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.*
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -18,6 +16,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
@@ -44,12 +43,12 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.*
@@ -70,7 +69,9 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
     private val variationRepository: VariationRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
-    private val prefs: AppPrefs
+    private val prefs: AppPrefs,
+    private val addonsStore: WCAddonsStore,
+    val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -140,7 +141,7 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private val cardBuilder by lazy {
-        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)
+        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonsStore, selectedSite)
     }
 
     private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
@@ -235,6 +236,9 @@ class ProductDetailViewModel @Inject constructor(
     fun getProduct() = viewState
 
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
+
+    fun observeProductSpecificAddons(siteRemoteId: Long, productRemoteId: Long) =
+        addonsStore.observeProductSpecificAddons(siteRemoteId, productRemoteId)
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
@@ -893,7 +897,12 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun updateCards(product: Product) {
-        _productDetailCards.value = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
+        launch(dispatchers.io) {
+            val cards = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
+            withContext(dispatchers.main) {
+                _productDetailCards.value = cards
+            }
+        }
         fetchBottomSheetList()
     }
 
