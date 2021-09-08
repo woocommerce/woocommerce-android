@@ -4,7 +4,6 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.FeatureAnnouncementItem
 
 object FeatureAnnouncementRepository {
-
     val exampleAnnouncement = FeatureAnnouncement(
         appVersionName = "14.2",
         announcementVersion = 1337,
