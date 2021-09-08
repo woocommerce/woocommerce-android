@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.model.ProductAddonOption
@@ -56,6 +58,26 @@ class OrderedAddonViewModel @Inject constructor(
                 ?.let { dispatchResult(it) }
                 ?: handleFailure()
         }
+    }
+
+    fun onGiveFeedbackClicked() {
+        trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_GIVEN)
+
+        FeatureFeedbackSettings(
+            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            FeatureFeedbackSettings.FeedbackState.GIVEN
+        ).registerItselfWith(OrderedAddonFragment.TAG)
+    }
+
+    fun onDismissWIPCardClicked() {
+        trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_DISMISSED)
+
+        FeatureFeedbackSettings(
+            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            FeatureFeedbackSettings.FeedbackState.DISMISSED
+        ).registerItselfWith(OrderedAddonFragment.TAG)
+
+        viewState = viewState.copy(showWIPNoticeCard = false)
     }
 
     private suspend fun loadOrderAddonsData(
@@ -124,9 +146,20 @@ class OrderedAddonViewModel @Inject constructor(
         }
     }
 
+    private fun trackFeedback(feedbackAction: String) {
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_ADDONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to feedbackAction
+            )
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
-        val isLoadingFailure: Boolean = false
+        val isLoadingFailure: Boolean = false,
+        val showWIPNoticeCard: Boolean = false
     ) : Parcelable
 }
