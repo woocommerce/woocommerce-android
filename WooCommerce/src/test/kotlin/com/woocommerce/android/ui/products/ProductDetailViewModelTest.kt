@@ -2,15 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -21,12 +12,10 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
-import com.woocommerce.android.ui.products.models.ProductProperty.Editable
-import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
-import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
+import com.woocommerce.android.ui.products.models.ProductProperty.*
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
@@ -40,18 +29,28 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.Date
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.emptyList
+import kotlin.collections.joinToString
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mapOf
+import kotlin.collections.toList
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -81,9 +80,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
-    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock {
+        on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
+        on { it.observeCurrentUploads(any()) } doReturn emptyFlow()
+        on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
+    }
 
-    private val savedState: SavedStateHandle =
+    private var savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).initSavedStateHandle()
 
     private val siteParams = SiteParameters(
@@ -214,8 +217,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn("").whenever(prefs).getSelectedProductType()
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(flowOf(emptyList<Uri>())).whenever(mediaFileUploadHandler).observeCurrentUploads(any())
 
         viewModel = spy(
             ProductDetailViewModel(
@@ -644,6 +647,62 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             // The VM state should have been updated with the _fetched_ product's numVariations
             assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
+        }
+
+    @Test
+    fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
+        doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
+        doReturn(product).whenever(productRepository).getProduct(any())
+        savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+
+        setup()
+        viewModel.start()
+        viewModel.onSaveAsDraftButtonClicked()
+
+        verify(mediaFileUploadHandler).assignUploadsToCreatedProduct(PRODUCT_REMOTE_ID)
+    }
+
+    @Test
+    fun `given a product is under creation, when displaying discard changes dialog, then stop observing uploads`() =
+        testBlocking {
+            var isObservingEvents: Boolean? = null
+            val successEvents = MutableSharedFlow<MediaModel>()
+                .onSubscription { isObservingEvents = true }
+                .onCompletion { isObservingEvents = false }
+            doReturn(successEvents).whenever(mediaFileUploadHandler)
+                .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
+            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+
+            setup()
+            viewModel.start()
+            // Make some changes to trigger discard changes dialog
+            viewModel.onProductTitleChanged("Product")
+            viewModel.onBackButtonClickedProductDetail()
+
+            assertThat(isObservingEvents).isFalse()
+        }
+
+    @Test
+    fun `given a product is under creation, when dismissing discard changes dialog, then start observing uploads`() =
+        testBlocking {
+            var isObservingEvents: Boolean? = null
+            val successEvents = MutableSharedFlow<MediaModel>()
+                .onSubscription { isObservingEvents = true }
+                .onCompletion { isObservingEvents = false }
+            doReturn(successEvents).whenever(mediaFileUploadHandler)
+                .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
+            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+
+            setup()
+            viewModel.start()
+            // Make some changes to trigger discard changes dialog
+            viewModel.onProductTitleChanged("Product")
+            viewModel.onBackButtonClickedProductDetail()
+            (viewModel.event.value as ShowDialog).negativeBtnAction!!.onClick(null, 0)
+
+            assertThat(isObservingEvents).isTrue()
         }
 
     private val productsDraft
