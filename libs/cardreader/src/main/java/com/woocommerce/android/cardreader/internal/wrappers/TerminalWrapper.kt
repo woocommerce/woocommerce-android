@@ -27,7 +27,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderImpl
  */
 internal class TerminalWrapper {
     fun isInitialized() = Terminal.isInitialized()
-    fun getLifecycleObserver() = TerminalApplicationDelegate
+    fun getLifecycleObserver() = TerminalApplicationDelegateWrapper()
     fun initTerminal(
         application: Application,
         logLevel: LogLevel,

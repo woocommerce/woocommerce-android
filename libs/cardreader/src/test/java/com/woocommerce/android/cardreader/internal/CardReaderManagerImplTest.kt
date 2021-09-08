@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -27,7 +28,10 @@ import org.mockito.kotlin.whenever
 @RunWith(MockitoJUnitRunner::class)
 class CardReaderManagerImplTest {
     private lateinit var cardReaderManager: CardReaderManagerImpl
-    private val terminalWrapper: TerminalWrapper = mock()
+    private val terminalApplicationDelegateWrapper: TerminalApplicationDelegateWrapper = mock()
+    private val terminalWrapper: TerminalWrapper = mock {
+        on { getLifecycleObserver() }.thenReturn(terminalApplicationDelegateWrapper)
+    }
     private val tokenProvider: TokenProvider = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
@@ -56,6 +60,13 @@ class CardReaderManagerImplTest {
         cardReaderManager.initialize(application)
 
         verify(application, atLeastOnce()).registerComponentCallbacks(any())
+    }
+
+    @Test
+    fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
+        cardReaderManager.initialize(application)
+
+        verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
 
     @Test
