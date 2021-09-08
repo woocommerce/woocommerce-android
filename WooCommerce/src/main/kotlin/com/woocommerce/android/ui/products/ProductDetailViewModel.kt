@@ -897,6 +897,11 @@ class ProductDetailViewModel @Inject constructor(
         productCategoriesRepository.onCleanup()
         productTagsRepository.onCleanup()
         mediaFilesRepository.onCleanup()
+        if (isAddFlowEntryPoint) {
+            // TODO revisit this once we support background image uploads for the product creation flow
+            mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
+            mediaFileUploadHandler.cancelUpload(getRemoteProductId())
+        }
     }
 
     private fun updateCards(product: Product) {
