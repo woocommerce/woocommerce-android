@@ -10,6 +10,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -73,9 +74,12 @@ internal class CardReaderManagerImpl(
         }
     }
 
-    override fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> {
+    override fun discoverReaders(
+        isSimulated: Boolean,
+        cardReaderTypesToDiscover: CardReaderTypesToDiscover,
+    ): Flow<CardReaderDiscoveryEvents> {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        return connectionManager.discoverReaders(isSimulated)
+        return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
     override suspend fun connectToReader(cardReader: CardReader): Boolean {
