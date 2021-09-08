@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.cardreader
 
 import android.app.Dialog
 import android.content.ContentResolver
+import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -29,12 +30,28 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import android.nfc.NfcAdapter
+
 
 @AndroidEntryPoint
 class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_payment_dialog) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
-    @Inject lateinit var printHtmlHelper: PrintHtmlHelper
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var printHtmlHelper: PrintHtmlHelper
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        disableGooglePay()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        reEnableGooglePay()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.let {
@@ -145,6 +162,25 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
         printHtmlHelper.getAndClearPrintJobResult()?.let {
             viewModel.onPrintResult(it)
         }
+    }
+
+    /**
+     * Disables Google Pay in order to prevent the merchant from accidentally charging themselves instead of
+     * the customer.
+     */
+    private fun disableGooglePay() {
+        NfcAdapter.getDefaultAdapter(requireContext())
+            ?.enableReaderMode(
+                requireActivity(),
+                { },
+                NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
+                null
+            )
+    }
+
+    private fun reEnableGooglePay() {
+        NfcAdapter.getDefaultAdapter(requireContext())
+            ?.disableReaderMode(requireActivity())
     }
 
     companion object {
