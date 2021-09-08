@@ -2,7 +2,6 @@ package com.woocommerce.android.cardreader.internal.wrappers
 
 import android.app.Application
 import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.TerminalApplicationDelegate
 import com.stripe.stripeterminal.external.callable.BluetoothReaderListener
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
