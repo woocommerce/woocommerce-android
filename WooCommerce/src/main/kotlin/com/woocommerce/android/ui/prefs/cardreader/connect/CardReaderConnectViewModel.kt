@@ -18,6 +18,8 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.F
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -204,7 +206,10 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private suspend fun startScanning() {
         cardReaderManager
-            .discoverReaders(isSimulated = BuildConfig.USE_SIMULATED_READER)
+            .discoverReaders(
+                isSimulated = BuildConfig.USE_SIMULATED_READER,
+                cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
+            )
             .flowOn(dispatchers.io)
             .collect { discoveryEvent ->
                 handleScanEvent(discoveryEvent)
@@ -501,5 +506,9 @@ class CardReaderConnectViewModel @Inject constructor(
         ) : ListItemViewState() {
             val connectLabel: UiString = UiStringRes(R.string.card_reader_connect_connect_button)
         }
+    }
+
+    companion object {
+        private val SUPPORTED_READERS = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2)
     }
 }
