@@ -1273,6 +1273,7 @@
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_whats_new">What\'s New in WooCommerce</string>
+    <string name="settings_whats_new_icon_description">New feature icon image</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>

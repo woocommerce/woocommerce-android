@@ -35,7 +35,6 @@ object ImageUtils {
         base64ImageData: String,
         placeholder: Drawable?
     ) {
-
         val imageData: ByteArray
         try {
             val sanitizedBase64String = base64ImageData.replace("data:image/png;base64,", "")
