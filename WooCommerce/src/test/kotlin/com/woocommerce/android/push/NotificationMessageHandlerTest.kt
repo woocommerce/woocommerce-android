@@ -27,6 +27,8 @@ import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayl
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
+// We can't remove the dependency from Robolectric for this test, since the NotificationHandler depends
+// on [android.util.Base64]
 @RunWith(RobolectricTestRunner::class)
 class NotificationMessageHandlerTest {
     private lateinit var notificationMessageHandler: NotificationMessageHandler

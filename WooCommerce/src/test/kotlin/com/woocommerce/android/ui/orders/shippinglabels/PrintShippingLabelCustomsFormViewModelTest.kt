@@ -5,20 +5,15 @@ import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
 import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import java.io.File
 
-@RunWith(RobolectricTestRunner::class)
 class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: PrintShippingLabelCustomsFormViewModel
     private val fileDownloader: FileDownloader = mock()

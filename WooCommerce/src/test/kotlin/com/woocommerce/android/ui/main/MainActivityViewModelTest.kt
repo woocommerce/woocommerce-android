@@ -5,25 +5,17 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.push.NotificationTestUtils
 import com.woocommerce.android.push.WooNotificationType
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class MainActivityViewModelTest : BaseUnitTest() {
     companion object {
         private const val TEST_NEW_ORDER_REMOTE_NOTE_ID = 5473011602

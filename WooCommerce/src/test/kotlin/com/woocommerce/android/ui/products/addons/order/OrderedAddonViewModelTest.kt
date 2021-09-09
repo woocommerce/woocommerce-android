@@ -19,14 +19,11 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderedAddonViewModelTest : BaseUnitTest() {
     private lateinit var viewModelUnderTest: OrderedAddonViewModel
     private var addonRepositoryMock: AddonRepository = mock()
@@ -77,8 +74,6 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should return null if fetchGlobalAddons returns an error`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
-                .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
 
             var actualResult: List<ProductAddon>? = null

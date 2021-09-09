@@ -1,17 +1,11 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewModel.PrintShippingLabelViewState
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
@@ -24,17 +18,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import java.util.Date
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class PrintShippingLabelViewModelTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_SHIPPING_LABEL_ID = 1L

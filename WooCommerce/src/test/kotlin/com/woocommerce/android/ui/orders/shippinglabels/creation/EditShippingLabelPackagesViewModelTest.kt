@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import org.mockito.kotlin.*
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -18,13 +17,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = "1-1-1"
