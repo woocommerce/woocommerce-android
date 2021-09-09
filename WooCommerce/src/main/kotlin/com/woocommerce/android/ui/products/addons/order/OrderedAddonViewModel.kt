@@ -4,11 +4,18 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.addons.order.OrderedAddonFragment.Companion.TAG
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,6 +24,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.domain.Addon
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -34,6 +42,11 @@ class OrderedAddonViewModel @Inject constructor(
     private val _orderedAddons = MutableLiveData<List<Addon>>()
     val orderedAddonsData: LiveData<List<Addon>> = _orderedAddons
 
+    private val currentFeedbackSettings
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)
+            ?: FeatureFeedbackSettings(OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name)
+                .apply { registerItselfWith(TAG) }
+
     /**
      * Provides the currencyCode for views who requires display prices
      */
@@ -49,13 +62,42 @@ class OrderedAddonViewModel @Inject constructor(
         productID: Long
     ) = viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
         launch(dispatchers.computation) {
-            takeIf { addonsRepository.updateGlobalAddonsSuccessfully() }
-                ?.let { addonsRepository.getOrderAddonsData(orderID, orderItemID, productID) }
-                ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
+            addonsRepository.updateGlobalAddonsSuccessfully()
+            loadOrderAddonsData(orderID, orderItemID, productID)
+                ?.takeIf { it.isNotEmpty() }
                 ?.let { dispatchResult(it) }
-                ?: dispatchFailure()
+                ?: handleFailure()
         }
     }
+
+    fun onGiveFeedbackClicked() {
+        trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_GIVEN)
+
+        FeatureFeedbackSettings(
+            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            GIVEN
+        ).registerItselfWith(TAG)
+
+        triggerEvent(ShowSurveyView)
+    }
+
+    fun onDismissWIPCardClicked() {
+        trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_DISMISSED)
+
+        FeatureFeedbackSettings(
+            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            DISMISSED
+        ).registerItselfWith(TAG)
+
+        viewState = viewState.copy(shouldDisplayFeedbackCard = false)
+    }
+
+    private suspend fun loadOrderAddonsData(
+        orderID: Long,
+        orderItemID: Long,
+        productID: Long
+    ) = addonsRepository.getOrderAddonsData(orderID, orderItemID, productID)
+        ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
 
     private fun mapAddonsFromOrderAttributes(
         productAddons: List<Addon>,
@@ -119,19 +161,54 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun dispatchResult(result: List<Addon>) {
         withContext(dispatchers.main) {
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingFailure = false,
+                shouldDisplayFeedbackCard = currentFeedbackSettings.state != DISMISSED
+            )
+            track(result)
             _orderedAddons.value = result
         }
     }
 
-    private suspend fun dispatchFailure() {
+    private suspend fun handleFailure() {
         withContext(dispatchers.main) {
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingFailure = true,
+                shouldDisplayFeedbackCard = false
+            )
         }
     }
 
+    private fun trackFeedback(feedbackAction: String) {
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_ADDONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to feedbackAction
+            )
+        )
+    }
+
+    private fun track(addons: List<Addon>) =
+        addons.distinctBy { it.name }
+            .map { it.name }
+            .filter { it.isNotEmpty() }
+            .joinToString(",")
+            .let {
+                AnalyticsTracker.track(
+                    AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
+                    mapOf(AnalyticsTracker.KEY_ADDONS to it)
+                )
+            }
+
     @Parcelize
     data class ViewState(
-        val isSkeletonShown: Boolean? = null
+        val isSkeletonShown: Boolean? = null,
+        val isLoadingFailure: Boolean = false,
+        val shouldDisplayFeedbackCard: Boolean = false
     ) : Parcelable
+
+    object ShowSurveyView : Event()
 }
