@@ -101,6 +101,9 @@ internal class CardReaderManagerImpl(
         terminal.initTerminal(application, logLevel, tokenProvider, terminalListener)
     }
 
+    override suspend fun listenForBluetoothCardReaderMessagesAsync() =
+        connectionManager.listenForBluetoothCardReaderMessages()
+
     override suspend fun startAsyncSoftwareUpdate() {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         softwareUpdateManager.startAsyncSoftwareUpdate()

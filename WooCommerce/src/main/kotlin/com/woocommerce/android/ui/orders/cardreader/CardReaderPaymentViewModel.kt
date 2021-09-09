@@ -39,6 +39,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -109,6 +110,17 @@ class CardReaderPaymentViewModel
         }
     }
 
+    private suspend fun listenForBluetoothCardReaderMessages() {
+        cardReaderManager.listenForBluetoothCardReaderMessagesAsync().collect { message ->
+            when (message) {
+                is BluetoothCardReaderMessages.CardReaderDisplayMessage -> {
+                    handleAdditionalInfo(message.message)
+                }
+                is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/ }
+            }
+        }
+    }
+
     private fun initPaymentFlow(isRetry: Boolean) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
@@ -120,7 +132,12 @@ class CardReaderPaymentViewModel
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
-                collectPaymentFlow(cardReaderManager, order)
+                launch {
+                    collectPaymentFlow(cardReaderManager, order)
+                }
+                launch {
+                    listenForBluetoothCardReaderMessages()
+                }
             } ?: run {
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
@@ -260,7 +277,7 @@ class CardReaderPaymentViewModel
                 INSERT_CARD -> null // noop - collect payment screen is currently shown
                 INSERT_OR_SWIPE_CARD -> null // noop - collect payment screen is currently shown
                 SWIPE_CARD -> null // noop - collect payment screen is currently shown
-                REMOVE_CARD -> null // noop - processing payment screen always shows "remove card" message
+                REMOVE_CARD -> R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
                 MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
                     R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
                 TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt

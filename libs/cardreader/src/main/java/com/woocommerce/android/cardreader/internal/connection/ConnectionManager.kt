@@ -11,6 +11,9 @@ import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -22,6 +25,16 @@ internal class ConnectionManager(
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
+
+    suspend fun listenForBluetoothCardReaderMessages() = callbackFlow {
+        val listener = object : BluetoothCardReaderMessagesObserver() {
+            override fun sendMessage(message: BluetoothCardReaderMessages) {
+                this@callbackFlow.sendBlocking(message)
+            }
+        }
+        bluetoothReaderListener.registerBluetoothCardReaderObservers(listener)
+        awaitClose()
+    }
 
     fun discoverReaders(isSimulated: Boolean) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->

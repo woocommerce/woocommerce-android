@@ -10,12 +10,14 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.LOG_TAG
+import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
+    private val additionalInfoMapper: AdditionalInfoMapper,
 ) : BluetoothReaderListener {
     private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
     val updateStatusEvents = _updateStatusEvents.asStateFlow()
@@ -23,6 +25,12 @@ internal class BluetoothReaderListenerImpl(
     private val _updateAvailabilityEvents =
         MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
     val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
+
+    private lateinit var bluetoothCardReaderMessagesObserver: BluetoothCardReaderObserver
+
+    fun registerBluetoothCardReaderObservers(observer: BluetoothCardReaderObserver) {
+        bluetoothCardReaderMessagesObserver = observer
+    }
 
     override fun onFinishInstallingUpdate(update: ReaderSoftwareUpdate?, e: TerminalException?) {
         logWrapper.d(LOG_TAG, "onFinishInstallingUpdate: $update $e")
@@ -59,9 +67,13 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
         logWrapper.d(LOG_TAG, "onRequestReaderDisplayMessage: $message")
+        (bluetoothCardReaderMessagesObserver as BluetoothCardReaderMessagesObserver)
+            .sendMessage(BluetoothCardReaderMessages.CardReaderDisplayMessage(additionalInfoMapper.map(message)))
     }
 
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
+        (bluetoothCardReaderMessagesObserver as BluetoothCardReaderMessagesObserver)
+            .sendMessage(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
     }
 }
