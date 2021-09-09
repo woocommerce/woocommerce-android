@@ -251,7 +251,8 @@ class ProductImagesFragment :
 
     private fun showImageDetail(image: Image, skipThrottling: Boolean) {
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
-            viewModel.isImageDeletingAllowed, image.id
+            isDeletingAllowed = viewModel.isImageDeletingAllowed,
+            mediaId = image.id
         )
         findNavController().navigateSafely(action, skipThrottling)
     }

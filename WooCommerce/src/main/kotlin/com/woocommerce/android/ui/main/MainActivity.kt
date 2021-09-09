@@ -774,10 +774,10 @@ class MainActivity :
         }
 
         val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
-            remoteReviewId,
-            tempStatus,
-            launchedFromNotification,
-            enableModeration
+            remoteReviewId = remoteReviewId,
+            tempStatus = tempStatus,
+            launchedFromNotification = launchedFromNotification,
+            enableModeration = enableModeration
         )
         navController.navigateSafely(action)
     }

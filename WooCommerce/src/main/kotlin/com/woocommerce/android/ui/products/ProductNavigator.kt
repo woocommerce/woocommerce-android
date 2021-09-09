@@ -347,14 +347,13 @@ class ProductNavigator @Inject constructor() {
         selectedImage: Image?,
         showChooser: Boolean
     ) {
-        val action = ProductDetailFragmentDirections
-            .actionProductDetailFragmentToNavGraphImageGallery(
-                remoteId,
-                images.toTypedArray(),
-                selectedImage,
-                showChooser,
-                RequestCodes.PRODUCT_DETAIL_IMAGES
-            )
+        val action = ProductDetailFragmentDirections.actionProductDetailFragmentToNavGraphImageGallery(
+            remoteId = remoteId,
+            images = images.toTypedArray(),
+            selectedImage = selectedImage,
+            showChooser = showChooser,
+            requestCode = RequestCodes.PRODUCT_DETAIL_IMAGES
+        )
         fragment.findNavController().navigateSafely(action)
     }
 }

@@ -28,11 +28,11 @@ class VariationNavigator @Inject constructor() {
         when (target) {
             is ViewImageGallery -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToNavGraphImageGallery(
-                    target.remoteId,
-                    target.images.toTypedArray(),
-                    target.selectedImage,
-                    target.showChooser,
-                    RequestCodes.VARIATION_DETAIL_IMAGE
+                    remoteId = target.remoteId,
+                    images = target.images.toTypedArray(),
+                    selectedImage = target.selectedImage,
+                    showChooser = target.showChooser,
+                    requestCode = RequestCodes.VARIATION_DETAIL_IMAGE
                 )
                 fragment.findNavController().navigateSafely(action)
             }
