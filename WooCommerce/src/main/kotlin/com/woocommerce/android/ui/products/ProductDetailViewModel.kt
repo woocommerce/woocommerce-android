@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.*
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -70,7 +71,8 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
     private val variationRepository: VariationRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
-    private val prefs: AppPrefs
+    private val prefs: AppPrefs,
+    private val addonRepository: AddonRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -140,7 +142,7 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private val cardBuilder by lazy {
-        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)
+        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonRepository)
     }
 
     private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
@@ -235,6 +237,9 @@ class ProductDetailViewModel @Inject constructor(
     fun getProduct() = viewState
 
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
+
+    fun observeProductSpecificAddons(productRemoteId: Long) =
+        addonRepository.observeProductSpecificAddons(productRemoteId)
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
@@ -905,7 +910,12 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun updateCards(product: Product) {
-        _productDetailCards.value = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
+        launch(dispatchers.io) {
+            val cards = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
+            withContext(dispatchers.main) {
+                _productDetailCards.value = cards
+            }
+        }
         fetchBottomSheetList()
     }
 

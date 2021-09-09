@@ -1,18 +1,20 @@
 package com.woocommerce.android.ui.products.addons
 
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonWithOptionsList
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonsList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.times
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -104,7 +106,7 @@ class AddonRepositoryTest {
         configureSuccessfulOrderResponse()
         configureSuccessfulAddonResponse()
 
-        val expectedAddons = defaultAddonWithOptionsList.map { it.toAppModel() }
+        val expectedAddons = defaultAddonsList
 
         repositoryUnderTest.getOrderAddonsData(123, 999, 333)
             ?.let { (productAddons, _) ->
@@ -113,7 +115,7 @@ class AddonRepositoryTest {
                     .getProductByRemoteId(siteModelMock, 333)
 
                 verify(addonStoreMock, times(1))
-                    .observeAddonsForProduct(321, defaultWCProductModel)
+                    .observeAllAddonsForProduct(siteModelMock.siteId, defaultWCProductModel)
 
                 assertThat(productAddons).isEqualTo(expectedAddons)
             } ?: fail("non-null Pair with valid data was expected")
@@ -160,6 +162,20 @@ class AddonRepositoryTest {
         assertThat(response).isNull()
     }
 
+    @Test
+    fun `hasAddons should return false if there's no add-ons for given product`() = runBlockingTest {
+        whenever(addonStoreMock.observeProductSpecificAddons(any(), any())).thenReturn(emptyFlow())
+
+        assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(false)
+    }
+
+    @Test
+    fun `hasAddons should return true if there are add-ons for given product`() = runBlockingTest {
+        whenever(addonStoreMock.observeProductSpecificAddons(any(), any())).thenReturn(flowOf(defaultAddonsList))
+
+        assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(true)
+    }
+
     private fun configureSuccessfulOrderResponse() {
         mock<WCOrderModel>().apply {
             whenever(getLineItemList()).thenReturn(defaultWCOrderItemList)
@@ -180,7 +196,7 @@ class AddonRepositoryTest {
         ).thenReturn(defaultWCProductModel)
 
         whenever(
-            addonStoreMock.observeAddonsForProduct(localSiteID.toLong(), defaultWCProductModel)
-        ).thenReturn(MutableStateFlow(defaultAddonWithOptionsList))
+            addonStoreMock.observeAllAddonsForProduct(localSiteID.toLong(), defaultWCProductModel)
+        ).thenReturn(MutableStateFlow(defaultAddonsList))
     }
 }

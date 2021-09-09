@@ -5,10 +5,6 @@ import android.content.SharedPreferences
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ProductAddon
-import com.woocommerce.android.model.ProductAddon.PriceType.FlatFee
-import com.woocommerce.android.model.ProductAddon.PriceType.QuantityBased
-import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
@@ -29,6 +25,8 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.domain.Addon
+import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType
 import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
@@ -78,7 +76,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             val expectedResult = defaultOrderedAddonList
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
@@ -97,7 +95,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             val expectedResult = defaultOrderedAddonList
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
@@ -114,7 +112,6 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 listOf(
                     emptyProductAddon.copy(
                         name = "Delivery",
-                        priceType = FlatFee
                     )
                 ),
                 defaultOrderAttributes
@@ -126,18 +123,19 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             val expectedResult = emptyProductAddon.copy(
                 name = "Delivery",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
+                options = listOf(
+                    Addon.HasOptions.Option(
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "$5,00",
+                        ),
                         label = "Yes",
-                        price = "$5,00",
                         image = ""
                     )
                 )
             ).let { listOf(it) }
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
@@ -166,18 +164,19 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             val expectedResult = emptyProductAddon.copy(
                 name = "test-name",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
-                        "test-label",
-                        "test-price",
-                        "test-image"
+                options = listOf(
+                    Addon.HasOptions.Option(
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "test-price"
+                        ),
+                        label = "test-label",
+                        image = "test-image"
                     )
                 )
             ).let { listOf(it) }
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
@@ -211,31 +210,33 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             val expectedResult = listOf(
                 emptyProductAddon.copy(
                     name = "test-name",
-                    priceType = FlatFee,
-                    rawOptions = listOf(
-                        ProductAddonOption(
-                            priceType = FlatFee,
-                            "test-label",
-                            "test-price",
-                            "test-image"
+                    options = listOf(
+                        Addon.HasOptions.Option(
+                            price = Addon.HasAdjustablePrice.Price.Adjusted(
+                                priceType = PriceType.FlatFee,
+                                value = "test-price"
+                            ),
+                            label = "test-label",
+                            image = "test-image"
                         )
                     )
                 ),
                 emptyProductAddon.copy(
                     name = "test-name",
-                    priceType = FlatFee,
-                    rawOptions = listOf(
-                        ProductAddonOption(
-                            priceType = QuantityBased,
-                            "test-label-2",
-                            "test-price-2",
-                            "test-image-2"
+                    options = listOf(
+                        Addon.HasOptions.Option(
+                            price = Addon.HasAdjustablePrice.Price.Adjusted(
+                                priceType = PriceType.FlatFee,
+                                value = "test-price-2",
+                            ),
+                            label = "test-label-2",
+                            image = "test-image-2"
                         )
                     )
                 )
             )
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }

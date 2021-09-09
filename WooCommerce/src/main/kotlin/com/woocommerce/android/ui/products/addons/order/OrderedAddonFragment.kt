@@ -18,7 +18,6 @@ import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.ProductAddon
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
@@ -28,6 +27,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.domain.Addon
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -121,7 +121,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         )
     }
 
-    private fun setupRecyclerViewWith(addonList: List<ProductAddon>) {
+    private fun setupRecyclerViewWith(addonList: List<Addon>) {
         binding.addonsList.adapter = AddonListAdapter(
             addonList,
             currencyFormatter.buildBigDecimalFormatter(viewModel.currencyCode),
@@ -129,7 +129,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         )
     }
 
-    private fun onOrderedAddonsReceived(orderedAddons: List<ProductAddon>) {
+    private fun onOrderedAddonsReceived(orderedAddons: List<Addon>) {
         binding.addonsEditNotice.visibility = VISIBLE
         setupRecyclerViewWith(orderedAddons)
     }
