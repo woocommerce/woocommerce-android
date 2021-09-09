@@ -69,19 +69,21 @@ class OrderedAddonViewModel @Inject constructor(
     private fun Addon.asAddonWithSingleSelectedOption(
         attribute: Order.Item.Attribute
     ): Addon {
-        return if (this is Addon.HasOptions) {
-            options.find { it.label == attribute.value }
-                ?.let {
-                    when (this) {
-                        is Addon.Checkbox -> this.copy(options = listOf(it))
-                        is Addon.MultipleChoice -> this.copy(options = listOf(it))
-                        else -> null
-                    }
-                } ?: mergeOrderAttributeWithAddon(this, attribute)
-        } else {
-            this
+        return when (this) {
+            is Addon.HasOptions -> options.find { it.label == attribute.value }
+                ?.takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
+                ?.let { this.asSelectableAddon(it) }
+                ?: mergeOrderAttributeWithAddon(this, attribute)
+            else -> this
         }
     }
+
+    private fun Addon.asSelectableAddon(selectedOption: Addon.HasOptions.Option): Addon? =
+        when (this) {
+            is Addon.Checkbox -> this.copy(options = listOf(selectedOption))
+            is Addon.MultipleChoice -> this.copy(options = listOf(selectedOption))
+            else -> null
+        }
 
     /**
      * If it isn't possible to find the respective option
