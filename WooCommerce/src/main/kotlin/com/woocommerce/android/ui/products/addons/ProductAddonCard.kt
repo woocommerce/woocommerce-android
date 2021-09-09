@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.addons
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
@@ -55,7 +56,27 @@ class ProductAddonCard @JvmOverloads constructor(
         if (addon is Addon.HasOptions) {
             bindOptionList(addon, formatCurrencyForDisplay)
         }
+        if (addon is Addon.HasAdjustablePrice) {
+            bindAdjustedPrice(addon, formatCurrencyForDisplay)
+        }
         if (orderMode.not()) bindDescription(addon)
+    }
+
+    private fun ProductAddonCardBinding.bindAdjustedPrice(
+        addon: Addon.HasAdjustablePrice,
+        formatCurrencyForDisplay: (BigDecimal) -> String
+    ) {
+        when(val price = addon.price) {
+            is Addon.HasAdjustablePrice.Price.Adjusted -> {
+                addonCustomPrice.apply {
+                    visibility = View.VISIBLE
+                    text = price.toFormattedPrice(formatCurrencyForDisplay)
+                }
+            }
+            Addon.HasAdjustablePrice.Price.NotAdjusted ->{
+                addonCustomPrice.visibility = View.GONE
+            }
+        }
     }
 
     private fun ProductAddonCardBinding.bindDescription(
