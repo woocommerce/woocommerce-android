@@ -278,7 +278,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
         assertThat(state.progressText).isEqualTo(buildProgressText(progress))
         assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_progress)
-        assertThat(state.button.text).isEqualTo(UiStringRes(R.string.cancel))
     }
 
     private fun verifyUpdatingCancelingState(
