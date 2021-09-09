@@ -102,6 +102,26 @@ class AddonRepositoryTest {
     }
 
     @Test
+    fun `fetchOrderAddonsData should map productAddons correctly`() = runBlockingTest {
+        configureSuccessfulOrderResponse()
+        configureSuccessfulAddonResponse()
+
+        val expectedAddons = defaultAddonsList
+
+        repositoryUnderTest.getOrderAddonsData(123, 999, 333)
+            ?.let { (productAddons, _) ->
+
+                verify(productStoreMock, times(1))
+                    .getProductByRemoteId(siteModelMock, 333)
+
+                verify(addonStoreMock, times(1))
+                    .observeAllAddonsForProduct(siteModelMock.siteId, defaultWCProductModel)
+
+                assertThat(productAddons).isEqualTo(expectedAddons)
+            } ?: fail("non-null Pair with valid data was expected")
+    }
+
+    @Test
     fun `getAddonsFrom should return addons successfully`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
