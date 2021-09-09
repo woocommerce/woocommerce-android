@@ -136,4 +136,8 @@ internal class CardReaderManagerImpl(
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         terminal.clearCachedCredentials()
     }
+
+    override fun cancelOngoingFirmwareUpdate() {
+        softwareUpdateManager.cancelOngoingFirmwareUpdate()
+    }
 }

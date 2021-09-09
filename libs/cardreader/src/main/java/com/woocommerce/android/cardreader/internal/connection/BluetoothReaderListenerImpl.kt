@@ -24,6 +24,8 @@ internal class BluetoothReaderListenerImpl(
         MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
     val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
 
+    var cancelUpdateAction: Cancelable? = null
+
     override fun onFinishInstallingUpdate(update: ReaderSoftwareUpdate?, e: TerminalException?) {
         logWrapper.d(LOG_TAG, "onFinishInstallingUpdate: $update $e")
         if (e == null) {
@@ -45,6 +47,7 @@ internal class BluetoothReaderListenerImpl(
     }
 
     override fun onStartInstallingUpdate(update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
+        cancelUpdateAction = cancelable
         logWrapper.d(LOG_TAG, "onStartInstallingUpdate: $update $cancelable")
         _updateStatusEvents.value = SoftwareUpdateStatus.InstallationStarted
     }
