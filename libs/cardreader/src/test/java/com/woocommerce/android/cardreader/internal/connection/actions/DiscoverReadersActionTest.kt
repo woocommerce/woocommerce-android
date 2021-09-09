@@ -13,8 +13,8 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
+import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNot
@@ -33,10 +33,11 @@ import org.mockito.junit.MockitoJUnitRunner
 class DiscoverReadersActionTest {
     private lateinit var action: DiscoverReadersAction
     private val terminal: TerminalWrapper = mock()
+    private val logWrapper: LogWrapper = mock()
 
     @Before
     fun setUp() {
-        action = DiscoverReadersAction(terminal)
+        action = DiscoverReadersAction(terminal, logWrapper)
     }
 
     @Test
@@ -195,18 +196,6 @@ class DiscoverReadersActionTest {
 
         assertThat(result.size).isEqualTo(3)
     }
-
-    @Test(expected = ClosedSendChannelException::class)
-    fun `given more events emitted, when terminal event already processed, then exception is thrown`() =
-        runBlockingTest {
-            whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
-                onSuccess(it.arguments)
-                onUpdateDiscoveredReaders(args = it.arguments, readers = listOf())
-                mock<Cancelable>()
-            }
-
-            action.discoverReaders(false).toList()
-        }
 
     private fun onUpdateDiscoveredReaders(args: Array<Any>, readers: List<Reader>) {
         args.filterIsInstance<DiscoveryListener>().first().onUpdateDiscoveredReaders(readers)
