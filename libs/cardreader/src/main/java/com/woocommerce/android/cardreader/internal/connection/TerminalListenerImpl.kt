@@ -26,7 +26,6 @@ internal class TerminalListenerImpl(
     }
 
     override fun onConnectionStatusChange(status: ConnectionStatus) {
-        super.onConnectionStatusChange(status)
         logWrapper.d(LOG_TAG, "onConnectionStatusChange: ${status.name}")
     }
 

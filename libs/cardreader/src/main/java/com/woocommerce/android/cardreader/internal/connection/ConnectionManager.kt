@@ -48,16 +48,16 @@ internal class ConnectionManager(
             val locationId = cardReader.locationId ?: throw IllegalStateException(
                 "Only attached to a location readers are supported at the moment"
             )
+            updateReaderStatus(CardReaderStatus.Connecting)
             val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration(locationId)
-            terminalListenerImpl.updateReaderStatus(CardReaderStatus.Connecting)
             val readerCallback = object : ReaderCallback {
                 override fun onSuccess(reader: Reader) {
-                    terminalListenerImpl.updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
+                    updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
                     continuation.resume(true)
                 }
 
                 override fun onFailure(e: TerminalException) {
-                    terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected)
+                    updateReaderStatus(CardReaderStatus.NotConnected)
                     continuation.resume(false)
                 }
             }
@@ -72,15 +72,20 @@ internal class ConnectionManager(
     }
 
     suspend fun disconnectReader() = suspendCoroutine<Boolean> { continuation ->
-        terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected)
         terminal.disconnectReader(object : Callback {
             override fun onFailure(e: TerminalException) {
+                updateReaderStatus(CardReaderStatus.NotConnected)
                 continuation.resume(false)
             }
 
             override fun onSuccess() {
+                updateReaderStatus(CardReaderStatus.NotConnected)
                 continuation.resume(true)
             }
         })
+    }
+
+    private fun updateReaderStatus(status: CardReaderStatus) {
+        terminalListenerImpl.updateReaderStatus(status)
     }
 }
