@@ -369,6 +369,10 @@
     <string name="ordered_add_ons_details_info_notice">If renaming an add-on in your web dashboard, please note that previous orders will no longer show that add-on within the app.</string>
     <string name="ordered_add_ons_wip_title">View add-ons from your device!</string>
     <string name="ordered_add_ons_wip_message">We are working on making it easier for you to see product add-ons from your device! For now, you’ll be able to see the add-ons for your orders. You can create and edit these add-ons in your web dashboard.</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Something went wrong</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Sorry, we couldn\'t load the Order Add-ons right now</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+
     <!--
         Shipping label Refunds
     -->

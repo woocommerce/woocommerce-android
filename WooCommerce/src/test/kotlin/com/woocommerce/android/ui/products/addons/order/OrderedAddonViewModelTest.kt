@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.products.addons.order
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ProductAddon
@@ -21,10 +24,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -46,6 +51,14 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         val parameterRepositoryMock = mock<ParameterRepository> {
             on { getParameters("key_product_parameters", savedState) }
                 .doReturn(storeParametersMock)
+        }
+
+        val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+        val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
+        mock<Context> {
+            whenever(it.applicationContext).thenReturn(it)
+            whenever(it.getSharedPreferences(any(), any())).thenReturn(preferences)
+            FeedbackPrefs.init(it)
         }
 
         viewModelUnderTest = OrderedAddonViewModel(
@@ -76,11 +89,13 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `should return null if fetchGlobalAddons returns an error`() =
+    fun `should request data even if fetchGlobalAddons returns an error`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+            val expectedResult = defaultOrderedAddonList
 
             var actualResult: List<ProductAddon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
@@ -89,7 +104,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             viewModelUnderTest.start(321, 999, 123)
 
-            assertThat(actualResult).isNull()
+            assertThat(actualResult).isEqualTo(expectedResult)
         }
 
     @Test
@@ -228,5 +243,136 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             viewModelUnderTest.start(321, 999, 123)
 
             assertThat(actualResult).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `should enable and disable skeleton view when loading the view data`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isSkeletonShown).isTrue
+                        1 -> assertThat(new.isSkeletonShown).isFalse
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should enable and disable skeleton view when loading the view data fails`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isSkeletonShown).isTrue
+                        1 -> assertThat(new.isSkeletonShown).isFalse
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should change isLoadingFailure to true when loading the view data fails`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isLoadingFailure).isFalse
+                        1 -> assertThat(new.isLoadingFailure).isTrue
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should change isLoadingFailure to true when the Ordered Addons data is empty`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(emptyList(), emptyList()))
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isLoadingFailure).isFalse
+                        1 -> assertThat(new.isLoadingFailure).isTrue
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should keep isLoadingFailure to false when loading the view data succeeds`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isLoadingFailure).isFalse
+                        1 -> assertThat(new.isLoadingFailure).isFalse
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
         }
 }
