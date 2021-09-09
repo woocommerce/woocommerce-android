@@ -4,7 +4,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -49,7 +48,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
     }
 
-    private val savedState = IssueRefundFragmentArgs(0).initSavedStateHandle()
+    private val savedState = IssueRefundFragmentArgs(0).toSavedStateHandle()
 
     private lateinit var viewModel: IssueRefundViewModel
 

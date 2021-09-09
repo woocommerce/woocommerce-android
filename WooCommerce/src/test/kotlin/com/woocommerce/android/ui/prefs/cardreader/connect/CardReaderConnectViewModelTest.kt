@@ -9,7 +9,6 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.*
@@ -818,7 +817,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         onboardingState: CardReaderOnboardingState,
         skipOnboarding: Boolean = false
     ): CardReaderConnectViewModel {
-        val savedState = CardReaderConnectDialogFragmentArgs(skipOnboarding = skipOnboarding).initSavedStateHandle()
+        val savedState = CardReaderConnectDialogFragmentArgs(skipOnboarding = skipOnboarding).toSavedStateHandle()
         whenever(onboardingChecker.getOnboardingState()).thenReturn(onboardingState)
         return CardReaderConnectViewModel(
             savedState,

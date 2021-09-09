@@ -5,7 +5,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -64,7 +63,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val savedState = VariationDetailFragmentArgs(
         TEST_VARIATION.remoteProductId,
         TEST_VARIATION.remoteVariationId
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     @Before
     fun setup() {

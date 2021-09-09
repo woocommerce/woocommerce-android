@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
@@ -44,7 +43,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
         receiptUrl = "testing url",
         billingEmail = "testing email",
         orderId = 999L
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     @Before
     fun setUp() {

@@ -9,7 +9,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R.string
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundViewModel.ShippingLabelRefundViewState
@@ -50,7 +49,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     private val savedState = ShippingLabelRefundFragmentArgs(
         orderId = REMOTE_ORDER_ID,
         shippingLabelId = REMOTE_SHIPPING_LABEL_ID
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private val shippingLabelViewStateTestData = ShippingLabelRefundViewState(shippingLabel = shippingLabel)
     private lateinit var viewModel: ShippingLabelRefundViewModel

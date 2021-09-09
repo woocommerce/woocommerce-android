@@ -9,7 +9,6 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -64,7 +63,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     )
 
     private val savedState = ProductPricingFragmentArgs(RequestCodes.PRODUCT_DETAIL_PRICING, pricingData)
-        .initSavedStateHandle()
+        .toSavedStateHandle()
 
     private lateinit var viewModel: ProductPricingViewModel
 
@@ -163,7 +162,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     @Test
     fun `Hides the tax section for variation pricing`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val savedState = ProductPricingFragmentArgs(RequestCodes.VARIATION_DETAIL_PRICING, pricingData)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
 
         viewModel = spy(
             ProductPricingViewModel(

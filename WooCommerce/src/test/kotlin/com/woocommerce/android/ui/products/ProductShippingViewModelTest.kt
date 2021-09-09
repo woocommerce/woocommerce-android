@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -41,7 +40,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel(requestCode: Int): ProductShippingViewModel {
-        val savedState = ProductShippingFragmentArgs(requestCode, initialData).initSavedStateHandle()
+        val savedState = ProductShippingFragmentArgs(requestCode, initialData).toSavedStateHandle()
         return spy(
             ProductShippingViewModel(
                 savedState,

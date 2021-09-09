@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
 import com.woocommerce.android.util.FileDownloader
@@ -36,7 +35,7 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     private fun initViewModel() {
         viewModel = PrintShippingLabelCustomsFormViewModel(
             savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(urls.toTypedArray(), true)
-                .initSavedStateHandle(),
+                .toSavedStateHandle(),
             fileDownloader = fileDownloader,
             fileUtils = fileUtils
         )

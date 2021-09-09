@@ -13,7 +13,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
@@ -75,7 +74,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private val savedState: SavedStateHandle =
-        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
+        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).toSavedStateHandle()
 
     private val siteParams = SiteParameters(
         currencyCode = "USD",

@@ -17,7 +17,6 @@ import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Initiali
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.UpToDate
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
@@ -389,6 +388,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     ) = CardReaderUpdateViewModel(
         cardReaderManager,
         tracker,
-        CardReaderUpdateDialogFragmentArgs(startedByUser).initSavedStateHandle()
+        CardReaderUpdateDialogFragmentArgs(startedByUser).toSavedStateHandle()
     )
 }

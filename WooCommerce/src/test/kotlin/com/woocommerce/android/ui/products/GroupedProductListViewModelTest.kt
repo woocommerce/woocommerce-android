@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListViewState
@@ -33,7 +32,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         remoteProductId = PRODUCT_REMOTE_ID,
         productIds = GROUPED_PRODUCT_IDS,
         groupedProductListType = GroupedProductListType.GROUPED
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private val productList = ProductTestUtils.generateProductList()
     private val groupedProductIds = GROUPED_PRODUCT_IDS.toList()

@@ -14,7 +14,6 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.payments.PaymentInfo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -71,7 +70,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
         ORDER_IDENTIFIER
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {

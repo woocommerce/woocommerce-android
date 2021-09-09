@@ -10,7 +10,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -55,7 +54,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
     }
 
-    private val savedState = OrderFulfillFragmentArgs(orderIdentifier = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState = OrderFulfillFragmentArgs(orderIdentifier = ORDER_IDENTIFIER).toSavedStateHandle()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(5, ORDER_IDENTIFIER)

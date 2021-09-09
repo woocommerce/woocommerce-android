@@ -7,7 +7,6 @@ import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
@@ -47,7 +46,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     private val base64Decoder: Base64Decoder = mock()
 
     private var savedState = PrintShippingLabelFragmentArgs(shippingLabelIds = longArrayOf(REMOTE_SHIPPING_LABEL_ID))
-        .initSavedStateHandle()
+        .toSavedStateHandle()
 
     private val printShippingLabelViewState = PrintShippingLabelViewState()
     private lateinit var viewModel: PrintShippingLabelViewModel
@@ -250,7 +249,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     @Test
     fun `when printing multiple labels, then show the correct screen title`() {
         savedState = PrintShippingLabelFragmentArgs(shippingLabelIds = longArrayOf(REMOTE_SHIPPING_LABEL_ID, 0L))
-            .initSavedStateHandle()
+            .toSavedStateHandle()
 
         initViewModel()
 

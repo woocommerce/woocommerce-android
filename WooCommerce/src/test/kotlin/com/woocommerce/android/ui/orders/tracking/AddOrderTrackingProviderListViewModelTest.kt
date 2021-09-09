@@ -6,7 +6,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModel.ViewState
@@ -41,7 +40,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: AddOrderTrackingProviderListViewModel
 
-    private val savedState = AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState = AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_IDENTIFIER).toSavedStateHandle()
 
     fun setupViewModel() {
         viewModel = AddOrderTrackingProviderListViewModel(

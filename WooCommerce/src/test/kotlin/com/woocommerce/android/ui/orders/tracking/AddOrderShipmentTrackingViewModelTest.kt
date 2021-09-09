@@ -9,7 +9,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
@@ -36,7 +35,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
-    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_IDENTIFIER).toSavedStateHandle()
 
     private lateinit var viewModel: AddOrderShipmentTrackingViewModel
 

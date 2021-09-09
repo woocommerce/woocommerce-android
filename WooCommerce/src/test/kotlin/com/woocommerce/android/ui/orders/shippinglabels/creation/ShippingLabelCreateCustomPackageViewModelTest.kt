@@ -5,7 +5,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -46,7 +45,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
     )
 
     fun setup() {
-        val savedState = ShippingLabelCreatePackageFragmentArgs(0).initSavedStateHandle()
+        val savedState = ShippingLabelCreatePackageFragmentArgs(0).toSavedStateHandle()
         whenever(parameterRepository.getParameters(any(), any<SavedStateHandle>())).thenReturn(
             SiteParameters(
                 currencyCode = "USD",

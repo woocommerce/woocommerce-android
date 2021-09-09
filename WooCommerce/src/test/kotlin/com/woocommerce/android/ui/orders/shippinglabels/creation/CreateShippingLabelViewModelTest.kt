@@ -8,7 +8,6 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -170,7 +169,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    private val savedState = CreateShippingLabelFragmentArgs(order.getIdentifier()).initSavedStateHandle()
+    private val savedState = CreateShippingLabelFragmentArgs(order.getIdentifier()).toSavedStateHandle()
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 

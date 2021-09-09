@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -33,7 +32,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         selectedImage = null,
         showChooser = false,
         requestCode = 123
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private fun initialize(productImages: List<Image> = generateProductImagesList()) {
         viewModel = ProductImagesViewModel(

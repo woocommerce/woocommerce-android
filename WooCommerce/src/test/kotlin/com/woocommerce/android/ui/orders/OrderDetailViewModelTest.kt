@@ -21,7 +21,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
@@ -84,7 +83,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val dispatcher: Dispatcher = mock()
 
-    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER).toSavedStateHandle()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER))

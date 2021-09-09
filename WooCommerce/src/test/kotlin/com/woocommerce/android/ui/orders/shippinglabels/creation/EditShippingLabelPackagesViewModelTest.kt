@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import org.mockito.kotlin.*
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -56,7 +55,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
     suspend fun setup(currentPackages: Array<ShippingLabelPackage>) {
-        val savedState = EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages).initSavedStateHandle()
+        val savedState = EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages).toSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)

@@ -14,7 +14,6 @@ import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
@@ -84,7 +83,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
 
     private val savedState: SavedStateHandle =
-        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).initSavedStateHandle()
+        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).toSavedStateHandle()
 
     private val siteParams = SiteParameters(
         currencyCode = "USD",

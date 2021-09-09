@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -37,7 +36,7 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock()
     private val shippingRepository: ShippingLabelRepository = mock()
 
-    private val savedState = ShippingPackageSelectorFragmentArgs(0).initSavedStateHandle()
+    private val savedState = ShippingPackageSelectorFragmentArgs(0).toSavedStateHandle()
 
     private lateinit var viewModel: ShippingPackageSelectorViewModel
 

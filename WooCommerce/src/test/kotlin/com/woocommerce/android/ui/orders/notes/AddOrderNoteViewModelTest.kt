@@ -10,7 +10,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.tools.NetworkStatus
@@ -51,7 +50,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: AddOrderNoteViewModel
 
     private val savedState: SavedStateHandle =
-        AddOrderNoteFragmentArgs(orderId = REMOTE_ORDER_ID, orderNumber = "100").initSavedStateHandle()
+        AddOrderNoteFragmentArgs(orderId = REMOTE_ORDER_ID, orderNumber = "100").toSavedStateHandle()
 
     private fun initViewModel() {
         viewModel = AddOrderNoteViewModel(

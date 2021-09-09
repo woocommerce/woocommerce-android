@@ -6,7 +6,6 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.ShippingLabelPackage.Item
@@ -64,7 +63,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
 
     fun setup(navArgs: ShippingCustomsFragmentArgs = defaultNavArgs) {
         viewModel = ShippingCustomsViewModel(
-            savedStateHandle = navArgs.initSavedStateHandle(),
+            savedStateHandle = navArgs.toSavedStateHandle(),
             selectedSide = selectedSite,
             parameterRepository = parameterRepository,
             dataStore = dataStore,

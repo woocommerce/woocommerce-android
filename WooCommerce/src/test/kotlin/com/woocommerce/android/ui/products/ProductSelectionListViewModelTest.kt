@@ -7,7 +7,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -40,7 +39,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         remoteProductId = PRODUCT_REMOTE_ID,
         groupedProductListType = GroupedProductListType.GROUPED,
         excludedProductIds = excludedProductIds.toLongArray()
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private lateinit var viewModel: ProductSelectionListViewModel
 
