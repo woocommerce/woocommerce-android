@@ -27,7 +27,7 @@ class TerminalListenerImplTest {
     }
 
     @Test
-    fun `when update reader status with not connected, then connected status emitted`() {
+    fun `when update reader status with not connected, then not connected status emitted`() {
         val newStatus = CardReaderStatus.NotConnected
 
         listener.updateReaderStatus(newStatus)
@@ -36,7 +36,7 @@ class TerminalListenerImplTest {
     }
 
     @Test
-    fun `when update reader status with connecting, then connected status emitted`() {
+    fun `when update reader status with connecting, then connecting status emitted`() {
         val newStatus = CardReaderStatus.Connecting
 
         listener.updateReaderStatus(newStatus)
