@@ -54,7 +54,6 @@ class AddOrderShipmentTrackingFragment :
 
     private val viewModel: AddOrderShipmentTrackingViewModel by viewModels()
 
-    private var isSelectedProviderCustom = false
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var progressDialog: CustomProgressDialog? = null
 

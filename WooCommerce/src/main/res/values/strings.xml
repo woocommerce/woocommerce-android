@@ -344,7 +344,7 @@
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
     <string name="orderdetail_shipping_label_m3_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on "Create shipping label" to try our beta feature!</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
-    <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your phone</string>
+    <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
@@ -395,7 +395,7 @@
     <string name="shipping_label_print_button">Print shipping label</string>
     <string name="shipping_label_print_multiple_button">Print shipping labels</string>
     <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
-    <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
+    <string name="shipping_label_print_info">Don\'t know how to print with your mobile device?</string>
     <string name="shipping_label_print_purchase_success">Shipping label purchased!</string>
     <string name="shipping_label_print_multiple_purchase_success">Shipping labels purchased!</string>
     <string name="shipping_label_print_save_for_later">Save for later</string>
@@ -439,7 +439,7 @@
     -->
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="shipping_label_more_information_heading">Save time and money by fulfilling with WooCommerce Shipping</string>
-    <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your phone at discounted rates!</string>
+    <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your mobile device at discounted rates!</string>
     <string name="shipping_label_more_information_link">Learn more</string>
     <string name="shipping_label_create_title">Create shipping label</string>
     <string name="shipping_label_create_packaging_details">Packaging details</string>
@@ -830,14 +830,14 @@
         Card Reader Software update
     -->
     <string name="card_reader_software_update_update" translatable="false">@string/update</string>
-    <string name="card_reader_software_update_skip" translatable="false">@string/skip</string>
     <string name="card_reader_software_update_cancel" translatable="false">@string/cancel</string>
-    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly. Do you want to update it now?</string>
+    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly</string>
     <string name="card_reader_software_update_title">Software update</string>
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Canceling an ongoing software update is not recommended. Cancelling will block your reader connection.</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% complete</string>
 
     <!--
         Card Reader Onboarding
@@ -905,6 +905,8 @@
     -->
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
+    <string name="notification_order_title">You have 1 new order! 🎉</string>
+    <string name="notification_review_title">You have 1 new review! 🌟</string>
     <!--
         Product Review Detail
     -->
@@ -976,6 +978,7 @@
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_stock_status">Stock status</string>
     <string name="product_type">Product type</string>
+    <string name="product_category">Category</string>
     <string name="product_type_description">%s product</string>
     <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
@@ -1237,8 +1240,11 @@
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>
     <string name="settings_enable_product_adding_teaser_title">Creating products</string>
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
+    <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
+    <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -1266,6 +1272,7 @@
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
+    <string name="settings_whats_new">What\'s New in WooCommerce</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>

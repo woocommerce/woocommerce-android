@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
@@ -12,18 +13,21 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductFilterOptionListBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProductFilterOptionListFragment :
     BaseFragment(R.layout.fragment_product_filter_option_list),
+    OnLoadMoreListener,
     OnProductFilterOptionClickListener {
     private val viewModel: ProductFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_product_filters)
 
@@ -31,19 +35,20 @@ class ProductFilterOptionListFragment :
 
     private lateinit var mProductFilterOptionListAdapter: ProductFilterOptionListAdapter
 
+    private val skeletonView = SkeletonView()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentProductFilterOptionListBinding.bind(view)
-        setupObservers(viewModel)
+        setupObservers(viewModel, binding)
 
-        mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this)
+        mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this, this)
         with(binding.filterOptionList) {
             addItemDecoration(
-                AlignedDividerDecoration(
+                DividerItemDecoration(
                     requireActivity(),
-                    DividerItemDecoration.VERTICAL,
-                    alignStartToStartOf = R.id.filterOptionItem_name
+                    DividerItemDecoration.VERTICAL
                 )
             )
             layoutManager = LinearLayoutManager(activity)
@@ -64,9 +69,18 @@ class ProductFilterOptionListFragment :
         }
     }
 
-    private fun setupObservers(viewModel: ProductFilterListViewModel) {
+    private fun setupObservers(
+        viewModel: ProductFilterListViewModel,
+        binding: FragmentProductFilterOptionListBinding
+    ) {
         viewModel.productFilterOptionListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
+                showSkeleton(it, binding)
+            }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) {
+                showLoadMoreProgress(it, binding)
+            }
         }
 
         viewModel.filterOptionListItems.observe(
@@ -88,11 +102,38 @@ class ProductFilterOptionListFragment :
         viewModel.loadFilterOptions(arguments.selectedFilterItemPosition)
     }
 
+    private fun showSkeleton(show: Boolean, binding: FragmentProductFilterOptionListBinding) {
+        if (show) {
+            skeletonView.show(
+                binding.filterOptionList,
+                R.layout.skeleton_product_filter_options_categories_list,
+                delayed = true
+            )
+            binding.filterOptionListBtnFrame.hide()
+        } else {
+            skeletonView.hide()
+            binding.filterOptionListBtnFrame.show()
+        }
+    }
+
+    private fun showLoadMoreProgress(show: Boolean, binding: FragmentProductFilterOptionListBinding) {
+        binding.loadMoreProgress.isVisible = show
+    }
+
     private fun showProductFilterList(productFilterOptionList: List<FilterListOptionItemUiModel>) {
-        mProductFilterOptionListAdapter.filterList = productFilterOptionList
+        mProductFilterOptionListAdapter.updateData(productFilterOptionList)
     }
 
     override fun onFilterOptionClick(selectedFilter: FilterListOptionItemUiModel) {
         viewModel.onFilterOptionItemSelected(arguments.selectedFilterItemPosition, selectedFilter)
+    }
+
+    override fun onRequestLoadMore() {
+        viewModel.onLoadMoreRequested(arguments.selectedFilterItemPosition)
+    }
+
+    override fun onDestroyView() {
+        skeletonView.hide()
+        super.onDestroyView()
     }
 }

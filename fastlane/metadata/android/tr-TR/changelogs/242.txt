@@ -1,0 +1,4 @@
+7.4
+Onayınızı gerektiren ürün yorumlarında, bunları önceden onaylanmış yorumlardan ayırt etmenizi kolaylaştırmak için yeni bir etiket uygulandı.
+
+Bu güncelleme ile ayrıca WooCommerce Shipping & Tax Uzantısını kullanan gönderi etiketi özelliğinde çeşitli geliştirmeler de yapılmıştır. Bu yeni özellikle ilgili tüm geri bildirimleriniz bizim için çok değerlidir!

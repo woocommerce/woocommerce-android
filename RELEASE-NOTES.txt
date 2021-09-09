@@ -1,8 +1,21 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
-7.4
+7.6
 -----
 
+
+7.5
+-----
+- [***] Merchants using WooCommerce Product Add-ons in their store can view Add-on information at Orders and Products views [https://github.com/woocommerce/woocommerce-android/pull/4689]
+- [*] Products: Filtering by category is now available. [https://github.com/woocommerce/woocommerce-android/pull/4715]
+- [*] Fixed a bug where a new order notification opened incorrect order detail info. [https://github.com/woocommerce/woocommerce-android/pull/4635]
+
+
+7.4
+-----
+- [*] Reviews Tab: Added a pending review label to unapproved reviews [https://github.com/woocommerce/woocommerce-android/pull/4644]
+- [*] Shipping Labels: Fixed a rare crash that occurred when adding a new package with decimal weight quantity [https://github.com/woocommerce/woocommerce-android/pull/4657]
+- [*] Shipping Labels: Updated error messages when validating origin and shipping addresses  [https://github.com/woocommerce/woocommerce-android/pull/4612]
 
 7.3
 -----

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:49:13+0000
+Translation-Revision-Date: 2021-08-31 11:54:45+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d товар</string>
+    <string name="upsell_product_count_many">Продукты для апсела: %d</string>
+    <string name="upsell_product_count_one">Продукт для апсела: %d</string>
+    <string name="cross_sell_product_count_many">Продукты для кроссела: %d</string>
+    <string name="cross_sell_product_count_one">Продукт для кроссела: %d</string>
+    <string name="product_count_many">%d товаров (товара)</string>
+    <string name="product_count_one">%d товар</string>
+    <string name="product_add_ons_title">Дополнения к товару</string>
+    <string name="product_save_dialog_title">Сохранение товара</string>
+    <string name="pending_review_label">На утверждении</string>
+    <string name="card_reader_payment_reader_not_connected">Убедитесь, что устройство чтения подключено.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Повторите попытку с помощью другой карты</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Повторно приложите, вставьте или проведите карту</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Обнаружено несколько карт. Попробуйте с помощью одной карты</string>
+    <string name="card_reader_payment_remove_card_prompt">Удалите карту</string>
+    <string name="card_reader_payment_retry_card_prompt">Попробуйте с помощью той же карты</string>
+    <string name="order_refunds_refund_info_description_many">%d элементов</string>
+    <string name="order_refunds_refund_info_description_one">%d товар</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d рабоч. дн.</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d рабочий день</string>
+    <string name="shipping_label_validation_error_template">Не удалось автоматически проверить почтовый адрес: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">Не удалось автоматически проверить адрес происхождения. Чтобы убедиться в правильности адреса, найдите его на Google Maps.</string>
+    <string name="ordered_add_ons_wip_message">Мы стараемся упростить процедуру просмотра дополнений к товару с вашего устройства. В настоящее время вы можете просматривать дополнения для своих заказов. Такие дополнения можно создавать и редактировать в веб-консоли.</string>
+    <string name="ordered_add_ons_wip_title">Просмотрите дополнения на своём устройстве!</string>
+    <string name="ordered_add_ons_details_info_notice">В случае переименования дополнения в веб-консоли следует отметить, что предыдущие заказы больше не будут показывать данное дополнение в приложении.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Просмотреть дополнения</string>
+    <string name="save">Сохранить</string>
     <string name="support_contact_payments_detail">Обратитесь к инженерам поддержки за помощью при решении вопросов, связанных с платежами</string>
     <string name="support_contact_payments">Обратиться в службу поддержки платежей</string>
     <string name="product_images_error_detail_title">Загрузить подробности (%d)</string>
@@ -13,7 +40,6 @@ Language: ru
     <string name="product_image_service_error_uploading_single">Не удалось загрузить %d файл</string>
     <string name="product_image_service_error_media_null">Медиасодержимое не найдено</string>
     <string name="product_add_ons_details_info_notice">Дополнения к товару можно редактировать в веб-консоли.</string>
-    <string name="product_add_ons_card_button_title">Дополнения к товару</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Подробнее&lt;/a&gt; о загрузке изображений</string>
     <string name="card_reader_onboarding_generic_error_hint">К сожалению, нам не удалось подтвердить платежи, совершённые в этом физическом магазине</string>
     <string name="card_reader_onboarding_generic_error_header">Не удалось подтвердить платежи в этом физическом магазине</string>
@@ -355,6 +381,7 @@ Language: ru
     <string name="shipping_label_packages_loading_message">Пожалуйста, подождите…</string>
     <string name="shipping_label_packages_loading_title">Загрузка посылок!</string>
     <string name="shipping_label_package_details_title_template">Посылка %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d элементов</string>
     <string name="shipping_label_packages_loading_error">Не удаётся загрузить определения посылок</string>
     <string name="shipping_label_package_details_weight_info">Включает вес посылок</string>
     <string name="shipping_label_package_details_weight_hint">Общий вес посылок (%1$s)</string>
@@ -369,9 +396,8 @@ Language: ru
     <string name="shipping_label_address_suggestion_use_selected_address">Использовать выбранный адрес</string>
     <string name="shipping_label_edit_address_loading_progress_title">Загрузка адреса</string>
     <string name="product_wip_title_m5">Доступны новые функции!</string>
-    <string name="shipping_label_validation_view_map">Открыть карту</string>
+    <string name="shipping_label_validation_view_map">Найти на карте</string>
     <string name="shipping_label_validation_contact_customer">Связаться с клиентом</string>
-    <string name="shipping_label_validation_error_template">Сбой проверки: %s</string>
     <string name="shipping_label_error_address_invalid_street">Недопустимая улица</string>
     <string name="shipping_label_error_address_house_number_missing">Не указан номер дома</string>
     <string name="shipping_label_error_address_not_found">Адрес не найден</string>
@@ -770,10 +796,9 @@ Language: ru
     <string name="orderlist_loading">Просмотр информации о ваших заказах…</string>
     <string name="product_detail_editable_text_hint">Введите текст</string>
     <string name="product_detail_title_hint">Введите название товара</string>
-    <string name="product_detail_save_product_success">Продукт обновлен</string>
+    <string name="product_detail_save_product_success">Товар сохранён</string>
     <string name="product_detail_update_product_error">Ошибка обновления продукта</string>
     <string name="product_update_dialog_message">Пожалуйста, подождите…</string>
-    <string name="product_save_dialog_title">Обновление продукта</string>
     <string name="product_description_empty">Опишите продукт</string>
     <string name="product_description">Описание</string>
     <string name="product_edit_description">Редактировать описание</string>

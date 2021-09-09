@@ -1,4 +1,0 @@
-7.3:
-WooCommerce Gönderim ve Vergi Uzantısını kullanan satıcılar, yaptığımız iki iyileştirmeyi duymaktan mutlu olacaklardır. Bir etiket oluştururken özel paketler oluşturabilirsiniz. Tek bir sipariş için birden fazla gönderim etiketi de oluşturabilirsiniz!
-
-Bu ve diğer birçok küçük iyileştirme, deneyiminizi daha sorunsuz hale getirmek için yapıldı. Yazılımımıza gönlümüzden kattığımız sevgiyi fark edeceğinizi umuyoruz.

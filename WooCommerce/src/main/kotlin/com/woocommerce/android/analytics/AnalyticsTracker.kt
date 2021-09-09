@@ -260,9 +260,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CARD_READER_AUTO_CONNECTION_STARTED,
 
         // -- Card Reader - software update
-        CARD_READER_SOFTWARE_UPDATE_TAPPED,
         CARD_READER_SOFTWARE_UPDATE_SUCCESS,
-        CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED,
         CARD_READER_SOFTWARE_UPDATE_FAILED,
 
         // -- Receipts
@@ -421,6 +419,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED,
         PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED,
         PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED,
+
+        // -- Product Add-ons
+        PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED,
+        PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
+        PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED,
+        PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED,
 
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
@@ -684,6 +688,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FILTERS = "filters"
         const val KEY_FULFILL_ORDER = "fulfill_order"
         const val KEY_STEP = "step"
+        const val KEY_ADDONS = "addons"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -733,6 +738,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
         const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
+        const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"

@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -60,6 +61,7 @@ internal class CardReaderManagerImpl(
     override fun initialize(app: Application) {
         if (!terminal.isInitialized()) {
             application = app
+            terminal.getLifecycleObserver().onCreate(app)
 
             app.registerComponentCallbacks(object : ComponentCallbacks2 {
                 override fun onConfigurationChanged(newConfig: Configuration) {}
@@ -81,9 +83,12 @@ internal class CardReaderManagerImpl(
         }
     }
 
-    override fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> {
+    override fun discoverReaders(
+        isSimulated: Boolean,
+        cardReaderTypesToDiscover: CardReaderTypesToDiscover,
+    ): Flow<CardReaderDiscoveryEvents> {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        return connectionManager.discoverReaders(isSimulated)
+        return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
     override suspend fun connectToReader(cardReader: CardReader): Boolean {
@@ -122,9 +127,9 @@ internal class CardReaderManagerImpl(
         terminal.initTerminal(application, logLevel, tokenProvider, terminalListener)
     }
 
-    override fun installSoftwareUpdate() {
+    override suspend fun startAsyncSoftwareUpdate() {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        terminal.installSoftwareUpdate()
+        softwareUpdateManager.startAsyncSoftwareUpdate()
     }
 
     override suspend fun clearCachedCredentials() {

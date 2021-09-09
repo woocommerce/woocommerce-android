@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.FCMRegistrationIntentService
-import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
@@ -68,7 +68,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var zendeskHelper: ZendeskHelper
-    @Inject lateinit var notificationHandler: NotificationHandler
+    @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
@@ -124,7 +124,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         // Developers can uncomment the line below to clear the db tables at startup
         // wellSqlConfig.resetDatabase()
 
-        notificationHandler.createNotificationChannels(application)
+        wooNotificationBuilder.createNotificationChannels()
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         application.registerActivityLifecycleCallbacks(lifecycleMonitor)
