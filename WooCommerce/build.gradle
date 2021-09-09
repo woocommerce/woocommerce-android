@@ -146,7 +146,7 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-messaging:21.0.0'
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
