@@ -32,16 +32,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import android.nfc.NfcAdapter
 
-
 @AndroidEntryPoint
 class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_payment_dialog) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
 
-    @Inject
-    lateinit var printHtmlHelper: PrintHtmlHelper
+    @Inject lateinit var printHtmlHelper: PrintHtmlHelper
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
