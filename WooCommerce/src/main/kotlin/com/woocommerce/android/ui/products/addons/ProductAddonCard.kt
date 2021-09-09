@@ -66,14 +66,14 @@ class ProductAddonCard @JvmOverloads constructor(
         addon: Addon.HasAdjustablePrice,
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
-        when(val price = addon.price) {
+        when (val price = addon.price) {
             is Addon.HasAdjustablePrice.Price.Adjusted -> {
                 addonCustomPrice.apply {
                     visibility = View.VISIBLE
                     text = price.toFormattedPrice(formatCurrencyForDisplay)
                 }
             }
-            Addon.HasAdjustablePrice.Price.NotAdjusted ->{
+            Addon.HasAdjustablePrice.Price.NotAdjusted -> {
                 addonCustomPrice.visibility = View.GONE
             }
         }
