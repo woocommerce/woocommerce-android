@@ -82,7 +82,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val vm = initVM(CardReaderOnboardingState.WcpaySetupNotCompleted, skipOnboarding = false)
 
             assertThat(vm.event.value)
-                .isInstanceOf(CardReaderConnectViewModel.CardReaderConnectEvent.NavigateToOnboardingFlow::class.java)
+                .isInstanceOf(NavigateToOnboardingFlow::class.java)
         }
 
     @Test
@@ -292,7 +292,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
 
-            verify(cardReaderManager).discoverReaders(anyBoolean())
+            verify(cardReaderManager).discoverReaders(anyBoolean(), any())
         }
 
     @Test
@@ -874,7 +874,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
-        whenever(cardReaderManager.discoverReaders(anyBoolean())).thenAnswer {
+        whenever(cardReaderManager.discoverReaders(anyBoolean(), any())).thenAnswer {
             flow {
                 when (scanState) {
                     SCANNING -> { // no-op

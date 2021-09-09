@@ -2,7 +2,6 @@ package com.woocommerce.android.cardreader.internal.wrappers
 
 import android.app.Application
 import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.TerminalApplicationDelegate
 import com.stripe.stripeterminal.external.callable.BluetoothReaderListener
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
@@ -27,7 +26,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderImpl
  */
 internal class TerminalWrapper {
     fun isInitialized() = Terminal.isInitialized()
-    fun getLifecycleObserver() = TerminalApplicationDelegate
+    fun getLifecycleObserver() = TerminalApplicationDelegateWrapper()
     fun initTerminal(
         application: Application,
         logLevel: LogLevel,

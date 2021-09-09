@@ -1,10 +1,13 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -25,13 +28,19 @@ import org.mockito.kotlin.whenever
 @RunWith(MockitoJUnitRunner::class)
 class CardReaderManagerImplTest {
     private lateinit var cardReaderManager: CardReaderManagerImpl
-    private val terminalWrapper: TerminalWrapper = mock()
+    private val terminalApplicationDelegateWrapper: TerminalApplicationDelegateWrapper = mock()
+    private val terminalWrapper: TerminalWrapper = mock {
+        on { getLifecycleObserver() }.thenReturn(terminalApplicationDelegateWrapper)
+    }
     private val tokenProvider: TokenProvider = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
     private val connectionManager: ConnectionManager = mock()
     private val softwareUpdateManager: SoftwareUpdateManager = mock()
     private val terminalListener: TerminalListenerImpl = mock()
+
+    private val supportedReaders =
+        CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
 
     @Before
     fun setUp() {
@@ -51,6 +60,13 @@ class CardReaderManagerImplTest {
         cardReaderManager.initialize(application)
 
         verify(application, atLeastOnce()).registerComponentCallbacks(any())
+    }
+
+    @Test
+    fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
+        cardReaderManager.initialize(application)
+
+        verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
 
     @Test
@@ -89,7 +105,7 @@ class CardReaderManagerImplTest {
     fun `given terminal not initialized, when reader discovery started, then exception is thrown`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.discoverReaders(true)
+        cardReaderManager.discoverReaders(true, supportedReaders)
     }
 
     @Test(expected = IllegalStateException::class)

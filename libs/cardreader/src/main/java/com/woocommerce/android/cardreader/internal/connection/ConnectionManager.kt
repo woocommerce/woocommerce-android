@@ -8,6 +8,7 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
@@ -25,7 +26,7 @@ internal class ConnectionManager(
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
 
-    fun discoverReaders(isSimulated: Boolean) =
+    fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->
             when (state) {
                 is DiscoverReadersStatus.Started -> {
@@ -35,7 +36,17 @@ internal class ConnectionManager(
                     CardReaderDiscoveryEvents.Failed(state.exception.errorMessage)
                 }
                 is DiscoverReadersStatus.FoundReaders -> {
-                    CardReaderDiscoveryEvents.ReadersFound(state.readers.map { CardReaderImpl(it) })
+                    val filtering: (Reader) -> Boolean = when (cardReaderTypesToDiscover) {
+                        is CardReaderTypesToDiscover.SpecificReaders -> { reader ->
+                            cardReaderTypesToDiscover.readers.map { it.name }.contains(reader.deviceType.name)
+                        }
+                        CardReaderTypesToDiscover.UnspecifiedReaders -> { _ -> true }
+                    }
+                    CardReaderDiscoveryEvents.ReadersFound(
+                        state.readers
+                            .filter(filtering)
+                            .map { CardReaderImpl(it) }
+                    )
                 }
                 DiscoverReadersStatus.Success -> {
                     CardReaderDiscoveryEvents.Succeeded

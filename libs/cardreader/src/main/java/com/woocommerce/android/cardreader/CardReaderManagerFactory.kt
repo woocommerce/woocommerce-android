@@ -43,7 +43,7 @@ object CardReaderManagerFactory {
             ConnectionManager(
                 terminal,
                 bluetoothReaderListener,
-                DiscoverReadersAction(terminal),
+                DiscoverReadersAction(terminal, logWrapper),
                 terminalListener,
             ),
             SoftwareUpdateManager(

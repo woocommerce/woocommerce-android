@@ -4,6 +4,7 @@ import android.app.Application
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.payments.PaymentInfo
@@ -20,7 +21,11 @@ interface CardReaderManager {
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability>
 
     fun initialize(app: Application)
-    fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
+    fun discoverReaders(
+        isSimulated: Boolean,
+        cardReaderTypesToDiscover: CardReaderTypesToDiscover,
+    ): Flow<CardReaderDiscoveryEvents>
+
     suspend fun connectToReader(cardReader: CardReader): Boolean
     suspend fun disconnectReader(): Boolean
 
