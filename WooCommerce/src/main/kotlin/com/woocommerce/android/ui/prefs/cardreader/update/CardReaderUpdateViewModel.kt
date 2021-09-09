@@ -60,7 +60,7 @@ class CardReaderUpdateViewModel @Inject constructor(
     fun onBackPressed() {
         return when (val currentState = viewState.value) {
             is UpdatingState -> showCancelAnywayButton(currentState)
-            is UpdatingCancelingState -> viewState.value = buildUpdateState(currentState.progressText)
+            is UpdatingCancelingState -> viewState.value = UpdatingState(progressText = currentState.progressText)
             is UpdateAboutToStart -> {
                 // noop. Update is initiating, we can not cancel it
             }
@@ -115,7 +115,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         if (currentState is StateWithProgress<*>) {
             viewState.value = currentState.copyWithUpdatedProgress(buildProgressText(progress))
         } else {
-            viewState.value = buildUpdateState(buildProgressText(progress))
+            viewState.value = UpdatingState(progressText = buildProgressText(progress))
         }
     }
 
@@ -140,15 +140,6 @@ class CardReaderUpdateViewModel @Inject constructor(
         )
         triggerEvent(ExitWithResult(FAILED))
     }
-
-    private fun buildUpdateState(progressText: UiString) =
-        UpdatingState(
-            progressText = progressText,
-            button = ButtonState(
-                ::onCancelClicked,
-                UiStringRes(R.string.cancel)
-            ),
-        )
 
     private fun convertProgressToPercentage(progress: Float) = (progress * PERCENT_100).toInt()
 
@@ -181,7 +172,6 @@ class CardReaderUpdateViewModel @Inject constructor(
 
         data class UpdatingState(
             override val progressText: UiString,
-            override val button: ButtonState,
             override val description: UiStringRes = UiStringRes(
                 R.string.card_reader_software_update_description
             ),
