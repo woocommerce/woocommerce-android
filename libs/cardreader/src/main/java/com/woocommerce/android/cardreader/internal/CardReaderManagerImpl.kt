@@ -93,19 +93,7 @@ internal class CardReaderManagerImpl(
 
     override suspend fun connectToReader(cardReader: CardReader): Boolean {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-
-        connectedScope.launch {
-            readerStatus.collect { status ->
-                if (status is CardReaderStatus.Connected) {
-                    readerStatus.collect { statusAfterConnected ->
-                        if (statusAfterConnected is CardReaderStatus.NotConnected) {
-                            connectionManager.resetConnectionState()
-                            connectedScope.cancel()
-                        }
-                    }
-                }
-            }
-        }
+        startStateResettingJob()
         return connectionManager.connectToReader(cardReader)
     }
 
@@ -139,5 +127,22 @@ internal class CardReaderManagerImpl(
 
     override fun cancelOngoingFirmwareUpdate() {
         softwareUpdateManager.cancelOngoingFirmwareUpdate()
+    }
+
+    private fun startStateResettingJob() {
+        connectedScope.launch {
+            readerStatus.collect { status ->
+                if (status is CardReaderStatus.Connected) {
+                    launch {
+                        readerStatus.collect { statusAfterConnected ->
+                            if (statusAfterConnected is CardReaderStatus.NotConnected) {
+                                connectionManager.resetConnectionState()
+                                connectedScope.cancel()
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
