@@ -1,14 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
@@ -17,10 +9,10 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -39,15 +31,20 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
@@ -59,9 +56,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val selectedSite: SelectedSite = mock {
-        on { get() } doReturn SiteModel()
-    }
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
@@ -97,8 +91,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val prefs: AppPrefs = mock {
         on(it.getSelectedProductType()).then { "simple" }
     }
-    private val addonsStore: WCAddonsStore = mock {
-        on { observeProductSpecificAddons(any(), any()) } doReturn emptyFlow()
+    private val addonRepository: AddonRepository = mock {
+        onBlocking { hasAnyProductSpecificAddons(any()) } doReturn false
     }
 
     private val productUtils = ProductUtils()
@@ -176,14 +170,12 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 variationRepository,
                 mediaFileUploadHandler,
                 prefs,
-                addonsStore,
-                selectedSite
+                addonRepository,
             )
         )
 
         clearInvocations(
             viewModel,
-            selectedSite,
             productRepository,
             networkStatus,
             currencyFormatter,

@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCAddonsStore
@@ -23,6 +25,15 @@ class AddonRepository @Inject constructor(
     fun getAddonsFrom(productID: Long) =
         productStore.getProductByRemoteId(selectedSite.get(), productID)
             ?.addons
+
+    fun observeProductSpecificAddons(productRemoteID: Long): Flow<List<Addon>> =
+        addonsStore.observeProductSpecificAddons(
+            selectedSite.get().siteId,
+            productRemoteId = productRemoteID
+        )
+
+    suspend fun hasAnyProductSpecificAddons(productRemoteID: Long): Boolean =
+        observeProductSpecificAddons(productRemoteID).firstOrNull().isNullOrEmpty().not()
 
     suspend fun getOrderAddonsData(
         orderID: Long,

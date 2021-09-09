@@ -18,7 +18,6 @@ import com.woocommerce.android.extensions.*
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
@@ -27,6 +26,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.*
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -51,7 +51,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.*
@@ -73,8 +72,7 @@ class ProductDetailViewModel @Inject constructor(
     private val variationRepository: VariationRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val prefs: AppPrefs,
-    private val addonsStore: WCAddonsStore,
-    val selectedSite: SelectedSite
+    private val addonRepository: AddonRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -144,7 +142,7 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private val cardBuilder by lazy {
-        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonsStore, selectedSite)
+        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonRepository)
     }
 
     private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
@@ -240,8 +238,8 @@ class ProductDetailViewModel @Inject constructor(
 
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
 
-    fun observeProductSpecificAddons(siteRemoteId: Long, productRemoteId: Long) =
-        addonsStore.observeProductSpecificAddons(siteRemoteId, productRemoteId)
+    fun observeProductSpecificAddons(productRemoteId: Long) =
+        addonRepository.observeProductSpecificAddons(productRemoteId)
 
     /**
      * Called when the Share menu button is clicked in Product detail screen

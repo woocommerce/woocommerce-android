@@ -7,11 +7,14 @@ import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrd
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.times
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -137,6 +140,20 @@ class AddonRepositoryTest {
         configureSuccessfulAddonResponse()
         val response = repositoryUnderTest.getOrderAddonsData(123, 0, 333)
         assertThat(response).isNull()
+    }
+
+    @Test
+    fun `hasAddons should return false if there's no add-ons for given product`() = runBlockingTest {
+        whenever(addonStoreMock.observeProductSpecificAddons(any(), any())).thenReturn(emptyFlow())
+
+        assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(false)
+    }
+
+    @Test
+    fun `hasAddons should return true if there are add-ons for given product`() = runBlockingTest {
+        whenever(addonStoreMock.observeProductSpecificAddons(any(), any())).thenReturn(flowOf(defaultAddonsList))
+
+        assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(true)
     }
 
     private fun configureSuccessfulOrderResponse() {

@@ -37,12 +37,11 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
         _binding = FragmentProductAddonsBinding.bind(view)
         viewModel.event.observe(viewLifecycleOwner, Observer(::onEventReceived))
 
-        viewModel.observeProductSpecificAddons(
-            siteRemoteId = viewModel.selectedSite.get().siteId,
-            productRemoteId = viewModel.getRemoteProductId()
-        ).asLiveData().observe(viewLifecycleOwner) { addons ->
-            setupRecyclerViewWith(addons, viewModel.currencyCode)
-        }
+        viewModel.observeProductSpecificAddons(productRemoteId = viewModel.getRemoteProductId())
+            .asLiveData()
+            .observe(viewLifecycleOwner) { addons ->
+                setupRecyclerViewWith(addons, viewModel.currencyCode)
+            }
     }
 
     private fun onEventReceived(event: MultiLiveEvent.Event) {

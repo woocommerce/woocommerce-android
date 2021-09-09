@@ -14,7 +14,6 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -40,6 +39,7 @@ import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VIRTUAL
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -53,16 +53,13 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.flow.firstOrNull
-import org.wordpress.android.fluxc.store.WCAddonsStore
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters,
-    private val addonsStore: WCAddonsStore,
-    private val selectedSite: SelectedSite
+    private val addonRepository: AddonRepository,
 ) {
     private lateinit var originalSku: String
 
@@ -622,10 +619,9 @@ class ProductDetailCardBuilder(
 
     private suspend fun Product.addons(): ProductProperty? =
         takeIf { product ->
-            addonsStore.observeProductSpecificAddons(
-                siteRemoteId = selectedSite.get().siteId,
-                productRemoteId = product.remoteId
-            ).firstOrNull().isNullOrEmpty().not() && AppPrefs.isProductAddonsEnabled
+            addonRepository.hasAnyProductSpecificAddons(
+                productRemoteID = product.remoteId
+            ) && AppPrefs.isProductAddonsEnabled
         }?.let {
             ComplexProperty(
                 value = resources.getString(string.product_add_ons_title),
