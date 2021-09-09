@@ -749,7 +749,7 @@ class MainActivity :
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId,
+            remoteProductId = remoteProductId,
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
@@ -783,10 +783,10 @@ class MainActivity :
         }
 
         val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
-            remoteReviewId,
-            tempStatus,
-            launchedFromNotification,
-            enableModeration
+            remoteReviewId = remoteReviewId,
+            tempStatus = tempStatus,
+            launchedFromNotification = launchedFromNotification,
+            enableModeration = enableModeration
         )
         navController.navigateSafely(action)
     }
@@ -799,7 +799,11 @@ class MainActivity :
         productCategoryName: String?
     ) {
         val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
-            stockStatus, productStatus, productType, productCategory, productCategoryName
+            selectedStockStatus = stockStatus,
+            selectedProductStatus = productStatus,
+            selectedProductType = productType,
+            selectedProductCategoryId = productCategory,
+            selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
     }
