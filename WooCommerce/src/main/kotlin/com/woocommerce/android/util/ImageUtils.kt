@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import android.util.Base64
 import android.widget.ImageView
 import com.woocommerce.android.di.GlideApp
-import org.wordpress.android.util.AppLog
+import com.woocommerce.android.util.WooLog.T.MEDIA
 
 object ImageUtils {
     /**
@@ -40,7 +40,7 @@ object ImageUtils {
             val sanitizedBase64String = base64ImageData.replace("data:image/png;base64,", "")
             imageData = Base64.decode(sanitizedBase64String, Base64.DEFAULT)
         } catch (ex: IllegalArgumentException) {
-            AppLog.e(AppLog.T.UTILS, String.format("Cant parse base64 image data:" + ex.message))
+            WooLog.e(MEDIA, "Cant parse base64 image data: ${ex.message}")
             return
         }
 
