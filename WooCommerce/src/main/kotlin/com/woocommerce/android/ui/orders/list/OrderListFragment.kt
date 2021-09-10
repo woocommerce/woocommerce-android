@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -162,9 +161,6 @@ class OrderListFragment :
 
         initializeViewModel()
         initializeTabs()
-
-        val filterOrSearchEnabled = isFilterEnabled || isSearching
-        showTabs(!filterOrSearchEnabled)
 
         if (isFilterEnabled) {
             viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
@@ -612,14 +608,6 @@ class OrderListFragment :
      */
     private fun submitSearchQuery(query: String) {
         viewModel.submitSearchOrFilter(searchQuery = query)
-    }
-
-    private fun showTabs(show: Boolean) {
-        if (show && tabLayout.visibility != View.VISIBLE) {
-            WooAnimUtils.fadeIn(tabLayout)
-        } else if (!show && tabLayout.visibility != View.GONE) {
-            tabLayout.visibility = View.GONE
-        }
     }
 
     private fun refreshOrders() {
