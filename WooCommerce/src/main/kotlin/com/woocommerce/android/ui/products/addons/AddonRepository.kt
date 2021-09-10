@@ -47,5 +47,6 @@ class AddonRepository @Inject constructor(
 
     private suspend fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
         getAddonsFrom(productID)
+            ?.map { it.toAppModel() }
             ?.let { addons -> Pair(addons, this) }
 }
